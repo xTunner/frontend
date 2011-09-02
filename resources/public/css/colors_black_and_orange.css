@@ -1,0 +1,137 @@
+
+/**************************************/
+/*** Blue and green theme rule sets ***/
+
+h3 {
+	color: #C7480C;
+}
+
+h5 {
+	color: #C7480C;
+}
+
+.call_to_action {
+	border: 5px solid #4B4B4B;
+	text-shadow: -1px -1px 0 #CF7815;
+	background: #C7480C;
+	background: url("../images/bg_fallback_cta_orange.gif") repeat-x center left;
+	background: -moz-linear-gradient(top, #FCA11C, #EC8317 50%, #E15F10 50%, #C7480C);
+	background: -webkit-gradient(linear, left top, left bottom, from(#FCA11C), color-stop(50%, #EC8317), color-stop(50%, #E15F10), to(#C7480C));
+	-webkit-background-clip: padding-box; /* fix for Chrome anti-aliasing issue */
+}
+
+	.call_to_action:hover {
+		background: #C7480C;
+		background: url("../images/bg_fallback_cta_orange.gif") repeat-x center left;
+		background: -moz-linear-gradient(top, #FCA11C, #C7480C);
+		background: -webkit-gradient(linear, left top, left bottom, from(#FCA11C), to(#C7480C));
+		-webkit-background-clip: padding-box; /* fix for Chrome anti-aliasing issue */
+	}
+
+	.call_to_action:active {
+		background: #C7480C;
+		background: url("../images/bg_fallback_cta_orange.gif") repeat-x center left;
+		background: -moz-linear-gradient(top,#C7480C, #FCA11C);
+		background: -webkit-gradient(linear, left top, left bottom, from(#C7480C), to(#FCA11C));
+		-webkit-background-clip: padding-box; /* fix for Chrome anti-aliasing issue */
+	}
+
+#logo a, a#logo {
+		background: url("../images/logo_orange.png") no-repeat top left;
+}
+
+#nav li a {
+	color: #C7480C;
+}
+
+	#nav > li:hover > a, #nav li .current_page {
+		color: #973709;
+	}
+
+#nav > li:hover > a, #nav li .current_page {
+		background: url("../images/current_page_arrow_gray.png") no-repeat center bottom;
+}
+
+#nav .dropdown_alignedLeft > a, #nav .dropdown_alignedRight > a {
+		background: url("../images/dropdown_arrow_orange.png") no-repeat top right;
+}
+
+	#nav .dropdown_alignedLeft:hover > a, #nav .dropdown_alignedRight:hover > a {
+		background: #C7480C url("../images/dropdown_arrow_orange.png") no-repeat bottom right;
+	}
+
+#nav .dropdown_alignedLeft:hover > ul, #nav .dropdown_alignedRight:hover > ul {
+	background: #C7480C;
+}
+	
+#nav li ul li {
+	border-bottom: 1px dashed #E3A486;
+}
+
+#nav li ul li.dropdown_innerTitle {
+	color: #E3A486;
+}
+
+#nav li ul li a:hover {
+	color: #E3A486;
+}
+
+#pitch_wrap {
+	border-top: 5px solid #000000;
+	background: #000000 url("../images/bg_gradient_black.jpg") no-repeat top center;
+}
+
+#slider {
+	-moz-box-shadow: 0 0 15px #000000;
+	-webkit-box-shadow: 0 0 15px #000000;
+	box-shadow: 0 0 15px #000000;
+}
+
+	.slider_controls li a {
+		background: url("../images/slider_controls_black.png") no-repeat top left;
+	}
+
+#blurb a {
+	border-bottom: 1px solid #FCA11C;
+	color: #C7480C;
+}
+
+#page_title_wrap {
+	border-top: 5px solid #000000;
+	background: #000000 url("../images/bg_gradient_black.jpg") no-repeat top center;
+}
+
+#main_content_full_width h1, #main_content_extra_wide h1, #main_content_wide h1, #main_content_wide_wpadding h1 {
+	color: #C7480C;
+}
+
+.best_plan {
+	background: #000000;
+}
+
+#account h3 span {
+	background: #000000;
+	background: -moz-linear-gradient(top, #4B4B4B, #000000);
+	background: -webkit-gradient(linear, left top, right bottom, from(#4B4B4B), to(#000000));
+}
+
+#main_content_wide_wpadding .post_excerpt h2, #main_content_wide_wpadding .post_excerpt h2 a, #main_content_wide_wpadding #post h1 {
+	color: #C7480C;
+}
+
+#main_content_wide_wpadding .post_excerpt h2 a:hover {
+	color: #973709;
+}
+
+.more {
+	color: #C7480C;
+}
+
+	.more a {
+		color: #C7480C;	
+	}
+
+.generic_table th:hover, .generic_table td:hover {
+	color: #FFFFFF;
+	background-color: #C7480C;
+}

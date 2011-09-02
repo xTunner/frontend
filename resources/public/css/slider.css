@@ -1,0 +1,39 @@
+
+/************************/
+/*** Slider rule sets ***/
+
+#slider {
+	position: absolute;
+	right: 0;
+	bottom: 30px;
+}
+
+	.slider_images {
+		overflow: hidden;
+		position: relative;
+		height: 280px;
+	}
+
+	.slider_controls {
+		position: absolute;
+		z-index: 50;
+		bottom: -10px;
+		right: 165px;
+	}
+	
+		.slider_controls li {
+			float: left;
+			margin: 0 0 0 10px;
+		}
+	
+			.slider_controls li a {
+				display: block;
+				overflow: hidden;
+				width: 15px;
+				height: 15px;
+				text-indent: -9000px;
+			}
+
+			.slider_controls li.current a {
+				background-position: 0 -15px;
+			}
