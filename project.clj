@@ -2,7 +2,8 @@
             :description "FIXME: write this!"
             :dependencies [[org.clojure/clojure "1.2.1"]
                            [noir "1.1.0"]
-                           [enlive "1.0.0"]
-                           [swank-clojure "1.3.2"]]
+                           ;; [enlive "1.0.0"]
+                           ;; [swank-clojure "1.3.2"]
+                           ]
             :main circleci.server)
 
