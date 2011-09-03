@@ -20,6 +20,6 @@
 (defn -main [& m]
   (let [mode (keyword (or (first m) :dev))
         port noir-port]
-    (start-swank)
+    ;; (start-swank)
     (server/start port {:mode mode
                         :ns 'circleci})))
