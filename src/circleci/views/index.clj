@@ -11,7 +11,7 @@
      [:div#intro
       [:h1 "Continuous Integration for Heroku"]
       [:p "CircleCI runs automated tests, manages integration branches and deploys to production, all with ease"]
-      [:a.call_to_action {:href "/pricing"} "Get started now"]]
+      [:a.call_to_action {:href "/signup"} "Get started now"]]
      [:div#slider
       [:div.slider_images
        (for [img ["img/screenshot_01.jpg"
