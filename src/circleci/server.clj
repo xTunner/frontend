@@ -12,14 +12,17 @@
 
 (server/load-views "src/circleci/views/")
 
-(def noir-port
+(defn noir-port []
   (if-let [port (System/getenv "PORT")]
     (Integer/parseInt port)
     8080))
 
 (defn -main [& m]
+  (println "-main starting")
   (let [mode (keyword (or (first m) :dev))
-        port noir-port]
+        port (noir-port)]
+    (println "noir port is" port)
     ;; (start-swank)
     (server/start port {:mode mode
-                        :ns 'circleci})))
+                        :ns 'circleci})
+    (println "server started" port)))
