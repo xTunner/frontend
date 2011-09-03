@@ -1,4 +1,4 @@
-(ns circleci.views.index
+(ns circleci.views.signup
   (use noir.core
        hiccup.core
        hiccup.page-helpers

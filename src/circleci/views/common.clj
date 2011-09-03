@@ -49,8 +49,7 @@
                 (unordered-list {:id "nav"}
                                 [(link-to {:class "current_page"} ;; TODO - make current_page reflect reality
                                           "/" "Home")
-                                 (link-to "/signup" "Signup page")
-                                 (link-to "/contact" "Contact")])
+                                 (link-to "/signup" "Signup page")])
                 [:div.clear]]]
               content
               [:div.clear]
