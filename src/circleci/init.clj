@@ -1,13 +1,14 @@
 (ns circleci.init
-  ;;(:require circleci.swank)
-  (:require circleci.db)
-  (:require circleci.db.migrations)
-  (:require circleci.web)
-  (:require circleci.repl)
-  (:require circleci.logging))
+  )
 
 (defn -main []
   (try
+    ;;(require 'circleci.swank)
+    (require 'circleci.db)
+    (require 'circleci.db.migrations)
+    (require 'circleci.web)
+    (require 'circleci.repl)
+    (require 'circleci.logging)
     ;; (circleci.swank/init)
     (circleci.logging/init)
     (circleci.db/init)
