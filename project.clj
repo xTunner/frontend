@@ -3,6 +3,7 @@
             :dependencies [[org.clojure/clojure "1.2.1"]
                            [noir "1.1.0"]
                            [clj-table "0.1.5"]
+                           [clj-url "1.0.2"]
                            [c3p0 "0.9.1.2"]
                            [swank-clojure "1.3.2"]
                            [log4j "1.2.14"]
