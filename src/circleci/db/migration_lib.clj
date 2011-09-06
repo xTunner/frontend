@@ -33,7 +33,6 @@
     (-> results first :version)))
 
 (defn set-schema-version [migration-info version]
-  (println "set-schema-version: " version)
   (jdbc/transaction
    (jdbc/delete-rows (:table-name migration-info) [true])
    (jdbc/insert-record (:table-name migration-info) {:version version})))
@@ -66,34 +65,28 @@
     (catch Exception e
       nil)))
 
-(defn unmap-migrations [ns]
+(defn reset-migration-state
+  "If developing in emacs or some other IDE that reload code, reset
+  all migration related state so you don't accidentally create extra
+  migrations when reloading your migration file."
+  [ns]
   (->>
    (ns-publics ns)
    (vals)
    (filter #(-> % meta ::migration))
    (map #(-> % meta :name))
-   (map (fn [m]
-          (println "unmapping" m "in " ns)
-          (ns-unmap ns m)))
-   (doall)))
+   (map #(ns-unmap ns %))
+   (doall))
+  (dosync (alter migration-order (constantly 0))))
 
 (defn find-migrations [migration-info]
   (let [ns (:migration-ns migration-info)
         run-migrations (get-run-migrations migration-info)]
-    (println "migration-info: migration-info:" migration-info)
-    (println "find-migrations: ns=" ns)
-    (unmap-migrations ns)
-    (dosync (alter migration-order (constantly 0)))
-    (require ns :reload)
     (->> ns
          (ns-publics)
          (vals)
          (filter #(-> % meta ::migration))
-         ((fn [i]
-           (do (println "pre-remove:" i) i)))
          (remove #(contains? run-migrations (-> % meta ::migration-name)))
-         ((fn [i]
-           (do (println "post-remove:" i) i)))
          (sort-by #(-> % meta ::migration-order)))))
 
 (defn run-required-migrations [migration-info]

@@ -10,6 +10,8 @@
     (run-required-migrations migration-info))
   (println "migrations/init done"))
 
+;; (reset-migration-state (.getName *ns*))
+
 (defmigration "schema version"
   (println "create-table: schema version")
   (jdbc/create-table :schema_version
