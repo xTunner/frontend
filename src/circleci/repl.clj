@@ -13,4 +13,5 @@
              '[clojure.xml :as xml])
     (require '[clojure.contrib.sql :as sql])
 
-    (use '[circleci.db :only (with-conn)])))
+    (use '[circleci.db :only (with-conn)]))
+  (println "repl/init done"))

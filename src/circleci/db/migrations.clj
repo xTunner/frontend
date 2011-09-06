@@ -167,4 +167,5 @@
 
 (defn init []
   (db/with-conn
-    (run-required-migrations)))
+    (run-required-migrations))
+  (println "migrations/init done"))
