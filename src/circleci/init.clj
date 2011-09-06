@@ -3,11 +3,13 @@
   (:require circleci.db)
   (:require circleci.db.migrations)
   (:require circleci.web)
-  (:require circleci.repl))
+  (:require circleci.repl)
+  (:require circleci.logging))
 
 (defn -main []
   (try
     ;; (circleci.swank/init)
+    (circleci.logging/init)
     (circleci.db/init)
     (circleci.db.migrations/init)
     (circleci.web/init)
