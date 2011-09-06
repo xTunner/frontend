@@ -1,4 +1,4 @@
-(ns circleci.views.common
+(ns circleci.web.views.common
   (use noir.core
        hiccup.core
        hiccup.page-helpers))

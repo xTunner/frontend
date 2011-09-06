@@ -1,8 +1,8 @@
-(ns circleci.views.index
+(ns circleci.web.views.index
   (use noir.core
        hiccup.core
        hiccup.page-helpers)
-  (use circleci.views.common))
+  (use circleci.web.views.common))
 
 (defpage "/" []
   (layout

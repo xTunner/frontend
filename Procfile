@@ -1,1 +1,1 @@
-web: lein run -m circleci.server
+web: lein run -m circleci.init
