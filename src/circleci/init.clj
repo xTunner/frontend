@@ -6,8 +6,14 @@
   (:require circleci.repl))
 
 (defn -main []
-  ;; (circleci.swank/init)
-  (circleci.db/init)
-  (circleci.db.migrations/init)
-  (circleci.web/init)
-  (circleci.repl/init))
+  (try
+    ;; (circleci.swank/init)
+    (circleci.db/init)
+    (circleci.db.migrations/init)
+    (circleci.web/init)
+    (circleci.repl/init)
+    (catch Exception e
+      (println "caught exception on startup:")
+      (.printStackTrace e)
+      (println "exiting")
+      (System/exit 1))))
