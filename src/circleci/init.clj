@@ -9,7 +9,7 @@
 (defn -main []
   (try
     (circleci.logging/init)
-    (circleci.swank/init)
+    ;;(circleci.swank/init)
     (circleci.db/init)
     (circleci.db.migrations/init)
     (circleci.web/init)
