@@ -1,5 +1,5 @@
 (ns circleci.init
-  (:require circleci.swank)
+  ;;(:require circleci.swank)
   (:require circleci.db)
   (:require circleci.db.migrations)
   (:require circleci.web)
