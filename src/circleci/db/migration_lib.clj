@@ -10,6 +10,13 @@
   (:require [clojure.string :as str])
   (:use [clojure.contrib.shell :only (sh)]))
 
+(defn get-root-cause [exception]
+  "keeps getting the cause of e until there are no more"
+  (loop [e exception]
+    (if (.getCause e)
+      (recur (.getCause e))
+      e)))
+
 (defn migration-info
   "returns a map containing all the info needed to support migrations. Other migration fns will take this as an argument. Arguments:
    ns - a symbol, the namespace containing the defmigration calls.
@@ -39,19 +46,30 @@
 
 (def migration-order (ref 0))
 
+(defn mark-migration-run [migration-info migration-var]
+  ;; FIXME: table name, migration var vs. migration-info
+  (jdbc/insert-record (:table-name migration-info) {:name (-> migration-var meta ::migration-name)
+                                                    :date_run (java.sql.Timestamp. (System/currentTimeMillis))}))
+
 (defmacro defmigration
   "defines a DB migration. "
   [name & body]
   (dosync
    (alter migration-order inc)
-   (let [migration-num @migration-order]
-     `(defn ~(gensym "migration") {::migration true
+   (let [migration-num @migration-order
+         migration-var (gensym "migration")]
+     `(defn ~migration-var {::migration true
                         ::migration-name ~name
                         ::migration-order ~migration-num} [migration-info#]
                         (db/with-conn
-                          (jdbc/transaction
-                           ~@body
-                           (set-schema-version migration-info# ~migration-num)))))))
+                          (try
+                            (jdbc/transaction
+                             ~@body
+                             (mark-migration-run migration-info# (var ~migration-var)))
+                            (catch Exception e#
+                              (when (= (class e#) java.sql.BatchUpdateException) ;; (contains? (ancestors e#) java.sql.BatchUpdateException)
+                                (print (.getNextException e#)))
+                              (throw e#))))))))
 
 (defn get-run-migrations
   "returns a seq of migration names that have already been run"
@@ -75,7 +93,7 @@
    (vals)
    (filter #(-> % meta ::migration))
    (map #(-> % meta :name))
-   (map #(ns-unmap ns %))
+   (map #(do (println "unmapping" %) (ns-unmap ns %)))
    (doall))
   (dosync (alter migration-order (constantly 0))))
 
@@ -96,4 +114,3 @@
                (println "running" (-> % meta ::migration-name) (-> % meta ::migration-order))
                (% migration-info)))
        (doall)))
-
