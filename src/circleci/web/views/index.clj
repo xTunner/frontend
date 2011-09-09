@@ -9,8 +9,8 @@
    [:div#pitch_wrap
     [:div#pitch
      [:div#intro
-      [:h1 "Continuous Integration for Heroku"]
-      [:p "CircleCI runs automated tests, manages integration branches and deploys to production, all with ease"]
+      [:h1 "Continuous Integration for AWS and Heroku"]
+      ;;[:p "CircleCI runs automated tests, manages integration branches and deploys to production, all with ease"]
       [:a.call_to_action {:href "/signup"} "Get started now"]]
      [:div#slider
       [:div.slider_images
@@ -30,12 +30,12 @@
       [:img {:src "img/screenshot_small_01.jpg"
              :width 190
              :height 60}]
-      [:h3 "An important feature"]
-      [:p "This area will contain either one of the  most important features or one of the top benefits of using your product or choosing your company. This paragraph could be accompanied by one screenshot exempifying that feature."]]
+      [:h3 "No more build breaks!"]
+      [:p "CircleCI runs automated tests, builds artifacts, manages integration branches and deploys to production, with ease"]]
      [:div#testimonials.box_wide
       [:h3 "Here's what our imaginary customers are saying"]
       [:blockquote.separator_r
-       "CircleCI is the best thing since Heroku!"
+       "CircleCI is the best thing since AWS!"
        [:cite "Mike Mikington, Mike Inc." [:img {:src "img/customer_01.jpg"
                                                  :width 30
                                                  :height 30
