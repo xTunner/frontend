@@ -6,7 +6,7 @@
   (with-ns 'user
     (use 'clojure.repl)
     (use '[clojure.contrib.ns-utils :only (docs)])
-    (use '[clojure.contrib.repl-utils :exclude (javadoc apropos source)])
+    (use '[clojure.contrib.repl-utils :exclude (apropos source)])
     (require '[clojure.contrib.zip-filter :as zf]
              '[clojure.zip :as zip]
              '[clojure.contrib.zip-filter.xml :as zf-xml]
