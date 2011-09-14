@@ -8,9 +8,15 @@
                            [swank-clojure "1.3.2"]
                            [log4j "1.2.14"]
                            [log4j/apache-log4j-extras "1.1"]
-                           [org.clojure/tools.logging "0.2.0"]
-                           [org.jclouds/jclouds-all "1.1.1"]
-                           [org.jclouds.driver/jclouds-sshj "1.1.1"]]
+                           [commons-codec "1.4"]
+                           
+                           [org.cloudhoist/pallet "0.6.4"]
+                           [org.cloudhoist/pallet-crates-all "0.5.0"]
+                           [org.jclouds/jclouds-all "1.0.0"]
+                           [org.jclouds.driver/jclouds-log4j "1.0.0"]
+                           [org.jclouds.driver/jclouds-jsch "1.0.0"]]
+            :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
+                           "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
             :dev-dependencies []
             :main circleci.init)
 
