@@ -9,9 +9,8 @@
                            [log4j "1.2.14"]
                            [log4j/apache-log4j-extras "1.1"]
                            [commons-codec "1.4"]
-                           
                            [org.cloudhoist/pallet "0.6.4"]
-                           [org.cloudhoist/pallet-crates-all "0.5.0"]
+                           [org.cloudhoist/pallet-crates-all "0.5.1-SNAPSHOT"]
                            [org.jclouds/jclouds-all "1.0.0"]
                            [org.jclouds.driver/jclouds-log4j "1.0.0"]
                            [org.jclouds.driver/jclouds-jsch "1.0.0"]]
