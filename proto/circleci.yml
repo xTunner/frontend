@@ -1,0 +1,6 @@
+repo:
+  url: git@github.com:arohner/CircleCi.git
+  backend: git
+
+code:
+  type: clojure
