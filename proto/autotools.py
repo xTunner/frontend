@@ -1,8 +1,8 @@
 import subprocess
 
-def run(spec):
+def run(config):
 
-  confs = spec['configurations']
+  confs = config['configurations']
 
   for i, conf in enumerate(confs):
 

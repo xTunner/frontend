@@ -1,16 +1,26 @@
-handler = Handler({
-  repo: {
-    backend: required,
+import os
 
-    url: def url(spec, parent, val):
-      print "Pulling %s to %s" % (url, dirname)
-      dirname = os.path.basename(parent['url'])
-      repo = repos.Repo(parent['backend'], val)
-      repo.clone(dirname)
-      
-  code: {
-    subdir: def subdir(spec, subdir):
-      os.chdir(subdir)
-    }
+from generic import Handler, required
+import repos
+
+
+def url(config, parent, val):
+  url = parent['url']
+  dirname = os.path.basename(url)
+  print "Pulling %s to %s" % (url, dirname)
+  repo = repos.Repo(parent['backend'], val)
+  repo.clone(dirname)
+
+def subdir(config, parent, val):
+  os.chdir(val)
+
+
+handler = Handler({
+  'repo': {
+    'backend': required,
+    'url': url
+  },
+  'code': {
+    'subdir': subdir
   }
 })

@@ -15,7 +15,7 @@ import handlers
 filename = sys.argv[1]
 print "Reading from " + filename + " :"
 
-spec = yaml.load(file(filename))
-print pprint.pformat(spec)
+config = yaml.load(file(filename))
+print pprint.pformat(config)
 
-handlers.handle()
+handlers.handle(config)
