@@ -1,5 +1,5 @@
 repo:
-  url: git@github.com:arohner/CircleCi.git
+  url: git@github.com:arohner/CircleCI.git
   backend: git
 
 code:

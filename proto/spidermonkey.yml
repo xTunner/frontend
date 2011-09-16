@@ -1,12 +1,10 @@
 repo:
   url: http://hg.mozilla.org/mozilla-central
   type: hg
-
-suite:
   subdir: js/src
-  in-tree: No
 
-  type: autotools
+autotools:
+  in-tree: No
 
   configurations:
     - --enable-optimize --disable-debug
