@@ -1,5 +1,6 @@
 import errno
 import os
+import subprocess
 
 
 def exe(cmd, dir=None):
@@ -8,6 +9,8 @@ def exe(cmd, dir=None):
       cwd = os.getcwd()
       _mkdirs(dir)
       os.chdir(dir)
+    split = cmd.rstrip().split(" ")
+    return subprocess.call(split)
   finally:
     if dir:
       os.chdir(cwd)
