@@ -12,7 +12,7 @@ autotools:
         dir: $SRCDIR
 
       autoconf:
-        command: ./autogen.sh
+        command: autoconf
         dir: $SRCDIR
 
       configure:
