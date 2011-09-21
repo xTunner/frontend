@@ -4,7 +4,8 @@
   (:require circleci.db.migrations)
   (:require circleci.web)
   (:require circleci.repl)
-  (:require circleci.logging))
+  (:require circleci.logging)
+  (:require circleci.backend.nodes))
 
 (defn -main []
   (try
