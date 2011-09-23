@@ -14,7 +14,7 @@
 
 (defn build [& {:keys [project-name build-num actions action-results group continue]
                 :or {failed false}}]
-  (Build. project-name build-num actions action-results group true))
+  (Build. project-name build-num actions (or action-results []) group true))
 
 (defrecord BuildContext [build
                          action

@@ -24,4 +24,4 @@
       (.removeAllAppenders)
       (.addAppender rolling-log-appender)
       (.addAppender (ConsoleAppender. layout))))
-  (. (Logger/getRootLogger) (setLevel Level/WARN)))
+  (. (Logger/getRootLogger) (setLevel Level/DEBUG)))
