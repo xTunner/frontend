@@ -1,23 +1,28 @@
 (ns circleci.backend.action
-  (:use [arohner.utils :only (inspect)]))
+  (:use [arohner.validation :only (validate!)]
+        [arohner.predicates :only (bool?)]))
 
 (defrecord Action [name
                    dependencies ;; a seq of actions to be called first
-                   act-fn ;; an fn of one argument, the affected node. If returns falsy, the action has "failed" and the on-fail code is run
+                   act-fn ;; an fn of one argument, the session. If returns falsy, the action has "failed" and the on-fail code is run
                    on-fail ;; what to do when the action fails. A keyword, either :continue or :abort
                    ])
 
-(defrecord ActionResult [status
-                         failure-recommendation])
+(defrecord ActionResult [success  ;; boolean, mandatory
+                         continue ;; boolean, mandatory
+                         out  ;; stdout from the command, a string (optional)
+                         err  ;; stderr from the command, a string (optional)
+                         exit ;; exit status from the command (optional)
+                         ])
+
+(def ActionResult-validator
+  [[#(-> % :success bool?) ":success must be a bool, got %s" #(-> % :success (class) )]
+   [#(-> % :continue bool?) ":continue must be a bool, got %s" #(-> % :continue (class))]])
+
+(defn validate-action-result! [ar]
+  (validate! ActionResult-validator ar))
+
 (defn action
   "defines an action."
-  [name & {:keys [dependencies act-fn on-fail]}]
+  [& {:keys [name dependencies act-fn on-fail]}]
   (Action. name dependencies act-fn (or on-fail :abort)))
-
-(defn invoke-action [act node]
-  (let [response ((-> act :act-fn) node)]
-    (if response
-      (ActionResult. :success nil)
-      (ActionResult. :failure (-> act :on-fail)))))
-
-(defmacro def-action [name ])

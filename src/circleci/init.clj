@@ -5,7 +5,8 @@
   (:require circleci.web)
   (:require circleci.repl)
   (:require circleci.logging)
-  (:require circleci.backend.nodes))
+  (:require circleci.backend.nodes)
+  (:require circleci.backend.project.rails))
 
 (defn -main []
   (try
