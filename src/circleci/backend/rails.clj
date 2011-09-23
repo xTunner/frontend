@@ -32,7 +32,6 @@
   (let [ssh-session (-> session :ssh :ssh-session)
         _ (assert ssh-session)
         files (ssh/sftp ssh-session :ls dir)]
-    (def files (filenames files))
     (doseq [file (filenames files)]
       (let [local-file (pallet.utils/tmpfile)]
         (with-open [outstream (io/output-stream local-file)]
