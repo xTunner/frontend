@@ -1,5 +1,6 @@
 (ns circleci.backend.action.bash
   (:use [arohner.utils :only (inspect)])
+  (:require [circleci.backend.ssh :as ssh])
   (:require [circleci.backend.action :as action]))
 
 (defn exit-status
@@ -27,12 +28,12 @@
     ;; TODO yes, this whole thing shouldn't be in macro context, but
     ;; the stevedor/script is the important part, and we can't apply
     ;; macro (yet). See c.c.macross
-    `(let [result# (circleci.backend.nodes/ssh-exec
-                   (-> ~context :node)
-                   (pallet.script/with-script-context (pallet.action-plan/script-template-for-server (-> ~context :node))
-                     (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
-                       (pallet.stevedore/script ("cd" (clj *pwd*))
-                                                ~@body))))]
+    `(let [result# (ssh/ssh-exec
+                    (-> ~context :node)
+                    (pallet.script/with-script-context (pallet.action-plan/script-template-for-server (-> ~context :node))
+                      (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
+                        (pallet.stevedore/script ("cd" (clj *pwd*))
+                                                 ~@body))))]
        (process-result result#))))
 
 (defmacro bash
