@@ -11,16 +11,21 @@
                            [log4j/apache-log4j-extras "1.1"]
                            [commons-codec "1.4"]
                            [arohner-utils "0.0.2"]
-                           [org.clojars.arohner/clj-yaml "fc59d5c4337614734bba24ea2ee90aa5237dde5b"]
+                           [clj-yaml "0.3.1"]
                            [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
                            [org.cloudhoist/pallet "0.6.4"]
-                           [org.cloudhoist/pallet-crates-all "0.5.1-SNAPSHOT"]
-                           [pallet-rvm "0.1"]
                            [org.jclouds/jclouds-all "1.0.0"]
                            [org.jclouds.driver/jclouds-log4j "1.0.0"]
-                           [org.jclouds.driver/jclouds-jsch "1.0.0"]]
+                           [org.jclouds.driver/jclouds-jsch "1.0.0"]
+                           
+                           ;; Pallet Crates
+                           [org.cloudhoist/automated-admin-user "0.6.0"]
+                           [org.cloudhoist/git "0.5.0"]
+                           [org.cloudhoist/postgres "0.6.1"]
+                           [org.cloudhoist/rubygems "0.6.0"]
+                           [pallet-rvm "0.1"]]
             :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                            "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
-            :dev-dependencies []
+            :dev-dependencies [[lein-test-out "0.1.1"]]
             :main circleci.init)
 
