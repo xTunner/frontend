@@ -480,7 +480,7 @@ abbr {
 
 #intro {
 	float: left;
-	width: 460px;
+	width: 360px;
 	margin : 0 0 60px 0;
 }
 
@@ -559,9 +559,9 @@ abbr {
 }
 
 	#content {
-		width: 940px;
-		margin: 0 auto;
-		padding: 50px 0;
+		width: 700px;
+		margin: auto auto auto auto;
+		padding: 50px 50px;
 		font-size: 13px;
 		color: #5F5F5F;
 	}

@@ -9,7 +9,7 @@
    [:div#pitch_wrap
     [:div#pitch
      [:div#intro
-      [:h1 "Really Easy Continuous Integration"]
+      [:h1 "Continuous Integration made easy"]
      ]
      [:div#slider ]
      [:div.ie7_sliderFix]
