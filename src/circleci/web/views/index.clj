@@ -32,20 +32,6 @@
              :height 60}]
       [:h3 "No more build breaks!"]
       [:p "CircleCI runs automated tests, builds artifacts, manages integration branches and deploys to production, with ease"]]
-     [:div#testimonials.box_wide
-      [:h3 "Here's what our imaginary customers are saying"]
-      [:blockquote.separator_r
-       "CircleCI is the best thing since AWS!"
-       [:cite "Mike Mikington, Mike Inc." [:img {:src "img/customer_01.jpg"
-                                                 :width 30
-                                                 :height 30
-                                                 :alt "Mike Mikington"}]]]
-      [:blockquote "I love the GitHub integration and easy setup"
-       [:cite "Serious Samy, Solaris"
-        [:img {:src "img/customer_02.jpg"
-               :width 30
-               :height 30
-               :alt "Serious Sam"}]]]]
      [:div.clear]]]
    [:div#content_wrap
     [:div#content
