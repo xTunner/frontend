@@ -63,9 +63,9 @@
                [:div#header
                 [:h1#logo (link-to {:title "Go to CircleCI homepage"} "/" "CircleCI")]
                 (unordered-list {:id "nav"}
-                                [(link-to {:class "current_page"} ;; TODO - make current_page reflect reality
-                                          "/" "Home")
-                                 (link-to "/signup" "Signup page")])
+                                [(link-to {:class "current_page"}
+                                          "/" "Signup")
+                                 ])
                 [:div.clear]]]
               content
               [:div.clear]
