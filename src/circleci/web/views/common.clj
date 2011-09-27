@@ -3,6 +3,8 @@
        hiccup.core
        hiccup.page-helpers))
 
+;; This is hard coded for the signup-page-as-frontpage. Go back some revisions to find the original.
+
 (defn css [path & {:keys [rel type media title] :as opts}]
   [:link (merge {:href path} opts)])
 
@@ -27,9 +29,9 @@
               [:meta {:http-equiv "Content-Type"
                       :content "text/html; charset=utf-8"}]
               [:meta {:name "description"
-                      :content "The best Continuous Integration Solution for Heroku"}]
+                      :content "Continuous Integration made easy"}]
               [:meta {:name "keywords"
-                      :content "CircleCI, heroku, continuous integration, CI, github"}]
+                      :content "Circle, heroku, continuous integration, continuous deployment, CI, github"}]
               (css "css/reset.css" :rel "stylesheet" :type "text/css" :media "screen")
               (css "css/core.css" :rel "stylesheet" :type "text/css" :media "screen")
               (css "css/colors_blue_and_green.css" :rel "stylesheet" :type "text/css" :title "Blue and green" :media "screen")
@@ -55,7 +57,7 @@
 			play: 5000,
 			pause: 2500,
 			hoverPause: true});});"]
-              [:title "CircleCI - A Continuous Integration service for Heroku"]]
+              [:title "Circle - Continuous Integration made easy"]]
              [:body
               [:div#header_wrap
                [:div#header
