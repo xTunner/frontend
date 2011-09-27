@@ -9,30 +9,12 @@
    [:div#pitch_wrap
     [:div#pitch
      [:div#intro
-      [:h1 "Continuous Integration for AWS and Heroku"]
-      ;;[:p "CircleCI runs automated tests, manages integration branches and deploys to production, all with ease"]
-      [:a.call_to_action {:href "/signup"} "Get started now"]]
-     [:div#slider
-      [:div.slider_images
-       (for [img ["img/screenshot_01.jpg"
-                  "img/screenshot_02.jpg"
-                  "img/screenshot_03.jpg"
-                  "img/screenshot_04.jpg"]]
-         (image {:width 420
-                 :height 280} img))]]
+      [:h1 "Really Easy Continuous Integration"]
+     ]
+     [:div#slider ]
      [:div.ie7_sliderFix]
      [:div.clear]]]
-   [:div#addendum_wrap
-    [:div#addendum
-     [:div#callout.box_wide.separator_r
-      [:a {:href "img/screeshot_large_01.jpg"
-           :rel "lightbox"}]
-      [:img {:src "img/screenshot_small_01.jpg"
-             :width 190
-             :height 60}]
-      [:h3 "No more build breaks!"]
-      [:p "CircleCI runs automated tests, builds artifacts, manages integration branches and deploys to production, with ease"]]
-     [:div.clear]]]
+
    [:div#content_wrap
     [:div#content
      [:div#main_content_wide.left
@@ -53,7 +35,7 @@
               :width 60
               :height 55}]
        [:h3 "No more build breaks"]
-       [:p "Each developer commits to their own integration branch, CircleCI automatically merges their changes " [:b "only"] " when the tests pass"]]
+       [:p "CircleCI runs automated tests, builds artifacts, manages integration branches and deploys to production, with ease" ]]
       [:div.box_medium.feature
        [:img {:src "img/icon_feature_04.png"
               :width 60
