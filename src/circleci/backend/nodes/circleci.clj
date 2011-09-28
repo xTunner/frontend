@@ -6,6 +6,8 @@
             [pallet.action.remote-file :as remote-file]
             [pallet.crate.automated-admin-user :as automated-admin-user]
             [pallet.crate.git :as git]
+            [pallet.crate.lein :as lein]
+            [pallet.crate.java :as java]
             [pallet.crate.ssh-key :as ssh-key]
             [pallet.crate.network-service :as network-service]
             [pallet.crate.postgres :as postgres]))
@@ -51,11 +53,8 @@
                         (ssh-key/authorize-key "circle"
                                                (slurp "www.id_rsa.pub"))
                         (pallet.crate.network-service/wait-for-port-listen 5432)
-                        ;; DNS name?
-                        ;; http server
-                        ;; git checkout
-                        ;; lein run
-                        )}))
+                        (java/java :openjdk :jdk)
+                        (lein/lein))}))
 
 (defn start
   "start a new circleCI instance"

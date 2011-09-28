@@ -10,7 +10,7 @@
                            [log4j "1.2.14"]
                            [log4j/apache-log4j-extras "1.1"]
                            [clj-http "0.1.3"]
-
+                           [clj-r53 "1.0.0"]
                            [commons-codec "1.4"]
                            [arohner-utils "0.0.2"]
                            [clj-yaml "0.3.1"]
@@ -25,6 +25,8 @@
                            [org.cloudhoist/git "0.5.0"]
                            [org.cloudhoist/postgres "0.6.1"]
                            [org.cloudhoist/rubygems "0.6.0"]
+                           [org.cloudhoist/java "0.5.1"]
+                           [lein-crate "0.1.0"]
                            [pallet-rvm "0.1"]]
             :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                            "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
