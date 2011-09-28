@@ -2,17 +2,38 @@
   (use noir.core
        hiccup.core
        hiccup.page-helpers)
-  (use circleci.web.views.common))
+  (use circleci.web.views.common)
+  (:require [circleci.model.beta-notify :as beta]))
+
+(defpage [:post "/"] {:as request}
+  (with-conn
+               (beta/insert {:email (:email request)
+                             :environment ""
+                             :features ""})
+               (redirect "/beta-thanks")))
 
 (defpage "/" []
   (layout
    [:div#pitch_wrap
     [:div#pitch
+
      [:div#intro
-      [:h1 "Continuous Integration made easy"]
-     ]
-     [:div#slider ]
-     [:div.ie7_sliderFix]
+      [:h1 "Continuous Integration made easy"]]
+
+     [:div
+      [:form {:action "/" :method "POST"}
+       [:fieldset
+        (unordered-list
+         [(list (label "email" "Email address")
+                (text-field {:id "email"
+                             :type "text"} "email"))
+          (list (label "checkbox" "Can we contact you?")
+                (check-box {:id "contact"
+                             :name "contact"
+                             :checked true} "email"))])]
+       [:fieldset
+        [:input.call_to_action {:type "submit"
+                                :value "Get Notified"}]]]]
      [:div.clear]]]
 
    [:div#content_wrap

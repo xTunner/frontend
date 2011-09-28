@@ -42,14 +42,6 @@
                                 :value "Get Notified"}]]]]]]
    [:div.clear]))
 
-(pre-route [:post"/signup"] {form :form-params :as request}
-           (with-conn
-             (beta/insert {:email (get form "email")
-                           :environment (get form "environment")
-                           :features (get form "features")})
-             (redirect "/beta-thanks")))
-
-
 (defpage "/beta-thanks" []
   (layout
    [:div#page_title_wrap

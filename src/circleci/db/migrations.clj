@@ -24,3 +24,4 @@
                      [:email :text "PRIMARY KEY"]
                      [:environment :text]
                      [:features :text]))
+
