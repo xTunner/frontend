@@ -72,10 +72,7 @@
               [:div#footer_wrap
                [:div#footer
                 [:div.box_wide.separator_r
-                 (unordered-list {:id "nav_footer"}
-                  [(link-to "/" "Home")
-                   (link-to "/signup" "Signup")])
-                 [:p#copyright "Copyright &copy; 2011 CircleCI"]]
+                 [:p#copyright "Copyright &copy; 2011 Circle"]]
                 [:div#social_info.box_small.separator_r
                  [:ul
                   [:li#twitter [:a {:href "#"} "follow us"] " on twitter"]
@@ -83,5 +80,5 @@
                 [:div#contact_info.box_small
                  [:h5 "Contact"
                   (unordered-list
-                   ["arohner@gmail.com"])]]
+                   ["questions@circleci.com"])]]
                 [:div.clear]]]]))
