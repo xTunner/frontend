@@ -61,7 +61,7 @@
              [:body
               [:div#header_wrap
                [:div#header
-                [:h1#logo (link-to {:title "Go to CircleCI homepage"} "/" "CircleCI")]
+                [:h1#logo (link-to {:title "Go to Circle homepage"} "/" "Circle")]
                 (unordered-list {:id "nav"}
                                 [(link-to {:class "current_page"}
                                           "/" "Signup")
