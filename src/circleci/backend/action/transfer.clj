@@ -6,7 +6,7 @@
   (:require [circleci.backend.action :as action])
   (:require [circleci.backend.ssh :as circle-ssh])
   (:require [circleci.backend.action.bash :as bash])
-  (:use [circleci.utils :only (printfln)])
+  (:use [circleci.utils.core :only (printfln)])
   (:use circleci.utils.except))
 
 (defn get-file
