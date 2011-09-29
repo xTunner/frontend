@@ -24,6 +24,7 @@
      [:div#ciright
       [:div#cirightinner
 
+
       [:h3#takepart "Take part in the beta"]
       [:p
        [:span "We'll email you when we're ready."]]
@@ -31,7 +32,8 @@
        [:fieldset
         (unordered-list
          [(list (text-field {:id "email"
-                             :type "text"} "email" "Email address"))
+                             :type "text"
+                             :onfocus "if (this.value == 'Email address') { this.value=''};"} "email" "Email address"))
           (list (check-box {:id "contact"
                              :name "contact"
                              :checked true} "contact")
