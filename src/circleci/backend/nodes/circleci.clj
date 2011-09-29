@@ -3,6 +3,7 @@
             pallet.phase
             [pallet.action.user :as user]
             [pallet.action.directory :as directory]
+            [pallet.action.package :as package]
             [pallet.action.remote-file :as remote-file]
             [pallet.crate.automated-admin-user :as automated-admin-user]
             [pallet.crate.git :as git]
@@ -10,7 +11,8 @@
             [pallet.crate.java :as java]
             [pallet.crate.ssh-key :as ssh-key]
             [pallet.crate.network-service :as network-service]
-            [pallet.crate.postgres :as postgres]))
+            [pallet.crate.postgres :as postgres]
+            [circleci.backend.nodes :as nodes]))
 
 ;; The node configuration to build the circleci box
 
@@ -25,6 +27,8 @@
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (pallet.phase/phase-fn
+                        (package/packages
+                         :aptitude ["openjdk-6-jdk"])
                         (git/git)
                         (postgres/settings (postgres/settings-map {:version "8.4"
                                                                    :permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
@@ -53,19 +57,18 @@
                         (ssh-key/authorize-key "circle"
                                                (slurp "www.id_rsa.pub"))
                         (pallet.crate.network-service/wait-for-port-listen 5432)
-                        (java/java :openjdk :jdk)
-                        (lein/lein))}))
+                        (lein/lein)
+                        (remote-file/remote-file "/home/circle/.ssh/config" :content "Host github.com\n\tStrictHostKeyChecking no\n"
+                                                 :owner "circle"
+                                                 :group "circle"
+                                                 :mode "644"))}))
 
 (defn start
   "start a new circleCI instance"
   []
-  (pallet.core/converge
-       {circleci-group 1}
-       :compute (pallet.compute/service :aws)))
+  (nodes/converge {circleci-group 1}))
 
 (defn stop
   "start a new circleCI instance"
   []
-  (pallet.core/converge
-       {circleci-group 0}
-       :compute (pallet.compute/service :aws)))
+  (nodes/converge {circleci-group 0}))
