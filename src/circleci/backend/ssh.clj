@@ -31,27 +31,40 @@
      :out (str stdout)
      :err (str stderr)}))
 
+(defn with-session* [node f]
+  (ssh/with-ssh-agent [(pallet.execute/default-agent)]
+    (let [server (pallet.compute/node-address (-> node :node))
+          user (-> node :admin-user)
+          _ (pallet.execute/possibly-add-identity
+             ssh/*ssh-agent* (:private-key-path user) (:passphrase user))
+          ssh-session (ssh/session server
+                                   :username (:username user)
+                                   :password (:password user)
+                                   :strict-host-key-checking :no)]
+      (ssh/with-connection ssh-session
+        (f ssh-session)))))
+
+(defmacro with-session
+  "Creates an SSH session to node, and calls body. session is the name of the local variable that will be bound to the session"
+  [node session & body]
+  `(with-session* ~node
+     (fn [~session]
+       ~@body)))
+
 (defn remote-exec
   "Run an ssh exec command on a server."
-  [#^String server #^String command user]
-  (ssh/with-ssh-agent [(pallet.execute/default-agent)]
-    (pallet.execute/possibly-add-identity
-     ssh/*ssh-agent* (:private-key-path user) (:passphrase user))
-    (let [ssh-session (ssh/session server
-                               :username (:username user)
-                               :password (:password user)
-                               :strict-host-key-checking :no)]
-      (ssh/with-connection ssh-session
-        (process-exec
-         (ssh/ssh-exec ssh-session
-                       command
-                       nil
-                       :stream
-                       {}))))))
+  [node #^String command]
+  (with-session node ssh-session
+    (process-exec
+     (ssh/ssh-exec ssh-session
+                   command
+                   nil
+                   :stream
+                   {}))))
 
 (defn ssh-exec
   "Executes a command on a node. Takes a node returned by (node-info),
   and command, a string. Returns a map containing the keys :out, :error :exit
 "
   [node cmd & {:keys [sudo]}]
-  (remote-exec (pallet.compute/node-address (-> node :node)) cmd (-> node :admin-user)))
+  (remote-exec node cmd ))
