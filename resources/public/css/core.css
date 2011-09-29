@@ -250,13 +250,11 @@ abbr {
 }
 
 .call_to_action {
-	display: block;
-	float: left;
 	padding: 8px 25px 12px 25px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
 	border-radius: 8px;
-	margin: 5px 0;
+	margin: 20px 0 20px 0;
 	cursor: pointer;
 	font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
 	font-size: 18px;
