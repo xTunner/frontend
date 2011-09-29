@@ -42,8 +42,6 @@
               ;; (css "css/colors_yellow_and_black.css" :rel "alternate stylesheet" :type "text/css" :title "Yellow and black" :media "screen")
               ;; (css "css/colors_teal_and_brown.css" :rel "alternate stylesheet" :type "text/css" :title "Teal and brown" :media "screen")
               ;; (css "css/colors_cherry_and_yellow.css" :rel "alternate stylesheet" :type "text/css" :title "Cherry and yellow" :media "screen")
-              (css "css/slider.css" :rel "stylesheet" :type "text/css" :media "screen")
-              (css "css/lightbox.css" :rel "stylesheet" :type "text/css" :media "screen")
               "<!--[if lte IE 8]>
 		<link href=\"css/ie.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />
               <![endif]-->"
@@ -51,11 +49,7 @@
               <script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script>
               <![endif]-->"
               (css "http://fonts.googleapis.com/css?family=PT+Sans" :rel "stylesheet" :type "text/css" :media "screen")
-              (include-js "js/styleswitcher.js"
-                          "js/lightbox.js"
-                          "js/jquery_minimized_core.js"
-                          "js/wufoo.js"
-                          "js/jquery_slider.js")
+              (include-js "js/jquery_minimized_core.js" "js/wufoo.js")
               [:script
                "$(function(){
 		    $('#slider').slides({

@@ -23,14 +23,6 @@
 
      [:div#ciright
       [:div
-      "
-    <style type=\"text/css\">
-      @import url(/css/global/power.15346.css);
-    </style>
-
-    <!-- JavaScript -->
-    <script src=\"js/dynamic.js\"></script>
-    "
 
       [:h3#takepart "Take part in the beta"]
       [:p
