@@ -35,6 +35,7 @@
               (css "css/reset.css" :rel "stylesheet" :type "text/css" :media "screen")
               (css "css/core.css" :rel "stylesheet" :type "text/css" :media "screen")
               (css "css/colors_blue_and_green.css" :rel "stylesheet" :type "text/css" :title "Blue and green" :media "screen")
+              (css "css/additional.css" :rel "stylesheet" :type "text/css" :media "screen")
               ;; (css "css/colors_black_and_orange.css" :rel "alternate stylesheet" :type "text/css" :title "Black and orange" :media "screen")
               ;; (css "css/colors_green_and_brown.css" :rel "alternate stylesheet" :type "text/css" :title "Green and brown" :media "screen")
               ;; (css "css/colors_yellow_and_black.css" :rel "alternate stylesheet" :type "text/css" :title "Yellow and black" :media "screen")

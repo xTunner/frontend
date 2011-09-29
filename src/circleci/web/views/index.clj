@@ -15,26 +15,30 @@
 (defpage "/" []
   (layout
    [:div#pitch_wrap
+    [:div#ci_beta_signup
     [:div#pitch
 
-     [:div#intro
-      [:h1 "Continuous Integration made easy"]]
+     [:div#cileft
+      [:h1#cititle "Continuous Integration" [:br] "made easy"]]
 
-     [:div
+     [:div#ciright
+      [:div#signupform
+      [:h3#takepart "Take part in the beta"]
+      [:p
+       [:span "We'll email you when we're ready."]]
       [:form {:action "/" :method "POST"}
        [:fieldset
         (unordered-list
-         [(list (label "email" "Email address")
-                (text-field {:id "email"
-                             :type "text"} "email"))
-          (list (label "checkbox" "Can we contact you?")
-                (check-box {:id "contact"
+         [(list (text-field {:id "email"
+                             :type "text"} "email" "Email address"))
+          (list (check-box {:id "contact"
                              :name "contact"
-                             :checked true} "email"))])]
+                             :checked true} "contact")
+                (label "contact" "May we contact you to ask about your platform?"))])]
        [:fieldset
         [:input.call_to_action {:type "submit"
-                                :value "Get Notified"}]]]]
-     [:div.clear]]]
+                                :value "Get Notified"}]]]]]
+     [:div.clear]]]]
 
    [:div#content_wrap
     [:div#content
