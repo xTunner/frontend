@@ -22,7 +22,7 @@
       [:h1#cititle "Continuous Integration" [:br] "made easy"]]
 
      [:div#ciright
-      [:div
+      [:div#cirightinner
 
       [:h3#takepart "Take part in the beta"]
       [:p
