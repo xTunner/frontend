@@ -2,7 +2,7 @@ html {
   background:#eee;
 }
 body {
-  margin:17px 0 15px 0;
+  margin:0px 0 15px 0;
   padding:0;
   font-size:small;
   font-family:"Lucida Grande",Tahoma,Arial,Verdana,sans-serif;
@@ -37,9 +37,6 @@ form.wufoo {
 img,a img {
   border:none;
   -ms-interpolation-mode:bicubic;
-}
-* html #bottom {
-  _behavior:url(/images/iepngfix.htc);
 }
 .hide,.cloak div,.cloak span,.likert.cloak tbody,.likert.cloak thead {
   display:none !important;
@@ -283,7 +280,6 @@ input.text,input.search,textarea.textarea {
   border-left:1px solid #c3c3c3;
   border-right:1px solid #c3c3c3;
   border-bottom:1px solid #ddd;
-  background:#fff url(/images/fieldbg.gif) repeat-x top;
 }
 input.nospin::-webkit-inner-spin-button,input.nospin::-webkit-outer-spin-button {
   -webkit-appearance:none;
