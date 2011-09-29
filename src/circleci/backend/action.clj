@@ -26,3 +26,11 @@
   "defines an action."
   [& {:keys [name dependencies act-fn on-fail]}]
   (Action. name dependencies act-fn (or on-fail :abort)))
+
+(defn successful? [action-result]
+  (-> action-result :success))
+
+(defn continue? [action-result]
+  (or (-> action-result :success)
+      (-> action-result :continue)))
+

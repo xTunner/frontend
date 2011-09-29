@@ -20,9 +20,7 @@
                          action
                          node])
 
-(defn continue? [action-result]
-  (or (-> action-result :success)
-      (-> action-result :continue)))
+
 
 (defn run-build [build]
   (println "getting node info")
