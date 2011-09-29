@@ -1,4 +1,6 @@
 (ns circleci.backend.ssh
+  (:require pallet.execute
+            pallet.compute)
   (:require [clj-ssh.ssh :as ssh]))
 
 (defn slurp-stream
