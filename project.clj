@@ -31,6 +31,7 @@
             :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                            "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
             :dev-dependencies [[lein-test-out "0.1.1"]
-                               [midje "1.2.0"]]
+                               [midje "1.2.0"]
+                               [lein-midje "1.0.4"]]
             :main circleci.init)
 
