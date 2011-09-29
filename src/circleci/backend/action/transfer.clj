@@ -25,8 +25,17 @@
   (.isDirectory (File. path)))
 
 (defn get-files
-  "copies over the seq of remote files to local-dir "
-  [context remote-files local-dir & {:keys [no-overwrite] :as opts}]
+  "copies over the seq of remote paths calls f with one argument, an input stream"
+  [context remote-paths f]
+  (circle-ssh/with-session (-> context :node) ssh-session
+    (doseq [remote-path remote-paths]
+      (f (ssh/sftp ssh-session
+                :get
+                remote-path)))))
+
+(defn write-files
+  "copies over the seq of remote paths to local-dir"
+  [context remote-paths local-dir & {:keys [no-overwrite]}]
   (let [local-dir (if (re-find #"/$" local-dir)
                     local-dir
                     (str local-dir "/"))]
@@ -39,9 +48,9 @@
       (printfln "%s -> %s" remote-path new-local)
       (ssh/sftp ssh-session
                 :get
-                remote-path
-                (-> new-local java.io.FileOutputStream.
-                    java.io.BufferedOutputStream.))))))
+                remote-path)))))
+
+
 
 (defn find-files
   "Runs find on the remote box, returns the list of files that matched. Find starts at directory, Pattern is a grep -P regex"
