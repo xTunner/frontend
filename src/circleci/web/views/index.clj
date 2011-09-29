@@ -32,7 +32,9 @@
         (unordered-list
          [(list (text-field {:id "email"
                              :type "text"
-                             :onfocus "if (this.value == 'Email address') { this.value=''};"} "email" "Email address"))
+                             :onfocus "if (this.value == 'Email address') { this.value=''};"
+                             :onblur "if (this.value == '') { this.value = 'Email address'};"}
+                             "email" "Email address"))
           (list (check-box {:id "contact"
                              :name "contact"
                              :checked true} "contact")
