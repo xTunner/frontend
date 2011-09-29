@@ -8,16 +8,26 @@
   (:require circleci.backend.nodes)
   (:require circleci.backend.project.rails))
 
+(def init*
+  (delay
+   (try
+     (circleci.logging/init)
+     (circleci.swank/init)
+     (circleci.db/init)
+     (circleci.db.migrations/init)
+     (circleci.web/init)
+     (circleci.repl/init)
+     true    
+     (catch Exception e
+       (println "caught exception on startup:")
+       (.printStackTrace e)
+       (println "exiting")
+       (System/exit 1)))))
+
+(defn init
+  "Start everything up. idempotent."
+  []
+  @init*)
+
 (defn -main []
-  (try
-    (circleci.logging/init)
-    (circleci.swank/init)
-    (circleci.db/init)
-    (circleci.db.migrations/init)
-    (circleci.web/init)
-    (circleci.repl/init)
-    (catch Exception e
-      (println "caught exception on startup:")
-      (.printStackTrace e)
-      (println "exiting")
-      (System/exit 1))))
+  (init))
