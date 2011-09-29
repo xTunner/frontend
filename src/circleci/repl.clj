@@ -11,7 +11,5 @@
              '[clojure.zip :as zip]
              '[clojure.contrib.zip-filter.xml :as zf-xml]
              '[clojure.xml :as xml])
-    (require '[clojure.contrib.sql :as sql])
-
     (use '[circleci.db :only (with-conn)]))
   (println "repl/init done"))
