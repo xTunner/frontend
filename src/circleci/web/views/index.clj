@@ -15,21 +15,20 @@
 (defpage "/" []
   (layout
    [:div#pitch_wrap
-    [:div#ci_beta_signup
     [:div#pitch
 
      [:div#cileft
       [:h1#cititle "Continuous Integration" [:br] "made easy"]]
 
+
      [:div#ciright
       [:div#cirightinner
-
 
       [:h3#takepart "Take part in the beta"]
       [:p
        [:span "We'll email you when we're ready."]]
       [:form {:action "/" :method "POST"}
-       [:fieldset
+       [:fieldset#actualform
         (unordered-list
          [(list (text-field {:id "email"
                              :type "text"
@@ -41,7 +40,8 @@
        [:fieldset
         [:input.call_to_action {:type "submit"
                                 :value "Get Notified"}]]]]]
-     [:div.clear]]]]
+     [:div.clear]]]
+
 
    [:div#content_wrap
     [:div#content
