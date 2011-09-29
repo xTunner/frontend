@@ -37,11 +37,6 @@
               (css "css/colors_blue_and_green.css" :rel "stylesheet" :type "text/css" :title "Blue and green" :media "screen")
               (css "css/additional.css" :rel "stylesheet" :type "text/css" :media "screen")
               (css "css/wufoo.css" :rel "stylesheet" :type "text/css" :media "screen")
-              ;; (css "css/colors_black_and_orange.css" :rel "alternate stylesheet" :type "text/css" :title "Black and orange" :media "screen")
-              ;; (css "css/colors_green_and_brown.css" :rel "alternate stylesheet" :type "text/css" :title "Green and brown" :media "screen")
-              ;; (css "css/colors_yellow_and_black.css" :rel "alternate stylesheet" :type "text/css" :title "Yellow and black" :media "screen")
-              ;; (css "css/colors_teal_and_brown.css" :rel "alternate stylesheet" :type "text/css" :title "Teal and brown" :media "screen")
-              ;; (css "css/colors_cherry_and_yellow.css" :rel "alternate stylesheet" :type "text/css" :title "Cherry and yellow" :media "screen")
               "<!--[if lte IE 8]>
 		<link href=\"css/ie.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />
               <![endif]-->"
@@ -50,15 +45,8 @@
               <![endif]-->"
               (css "http://fonts.googleapis.com/css?family=PT+Sans" :rel "stylesheet" :type "text/css" :media "screen")
               (include-js "js/jquery_minimized_core.js" "js/wufoo.js")
-              [:script
-               "$(function(){
-		    $('#slider').slides({
-		        preload: true,
-			play: 5000,
-			pause: 2500,
-			hoverPause: true});});"]
               [:title "Circle - Continuous Integration made easy"]]
-             [:body.noI.ltr
+             [:body
               [:div#header_wrap
                [:div#header
                 [:h1#logo (link-to {:title "Go to Circle homepage"} "/" "Circle")]
