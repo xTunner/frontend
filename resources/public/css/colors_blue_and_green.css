@@ -11,7 +11,7 @@ h5 {
 }
 
 .call_to_action {
-	border: 5px solid #2378A1;
+	border: 5px #2378A1;
 	text-shadow: -1px -1px 0 #6DBA42;
 	background: #2EB72B;
 	background: url("../img/bg_fallback_cta_green.gif") repeat-x center left;
