@@ -1,50 +1,35 @@
 (ns circleci.web.views.index
-  (use noir.core
+  (:use noir.core
        hiccup.core
-       hiccup.page-helpers)
-  (use circleci.web.views.common)
-  (:require [circleci.model.beta-notify :as beta]))
+       hiccup.page-helpers
+       hiccup.form-helpers
+       circleci.web.views.common
+       ring.util.response)
+  (:use [circleci.db :only (with-conn)])
+  (:use [ring.util.response :only (redirect)])
+  (:require [circleci.model.beta-notify :as beta])
+  (:require [noir.cookies :as cookies]))
+
 
 (defpage [:post "/"] {:as request}
   (with-conn
                (beta/insert {:email (:email request)
                              :environment ""
                              :features ""})
-               (redirect "/beta-thanks")))
+               (cookies/put! :signed-up "1")
+               (redirect "/")))
+
+
+(declare signupform youre-done)
 
 (defpage "/" []
   (layout
    [:div#pitch_wrap
     [:div#pitch
 
-     [:div#cileft
-      [:h1#cititle "Continuous Integration" [:br] "made easy"]]
-
-
-     [:div#ciright
-      [:div#cirightinner
-      [:div#cirightinnerest
-
-      [:h2.takepart "Take part in the beta"]
-      [:p.whenready "We'll email you when we're ready."]
-      [:form {:action "/" :method "POST"}
-       [:fieldset#actualform
-        (unordered-list
-         [(list (text-field {:id "email"
-                             :type "text"
-                             :onfocus "if (this.value == 'Email address') { this.value=''};"
-                             :onblur "if (this.value == '') { this.value = 'Email address'};"}
-                             "email" "Email address"))
-          (list (check-box {:id "contact"
-                             :name "contact"
-                             :checked true} "contact")
-                [:div [:div
-                (label {:id "contact-label"} "contact" "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
-       [:fieldset
-        [:input.call_to_action {:type "submit"
-                                :value "Get Notified"}]]]]]]
+     [:div#cileft [:h1#cititle "Continuous Integration" [:br] "made easy"]]
+     [:div#ciright (if (cookies/get :signed-up) (youre-done) (signupform))]
      [:div.clear]]]
-
 
    [:div#content_wrap
     [:div#content
@@ -73,3 +58,37 @@
               :height 55}]
        [:h3 "Parallel testing"]
        [:p "Reduce test time by running the tests in parallel on multiple boxes"]]]]]))
+
+(defpartial signupform [& content]
+  [:div#cirightinner
+  [:div#cirightinnerest
+
+  [:h2.takepart "Take part in the beta"]
+  [:p.whenready "We'll email you when we're ready."]
+  [:form {:action "/" :method "POST"}
+   [:fieldset#actualform
+    (unordered-list
+     [(list (text-field {:id "email"
+                         :type "text"
+                         :onfocus "if (this.value == 'Email address') { this.value=''};"
+                         :onblur "if (this.value == '') { this.value = 'Email address'};"}
+                         "email" "Email address"))
+      (list (check-box {:id "contact"
+                         :name "contact"
+                         :checked true} "contact")
+            [:div [:div
+            (label {:id "contact-label"} "contact" "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
+   [:fieldset
+    [:input.call_to_action {:type "submit"
+                            :value "Get Notified"}]]]]]
+)
+
+(defpartial youre-done [& content]
+  [:div#cirightinner
+  [:div#cirightinnerest
+
+  [:h2 "Thanks, we'll be in touch soon!"]
+                            ]]
+)
+
+
