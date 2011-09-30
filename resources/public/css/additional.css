@@ -186,34 +186,15 @@
 		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
 	}
 
-/* Circle-specific rules */
-#cileft {
-  width: 470px;
-  height: 210px;
-  float: left;
-  margin: 110px 0 0 0;
-}
-
-/* Vertical centering from
- * http://www.jakpsatweb.cz/css/css-vertical-center-solution.html
+/*
+ * Circle-specific rules from here on.
  */
-.vcenter1 {
-  display: table;
-  height: 210px;
-  #position: relative;
-  overflow: hidden;
-}
 
-.vcenter2 {
-  #position: absolute;
-  #top: 50%;
-  display: table-cell;
-  vertical-align: middle;
-}
 
-.vcenter3 {
-  #position: relative;
-  #top: -50%;
+#left-panel {
+  width: 470px;
+  height: 320px;
+  float: left;
 }
 
 #ciright {
@@ -232,12 +213,39 @@
   margin: 26px 0 0 0; 
 }
 
+#pitch-height {
+  height: 320px;
+}
+
+
+/* Vertical centering from
+ * http://www.jakpsatweb.cz/css/css-vertical-center-solution.html
+ */
+.vcenter1 {
+  display: table;
+  #position: relative;
+  overflow: hidden;
+}
+
+.vcenter2 {
+  #position: absolute;
+  #top: 50%;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.vcenter3 {
+  #position: relative;
+  #top: -50%;
+}
+
 #cirightinner {
   /* Move the form closer to the
    * center of the page. */
   padding: 0 0px 0 50px;
 }
 
+/* The nice blue background for the form */
 .blue-box {
   background: #2378A1;
   border-radius: 18px;
@@ -252,8 +260,6 @@
   margin: 0px;
 }
 
-
-
 #cititle {
   text-align: center;
   padding: 0 0px 0 50px;
@@ -264,13 +270,11 @@
   text-align: left;
 }
 
-
 .takepart {
   color: #ffffff;
   text-align: center;
   padding: 5px 20px 0 20px;
 }
-
 
 #actualform text-field {
   margin-bottom: 10px;

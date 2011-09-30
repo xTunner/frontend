@@ -22,12 +22,39 @@
 
 (declare signupform youre-done)
 
+
+;  center-vertically [height-id content]
+;    [:div {:class "vcenter1" :id height-id}
+;      [:div.vcenter2
+;        [:div.vcenter3
+;          content]]])
+
+(defn
+  ^{:doc "Take the provided div and center it vertically, by adding classes and
+          wrapping it's contents in more divs. It relies on additional.css
+          having .vcenter{1,2,3} defined."}
+  center-vertically [[tag & tags]]
+    (let [[m & ts] tags]
+      (if (map? m)
+        (let [combined (into m {:class "vcenter1"})
+              x [tag combined [:div.vcenter2 (apply vector :div.vcenter3 ts)]]]
+          (println x)
+          x)
+        (let [combined {:class "vcenter1"}
+              x [tag combined [:div.vcenter2 (apply vector :div.vcenter3 tags)]]]
+          (println x)
+          x))))
+
+
+
+
 (defpage "/" []
   (layout
    [:div#pitch_wrap
     [:div#pitch
 
-     [:div#cileft [:h1#cititle "Continuous Integration" [:br] "made easy"]]
+     (center-vertically 
+      [:div#left-panel [:h1#cititle "Continuous Integration" [:br] "made easy"]])
      [:div#ciright (if (cookies/get :signed-up) (youre-done) (signupform))]
      [:div.clear]]]
 
@@ -93,9 +120,7 @@
 
 (defpartial youre-done [& content]
   (delete-cookie :signed-up)
-  [:div.vcenter1
-   [:div.vcenter2
-    [:div.vcenter3
-     [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]]]])
+  (center-vertically "pitch-height"
+    [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]))
 
 
