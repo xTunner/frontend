@@ -230,7 +230,7 @@
   #top: -50%;
 }
 
-#cirightinner {
+.move-right {
   /* Move the form closer to the
    * center of the page. */
   padding: 0 0px 0 50px;

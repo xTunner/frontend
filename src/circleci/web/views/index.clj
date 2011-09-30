@@ -75,7 +75,7 @@
        [:p "Reduce test time by running the tests in parallel on multiple boxes"]]]]]))
 
 (defpartial signupform [& content]
-  [:div#cirightinner
+  [:div.move-right
   [:div {:id "cirightinnerest" :class "blue-box"}
 
   [:h2.takepart "Take part in the beta"]
@@ -108,6 +108,7 @@
 
 (defpartial youre-done [& content]
   (delete-cookie :signed-up)
-  [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"])
+  [:div.move-right
+   [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]])
 
 
