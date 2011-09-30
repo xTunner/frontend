@@ -189,7 +189,7 @@
 /* Circle-specific rules */
 #cileft {
   width: 470px;
-  height: 200px;
+  height: 210px;
   float: left;
   margin: 110px 0 0 0;
 }
@@ -197,13 +197,37 @@
 #ciright {
   width: 470px;
   float: right;
-  text-align:center;
-  margin: 35px 0 0 0;
+
+  /* This is the only place I can
+   * get the button to sit in the
+   * right place. */
+  text-align: center; 
+
+
+  /* Center vertically, this might
+   * only work on my exact config
+   * due to spacing */
+  margin: 26px 0 0 0; 
 }
 
 #cirightinner {
-  padding: 0 50px 0 0px;
+  /* Move the form closer to the
+   * center of the page. */
+  padding: 0 0px 0 50px;
 }
+
+#cirightinnerest {
+  background: #2378A1;
+  border-radius: 18px;
+  -moz-border-radius: 18px;
+  border: 1px solid;
+  border-color: #2378A1;
+
+  padding: 0px;
+  margin: 0px;
+  width: 350px;
+}
+
 
 
 #cititle {
@@ -211,10 +235,34 @@
   padding: 0 0px 0 50px;
 }
 
-
-#takepart {
-  color: #ffffff;
+#actualform {
+  padding: 0px 20px 0 20px;
+  text-align: left;
 }
 
 
+.takepart {
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 20px 0 20px;
+}
+
+
+#actualform text-field {
+  margin-bottom: 10px;
+}
+
+#contact-label {
+  margin: -22px 0px 0 22px;
+  clear:both;
+  display:block;
+}
+
+.whenready {
+  color: #ffffff;
+  text-align: left;
+  padding: 0px 20px 0 25px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
 

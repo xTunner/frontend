@@ -139,7 +139,6 @@ form ul:after,form li:after,form li div:after {
 form li div {
   margin:0;
   padding:0;
-  color:#444;
 }
 form li span {
   margin:0 .3em 0 0;
@@ -195,15 +194,6 @@ form li.complex div span.full input,form li.complex div span.full select,form li
 label span,.section span,p span,.likert span {
   display:inline !important;
   float:none !important;
-}
-form li div label,form li span label {
-  margin:0;
-  padding-top:3px;
-  clear:both;
-  font-size:85%;
-  line-height:160%;
-  color:#444;
-  display:block;
 }
 fieldset {
   display:block;

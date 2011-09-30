@@ -23,10 +23,10 @@
 
      [:div#ciright
       [:div#cirightinner
+      [:div#cirightinnerest
 
-      [:h3#takepart "Take part in the beta"]
-      [:p
-       [:span "We'll email you when we're ready."]]
+      [:h2.takepart "Take part in the beta"]
+      [:p.whenready "We'll email you when we're ready."]
       [:form {:action "/" :method "POST"}
        [:fieldset#actualform
         (unordered-list
@@ -38,10 +38,11 @@
           (list (check-box {:id "contact"
                              :name "contact"
                              :checked true} "contact")
-                (label "contact" "May we contact you to ask about your platform?"))])]
+                [:div [:div
+                (label {:id "contact-label"} "contact" "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
        [:fieldset
         [:input.call_to_action {:type "submit"
-                                :value "Get Notified"}]]]]]
+                                :value "Get Notified"}]]]]]]
      [:div.clear]]]
 
 
