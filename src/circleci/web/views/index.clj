@@ -93,9 +93,9 @@
 
 (defpartial youre-done [& content]
   (delete-cookie :signed-up)
-  [:div#cithanks1
-   [:div#cithanks2
-    [:div#cithanks3
-     [:h2.blue-box "Thanks, we'll be in touch soon!"]]]])
+  [:div.vcenter1
+   [:div.vcenter2
+    [:div.vcenter3
+     [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]]]])
 
 

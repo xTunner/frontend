@@ -197,21 +197,21 @@
 /* Vertical centering from
  * http://www.jakpsatweb.cz/css/css-vertical-center-solution.html
  */
-#cithanks1 {
+.vcenter1 {
   display: table;
   height: 210px;
   #position: relative;
   overflow: hidden;
 }
 
-#cithanks2 {
+.vcenter2 {
   #position: absolute;
   #top: 50%;
   display: table-cell;
   vertical-align: middle;
 }
 
-#cithanks3 {
+.vcenter3 {
   #position: relative;
   #top: -50%;
 }
