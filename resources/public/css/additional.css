@@ -247,17 +247,22 @@
   width: 350px;
 }
 
-
+/* Center the text and move the whole title
+ * a litte bit closer to the center of the
+ * page. */
 #cititle {
   text-align: center;
   padding: 0 0px 0 50px;
 }
 
+/* The part of the "form" area which
+ * actually has the HTML form in it. */
 #actualform {
   padding: 0px 20px 0 20px;
   text-align: left;
 }
 
+/* The title of the form */
 .takepart {
   color: #ffffff;
   text-align: center;
@@ -268,6 +273,8 @@
   margin-bottom: 10px;
 }
 
+/* Make the entire label sit to the right of
+ * the check-box. */
 #contact-label {
   margin: -22px 0px 0 22px;
   clear:both;
