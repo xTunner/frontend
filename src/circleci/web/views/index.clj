@@ -55,7 +55,8 @@
 
      (center-vertically 
       [:div#left-panel [:h1#cititle "Continuous Integration" [:br] "made easy"]])
-     [:div#ciright (if (cookies/get :signed-up) (youre-done) (signupform))]
+     (center-vertically
+      [:div#right-panel (if (cookies/get :signed-up) (youre-done) (signupform))])
      [:div.clear]]]
 
    [:div#content_wrap
@@ -120,7 +121,6 @@
 
 (defpartial youre-done [& content]
   (delete-cookie :signed-up)
-  (center-vertically "pitch-height"
-    [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]))
+  [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"])
 
 

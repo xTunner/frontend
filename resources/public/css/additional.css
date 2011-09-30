@@ -197,24 +197,15 @@
   float: left;
 }
 
-#ciright {
+#right-panel {
   width: 470px;
   float: right;
+  height: 320px;
 
   /* This is the only place I can
    * get the button to sit in the
    * right place. */
   text-align: center; 
-
-
-  /* Center vertically, this might
-   * only work on my exact config
-   * due to spacing */
-  margin: 26px 0 0 0; 
-}
-
-#pitch-height {
-  height: 320px;
 }
 
 
@@ -245,6 +236,12 @@
   padding: 0 0px 0 50px;
 }
 
+
+#cirightinnerest {
+  padding: 0px;
+  margin: 0px;
+}
+
 /* The nice blue background for the form */
 .blue-box {
   background: #2378A1;
@@ -255,10 +252,6 @@
   width: 350px;
 }
 
-#cirightinnerest {
-  padding: 0px;
-  margin: 0px;
-}
 
 #cititle {
   text-align: center;
