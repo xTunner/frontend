@@ -76,7 +76,7 @@
 
 (defpartial signupform [& content]
   [:div.move-right
-  [:div {:id "cirightinnerest" :class "blue-box"}
+  [:div.blue-box
 
   [:h2.takepart "Take part in the beta"]
   [:p.whenready "We'll email you when we're ready."]
