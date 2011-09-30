@@ -194,6 +194,28 @@
   margin: 110px 0 0 0;
 }
 
+/* Vertical centering from
+ * http://www.jakpsatweb.cz/css/css-vertical-center-solution.html
+ */
+#cithanks1 {
+  display: table;
+  height: 210px;
+  #position: relative;
+  overflow: hidden;
+}
+
+#cithanks2 {
+  #position: absolute;
+  #top: 50%;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#cithanks3 {
+  #position: relative;
+  #top: -50%;
+}
+
 #ciright {
   width: 470px;
   float: right;
@@ -216,16 +238,18 @@
   padding: 0 0px 0 50px;
 }
 
-#cirightinnerest {
+.blue-box {
   background: #2378A1;
   border-radius: 18px;
   -moz-border-radius: 18px;
   border: 1px solid;
   border-color: #2378A1;
+  width: 350px;
+}
 
+#cirightinnerest {
   padding: 0px;
   margin: 0px;
-  width: 350px;
 }
 
 

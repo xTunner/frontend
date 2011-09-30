@@ -61,7 +61,7 @@
 
 (defpartial signupform [& content]
   [:div#cirightinner
-  [:div#cirightinnerest
+  [:div {:id "cirightinnerest" :class "blue-box"}
 
   [:h2.takepart "Take part in the beta"]
   [:p.whenready "We'll email you when we're ready."]
@@ -83,12 +83,19 @@
                             :value "Get Notified"}]]]]]
 )
 
-(defpartial youre-done [& content]
-  [:div#cirightinner
-  [:div#cirightinnerest
+;; You need expires for IE6-8
+(defn delete-cookie [name]
+  (cookies/put! name {:value "1"
+                      :max-age 0
+                      :expires 0
+                      :path "/"})
+  "")
 
-  [:h2 "Thanks, we'll be in touch soon!"]
-                            ]]
-)
+(defpartial youre-done [& content]
+  (delete-cookie :signed-up)
+  [:div#cithanks1
+   [:div#cithanks2
+    [:div#cithanks3
+     [:h2.blue-box "Thanks, we'll be in touch soon!"]]]])
 
 
