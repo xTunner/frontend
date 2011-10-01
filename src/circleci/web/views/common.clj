@@ -63,8 +63,7 @@
                  [:p#copyright "Copyright &copy; 2011 Circle"]]
                 [:div#social_info.box_small.separator_r
                  [:ul
-                  [:li#twitter [:a {:href "#"} "follow us"] " on twitter"]
-                  [:li#facebook [:a {:href "#"} "follow us"] " on facebook"]]]
+                  [:li#twitter [:a {:href ""} "follow @circleci"] " on twitter"] ]]
                 [:div#contact_info.box_small
                  [:h5 "Contact"
                   (unordered-list
