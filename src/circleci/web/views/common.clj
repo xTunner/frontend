@@ -63,9 +63,9 @@
                  [:p#copyright "Copyright &copy; 2011 Circle"]]
                 [:div#social_info.box_small.separator_r
                  [:ul
-                  [:li#twitter [:a {:href "http://twitter.com/circleci"} "follow @circleci"] " on twitter"] ]]
+                  [:li#twitter [:a {:href "http://twitter.com/circleci"} "follow @circleci"]]]]
                 [:div#contact_info.box_small
-                 [:h5 "Contact"
+                 [:h5
                   (unordered-list
                    ["questions@circleci.com"])]]
                 [:div.clear]]]]))
