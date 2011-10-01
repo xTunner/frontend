@@ -6,7 +6,8 @@
   (:require circleci.repl)
   (:require circleci.logging)
   (:require circleci.backend.nodes)
-  (:require circleci.backend.project.rails))
+  (:require circleci.backend.project.rails)
+  (:require circleci.backend.project.circleci))
 
 (def init*
   (delay
