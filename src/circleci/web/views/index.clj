@@ -82,22 +82,23 @@
          [:form {:action "/" :method "POST"}
            [:fieldset#actualform
              (unordered-list
-               [(list (text-field {:id "email"
-                                   :type "text"
-                                   :onfocus "if (this.value == 'Email address') { this.value=''};"
-                                   :onblur "if (this.value == '') { this.value = 'Email address'};"}
-                                   "email" "Email address"))
-                (list (check-box {:id "contact"
-                                  :name "contact"
-                                  :checked true} "contact")
-                      [:div
-                        [:div
-                          (label {:id "contact-label"}
-                                 "contact"
-                                 "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
-             [:fieldset
-               [:input.call_to_action {:type "submit"
-                                       :value "Get Notified"}]]]]])
+               [(text-field {:id "email"
+                             :type "text"
+                             :onfocus "if (this.value == 'Email address') { this.value=''};"
+                             :onblur "if (this.value == '') { this.value = 'Email address'};"}
+                             "email" "Email address")
+                (check-box {:id "contact"
+                            :name "contact"
+                            :checked true}
+                            "contact"
+                            [:div
+                              [:div
+                                (label {:id "contact-label"}
+                                       "contact"
+                                       "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
+           [:fieldset
+             [:input.call_to_action {:type "submit"
+                                     :value "Get Notified"}]]]]])
 
 
 
