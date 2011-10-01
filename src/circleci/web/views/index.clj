@@ -74,35 +74,37 @@
 
 (defpartial signupform [& content]
   [:div.move-right
-  [:div.blue-box
+   [:div.blue-box
+    [:h2.takepart "Take part in the beta"]
+    [:p.whenready "We'll email you when we're ready."]
+    [:form {:action "/" :method "POST"}
+     [:fieldset#actualform
+      (unordered-list
+       [(list (text-field {:id "email"
+                           :type "text"
+                           :onfocus "if (this.value == 'Email address') { this.value=''};"
+                           :onblur "if (this.value == '') { this.value = 'Email address'};"}
+                           "email" "Email address"))
+        (list (check-box {:id "contact"
+                           :name "contact"
+                           :checked true} "contact")
+              [:div
+               [:div
+                (label {:id "contact-label"}
+                       "contact"
+                       "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
+     [:fieldset
+      [:input.call_to_action {:type "submit"
+                              :value "Get Notified"}]]]]])
 
-  [:h2.takepart "Take part in the beta"]
-  [:p.whenready "We'll email you when we're ready."]
-  [:form {:action "/" :method "POST"}
-   [:fieldset#actualform
-    (unordered-list
-     [(list (text-field {:id "email"
-                         :type "text"
-                         :onfocus "if (this.value == 'Email address') { this.value=''};"
-                         :onblur "if (this.value == '') { this.value = 'Email address'};"}
-                         "email" "Email address"))
-      (list (check-box {:id "contact"
-                         :name "contact"
-                         :checked true} "contact")
-            [:div [:div
-            (label {:id "contact-label"} "contact" "May we contact you to ask about your platform, stack, test suite, etc?")]])])]
-   [:fieldset
-    [:input.call_to_action {:type "submit"
-                            :value "Get Notified"}]]]]]
-)
 
-;; You need expires for IE6-8
+
 (defn delete-cookie [name]
-  (cookies/put! name {:value "1"
+  (cookies/put! name {:value ""
                       :max-age 0
-                      :expires 0
+                      :expires 0 ; You need expires for IE6-8
                       :path "/"})
-  "")
+  "") ; return a string
 
 (defpartial youre-done [& content]
   (delete-cookie :signed-up)
