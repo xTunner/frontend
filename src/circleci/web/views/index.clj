@@ -108,7 +108,7 @@
   "") ; return a string
 
 (defpartial youre-done [& content]
-  (delete-cookie :signed-up)
+;  (delete-cookie :signed-up) ; For debugging
   [:div.move-right
    [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]])
 
