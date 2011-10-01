@@ -26,7 +26,7 @@
                      [:environment :text]
                      [:features :text]))
 
-(defn alter-table [name & specs]
+(defn add-column [name & specs]
    (jdbc/do-commands
     (format "ALTER TABLE %s ADD %s"
      (as-str name)
@@ -39,5 +39,5 @@
 
 (defmigration "add beta checkbox"
   (println "alter-table: beta checkbox")
-  (alter-table :beta_notify [:contact :boolean]))
+  (add-column :beta_notify [:contact :boolean]))
 
