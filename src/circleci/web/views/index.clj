@@ -29,10 +29,8 @@
   center-vertically [[tag & args]]
     (let [[m & remaining] args
           property-map (into {:class "vcenter1"} (if (map? m) m {}))
-          inner-tags (if (map? m) remaining args)
-          x [tag property-map [:div.vcenter2 (apply vector :div.vcenter3 inner-tags)]]]
-      (println x)
-      x))
+          inner-tags (if (map? m) remaining args)]
+     [tag property-map [:div.vcenter2 (apply vector :div.vcenter3 inner-tags)]]))
 
 
 (defpage "/" []
