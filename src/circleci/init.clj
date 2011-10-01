@@ -1,19 +1,19 @@
 (ns circleci.init
-  (:require circleci.swank)
+  ;; (:require circleci.swank)
   (:require circleci.db)
   (:require circleci.db.migrations)
   (:require circleci.web)
   (:require circleci.repl)
   (:require circleci.logging)
-  (:require circleci.backend.nodes)
-  (:require circleci.backend.project.rails)
-  (:require circleci.backend.project.circleci))
+  (:require circleci.backend.nodes
+            circleci.backend.project.rails
+            circleci.backend.project.circleci))
 
 (def init*
   (delay
    (try
      (circleci.logging/init)
-     (circleci.swank/init)
+     ;; (circleci.swank/init)
      (circleci.db/init)
      (circleci.db.migrations/init)
      (circleci.web/init)
