@@ -1,7 +1,8 @@
 (ns circleci.db.migrations
   (:use [circleci.db :only (with-conn)])
   (:use [circleci.db.migration-lib :only (defmigration run-required-migrations reset-migration-state)])
-  (:require [clojure.java.jdbc :as jdbc]))
+  (:require [clojure.java.jdbc :as jdbc])
+  (use (clojure.contrib [string :only (as-str)])))
 
 (def migration-info (circleci.db.migration-lib/migration-info (.getName *ns*)))
 
@@ -24,4 +25,19 @@
                      [:email :text "PRIMARY KEY"]
                      [:environment :text]
                      [:features :text]))
+
+(defn alter-table [name & specs]
+   (jdbc/do-commands
+    (format "ALTER TABLE %s ADD %s"
+     (as-str name)
+     (apply str
+            (map as-str
+                 (apply concat
+                        (interpose [", "]
+                                   (map (partial interpose " ") specs))))))))
+
+
+(defmigration "add beta checkbox"
+  (println "alter-table: beta checkbox")
+  (alter-table :beta_notify [:contact :boolean]))
 
