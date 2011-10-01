@@ -4,7 +4,8 @@
   (:use [circleci.backend.build :only (build)])
   (:use [circleci.backend.action.vcs :only (checkout)])
   (:use [circleci.backend.action.bash :only (bash)])
-  (:use [circleci.backend.action.junit :only (junit)]))
+  ;; (:use [circleci.backend.action.junit :only (junit)])
+  )
 
 (def circle-build (build :project-name "CircleCI"
                          :build-num 1
