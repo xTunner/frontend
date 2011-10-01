@@ -26,18 +26,9 @@
                      [:environment :text]
                      [:features :text]))
 
-(defn add-column [name & specs]
-   (jdbc/do-commands
-    (format "ALTER TABLE %s ADD %s"
-     (as-str name)
-     (apply str
-            (map as-str
-                 (apply concat
-                        (interpose [", "]
-                                   (map (partial interpose " ") specs))))))))
-
-
 (defmigration "add beta checkbox"
   (println "alter-table: beta checkbox")
-  (add-column :beta_notify [:contact :boolean]))
+  (jdbc/do-commands "ALTER TABLE beta_notify ADD contact boolean"))
+
+
 
