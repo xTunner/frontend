@@ -1,6 +1,6 @@
 (ns circleci.backend.build
   (:use [arohner.utils :only (inspect fold)])
-  (:use [circleci.backend.action :only (validate-action-result!)])
+  (:use [circleci.backend.action :only (continue? validate-action-result!)])
   (:use [circleci.backend.action.bash :only (with-pwd)])
   (:use [circleci.backend.nodes :only (node-info)]))
 
@@ -19,10 +19,6 @@
 (defrecord BuildContext [build
                          action
                          node])
-
-(defn continue? [action-result]
-  (or (-> action-result :success)
-      (-> action-result :continue)))
 
 (defn run-build [build]
   (println "getting node info")
