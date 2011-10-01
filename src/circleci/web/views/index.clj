@@ -14,6 +14,7 @@
 (defpage [:post "/"] {:as request}
   (with-conn
                (beta/insert {:email (:email request)
+                             :contact (= "true" (:contact request))
                              :environment ""
                              :features ""})
                (cookies/put! :signed-up "1")
