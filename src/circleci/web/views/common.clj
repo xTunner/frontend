@@ -47,6 +47,7 @@
               (include-js "js/jquery_minimized_core.js" "js/wufoo.js")
               [:title "Circle - Continuous Integration made easy"]]
              [:body
+              [:div#notthefooter
               [:div#header_wrap
                [:div#header
                 [:h1#logo (link-to {:title "Go to Circle homepage"} "/" "Circle")]
@@ -57,6 +58,7 @@
                 [:div.clear]]]
               content
               [:div.clear]
+              [:div#notthefooterclear]]
               [:div#footer_wrap
                [:div#footer
                 [:div.box_wide.separator_r
