@@ -30,9 +30,12 @@
   (println "alter-table: beta checkbox")
   (jdbc/do-commands "ALTER TABLE beta_notify ADD contact boolean"))
 
-; Since we don't authenticate a user's info/email, we can't just say "it looks like you signed up before, here's your info", so we use their session. I'm not sure how to make the session info DB based, so I'll just use the session/email as the primary key.
+; Since we don't authenticate a user's info/email, we can't just say "it looks like you signed up before, here's your info", so we use their session. I'm not sure how to make the session info DB based, so I'll just store the session alongside.
 (defmigration "add session key"
   (println "alter-table: add session-key")
   (jdbc/do-commands "ALTER TABLE beta_notify ADD session_key text"))
 
+(defmigration "signup twice"
+  (println "alter-table: remove primary key constraint")
+  (jdbc/do-commands "ALTER TABLE beta_notify DROP CONSTRAINT beta_notify_pkey"))
 
