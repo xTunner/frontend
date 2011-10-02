@@ -8,6 +8,29 @@
 (defn css [path & {:keys [rel type media title] :as opts}]
   [:link (merge {:href path} opts)])
 
+(defn center-vertically 
+  "Take the provided div and center it vertically, by adding classes and
+  wrapping it's contents in more divs. It relies on additional.css having
+  .vcenter{1,2,3} defined."
+  [[tag & args]]
+    (let [[m & remaining] args
+          property-map (into {:class "vcenter1"} (if (map? m) m {}))
+          inner-tags (if (map? m) remaining args)]
+         [tag property-map [:div.vcenter2 (apply vector :div.vcenter3 inner-tags)]]))
+
+
+(defn center-vertically-span 
+  "Take the provided div and center it vertically, by adding classes and
+  wrapping it's contents in more divs. It relies on additional.css having
+  .vcenter{1,2,3} defined."
+  [[tag & args]]
+    (let [[m & remaining] args
+          property-map (into {:class "vcenter1"} (if (map? m) m {}))
+          inner-tags (if (map? m) remaining args)]
+         [tag property-map [:span.vcenter2 (apply vector :span.vcenter3 inner-tags)]]))
+
+
+
 (defn google-analytics []
   (html
    [:script {:type "text/javascript"} "
@@ -50,10 +73,8 @@
               [:div#notthefooter
               [:div#header_wrap
                [:div#header
-                [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img {:src "img/circle-transparent.png"
-                                                                               :height "50px"
-                                                                               :width "50px"}]
-                                                                        "CIRCLE")]
+                [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img#circle {:src "img/circle-transparent.png"}]
+                                                                        [:span#circle-word "Circle"])]
                 (unordered-list {:id "nav"}
                                 [(link-to {:class "current_page"}
                                           "/" "Signup")

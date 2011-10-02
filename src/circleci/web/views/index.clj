@@ -23,17 +23,6 @@
 
 (declare signupform youre-done)
 
-(defn center-vertically 
-  "Take the provided div and center it vertically, by adding classes and
-  wrapping it's contents in more divs. It relies on additional.css having
-  .vcenter{1,2,3} defined."
-  [[tag & args]]
-    (let [[m & remaining] args
-          property-map (into {:class "vcenter1"} (if (map? m) m {}))
-          inner-tags (if (map? m) remaining args)]
-         [tag property-map [:div.vcenter2 (apply vector :div.vcenter3 inner-tags)]]))
-
-
 (defpage "/" []
   (layout
     [:div#pitch_wrap

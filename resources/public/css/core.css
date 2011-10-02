@@ -348,17 +348,25 @@ abbr {
 
 #logo {
 	float: left;
-	font-weight: bold;
-  /* 66cef6 */
+  margin: -7px 0 0 0;
 }
 
-	#logo a, a#logo {
-		width: 50px;
-		height: 50px;
-    text-decoration: none;
-    font: 100% Arial,Helvetica,sans-serif;
-    color: #0079b6;
-	}
+#logo a, a#logo {
+  text-decoration: none;
+}
+
+#circle-word {
+  color: #0079b6;
+	font-weight: bold;
+  line-height: 58px;
+  font-size: 40px;
+  padding: 0 0 0 2px;
+}
+
+#circle {
+  height: 65px;
+  width: 65px;
+}
 
 #nav {
 	float: right;
