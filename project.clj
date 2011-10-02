@@ -9,7 +9,7 @@
                            [swank-clojure "1.3.2"]
                            [log4j "1.2.14"]
                            [log4j/apache-log4j-extras "1.1"]
-                           [clj-http "0.1.3"]
+                           [clj-http "0.2.1"]
                            [clj-r53 "1.0.0"]
                            [commons-codec "1.4"]
                            [arohner-utils "0.0.2"]
@@ -19,6 +19,7 @@
                            [org.jclouds/jclouds-all "1.0.0"]
                            [org.jclouds.driver/jclouds-log4j "1.0.0"]
                            [org.jclouds.driver/jclouds-jsch "1.0.0"]
+                           [com.amazonaws/aws-java-sdk "1.2.7"]
                            
                            ;; Pallet Crates
                            [org.cloudhoist/automated-admin-user "0.6.0"]
