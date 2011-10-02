@@ -92,7 +92,7 @@
 
 (defpartial youre-done [& content]
   (do 
-    (session/remove! :signed-up) ; For debugging
+;    (session/remove! :signed-up) ; For debugging
     [:div.move-right
       [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]]))
 
