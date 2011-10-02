@@ -74,7 +74,7 @@
 (defpartial signupform [& content]
    [:div.move-right
      [:div.blue-box
-       [:h2.takepart "Take part in the beta"]
+       [:h2.takepart "Sign up for the beta"]
          [:p.whenready "We'll email you when we're ready."]
          [:form {:action "/" :method "POST"}
            [:fieldset#actualform
