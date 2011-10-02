@@ -8,19 +8,20 @@
   (:use [circleci.db :only (with-conn)])
   (:use [ring.util.response :only (redirect)])
   (:require [circleci.model.beta-notify :as beta])
-  (:require [noir.cookies :as cookies]))
+  (:require [noir.cookies :as cookies])
+  (:require [noir.session :as session]))
 
 
 (defpage [:post "/"] {:as request}
   (with-conn
-    (def session-key (cookies/get "ring-session")
-    (beta/insert {:email (:email request)
-                 :contact (= "true" (:contact request))
-                 :environment ""
-                 :features ""
-                 :session-key session-key})
-    (session/put! :signed-up "1")
-    (redirect "/")))
+    (let [session-key (cookies/get "ring-session")]
+      (beta/insert {:email (:email request)
+                   :contact (= "true" (:contact request))
+                   :environment ""
+                   :features ""
+                   :session_key session-key})
+      (session/put! :signed-up "1")
+      (redirect "/"))))
 
 
 (declare signupform youre-done)

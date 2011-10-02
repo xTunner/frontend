@@ -4,4 +4,4 @@
 (table/deftable beta-notify
   :tablename "beta_notify"
   :primary-keys [email]
-  :columns [email environment features contact])
+  :columns [email environment features contact session_key])
