@@ -349,12 +349,15 @@ abbr {
 #logo {
 	float: left;
 	font-weight: bold;
+  /* 66cef6 */
 }
 
 	#logo a, a#logo {
-		width: 70px;
+		width: 50px;
 		height: 50px;
-		text-indent: -9000px;
+    text-decoration: none;
+    font: 100% Arial,Helvetica,sans-serif;
+    color: #0079b6;
 	}
 
 #nav {
@@ -370,6 +373,7 @@ abbr {
 			display: block;
 			padding: 10px 20px 20px 20px;
 			font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
+
 			font-size: 16px;
 			text-decoration: none;
 		}

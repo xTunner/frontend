@@ -53,7 +53,7 @@
                 [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img {:src "img/circle-transparent.png"
                                                                                :height "50px"
                                                                                :width "50px"}]
-                                                                        "Circle")]
+                                                                        "CIRCLE")]
                 (unordered-list {:id "nav"}
                                 [(link-to {:class "current_page"}
                                           "/" "Signup")
