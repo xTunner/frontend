@@ -13,11 +13,13 @@
 
 (defpage [:post "/"] {:as request}
   (with-conn
+    (def session-key (cookies/get "ring-session")
     (beta/insert {:email (:email request)
                  :contact (= "true" (:contact request))
                  :environment ""
-                 :features ""})
-    (cookies/put! :signed-up "1")
+                 :features ""
+                 :session-key session-key})
+    (session/put! :signed-up "1")
     (redirect "/")))
 
 
