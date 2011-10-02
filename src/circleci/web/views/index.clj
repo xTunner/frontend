@@ -34,7 +34,7 @@
         (center-vertically 
           [:div#left-panel [:h1#cititle "Continuous Integration" [:br] "made easy"]])
         (center-vertically
-          [:div#right-panel (if (cookies/get :signed-up) (youre-done) (signupform))])
+          [:div#right-panel (if (session/get :signed-up) (youre-done) (signupform))])
         [:div.clear]]]
 
     [:div#content_wrap
@@ -90,17 +90,10 @@
                                      :value "Get Notified"}]]]]])
 
 
-
-(defn delete-cookie [name]
-  (cookies/put! name {:value ""
-                      :max-age 0
-                      :expires 0 ; You need expires for IE6-8
-                      :path "/"})
-  "") ; return a string
-
 (defpartial youre-done [& content]
-;  (delete-cookie :signed-up) ; For debugging
-  [:div.move-right
-    [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]])
+  (do 
+    (session/remove! :signed-up) ; For debugging
+    [:div.move-right
+      [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]]))
 
 
