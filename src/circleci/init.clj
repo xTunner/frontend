@@ -14,7 +14,10 @@
   (delay
    (try
      (circleci.logging/init)
-     ;; (circleci.swank/init)
+     ;; workaround for Heroku not liking us starting up swank
+     (when (System/getenv "SWANK")
+       (require 'circleci.swank)
+       (.invoke (ns-resolve 'circleci.swank 'init)))
      (circleci.db/init)
      (circleci.db.migrations/init)
      (circleci.web/init)
