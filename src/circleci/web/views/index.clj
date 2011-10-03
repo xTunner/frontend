@@ -54,7 +54,7 @@
           [:div.box_medium.feature.separator_r
             [:img {:src "img/icon_feature_02.png" :width 60 :height 55}]
             [:h3 "Lightning fast tests"]
-            [:p "Find out as soon as something breaks, using automatic paralleization, "
+            [:p "Find out as soon as something breaks, using automatic parallelization, "
                 "dependency analysis and test prioritization."]]
 
           [:div.box_medium.feature
