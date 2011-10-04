@@ -15,7 +15,8 @@
                          :group circle/circleci-group))
 
 (def circle-deploy (build :project-name "CircleCI"
-                          :type :deploy ;;?
+                          :build-num 1
+                          :type :deploy
                           :group circle/circleci-group
                           :actions [(checkout "git@github.com:arohner/CircleCI.git")
                                     (bash [(lein deps)
