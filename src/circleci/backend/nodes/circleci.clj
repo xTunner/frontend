@@ -20,6 +20,7 @@
   (pallet.core/group-spec
    "CircleCI box"
    :node-spec (pallet.core/node-spec
+               :hardware {:hardware-id "m1.small"} ;; require m1.small or larger right now, because of https://bugs.launchpad.net/ubuntu/+source/linux-ec2/+bug/634487
                :image {:os-family :ubuntu
                        :location-id "us-east-1"
                        :image-id "us-east-1/ami-06ad526f"}
@@ -27,13 +28,13 @@
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (pallet.phase/phase-fn
-                        (package/packages
-                         :aptitude ["openjdk-6-jdk"])
+                        (java/java :openjdk)
                         (git/git)
                         (postgres/settings (postgres/settings-map {:version "8.4"
                                                                    :permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
                                                                                  {:connection-type "host" :database "all" :user "all" :ip-mask "127.0.0.1/32" :auth-method "trust"}
                                                                                  {:connection-type "host" :database "all" :user "all" :ip-mask "::1/128" :auth-method "trust"}]}))
+                        
                         (postgres/postgres)
                         (postgres/initdb)
                         (postgres/hba-conf)
