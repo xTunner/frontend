@@ -15,12 +15,17 @@
                  [arohner-utils "0.0.2"]
                  [clj-yaml "0.3.1"]
                  [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
-                 [org.cloudhoist/pallet "0.6.4"]
-                 [org.jclouds/jclouds-all "1.0.0"]
-                 [org.jclouds.driver/jclouds-log4j "1.0.0"]
-                 [org.jclouds.driver/jclouds-jsch "1.0.0"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
                  
+                 [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
+                 [org.jclouds/jclouds-core "1.1.1"]
+                 [org.jclouds/jclouds-compute "1.1.1"]
+                 [org.jclouds/jclouds-blobstore "1.1.1"]
+                 [org.jclouds/jclouds-loadbalancer "1.1.1"]
+                 [org.jclouds.driver/jclouds-log4j "1.1.1"]
+                 [org.jclouds.driver/jclouds-jsch "1.1.1"]
+                 [org.jclouds.provider/aws-ec2 "1.1.1"]
+
                  ;; Pallet Crates
                  [org.cloudhoist/automated-admin-user "0.6.0"]
                  [org.cloudhoist/git "0.5.0"]
