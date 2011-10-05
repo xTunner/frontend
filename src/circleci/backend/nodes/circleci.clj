@@ -24,7 +24,7 @@
                :image {:os-family :ubuntu
                        :location-id "us-east-1"
                        :image-id "us-east-1/ami-06ad526f"}
-               :network {:inbound-ports [22]})
+               :network {:inbound-ports [22 80 8080]})
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (pallet.phase/phase-fn
