@@ -20,6 +20,6 @@
                           :group circle/circleci-group
                           :actions [(checkout "git@github.com:arohner/CircleCI.git")
                                     (bash [(lein deps)
-                                           (lein daemon start :web)])
+                                           (lein daemon start ":web")])
                                     ;;; Load Balancer
                                     ]))
