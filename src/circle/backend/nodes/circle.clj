@@ -18,7 +18,7 @@
 
 (def circle-group
   (pallet.core/group-spec
-   "CircleCI box"
+   "circle"
    :node-spec (pallet.core/node-spec
                :hardware {:hardware-id "m1.small"} ;; require m1.small or larger right now, because of https://bugs.launchpad.net/ubuntu/+source/linux-ec2/+bug/634487
                :image {:os-family :ubuntu
@@ -28,7 +28,18 @@
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (pallet.phase/phase-fn
-                        (java/java :openjdk)
+                        (package/package-source "ubuntu-archive"
+                                                ;; by default, EC2
+                                                ;; ubuntu images only
+                                                ;; use ubuntu mirrors
+                                                ;; hosted on EC2,
+                                                ;; which sometimes go
+                                                ;; down. Add this as
+                                                ;; another mirror for
+                                                ;; reliability
+                                                :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
+                                                           :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
+                        (java/java :sun :jdk)
                         (git/git)
                         (postgres/settings (postgres/settings-map {:version "8.4"
                                                                    :permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
