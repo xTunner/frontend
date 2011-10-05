@@ -37,6 +37,7 @@
                      [lein-midje "1.0.4"]
                      [lein-daemon "0.4.0"]]
   :main circleci.init
+  :jvm-opts ["-Djava.net.preferIPv4Stack=true"]
   :daemon {:web {:ns circleci.init
                  :pidfile "circle.pid"}})
 
