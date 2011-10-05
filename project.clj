@@ -1,4 +1,4 @@
-(defproject circleci "0.1.0-SNAPSHOT"
+(defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [clj-json "0.4.0"] ;; noir pulls in clj-json 0.3.2 which isn't compatible w/ clojure 1.3. Put this dep ahead to pull it in first.
@@ -36,8 +36,8 @@
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
                      [lein-daemon "0.4.0"]]
-  :main circleci.init
+  :main circle.init
   :jvm-opts ["-Djava.net.preferIPv4Stack=true"]
-  :daemon {:web {:ns circleci.init
+  :daemon {:web {:ns circle.init
                  :pidfile "circle.pid"}})
 
