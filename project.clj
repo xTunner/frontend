@@ -34,14 +34,14 @@
                  [org.cloudhoist/rubygems "0.6.0"]
                  [org.cloudhoist/java "0.5.1"]
                  [lein-crate "0.1.0"]
-                 [lein-daemon "0.4.0"]
+                 [lein-daemon "0.4.1"]
                  [pallet-rvm "0.1"]]
   :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                  "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
   :dev-dependencies [[lein-test-out "0.1.1"]
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
-                     [lein-daemon "0.4.0"]]
+                     [lein-daemon "0.4.1"]]
   :main circle.init
   :jvm-opts ["-Djava.net.preferIPv4Stack=true"]
   :daemon {:web {:ns circle.init
