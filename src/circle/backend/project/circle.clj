@@ -15,11 +15,12 @@
                          :group circle/circle-group))
 
 (def circle-deploy (build :project-name "Circle"
-                          :build-num 1
+                          :build-num 2
                           :type :deploy
                           :group circle/circle-group
                           :actions [(checkout "git@github.com:arohner/CircleCI.git")
                                     (bash [(lein deps)
+                                           (export "CIRCLE_ENV=production")
                                            (lein daemon start ":web")])
                                     ;;; Load Balancer
                                     ]))
