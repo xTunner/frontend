@@ -12,6 +12,7 @@
                  [clj-http "0.2.1"]
                  [clj-r53 "1.0.0"]
                  [commons-codec "1.4"]
+                 [commons-email "1.1"]
                  [arohner-utils "0.0.2"]
                  [clj-yaml "0.3.1"]
                  [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
