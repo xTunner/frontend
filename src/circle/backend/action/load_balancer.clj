@@ -2,13 +2,14 @@
   (:require [circle.backend.nodes :as nodes])
   (:require [circle.backend.action :as action])
   (:require [circle.backend.load-balancer :as lb])
-  (:require [circle.backend.ec2 :as ec2]))
+  (:require [circle.backend.ec2 :as ec2])
+  (:require [circle.backend.ec2-tag :as tag]))
 
 (defn add-instances []
   (action/action
    :name "add to load balancer"
    :act-fn (fn [context]
-             (lb/register-instances (-> context :build :lb-name)
+             (lb/add-instances (-> context :build :lb-name)
                                     (nodes/group-instance-ids (-> context :build :group))))))
 
 (defn wait-for-healthy* [lb-name & {:keys [instance-ids 
@@ -40,7 +41,7 @@
     (filter (fn [tag]
               (and (contains? lb-ids (-> tag :resourceId))
                    (= (-> tag :key) :rev)
-                   (not= (-> tag :value) current-rev))) (circle.backend.ec2-tag/describe-tags))))
+                   (not= (-> tag :value) current-rev))) (tag/describe-tags))))
 
 (defn shutdown-remove-old-revisions
   "remove from the LB and shutdown  all instances that don't have the revision tag of the current deploy"
