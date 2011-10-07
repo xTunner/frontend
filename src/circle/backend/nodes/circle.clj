@@ -12,6 +12,7 @@
             [pallet.crate.ssh-key :as ssh-key]
             [pallet.crate.network-service :as network-service]
             [pallet.crate.postgres :as postgres]
+            [pallet.crate.nginx :as nginx]
             [circle.backend.nodes :as nodes]))
 
 ;; The node configuration to build the circle box
@@ -39,8 +40,19 @@
                                                 ;; reliability
                                                 :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                            :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
+                        (package/packages :aptitude ["nginx"])
                         (java/java :sun :jdk)
                         (git/git)
+                        ;; (nginx/nginx :version "1.1.5")
+                        (nginx/site "circle"
+                                    :listen 80
+                                    :server_name "circle"
+                                    :locations [{:location "/"
+                                                 :proxy_pass "http://localhost:8080"
+                                                 :proxy_headers {"X-Real-IP" "\\$remote_addr"
+                                                                 "X-Forwarded-For" "\\$proxy_add_x_forwarded_for"
+                                                                 "Host" "\\$http_host"}}])
+                        (nginx/site "default" :action :disable)
                         (postgres/settings (postgres/settings-map {:version "8.4"
                                                                    :permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
                                                                                  {:connection-type "host" :database "all" :user "all" :ip-mask "127.0.0.1/32" :auth-method "trust"}
