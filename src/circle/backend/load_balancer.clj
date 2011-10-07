@@ -4,27 +4,19 @@
            (com.amazonaws.services.elasticloadbalancing.model
             ConfigureHealthCheckRequest
             DeleteLoadBalancerRequest
+            DescribeInstanceHealthRequest
             HealthCheck
             Instance
             Listener
             RegisterInstancesWithLoadBalancerRequest
+            DeregisterInstancesFromLoadBalancerRequest
             CreateLoadBalancerRequest))
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:use [pallet.thread-expr :only (when->)])
   (:use [circle.utils.except :only (throw-if-not)])
   (:use [circle.utils.core :only (apply-map)]))
 
-(defn availability-zones []
-  (-> (AmazonEC2Client. aws-credentials)
-      (.describeAvailabilityZones)
-      (.getAvailabilityZones)
-      (->>
-       (map (fn [az]
-              {:zone (.getZoneName az)
-               :region (.getRegionName az)
-               :status (.getState az)})))))
-
-(defmacro with-client
+(defmacro with-elb-client
   [client & body]
   `(let [~client (AmazonElasticLoadBalancingClient. aws-credentials)]
      ~@body))
@@ -32,16 +24,25 @@
 (defn delete-balancer
   "name is the name passed to create-balancer. Returns nil"
   [name]
-  (with-client client
+  (with-elb-client client
     (.deleteLoadBalancer client (DeleteLoadBalancerRequest. name))))
 
-(defn register-instances-with-balancer
+(defn add-instances
   "Instances is a seq of strings, each an EC2 instance id"
   [lb-name instances]
-  (with-client client
+  (with-elb-client client
     (.registerInstancesWithLoadBalancer
      client
      (RegisterInstancesWithLoadBalancerRequest. lb-name
+                                                (for [i instances]
+                                                  (Instance. i))))))
+
+(defn remove-instances
+  [lb-name instances]
+  (with-elb-client client
+    (.deregisterInstancesFromLoadBalancer
+     client
+     (DeregisterInstancesFromLoadBalancerRequest. lb-name
                                                 (for [i instances]
                                                   (Instance. i))))))
 
@@ -54,7 +55,7 @@
    unhealthy-threshold - number of failed pings before the instance is marked unhealthy and disabled from the load balancer.
    healthy-threshold - number of successful pings before the instance is restored to the load balancer "
   [lb-name & {:keys [target interval timeout unhealthy-threshold healthy-threshold]}]
-  (with-client client
+  (with-elb-client client
     (.configureHealthCheck client
                            (ConfigureHealthCheckRequest. lb-name
                                                          (HealthCheck. target
@@ -77,7 +78,7 @@
              listeners
              availability-zones
              health-check]}]
-  (with-client client
+  (with-elb-client client
     (let [request (CreateLoadBalancerRequest.)]
 
       (throw-if-not name "name is required")
@@ -98,3 +99,21 @@
 
       (when health-check
         (apply-map configure-health-check name health-check)))))
+
+(defn get-health [lb-name & instance-ids]
+  (let [request (DescribeInstanceHealthRequest. lb-name)]
+    (when instance-ids
+      (.setInstances request (map #(Instance. %) instance-ids)))
+    (with-elb-client client
+      (-> client
+          (.describeInstanceHealth request)
+          (.getInstanceStates)
+          (->> (map bean))))))
+
+(defn healthy? [lb-name & instance-ids]
+  (->> instance-ids
+       (apply get-health lb-name)
+       (every? #(= "InService" (:state %)))))
+
+(defn instance-ids [lb-name]
+  (map :instanceId (get-health lb-name)))

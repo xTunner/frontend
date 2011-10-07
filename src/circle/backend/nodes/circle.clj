@@ -5,6 +5,7 @@
             [pallet.action.directory :as directory]
             [pallet.action.package :as package]
             [pallet.action.remote-file :as remote-file]
+            [pallet.action.service :as service]
             [pallet.crate.automated-admin-user :as automated-admin-user]
             [pallet.crate.git :as git]
             [pallet.crate.lein :as lein]
@@ -52,6 +53,7 @@
                                                                  "X-Forwarded-For" "\\$proxy_add_x_forwarded_for"
                                                                  "Host" "\\$http_host"}}])
                         (nginx/site "default" :action :disable)
+                        (service/service "nginx" :action :enable)
                         (postgres/settings (postgres/settings-map {:version "8.4"
                                                                    :permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
                                                                                  {:connection-type "host" :database "all" :user "all" :ip-mask "127.0.0.1/32" :auth-method "trust"}

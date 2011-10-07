@@ -17,7 +17,7 @@
 
 (def ActionResult-validator
   [[#(-> % :success bool?) ":success must be a bool, got %s" #(-> % :success (class) )]
-   [#(-> % :continue bool?) ":continue must be a bool, got %s" #(-> % :continue (class))]])
+   [#(or (-> % :success) (-> % :continue bool?)) ":continue must be a bool, got %s" #(-> % :continue (class))]])
 
 (defn validate-action-result! [ar]
   (validate! ActionResult-validator ar))
