@@ -31,15 +31,16 @@
       false)))
 
 (defn wait-for-healthy []
-  :name "wait for nodes LB healthy"
-  :act-fn (fn [context]
-            (if (wait-for-healthy* (-> context :build :lb-name)
-                               :instance-ids (nodes/group-instance-ids (-> context :build :group))
-                               :sleep 5
-                               :retries 10)
-              {:success true}
-              {:success false
-               :continue false})))
+  (action/action
+   :name "wait for nodes LB healthy"
+   :act-fn (fn [context]
+             (if (wait-for-healthy* (-> context :build :lb-name)
+                                    :instance-ids (nodes/group-instance-ids (-> context :build :group))
+                                    :sleep 5
+                                    :retries 10)
+               {:success true}
+               {:success false
+                :continue false}))))
 
 (defn get-old-revisions [lb-name current-rev]
   (let [lb-ids (set (lb/instance-ids lb-name))]
