@@ -9,8 +9,13 @@
   (action/action
    :name "add to load balancer"
    :act-fn (fn [context]
-             (lb/add-instances (-> context :build :lb-name)
-                                    (nodes/group-instance-ids (-> context :build :group))))))
+             (try
+               (let [result (lb/add-instances (-> context :build :lb-name)
+                                              (nodes/group-instance-ids (-> context :build :group)))]
+                 {:success true})
+               (catch Exception e
+                 {:success false
+                  :continue false})))))
 
 (defn wait-for-healthy* [lb-name & {:keys [instance-ids 
                                            retries ;; number of times to retry
@@ -48,8 +53,13 @@
   []
   :name "remove old revisions"
   :act-fn (fn [context]
-            (let [lb-name (-> context :build :lb-name)
-                  old-instances (get-old-revisions lb-name
-                                                    (-> context :build :vcs-revision))]
-              (lb/remove-instances lb-name old-instances)
-              (ec2/terminate-instances old-instances))))
+            (try
+              (let [lb-name (-> context :build :lb-name)
+                    old-instances (get-old-revisions lb-name
+                                                     (-> context :build :vcs-revision))]
+                (lb/remove-instances lb-name old-instances)
+                (ec2/terminate-instances old-instances)
+                {:success true})
+              (catch Exception e
+                {:success false
+                 :continue false}))))

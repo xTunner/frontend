@@ -31,11 +31,14 @@
   "Instances is a seq of strings, each an EC2 instance id"
   [lb-name instances]
   (with-elb-client client
-    (.registerInstancesWithLoadBalancer
-     client
-     (RegisterInstancesWithLoadBalancerRequest. lb-name
+    (-> client
+        (.registerInstancesWithLoadBalancer
+         (RegisterInstancesWithLoadBalancerRequest. lb-name
                                                 (for [i instances]
-                                                  (Instance. i))))))
+                                                  (Instance. i))))
+        (.getInstances)
+        (->>
+         (map bean)))))
 
 (defn remove-instances
   [lb-name instances]
