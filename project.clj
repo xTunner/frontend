@@ -19,13 +19,14 @@
                  [com.amazonaws/aws-java-sdk "1.2.7"]
                  
                  [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
-                 [org.jclouds/jclouds-core "1.2.0-20111005.184141-97"]
-                 [org.jclouds/jclouds-compute "1.2.0-20111005.184527-96"]
-                 [org.jclouds/jclouds-blobstore "1.2.0-20111005.185008-93"]
-                 [org.jclouds/jclouds-loadbalancer "1.2.0-20111005.184815-94"]
-                 [org.jclouds.driver/jclouds-log4j "1.2.0-20111005.184406-97"]
-                 [org.jclouds.driver/jclouds-jsch "1.2.0-20111005.191220-90"]
-                 [org.jclouds.provider/aws-ec2 "1.2.0-20111005.190523-90"]
+
+                 [org.jclouds/jclouds-core "1.2.0-SNAPSHOT"]
+                 [org.jclouds/jclouds-compute "1.2.0-SNAPSHOT"]
+                 [org.jclouds/jclouds-blobstore "1.2.0-SNAPSHOT"]
+                 [org.jclouds/jclouds-loadbalancer "1.2.0-SNAPSHOT"]
+                 [org.jclouds.driver/jclouds-log4j "1.2.0-SNAPSHOT"]
+                 [org.jclouds.driver/jclouds-jsch "1.2.0-SNAPSHOT"]
+                 [org.jclouds.provider/aws-ec2 "1.2.0-SNAPSHOT"]
 
                  ;; Pallet Crates
                  [org.cloudhoist/automated-admin-user "0.6.0"]
@@ -33,6 +34,7 @@
                  [org.cloudhoist/postgres "0.6.1"]
                  [org.cloudhoist/rubygems "0.6.0"]
                  [org.cloudhoist/java "0.5.1"]
+                 [org.cloudhoist/nginx "0.5.1-SNAPSHOT"]
                  [lein-crate "0.1.0"]
                  [lein-daemon "0.4.1"]
                  [pallet-rvm "0.1"]]
