@@ -28,7 +28,7 @@
           :type :deploy
           :vcs-type :git
           :vcs-url "git@github.com:arohner/CircleCI.git"
-          :vcs-revision "2c24ff2bba2fd07ea7128195b4193eb2f1b2453d"
+          :vcs-revision "382279b1bd282f06a5aac1cbf5454cd7c997e45f"
           :num-nodes 1
           :lb-name "www"
           :group circle/circle-group
