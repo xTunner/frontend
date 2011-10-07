@@ -25,7 +25,7 @@
                :image {:os-family :ubuntu
                        :location-id "us-east-1"
                        :image-id "us-east-1/ami-06ad526f"}
-               :network {:inbound-ports [22 80 8080]})
+               :network {:inbound-ports [22 80]})
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (pallet.phase/phase-fn
@@ -43,7 +43,6 @@
                         (package/packages :aptitude ["nginx"])
                         (java/java :sun :jdk)
                         (git/git)
-                        ;; (nginx/nginx :version "1.1.5")
                         (nginx/site "circle"
                                     :listen 80
                                     :server_name "circle"

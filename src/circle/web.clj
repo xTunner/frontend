@@ -9,9 +9,7 @@
   (let [mode (if production?
                :prod
                :dev)
-        port (Integer/parseInt (get (System/getenv) "HTTP_PORT" (if production?
-                                                                  "80"
-                                                                  "8080")))]
+        port (Integer/parseInt (get (System/getenv) "HTTP_PORT" "8080"))]
     (def server (server/start port {:mode mode
                                     :ns 'circle}))
     (println "web/init done")))
