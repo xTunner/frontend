@@ -1,0 +1,90 @@
+mozilla:
+  type: autotools
+  is-just-a-base-class: Yes
+
+  when: push
+
+  repo:
+    url: http://hg.mozilla.org/mozilla-central
+    vcs: hg
+
+  in-tree: No
+
+  autoconf:
+    version: 2.13
+
+  test:
+    check:
+      format: custom # NOT SURE ABOUT THIS
+      success-regex: "^TEST-PASS"
+      fail-regex: "^TEST-UNEXPECTED-"
+
+  platforms:
+    - os: osx
+      version: 10.6
+      architecture: x86-64
+    - os: osx
+      version: 10.5
+      architecture: i386
+      #macports
+      #brew:
+    - os: ubuntu
+      versions: [10.04]
+      architectures: [i386, x86-64]
+      packages: ["libxml2", "libxml2-dev", "libxslt1-dev", "sqlite3", "libsqlite3-dev", "mysql-server", "libmysqlclient15-dev", "postgresql", "postgresql-client", "postgresql-contrib", "libpq-dev"]
+    - os: android
+      version: 0.0.3.1
+      #image:
+      #ios
+      #windows
+      #kernel
+      #freebsd
+      #openbsd
+    
+firefox:
+  type: mozilla
+  in-tree: No
+
+  configuration:
+    - --enable-optimize --disable-debug
+    - --disable-optimize --enable-debug
+
+  configuration:
+    matrix:
+      - --app=mail
+      - [--debug-level=4, --debug-level=3, --debug-level=2, --debug-level=1, --debug-level=0]
+      - --disable-optimize
+      - --enable-debug
+      - --with-xml
+      - --enable-valgrind
+      - --with-X
+    exclude:
+      - --enable-optimize --enable-debug --enable-valgrind
+      - --enable-valgrind --enable-debug -with-X
+
+  test:
+    mochitest-1:
+      command: make mochitest-1 
+    mochitest-2:
+      command: make mochitest-1 
+    check:
+      command: make check
+
+
+firefox-infrequent-freebsd:
+  type: firefox
+  platforms:
+    - os: freebsd
+      ports: x, y, z
+  when: full-moons
+
+
+spidermonkey:
+  type: firefox
+  subdir: js/src
+
+  configurations:
+    - --enable-optimize --disable-debug
+    - --disable-optimize --enable-debug
+
+
