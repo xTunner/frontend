@@ -2,7 +2,9 @@
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            (com.amazonaws.services.ec2.model DescribeInstancesResult
-                                             TerminateInstancesRequest)))
+                                             TerminateInstancesRequest
+                                             DeleteSecurityGroupRequest
+                                             DeleteKeyPairRequest)))
 
 (defmacro with-ec2-client
   [client & body]
@@ -28,12 +30,23 @@
         (.getReservations)
         (->> (map bean)))))
 
-(defn all-instance-ids []
+(defn instances []
   (->>
    (reservations)
    (mapcat :instances)
-   (map bean)
-   (map :instanceId)))
+   (map bean)))
+  
+(defn all-instance-ids []
+  (map :instanceId (instances)))
+
+(defn instance [instance-id]
+  (first (filter #(= instance-id (:instanceId %)) (instances))))
+
+(defn get-availability-zone [instance-id]
+  (-> instance-id
+      (instance)
+      :placement
+      (.getAvailabilityZone)))
 
 (defn terminate-instances [instance-ids]
   (with-ec2-client client
@@ -43,3 +56,25 @@
 
 (defn terminate-all-instances []
   (terminate-instances (all-instance-ids)))
+
+(defn security-groups
+  []
+  (with-ec2-client client
+    (-> client
+        (.describeSecurityGroups)
+        (.getSecurityGroups)
+        (->>
+         (map bean)))))
+
+(defn delete-group [group-name]
+  (with-ec2-client client
+    (-> client
+        (.deleteSecurityGroup (DeleteSecurityGroupRequest. group-name)))))
+
+(defn delete-groups-matching
+  "delete all ec2 security groups matching the regex. Mainly used as repl workaround for jclouds bugs"
+  [regex]
+  (doseq [group (filter #(re-find regex %) (map :groupName (security-groups)))]
+    (println "deleting" group)
+    (delete-group group)))
+

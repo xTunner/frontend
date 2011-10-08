@@ -1,6 +1,6 @@
 (ns circle.backend.action.vcs
   (:require [clj-url.core :as url])
-  (:require [circle.backend.action :as action])
+  (:use [circle.backend.action :only (defaction)])
   (:require [circle.backend.action.bash :as bash])
   (:use [circle.backend.action.bash :only (remote-bash
                                                  *pwd*)])
@@ -34,19 +34,16 @@
 (defn checkout-dir [context]
   (str (home-dir context) "/" (-> context :build :project-name) "-" (-> context :build :build-num)))
 
-(defn checkout
-  "action to checkout code."
-  []
-  (action/action 
-   :name (format "checkout")
-   :act-fn (fn [context]
-             (let [dir (checkout-dir context)
-                   result (-> (checkout-impl {:context context
-                                              :url (-> context :build :vcs-url)
-                                              :path dir
-                                              :vcs (-> context :build :vcs-type)
-                                              :revision (-> context :build :vcs-revision)})
-                              (bash/process-result))]
-               (when (-> result :success)
-                 (set! *pwd* dir))
-               result))))
+(defaction checkout []
+  {:name "checkout"}
+  (fn [context]
+    (let [dir (checkout-dir context)
+          result (-> (checkout-impl {:context context
+                                     :url (-> context :build :vcs-url)
+                                     :path dir
+                                     :vcs (-> context :build :vcs-type)
+                                     :revision (-> context :build :vcs-revision)})
+                     (bash/process-result))]
+      (when (-> result :success)
+        (set! *pwd* dir))
+      result)))

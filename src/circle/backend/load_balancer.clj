@@ -3,14 +3,16 @@
            com.amazonaws.services.ec2.AmazonEC2Client
            (com.amazonaws.services.elasticloadbalancing.model
             ConfigureHealthCheckRequest
+            CreateLoadBalancerRequest
             DeleteLoadBalancerRequest
+            DeregisterInstancesFromLoadBalancerRequest
             DescribeInstanceHealthRequest
+            DescribeLoadBalancersRequest
+            EnableAvailabilityZonesForLoadBalancerRequest
             HealthCheck
             Instance
             Listener
-            RegisterInstancesWithLoadBalancerRequest
-            DeregisterInstancesFromLoadBalancerRequest
-            CreateLoadBalancerRequest))
+            RegisterInstancesWithLoadBalancerRequest))
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:use [pallet.thread-expr :only (when->)])
   (:use [circle.utils.except :only (throw-if-not)])
@@ -103,7 +105,33 @@
       (when health-check
         (apply-map configure-health-check name health-check)))))
 
+(defn describe-balancer [lb-name]
+  (with-elb-client client
+    (-> client
+        (.describeLoadBalancers (DescribeLoadBalancersRequest. [lb-name]))
+        (.getLoadBalancerDescriptions)
+        (first)
+        (bean))))
+
+(defn get-availability-zones [lb-name]
+  (-> lb-name
+      (describe-balancer)
+      :availabilityZones
+      (seq)))
+
+(defn add-availability-zone [lb-name new-zone]
+  (with-elb-client client
+    (println "adding" new-zone "to" lb-name)
+    (-> client
+        (.enableAvailabilityZonesForLoadBalancer (EnableAvailabilityZonesForLoadBalancerRequest. lb-name [new-zone])))))
+
+(defn ensure-availability-zone [lb-name zone]
+  (if (not (contains? (set (get-availability-zones lb-name)) zone))
+    (add-availability-zone lb-name zone)
+    true))
+
 (defn get-health [lb-name & instance-ids]
+  {:post [(do (println "get-health:" %) true)]}
   (let [request (DescribeInstanceHealthRequest. lb-name)]
     (when instance-ids
       (.setInstances request (map #(Instance. %) instance-ids)))

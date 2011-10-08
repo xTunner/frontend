@@ -39,13 +39,13 @@
 (defmacro bash
   "Returns a new action that executes bash on the host. Body is either a string, or a seq of stevedore code."
   [body & {:keys [name] :as opts}]
-  (let [body (if (string? body)
+  (let [name (or name (str (quote body)))
+        body (if (string? body)
                [body]
                body)]
-    `(action/action
-      :name (or ~name (str (quote ~@body)))
-      :act-fn (fn [context#]
-                (remote-bash context# ~body ~@(flatten (seq opts)))))))
+    `(action/action ~name
+                    (fn [context#]
+                      (remote-bash context# ~body ~@(flatten (seq opts)))))))
 
 (defmacro with-pwd
   "When set, each bash command will start in the specified directory. Dir is a string."
