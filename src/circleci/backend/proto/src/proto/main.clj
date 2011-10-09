@@ -8,19 +8,19 @@
   (:import org.xeustechnologies.jtar.TarInputStream)
   (:require [clojure.string :as string]))
 
-(def handlers '[repo-handler autotools-handler])
+(def handlers [repo-handler autotools-handler])
 
 
 (defn run-handlers
   "Run all the handlers on a definition"
   [config]
-  (for [h handlers] (h config)))
+  (doseq [h handlers] (do (println config) (h config) (println h))))
 
 
-(defn process-handlers
+(defn process-configurations
   "For each project definition, run all the handlers on it"
   [configurations]
-  (functor/fmap run-handlers configurations))
+  (map run-handlers (vals configurations)))
 
 
 (defn autotools-handler
@@ -28,7 +28,7 @@
     subdir :subdir
     configurations :configurations
     autoconf-version :autoconf-version}]
-  (println "autotools handler")
+  (println "do autotools")
   (when (= type "autotools") (println "autotools")))
 
 (defn shell-out [& args]
@@ -38,7 +38,8 @@
 (defn download
   "Download a file, and save it to a known filename"
   [remote-file local-file]
-  (shell-out "curl" remote-file "-o" local-file "-s"))
+ ; (shell-out "curl" remote-file "-o" local-file "-s")
+  (shell-out "cp" "scratch/saved.tar.bz2" local-file))
 
 (defn untar
   "Untar a file, into directory"
@@ -55,7 +56,7 @@
     (first (string/split (-> tis
                              .getNextEntry
                              .getName)
-                         "/"))))
+                         #"/"))))
 
 
 (defn repo-handler
@@ -72,14 +73,13 @@
 
 (defn init [& argv]
   (proto.repl/init)
-  (-> argv
-      first
-      io/reader
-      slurp
-      yaml/parse-string
-      process-handlers
-      println))
+  (def configuration (-> argv
+                          first
+                          io/reader
+                          slurp
+                          yaml/parse-string))
+  (process-configurations configuration))
 
-;;
+
 (defn -main []
   (init *command-line-args*))
