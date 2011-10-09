@@ -1,10 +1,14 @@
 (ns proto.main
+  (:require proto.repl)
   (:require [clojure.contrib.io :as io])
   (:require [clojure.contrib.generic.functor :as functor])
   (:require [clj-yaml.core :as yaml])
-  (:require [clojure.contrib.shell :as shell]))
+  (:require [clojure.contrib.shell :as shell])
+  (:import (java.io FileInputStream BufferedInputStream))
+  (:import org.xeustechnologies.jtar.TarInputStream)
+  (:require [clojure.string :as string]))
 
-(def handlers [repo-handler autotools-handler])
+(def handlers '[repo-handler autotools-handler])
 
 
 (defn run-handlers
@@ -43,8 +47,15 @@
 
 (defn tar-get-directory
   "Find the name of the directory that wraps the tar"
-  [tar-file]
-  (shell-out "tar" "tf" tar-file "|" "head" "-n" "1" "|" "sed" "'s/\\.*$//'"))
+  [filename]
+  (with-open [tis (-> filename
+                      FileInputStream.
+                      BufferedInputStream.
+                      org.xeustechnologies.jtar.TarInputStream.)]
+    (first (string/split (-> tis
+                             .getNextEntry
+                             .getName)
+                         "/"))))
 
 
 (defn repo-handler
@@ -60,6 +71,7 @@
 
 
 (defn init [& argv]
+  (proto.repl/init)
   (-> argv
       first
       io/reader
@@ -68,6 +80,6 @@
       process-handlers
       println))
 
-
+;;
 (defn -main []
   (init *command-line-args*))
