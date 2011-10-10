@@ -1,6 +1,6 @@
-repo: git@github.com/coffeemug/rethinkdb
+rethinkdb:
+  type: autotools
+  repo: git@github.com/coffeemug/rethinkdb
 
-
-type: autotools
 
 
