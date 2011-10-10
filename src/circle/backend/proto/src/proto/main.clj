@@ -7,20 +7,51 @@
   (:import (java.io FileInputStream BufferedInputStream))
   (:import (org.apache.commons.compress.compressors.bzip2 BZip2CompressorInputStream))
   (:import org.xeustechnologies.jtar.TarInputStream)
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string])
+  (:require [clojure.contrib.seq-utils :as seq-utils])
+  (:require [fs]))
+
+(defn strip-dots
+  "Remove all dots from a string"
+  [s]
+  (string/replace s "." ""))
+
+(defn env-paths
+  []
+  (string/split (System/getenv "PATH") #":"))
 
 
-(defn autotools-handler
-  [{type :type
-    subdir :subdir
-    configurations :configurations
-    autoconf-version :autoconf-version}]
-  (println "do autotools")
-  (when (= type "autotools") (println "autotools")))
+(defn autoconf
+  "Figure out the executable name for autoconf with the given version"
+  [version]
+  (let [mac-suffix (strip-dots version)
+        ubuntu-suffix (str "-" version)
+        suffixes [mac-suffix ubuntu-suffix]
+        exe-names (map #(str "autoconf" %) suffixes)]
+    (seq-utils/find-first fs/executable?
+                          (for [name exe-names path (env-paths)]
+                            (fs/join path name)))))
 
 (defn shell-out [& args]
   (if (not= (:exit (apply shell/sh :return-map true args)) 0)
     (throw (Exception. (str "Failed thing: " args)))))
+
+(defn autotools-handler
+  [{type :type
+    srcdir :srcdir
+    configurations :configurations
+    {autoconf-version :version} :autoconf}]
+  (when (= type "autotools")
+    (let [autoconf-version (or autoconf-version "")
+          configurations (or configurations [])
+          srcdir (or srcdir "")
+          automake "automake"]
+      (do
+        (shell-out (autoconf autoconf-version) :dir srcdir)
+        (shell-out "./configure" :dir srcdir)
+        (shell-out "make" :dir srcdir)
+        (shell-out "make" "check" :dir srcdir)))))
+
 
 (defn download
   "Download a file, and save it to a known filename"
@@ -41,7 +72,7 @@
                       FileInputStream.
                       BufferedInputStream.
                       BZip2CompressorInputStream.
-                      org.xeustechnologies.jtar.TarInputStream.)]
+                      TarInputStream.)]
     (first (string/split (-> tis
                              .getNextEntry
                              .getName)
@@ -57,7 +88,7 @@
     (do
       (download (str repo "/archive/tip.tar.bz2") tar-file)
       (untar tar-file dir)
-      {:srcdir (str (tar-get-directory tar-file) "/"  subdir)})))
+      {:srcdir (fs/join dir (tar-get-directory tar-file) subdir)})))
 
 
 (def handlers [repo-handler autotools-handler])
