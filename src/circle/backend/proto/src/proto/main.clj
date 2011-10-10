@@ -56,8 +56,9 @@
 (defn download
   "Download a file, and save it to a known filename"
   [remote-file local-file]
- ; (shell-out "curl" remote-file "-o" local-file "-s")
-  (shell-out "cp" "scratch/saved.tar.bz2" local-file))
+  (shell-out "curl" remote-file "-o" local-file "-s")
+ ; (shell-out "cp" "scratch/saved.tar.bz2" local-file)
+  )
 
 (defn untar
   "Untar a file, into directory"
@@ -78,21 +79,41 @@
                              .getName)
                          #"/"))))
 
+(defn try-hg
+  [url]
+  (let [dir "scratch/"
+        tar-file (str dir "tip.tar.bz2")]
+    (do
+      (download (str url "/archive/tip.tar.bz2") tar-file)
+      (untar tar-file dir)
+      {:srcdir (fs/join dir (tar-get-directory tar-file))})))
+
+(defn try-github
+  [url]
+  (let [parsed (re-find #"^git@github.com:(\w+)/(\w+)\.git$" url)]
+    (when parsed
+      (let [[_ username project] parsed
+            dir "scratch/"
+            tar-file (fs/join dir "master.tar.gz")]
+        (download (str "https://nodeload.github.com/" username "/" project "/tarball/master")
+                  tar-file)
+        (untar tar-file dir)
+        {:srcdir (fs/join dir (tar-get-directory tar-file))}))))
 
 (defn repo-handler
   [{repo :repo
     subdir :subdir :or ""}]
-  (let [dir "scratch/"
-        tar-file (str dir "tip.tar.bz2")]
-                                        ; for now, assume it's mercurial
-    (do
-      (download (str repo "/archive/tip.tar.bz2") tar-file)
-      (untar tar-file dir)
-      {:srcdir (fs/join dir (tar-get-directory tar-file) subdir)})))
+  ; if they dont match, return non-nil and try the next one. If they
+  ; do match, return the directory the code was checked out into on
+  ; success, and raise an exception on failure.
+  (some (try-github repo)
+;        (try-git)
+        (try-hg repo)
+;        (try-svn)
+        ))
 
 
 (def handlers [repo-handler autotools-handler])
-
 
 (defn run-handlers
   "On a configuration, run each of the handlers in turn, updating the config with the result of previous handlers"
