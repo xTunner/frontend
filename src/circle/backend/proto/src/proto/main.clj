@@ -50,14 +50,14 @@
 
 (defn repo-handler
   [{repo :repo
-    subdir :subdir}]
+    subdir :subdir :or ""}]
   (let [dir "scratch/"
         tar-file (str dir "tip.tar.bz2")]
                                         ; for now, assume it's mercurial
     (do
       (download (str repo "/archive/tip.tar.bz2") tar-file)
       (untar tar-file dir)
-      {:srcdir (tar-get-directory tar-file)})))
+      {:srcdir (str (tar-get-directory tar-file) "/"  subdir)})))
 
 
 (def handlers [repo-handler autotools-handler])
