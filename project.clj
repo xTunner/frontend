@@ -1,38 +1,51 @@
-(defproject circleci "0.1.0-SNAPSHOT"
-            :description "FIXME: write this!"
-            :dependencies [[org.clojure/clojure "1.2.1"]
-                           [clj-json "0.4.0"] ;; noir pulls in clj-json 0.3.2 which isn't compatible w/ clojure 1.3. Put this dep ahead to pull it in first.
-                           [noir "1.1.1-SNAPSHOT"]
-                           [clj-table "0.1.5"]
-                           [clj-url "1.0.2"]
-                           [c3p0 "0.9.1.2"]
-                           [swank-clojure "1.3.2"]
-                           [log4j "1.2.14"]
-                           [log4j/apache-log4j-extras "1.1"]
-                           [clj-http "0.2.1"]
-                           [clj-r53 "1.0.0"]
-                           [commons-codec "1.4"]
-                           [arohner-utils "0.0.2"]
-                           [clj-yaml "0.3.1"]
-                           [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
-                           [org.cloudhoist/pallet "0.6.4"]
-                           [org.jclouds/jclouds-all "1.0.0"]
-                           [org.jclouds.driver/jclouds-log4j "1.0.0"]
-                           [org.jclouds.driver/jclouds-jsch "1.0.0"]
-                           [com.amazonaws/aws-java-sdk "1.2.7"]
-                           
-                           ;; Pallet Crates
-                           [org.cloudhoist/automated-admin-user "0.6.0"]
-                           [org.cloudhoist/git "0.5.0"]
-                           [org.cloudhoist/postgres "0.6.1"]
-                           [org.cloudhoist/rubygems "0.6.0"]
-                           [org.cloudhoist/java "0.5.1"]
-                           [lein-crate "0.1.0"]
-                           [pallet-rvm "0.1"]]
-            :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
-                           "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
-            :dev-dependencies [[lein-test-out "0.1.1"]
-                               [midje "1.2.0"]
-                               [lein-midje "1.0.4"]]
-            :main circleci.init)
+(defproject circle "0.1.0-SNAPSHOT"
+  :description "FIXME: write this!"
+  :dependencies [[org.clojure/clojure "1.2.1"]
+                 [clj-json "0.4.0"] ;; noir pulls in clj-json 0.3.2 which isn't compatible w/ clojure 1.3. Put this dep ahead to pull it in first.
+                 [noir "1.1.1-SNAPSHOT"]
+                 [clj-table "0.1.5"]
+                 [clj-url "1.0.2"]
+                 [c3p0 "0.9.1.2"]
+                 [swank-clojure "1.3.2"]
+                 [log4j "1.2.14"]
+                 [log4j/apache-log4j-extras "1.1"]
+                 [clj-http "0.2.1"]
+                 [clj-r53 "1.0.0"]
+                 [commons-codec "1.4"]
+                 [commons-email "1.1"]
+                 [arohner-utils "0.0.2"]
+                 [clj-yaml "0.3.1"]
+                 [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
+                 [com.amazonaws/aws-java-sdk "1.2.7"]
+                 
+                 [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
+
+                 [org.jclouds/jclouds-core "1.2.0-SNAPSHOT"]
+                 [org.jclouds/jclouds-compute "1.2.0-SNAPSHOT"]
+                 [org.jclouds/jclouds-blobstore "1.2.0-SNAPSHOT"]
+                 [org.jclouds/jclouds-loadbalancer "1.2.0-SNAPSHOT"]
+                 [org.jclouds.driver/jclouds-log4j "1.2.0-SNAPSHOT"]
+                 [org.jclouds.driver/jclouds-jsch "1.2.0-SNAPSHOT"]
+                 [org.jclouds.provider/aws-ec2 "1.2.0-SNAPSHOT"]
+
+                 ;; Pallet Crates
+                 [org.cloudhoist/automated-admin-user "0.6.0"]
+                 [org.cloudhoist/git "0.5.0"]
+                 [org.cloudhoist/postgres "0.6.1"]
+                 [org.cloudhoist/rubygems "0.6.0"]
+                 [org.cloudhoist/java "0.5.1"]
+                 [org.cloudhoist/nginx "0.5.1-SNAPSHOT"]
+                 [lein-crate "0.1.0"]
+                 [lein-daemon "0.4.1"]
+                 [pallet-rvm "0.1"]]
+  :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
+                 "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
+  :dev-dependencies [[lein-test-out "0.1.1"]
+                     [midje "1.2.0"]
+                     [lein-midje "1.0.4"]
+                     [lein-daemon "0.4.1"]]
+  :main circle.init
+  :jvm-opts ["-Djava.net.preferIPv4Stack=true"]
+  :daemon {:web {:ns circle.init
+                 :pidfile "circle.pid"}})
 
