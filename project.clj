@@ -1,6 +1,7 @@
 (defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :dependencies [[org.clojure/clojure "1.2.1"]
+                 [org.clojure/clojure-contrib "1.2.0"]
                  [clj-json "0.4.0"] ;; noir pulls in clj-json 0.3.2 which isn't compatible w/ clojure 1.3. Put this dep ahead to pull it in first.
                  [noir "1.1.1-SNAPSHOT"]
                  [clj-table "0.1.5"]
@@ -12,11 +13,14 @@
                  [clj-http "0.2.1"]
                  [clj-r53 "1.0.0"]
                  [commons-codec "1.4"]
+                 [org.apache.commons/commons-compress "1.0"]
+                 [org.xeustechnologies/jtar "1.0.4"]
                  [commons-email "1.1"]
                  [arohner-utils "0.0.2"]
                  [clj-yaml "0.3.1"]
                  [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
+                 [fs "0.9.0"]
                  
                  [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
 
@@ -43,9 +47,12 @@
   :dev-dependencies [[lein-test-out "0.1.1"]
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
-                     [lein-daemon "0.4.1"]]
+                     [lein-daemon "0.4.1"]
+                     [swank-clojure "1.4.0-SNAPSHOT"]
+                     [clojure-source "1.2.1"]]
   :main circle.init
-  :jvm-opts ["-Djava.net.preferIPv4Stack=true"]
+  :jvm-opts ["-Djava.net.preferIPv4Stack=true"
+             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n"]
   :daemon {:web {:ns circle.init
                  :pidfile "circle.pid"}})
 

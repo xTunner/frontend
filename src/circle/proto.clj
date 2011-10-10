@@ -1,5 +1,5 @@
-(ns proto.main
-  (:require proto.repl)
+(ns circle.proto
+  (:require circle.repl)
   (:require [clojure.contrib.io :as io])
   (:require [clojure.contrib.generic.functor :as functor])
   (:require [clj-yaml.core :as yaml])
@@ -136,7 +136,7 @@
 
 
 (defn init [& argv]
-  (proto.repl/init)
+  (circle.repl/init)
   (def configuration (-> argv
                           first
                           io/reader
