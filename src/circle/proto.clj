@@ -37,20 +37,18 @@
     (throw (Exception. (str "Failed thing: " args)))))
 
 (defn autotools-handler
-  [{type :type
-    srcdir :srcdir
-    configurations :configurations
+  [{:keys [type srcdir configurations]
     {autoconf-version :version} :autoconf}]
+  
   (when (= type "autotools")
     (let [autoconf-version (or autoconf-version "")
           configurations (or configurations [])
           srcdir (or srcdir "")
           automake "automake"]
-      (do
-        (shell-out (autoconf autoconf-version) :dir srcdir)
-        (shell-out "./configure" :dir srcdir)
-        (shell-out "make" :dir srcdir)
-        (shell-out "make" "check" :dir srcdir)))))
+      (shell-out (autoconf autoconf-version) :dir srcdir)
+      (shell-out "./configure" :dir srcdir)
+      (shell-out "make" :dir srcdir)
+      (shell-out "make" "check" :dir srcdir))))
 
 
 (defn download
@@ -63,7 +61,7 @@
 (defn untar
   "Untar a file, into directory"
   [tar-file directory]
-;  (shell-out "tar" "jxf" tar-file "-C" directory)
+  (shell-out "tar" "jxf" tar-file "-C" directory)
   )
 
 (defn tar-get-directory
@@ -83,10 +81,9 @@
   [url]
   (let [dir "scratch/"
         tar-file (str dir "tip.tar.bz2")]
-    (do
-      (download (str url "/archive/tip.tar.bz2") tar-file)
-      (untar tar-file dir)
-      {:srcdir (fs/join dir (tar-get-directory tar-file))})))
+    (download (str url "/archive/tip.tar.bz2") tar-file)
+    (untar tar-file dir)
+    {:srcdir (fs/join dir (tar-get-directory tar-file))}))
 
 (defn try-github
   [url]
@@ -101,8 +98,7 @@
         {:srcdir (fs/join dir (tar-get-directory tar-file))}))))
 
 (defn repo-handler
-  [{repo :repo
-    subdir :subdir :or ""}]
+  [{:keys [repo subdir] :or {subdir ""}}]
   ; if they dont match, return non-nil and try the next one. If they
   ; do match, return the directory the code was checked out into on
   ; success, and raise an exception on failure.
