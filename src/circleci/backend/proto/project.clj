@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [clj-yaml "0.3.0-SNAPSHOT"]
+                 [org.apache.commons/commons-compress "1.0"]
                  [org.xeustechnologies/jtar "1.0.4"] ; work with tar files (Java)
                  ]
   

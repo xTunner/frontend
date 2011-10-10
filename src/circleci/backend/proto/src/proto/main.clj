@@ -5,22 +5,9 @@
   (:require [clj-yaml.core :as yaml])
   (:require [clojure.contrib.shell :as shell])
   (:import (java.io FileInputStream BufferedInputStream))
+  (:import (org.apache.commons.compress.compressors.bzip2 BZip2CompressorInputStream))
   (:import org.xeustechnologies.jtar.TarInputStream)
   (:require [clojure.string :as string]))
-
-(def handlers [repo-handler autotools-handler])
-
-
-(defn run-handlers
-  "Run all the handlers on a definition"
-  [config]
-  (doseq [h handlers] (do (println config) (h config) (println h))))
-
-
-(defn process-configurations
-  "For each project definition, run all the handlers on it"
-  [configurations]
-  (map run-handlers (vals configurations)))
 
 
 (defn autotools-handler
@@ -44,7 +31,8 @@
 (defn untar
   "Untar a file, into directory"
   [tar-file directory]
-  (shell-out "tar" "jxf" tar-file "-C" directory))
+;  (shell-out "tar" "jxf" tar-file "-C" directory)
+  )
 
 (defn tar-get-directory
   "Find the name of the directory that wraps the tar"
@@ -52,6 +40,7 @@
   (with-open [tis (-> filename
                       FileInputStream.
                       BufferedInputStream.
+                      BZip2CompressorInputStream.
                       org.xeustechnologies.jtar.TarInputStream.)]
     (first (string/split (-> tis
                              .getNextEntry
@@ -68,7 +57,30 @@
     (do
       (download (str repo "/archive/tip.tar.bz2") tar-file)
       (untar tar-file dir)
-      (tar-get-directory tar-file))))
+      {:srcdir (tar-get-directory tar-file)})))
+
+
+(def handlers [repo-handler autotools-handler])
+
+
+(defn run-handlers
+  "On a configuration, run each of the handlers in turn, updating the config with the result of previous handlers"
+  [config]
+  (loop [c config hs handlers]
+    (do
+      (println c)
+      (when hs
+        (recur (into c
+                     (or
+                       ((first hs) c) {}))
+                       (next hs))))))
+
+
+(defn process-configurations
+  "For each project definition, run all the handlers on it"
+  [configurations]
+  (map run-handlers (vals configurations)))
+
 
 
 (defn init [& argv]
