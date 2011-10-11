@@ -191,9 +191,13 @@
   (map run-handlers (vals configurations)))
 
 
+(defn clean-scratch-directory
+  []
+  (shell-out "rm" "-Rf" "scratch/"))
 
 (defn init [& argv]
   (circle.repl/init)
+  (clean-scratch-directory)
   (def configuration (-> argv
                           first
                           io/reader
