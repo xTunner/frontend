@@ -21,6 +21,54 @@
   (string/split (System/getenv "PATH") #":"))
 
 
+;;;  How can we quickly get a clone that we can experiment on? A full
+;;;  clone includes full history, file data, and remote branches. In
+;;;  the best case, we want no history, no remote branches, and
+;;;  possibly even no file data (ie, just directory listings).
+  
+
+;;; SVN
+;;;   - Bare checkout, no history
+;;;     $ svn export
+;;; 
+;;; 
+;;; Git:
+;;;   - Full clone, using git protocol (41s)
+;;;     $ git clone git@github.com:coffeemug/rethinkdb.git
+;;;     - 41s
+;;; 
+;;;   - Full clone, using http protocol (50s ish)
+;;;     $ git clone https://github.com/coffeemug/rethinkdb/
+;;;      
+;;;   - Shallow clone using remote git archive
+;;;     $ git archive --remote=url url
+;;;     - Not supported on all git hosts, including github
+;;; 
+;;;   - Shallow git clone with depth (17s)
+;;;     $ git clone --depth=1 git@github.co:coffeemug/rethinkdb.git
+;;;   
+;;;   - Download a tarball directly
+;;;     $ wget https://nodeload.github.com/coffeemug/rethinkdb/tarball/master.tar.gz
+;;;     - awkward, since you need to authenticate first using cookies
+;;;     - github only
+;;; 
+;;;   - Fetch only one branch, shallowly (8s)
+;;;     $ mkdir rethinkdn
+;;;     $ cd rethinkdb
+;;;     $ git init
+;;;     $ git remote add origin git@github.com:pbiggar/rethinkdb.git
+;;;     $ git fetch origin HEAD
+;;;     - this will work pretty much anywhere
+;;; 
+;;;   - Might be faster still, see super-advanced possibilities:
+;;;     - http://progit.org/book/ch9-6.html
+;;;     - http://stackoverflow.com/questions/1178389/
+;;; 
+;;; hg:
+;;;   - wget http://hg.mozilla.org/mozilla-central/archives/tip.tar.bz2
+;;;     Tarball with no history
+
+
 (defn autoconf
   "Figure out the executable name for autoconf with the given version"
   [version]
@@ -90,23 +138,19 @@
   (let [parsed (re-find #"^git@github.com:(\w+)/(\w+)\.git$" url)]
     (when parsed
       (let [[_ username project] parsed
-            dir "scratch/"
-            tar-file (fs/join dir "master.tar.gz")]
-        (download (str "https://nodeload.github.com/" username "/" project "/tarball/master")
-                  tar-file)
-        (untar tar-file dir)
-        {:srcdir (fs/join dir (tar-get-directory tar-file))}))))
+            dir (fs/join "scratch" project)]
+        (shell-out "mkdir" "-p" dir)
+        (shell-out "git" "init" :dir dir)
+        (shell-out "git" "remote" "add" "origin" url :dir dir)
+        (shell-out "git" "fetch" "origin" "HEAD" "--depth" "1" :dir dir)
+        {:srcdir dir}))))
 
 (defn repo-handler
   [{:keys [repo subdir] :or {subdir ""}}]
   ; if they dont match, return non-nil and try the next one. If they
   ; do match, return the directory the code was checked out into on
   ; success, and raise an exception on failure.
-  (some (try-github repo)
-;        (try-git)
-        (try-hg repo)
-;        (try-svn)
-        ))
+  (some #(% repo) [try-github try-hg]))
 
 
 (def handlers [repo-handler autotools-handler])
