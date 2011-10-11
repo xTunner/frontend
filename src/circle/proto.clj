@@ -58,6 +58,7 @@
 ;;;     $ git init
 ;;;     $ git remote add origin git@github.com:pbiggar/rethinkdb.git
 ;;;     $ git fetch origin HEAD
+;;;     $ git pull origin HEAD
 ;;;     - this will work pretty much anywhere
 ;;; 
 ;;;   - Might be faster still, see super-advanced possibilities:
@@ -150,6 +151,8 @@
     (untar tar-file dir)
     {:srcdir (fs/join dir (tar-get-directory tar-file))}))
 
+
+; TODO: github has the download link, that might be faster still
 (defn try-github
   [url]
   (let [parsed (re-find #"^git@github.com:(\w+)/(\w+)\.git$" url)]
@@ -160,7 +163,9 @@
         (shell-out "git" "init" :dir dir)
         (shell-out "git" "remote" "add" "origin" url :dir dir)
         (shell-out "git" "fetch" "origin" "HEAD" "--depth" "1" :dir dir)
+        (shell-out "git" "pull" "origin" "HEAD" :dir dir)
         {:srcdir dir}))))
+
 
 (defn repo-handler
   [{:keys [repo subdir] :or {subdir ""}}]
