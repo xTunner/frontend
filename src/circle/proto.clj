@@ -84,17 +84,34 @@
   (if (not= (:exit (apply shell/sh :return-map true args)) 0)
     (throw (Exception. (str "Failed thing: " args)))))
 
+; there is a program called autogen.sh on sourceforge that apparently
+; does magic here
+(defn autotools-generate
+  [srcdir]
+  (let [exists? #(fs/exists? (fs/join srcdir %))
+        has-configure-in (some exists? ["configure.in" "configure.ac"])
+        has-makefile-am (exists? "Makefile.am")
+        has-configure (exists? "configure")
+        has-makefile (exists? "Makefile")
+        has-autogen-sh (exists? "autogen.sh")]
+    (if-not (or has-makefile has-configure)
+      (if has-autogen-sh
+        (shell-out "autogen.sh" :dir srcdir)
+        (do
+          (when has-makefile-am (shell-out "aclocal" :dir srcdir))
+          (when has-configure-in (shell-out "autoconf"))
+          (when has-makefile-am (shell-out "automake")))))))
+
+
 (defn autotools-handler
   [{:keys [type srcdir configurations]
     {autoconf-version :version} :autoconf}]
-  
   (when (= type "autotools")
     (let [autoconf-version (or autoconf-version "")
           configurations (or configurations [])
           srcdir (or srcdir "")
           automake "automake"]
-      (shell-out (autoconf autoconf-version) :dir srcdir)
-      (shell-out "./configure" :dir srcdir)
+      (autotools-generate srcdir)
       (shell-out "make" :dir srcdir)
       (shell-out "make" "check" :dir srcdir))))
 
