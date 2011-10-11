@@ -1,6 +1,6 @@
 rethinkdb:
   type: autotools
   repo: git@github.com:coffeemug/rethinkdb.git
-
+  subdir: src
 
 
