@@ -9,6 +9,7 @@
   (:import org.xeustechnologies.jtar.TarInputStream)
   (:require [clojure.string :as string])
   (:require [clojure.contrib.seq-utils :as seq-utils])
+  (:use circle.utils.except)
   (:require [fs]))
 
 (defn strip-dots
@@ -82,8 +83,9 @@
                             (fs/join path name)))))
 
 (defn shell-out [& args]
-  (if (not= (:exit (apply shell/sh :return-map true args)) 0)
-    (throw (Exception. (str "Failed thing: " args)))))
+  (let [{:keys [out err exit]} (apply shell/sh :return-map true args)]
+    (throw-if-not (and (= exit 0) (= err ""))
+                  (throwf "Failed (%d): %s\n%s\n%s" exit args out err))))
 
 ; there is a program called autogen.sh on sourceforge that apparently
 ; does magic here
@@ -162,17 +164,18 @@
         (shell-out "mkdir" "-p" dir)
         (shell-out "git" "init" :dir dir)
         (shell-out "git" "remote" "add" "origin" url :dir dir)
-        (shell-out "git" "fetch" "origin" "HEAD" "--depth" "1" :dir dir)
-        (shell-out "git" "pull" "origin" "HEAD" :dir dir)
+        (shell-out "git" "fetch" "origin" "HEAD" "--depth" "1" "-q" :dir dir)
+        (shell-out "git" "pull" "origin" "HEAD" "-q" :dir dir)
         {:srcdir dir}))))
 
 
 (defn repo-handler
-  [{:keys [repo subdir] :or {subdir ""}}]
+  [{:keys [repo subdir] :or {subdir ""} :as config}]
   ; if they dont match, return non-nil and try the next one. If they
   ; do match, return the directory the code was checked out into on
   ; success, and raise an exception on failure.
-  (some #(% repo) [try-github try-hg]))
+  (let [{:keys [srcdir]} (some #(% repo) [try-github try-hg])]
+    (into config {:srcdir (fs/join srcdir subdir)})))
 
 
 (def handlers [repo-handler autotools-handler])
