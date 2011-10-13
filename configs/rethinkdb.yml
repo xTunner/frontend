@@ -3,4 +3,9 @@ rethinkdb:
   repo: git@github.com:coffeemug/rethinkdb.git
   subdir: src
 
+#  configurations:
+#    - machine: 
+# TODO:
+#  - needs boost, using CPLUS_INCLUDE_PATH, must be CPLUS_INCLUDE_PATH, since that uses -isystem instead of -I, and rethinkdb uses -Werror. Since we can't use CPATH, we may also have to use C_INCLUDE_PATH nad OBJC_INCLUDE_PATH, since they're not covered.
 
+# needs gtest too
