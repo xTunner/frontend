@@ -3,9 +3,25 @@ rethinkdb:
   repo: git@github.com:coffeemug/rethinkdb.git
   subdir: src
 
-#  configurations:
-#    - machine: 
-# TODO:
-#  - needs boost, using CPLUS_INCLUDE_PATH, must be CPLUS_INCLUDE_PATH, since that uses -isystem instead of -I, and rethinkdb uses -Werror. Since we can't use CPATH, we may also have to use C_INCLUDE_PATH nad OBJC_INCLUDE_PATH, since they're not covered.
 
-# needs gtest too
+  host:
+    type: t1.large
+    ami: ami-df3cf0b6
+
+    # Rethinkdb started with their own test framework, where full_test.py ran all of the builds in serial, and then in parallel in the cloud, and then in parallel using their own devops environment. # As a first approximation, this can all run serially, and then we can manually or automatically split them into indivisual configurations.
+
+  # As a result, we don't run a build step at all, just a single test step.
+  build: None
+
+  test:
+    environment:
+      # Like CPATH, but behaves like -isystem instead of -I
+      CPLUS_INCLUDE_PATH: "/home/ubuntu/deps/boost_1_47"
+
+      # New versions of gcc cause warnings
+      CFLAGS: "-Wno-error"
+
+      PYTHONPATH: "/home/ubuntu/rethinkdb/lib/retester:/home/ubuntu/rethinkdb/lib/vcoptparse"
+
+    command:
+      test/full_test.py
