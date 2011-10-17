@@ -1,12 +1,12 @@
 (ns circle.web.views.common
-  (use noir.core
+  (:use noir.core
        hiccup.core
        hiccup.page-helpers))
 
 ;; This is hard coded for the signup-page-as-frontpage. Go back some revisions to find the original.
 
 (defn css [path & {:keys [rel type media title] :as opts}]
-  [:link (merge {:href path} opts)])
+  [:link (merge {:href (resolve-uri path)} opts)])
 
 (defn center-vertically 
   "Take the provided div and center it vertically, by adding classes and
@@ -29,8 +29,6 @@
         inner-tags (if (map? m) remaining args)]
     [tag property-map [:span.vcenter2 (apply vector :span.vcenter3 inner-tags)]]))
 
-
-
 (defn google-analytics []
   (html
    [:script {:type "text/javascript"} "
@@ -44,7 +42,10 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();"]))
 
-(defpartial layout [& content]
+(defpartial layout
+  ;; "Options - a map,
+  ;;    :absolute-urls - if true, css and other static assets will use absolute URLs rather than relative"
+  [options & content]
   (html5
    [:head
     (google-analytics)
@@ -73,12 +74,13 @@
     [:div#notthefooter
      [:div#header_wrap
       [:div#header
-       [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img#circle {:src "img/circle-transparent.png"}]
-                          [:span#circle-word "Circle"])]
+       [:h1#logo (link-to {:title "Go to Circle homepage"} "/"
+                          (list
+                           (image {:id :circle} "img/circle-transparent.png")
+                           [:span#circle-word "Circle"]))]
        (unordered-list {:id "nav"}
                        [(link-to {:class "current_page"}
-                                 "/" "Signup")
-                        ])
+                                 "/" "Signup")])
        [:div.clear]]]
      content
      [:div.clear]
