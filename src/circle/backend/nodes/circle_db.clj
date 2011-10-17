@@ -92,6 +92,10 @@
                                                 
                         (postgres/create-database "circleci")
                         (postgres/create-role "circle" :user-parameters [:login :encrypted :password (format "'%s'" (-> circle.db/db-map :password))])
+                        (postgres/postgresql-script :db-name "circleci"
+                                                    :content "GRANT ALL on ALL TABLES IN SCHEMA public to circle;
+                                                              ALTER DEFAULT PRIVILEGES FOR circle IN SCHEMA public GRANT ALL ON TABLES TO circle"
+                                                    :literal true)
                         (user/user "circle"
                                    :action :create
                                    :shell :bash

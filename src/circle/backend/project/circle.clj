@@ -12,7 +12,7 @@
                          :build-num 1
                          :vcs-type :git
                          :vcs-url "git@github.com:arohner/CircleCI.git"
-                         :vcs-revision "2c24ff2bba2fd07ea7128195b4193eb2f1b2453d"
+                         :vcs-revision "a2ec5dbe2d402dc926e1e8b803d4fc6738562b5c"
 
                          :actions [(start-nodes)
                                    (checkout)
