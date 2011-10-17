@@ -3,5 +3,5 @@ pom.xml
 /lib/
 /classes/
 .lein-deps-sum
-circleci.log
+circle.log
 scratch
