@@ -39,7 +39,7 @@
 (defmacro bash
   "Returns a new action that executes bash on the host. Body is either a string, or a seq of stevedore code."
   [body & {:keys [name] :as opts}]
-  (let [name (or name (str (quote body)))
+  (let [name (or name (str body))
         body (if (string? body)
                [body]
                body)]
