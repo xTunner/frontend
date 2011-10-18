@@ -77,4 +77,3 @@
   (doseq [group (filter #(re-find regex %) (map :groupName (security-groups)))]
     (println "deleting" group)
     (delete-group group)))
-

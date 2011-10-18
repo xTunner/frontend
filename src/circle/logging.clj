@@ -10,6 +10,9 @@
                                      RollingFileAppender))
   (:import org.apache.commons.logging.LogFactory))
 
+(defn set-level [logger level]
+  (. (Logger/getLogger logger) (setLevel level)))
+
 (defn init []
   (let [rolling-policy (doto (TimeBasedRollingPolicy.)
                          (.setActiveFileName  "circle.log" )
@@ -24,4 +27,7 @@
       (.removeAllAppenders)
       (.addAppender rolling-log-appender)
       (.addAppender (ConsoleAppender. layout))))
-  (. (Logger/getRootLogger) (setLevel Level/DEBUG)))
+  (. (Logger/getRootLogger) (setLevel Level/INFO))
+  (set-level "jclouds.wire" Level/OFF)
+  (set-level "jclouds.headers" Level/OFF)
+  (set-level "jclouds.signature" Level/OFF))

@@ -26,7 +26,7 @@
                :image {:os-family :ubuntu
                        :location-id "us-east-1"
                        :image-id "us-east-1/ami-06ad526f"}
-               :network {:inbound-ports [22 80]})
+               :network {:security-groups ["www" "allow-DB"]})
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (pallet.phase/phase-fn
@@ -54,8 +54,7 @@
                                                                  "Host" "\\$http_host"}}])
                         (nginx/site "default" :action :disable)
                         (service/service "nginx" :action :enable)
-                        (postgres/settings (postgres/settings-map {:version "8.4"
-                                                                   :permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
+                        (postgres/settings (postgres/settings-map {:permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
                                                                                  {:connection-type "host" :database "all" :user "all" :ip-mask "127.0.0.1/32" :auth-method "trust"}
                                                                                  {:connection-type "host" :database "all" :user "all" :ip-mask "::1/128" :auth-method "trust"}]}))
                         

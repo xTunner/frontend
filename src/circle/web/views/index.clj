@@ -27,7 +27,7 @@
 (declare signupform youre-done)
 
 (defpage "/" []
-  (layout
+  (layout {}
     [:div#pitch_wrap
       [:div#pitch
 

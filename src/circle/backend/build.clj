@@ -43,7 +43,7 @@
                          :node @node}
                 _ (println "calling" (-> act :name))
                 action-result (-> act :act-fn (.invoke context))]
-            (println "result:" action-result)
+            (println "action-result for" (-> act :name) "is:" action-result)
             (validate-action-result! action-result)
             (-> build
                 (update-in [:action-results] conj action-result)
