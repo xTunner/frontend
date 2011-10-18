@@ -22,26 +22,25 @@
                          :group circle/circle-group))
 
 (def circle-deploy
-  (extend-group-with-revision
-   (build :project-name "Circle"
-          :build-num 2
-          :type :deploy
-          :vcs-type :git
-          :vcs-url "git@github.com:arohner/CircleCI.git"
-          :vcs-revision "5c4c9b4104032b9b443cefe5d178c3a5fd46ce91"
-          :aws-credentials circle.aws-credentials/AWS-access-credentials
-          :r53-zone-id "ZBVDNEPFXWZR2"
-          :num-nodes 1
-          :lb-name "www"
-          :group circle/circle-group
-          :actions [(start-nodes)
-                    (checkout)
-                    (bash [(lein deps)])
-                    (bash [(export "CIRCLE_ENV=production")
-                           (export "SWANK=true")
-                           (lein daemon start ":web")])
-                    (bash [(sudo "/etc/init.d/nginx" :start)])
-                    (tag-revision)
-                    (lb/add-instances)
-                    (lb/wait-for-healthy)
-                    (lb/shutdown-remove-old-revisions)])))
+  (build :project-name "Circle"
+         :build-num 2
+         :type :deploy
+         :vcs-type :git
+         :vcs-url "git@github.com:arohner/CircleCI.git"
+         :vcs-revision "a7108a0481b64c0be7387b5082494b344104b926"
+         :aws-credentials circle.aws-credentials/AWS-access-credentials
+         :r53-zone-id "ZBVDNEPFXWZR2"
+         :num-nodes 1
+         :lb-name "www"
+         :group circle/circle-group
+         :actions [(start-nodes)
+                   (checkout)
+                   (bash [(lein deps)])
+                   (bash [(export "CIRCLE_ENV=production")
+                          (export "SWANK=true")
+                          (lein daemon start ":web")])
+                   (bash [(sudo "/etc/init.d/nginx" :start)])
+                   (tag-revision)
+                   (lb/add-instances)
+                   (lb/wait-for-healthy)
+                   (lb/shutdown-remove-old-revisions)]))
