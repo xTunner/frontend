@@ -74,7 +74,7 @@
               [:div#header_wrap
                [:div#header
                 [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img#circle {:src "img/circle-transparent.png"}]
-                                                                        [:span#circle-word "Circle"])]
+                                                                        [:img#circle-word {:src "img/circle-word.png"}])]
                 (unordered-list {:id "nav"}
                                 [(link-to {:class "current_page"}
                                           "/" "Signup")

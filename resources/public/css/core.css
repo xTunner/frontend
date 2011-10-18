@@ -356,11 +356,8 @@ abbr {
 }
 
 #circle-word {
-  color: #0079b6;
-	font-weight: bold;
-  line-height: 58px;
-  font-size: 40px;
-  padding: 0 0 0 2px;
+  padding: 0 0 10px 0px;
+  height: 43px;
 }
 
 #circle {
