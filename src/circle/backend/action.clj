@@ -43,9 +43,9 @@
   [action-name f]
   (fn [context]
     (let [result (atom nil)
-          out-str (with-out-str
-                    (swap! result (fn [_]
-                                    (f context))))]
+          out-str ;;with-out-str
+          (swap! result (fn [_]
+                          (f context)))]
       (println "action-name=" action-name)
       (swap! result (fn [r]
                       (merge {:name action-name} r)))
@@ -62,11 +62,11 @@
 (defmacro defaction [name defn-args action-map f]
   (throw-if-not (vector? defn-args) "defn args must be a vector")
   (throw-if-not (map? action-map) "action-map must be a map")
-  `(let [act-map# ~action-map
-         act-name# (or (:name act-map#) (quote ~name))
-         f# ~f]
-     (throw-if-not (fn? f#) "f must be a fn")
-     (defn ~name ~defn-args
+  `(defn ~name ~defn-args
+     (let [act-map# ~action-map
+           act-name# (or (:name act-map#) (quote ~name))
+           f# ~f]
+       (throw-if-not (fn? f#) "f must be a fn")
        (action*
         :name act-name#
         :act-fn (action-fn act-name# f#)))))
