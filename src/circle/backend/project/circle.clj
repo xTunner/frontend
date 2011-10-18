@@ -2,7 +2,6 @@
   (:require [circle.backend.nodes :as nodes])
   (:require [circle.backend.nodes.circle :as circle])
   (:use [circle.backend.build :only (build extend-group-with-revision)])
-  (:use [circle.backend.action.dns :only (update-record)])
   (:use [circle.backend.action.nodes :only (start-nodes stop-nodes)])
   (:use [circle.backend.action.vcs :only (checkout)])
   (:use [circle.backend.action.bash :only (bash)])
