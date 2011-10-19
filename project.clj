@@ -35,13 +35,13 @@
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
-                 [org.jclouds/jclouds-core "1.2.0"]
-                 [org.jclouds/jclouds-compute "1.2.0"]
-                 [org.jclouds/jclouds-blobstore "1.2.0"]
-                 [org.jclouds/jclouds-loadbalancer "1.2.0"]
-                 [org.jclouds.driver/jclouds-log4j "1.2.0"]
-                 [org.jclouds.driver/jclouds-jsch "1.2.0"]
-                 [org.jclouds.provider/aws-ec2 "1.2.0"]
+                 [org.jclouds/jclouds-core "1.2.1"]
+                 [org.jclouds/jclouds-compute "1.2.1"]
+                 [org.jclouds/jclouds-blobstore "1.2.1"]
+                 [org.jclouds/jclouds-loadbalancer "1.2.1"]
+                 [org.jclouds.driver/jclouds-log4j "1.2.1"]
+                 [org.jclouds.driver/jclouds-jsch "1.2.1"]
+                 [org.jclouds.provider/aws-ec2 "1.2.1"]
 
                  ;; Pallet Crates
                  [org.cloudhoist/automated-admin-user "0.6.0"]
