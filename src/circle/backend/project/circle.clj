@@ -12,7 +12,7 @@
                          :build-num 1
                          :vcs-type :git
                          :vcs-url "git@github.com:arohner/CircleCI.git"
-                         :vcs-revision "a2ec5dbe2d402dc926e1e8b803d4fc6738562b5c"
+                         :vcs-revision "27d62d1712f9880627012673b524d178d2cff0e7"
 
                          :actions [(start-nodes)
                                    (checkout)
@@ -27,7 +27,7 @@
          :type :deploy
          :vcs-type :git
          :vcs-url "git@github.com:arohner/CircleCI.git"
-         :vcs-revision "a7108a0481b64c0be7387b5082494b344104b926"
+         :vcs-revision "27d62d1712f9880627012673b524d178d2cff0e7"
          :aws-credentials circle.aws-credentials/AWS-access-credentials
          :r53-zone-id "ZBVDNEPFXWZR2"
          :num-nodes 1
