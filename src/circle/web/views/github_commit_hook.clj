@@ -7,6 +7,7 @@
   (:require [circle.backend.build :as build])
   (:require [circle.backend.email :as email])
   (:require [circle.backend.project.circle :as circle])
+  (:use [clojure.tools.logging :only (infof)])
   (:use circle.web.views.common))
 
 (def sample-json (json/decode "{
@@ -78,6 +79,7 @@
                   :body (email-body build result)))))
 
 (defpage [:post "/github-commit"] []
+  (infof "github post: %s" *request*)
   (let [body (-> *request* :body)
         github-json (json/decode body)]
     (future (process-json github-json))))
