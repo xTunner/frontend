@@ -69,7 +69,7 @@
 
 (defn process-json [github-json]
   (when (= (-> github-json :repository :name "CircleCI"))
-    (let [build (merge circle/circle-build
+    (let [build (merge circle/circle-deploy
                        {:vcs-type :git
                         :vcs-url (-> github-json :repository :url)
                         :vcs-revision (-> github-json :commits first)})

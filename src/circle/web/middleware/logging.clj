@@ -4,5 +4,5 @@
 (defn wrap-log [handler]
   (fn [request]
     (let [resp (handler request)]
-      (infof "request %s -> %s" (-> request :uri) resp)
+      (infof "request %s -> %s" (-> request :uri) (dissoc resp :body))
       resp)))
