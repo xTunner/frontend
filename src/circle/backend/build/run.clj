@@ -25,7 +25,7 @@
                         (swap! node (fn [_]
                                       (-> build :group (node-info) (first))))))]
     (when (= :deploy (:type build))
-      (throw-if-not (:vcs-revision) "version-control revision is required for deploys"))
+      (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
 
     (add-file-appender (log-ns build) (log-filename build))
     

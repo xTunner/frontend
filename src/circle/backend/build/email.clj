@@ -15,13 +15,13 @@
 
 (defn email-body [build]
   (if (build/successful? build)
-    (success-email build build)
-    (fail-email build build)))
+    (success-email build)
+    (fail-email build)))
 
 (defn send-build-email [build]
   (email/send :to (-> build :notify-email)
               :subject (email-subject build)
-              :body (email-body build build)))
+              :body (email-body build)))
 
 (defn send-build-error-email [build e]
   (email/send :to "arohner@gmail.com"
