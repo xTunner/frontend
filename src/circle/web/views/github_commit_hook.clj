@@ -68,11 +68,12 @@
     (fail-email build build-result)))
 
 (defn process-json [github-json]
-  (when (= (-> github-json :repository :name "CircleCI"))
+  (def last-json github-json)
+  (when (= "CircleCI" (-> github-json :repository :name))
     (let [build (merge circle/circle-deploy
                        {:vcs-type :git
                         :vcs-url (-> github-json :repository :url)
-                        :vcs-revision (-> github-json :commits first)})
+                        :vcs-revision (-> github-json :commits last :id)})
           result (build/run-build build)]
       (email/send :to (-> github-json :owner :email)
                   :subject (email-subject result)
@@ -80,6 +81,7 @@
 
 (defpage [:post "/github-commit"] []
   (infof "github post: %s" *request*)
-  (let [body (-> *request* :body)
-        github-json (json/decode body)]
-    (future (process-json github-json))))
+  (def last-request *request*)
+  (let [github-json (json/decode (-> *request* :params :payload))]
+    (future (process-json github-json))
+    {:status 200 :body ""}))
