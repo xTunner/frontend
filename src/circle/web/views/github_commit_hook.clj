@@ -7,6 +7,7 @@
   (:require [circle.backend.build :as build])
   (:require [circle.backend.email :as email])
   (:require [circle.backend.project.circle :as circle])
+  (:use [circle.backend.build :only (extend-group-with-revision)])
   (:use [clojure.tools.logging :only (infof)])
   (:use circle.web.views.common))
 
@@ -70,10 +71,13 @@
 (defn process-json [github-json]
   (def last-json github-json)
   (when (= "CircleCI" (-> github-json :repository :name))
-    (let [build (merge circle/circle-deploy
-                       {:vcs-type :git
-                        :vcs-url (-> github-json :repository :url)
-                        :vcs-revision (-> github-json :commits last :id)})
+    (let [build (extend-group-with-revision
+                  (merge circle/circle-deploy
+                         {:vcs-type :git
+                          :vcs-url (-> github-json :repository :url)
+                          :vcs-revision (-> github-json :commits last :id)
+                          :num-nodes 1}))
+          _ (infof "process-json: build=" build)
           result (build/run-build build)]
       (email/send :to (-> github-json :owner :email)
                   :subject (email-subject result)

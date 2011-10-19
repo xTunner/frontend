@@ -51,9 +51,8 @@
     (add-file-appender (log-ns build) (log-filename build))
     
     (with-pwd "" ;; bind here, so actions can set! it
-      (with-logs (log-ns build)
-        (println "starting build: %s" build)
-        (let [build-result (fold build [act (-> build :actions)]
+      (println "starting build: %s" build)
+      (let [build-result (fold build [act (-> build :actions)]
                            (update-node build)
                            (if (-> build :continue)
                              (let [context {:build build
@@ -67,7 +66,7 @@
                                    (update-in [:action-results] conj action-result)
                                    (update-in [:continue] (fn [_] (continue? action-result)))))
                              build))]
-          (println "build-result: " build-result))))))
+        (println "build-result: " build-result)))))
 
 (defn extend-group-with-revision
   "update the build with a new group that extends the existing group at the :group key."
