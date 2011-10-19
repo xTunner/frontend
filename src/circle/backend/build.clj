@@ -16,9 +16,11 @@
                   continue  ;; if true, continue running the build. Failed actions will set this to false
                   ])
 
-(defn build [& {:keys [project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions action-results group num-nodes lb-name continue]
-                :or {failed false}}]
-  (Build. project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions (or action-results []) group num-nodes lb-name true))
+;; (defn build [& {:keys [project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions action-results group num-nodes lb-name continue]
+;;                 :or {failed false}}]
+;;   (Build. project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions (or action-results []) group num-nodes lb-name true))
+
+(def build hash-map)
 
 (defrecord BuildContext [build
                          action
