@@ -5,7 +5,7 @@
         hiccup.page-helpers
         [noir.request :only (*request*)])
   (:require [circle.backend.build :as build])
-  (:require [circle.backend.email :as email])
+  (:require [circle.backend.build.run :as run])
   (:require [circle.backend.project.circle :as circle])
   (:use [circle.backend.build :only (extend-group-with-revision)])
   (:use [clojure.tools.logging :only (infof)])
@@ -52,22 +52,6 @@
   \"ref\": \"refs/heads/master\"
 }"))
 
-(defn email-subject [build-result]
-  (if (build/successful? build-result)
-    "Build Success"
-    "FAIL"))
-
-(defn success-email [build build-result]
-  (str "Build of" (-> build :vcs-revision) "successful"))
-
-(defn fail-email [build build-result]
-  (str "Build of" (-> build :vcs-revision) "failed" (map #(str (:out %) (:err %)) (-> build-result :action-results))))
-
-(defn email-body [build build-result]
-  (if (build/successful? build-result)
-    (success-email build build-result)
-    (fail-email build build-result)))
-
 (defn process-json [github-json]
   (def last-json github-json)
   (when (= "CircleCI" (-> github-json :repository :name))
@@ -77,11 +61,8 @@
                           :vcs-url (-> github-json :repository :url)
                           :vcs-revision (-> github-json :commits last :id)
                           :num-nodes 1}))
-          _ (infof "process-json: build=" build)
-          result (build/run-build build)]
-      (email/send :to (-> github-json :owner :email)
-                  :subject (email-subject result)
-                  :body (email-body build result)))))
+          _ (infof "process-json: build=" build)]
+      (run/run-build build))))
 
 (defpage [:post "/github-commit"] []
   (infof "github post: %s" *request*)

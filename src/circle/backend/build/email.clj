@@ -1,0 +1,29 @@
+(ns circle.backend.build.email
+  (:require [circle.backend.build :as build])
+  (:require [circle.backend.email :as email]))
+
+(defn email-subject [build-result]
+  (if (build/successful? build-result)
+    "Build Success"
+    "FAIL"))
+
+(defn success-email [build]
+  (str "Build of" (-> build :vcs-revision) "successful"))
+
+(defn fail-email [build]
+  (str "Build of" (-> build :vcs-revision) "failed" (map #(str (:out %) (:err %)) (-> build :action-results))))
+
+(defn email-body [build]
+  (if (build/successful? build)
+    (success-email build build)
+    (fail-email build build)))
+
+(defn send-build-email [build github-json]
+  (email/send :to (-> github-json :owner :email)
+              :subject (email-subject result)
+              :body (email-body build result)))
+
+(defn send-build-error-email [build e]
+  (email/send :to "arohner@gmail.com"
+              :subject "Circle exception"
+              :body (with-out-str (str build) "\n" (.printStackTrace e))))
