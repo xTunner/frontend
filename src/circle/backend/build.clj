@@ -7,6 +7,7 @@
                   vcs-revision ;; if present, the commit that caused the build to be run, or nil
                   aws-credentials ;; map containing :user and :password
                   r53-zone-id   ;; zone-id of the domain we're managing. Required for DNS updates.
+                  notify-email ;; an email address to notify when build is done
                   actions ;; a seq of actions
                   action-results
                   group ;; the pallet group spec to use for the build
@@ -15,9 +16,9 @@
                   continue  ;; if true, continue running the build. Failed actions will set this to false
                   ])
 
-(defn build [& {:keys [project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id actions action-results group num-nodes lb-name continue]
+(defn build [& {:keys [project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions action-results group num-nodes lb-name continue]
                 :or {failed false}}]
-  (Build. project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id actions (or action-results []) group num-nodes lb-name true))
+  (Build. project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions (or action-results []) group num-nodes lb-name true))
 
 (defrecord BuildContext [build
                          action

@@ -47,7 +47,7 @@
                                      (update-in [:continue] (fn [_] (continue? action-result)))))
                                build))]
           (println "build-result: " build-result)
-          (email/send-build-email build build-result)))
+          (email/send-build-email build-result)))
       (catch Exception e
         (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
         (email/send-build-error-email build e)))))

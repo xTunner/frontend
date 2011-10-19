@@ -18,10 +18,10 @@
     (success-email build build)
     (fail-email build build)))
 
-(defn send-build-email [build github-json]
-  (email/send :to (-> github-json :owner :email)
-              :subject (email-subject result)
-              :body (email-body build result)))
+(defn send-build-email [build]
+  (email/send :to (-> build :notify-email)
+              :subject (email-subject build)
+              :body (email-body build build)))
 
 (defn send-build-error-email [build e]
   (email/send :to "arohner@gmail.com"
