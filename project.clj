@@ -21,6 +21,8 @@
                  [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
                  [fs "0.9.0"]
+                 [clj-time "0.3.1"]
+                 [congomongo "0.1.6"]
                  
                  [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
 
