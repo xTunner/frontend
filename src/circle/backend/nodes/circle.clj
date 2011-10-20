@@ -85,7 +85,8 @@
                         (remote-file/remote-file "/home/circle/.ssh/config" :content "Host github.com\n\tStrictHostKeyChecking no\n"
                                                  :owner "circle"
                                                  :group "circle"
-                                                 :mode "644"))}))
+                                                 :mode "644")
+                        (remote-file/remote-file "/home/circle/.pallet/config.clj" :local-file "src/circle/pallet_config.clj" :no-versioning true))}))
 
 (defn start
   "start a new circle instance"
