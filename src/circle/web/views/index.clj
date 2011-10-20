@@ -8,20 +8,18 @@
   (:use [circle.db :only (with-conn)])
   (:use [ring.util.response :only (redirect)])
   (:require [circle.model.beta-notify :as beta])
-  (:require [noir.cookies :as cookies])
   (:require [noir.session :as session]))
 
 
 (defpage [:post "/"] {:as request}
   (with-conn
-    (let [session-key (cookies/get "ring-session")]
-      (beta/insert {:email (:email request)
-                   :contact (= "true" (:contact request))
-                   :environment ""
-                   :features ""
-                   :session_key session-key})
-      (session/put! :signed-up "1")
-      (redirect "/"))))
+    (beta/insert {:email (:email request)
+                  :contact (= "true" (:contact request))
+                  :environment ""
+                  :features ""
+                  :session_key nil})
+    (session/flash-put! true)
+    (redirect "/")))
 
 
 (declare signupform youre-done)
@@ -34,7 +32,7 @@
         (center-vertically 
           [:div#left-panel [:h1#cititle "Continuous Integration" [:br] "made easy"]])
         (center-vertically
-          [:div#right-panel (if (session/get :signed-up) (youre-done) (signupform))])
+          [:div#right-panel (if (session/flash-get) (youre-done) (signupform))])
         [:div.clear]]]
 
     [:div#content_wrap
@@ -92,7 +90,6 @@
 
 (defpartial youre-done [& content]
   (do 
-;    (session/remove! :signed-up) ; For debugging
     [:div.move-right
       [:h2.blue-box "Thanks!" [:br] "We'll be in touch soon!"]]))
 
