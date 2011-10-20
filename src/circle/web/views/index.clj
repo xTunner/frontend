@@ -64,14 +64,16 @@
 (defpartial signupform [& content]
    [:div.move-right
      [:div.blue-box
-       [:h2.takepart "Sign up for the beta"]
-         [:p.whenready "We'll email you when we're ready."]
-         [:form {:action "/" :method "POST"}
+      [:h2.takepart "Sign up for the beta"]
+      [:p.whenready "We'll email you when we're ready."]
+      [:form {:action "/"
+              :method "POST"
+              :onsubmit "if (this.email.value == \"Email address\") { this.email.style.background = 'red'; return false; }"}
            [:fieldset#actualform
              (unordered-list
                [(text-field {:id "email"
                              :type "text"
-                             :onfocus "if (this.value == 'Email address') { this.value=''};"
+                             :onfocus "this.style.background = 'white'; if (this.value == 'Email address') { this.value=''};"
                              :onblur "if (this.value == '') { this.value = 'Email address'};"}
                              "email" "Email address")
                 (check-box {:id "contact"
