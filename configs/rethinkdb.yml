@@ -1,10 +1,11 @@
 rethinkdb:
   type: autotools
-  repo: git@github.com:coffeemug/rethinkdb.git
+  repo: git@github.com:pbiggar/rethinkdb.git
   subdir: src
 
 
   host:
+    # TODO: make this use chef or something
     type: t1.large
     ami: ami-df3cf0b6
 
