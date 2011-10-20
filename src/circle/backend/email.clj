@@ -1,4 +1,5 @@
 (ns circle.backend.email
+  (:use [circle.utils.except :only (throw-if-not)])
   (:use [circle.utils.args :only (require-args)])
   (:refer-clojure :exclude [send])
   (:import (org.apache.commons.mail SimpleEmail
@@ -14,7 +15,9 @@
   ; http://forums.sun.com/thread.jspa?threadID=5351826, because
   ; apparently the naive way doesn't work.
   [& {:keys [to subject body] :as args}]
+  (println "email/send:" args)
   (require-args to subject body)
+  (throw-if-not (> (count body) 1) "body must have at least one char")
   (let [email (new SimpleEmail)]
     (doto email
 ;      (.setDebug true)

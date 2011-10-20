@@ -31,7 +31,7 @@
     
     (try
       (with-pwd "" ;; bind here, so actions can set! it
-        (println "starting build: %s" build)
+        (println "starting build:" build)
         (let [build-result (fold build [act (-> build :actions)]
                              (update-node build)
                              (if (-> build :continue)
@@ -47,7 +47,8 @@
                                      (update-in [:continue] (fn [_] (continue? action-result)))))
                                build))]
           (println "build-result: " build-result)
-          (email/send-build-email build-result)))
+          (when (-> build :notify-email)
+            (email/send-build-email build-result))))
       (catch Exception e
         (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
         (email/send-build-error-email build e)))))
