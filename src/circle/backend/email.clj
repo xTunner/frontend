@@ -1,4 +1,5 @@
 (ns circle.backend.email
+  (:use [circle.utils.args :only (require-args)])
   (:refer-clojure :exclude [send])
   (:import (org.apache.commons.mail SimpleEmail
 	                            DefaultAuthenticator)))
@@ -12,7 +13,8 @@
   ; translated from
   ; http://forums.sun.com/thread.jspa?threadID=5351826, because
   ; apparently the naive way doesn't work.
-  [& {:keys [to subject body]}]
+  [& {:keys [to subject body] :as args}]
+  (require-args to subject body)
   (let [email (new SimpleEmail)]
     (doto email
 ;      (.setDebug true)
