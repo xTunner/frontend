@@ -10,6 +10,9 @@
   (:require [clojure.string :as string])
   (:require [clojure.contrib.seq-utils :as seq-utils])
   (:use circle.utils.except)
+  (:require [clj-time.core :as time])
+  (:use [circle.db :only (with-conn)])
+  (:require [circle.model.shell-command :as model])
   (:require [fs]))
 
 (defn strip-dots
@@ -82,10 +85,30 @@
                           (for [name exe-names path (env-paths)]
                             (fs/join path name)))))
 
+(defn record-program-start
+  "Record that a program has started, with pertinent information"
+  [args env timestamp]
+  (model/insert {:args args :env env :starting-time timestamp}))
+
+(defn record-program-end
+  "Records that a program has ended, with the result of that program"
+  [program-id out err exit timestamp]
+  (model/update {:id program-id :out out :err err :exit exit :ending-time timestamp}))
+
+(defn fetch-keyword-argument
+  "If the given keyword is in the argument list, return the value that follows it, else nil"
+  [values keyword]
+  (second (drop-while #(not= % keyword) values)))
+
 (defn shell-out [& args]
-  (let [{:keys [out err exit]} (apply shell/sh :return-map true args)]
-    (throw-if-not (and (= exit 0) (= err ""))
-                  (throwf "Failed (%d): %s\n%s\n%s" exit args out err))))
+  (with-conn
+    (let [passed-env (fetch-keyword-argument args :env)
+          env (apply shell/sh "env" passed-env)
+          program-id (record-program-start args env (time/now))
+          {:keys [out err exit]} (apply shell/sh :return-map true args)
+          _ (record-program-end program-id out err exit (time/now))]
+      (throw-if-not (and (= exit 0) (= err ""))
+                    (throwf "Failed (%d): %s\n%s\n%s" exit args out err)))))
 
 ; there is a program called autogen.sh on sourceforge that apparently
 ; does magic here
@@ -205,13 +228,14 @@
 
 (defn init [& argv]
   (circle.repl/init)
+  (circle.db/init)
   (clean-scratch-directory)
-  (def configuration (-> argv
+  (let [configuration (-> argv
                           first
                           io/reader
                           slurp
-                          yaml/parse-string))
-  (process-configurations configuration))
+                          yaml/parse-string)]
+    (process-configurations configuration)))
 
 
 (defn -main []
