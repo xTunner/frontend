@@ -1,4 +1,5 @@
-(ns circle.backend.build)
+(ns circle.backend.build
+  (:use [circle.utils.args :only (require-args)]))
 
 (defrecord Build [project-name ;; string
                   build-num ;; int
@@ -23,8 +24,8 @@
 (def build-defaults {:continue true
                      :failed false})
 (defn build [& {:keys [project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions action-results group num-nodes lb-name continue]
-                (require-args project-name build-num vcs-type vcs-url actions)
                 :as args}]
+  (require-args project-name build-num vcs-type vcs-url actions)
   (merge build-defaults args))
 
 (defrecord BuildContext [build
