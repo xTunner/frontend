@@ -12,7 +12,7 @@
   (:use circle.utils.except)
   (:require [clj-time.core :as time])
   (:use [circle.db :only (with-conn)])
-  (:require [circle.model.shell-command :as model])
+  ;; (:require [circle.model.shell-command :as model])
   (:require [fs]))
 
 (defn strip-dots
@@ -88,12 +88,14 @@
 (defn record-program-start
   "Record that a program has started, with pertinent information"
   [args env timestamp]
-  (model/insert {:args args :env env :starting-time timestamp}))
+  ;; (model/insert {:args args :env env :starting-time timestamp})
+  )
 
 (defn record-program-end
   "Records that a program has ended, with the result of that program"
   [program-id out err exit timestamp]
-  (model/update {:id program-id :out out :err err :exit exit :ending-time timestamp}))
+  ;; (model/update {:id program-id :out out :err err :exit exit :ending-time timestamp})
+  )
 
 (defn fetch-keyword-argument
   "If the given keyword is in the argument list, return the value that follows it, else nil"
