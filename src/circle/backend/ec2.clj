@@ -1,5 +1,6 @@
 (ns circle.backend.ec2
   (:use [circle.aws-credentials :only (aws-credentials)])
+  (:use [clojure.tools.logging :only (infof)])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            (com.amazonaws.services.ec2.model DescribeInstancesResult
                                              TerminateInstancesRequest
@@ -77,3 +78,22 @@
   (doseq [group (filter #(re-find regex %) (map :groupName (security-groups)))]
     (println "deleting" group)
     (delete-group group)))
+
+(defn keypairs []
+  (with-ec2-client client
+    (-> client
+        (.describeKeyPairs)
+        (.getKeyPairs)
+        (->>
+         (map bean)))))
+
+(defn delete-keypair
+  [name]
+  (println "deleting keypair %s" name)
+  (with-ec2-client client
+    (-> client
+        (.deleteKeyPair (DeleteKeyPairRequest. name)))))
+
+(defn delete-keypairs-matching [re]
+  (doseq [kp (filter #(re-find re (:keyName %)) (keypairs))]
+    (delete-keypair (-> kp :keyName))))
