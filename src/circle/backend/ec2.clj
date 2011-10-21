@@ -1,6 +1,7 @@
 (ns circle.backend.ec2
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:use [clojure.tools.logging :only (infof)])
+  (:use [clojure.core.incubator :only (-?>)])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            (com.amazonaws.services.ec2.model DescribeInstancesResult
                                              TerminateInstancesRequest
@@ -35,7 +36,8 @@
   (->>
    (reservations)
    (mapcat :instances)
-   (map bean)))
+   (map bean)
+   (filter #(not= :terminated (-?> % :state (bean) :name (keyword))))))
   
 (defn all-instance-ids []
   (map :instanceId (instances)))
@@ -89,7 +91,7 @@
 
 (defn delete-keypair
   [name]
-  (println "deleting keypair %s" name)
+  (println "deleting keypair" name)
   (with-ec2-client client
     (-> client
         (.deleteKeyPair (DeleteKeyPairRequest. name)))))
@@ -97,3 +99,11 @@
 (defn delete-keypairs-matching [re]
   (doseq [kp (filter #(re-find re (:keyName %)) (keypairs))]
     (delete-keypair (-> kp :keyName))))
+
+(defn delete-unused-jclouds-keypairs
+  []
+  (let [keep (into #{} (map :keyName (instances)))]
+    (doseq [k (->> (keypairs)
+                   (filter #(re-find #"^jclouds" (:keyName %)))
+                   (filter #(not (contains? keep (:keyName %)))))]
+      (delete-keypair (:keyName k)))))
