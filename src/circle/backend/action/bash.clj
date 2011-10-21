@@ -1,5 +1,6 @@
 (ns circle.backend.action.bash
   (:use [arohner.utils :only (inspect)])
+  (:require pallet.action-plan)
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.action :as action]))
 
