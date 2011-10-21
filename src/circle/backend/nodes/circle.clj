@@ -86,6 +86,11 @@
                                                  :owner "circle"
                                                  :group "circle"
                                                  :mode "644")
+                        (directory/directory "/home/circle/.pallet/"
+                                             :create :action
+                                             :path true
+                                             :owner "circle"
+                                             :group "circle")
                         (remote-file/remote-file "/home/circle/.pallet/config.clj" :local-file "src/circle/pallet_config.clj" :no-versioning true))}))
 
 (defn start
