@@ -20,7 +20,12 @@
 ;;                 :or {failed false}}]
 ;;   (Build. project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions (or action-results []) group num-nodes lb-name true))
 
-(def build hash-map)
+(def build-defaults {:continue true
+                     :failed false})
+(defn build [& {:keys [project-name build-num vcs-type vcs-url vcs-revision aws-credentials r53-zone-id notify-email actions action-results group num-nodes lb-name continue]
+                (require-args project-name build-num vcs-type vcs-url actions)
+                :as args}]
+  (merge build-defaults args))
 
 (defrecord BuildContext [build
                          action

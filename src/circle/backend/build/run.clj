@@ -17,38 +17,47 @@
 (defn log-filename [build]
   (str "build-" (-> build :project-name) "-" (-> build :build-num) ".log"))
 
-(defn run-build [build]
-  (infof "starting build: %s #%s" (-> build :project-name) (-> build :build-num))
+(defn do-build* [build]
   (let [node (atom nil)
         update-node (fn update-node [build]
-                      (when (not (seq @node))
+                      (when (and (-> build :group) (not (seq @node)))
+                        (println "update-node")
                         (swap! node (fn [_]
                                       (-> build :group (node-info) (first))))))]
-    (when (= :deploy (:type build))
-      (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
+    (fold build [act (-> build :actions)]
+      (if (-> build :continue)
+        (let [_ (update-node build)
+              context {:build build
+                       :action act
+                       :node @node}
+              _ (println "calling" (-> act :name))
+              action-result (-> act :act-fn (.invoke context))]
+          (infof "action-result for %s => %s" (-> act :name) action-result)
+          (validate-action-result! action-result)
+          (-> build
+              (update-in [:action-results] conj action-result)
+              (update-in [:continue] (fn [_] (continue? action-result)))
+              ((fn [build]
+                (when (not (continue? action-result))
+                  (infof "act %s returned %s, aborting." (-> act :name) action-result))
+                build))))
+        build))))
 
-    (add-file-appender (log-ns build) (log-filename build))
+(defn run-build [build]
+  (infof "starting build: %s #%s" (-> build :project-name) (-> build :build-num))
+  
+  (when (= :deploy (:type build))
+    (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
+
+  (add-file-appender (log-ns build) (log-filename build))
     
-    (try
-      (with-pwd "" ;; bind here, so actions can set! it
-        (println "starting build:" build)
-        (let [build-result (fold build [act (-> build :actions)]
-                             (update-node build)
-                             (if (-> build :continue)
-                               (let [context {:build build
-                                              :action act
-                                              :node @node}
-                                     _ (println "calling" (-> act :name))
-                                     action-result (-> act :act-fn (.invoke context))]
-                                 (println "action-result for" (-> act :name) "is:" action-result)
-                                 (validate-action-result! action-result)
-                                 (-> build
-                                     (update-in [:action-results] conj action-result)
-                                     (update-in [:continue] (fn [_] (continue? action-result)))))
-                               build))]
-          (println "build-result: " build-result)
-          (when (-> build :notify-email)
-            (email/send-build-email build-result))))
-      (catch Exception e
-        (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
-        (email/send-build-error-email build e)))))
+  (try
+    (with-pwd "" ;; bind here, so actions can set! it
+      (let [build-result (do-build* build)]
+        (println "build-result: " build-result)
+        (when (-> build :notify-email)
+          (email/send-build-email build-result))
+        build-result))
+    (catch Exception e
+      (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
+      (email/send-build-error-email build e))))
