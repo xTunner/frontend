@@ -24,7 +24,16 @@
               :subject (email-subject build)
               :body (email-body build)))
 
+(defn except-to-string [e]
+  (str (.getMessage e) "\n"
+       (-> e
+           (.getStackTrace)
+           (seq)
+           (->>
+            (map #(.toString %))
+            (str/join "\n")))))
+
 (defn send-build-error-email [build e]
   (email/send :to "arohner@gmail.com"
               :subject "Circle exception"
-              :body (with-out-str (str build) "\n" (.printStackTrace e))))
+              :body (str build "\n" (except-to-string e))))
