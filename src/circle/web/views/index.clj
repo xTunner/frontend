@@ -7,17 +7,16 @@
         ring.util.response)
   (:use [circle.db :only (with-conn)])
   (:use [ring.util.response :only (redirect)])
+  (:require [somnium.congomongo :as mongo])
   (:require [circle.model.beta-notify :as beta])
   (:require [noir.session :as session]))
 
 
-(defpage [:post "/"] {:as request}
-  (with-conn
-    (beta/insert {:email (:email request)
-                  :contact (= "true" (:contact request))
-                  :environment ""
-                  :features ""
-                  :session_key nil})
+(defpage [:post "/"] {:keys [email contact]}
+  (let [bool-contact (= "true" contact)]
+    (mongo/insert! :signups
+                   {:email email :contact bool-contact})
+    (with-conn (beta/insert {:email email :contact bool-contact}))
     (session/flash-put! true)
     (redirect "/")))
 
