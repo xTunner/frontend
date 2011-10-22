@@ -27,7 +27,7 @@
          :type :deploy
          :vcs-type :git
          :vcs-url "git@github.com:arohner/CircleCI.git"
-         :vcs-revision "0542337e29f07835b01c81fb3a69301205fb4411"
+         :vcs-revision "7a7b587e65b4d490d75d62f6a6960cd20b46c6ad"
          :aws-credentials circle.aws-credentials/AWS-access-credentials
          :r53-zone-id "ZBVDNEPFXWZR2"
          :num-nodes 1
