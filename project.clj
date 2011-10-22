@@ -33,7 +33,7 @@
                  [clj-yaml "0.3.1"]
                  [fs "0.9.0"]
                  [clj-time "0.3.1"]
-                 [congomongo "0.1.6"]
+                 [congomongo "0.1.7"]
                  [clj-uuid "1.0.0"]
                  
                  ;; Pallet/jClouds
