@@ -5,10 +5,8 @@
         hiccup.form-helpers
         circle.web.views.common
         ring.util.response)
-  (:use [circle.db :only (with-conn)])
   (:use [ring.util.response :only (redirect)])
   (:require [somnium.congomongo :as mongo])
-  (:require [circle.model.beta-notify :as beta])
   (:require [noir.session :as session]))
 
 
@@ -16,7 +14,6 @@
   (let [bool-contact (= "true" contact)]
     (mongo/insert! :signups
                    {:email email :contact bool-contact})
-    (with-conn (beta/insert {:email email :contact bool-contact}))
     (session/flash-put! true)
     (redirect "/")))
 

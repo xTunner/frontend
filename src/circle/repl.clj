@@ -1,7 +1,6 @@
 (ns circle.repl
   (:use [clojure.contrib.with-ns :only (with-ns)])
-  (:require clojure.contrib.trace)
-  (:require [clojure.java.jdbc :as jdbc]))
+  (:require clojure.contrib.trace))
 
 (defn init []
   (with-ns 'user
@@ -11,8 +10,7 @@
     (require '[clojure.contrib.zip-filter :as zf]
              '[clojure.zip :as zip]
              '[clojure.contrib.zip-filter.xml :as zf-xml]
-             '[clojure.xml :as xml])
-    (use '[circle.db :only (with-conn)]))
+             '[clojure.xml :as xml]))
   (println "repl/init done"))
 
 

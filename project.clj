@@ -14,7 +14,6 @@
                  [com.amazonaws/aws-java-sdk "1.2.7"]
                  
                  ;; DB
-                 [clj-table "0.1.5"]
                  [c3p0 "0.9.1.2"]
                  
                  ;; Logging

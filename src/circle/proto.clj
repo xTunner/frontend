@@ -10,9 +10,8 @@
   (:require [clojure.string :as string])
   (:require [clojure.contrib.seq-utils :as seq-utils])
   (:use circle.utils.except)
+  (:require circle.db)
   (:require [clj-time.core :as time])
-  (:use [circle.db :only (with-conn)])
-  ;; (:require [circle.model.shell-command :as model])
   (:require [fs]))
 
 (defn strip-dots
@@ -103,14 +102,13 @@
   (second (drop-while #(not= % keyword) values)))
 
 (defn shell-out [& args]
-  (with-conn
-    (let [passed-env (fetch-keyword-argument args :env)
-          env (apply shell/sh "env" passed-env)
-          program-id (record-program-start args env (time/now))
-          {:keys [out err exit]} (apply shell/sh :return-map true args)
-          _ (record-program-end program-id out err exit (time/now))]
-      (throw-if-not (and (= exit 0) (= err ""))
-                    (throwf "Failed (%d): %s\n%s\n%s" exit args out err)))))
+  (let [passed-env (fetch-keyword-argument args :env)
+        env (apply shell/sh "env" passed-env)
+        program-id (record-program-start args env (time/now))
+        {:keys [out err exit]} (apply shell/sh :return-map true args)
+        _ (record-program-end program-id out err exit (time/now))]
+    (throw-if-not (and (= exit 0) (= err ""))
+                  (throwf "Failed (%d): %s\n%s\n%s" exit args out err))))
 
 ; there is a program called autogen.sh on sourceforge that apparently
 ; does magic here

@@ -1,7 +1,6 @@
 (ns circle.init
   ;; (:require circle.swank)
   (:require circle.db)
-  (:require circle.db.migrations)
   (:require circle.web)
   (:require circle.repl)
   (:require circle.logging)
@@ -19,7 +18,6 @@
        (require 'circle.swank)
        (.invoke (ns-resolve 'circle.swank 'init)))
      (circle.db/init)
-     (circle.db.migrations/init)
      (circle.web/init)
      (circle.repl/init)
      true    
