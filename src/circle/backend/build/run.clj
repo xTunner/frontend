@@ -1,13 +1,16 @@
 (ns circle.backend.build.run
+  (:require [circle.backend.build.email :as email])
+  (:require [clj-time.core :as time])
   (:require [circle.backend.build :as build])
-  (:use [circle.backend.nodes :only (node-info)])
-  (:use [circle.utils.except :only (throw-if-not)])
-  (:use [clojure.tools.logging :only (with-logs error infof)])
-  (:use [circle.logging :only (add-file-appender)])
-  (:use [circle.backend.action.bash :only (with-pwd)])
   (:use [arohner.utils :only (inspect fold)])
-  (:use [circle.backend.action :only (continue? validate-action-result!)])
-  (:require [circle.backend.build.email :as email]))
+  (:require [circle.env :as env])
+  (:use [circle.backend.action :as action])
+  (:use [circle.backend.action.bash :only (with-pwd)])
+  (:use [circle.backend.action.nodes :only (cleanup-nodes)])
+  (:use [circle.backend.nodes :only (node-info)])
+  (:use [circle.logging :only (add-file-appender)])
+  (:use [circle.utils.except :only (throw-if throw-if-not)])
+  (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
 
 (defn log-ns
   "returns the name of the logger to use for this build "
@@ -17,47 +20,47 @@
 (defn log-filename [build]
   (str "build-" (-> build :project-name) "-" (-> build :build-num) ".log"))
 
-(defn do-build* [build]
-  (let [node (atom nil)
-        update-node (fn update-node [build]
-                      (when (and (-> build :group) (not (seq @node)))
-                        (println "update-node")
-                        (swap! node (fn [_]
-                                      (-> build :group (node-info) (first))))))]
-    (fold build [act (-> build :actions)]
-      (if (-> build :continue)
-        (let [_ (update-node build)
-              context {:build build
-                       :action act
-                       :node @node}
-              _ (println "calling" (-> act :name))
-              action-result (-> act :act-fn (.invoke context))]
-          (infof "action-result for %s => %s" (-> act :name) action-result)
-          (validate-action-result! action-result)
-          (-> build
-              (update-in [:action-results] conj action-result)
-              (update-in [:continue] (fn [_] (continue? action-result)))
-              ((fn [build]
-                (when (not (continue? action-result))
-                  (infof "act %s returned %s, aborting." (-> act :name) action-result))
-                build))))
-        build))))
+(defn start* [build]
+  (dosync
+   (alter build assoc :start-time (time/now))))
 
-(defn run-build [build]
+(defn stop* [build]
+  (dosync
+   (alter build assoc :stop-time (time/now))))
+
+(defn do-build* [build]
+  (throw-if (-> @build :start-time) "refusing to run started build")
+  (start* build)
+  (doseq [act (-> @build :actions)]
+    (when (-> @build :continue?)
+      (let [current-act-results-count (count (-> @build :action-results))]
+        (println "running" (-> act :name))
+        (action/with-action build act
+          (-> act :act-fn (.invoke build))))))
+  (stop* build)
+  build)
+
+(defn run-build [build & {:keys [cleanup-on-failure]
+                          :or {cleanup-on-failure true}}]
+  (def last-build build)
   (infof "starting build: %s #%s" (-> build :project-name) (-> build :build-num))
   
   (when (= :deploy (:type build))
     (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
 
   (add-file-appender (log-ns build) (log-filename build))
-    
+  
   (try
     (with-pwd "" ;; bind here, so actions can set! it
-      (let [build-result (do-build* build)]
-        (println "build-result: " build-result)
-        (when (-> build :notify-email)
-          (email/send-build-email build-result))
-        build-result))
+      (do-build* build)
+      (when (-> build :notify-email)
+        (email/send-build-email build))
+      build)
     (catch Exception e
       (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
-      (email/send-build-error-email build e))))
+      (when env/production?
+        (email/send-build-error-email build e))
+      (when cleanup-on-failure
+        (errorf "terminating nodes")
+        (cleanup-nodes build))
+      (throw e))))

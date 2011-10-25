@@ -29,7 +29,7 @@
       (.removeAllAppenders)
       (.addAppender rolling-log-appender)
       (.addAppender (ConsoleAppender. circle-layout))))
-  (. (Logger/getRootLogger) (setLevel Level/DEBUG))
+  (. (Logger/getRootLogger) (setLevel Level/INFO))
   (set-level "jclouds.wire" Level/OFF)
   (set-level "jclouds.signature" Level/OFF)
   (set-level "jclouds.headers" Level/OFF)
@@ -37,7 +37,10 @@
   (set-level "jclouds.ssh" Level/DEBUG)
   (set-level "org.jclouds.rest.internal.AsyncRestClientProxy" Level/OFF)
   (set-level "org.jclouds.http.internal.JavaUrlHttpCommandExecutorService" Level/OFF)
-  (set-level "org.mortbay.log" Level/INFO))
+  (set-level "org.mortbay.log" Level/INFO)
+
+  (set-level "org.apache.http.wire" Level/OFF)
+  (set-level "org.apache.http.headers" Level/OFF))
 
 
 (defn add-file-appender [loggername filename]

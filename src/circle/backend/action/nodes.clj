@@ -1,15 +1,23 @@
 (ns circle.backend.action.nodes
   (:require [circle.backend.nodes :as nodes])
-  (:use [circle.backend.action :only (defaction)]))
+  (:require [circle.backend.ec2 :as ec2])
+  (:use [circle.backend.action :only (defaction add-action-result)]))
 
 (defaction start-nodes []
   {:name "start nodes"}
-  (fn [context]
-    (nodes/converge {(-> context :build :group) (-> context :build :num-nodes)})
-    {:success true}))
+  (fn [build]
+    (let [group (-> @build :group)
+          instance-ids (nodes/start-and-configure group)
+          compute (nodes/pallet-compute-service group (map ec2/public-ip instance-ids))]
+      (dosync
+       (alter build assoc :instance-ids instance-ids)
+       (alter build assoc :pallet-compute compute)
+       (alter build assoc :node-info (nodes/node-info group :compute compute))))))
 
 (defaction stop-nodes []
   {:name "stop nodes"}
-  (fn [context]
-    (nodes/converge {(-> context :build :group) 0})
-    {:success true}))
+  (fn [build]
+    (ec2/terminate-instances! (-> @build :instance-ids))))
+
+(defn cleanup-nodes [build]
+  (ec2/terminate-instances! (-> @build :instance-ids)))

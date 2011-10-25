@@ -3,7 +3,7 @@
 
 (defn home-dir
   "returns the home dir on the current node"
-  [context]
-  (-> (remote-bash context [(echo "$HOME")])
+  [build]
+  (-> (remote-bash build [(echo "$HOME")])
       :out
       (clojure.string/trim)))
