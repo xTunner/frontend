@@ -65,11 +65,14 @@
     (try
       (let [lb-name (-> @build :lb-name)
             old-instances (get-old-revisions lb-name
-                                             (-> @build :vcs-revision))]
+                                             (-> @build :vcs-revision))
+            terminated-instances (lb/terminated-instances lb-name)]
         (println "shutdown-remove-old:" old-instances)
         (when (seq old-instances)
           (lb/remove-instances lb-name old-instances)
-          (ec2/terminate-instances! old-instances)) ;; TODO use jclouds, rather than EC2 directly
+          (ec2/terminate-instances! old-instances))
+        (when (seq terminated-instances)
+          (lb/remove-instances lb-name terminated-instances))
         {:success true})
       (catch AmazonClientException e
         {:success false

@@ -176,7 +176,6 @@
         (let [node {:ip-addr (public-ip instance-id) :username username :public-key public-key :private-key private-key}
               resp (circle.backend.ssh/remote-exec node "echo 'hello'")]
           (when (= 0 (-> resp :exit))
-            (println resp)
             (swap! success (constantly true))))
           
         (catch java.net.ConnectException e

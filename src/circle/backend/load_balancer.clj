@@ -141,6 +141,13 @@
           (.getInstanceStates)
           (->> (map bean))))))
 
+(defn terminated-instances
+  "Returns a seq of instance-ids, all terminated instances attached to the LB"
+  [lb-name]
+  (->> (get-health lb-name)
+       (filter #(= "Instance is in terminated state." (:description %)))
+       (map :instanceId)))
+
 (defn healthy? [lb-name & instance-ids]
   (->> instance-ids
        (apply get-health lb-name)
