@@ -36,7 +36,7 @@
                  [clj-uuid "1.0.0"]
                  
                  ;; Pallet/jClouds
-                 [org.cloudhoist/pallet "0.6.5-SNAPSHOT"]
+                 [org.cloudhoist/pallet "0.6.5"]
                  [org.jclouds/jclouds-core "1.2.1"]
                  [org.jclouds/jclouds-compute "1.2.1"]
                  [org.jclouds/jclouds-blobstore "1.2.1"]
