@@ -56,7 +56,7 @@
   (def last-json github-json)
   (when (= "CircleCI" (-> github-json :repository :name))
     (let [build (extend-group-with-revision
-                  (merge circle/circle-build
+                  (merge (circle/circle-build)
                          {:notify-email (-> github-json :repository :owner :email)
                           :vcs-type :git
                           :vcs-url (-> github-json :repository :url)
