@@ -55,19 +55,20 @@
 (defn process-json [github-json]
   (def last-json github-json)
   (when (= "CircleCI" (-> github-json :repository :name))
-    (let [build (extend-group-with-revision
-                  (merge (circle/circle-build)
-                         {:notify-email (-> github-json :repository :owner :email)
-                          :vcs-type :git
-                          :vcs-url (-> github-json :repository :url)
-                          :vcs-revision (-> github-json :commits last :id)
-                          :num-nodes 1}))
-          _ (infof "process-json: build=" build)]
+    (let [build (circle/circle-build)]
+      (dosync
+       (alter build (merge 
+                     {:notify-email (-> github-json :repository :owner :email)
+                      :vcs-type :git
+                      :vcs-url (-> github-json :repository :url)
+                      :vcs-revision (-> github-json :commits last :id)
+                      :num-nodes 1})))
+      (infof "process-json: build=" build)
       (run/run-build build))))
 
 (defpage [:post "/github-commit"] []
   (infof "github post: %s" *request*)
   (def last-request *request*)
   (let [github-json (json/decode (-> *request* :params :payload))]
-    (future (process-json github-json))
+    (def last-future (future (process-json github-json)))
     {:status 200 :body ""}))
