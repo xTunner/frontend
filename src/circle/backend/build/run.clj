@@ -51,12 +51,14 @@
         (do-build* build)
         (when (-> build :notify-email)
           (email/send-build-email build))
-        build))
+        build))    
     (catch Exception e
+      (dosync (alter build assoc :failed? true))
       (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
       (when env/production?
         (email/send-build-error-email build e))
-      (when cleanup-on-failure
-        (errorf "terminating nodes")
-        (cleanup-nodes build))
-      (throw e))))
+      (throw e))
+    (finally
+     (when (and (-> @build :failed?) cleanup-on-failure) 
+       (errorf "terminating nodes")
+       (cleanup-nodes build)))))
