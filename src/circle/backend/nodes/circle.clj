@@ -44,7 +44,7 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
-                             (package/packages :aptitude ["nginx" "htop"])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb"])
                              (java/java :sun :jdk)
                              (git/git)
                              (nginx/site "circle"
@@ -56,37 +56,17 @@
                                                                       "X-Forwarded-For" "\\$proxy_add_x_forwarded_for"
                                                                       "Host" "\\$http_host"}}])
                              (nginx/site "default" :action :disable)
-                             (service/service "nginx" :action :enable)
-                             (postgres/settings (postgres/settings-map {:permissions [{:connection-type "local" :database "all" :user "all" :auth-method "trust"}
-                                                                                      {:connection-type "host" :database "all" :user "all" :ip-mask "127.0.0.1/32" :auth-method "trust"}
-                                                                                      {:connection-type "host" :database "all" :user "all" :ip-mask "::1/128" :auth-method "trust"}]}))
-                             
-                             (postgres/postgres)
-                             (postgres/initdb)
-                             (postgres/hba-conf)
-                             (postgres/service :action :restart)
-                             (postgres/create-database "circleci")
+                             (service/service "nginx" :action :enable)                             
                              ;;users
                              (thread-expr/let->
                               [home (str "/home/" (-> session :user :username))]
-                              ;; (user/user "circle"
-                              ;;            :action :create
-                              ;;            :shell :bash
-                              ;;            :create-home true
-                              ;;            :groups #{"circle"})
                               (directory/directory  (str home "/.ssh/")
                                                    :create :action
-                                                   :path true
-                                                   ;; :owner "circle"
-                                                   ;; :group "circle"
-                                                   )
+                                                   :path true)
                               (ssh-key/install-key "ubuntu"
                                                    "id_rsa"
                                                    (slurp "www.id_rsa")
                                                    (slurp "www.id_rsa.pub"))
-                              ;; (ssh-key/authorize-key "circle"
-                              ;;                        (slurp "www.id_rsa.pub"))
-                              (pallet.crate.network-service/wait-for-port-listen 5432)
                               (lein/lein)
                               (remote-file/remote-file (str home "/.ssh/config") :content "Host github.com\n\tStrictHostKeyChecking no\n"
                                                        ;; :owner "circle"
@@ -94,10 +74,7 @@
                                                        :mode "644")
                               (directory/directory (str home "/.pallet/")
                                                    :create :action
-                                                   :path true
-                                                   ;; :owner "circle"
-                                                   ;; :group "circle"
-                                                   )
+                                                   :path true)
                               (remote-file/remote-file (str home "/.pallet/config.clj") :local-file "src/circle/pallet_config.clj" :no-versioning true))))}))
 
 (defn start
