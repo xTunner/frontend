@@ -3,7 +3,8 @@
   (:use [arohner.validation :only (validate!)]
         [circle.utils.predicates :only (bool? ref?)]
         [circle.utils.args :only (require-args)]
-        [circle.utils.except :only (throw-if throw-if-not)]))
+        [circle.utils.except :only (throw-if throw-if-not)]
+        [clojure.tools.logging :only (errorf)]))
 
 (defrecord Action [name
                    act-fn ;; an fn of one argument, the session. If returns falsy, the action has "failed" and the on-fail code is run
@@ -46,6 +47,7 @@
 (defn abort!
   "Stop the build."
   [build message]
+  (errorf "Aborting build: %s" message)
   (dosync
    (alter build assoc :continue? false)
    (alter build assoc :failed? true)))
