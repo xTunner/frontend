@@ -145,7 +145,7 @@
   "Returns a seq of instance-ids, all terminated instances attached to the LB"
   [lb-name]
   (->> (get-health lb-name)
-       (filter #(= "Instance is in terminated state." (:description %)))
+       (filter #(= "Instance is in terminated state." (:description %))) ;; there doesn't appear to be a useful, specific error code, so use the description string.
        (map :instanceId)))
 
 (defn healthy? [lb-name & instance-ids]
