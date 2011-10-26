@@ -64,7 +64,7 @@
                :vcs-url (github-http->ssh (-> github-json :repository :url))
                :vcs-revision (-> github-json :commits last :id)
                :num-nodes 1}))
-      (infof "process-json: build=" build)
+      (infof "process-json: build: %s" build)
       (run/run-build build))))
 
 (defpage [:post "/github-commit"] []

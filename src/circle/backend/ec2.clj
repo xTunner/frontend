@@ -3,7 +3,7 @@
   (:use [circle.utils.core :only (apply-map)]
         [circle.utils.except :only (throwf)]
         [circle.utils.args :only (require-args)])
-  (:use [clojure.tools.logging :only (infof)])
+  (:use [clojure.tools.logging :only (infof error)])
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
@@ -98,7 +98,7 @@
   "delete all ec2 security groups matching the regex. Mainly used as repl workaround for jclouds bugs"
   [regex]
   (doseq [group (filter #(re-find regex %) (map :groupName (security-groups)))]
-    (println "deleting" group)
+    (infof "deleting %s" group)
     (delete-group group)))
 
 (defn keypairs []
@@ -111,7 +111,7 @@
 
 (defn delete-keypair
   [name]
-  (println "deleting keypair" name)
+  (infof "deleting keypair %s" name)
   (with-ec2-client client
     (-> client
         (.deleteKeyPair (DeleteKeyPairRequest. name)))))
@@ -150,7 +150,7 @@
   "Blocks until AWS claims the instance is running"
   [instance-id & {:keys [timeout]
                   :or {timeout 300}}]
-    (println "waiting for instance to start")
+    (infof "block-until-running: waiting for instance %s to start" instance-id)
   (loop [timeout timeout]
     (let [inst (try
                  (instance instance-id)
@@ -163,7 +163,7 @@
           state (-?> inst :state (bean) :name (keyword))
           ip (-> inst :publicIpAddress)
           sleep-interval 5]
-      (println "block-until-running:" instance-id state)
+      (infof "block-until-running: %s %s" instance-id state)
       (cond
        (= state :running) true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
@@ -176,9 +176,9 @@
                   :as args}]
   (require-args instance-id username public-key private-key)
   (block-until-running instance-id)
-  (println "waiting for instance to be ready for SSH")
+  (infof "waiting for instance %s to be ready for SSH" instance-id)
   (let [success (atom false)
-        sleep-interval 1]
+        sleep-interval 5]
     (loop [timeout timeout]
       (try
         (let [node {:ip-addr (public-ip instance-id) :username username :public-key public-key :private-key private-key}
@@ -186,9 +186,9 @@
           (when (= 0 (-> resp :exit))
             (swap! success (constantly true))))
         (catch java.net.ConnectException e
-          (println "caught" (class e) (.getMessage e)))
+          (error e "block-until-ready"))
         (catch com.jcraft.jsch.JSchException e
-          (println "caught" (class e) (.getMessage e))))
+          (error e "block-until-ready")))
       (cond
        @success true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
