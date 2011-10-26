@@ -57,12 +57,12 @@
   (when (= "CircleCI" (-> github-json :repository :name))
     (let [build (circle/circle-build)]
       (dosync
-       (alter build (merge 
-                     {:notify-email (-> github-json :repository :owner :email)
-                      :vcs-type :git
-                      :vcs-url (-> github-json :repository :url)
-                      :vcs-revision (-> github-json :commits last :id)
-                      :num-nodes 1})))
+       (alter build merge 
+              {:notify-email (-> github-json :repository :owner :email)
+               :vcs-type :git
+               :vcs-url (-> github-json :repository :url)
+               :vcs-revision (-> github-json :commits last :id)
+               :num-nodes 1}))
       (infof "process-json: build=" build)
       (run/run-build build))))
 
