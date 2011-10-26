@@ -62,7 +62,6 @@
      ~@body))
 
 (defn build-log [message & args]
-  (println "build-log:" message)
   (throw-if-not *log-ns* "Log NS is not set")
   (log *log-ns* :info nil (apply format message args)))
 
