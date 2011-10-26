@@ -59,19 +59,23 @@
                              (service/service "nginx" :action :enable)                             
                              ;;users
                              (thread-expr/let->
-                              [home (str "/home/" (-> session :user :username))]
+                              [username (-> session :user :username)
+                               home (str "/home/" (-> session :user :username))]
                               (directory/directory  (str home "/.ssh/")
-                                                   :create :action
-                                                   :path true)
-                              (ssh-key/install-key "ubuntu"
+                                                    :create :action
+                                                    :owner username
+                                                    :group  username
+                                                    :mode "600"
+                                                    :path true)
+                              (ssh-key/install-key username
                                                    "id_rsa"
                                                    (slurp "www.id_rsa")
                                                    (slurp "www.id_rsa.pub"))
                               (lein/lein)
                               (remote-file/remote-file (str home "/.ssh/config") :content "Host github.com\n\tStrictHostKeyChecking no\n"
-                                                       ;; :owner "circle"
-                                                       ;; :group "circle"
-                                                       :mode "644")
+                                                       :owner username
+                                                       :group username
+                                                       :mode "600")
                               (directory/directory (str home "/.pallet/")
                                                    :create :action
                                                    :path true)
