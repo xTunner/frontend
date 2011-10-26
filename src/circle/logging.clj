@@ -40,7 +40,10 @@
   (set-level "org.mortbay.log" Level/INFO)
 
   (set-level "org.apache.http.wire" Level/OFF)
-  (set-level "org.apache.http.headers" Level/OFF))
+  (set-level "org.apache.http.headers" Level/OFF)
+
+  (set-level "clj-ssh.ssh" Level/WARN))
+
 
 
 (defn add-file-appender [loggername filename]
