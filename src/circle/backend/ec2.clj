@@ -5,6 +5,7 @@
         [circle.utils.args :only (require-args)])
   (:use [clojure.tools.logging :only (infof)])
   (:use [clojure.core.incubator :only (-?>)])
+  (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonServiceException
            (com.amazonaws.services.ec2.model DeleteKeyPairRequest
