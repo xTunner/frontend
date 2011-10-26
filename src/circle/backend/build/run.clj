@@ -15,10 +15,7 @@
 (defn log-ns
   "returns the name of the logger to use for this build "
   [build]
-  (str "circle.build." (-> build :project-name) "-" (-> build :build-num)))
-
-(defn log-filename [build]
-  (str "build-" (-> build :project-name) "-" (-> build :build-num) ".log"))
+  (str "circle.build." (-> @build :project-name) "-" (-> @build :build-num)))
 
 (defn start* [build]
   (dosync
@@ -47,15 +44,14 @@
   
   (when (= :deploy (:type build))
     (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
-
-  (add-file-appender (log-ns build) (log-filename build))
   
   (try
     (with-pwd "" ;; bind here, so actions can set! it
-      (do-build* build)
-      (when (-> build :notify-email)
-        (email/send-build-email build))
-      build)
+      (with-logs (log-ns build)
+        (do-build* build)
+        (when (-> build :notify-email)
+          (email/send-build-email build))
+        build))
     (catch Exception e
       (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
       (when env/production?
