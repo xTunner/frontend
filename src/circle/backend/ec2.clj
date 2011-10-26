@@ -148,10 +148,17 @@
 (defn block-until-running
   "Blocks until AWS claims the instance is running"
   [instance-id & {:keys [timeout]
-                  :or {timeout 60}}]
+                  :or {timeout 120}}]
     (println "waiting for instance to start")
   (loop [timeout timeout]
-    (let [inst (instance instance-id)
+    (let [inst (try
+                 (instance instance-id)
+                 (catch com.amazonaws.AmazonServiceException e
+                   ;; this is an eventual consistency 'race'. Sometimes AWS
+                   ;; reports the instance is not there right after it's
+                   ;; started.
+                   (when (not= "InvalidInstanceID.NotFound" (.getErrorCode e)) 
+                     (throw e))))
           state (-> inst :state (bean) :name (keyword))
           ip (-> inst :publicIpAddress)
           sleep-interval 5]
@@ -177,7 +184,6 @@
               resp (circle.backend.ssh/remote-exec node "echo 'hello'")]
           (when (= 0 (-> resp :exit))
             (swap! success (constantly true))))
-          
         (catch java.net.ConnectException e
           (println "caught" (class e) (.getMessage e)))
         (catch com.jcraft.jsch.JSchException e
