@@ -2,17 +2,10 @@
   (:use [arohner.utils :only (inspect)])
   (:require pallet.action-plan)
   (:use [circle.utils.core :only (apply-map)])
+  (:use [circle.backend.build :only (*pwd* log-ns build-log build-log-error)])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.action :as action]))
-
-(defn exit-status
-  "takes the output map from a call to ssh-exec, returns truthy if the exit status is 0"
-  [out]
-  (zero? (-> out :exit)))
-
-(def ^{:dynamic true
-       :doc "Binding for present working directory commands will run in"} *pwd* "")
 
 (defmacro remote-bash
   "Execute bash code on the remote server. Options:
@@ -31,12 +24,13 @@
            instance-id# (-> build# (deref) :instance-ids (first))
            ip-addr# (ec2/public-ip instance-id#)
            ssh-map# (merge (-> build# (deref) :group :circle-node-spec) {:ip-addr ip-addr#})
-           result# (ssh/remote-exec ssh-map#
-                                    (pallet.script/with-script-context (pallet.action-plan/script-template-for-server (-> build# (deref) :nodes (first)))
-                                      (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
-                                        (pallet.stevedore/script ("cd" (clj *pwd*))
-                                                                 ~@body))))]
-       (println "remote-bash:" result#)
+           result# (binding [ssh/handle-out build-log
+                             ssh/handle-err build-log-error]
+                     (ssh/remote-exec ssh-map#
+                                      (pallet.script/with-script-context (pallet.action-plan/script-template-for-server (-> build# (deref) :nodes (first)))
+                                        (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
+                                          (pallet.stevedore/script ("cd" (clj *pwd*))
+                                                                   ~@body)))))]
        (when (and (not= 0 (-> result# :exit)) ~abort-on-nonzero)
          (action/abort! build# (str (quote ~body) "returned exit code" (-> result# :exit))))
        (action/add-action-result result#)
@@ -52,10 +46,4 @@
     `(action/action :name ~name
                     :act-fn (fn [build#]
                               (remote-bash build# ~body ~@(flatten (seq opts)))))))
-
-(defmacro with-pwd
-  "When set, each bash command will start in the specified directory. Dir is a string."
-  [dir & body]
-  `(binding [*pwd* ~dir]
-     ~@body))
 

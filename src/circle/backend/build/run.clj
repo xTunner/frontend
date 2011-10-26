@@ -5,17 +5,11 @@
   (:use [arohner.utils :only (inspect fold)])
   (:require [circle.env :as env])
   (:use [circle.backend.action :as action])
-  (:use [circle.backend.action.bash :only (with-pwd)])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
   (:use [circle.backend.nodes :only (node-info)])
   (:use [circle.logging :only (add-file-appender)])
   (:use [circle.utils.except :only (throw-if throw-if-not)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
-
-(defn log-ns
-  "returns the name of the logger to use for this build "
-  [build]
-  (str "circle.build." (-> @build :project-name) "-" (-> @build :build-num)))
 
 (defn start* [build]
   (dosync
@@ -41,17 +35,15 @@
                           :or {cleanup-on-failure true}}]
   (def last-build build)
   (infof "starting build: %s #%s" (-> build :project-name) (-> build :build-num))
-  
   (when (= :deploy (:type build))
     (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
-  
   (try
-    (with-pwd "" ;; bind here, so actions can set! it
-      (with-logs (log-ns build)
+    (build/with-pwd "" ;; bind here, so actions can set! it
+      (build/with-build-log build
         (do-build* build)
         (when (-> build :notify-email)
-          (email/send-build-email build))
-        build))    
+          (email/send-build-email build)))
+      build)
     (catch Exception e
       (dosync (alter build assoc :failed? true))
       (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))

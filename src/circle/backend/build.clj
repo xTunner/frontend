@@ -1,6 +1,8 @@
 (ns circle.backend.build
   (:use [arohner.utils :only (inspect)])
-  (:use [circle.utils.args :only (require-args)]))
+  (:use [circle.utils.except :only (throw-if-not)]
+        [circle.utils.args :only (require-args)])
+  (:use [clojure.tools.logging :only (log)]))
 
 (def build-defaults {:continue? true
                      :num-nodes 1
@@ -38,3 +40,32 @@
 (defn successful? [build]
   (and (-> @build :stop-time)
        (-> @build :continue?)))
+
+(def ^{:dynamic true
+       :doc "present working directory on the build box commands will run in"} *pwd* "")
+
+(defmacro with-pwd
+  "When set, each command will start in the specified directory. Dir is a string."
+  [dir & body]
+  `(binding [*pwd* ~dir]
+     ~@body))
+
+(defn log-ns
+  "returns the name of the logger to use for this build "
+  [build]
+  (symbol (str "circle.build." (-> @build :project-name) "-" (-> @build :build-num))))
+
+(def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
+
+(defmacro with-build-log [build & body]
+  `(binding [*log-ns* (log-ns ~build)]
+     ~@body))
+
+(defn build-log [message & args]
+  (println "build-log:" message)
+  (throw-if-not *log-ns* "Log NS is not set")
+  (log *log-ns* :info nil (apply format message args)))
+
+(defn build-log-error [message & args]
+  (throw-if-not *log-ns* "Log NS is not set")
+  (log *log-ns* :error nil (apply format message args)))

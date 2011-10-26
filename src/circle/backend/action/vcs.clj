@@ -2,8 +2,8 @@
   (:require [clj-url.core :as url])
   (:use [circle.backend.action :only (defaction)])
   (:require [circle.backend.action.bash :as bash])
-  (:use [circle.backend.action.bash :only (remote-bash
-                                                 *pwd*)])
+  (:use [circle.backend.build :only (*pwd*)])
+  (:use [circle.backend.action.bash :only (remote-bash)])
   (:use [circle.backend.action.user :only (home-dir)]))
 
 (defn vcs-type

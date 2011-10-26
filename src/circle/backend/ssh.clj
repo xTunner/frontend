@@ -14,6 +14,14 @@
           s (String. bytes 0 num-read "UTF-8")]
       s)))
 
+(defn ^:dynamic handle-out
+  "Called periodically when the SSH command has output. Rebindable."
+  [^String out-str]
+  (print out-str))
+
+(defn ^:dynamic handle-err [^String err-str]
+  (print err-str))
+
 (defn process-exec
   "Takes the exec map and processes it"
   [[shell stdout-stream stderr-stream]]
@@ -22,10 +30,10 @@
         slurp-streams (fn slurp-streams []
                         (when-let [s (slurp-stream stdout-stream)]
                           (.append stdout s)
-                          (print s))
+                          (handle-out s))
                         (when-let [s (slurp-stream stderr-stream)]
                           (.append stderr s)
-                          (print s)))]
+                          (handle-err s)))]
     (while (= -1 (-> shell (.getExitStatus)))
       (slurp-streams)
       (Thread/sleep 100))
