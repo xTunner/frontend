@@ -54,7 +54,8 @@
                  [org.cloudhoist/nginx "0.5.1-SNAPSHOT"]
                  [lein-crate "0.1.0"]
                  [lein-daemon "0.4.1"]
-                 [pallet-rvm "0.1"]]
+                 [pallet-rvm "0.1"]
+                 [cdt "1.2.6.1-SNAPSHOT"]]
   
   :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                  "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
@@ -66,7 +67,7 @@
                      [clojure-source "1.2.1"]]
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
   :jvm-opts ["-Djava.net.preferIPv4Stack=true"
-             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n"]
+             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"]
   :daemon {:web {:ns circle.init
                  :pidfile "circle.pid"}})
 
