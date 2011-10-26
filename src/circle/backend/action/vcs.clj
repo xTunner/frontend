@@ -34,6 +34,15 @@
 (defn checkout-dir [build]
   (str (home-dir build) "/" (-> @build :project-name) "-" (-> @build :build-num)))
 
+(defn github-http->ssh
+  "Given a github http url, return the ssh version.
+
+  https://arohner@github.com/arohner/CircleCI.git -> git@github.com:arohner/CircleCI.git"
+  [http-url]
+  (let [repo (-> (re-find #"^https://(.*)@github.com/(.*)$" http-url)
+                 (get 2))]
+    (str "git@github.com:" repo)))
+
 (defaction checkout []
   {:name "checkout"}
   (fn [build]

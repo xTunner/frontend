@@ -7,6 +7,7 @@
   (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.project.circle :as circle])
+  (:use [circle.backend.action.vcs :only (github-http->ssh)])
   (:use [circle.backend.build :only (extend-group-with-revision)])
   (:use [clojure.tools.logging :only (infof)])
   (:use circle.web.views.common))
@@ -60,7 +61,7 @@
        (alter build merge 
               {:notify-email (-> github-json :repository :owner :email)
                :vcs-type :git
-               :vcs-url (-> github-json :repository :url)
+               :vcs-url (github-http->ssh (-> github-json :repository :url))
                :vcs-revision (-> github-json :commits last :id)
                :num-nodes 1}))
       (infof "process-json: build=" build)
