@@ -159,7 +159,7 @@
                    ;; started.
                    (when (not= "InvalidInstanceID.NotFound" (.getErrorCode e)) 
                      (throw e))))
-          state (-> inst :state (bean) :name (keyword))
+          state (-?> inst :state (bean) :name (keyword))
           ip (-> inst :publicIpAddress)
           sleep-interval 5]
       (println "block-until-running:" instance-id state)
