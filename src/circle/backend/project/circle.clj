@@ -1,6 +1,7 @@
 (ns circle.backend.project.circle
   (:require [circle.backend.nodes :as nodes])
   (:require [circle.backend.nodes.circle :as circle])
+  (:use [circle.env :only (last-remote-commit)])
   (:use [circle.backend.build :only (build extend-group-with-revision)])
   (:use [circle.backend.action.nodes :only (start-nodes stop-nodes)])
   (:use [circle.backend.action.vcs :only (checkout)])
@@ -13,7 +14,7 @@
          :build-num 1
          :vcs-type :git
          :vcs-url "git@github.com:arohner/CircleCI.git"
-         :vcs-revision "4e953637cea3ffecd1c3e91672e78bdc328d6b48"
+         :vcs-revision (last-remote-commit)
          :aws-credentials circle.aws-credentials/AWS-access-credentials
          :r53-zone-id "ZBVDNEPFXWZR2"
          :num-nodes 1
@@ -32,7 +33,7 @@
           :type :deploy
           :vcs-type :git
           :vcs-url "git@github.com:arohner/CircleCI.git"
-          :vcs-revision "ecbf093e526ec7e4388f947469cb1224acef59f9"
+          :vcs-revision (last-remote-commit)
           :aws-credentials circle.aws-credentials/AWS-access-credentials
           :r53-zone-id "ZBVDNEPFXWZR2"
           :num-nodes 1
