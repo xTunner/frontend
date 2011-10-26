@@ -23,8 +23,7 @@
                    (checkout)
                    (bash [(lein deps)])
                    (bash [(lein midje)])
-                   (stop-nodes)]
-         :group circle/circle-group))
+                   (stop-nodes)]))
 
 (defn circle-deploy []
   (->
@@ -33,7 +32,7 @@
           :type :deploy
           :vcs-type :git
           :vcs-url "git@github.com:arohner/CircleCI.git"
-          :vcs-revision "981961d3ab114ba7e3ed299c202c5874ac4ea8f7"
+          :vcs-revision "ecbf093e526ec7e4388f947469cb1224acef59f9"
           :aws-credentials circle.aws-credentials/AWS-access-credentials
           :r53-zone-id "ZBVDNEPFXWZR2"
           :num-nodes 1
