@@ -8,14 +8,14 @@ Currently, we deploy to www-test.circleci.com, do our testing, and then turn off
 
 #### In the REPL, deploy:
 
-    (circle.backend.build.run/run-build circle.backend.project.circle/circle-deploy)
+    (circle.backend.build.run/run-build (circle.backend.project.circle/circle-deploy))
 
 #### Get the list of running instances
 
-    (circle.backend.ec2/instances)
+    (print-instances)
 
 #### Terminate instances
 
-    (circle.backend.ec2/terminate-instances! instance-string)
+    (circle.backend.ec2/terminate-instances! instance-id)
 
 
