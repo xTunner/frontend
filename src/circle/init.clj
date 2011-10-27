@@ -20,6 +20,7 @@
      (circle.db/init)
      (circle.web/init)
      (circle.repl/init)
+     (println (java.util.Date.))
      true    
      (catch Exception e
        (println "caught exception on startup:")

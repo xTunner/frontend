@@ -56,6 +56,5 @@
                                      :path dir
                                      :vcs (-> @build :vcs-type)
                                      :revision (-> @build :vcs-revision)}))]
-      (println "checkout: result=" result)
       (set! *pwd* dir)
       result)))
