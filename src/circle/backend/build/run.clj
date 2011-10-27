@@ -41,7 +41,7 @@
     (build/with-pwd "" ;; bind here, so actions can set! it
       (build/with-build-log build
         (do-build* build)
-        (when (-> build :notify-email)
+        (when (-> @build :notify-email)
           (email/send-build-email build)))
       build)
     (catch Exception e

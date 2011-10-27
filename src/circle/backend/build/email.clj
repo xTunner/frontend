@@ -9,10 +9,10 @@
     "FAIL"))
 
 (defn success-email [build]
-  (str "Build of " (-> build :vcs-revision) "successful"))
+  (str "Build of " (-> @build :vcs-revision) "successful"))
 
 (defn fail-email [build]
-  (str "Build of " (-> build :vcs-revision) " failed " (str/join "\n" (map #(str (:out %) (:err %)) (-> build :action-results)))))
+  (str "Build of " (-> @build :vcs-revision) " failed " (str/join "\n" (map #(str (:out %) (:err %)) (-> @build :action-results)))))
 
 (defn email-body [build]
   (if (build/successful? build)
@@ -20,7 +20,7 @@
     (fail-email build)))
 
 (defn send-build-email [build]
-  (email/send :to (-> build :notify-email)
+  (email/send :to (-> @build :notify-email)
               :subject (email-subject build)
               :body (email-body build)))
 
@@ -36,4 +36,4 @@
 (defn send-build-error-email [build e]
   (email/send :to "arohner@gmail.com"
               :subject "Circle exception"
-              :body (str build "\n" (except-to-string e))))
+              :body (str @build "\n" (except-to-string e))))
