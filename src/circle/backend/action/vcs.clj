@@ -41,10 +41,10 @@
 (defn github-http->ssh
   "Given a github http url, return the ssh version.
 
-  https://arohner@github.com/arohner/CircleCI.git -> git@github.com:arohner/CircleCI.git"
+  https://github.com/arohner/CircleCI.git -> git@github.com:arohner/CircleCI.git"
   [http-url]
-  (let [repo (-> (re-find #"^https://(.*)@github.com/(.*)$" http-url)
-                 (get 2))]
+  (let [repo (-> (re-find #"^https://github.com/(.*)$" http-url)
+                 (get 1))]
     (str "git@github.com:" repo)))
 
 (defaction checkout []
