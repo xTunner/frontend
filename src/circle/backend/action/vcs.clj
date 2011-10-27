@@ -1,6 +1,8 @@
 (ns circle.backend.action.vcs
   (:require [clj-url.core :as url])
+  (:use [circle.utils.except :only (throw-if-not)])
   (:use [circle.backend.action :only (defaction)])
+  (:use [clojure.tools.logging :only (infof)])
   (:require [circle.backend.action.bash :as bash])
   (:use [circle.backend.build :only (*pwd*)])
   (:use [circle.backend.action.bash :only (remote-bash)])
@@ -21,6 +23,8 @@
                           vcs))
 
 (defmethod checkout-impl :git [{:keys [build url path revision]}]
+  (throw-if-not (pos? (.length url)) "url must be non-empty")
+  (throw-if-not (pos? (.length path)) "path must be non-empty")
   (println "checking out" url " to " path)
   (if revision
     (remote-bash build [(git clone ~url ~path --no-checkout)
