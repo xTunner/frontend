@@ -1,10 +1,12 @@
 (ns circle.backend.ec2
+  (:require [clojure.string :as str])
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:use [circle.utils.core :only (apply-map)]
         [circle.utils.except :only (throwf)]
         [circle.utils.args :only (require-args)])
   (:use [clojure.tools.logging :only (infof error)])
   (:use [clojure.core.incubator :only (-?>)])
+  (:use [doric.core :only (table)])
   (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonServiceException
@@ -52,7 +54,8 @@
    (apply reservations instance-ids)
    (mapcat :instances)
    (map bean)
-   (filter #(not= :terminated (-?> % :state (bean) :name (keyword))))))
+   (filter #(not= :terminated (-?> % :state (bean) :name (keyword))))
+   (map #(update-in % [:state] bean))))
   
 (defn all-instance-ids []
   (map :instanceId (instances)))
@@ -239,3 +242,14 @@
                                 :public-key public-key
                                 :private-key private-key) instance-ids)
     instance-ids))
+
+(defn print-instances []
+  (->> (instances)
+       (map (fn [inst]
+              (-> inst
+               (assoc :state-name (-> inst :state :name))
+               (assoc :security-groups (str/join "," (for [g (:securityGroups inst)]
+                                                       (.getGroupName g))))
+               (assoc :tags (into {} (for [t (map bean (-> inst :tags))] [(:key t) (:value t)]))))))
+       (table [:instanceId :state-name :publicIpAddress :imageId :security-groups :tags])
+       (println)))

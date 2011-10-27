@@ -34,6 +34,7 @@
                  [clj-time "0.3.1"]
                  [congomongo "0.1.7"]
                  [clj-uuid "1.0.0"]
+                 [doric "0.5.0"]
                  
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
