@@ -186,9 +186,9 @@
           (when (= 0 (-> resp :exit))
             (swap! success (constantly true))))
         (catch java.net.ConnectException e
-          (error e "block-until-ready"))
+          (infof "block-until-ready: caught %s" (.getMessage e)))
         (catch com.jcraft.jsch.JSchException e
-          (error e "block-until-ready")))
+          (infof "block-until-ready: caught %s" (.getMessage e))))
       (cond
        @success true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
