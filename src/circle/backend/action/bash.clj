@@ -24,13 +24,14 @@
            instance-id# (-> build# (deref) :instance-ids (first))
            ip-addr# (ec2/public-ip instance-id#)
            ssh-map# (merge (-> build# (deref) :group :circle-node-spec) {:ip-addr ip-addr#})
+           cmd# (pallet.script/with-script-context (pallet.action-plan/script-template-for-server (-> build# (deref) :nodes (first)))
+                  (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
+                    (pallet.stevedore/script ("cd" (clj *pwd*))
+                                             ~@body)))
+           _# (build-log cmd#)
            result# (binding [ssh/handle-out build-log
                              ssh/handle-err build-log-error]
-                     (ssh/remote-exec ssh-map#
-                                      (pallet.script/with-script-context (pallet.action-plan/script-template-for-server (-> build# (deref) :nodes (first)))
-                                        (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
-                                          (pallet.stevedore/script ("cd" (clj *pwd*))
-                                                                   ~@body)))))]
+                     (ssh/remote-exec ssh-map# cmd#))]
        (when (and (not= 0 (-> result# :exit)) ~abort-on-nonzero)
          (action/abort! build# (str (quote ~body) "returned exit code" (-> result# :exit))))
        (action/add-action-result result#)
