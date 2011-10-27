@@ -14,6 +14,7 @@
             Listener
             RegisterInstancesWithLoadBalancerRequest))
   (:use [circle.aws-credentials :only (aws-credentials)])
+  (:use [clojure.tools.logging :only (infof)])
   (:use [pallet.thread-expr :only (when->)])
   (:use [circle.utils.except :only (throw-if-not)])
   (:use [circle.utils.core :only (apply-map)]))
