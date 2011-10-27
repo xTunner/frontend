@@ -121,7 +121,7 @@
 
 (defn add-availability-zone [lb-name new-zone]
   (with-elb-client client
-    (println "adding" new-zone "to" lb-name)
+    (infof "adding %s to %s" new-zone lb-name)
     (-> client
         (.enableAvailabilityZonesForLoadBalancer (EnableAvailabilityZonesForLoadBalancerRequest. lb-name [new-zone])))))
 
@@ -131,7 +131,6 @@
     true))
 
 (defn get-health [lb-name & instance-ids]
-  {:post [(do (println "get-health:" %) true)]}
   (let [request (DescribeInstanceHealthRequest. lb-name)]
     (when instance-ids
       (.setInstances request (map #(Instance. %) instance-ids)))
