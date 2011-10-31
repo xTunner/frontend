@@ -1,11 +1,16 @@
 (ns circle.env
-  (:use [clojure.java.shell :only (sh)]))
+  (:use [clojure.java.shell :only (sh)])
+  (:use [clojure.contrib.except :only (throw-if-not)]))
 
-(def env (if (= (System/getenv "CIRCLE_ENV") "production")
-           :production
-           :test))
+(def env (condp = (System/getenv "CIRCLE_ENV")
+               "production" :production
+               "staging" :staging
+               nil :local))
 
 (def production? (= env :production))
+(def staging? (= env :staging))
+(def local? (= env :local))
+(throw-if-not (= 1 (count (filter true? [production? staging? local?]))))
 
 (defn last-local-commit []
   (->
