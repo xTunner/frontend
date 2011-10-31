@@ -2,7 +2,6 @@
   (:require circle.init)
   (:require [clj-http.client :as http])
   (:require [clj-http.core :as core])
-  ;; (:require [uuid])
   (:require [somnium.congomongo :as mongo])
   (:use midje.sweet))
 
@@ -20,7 +19,7 @@
     body =not=> #"Thanks"))
 
 (fact "posting works"
-  (let [session (gensym "foobar") ;;(uuid/uuid)
+  (let [session (gensym "foobar")
         email (str session "@test.com")
         db-entries-before (mongo/fetch-count :signups :where {:email email})
         post-request {:form-params {:email email :contact true}}
