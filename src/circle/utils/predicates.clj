@@ -1,9 +1,9 @@
 (ns circle.utils.predicates)
 
-(defn bool?
-  "returns true if x is a bool"
-  [x]
-  (instance? java.lang.Boolean x))
+(defmacro instance-pred [name class]
+  `(defn ~name [x#]
+     (instance? ~class x#)))
 
-(defn ref? [x]
-  (instance? clojure.lang.IRef x))
+(instance-pred bool? java.lang.Boolean)
+(instance-pred ref? clojure.lang.IRef)
+(instance-pred namespace? clojure.lang.Namespace)

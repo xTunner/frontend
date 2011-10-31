@@ -13,3 +13,16 @@
         m (last args*)]
     (apply f (concat normal-args (flatten (seq m))))))
 
+
+(defn seq1
+  "Converts a normal seq, with chunking behavior, to one-at-a-time. See http://blog.fogus.me/2010/01/22/de-chunkifying-sequences-in-clojure/"
+  [#^clojure.lang.ISeq s]
+  (reify clojure.lang.ISeq
+    (first [_] (.first s))
+    (more [_] (seq1 (.more s)))
+    (next [_] (let [sn (.next s)] (and sn (seq1 sn))))
+    (seq [_] (let [ss (.seq s)] (and ss (seq1 ss))))
+    (count [_] (.count s))
+    (cons [_ o] (.cons s o))
+    (empty [_] (.empty s))
+    (equiv [_ o] (.equiv s o))))
