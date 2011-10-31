@@ -35,6 +35,5 @@
     get-response => (contains {:status 200})
     body => #"Thanks"
     body =not=> #"form"
-    db-entries-before => 0
-    db-entries-after => 1))
+    db-entries-after => (+ 1 db-entries-before)))
 
