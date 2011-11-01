@@ -6,6 +6,7 @@
         [circle.utils.args :only (require-args)])
   (:use [clojure.tools.logging :only (infof error)])
   (:use [clojure.core.incubator :only (-?>)])
+  (:use [arohner.utils :only (inspect)])
   (:use [doric.core :only (table)])
   (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
@@ -198,17 +199,14 @@
        :else (throwf "failed to SSH into %s" instance-id)))))
 
 (defn start-instances*
-  "Starts one or more instances. Returns a seq of instance-ids.
-
-  If block-until-ready? is true, private-key is required"
+  "Starts one or more instances. Returns a seq of instance-ids."
   [{:keys [ami
            keypair-name
            security-groups
            instance-type
            min-count ;; min number of instances to start
            max-count 
-           availability-zone
-           private-key]
+           availability-zone]
     :or {min-count 1
          max-count 1}}]
   (with-ec2-client client
