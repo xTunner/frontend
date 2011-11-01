@@ -16,6 +16,12 @@
                  ;; DB
                  [c3p0 "0.9.1.2"]
                  [congomongo "0.1.7"]
+
+                 ;; log4mongo-java isn't available in maven repos. To install:
+                 ;;   wget http://log4mongo.org/download/attachments/360458/log4mongo-java-0.7.0.jar
+                 ;;   mvn install:install-file -DgroupId=org.log4mongo
+                 ;;     -DartifactId=log4mongo-java -Dversion=0.7.0
+                 ;;     -Dpackaging=jar -Dfile=log4mongo-java-0.7.0.jar
                  [org.log4mongo/log4mongo-java "0.7.0"]
                  
                  ;; Logging
