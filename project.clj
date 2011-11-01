@@ -34,7 +34,6 @@
                  [clj-yaml "0.3.1"]
                  [fs "0.9.0"]
                  [clj-time "0.3.1"]
-                 [clj-uuid "1.0.0"]
                  [doric "0.5.0"]
                  
                  ;; Pallet/jClouds
