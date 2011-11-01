@@ -9,7 +9,10 @@
 	   (org.apache.log4j.spi RootLogger))
   (:import (org.apache.log4j.rolling TimeBasedRollingPolicy
                                      RollingFileAppender))
-  (:import org.apache.commons.logging.LogFactory))
+  (:import org.apache.commons.logging.LogFactory)
+  (:import org.log4mongo.MongoDbAppender)
+  (:use [circle.db :only (mongo-map)])
+  (:use [clojure.contrib.string :only (as-str)]))
 
 (defn set-level [logger level]
   (. (Logger/getLogger logger) (setLevel level)))
@@ -17,17 +20,27 @@
 (def circle-layout (EnhancedPatternLayout. "%p [%d] %t - %c - %m%n"))
 
 (defn init []
-  (let [rolling-policy (doto (TimeBasedRollingPolicy.)
+  (let [{:keys [db host port username password]} mongo-map
+        mongo-appender (doto (MongoDbAppender.)
+                         (.setDatabaseName (as-str db))
+                         (.setCollectionName "logs")
+                         (.setHostname host)
+                         (.setPort (str port))
+                         (.setUserName username)
+                         (.setPassword password)
+                         (.activateOptions))
+        rolling-policy (doto (TimeBasedRollingPolicy.)
                          (.setActiveFileName  "circle.log" )
                          (.setFileNamePattern "circle-%d{yyyy-MM-dd}.log.gz")
                          (.activateOptions))
-        rolling-log-appender (doto (RollingFileAppender.)
-                               (.setRollingPolicy rolling-policy)
-                               (.setLayout circle-layout)
-                               (.activateOptions))]
+        log-appender (doto (RollingFileAppender.)
+                       (.setRollingPolicy rolling-policy)
+                       (.setLayout circle-layout)
+                       (.activateOptions))]
     (doto (Logger/getRootLogger)
       (.removeAllAppenders)
-      (.addAppender rolling-log-appender)
+      (.addAppender log-appender)
+      (.addAppender mongo-appender)
       (.addAppender (ConsoleAppender. circle-layout))))
   (. (Logger/getRootLogger) (setLevel Level/INFO))
   (set-level "jclouds.wire" Level/OFF)

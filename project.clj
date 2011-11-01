@@ -15,9 +15,11 @@
                  
                  ;; DB
                  [c3p0 "0.9.1.2"]
+                 [congomongo "0.1.7"]
+                 [org.log4mongo/log4mongo-java "0.7.0"]
                  
                  ;; Logging
-                 [log4j "1.2.14"]
+                 [log4j "1.2.16"]
                  [log4j/apache-log4j-extras "1.1"]
                  [org.slf4j/slf4j-api "1.6.2"]
                  [org.slf4j/slf4j-log4j12 "1.6.2"]
@@ -32,7 +34,6 @@
                  [clj-yaml "0.3.1"]
                  [fs "0.9.0"]
                  [clj-time "0.3.1"]
-                 [congomongo "0.1.7"]
                  [clj-uuid "1.0.0"]
                  [doric "0.5.0"]
                  
