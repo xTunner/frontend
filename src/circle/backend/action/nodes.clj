@@ -17,7 +17,7 @@
 (defaction stop-nodes []
   {:name "stop nodes"}
   (fn [build]
-    (ec2/terminate-instances! (-> @build :instance-ids))))
+    (apply ec2/terminate-instances! (-> @build :instance-ids))))
 
 (defn cleanup-nodes [build]
-  (ec2/terminate-instances! (-> @build :instance-ids)))
+  (apply ec2/terminate-instances! (-> @build :instance-ids)))

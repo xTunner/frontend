@@ -70,7 +70,7 @@
         (println "shutdown-remove-old:" old-instances)
         (when (seq old-instances)
           (lb/remove-instances lb-name old-instances)
-          (ec2/terminate-instances! old-instances))
+          (apply ec2/terminate-instances! old-instances))
         (when (seq terminated-instances)
           (lb/remove-instances lb-name terminated-instances))
         {:success true})
