@@ -29,7 +29,6 @@
 (defn validate-action-result! [ar]
   (validate! ActionResult-validator ar))
 
-
 (defn action
   "defines an action."
   [& {:keys [name act-fn]

@@ -1,5 +1,4 @@
 (ns circle.models.node
-  (:use [circle.utils.args :only (require-args)])
   (:use [circle.utils.validation :only (validate defn-v)])
   (:use [circle.utils.model-validation :only (validate!)])
   (:use [circle.utils.model-validation-helpers :only (require-keys key-types)])
