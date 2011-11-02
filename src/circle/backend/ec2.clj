@@ -74,15 +74,12 @@
   (-> (instance instance-id) :publicIpAddress))
 
 (defn terminate-instances!
-  [instance-ids]
+  [& instance-ids]
   (when (seq instance-ids)
     (with-ec2-client client
       (-> client
           (.terminateInstances (TerminateInstancesRequest. instance-ids))
           (bean)))))
-
-(defn terminate-all-instances! []
-  (terminate-instances! (all-instance-ids)))
 
 (defn security-groups
   []
