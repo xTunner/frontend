@@ -4,7 +4,8 @@
         [circle.util.predicates :only (bool? ref?)]
         [circle.util.args :only (require-args)]
         [circle.util.except :only (throw-if throw-if-not)]
-        [clojure.tools.logging :only (errorf)]))
+        [clojure.tools.logging :only (errorf)])
+  (:require [somnium.congomongo :as mongo]))
 
 (defrecord Action [name
                    act-fn ;; an fn of one argument, the session. If returns falsy, the action has "failed" and the on-fail code is run
@@ -43,44 +44,52 @@
   (or (-> action-result :success)
       (-> action-result :continue)))
 
+
+(def ^{:dynamic true} *current-action* nil)
+(def ^{:dynamic true} *current-action-results* nil)
+
+(defn create-mongo-obj
+  "Start recording an action in the DB. Save the Mongo ID in the action for later records"
+  []
+  (let [obj (mongo/insert! "action-log" {})]
+    (dosync
+     (alter *current-action-results* assoc :_id (-> obj :_id)))))
+
+(defn record
+  [f key val]
+  (dosync
+   (alter *current-action-results* f key val)
+   (mongo/update! "action-log"
+                  (select-keys @*current-action-results* [:_id])
+                  @*current-action-results*)))
+
 (defn abort!
   "Stop the build."
   [build message]
   (errorf "Aborting build: %s" message)
-  (dosync
-   (alter build assoc :continue? false)
-   (alter build assoc :failed? true)))
-
-(def ^{:dynamic true} *current-action* nil)
-(def ^{:dynamic true} *current-action-results* nil)
-(def ^{:dynamic true} *set-action-results* nil)
+  (record build assoc :continue? false :failed? true))
 
 (defn add-start-time
-  ([]
-     (add-start-time *current-action-results*))
-  ([action-result]
-     (dosync
-      (alter action-result assoc :start-time (time/now)))))
+  []
+  (record assoc :start-time (-> (time/now) (.toDate))))
 
 (defn add-stop-time
-  ([]
-     (add-stop-time *current-action-results*))
-  ([action]
-     (dosync
-      (alter action assoc :stop-time (time/now)))))
+  []
+  (record assoc :stop-time (-> (time/now) (.toDate))))
+
+(defn add-exit-code
+  [exit-code]
+  (record assoc :exit-code exit-code))
 
 (defn add-output
   "Appends stdout strings to action result"
-  [action-result out & {:keys [err]}]
-  (dosync
-   (alter action-result #(merge-with str % {(if err
-                                              :err
-                                              :out) out}))))
+  [data & {:keys [err-data?]}]
+  (record #(merge-with str % {(if err-data? :err :out) data})))
 
 (defn add-err
   "Appends stderr strings to action result"
-  [action-result err]
-  (add-output action-result err :err true))
+  [err]
+  (add-output err :err true))
 
 (defn action-results
   "creates a new action results"
@@ -97,10 +106,9 @@
       :as args}]
   (throw-if-not *current-action* "no action to update")
   (dosync
-   (when out
-     (add-output *current-action-results* out))
-   (when err
-     (add-err *current-action-results* err))))
+   (add-output out)
+   (add-err err)
+   (add-exit-code exit-code)))
 
 (defmacro with-action [build act & body]
   `(do
@@ -109,10 +117,12 @@
        (throw-if-not (map? act#) "action must be a ref")
        (binding [*current-action* act#
                  *current-action-results* (action-results act#)]
-         (add-start-time *current-action-results*)
+         (dosync
+          (create-mongo-obj)
+          (add-start-time))
          (let [result# (do ~@body)]
            (dosync
-            (add-stop-time *current-action-results*)
+            (add-stop-time)
             (alter build# update-in [:action-results] conj @*current-action-results*))
            result#)))))
 

@@ -13,11 +13,11 @@
 
 (defn start* [build]
   (dosync
-   (alter build assoc :start-time (time/now))))
+   (alter build assoc :start-time (-> (time/now) .toDate))))
 
 (defn stop* [build]
   (dosync
-   (alter build assoc :stop-time (time/now))))
+   (alter build assoc :stop-time (-> (time/now) .toDate))))
 
 (defn do-build* [build]
   (throw-if (-> @build :start-time) "refusing to run started build")

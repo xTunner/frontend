@@ -5,6 +5,8 @@
   (:use [circle.backend.build.run :only (run-build)])
   (:use [circle.util.predicates :only (ref?)]))
 
+(circle.db/init)
+
 (defaction successful-action [act-name]
   {:name act-name}
   (fn [build]
@@ -26,4 +28,6 @@
     @build => map?
     (-> @build :action-results) => seq
     (-> @build :action-results (count)) => 3
+    (for [res (-> @build :action-results)]
+      (> (-> res :stop-time) (-> res :start-time)) => true)
     (successful? build) => truthy))
