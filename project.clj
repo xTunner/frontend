@@ -64,7 +64,7 @@
   :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                  "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
   :dev-dependencies [[lein-test-out "0.1.1"]
-                     [midje "1.3-alpha4"]
+                     [midje "1.2.0"]
                      [lein-midje "1.0.4"]
                      [lein-daemon "0.4.1"]
                      [swank-clojure "1.4.0-SNAPSHOT"]
