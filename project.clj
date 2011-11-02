@@ -18,7 +18,7 @@
                  [congomongo "0.1.7"]
 
                  ;; log4mongo-java isn't available in maven repos. Checked into extra-jars/
-                 ;;[org.log4mongo/log4mongo-java "0.7.0"]
+                 [org.log4mongo/log4mongo-java "0.7.0"]
                  
                  ;; Logging
                  [log4j "1.2.16"]
@@ -60,9 +60,8 @@
                  [pallet-rvm "0.1"]
                  [cdt "1.2.6.1-SNAPSHOT"]]
 
-   :library-path "extra-jars/"
-  :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
-                 "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
+  :repositories {"circle-artifacts" "http://artifacts.circleci.com:8081/nexus/content/groups/all-repos/"}
+  :omit-default-repositories true
   :dev-dependencies [[lein-test-out "0.1.1"]
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
