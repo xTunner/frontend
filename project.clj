@@ -26,6 +26,7 @@
                  [org.slf4j/slf4j-api "1.6.2"]
                  [org.slf4j/slf4j-log4j12 "1.6.2"]
                  [org.clojure/tools.logging "0.2.3"]
+                 [vmfest "0.2.3"]
                  
                  ;; Misc
                  [swank-clojure "1.3.2"]
