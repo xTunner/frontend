@@ -5,7 +5,7 @@
                  [clj-json "0.4.0"] ;; noir pulls in clj-json 0.3.2 which isn't compatible w/ clojure 1.3. Put this dep ahead to pull it in first.
 
                  ;; Web
-                 [noir "1.1.1-SNAPSHOT"]
+                 [noir "1.2.0"]
                  [clj-url "1.0.2"]
                  [clj-http "0.2.1"]
                  [clj-r53 "1.0.1"]
@@ -17,12 +17,8 @@
                  [c3p0 "0.9.1.2"]
                  [congomongo "0.1.7"]
 
-                 ;; log4mongo-java isn't available in maven repos. To install:
-                 ;;   wget http://log4mongo.org/download/attachments/360458/log4mongo-java-0.7.0.jar
-                 ;;   mvn install:install-file -DgroupId=org.log4mongo
-                 ;;     -DartifactId=log4mongo-java -Dversion=0.7.0
-                 ;;     -Dpackaging=jar -Dfile=log4mongo-java-0.7.0.jar
-                 [org.log4mongo/log4mongo-java "0.7.0"]
+                 ;; log4mongo-java isn't available in maven repos. Checked into extra-jars/
+                 ;;[org.log4mongo/log4mongo-java "0.7.0"]
                  
                  ;; Logging
                  [log4j "1.2.16"]
@@ -63,11 +59,12 @@
                  [lein-daemon "0.4.1"]
                  [pallet-rvm "0.1"]
                  [cdt "1.2.6.1-SNAPSHOT"]]
-  
+
+   :library-path "extra-jars/"
   :repositories {"sonatype-releases" "http://oss.sonatype.org/content/repositories/releases"
                  "sonatype-snapshots" "http://oss.sonatype.org/content/repositories/snapshots"}
   :dev-dependencies [[lein-test-out "0.1.1"]
-                     [midje "1.2.0"]
+                     [midje "1.3-alpha4"]
                      [lein-midje "1.0.4"]
                      [lein-daemon "0.4.1"]
                      [swank-clojure "1.4.0-SNAPSHOT"]
