@@ -54,7 +54,7 @@
                  [org.cloudhoist/postgres "0.6.1"]
                  [org.cloudhoist/rubygems "0.6.0"]
                  [org.cloudhoist/java "0.5.1"]
-                 [org.cloudhoist/nginx "0.5.1-SNAPSHOT"]
+                 [org.cloudhoist/nginx "3614ffb8e35fbf312893ec386d0aaa771ab81d2d"]
                  [lein-crate "0.1.0"]
                  [lein-daemon "0.4.1"]
                  [pallet-rvm "0.1"]
