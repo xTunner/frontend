@@ -31,6 +31,11 @@
   (stop* build)
   build)
 
+(defn log-result [b]
+  (if (build/successful? b)
+    (infof "Build %s successful" (build/build-name b))
+    (errorf "Build %s failed" (build/build-name b))))
+
 (defn run-build [build & {:keys [cleanup-on-failure]
                           :or {cleanup-on-failure true}}]
   (def last-build build)
@@ -42,8 +47,8 @@
       (build/with-build-log build
         (do-build* build)
         (when (-> @build :notify-email)
-          (email/send-build-email build)))
-      build)
+          (email/send-build-email build))))
+    build
     (catch Exception e
       (dosync (alter build assoc :failed? true))
       (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
@@ -51,6 +56,7 @@
         (email/send-build-error-email build e))
       (throw e))
     (finally
+     (log-result build)
      (when (and (-> @build :failed?) cleanup-on-failure) 
        (errorf "terminating nodes")
        (cleanup-nodes build)))))

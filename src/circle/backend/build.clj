@@ -37,6 +37,9 @@
           assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project-name) (-> @build :vcs-revision))))))
   build)
 
+(defn build-name [build]
+  (str (-> @build :project-name) "-" (-> @build :build-num)))
+
 (defn successful? [build]
   (and (-> @build :stop-time)
        (-> @build :continue?)))

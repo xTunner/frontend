@@ -33,7 +33,7 @@
                              ssh/handle-err build-log-error]
                      (ssh/remote-exec ssh-map# cmd#))]
        (when (and (not= 0 (-> result# :exit)) ~abort-on-nonzero)
-         (action/abort! build# (str (quote ~body) "returned exit code" (-> result# :exit))))
+         (action/abort! build# (str (quote ~body) " returned exit code " (-> result# :exit))))
        (action/add-action-result result#)
        result#)))
 
