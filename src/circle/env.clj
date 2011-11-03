@@ -3,9 +3,9 @@
   (:use [clojure.contrib.except :only (throw-if-not)]))
 
 (def env (condp = (System/getenv "CIRCLE_ENV")
-               "production" :production
-               "staging" :staging
-               nil :local))
+           "production" :production
+           "staging" :staging
+           nil :local))
 
 (def production? (= env :production))
 (def staging? (= env :staging))
