@@ -71,7 +71,10 @@
                      [clojure-source "1.2.1"]]
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
   :jvm-opts ["-Djava.net.preferIPv4Stack=true"
-             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"]
+             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"
+             "-XX:MaxPermSize=256m"
+             "-XX:+UseConcMarkSweepGC"
+             "-XX:+CMSClassUnloadingEnabled"]
   :daemon {:web {:ns circle.init
                  :pidfile "circle.pid"}})
 
