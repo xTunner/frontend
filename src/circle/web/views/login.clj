@@ -23,25 +23,25 @@
             :onsubmit "if (this.email.value == \"Email address\") { this.email.style.background = 'red'; return false; }"}
      [:fieldset#actualform
       (unordered-list
-       [(text-field {:id "email"
+       [(text-field {:id "username"
                      :type "text"
-                     :onfocus "this.style.background = 'white'; if (this.value == 'Email address') { this.value=''};"
-                     :onblur "if (this.value == '') { this.value = 'Email address'};"}
-                    "email" "Email address")
+                     :onfocus "this.style.background = 'white'; if (this.value == 'Username') { this.value=''};"
+                     :onblur "if (this.value == '') { this.value = 'Username'};"}
+                    "username" "Username")
         (text-field {:id "password"
                      :type "Password"
-                     :onfocus "this.style.background = 'white'; if (this.value == 'Email address') { this.value=''};"
+                     :onfocus "this.style.background = 'white'; if (this.value == 'Password') { this.value=''};"
                      :onblur "if (this.value == '') { this.value = 'Password'};"}
                     "password" "")])]
      [:fieldset
       [:input.call_to_action {:type "submit"
                               :value "Login"}]]]])
 
-(defpage [:post "/login"] {:keys [email password]}
-  (if-let [user (authenticate email password)]
+(defpage login [:post "/login"] {:keys [username password]}
+  (if-let [user (authenticate username password)]
     (do
       (session/put! :user-id (-> user :_id))
-      (redirect "/user/email"))
+      (redirect (url-for circle.web.views.user/user-page :username username)))
     (do
       (session/flash-put! false)
       (redirect "/login"))))
