@@ -1,4 +1,4 @@
-(ns circle.utils.core)
+(ns circle.util.core)
 
 (defn printfln [& args]
   (apply printf args)

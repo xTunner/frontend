@@ -4,7 +4,7 @@
         hiccup.page-helpers
         hiccup.form-helpers)
   (:use [circle.web.views.login :only (login)])
-  (:require [circle.models.user :as user])
+  (:require [circle.model.user :as user])
   (:use [ring.util.response :only (redirect)])
   (:require [noir.session :as session]))
 

@@ -1,7 +1,7 @@
-(ns circle.models.node
-  (:use [circle.utils.validation :only (validate defn-v)])
-  (:use [circle.utils.model-validation :only (validate!)])
-  (:use [circle.utils.model-validation-helpers :only (require-keys key-types)])
+(ns circle.model.node
+  (:use [circle.util.validation :only (validate defn-v)])
+  (:use [circle.util.model-validation :only (validate!)])
+  (:use [circle.util.model-validation-helpers :only (require-keys key-types)])
   (:require [somnium.congomongo :as mongo]))
 
 (def node-validation [(require-keys [:name :ami :username :keypair-name :public-key :private-key])

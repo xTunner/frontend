@@ -1,7 +1,9 @@
 (ns circle.web.views.common
   (:use noir.core
         hiccup.core
-        hiccup.page-helpers))
+        hiccup.page-helpers)
+  (:use [circle.web.user-session :only (logged-in?)])
+  (:use [circle.web.util :only (post-link)]))
 
 ;; This is hard coded for the signup-page-as-frontpage. Go back some revisions to find the original.
 

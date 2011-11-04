@@ -3,7 +3,7 @@
         circle.web.views.common
         hiccup.page-helpers
         hiccup.form-helpers)
-  (:use [circle.models.user :only (authenticate)])
+  (:use [circle.model.user :only (authenticate)])
   (:use [ring.util.response :only (redirect)])
   (:require [noir.session :as session]))
 

@@ -1,9 +1,9 @@
 (ns circle.backend.action
   (:require [clj-time.core :as time])
   (:use [arohner.validation :only (validate!)]
-        [circle.utils.predicates :only (bool? ref?)]
-        [circle.utils.args :only (require-args)]
-        [circle.utils.except :only (throw-if throw-if-not)]
+        [circle.util.predicates :only (bool? ref?)]
+        [circle.util.args :only (require-args)]
+        [circle.util.except :only (throw-if throw-if-not)]
         [clojure.tools.logging :only (errorf)]))
 
 (defrecord Action [name

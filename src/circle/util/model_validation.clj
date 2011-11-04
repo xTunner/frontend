@@ -1,6 +1,6 @@
-(ns circle.utils.model-validation
-  (:use [circle.utils.core :only (seq1)])
-  (:use [circle.utils.except :only (throw-if-not)]))
+(ns circle.util.model-validation
+  (:use [circle.util.core :only (seq1)])
+  (:use [circle.util.except :only (throw-if-not)]))
 
 (defn validation-error
   "validates an object. validation-seq is a seq of fns. Each fn takes one argument, the object to be validated, and returns nil on success, or a string containing a helpful error message on failure.

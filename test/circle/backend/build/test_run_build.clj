@@ -3,7 +3,7 @@
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.backend.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
-  (:use [circle.utils.predicates :only (ref?)]))
+  (:use [circle.util.predicates :only (ref?)]))
 
 (defaction successful-action [act-name]
   {:name act-name}

@@ -1,6 +1,6 @@
 (ns circle.backend.action.vcs
   (:require [clj-url.core :as url])
-  (:use [circle.utils.except :only (throw-if-not)])
+  (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.backend.action :only (defaction)])
   (:use [clojure.tools.logging :only (infof)])
   (:require [circle.backend.action.bash :as bash])

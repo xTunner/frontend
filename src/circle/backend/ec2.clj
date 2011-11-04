@@ -1,9 +1,9 @@
 (ns circle.backend.ec2
   (:require [clojure.string :as str])
   (:use [circle.aws-credentials :only (aws-credentials)])
-  (:use [circle.utils.core :only (apply-map)]
-        [circle.utils.except :only (throwf)]
-        [circle.utils.args :only (require-args)])
+  (:use [circle.util.core :only (apply-map)]
+        [circle.util.except :only (throwf)]
+        [circle.util.args :only (require-args)])
   (:use [clojure.tools.logging :only (infof error)])
   (:use [clojure.core.incubator :only (-?>)])
   (:use [arohner.utils :only (inspect)])

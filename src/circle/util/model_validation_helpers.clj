@@ -1,4 +1,4 @@
-(ns circle.utils.model-validation-helpers)
+(ns circle.util.model-validation-helpers)
 
 (defmacro require-predicate [f & msg]
   `(fn [o#]

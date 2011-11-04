@@ -1,7 +1,7 @@
-(ns circle.utils.validation
-  (:use [circle.utils.except :only (throwf throw-if throw-if-not)])
-  (:use [circle.utils.predicates :only (namespace?)])
-  (:use [circle.utils.macro :only (decompose-defn-args* defn-map* defn-map)]))
+(ns circle.util.validation
+  (:use [circle.util.except :only (throwf throw-if throw-if-not)])
+  (:use [circle.util.predicates :only (namespace?)])
+  (:use [circle.util.macro :only (decompose-defn-args* defn-map* defn-map)]))
 
 (defn validate-dispatch [tag val]
   tag)

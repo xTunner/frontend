@@ -1,4 +1,4 @@
-(ns circle.utils.predicates)
+(ns circle.util.predicates)
 
 (defmacro instance-pred [name class]
   `(defn ~name [x#]

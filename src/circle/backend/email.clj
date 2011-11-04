@@ -1,6 +1,6 @@
 (ns circle.backend.email
-  (:use [circle.utils.except :only (throw-if-not)])
-  (:use [circle.utils.args :only (require-args)])
+  (:use [circle.util.except :only (throw-if-not)])
+  (:use [circle.util.args :only (require-args)])
   (:refer-clojure :exclude [send])
   (:import (org.apache.commons.mail SimpleEmail
 	                            DefaultAuthenticator)))

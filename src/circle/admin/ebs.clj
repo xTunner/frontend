@@ -1,7 +1,7 @@
 (ns circle.admin.ebs
   (:require [org.jclouds.ec2.ebs2 :as ebs])
   (:require [circle.backend.ec2 :as ec2])
-  (:use [circle.utils.except :only (throw-if-not)])
+  (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.aws-credentials :only (jclouds-compute)]))
 
 (defn default-volume [instance-id]

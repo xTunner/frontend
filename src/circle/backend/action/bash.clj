@@ -1,7 +1,7 @@
 (ns circle.backend.action.bash
   (:use [arohner.utils :only (inspect)])
   (:require pallet.action-plan)
-  (:use [circle.utils.core :only (apply-map)])
+  (:use [circle.util.core :only (apply-map)])
   (:use [circle.backend.build :only (*pwd* log-ns build-log build-log-error)])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])

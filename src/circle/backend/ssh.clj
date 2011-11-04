@@ -1,7 +1,7 @@
 (ns circle.backend.ssh
   (:require pallet.execute
             pallet.compute)
-  (:use [circle.utils.args :only (require-args)])
+  (:use [circle.util.args :only (require-args)])
   (:require [clj-ssh.ssh :as ssh]))
 
 (defn slurp-stream

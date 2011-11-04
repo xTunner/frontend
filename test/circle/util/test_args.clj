@@ -1,6 +1,6 @@
-(ns circle.utils.test-args
+(ns circle.util.test-args
   (:use midje.sweet)
-  (:use circle.utils.args))
+  (:use circle.util.args))
 
 (defn f [foo]
   (require-arg foo)

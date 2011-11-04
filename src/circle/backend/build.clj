@@ -1,7 +1,7 @@
 (ns circle.backend.build
   (:use [arohner.utils :only (inspect)])
-  (:use [circle.utils.except :only (throw-if-not)]
-        [circle.utils.args :only (require-args)])
+  (:use [circle.util.except :only (throw-if-not)]
+        [circle.util.args :only (require-args)])
   (:use [clojure.tools.logging :only (log)]))
 
 (def build-defaults {:continue? true

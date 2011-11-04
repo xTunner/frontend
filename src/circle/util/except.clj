@@ -1,4 +1,4 @@
-(ns circle.utils.except)
+(ns circle.util.except)
 
 (defn throwf [& args]
   (throw (Exception. (apply format args))))

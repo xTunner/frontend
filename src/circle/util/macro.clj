@@ -1,4 +1,4 @@
-(ns circle.utils.macro
+(ns circle.util.macro
   (:require [clojure.string :as str])
   (:use midje.sweet))
 

@@ -9,7 +9,7 @@
   (:import org.xeustechnologies.jtar.TarInputStream)
   (:require [clojure.string :as string])
   (:require [clojure.contrib.seq-utils :as seq-utils])
-  (:use circle.utils.except)
+  (:use circle.util.except)
   (:require circle.db)
   (:require [clj-time.core :as time])
   (:require [fs]))
