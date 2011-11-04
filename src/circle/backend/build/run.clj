@@ -46,8 +46,9 @@
     (build/with-pwd "" ;; bind here, so actions can set! it
       (build/with-build-log build
         (do-build* build)
-        (when (-> @build :notify-email)
-          (email/send-build-email build))))
+        (if (-> @build :notify-email)
+          (email/send-build-email build)
+          (infof "build %s has no notify, not sending email" @build))))
     build
     (catch Exception e
       (dosync (alter build assoc :failed? true))
