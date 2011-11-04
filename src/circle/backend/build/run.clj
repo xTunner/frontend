@@ -39,7 +39,7 @@
 (defn run-build [build & {:keys [cleanup-on-failure]
                           :or {cleanup-on-failure true}}]
   (def last-build build)
-  (infof "starting build: %s #%s" (-> build :project-name) (-> build :build-num))
+  (infof "starting build: %s" (build/build-name build))
   (when (= :deploy (:type build))
     (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
   (try
