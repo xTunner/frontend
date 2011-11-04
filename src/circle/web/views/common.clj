@@ -56,11 +56,11 @@
             :content "Continuous Integration made easy"}]
     [:meta {:name "keywords"
             :content "Circle, heroku, continuous integration, continuous deployment, CI, github"}]
-    (css "css/reset.css" :rel "stylesheet" :type "text/css" :media "screen")
-    (css "css/core.css" :rel "stylesheet" :type "text/css" :media "screen")
-    (css "css/colors_blue_and_green.css" :rel "stylesheet" :type "text/css" :title "Blue and green" :media "screen")
-    (css "css/additional.css" :rel "stylesheet" :type "text/css" :media "screen")
-    (css "css/wufoo.css" :rel "stylesheet" :type "text/css" :media "screen")
+    (css "/css/reset.css" :rel "stylesheet" :type "text/css" :media "screen")
+    (css "/css/core.css" :rel "stylesheet" :type "text/css" :media "screen")
+    (css "/css/colors_blue_and_green.css" :rel "stylesheet" :type "text/css" :title "Blue and green" :media "screen")
+    (css "/css/additional.css" :rel "stylesheet" :type "text/css" :media "screen")
+    (css "/css/wufoo.css" :rel "stylesheet" :type "text/css" :media "screen")
     "<!--[if lte IE 8]>
 		<link href=\"css/ie.css\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />
               <![endif]-->"
@@ -68,14 +68,14 @@
               <script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script>
               <![endif]-->"
     (css "http://fonts.googleapis.com/css?family=PT+Sans" :rel "stylesheet" :type "text/css" :media "screen")
-    (include-js "js/jquery_minimized_core.js" "js/wufoo.js")
+    (include-js "/js/jquery_minimized_core.js" "js/wufoo.js")
     [:title "Circle - Continuous Integration made easy"]]
    [:body
     [:div#notthefooter
      [:div#header_wrap
       [:div#header
-       [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img#circle {:src "img/circle-transparent.png"}]
-                          [:img#circle-word {:src "img/circle-word.png"}])]
+       [:h1#logo (link-to {:title "Go to Circle homepage"} "/" [:img#circle {:src "/img/circle-transparent.png"}]
+                          [:img#circle-word {:src "/img/circle-word.png"}])]
        (unordered-list {:id "nav"}
                        [(link-to {:class "current_page"}
                                  "/" "Signup")
