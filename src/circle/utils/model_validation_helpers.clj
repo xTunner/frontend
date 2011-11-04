@@ -7,10 +7,10 @@
 
 (defmacro col-predicate
   "Require that f, a predicate, returns truthy when passed (get obj col)"
-  [col f]
+  [col f & [msg]]
   `(fn [o#]
      (when-not (~f (get o# ~col))
-       "field %s must pass predicate %s" (quote ~col) (quote ~f))))
+       (or ~msg (format "field %s must pass predicate %s" (quote ~col) (quote ~f))))))
 
 (defn require-key* [o k]
   ;;{:post [(do (println "require-key* post:" k "=" %) true)]}                     
