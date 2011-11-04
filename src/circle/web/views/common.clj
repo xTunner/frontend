@@ -68,7 +68,7 @@
               <script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script>
               <![endif]-->"
     (css "http://fonts.googleapis.com/css?family=PT+Sans" :rel "stylesheet" :type "text/css" :media "screen")
-    (include-js "/js/jquery_minimized_core.js" "js/wufoo.js")
+    (include-js "/js/jquery_minimized_core.js" "/js/wufoo.js")
     [:title "Circle - Continuous Integration made easy"]]
    [:body
     [:div#notthefooter
