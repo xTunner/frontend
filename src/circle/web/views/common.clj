@@ -44,6 +44,12 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();"]))
 
+
+(defn login-box []
+  (if (logged-in?)
+    (post-link "/logout" (format "Logout"))
+    (link-to "/login" "Login")))
+
 (defpartial layout
   ;; "Options - a map,
   ;;    :absolute-urls - if true, css and other static assets will use absolute URLs rather than relative"
@@ -81,7 +87,7 @@
        (unordered-list {:id "nav"}
                        [(link-to {:class "current_page"}
                                  "/" "Signup")
-                        (link-to "/login" "Login")])
+                        (login-box)])
        [:div.clear]]]
      content
      [:div.clear]
