@@ -1,6 +1,16 @@
-repo:
-  url: git@github.com:arohner/CircleCI.git
-  backend: git
+build:
+  type: build
+  commands:
+    - lein deps
+    - lein midje
 
-code:
-  type: clojure
+deploy:
+  type: deploy
+
+  commands:
+    - lein deps
+    - lein daemon start ":web":
+        environment:
+          CIRCLE_ENV: "production"
+          SWANK: "true"
+    - sudo /etc/init.d/nginx :start
