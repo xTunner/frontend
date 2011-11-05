@@ -1,3 +1,11 @@
+(def jvm-opts (concat ["-Djava.net.preferIPv4Stack=true"
+                       "-XX:MaxPermSize=256m"
+                       "-XX:+UseConcMarkSweepGC"
+                       "-XX:+CMSClassUnloadingEnabled"]
+                      (when (not= (System/getenv "USER") "pbiggar")
+                        ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"])))
+
+
 (defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :dependencies [[org.clojure/clojure "1.2.1"]
@@ -70,11 +78,7 @@
                      [swank-clojure "1.4.0-SNAPSHOT"]
                      [clojure-source "1.2.1"]]
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
-  :jvm-opts ["-Djava.net.preferIPv4Stack=true"
-             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"
-             "-XX:MaxPermSize=256m"
-             "-XX:+UseConcMarkSweepGC"
-             "-XX:+CMSClassUnloadingEnabled"]
+  :jvm-opts ~jvm-opts
   :daemon {:web {:ns circle.init
                  :pidfile "circle.pid"}})
 
