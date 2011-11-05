@@ -18,6 +18,7 @@ group :test do
   gem "mongoid-rspec", ">= 1.4.4", :group => :test
   gem "factory_girl_rails", ">= 1.3.0", :group => :test
   gem "launchy", ">= 2.0.5", :group => :test
+  gem "minitest"
 end  
 
 gem 'jquery-rails'
