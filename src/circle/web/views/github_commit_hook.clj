@@ -53,6 +53,8 @@
   \"ref\": \"refs/heads/master\"
 }"))
 
+;;; SECURITY TODO: this data is unverified - consider DDOS possibility
+;;; at least.
 (defn process-json [github-json]
   (def last-json github-json)
   (when (= "CircleCI" (-> github-json :repository :name))
