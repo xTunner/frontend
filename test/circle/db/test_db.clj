@@ -3,13 +3,14 @@
   (:require [somnium.congomongo :as mongo])
   (:use [clojure.tools.logging :only (infof)])
   (:require [clj-time.core :as time])
-  (:require [circle.init]))
+  (:require [circle.db])
+  (:require [circle.logging]))
 
-(circle.init/init)
+(circle.db/init)
+(circle.logging/init)
 
 (fact "logging uses the same DB as congomongo uses"
-  (let [before-time (time/now)
-        message (str (gensym "logging-test"))
+  (let [message (str (gensym "logging-test"))
         fetcher #(mongo/fetch-count :logs
                                   :where {:message message
                                           :level "INFO"})
