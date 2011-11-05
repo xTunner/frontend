@@ -23,8 +23,8 @@ end
 
 gem 'jquery-rails'
 gem "rspec-rails", ">= 2.7.0", :group => [:development, :test]
-gem "bson_ext", ">= 1.3.1"
-gem "mongoid", ">= 2.2.3"
+gem "bson_ext", "~> 1.4"
+gem "mongoid", "~> 2.3"
 gem "devise", ">= 1.4.9"
 gem 'haml-rails', '>= 0.3.4', :group => :development
 
