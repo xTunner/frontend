@@ -8,25 +8,24 @@
                      :num-nodes 1
                      :action-results []})
 
-(defn build [& {:keys [project-name ;; string
-                       build-num ;; int
-                       vcs-type
-                       vcs-url
-                       vcs-revision ;; if present, the commit that caused the build to be run, or nil
-                       aws-credentials ;; map containing :user and :password
-                       r53-zone-id   ;; zone-id of the domain we're managing. Required for DNS updates.
-                       notify-email ;; an email address to notify when build is done
-                       actions ;; a seq of actions
-                       action-results
-                       group ;; the pallet group spec to use for the build
-                       num-nodes ;; number of nodes to start/use
-                       nodes ;; nodes started by this build. Keep track so we can clean them up
-                       lb-name   ;; name of the load-balancer to use
-                       continue?  ;; if true, continue running the build. Failed actions will set this to false
-                       start-time
-                       stop-time]
-                :as args}]
-  (require-args project-name build-num vcs-type vcs-url actions)
+(defn build [{:keys [project-name ;; string
+                     build-num    ;; int
+                     vcs-url
+                     vcs-revision ;; if present, the commit that caused the build to be run, or nil
+                     aws-credentials ;; map containing :user and :password
+                     r53-zone-id ;; zone-id of the domain we're managing. Required for DNS updates.
+                     notify-email ;; an email address to notify when build is done
+                     actions      ;; a seq of actions
+                     action-results
+                     group ;; the pallet group spec to use for the build
+                     num-nodes ;; number of nodes to start/use
+                     nodes ;; nodes started by this build. Keep track so we can clean them up
+                     lb-name ;; name of the load-balancer to use
+                     continue? ;; if true, continue running the build. Failed actions will set this to false
+                     start-time
+                     stop-time]
+              :as args}]
+  (require-args project-name build-num vcs-url actions)
   (ref (merge build-defaults args)))
 
 (defn extend-group-with-revision

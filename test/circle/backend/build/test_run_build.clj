@@ -13,14 +13,13 @@
     nil))
 
 (defn successful-build []
-  (build :project-name "succesful build"
-         :build-num 1
-         :vcs-type :git
-         :vcs-url "git@github.com:foo/bar.git"
-         :vcs-revision "f00b4r"
-         :actions [(successful-action "1")
-                   (successful-action "2")
-                   (successful-action "3")]))
+  (build {:project-name "succesful build"
+          :build-num 1
+          :vcs-url "git@github.com:foo/bar.git"
+          :vcs-revision "f00b4r"
+          :actions [(successful-action "1")
+                    (successful-action "2")
+                    (successful-action "3")]}))
 
 (fact "successful build is successful"
   (let [build (run-build (successful-build))]

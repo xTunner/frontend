@@ -54,7 +54,7 @@
           result (-> (checkout-impl {:build build
                                      :url (-> @build :vcs-url)
                                      :path dir
-                                     :vcs (-> @build :vcs-type)
+                                     :vcs (-> @build :vcs-url vcs-type)
                                      :revision (-> @build :vcs-revision)}))]
       (set! *pwd* dir)
       result)))

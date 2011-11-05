@@ -62,7 +62,6 @@
       (dosync
        (alter build merge 
               {:notify-email (-> github-json :repository :owner :email)
-               :vcs-type :git
                :vcs-url (github-http->ssh (-> github-json :repository :url))
                :vcs-revision (-> github-json :commits last :id)
                :num-nodes 1}))
