@@ -51,7 +51,7 @@
 (defn create-mongo-obj
   "Start recording an action in the DB. Save the Mongo ID in the action for later records"
   []
-  (let [obj (mongo/insert! "action-log" {})]
+  (let [obj (mongo/insert! "action_log" {})]
     (dosync
      (alter *current-action-results* assoc :_id (-> obj :_id)))))
 
@@ -59,7 +59,7 @@
   [f key val]
   (dosync
    (alter *current-action-results* f key val)
-   (mongo/update! "action-log"
+   (mongo/update! "action_log"
                   (select-keys @*current-action-results* [:_id])
                   @*current-action-results*)))
 
