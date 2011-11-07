@@ -1,9 +1,10 @@
 (ns circle.backend.action
   (:require [clj-time.core :as time])
-  (:use [arohner.validation :only (validate!)]
-        [circle.util.predicates :only (bool? ref?)]
+  (:use [circle.util.predicates :only (bool? ref?)]
         [circle.util.args :only (require-args)]
         [circle.util.except :only (throw-if throw-if-not)]
+        [circle.util.model-validation :only (validate!)]
+        [circle.util.model-validation-helpers :only (is-map? require-keys col-predicate maybe)]
         [clojure.tools.logging :only (errorf)])
   (:require [somnium.congomongo :as mongo]))
 
@@ -22,10 +23,12 @@
                          ])
 
 (def ActionResult-validator
-  [[map? "result must be a map"
-    :action-name "result must have a name"
-    #(-> % :success bool?) ":success must be a bool, got %s" #(-> % :success (class) )]
-   [#(or (-> % :success) (-> % :continue bool?)) ":continue must be a bool, got %s" #(-> % :continue (class))]])
+  [(is-map?)
+   (require-keys [:name :start-time :end-time])
+   (col-predicate :success (maybe bool?) ":success must be a bool")
+   (col-predicate :continue (maybe bool?) ":continue must be a bool")
+   (col-predicate :out (maybe vector?))
+   (col-predicate :err (maybe vector?))])
 
 (defn validate-action-result! [ar]
   (validate! ActionResult-validator ar))
@@ -56,12 +59,12 @@
      (alter *current-action-results* assoc :_id (-> obj :_id)))))
 
 (defn record
-  [f key val]
+  [f & args]
   (dosync
-   (alter *current-action-results* f key val)
-   (mongo/update! "action_log"
-                  (select-keys @*current-action-results* [:_id])
-                  @*current-action-results*)))
+   (apply alter *current-action-results* f args))
+  (mongo/update! "action_log"
+                 (select-keys @*current-action-results* [:_id])
+                 @*current-action-results*))
 
 (defn abort!
   "Stop the build."
@@ -73,9 +76,9 @@
   []
   (record assoc :start-time (-> (time/now) (.toDate))))
 
-(defn add-stop-time
+(defn add-end-time
   []
-  (record assoc :stop-time (-> (time/now) (.toDate))))
+  (record assoc :end-time (-> (time/now) (.toDate))))
 
 (defn add-exit-code
   [exit-code]
@@ -84,12 +87,15 @@
 (defn add-output
   "Appends stdout strings to action result"
   [data & {:keys [err-data?]}]
-  (record #(merge-with str % {(if err-data? :err :out) data})))
+  (record (fn [action-result]
+            (let [key (if err-data? :err :out)]
+              (update-in action-result [key] (fn [out]
+                                               (conj (or out []) data)))))))
 
 (defn add-err
   "Appends stderr strings to action result"
   [err]
-  (add-output err :err true))
+  (add-output err :err-data? true))
 
 (defn action-results
   "creates a new action results"
@@ -122,7 +128,8 @@
           (add-start-time))
          (let [result# (do ~@body)]
            (dosync
-            (add-stop-time)
+            (add-end-time)
+            (validate-action-result! @*current-action-results*)
             (alter build# update-in [:action-results] conj @*current-action-results*))
            result#)))))
 

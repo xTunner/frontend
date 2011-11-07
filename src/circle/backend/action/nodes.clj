@@ -1,7 +1,8 @@
 (ns circle.backend.action.nodes
   (:require [circle.backend.nodes :as nodes])
   (:require [circle.backend.ec2 :as ec2])
-  (:use [circle.backend.action :only (defaction add-action-result)]))
+  (:use [circle.backend.action :only (defaction add-action-result)])
+  (:use [clojure.tools.logging :only (errorf)]))
 
 (defaction start-nodes []
   {:name "start nodes"}
@@ -20,4 +21,7 @@
     (apply ec2/terminate-instances! (-> @build :instance-ids))))
 
 (defn cleanup-nodes [build]
-  (apply ec2/terminate-instances! (-> @build :instance-ids)))
+  (let [ids (-> @build :instance-ids)]
+    (when (seq ids)
+      (errorf "terminating nodes %s" ids)
+      (apply ec2/terminate-instances! ids))))

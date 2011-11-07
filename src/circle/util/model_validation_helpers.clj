@@ -48,3 +48,16 @@
   (fn [o]
     (map-predicate (fn [field cls]
                      (key-type o field cls)) ks)))
+
+(defn is-map? [& [msg]]
+  (require-predicate map? msg))
+
+(defn maybe
+  "HOF, takes a predicate, and returns a fn that is true if argument passed in is nil, or passes the predicate.
+
+  ((maybe integer?) 3) => true
+  ((maybe integer?) nil) => true
+  ((maybe integer?) :bogus) => false"
+  [f]
+  (fn [x]
+    (or (nil? x) (f x))))
