@@ -1,0 +1,16 @@
+build:
+  type: build
+  commands:
+    - lein deps
+    - lein midje
+
+deploy:
+  type: deploy
+
+  commands:
+    - lein deps
+    - lein daemon start ":web":
+        environment:
+          CIRCLE_ENV: "production"
+          SWANK: "true"
+    - sudo /etc/init.d/nginx :start

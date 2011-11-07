@@ -1,0 +1,17 @@
+ruby:
+  bundler:
+    command: bundler install # command is a synonym for bash
+
+  gems:
+    - rake==1.45
+    - bundler>1.34
+    - ci_reporter
+
+  gemfile:
+    - /Gemfile
+
+  test:
+    command: rake test
+    use-ci:reporter: Yes
+    
+

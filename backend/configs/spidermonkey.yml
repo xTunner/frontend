@@ -1,0 +1,13 @@
+spidermonkey:
+  type: autotools
+  repo: http://hg.mozilla.org/mozilla-central
+  subdir: js/src
+
+  autoconf:
+    version: 2.13
+
+  configurations:
+    - --enable-optimize --disable-debug
+    - --disable-optimize --enable-debug
+
+

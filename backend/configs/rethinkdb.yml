@@ -1,0 +1,28 @@
+rethinkdb:
+  type: autotools
+  repo: git@github.com:pbiggar/rethinkdb.git
+  subdir: src
+
+
+  host:
+    # TODO: make this use chef or something
+    type: t1.large
+    ami: ami-df3cf0b6
+
+    # Rethinkdb started with their own test framework, where full_test.py ran all of the builds in serial, and then in parallel in the cloud, and then in parallel using their own devops environment. # As a first approximation, this can all run serially, and then we can manually or automatically split them into indivisual configurations.
+
+  # As a result, we don't run a build step at all, just a single test step.
+  build: None
+
+  test:
+    environment:
+      # Like CPATH, but behaves like -isystem instead of -I
+      CPLUS_INCLUDE_PATH: "/home/ubuntu/deps/boost_1_47"
+
+      # New versions of gcc cause warnings
+      CFLAGS: "-Wno-error"
+
+      PYTHONPATH: "/home/ubuntu/rethinkdb/lib/retester:/home/ubuntu/rethinkdb/lib/vcoptparse"
+
+    command:
+      test/full_test.py

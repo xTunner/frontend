@@ -1,0 +1,27 @@
+autotools:
+
+  build:
+    ordering: [autogen, autoconf, configure, make]
+    commands:
+      make:
+        command: make
+        dir: $OBJDIR
+
+      autogen:
+        command: ./autogen.sh
+        dir: $SRCDIR
+
+      autoconf:
+        command: autoconf
+        dir: $SRCDIR
+
+      configure:
+        command: $SRCDIR/configure
+        dir: $OBJDIR
+
+  test:
+    default: check
+    check:
+      command: make check
+      format: exit-code
+

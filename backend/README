@@ -1,0 +1,21 @@
+# Deploying
+
+Currently, we deploy to www-test.circleci.com, do our testing, and then turn off the instances. To deploy:
+
+#### Ready the keys
+
+    cp src/circle/pallet_config.clj to ~/.pallet/config.clj
+
+#### In the REPL, deploy:
+
+    (circle.backend.build.run/run-build (circle.backend.project.circle/circle-deploy))
+
+#### Get the list of running instances
+
+    (print-instances)
+
+#### Terminate instances
+
+    (circle.backend.ec2/terminate-instances! instance-id)
+
+

@@ -1,0 +1,94 @@
+* High Level
+** Watch GitHub
+** On commit, build & run the tests
+** if pass push to heroku
+
+* Our assumptions
+** We are hosted on AWS
+
+
+* Watching
+** Grab latest revision
+How do we determine this? [[http://help.github.com/post-receive-hooks/][GitHub post hook]] 
+
+* Configuration
+I expect this is where most of our work will be. This is where most companies time is wasted. 
+** Principles
+*** All configuration is checked in
+All CI and deployment configuration should be checked in 
+*** Convention over Configuration
+Have a set of sensible defaults/assumptions for each language/stack
+
+** Things to configure
+*** Where are the tests
+*** How to run them
+*** Additional hygene tools
+Whether/how to run lint, code coverage
+*** Test Environment(s)
+How to create a test env. AMI, native deps
+*** Production Deploy
+
+* Building
+** Pulling from GitHub
+If we don't use the API, we'll need SSH keys. SSH keys do not count against GitHub contributor limit.
+
+** Source Control Control
+highly prefer not storing user's source code, they already pay GitHub
+for this, and we don't want to mess with security. 
+
+Git pipeline?  Git pipeline doesn't exist right now, though we may
+want to build it in the future. Until then, we need a disk to write
+to.
+
+JGit can store a git repo in a DB (experimental)
+
+** Compilation Instructions
+In the config file
+
+* Testing
+** run the tests
+run X > /tmp/junit.xml && curl junit.xml. We control the run command.
+** parallelizing
+This will require some kind of hook into their unit testing framework. We'll probably have to write a test runner. 
+
+** collecting results
+POST to a CircleCI URL when done.
+** reporting results
+Standard UI. We'll want AJAX-y STDOUT logs
+
+* Deploying
+** AWS
+*** Deployment tools
+On AWS, there's less intrinsic structure, so we'll need to impose some. We want to encourage tools like Capistrano, Pallet, etc.
+** Heroku
+*** New App for testing?
+Can we create it? Scale it up/down? Contributors can't scale, but since we have their source and are a contributor, we can create our own identical app. Will need to figure out how to bill them for the heroku time we spend on it...
+*** DNS records?
+Punt for now. Heroku users currently deal with long startup times on redeploy.
+
+* Pricing
+** Flat fee / month, plus server time, at cost.
+Server time at cost is important. We want the user to be successful. We don't want to add friction w/ marked up server costs. Charge flat rates based on features, number of developers.
+** Possible segmentation
+*** Parallel testing
+*** Deployment
+**** Load balancing, # of boxes
+**** Analytics hooks
+
+
+* Billing
+
+
+
+* New User Workflow
+** Add CircleCI SSH key to GitHub or OAuth
+** Set up GitHub post hook
+** Check in config file
+
+
+** Add CircleCI as heroku collaborator
+
+* Competitors
+**  [[http://zenslap.me/welcome][Zenslap]]
+**  [[https://www.tddium.com/][Tddium]]
+
