@@ -26,3 +26,8 @@
     (cons [_ o] (.cons s o))
     (empty [_] (.empty s))
     (equiv [_ o] (.equiv s o))))
+
+(defn conj-vec
+  "conjoin, but (conj-vec nil item) returns [item] rather than (item), like normal conj"
+  [coll x & xs]
+  (apply conj (or coll []) x xs))

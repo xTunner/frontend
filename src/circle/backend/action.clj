@@ -1,6 +1,7 @@
 (ns circle.backend.action
-  (:require [clj-time.core :as time])
+  (:require [circle.util.time :as time])
   (:use [circle.util.predicates :only (bool? ref?)]
+        [circle.util.core :only (conj-vec)]
         [circle.util.args :only (require-args)]
         [circle.util.except :only (throw-if throw-if-not)]
         [circle.util.model-validation :only (validate!)]
@@ -27,8 +28,8 @@
    (require-keys [:name :start-time :end-time])
    (col-predicate :success (maybe bool?) ":success must be a bool")
    (col-predicate :continue (maybe bool?) ":continue must be a bool")
-   (col-predicate :out (maybe vector?))
-   (col-predicate :err (maybe vector?))])
+   (col-predicate :out (maybe vector?) ":out must be a vector")
+   (col-predicate :out #(every? map? %) "items in :out must be maps")])
 
 (defn validate-action-result! [ar]
   (validate! ActionResult-validator ar))
@@ -66,31 +67,34 @@
                  (select-keys @*current-action-results* [:_id])
                  @*current-action-results*))
 
-(defn abort!
-  "Stop the build."
-  [build message]
-  (errorf "Aborting build: %s" message)
-  (record build assoc :continue? false :failed? true))
-
-(defn add-start-time
-  []
-  (record assoc :start-time (-> (time/now) (.toDate))))
-
-(defn add-end-time
-  []
-  (record assoc :end-time (-> (time/now) (.toDate))))
-
-(defn add-exit-code
-  [exit-code]
-  (record assoc :exit-code exit-code))
-
 (defn add-output
   "Appends stdout strings to action result"
   [data & {:keys [err-data?]}]
   (record (fn [action-result]
             (let [key (if err-data? :err :out)]
-              (update-in action-result [key] (fn [out]
-                                               (conj (or out []) data)))))))
+              (update-in action-result [:out] conj-vec {:type key
+                                                        :time (time/ju-now)
+                                                        :message data})))))
+
+(defn abort!
+  "Stop the build."
+  [build message]
+  (errorf "Aborting build: %s" message)
+  (add-output message :err-data? true)
+  (dosync
+   (alter build assoc :continue? false :failed? true)))
+
+(defn add-start-time
+  []
+  (record assoc :start-time (time/ju-now)))
+
+(defn add-end-time
+  []
+  (record assoc :end-time (time/ju-now)))
+
+(defn add-exit-code
+  [exit-code]
+  (record assoc :exit-code exit-code))
 
 (defn add-err
   "Appends stderr strings to action result"
@@ -112,8 +116,10 @@
       :as args}]
   (throw-if-not *current-action* "no action to update")
   (dosync
-   (add-output out)
-   (add-err err)
+   (when out
+     (add-output out))
+   (when err
+     (add-err err))
    (add-exit-code exit-code)))
 
 (defmacro with-action [build act & body]
