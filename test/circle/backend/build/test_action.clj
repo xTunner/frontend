@@ -1,9 +1,11 @@
-(ns circle.backend.test_action
+(ns circle.backend.build.test-action
   (:use midje.sweet)
+  (:require circle.db)
   (:require [circle.backend.action :as action])
   (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run]))
 
+(circle.db/init)
 (defn minimal-build [& {:keys [actions]}]
   (build/build  {:project-name "test proj"
                  :build-num 1

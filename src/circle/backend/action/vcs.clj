@@ -27,10 +27,12 @@
   (throw-if-not (pos? (.length path)) "path must be non-empty")
   (println "checking out" url " to " path)
   (if revision
-    (remote-bash build [(git clone ~url ~path --no-checkout)
+    (remote-bash build (bash/quasiquote
+                        (git clone ~url ~path --no-checkout)
                         (cd ~path)
-                        (git checkout ~revision)])
-    (remote-bash build [(git clone ~url ~path --depth 1)])))
+                        (git checkout ~revision)))
+    (remote-bash build (bash/quasiquote
+                        (git clone ~url ~path --depth 1)))))
 
 (defmethod checkout-impl :default [{:keys [vcs]}]
   (throw (Exception. "don't know how to check out code of type" vcs)))
