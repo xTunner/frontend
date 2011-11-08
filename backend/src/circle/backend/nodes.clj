@@ -52,15 +52,15 @@
             :configure (pallet.phase/phase-fn
                         (pallet.action.package/package "git"))}))
 
-(def pallet-map (delay {:user admin-user
-                        :compute (pallet.compute/service :aws)}))
+(def pallet-map (future {:user admin-user
+                         :compute (pallet.compute/service :aws)}))
 
 (defn lift [group & {:as args}]
-  (apply-map pallet.core/lift group (merge pallet-map
+  (apply-map pallet.core/lift group (merge @pallet-map
                                      args)))
 
 (defn converge [converge-map & {:as args}]
-  (apply-map pallet.core/converge converge-map (merge pallet-map
+  (apply-map pallet.core/converge converge-map (merge @pallet-map
                                                       args)))
 
 (defn startup
@@ -118,7 +118,7 @@
   "returns a seq of maps, one for each node. This node obj is required for several pallet fns."
   [group-spec & {:keys [compute]}]
   (let [session (lift group-spec
-                      :compute (or compute (-> pallet-map :compute))
+                      :compute (or compute (-> @pallet-map :compute))
                       :phase (fn [session]
                                (-> session
                                    (pallet.parameter/assoc-for-target [:admin-user] (pallet.session/admin-user session)))))]

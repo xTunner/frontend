@@ -59,5 +59,5 @@
     (finally
      (log-result build)
      (when (and (-> @build :failed?) cleanup-on-failure) 
-       (errorf "terminating nodes")
+       
        (cleanup-nodes build)))))

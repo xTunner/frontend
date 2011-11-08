@@ -12,7 +12,7 @@
 
 (defn circle-read-config-file
   []
-  (-> "configs/circle.yml"
+  (-> "configs/circleci.yml"
       io/reader
       yaml/parse-string))
 
@@ -39,12 +39,11 @@
   "Return a build object by combining config files, db contents and defaults"
   (let [config (circle-read-config-file)
         actions (map #(bash [%]) (-> config name :commands))
-        before (-> known-actions name :prefix)
-        after (-> known-actions name :suffix)
+        before (map #(apply % []) (-> known-actions name :prefix))
+        after (map #(apply % []) (-> known-actions name :suffix))
         config-data {:build-num num
                      :actions (concat before actions after)}]
     (merge config-data circle-db-data)))
-
 
 (defn circle-build []
   (build (fetch-data 1 :build)))
