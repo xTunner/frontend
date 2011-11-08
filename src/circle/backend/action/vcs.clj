@@ -5,7 +5,7 @@
   (:use [clojure.tools.logging :only (infof)])
   (:require [circle.backend.action.bash :as bash])
   (:use [circle.backend.build :only (*pwd*)])
-  (:use [circle.backend.action.bash :only (remote-bash)])
+  (:use [circle.backend.action.bash :only (remote-bash-build)])
   (:use [circle.backend.action.user :only (home-dir)]))
 
 (defn vcs-type
@@ -27,11 +27,11 @@
   (throw-if-not (pos? (.length path)) "path must be non-empty")
   (println "checking out" url " to " path)
   (if revision
-    (remote-bash build (bash/quasiquote
+    (remote-bash-build build (bash/quasiquote
                         (git clone ~url ~path --no-checkout)
                         (cd ~path)
                         (git checkout ~revision)))
-    (remote-bash build (bash/quasiquote
+    (remote-bash-build build (bash/quasiquote
                         (git clone ~url ~path --depth 1)))))
 
 (defmethod checkout-impl :default [{:keys [vcs]}]
