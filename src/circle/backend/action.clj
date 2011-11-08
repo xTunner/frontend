@@ -122,22 +122,19 @@
      (add-err err))
    (add-exit-code exit-code)))
 
-(defmacro with-action [build act & body]
-  `(do
-     (let [act# ~act
-           build# ~build]
-       (throw-if-not (map? act#) "action must be a ref")
-       (binding [*current-action* act#
-                 *current-action-results* (action-results act#)]
-         (dosync
-          (create-mongo-obj)
-          (add-start-time))
-         (let [result# (do ~@body)]
-           (dosync
-            (add-end-time)
-            (validate-action-result! @*current-action-results*)
-            (alter build# update-in [:action-results] conj @*current-action-results*))
-           result#)))))
+(defn run-action [build act]
+  (throw-if-not (map? act) "action must be a ref")
+  (binding [*current-action* act
+            *current-action-results* (action-results act)]
+    (dosync
+     (create-mongo-obj)
+     (add-start-time))
+    (let [result ((-> act :act-fn) build)]
+      (dosync
+       (add-end-time)
+       (validate-action-result! @*current-action-results*)
+       (alter build update-in [:action-results] conj @*current-action-results*))
+      result)))
 
 (defmacro defaction [name defn-args action-map f]
   (throw-if-not (vector? defn-args) "defn args must be a vector")

@@ -26,8 +26,7 @@
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
         (build/build-log "running" (-> act :name))
-        (action/with-action build act
-          (-> act :act-fn (.invoke build))))))
+        (action/run-action build act))))
   (stop* build)
   build)
 

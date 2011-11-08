@@ -46,6 +46,9 @@
 (def ^{:dynamic true
        :doc "present working directory on the build box commands will run in"} *pwd* "")
 
+(def ^{:dynamic true
+       :doc "A map of nvironment variables that will be set when commands are run"} *env* {})
+
 (defmacro with-pwd
   "When set, each command will start in the specified directory. Dir is a string."
   [dir & body]
