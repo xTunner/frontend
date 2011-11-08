@@ -56,7 +56,7 @@
                    :act-fn (fn [build]
                              (binding [ssh/handle-out build-log
                                        ssh/handle-err build-log-error]
-                               (let [result (apply-map remote-bash build body opts)] 
+                               (let [result (remote-bash-build build body)]
                                  (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                    (action/abort! build (str body " returned exit code " (-> result :exit))))
                                  (action/add-action-result result)

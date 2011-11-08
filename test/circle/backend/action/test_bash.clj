@@ -1,7 +1,12 @@
 (ns circle.backend.action.test-bash
   (:use midje.sweet)
   (:use [circle.backend.build :only (*pwd* *env*)])
-  (:require [circle.backend.action.bash :as bash]))
+  (:require [circle.backend.action.bash :as bash])
+  (:require [circle.backend.build.run :as run])
+  (:require circle.db)
+  (:use [circle.backend.build.utils :only (minimal-build)]))
+
+(circle.db/init)
 
 (fact "format-bash-command handles pwd"
   (binding [*pwd* "/home/test"]
@@ -40,4 +45,12 @@
         bar "bar"
         resp (bash/remote-bash (localhost-ssh-map) (bash/quasiquote (echo ~foo ~bar)))]
     resp => (clojure.java.shell/sh "echo" "foo" "bar")))
+
+(fact "bash action works"
+  (let [build (minimal-build :actions [(bash/bash "hostname")])]
+    (binding [bash/ssh-map-for-build (fn [build] (localhost-ssh-map))]
+      (let [result (run/run-build build)]
+        (-> @build :action-results (count)) => 1
+        (-> @build :action-results (first) :exit-code) => 0
+        (-> @build :action-results (first) :out (first) :message) => (-> (localhost-name) :out)))))
 

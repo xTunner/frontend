@@ -110,7 +110,7 @@
   "Adds information about the action's result
   out - stdout, a string from running the command
   err - stdderr"
-  [{:keys [out err exit-code successful continue]
+  [{:keys [out err exit successful continue]
       :or {successful true
            continue true}
       :as args}]
@@ -120,7 +120,8 @@
      (add-output out))
    (when err
      (add-err err))
-   (add-exit-code exit-code)))
+   (when exit
+     (add-exit-code exit))))
 
 (defn run-action [build act]
   (throw-if-not (map? act) "action must be a ref")

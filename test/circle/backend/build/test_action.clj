@@ -3,14 +3,10 @@
   (:require circle.db)
   (:require [circle.backend.action :as action])
   (:require [circle.backend.build :as build])
-  (:require [circle.backend.build.run :as run]))
+  (:require [circle.backend.build.run :as run])
+  (:use [circle.backend.build.utils :only (minimal-build)]))
 
 (circle.db/init)
-(defn minimal-build [& {:keys [actions]}]
-  (build/build  {:project-name "test proj"
-                 :build-num 1
-                 :vcs-url "http://github.com/arohner/test-circle"
-                 :actions (or actions [])}))
 
 (action/defaction test-action [act-result]
   {:name "test"}
