@@ -11,18 +11,23 @@
 (defmacro quasiquote [& forms]
   `(pallet.stevedore/quasiquote ~forms))
 
-(defn format-bash-cmd [body]
-  (let [cd-form (when (seq *pwd*)
-                  (quasiquote (cd ~*pwd*)))
+(defn maybe-name
+  "Returns "
+  [x]
+  (apply-if (named? x) name x))
+
+(defn format-bash-cmd [body environment pwd]
+  (let [cd-form (when (seq pwd)
+                  (quasiquote (cd ~pwd)))
         env-form (map (fn [[k v]]
-                        (format "export %s=%s" k (apply-if (named? v) name v))) *env*)]
+                        (format "export %s=%s" (maybe-name k) (maybe-name v))) environment)]
     (concat cd-form env-form body)))
 
-(defn emit-form [body]
+(defn emit-form [body & {:keys [environment pwd]}]
   (let [body (if (string? body)
                [body]
                body)
-        body (format-bash-cmd body)]
+        body (format-bash-cmd body environment (or pwd *pwd*))]
     (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
       (pallet.stevedore/with-line-number [*file* (:line (meta body))]
         (binding [pallet.stevedore/*script-ns* *ns*]
@@ -32,8 +37,11 @@
   "Execute bash code on the remote server.
 
    ssh-map is a map containing the keys :username, :public-key, :private-key :ip-addr. All keys are required."
-  [ssh-map body & {}]
-  (let [cmd (emit-form body)
+  [ssh-map body & {:keys [environment
+                          pwd]}]
+  (let [cmd (emit-form body
+                       :environment environment
+                       :pwd pwd)
         result (ssh/remote-exec ssh-map cmd)]
     result))
 
@@ -43,12 +51,12 @@
     (merge (-> @build :group :circle-node-spec) {:ip-addr ip-addr})))
 
 (defn remote-bash-build
-  [build body]
-  (remote-bash (ssh-map-for-build build) body))
+  [build body & {:as opts}]
+  (apply-map remote-bash (ssh-map-for-build build) body opts))
 
 (defn bash
   "Returns a new action that executes bash on the host. Body is a string"
-  [body & {:keys [name abort-on-nonzero]
+  [body & {:keys [name abort-on-nonzero environment pwd]
            :or {abort-on-nonzero true}
            :as opts}]
   (let [name (or name (str body))]
@@ -56,7 +64,7 @@
                    :act-fn (fn [build]
                              (binding [ssh/handle-out build-log
                                        ssh/handle-err build-log-error]
-                               (let [result (remote-bash-build build body)]
+                               (let [result (remote-bash-build build body :environment environment :pwd pwd)]
                                  (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                    (action/abort! build (str body " returned exit code " (-> result :exit))))
                                  (action/add-action-result result)
