@@ -13,4 +13,4 @@ deploy:
         environment:
           CIRCLE_ENV: "production"
           SWANK: "true"
-    - sudo /etc/init.d/nginx :start
+    - sudo /etc/init.d/nginx start
