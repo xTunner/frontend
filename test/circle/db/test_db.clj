@@ -16,6 +16,5 @@
                                           :level "INFO"})
         log-entries-before (fetcher)
         _ (infof message)
-        log-entries-after (fetcher)
-        ]
+        log-entries-after (fetcher)]
     log-entries-after => (+ 1 log-entries-before)))

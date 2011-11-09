@@ -58,5 +58,4 @@
     (finally
      (log-result build)
      (when (and (-> @build :failed?) cleanup-on-failure) 
-       
        (cleanup-nodes build)))))
