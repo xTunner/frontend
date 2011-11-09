@@ -17,12 +17,11 @@
             [pallet.thread-expr :as thread-expr]
             [circle.backend.nodes :as nodes]))
 
-
 ;; this is our "memoized" circle box
 (def circle-group
   (pallet.core/group-spec
    "circle"
-   :circle-node-spec {:ami "ami-afa46dc6"
+   :circle-node-spec {:ami "ami-a5c70ecc"
                       :availability-zone "us-east-1a"
                       :instance-type "m1.small"
                       :keypair-name "www"
