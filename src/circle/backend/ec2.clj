@@ -160,7 +160,7 @@
 (defn block-until-running
   "Blocks until AWS claims the instance is running"
   [instance-id & {:keys [timeout]
-                  :or {timeout 300}}]
+                  :or {timeout 600}}]
     (infof "block-until-running: waiting for instance %s to start" instance-id)
   (loop [timeout timeout]
     (let [inst (try

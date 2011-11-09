@@ -61,7 +61,7 @@
                                :strict-host-key-checking :no)]
       (try-try-again
        {:sleep 1000
-        :default 5
+        :default 30
         :catch [com.jcraft.jsch.JSchException]
         :error-hook (fn [e] (errorf "caught %s" e))}
        #(try
