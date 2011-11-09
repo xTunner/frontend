@@ -11,7 +11,8 @@
   (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonServiceException
-           (com.amazonaws.services.ec2.model DeleteKeyPairRequest
+           (com.amazonaws.services.ec2.model CreateImageRequest
+                                             DeleteKeyPairRequest
                                              DeleteSecurityGroupRequest
                                              DescribeImagesRequest
                                              DescribeInstancesRequest
@@ -147,6 +148,15 @@
     (-> client
         (.describeImages (-> (DescribeImagesRequest.) (.withImageIds [ami]))))))
 
+(defn image-state [ami]
+  (-> (describe-image ami)
+      (bean)
+      :images
+      (first)
+      (bean)
+      :state
+      (keyword)))
+
 (defn block-until-running
   "Blocks until AWS claims the instance is running"
   [instance-id & {:keys [timeout]
@@ -248,3 +258,11 @@
                (assoc :tags (into {} (for [t (map bean (-> inst :tags))] [(:key t) (:value t)]))))))
        (table [:instanceId :state-name :publicIpAddress :imageId :security-groups :tags])
        (println)))
+
+(defn create-image
+  "Create an AMI from a running instance. Returns the new AMI-id"
+  [instance-id image-name]
+  (with-ec2-client client
+    (-> client
+        (.createImage (CreateImageRequest. instance-id image-name))
+        (.getImageId))))
