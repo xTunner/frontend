@@ -46,6 +46,7 @@
                  [fs "0.9.0"]
                  [clj-time "0.3.1"]
                  [doric "0.5.0"]
+                 [robert/bruce "0.7.1"]
                  
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
