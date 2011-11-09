@@ -25,7 +25,7 @@
   (doseq [act (-> @build :actions)]
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
-        (build/build-log "running" (-> act :name))
+        (build/build-log "running %s" (-> act :name))
         (action/run-action build act))))
   (stop* build)
   build)
