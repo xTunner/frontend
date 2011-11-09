@@ -54,10 +54,13 @@
   "Returns all instance-ids attached to the load balancer that aren't tagged with current-rev"
   [lb-name current-rev]
   (let [lb-ids (set (lb/instance-ids lb-name))]
-    (filter (fn [tag]
-              (and (contains? lb-ids (-> tag :resourceId))
-                   (= (-> tag :key) :rev)
-                   (not= (-> tag :value) current-rev))) (tag/describe-tags))))
+    (->>
+     (tag/describe-tags)
+     (filter (fn [tag]
+               (and (contains? lb-ids (-> tag :resourceId))
+                    (= (-> tag :key) "rev")
+                    (not= (-> tag :value) current-rev))))
+     (map #(-> % :resourceId)))))
 
 (defaction shutdown-remove-old-revisions []
   {:name "remove old revisions"}
