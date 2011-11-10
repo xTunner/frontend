@@ -1,5 +1,6 @@
 (ns circle.backend.build.test-run-build
   (:use midje.sweet)
+  (:use [circle.backend.build.utils :only (minimal-build)])
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.backend.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
@@ -30,3 +31,56 @@
     (for [res (-> @build :action-results)]
       (> (-> res :stop-time) (-> res :start-time)) => true)
     (successful? build) => truthy))
+
+
+(defchecker email-args [& args]
+  (println "checking email args:" args)
+  true)
+
+(fact "notify email works"
+  (successful? (run-build (minimal-build :actions [(successful-action "1")]
+                                         :notify-email ["foo@bar.com"
+                                                        "baz@bar.com"]))) => truthy
+  (provided
+    (circle.backend.email/send :to "foo@bar.com" :subject anything :body anything) => anything :times 1
+    (circle.backend.email/send :to "baz@bar.com" :subject anything :body anything) => anything :times 1))
+
+(fact "notify email handles :owner"
+  (binding [circle.backend.email/send-email? false]
+    (successful? (run-build (minimal-build :actions [(successful-action "1")]
+                                           :repository {:owner {:name "arohner"
+                                                                :email "a@circleci.com"}}
+                                           :notify-email [:owner]))) => truthy) 
+  (provided
+    (circle.backend.email/send :to "a@circleci.com" :subject anything :body anything) => anything :times 1))
+
+(fact "notify email handles :committer"
+  (binding [circle.backend.email/send-email? false]
+    (successful? (run-build (minimal-build :actions [(successful-action "1")]
+                                           :commits [{:author {:name "Allen"
+                                                               :email "a@circleci.com"}}]
+                                           :notify-email [:committer]))) => truthy) 
+  (provided
+    (circle.backend.email/send :to "a@circleci.com" :subject anything :body anything) => anything :times 1))
+
+(fact "notify email handles multiple committers"
+  (binding [circle.backend.email/send-email? false]
+    (successful? (run-build (minimal-build :actions [(successful-action "1")]
+                                           :commits [{:author {:name "Allen"
+                                                               :email "allen@circleci.com"}}
+                                                     {:author {:name "Paul"
+                                                               :email "paul@circleci.com"}}]
+                                           :notify-email [:committer]))) => truthy) 
+  (provided
+    (circle.backend.email/send :to "allen@circleci.com" :subject anything :body anything) => anything :times 1
+    (circle.backend.email/send :to "paul@circleci.com" :subject anything :body anything) => anything :times 1))
+
+(fact "build emails contain the name of the project"
+  (binding [circle.backend.email/send-email? false]
+    (successful? (run-build (minimal-build :project-name "Test Project"
+                                           :actions [(successful-action "1")]
+                                           :commits [{:author {:name "Allen"
+                                                               :email "a@circleci.com"}}]
+                                           :notify-email [:committer]))) => truthy)
+  (provided
+    (circle.backend.email/send :to anything :subject anything :body #"Test Project") => anything :times 1))

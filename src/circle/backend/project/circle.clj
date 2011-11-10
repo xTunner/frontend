@@ -73,7 +73,8 @@
         before (map #(apply % []) (-> known-actions name :prefix))
         after (map #(apply % []) (-> known-actions name :suffix))
         config-data {:build-num num
-                     :actions (concat before actions after)}]
+                     :actions (concat before actions after)
+                     :notify-email (-> config name :notify-email)}]
     (merge config-data circle-db-data)))
 
 (defn circle-build []

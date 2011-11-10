@@ -1,6 +1,7 @@
 (ns circle.backend.email
   (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.util.args :only (require-args)])
+  (:require [circle.env :as env])
   (:refer-clojure :exclude [send])
   (:import (org.apache.commons.mail SimpleEmail
 	                            DefaultAuthenticator)))
@@ -9,6 +10,10 @@
 (def friendly-name "Circle Builds")
 (def password "powerful development did finally")
 (def smtp-server "smtp.gmail.com")
+
+(def ^:dynamic send-email? (if env/production?
+                             true
+                             false))
 
 (defn send 
   ; translated from
@@ -38,4 +43,5 @@
       (.put "mail.smtp.socketFactory.class" "javax.net.ssl.SSLSocketFactory")
       (.put "mail.smtp.socketFactory.fallback" "false")
       (.put "mail.smtp.starttls.enable" "true"))
-    (future (.send email))))
+    (when send-email?
+      (future (.send email)))))
