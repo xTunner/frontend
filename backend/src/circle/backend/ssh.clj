@@ -2,6 +2,8 @@
   (:require pallet.execute
             pallet.compute)
   (:use [circle.util.args :only (require-args)])
+  (:use [robert.bruce :only (try-try-again)])
+  (:use [clojure.tools.logging :only (errorf)])
   (:require [clj-ssh.ssh :as ssh]))
 
 (defn slurp-stream
@@ -57,8 +59,14 @@
           session (ssh/session ip-addr
                                :username username
                                :strict-host-key-checking :no)]
-      (ssh/with-connection session
-        (f session)))))
+      (try-try-again
+       {:sleep 1000
+        :tries 30
+        :catch [com.jcraft.jsch.JSchException]
+        :error-hook (fn [e] (errorf "caught %s" e))}
+       #(try
+          (ssh/with-connection session
+            (f session)))))))
 
 (defn remote-exec
   "Node is a map containing the keys required by with-session"

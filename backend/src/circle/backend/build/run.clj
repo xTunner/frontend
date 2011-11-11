@@ -25,9 +25,8 @@
   (doseq [act (-> @build :actions)]
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
-        (build/build-log "running" (-> act :name))
-        (action/with-action build act
-          (-> act :act-fn (.invoke build))))))
+        (build/build-log "running %s" (-> act :name))
+        (action/run-action build act))))
   (stop* build)
   build)
 
@@ -46,9 +45,7 @@
     (build/with-pwd "" ;; bind here, so actions can set! it
       (build/with-build-log build
         (do-build* build)
-        (if (-> @build :notify-email)
-          (email/send-build-email build)
-          (infof "build %s has no notify, not sending email" @build))))
+        (email/notify-build-results build)))
     build
     (catch Exception e
       (dosync (alter build assoc :failed? true))
@@ -59,5 +56,4 @@
     (finally
      (log-result build)
      (when (and (-> @build :failed?) cleanup-on-failure) 
-       
        (cleanup-nodes build)))))

@@ -17,11 +17,24 @@
             [pallet.thread-expr :as thread-expr]
             [circle.backend.nodes :as nodes]))
 
-;; The pallet  configuration to build the circle box
+;; this is our "memoized" circle box
 (def circle-group
   (pallet.core/group-spec
    "circle"
-   :circle-node-spec {:ami "ami-06ad526f"
+   :circle-node-spec {:ami "ami-a5c70ecc"
+                      :availability-zone "us-east-1a"
+                      :instance-type "m1.small"
+                      :keypair-name "www"
+                      :security-groups ["www" "allow-DB"]
+                      :username "ubuntu"
+                      :public-key (slurp "www.id_rsa.pub")
+                      :private-key (slurp "www.id_rsa")}))
+
+;; The configuration to build the circle box from scratch
+(def circle-raw-group
+  (pallet.core/group-spec
+   "circle"
+   :circle-node-spec {:ami "ami-06ad526f" ;; clean ubuntu 11.10
                       :availability-zone "us-east-1a"
                       :instance-type "m1.small"
                       :keypair-name "www"

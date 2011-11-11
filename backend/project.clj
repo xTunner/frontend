@@ -46,6 +46,7 @@
                  [fs "0.9.0"]
                  [clj-time "0.3.1"]
                  [doric "0.5.0"]
+                 [robert/bruce "0.7.1"]
                  
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
@@ -63,7 +64,7 @@
                  [org.cloudhoist/postgres "0.6.1"]
                  [org.cloudhoist/rubygems "0.6.0"]
                  [org.cloudhoist/java "0.5.1"]
-                 [org.cloudhoist/nginx "3614ffb8e35fbf312893ec386d0aaa771ab81d2d"]
+                 [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
                  [lein-daemon "0.4.1"]
                  [pallet-rvm "0.1"]

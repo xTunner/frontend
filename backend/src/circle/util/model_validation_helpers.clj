@@ -36,6 +36,14 @@
   (fn [obj]
     (map-predicate #(require-key* obj %) keys)))
 
+(defn allow-keys
+  "Validates that the map MAY contain keys listed, and no keys not listed"
+  [allowed-keys & [msg]]
+  (fn [obj]
+    (let [extra-keys (clojure.set/difference (set (keys obj)) (set allowed-keys))]
+      (when (seq extra-keys)
+        (or msg (format "keys %s are not allowed" (clojure.string/join "," extra-keys)))))))
+
 (defn key-type
   "Validates that the column is of the specified class"
   [k cls]

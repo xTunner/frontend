@@ -14,7 +14,9 @@
                      vcs-revision ;; if present, the commit that caused the build to be run, or nil
                      aws-credentials ;; map containing :user and :password
                      r53-zone-id ;; zone-id of the domain we're managing. Required for DNS updates.
-                     notify-email ;; an email address to notify when build is done
+                     notify-email ;; a seq of email addresses to notify when build is done
+                     repository
+                     commits
                      actions      ;; a seq of actions
                      action-results
                      group ;; the pallet group spec to use for the build
@@ -45,6 +47,9 @@
 
 (def ^{:dynamic true
        :doc "present working directory on the build box commands will run in"} *pwd* "")
+
+(def ^{:dynamic true
+       :doc "A map of nvironment variables that will be set when commands are run"} *env* {})
 
 (defmacro with-pwd
   "When set, each command will start in the specified directory. Dir is a string."

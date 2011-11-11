@@ -1,8 +1,13 @@
 build:
   type: build
+  node: www   # name of node to use. unique per-project
   commands:
     - lein deps
     - lein midje
+  on-success: deploy # another build to trigger if this one is successful
+  notify-email:   # list of people to email about build results. Recognized keys, :committer, :owner, or email literals.
+    - :committer
+    - :owner
 
 deploy:
   type: deploy
@@ -13,4 +18,4 @@ deploy:
         environment:
           CIRCLE_ENV: "production"
           SWANK: "true"
-    - sudo /etc/init.d/nginx :start
+    - sudo /etc/init.d/nginx start
