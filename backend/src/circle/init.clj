@@ -1,4 +1,4 @@
-(ns circle.init
+(ns circle.Init ;; capitalized for JRuby
   ;; (:require circle.swank)
   (:require circle.db)
   (:require circle.web)
@@ -7,7 +7,7 @@
   ;; (:require circle.backend.nodes
   ;;           circle.backend.project.rails
   ;;           circle.backend.project.circle)
-  (:gen-class :main true)
+  (:gen-class :name circle.Init :main true)
   )
 
 (def init*
