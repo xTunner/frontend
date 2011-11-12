@@ -68,10 +68,10 @@
                :vcs-revision (-> github-json :commits last :id)
                :num-nodes 1}))
       (infof "process-json: build: %s" @build)
-      (run/add-build build))))
+      (run/run-build build))))
 
 (defpage [:post "/github-commit"] []
   (infof "github post: %s" *request*)
   (def last-request *request*)
-  (let [github-json (json/decode (-> *request* :params :payload))]
+  (let [github-json (future (json/decode (-> *request* :params :payload)))]
     {:status 200 :body ""}))
