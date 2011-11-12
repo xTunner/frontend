@@ -63,10 +63,10 @@
             priv-key (String. (.getValue pass))
             _ (when priv-key (println "found key" priv-key))
             session (when priv-key
-                      (-> (circle.backend.ssh/session :username username
-                                                      :ip-addr (-> uri (str) (clj-url.core/parse) :host)
-                                                      :public-key nil
-                                                      :private-key priv-key)))]
+                      (circle.backend.ssh/session {:username username
+                                                   :ip-addr (-> uri (str) (clj-url.core/parse) :host)
+                                                   :public-key nil
+                                                   :private-key priv-key}))]
         (if session
           (do
             (clj-ssh.ssh/connect session)

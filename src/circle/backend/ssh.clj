@@ -46,7 +46,7 @@
 (defn session
   "Creates an SSH session on an arbitrary box. All keys are
   required."
-  [& {:keys [username ip-addr public-key private-key]}]
+  [{:keys [username ip-addr public-key private-key]}]
   (require-args username ip-addr private-key)
   (let [agent (ssh/create-ssh-agent false)
         _ (ssh/add-identity agent "bogus"
@@ -62,7 +62,7 @@
 (defn with-session
   "Calls f, a function of one argument, the ssh session, while connected."
   [session-args f]
-  (let [s (apply-map session session-args)]
+  (let [s (session session-args)]
     (try-try-again
      {:sleep 1000
       :tries 30
