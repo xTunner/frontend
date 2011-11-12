@@ -1,9 +1,9 @@
 (ns circle.backend.build.email
   (:require [circle.backend.build :as build])
   (:require [circle.backend.email :as email])
+  (:use [clojure.core.incubator :only (-?>)])
   (:use [clojure.tools.logging :only (infof)])
-  (:use [arohner.utils :only (inspect)])
-  (:require [clojure.string :as str]))
+  (:use [arohner.utils :only (inspect)]))
 
 (defn email-subject [build]
   (if (build/successful? build)
@@ -42,7 +42,7 @@
 
 (defn translate-recipient [build to]
   (condp = to
-    :owner [(-> @build :repository :owner :email)]
+    :owner (-?> @build :repository :owner :email (vector))
     :committer (->> (-> @build :commits)
                     (map (fn [c]
                            (-> c :author :email))))

@@ -6,6 +6,7 @@
   (:require [circle.backend.action.bash :as bash])
   (:use [circle.backend.build :only (*pwd*)])
   (:use [circle.backend.action.bash :only (remote-bash-build)])
+  (:use midje.sweet)
   (:use [circle.backend.action.user :only (home-dir)]))
 
 (defn vcs-type
@@ -28,26 +29,17 @@
   (println "checking out" url " to " path)
   (if revision
     (remote-bash-build build (bash/quasiquote
-                        (git clone ~url ~path --no-checkout)
-                        (cd ~path)
-                        (git checkout ~revision)))
+                              (git clone ~url ~path --no-checkout)
+                              (cd ~path)
+                              (git checkout ~revision)))
     (remote-bash-build build (bash/quasiquote
-                        (git clone ~url ~path --depth 1)))))
+                              (git clone ~url ~path --depth 1)))))
 
 (defmethod checkout-impl :default [{:keys [vcs]}]
   (throw (Exception. "don't know how to check out code of type" vcs)))
 
 (defn checkout-dir [build]
   (str (home-dir build) "/" (-> @build :project-name) "-" (-> @build :build-num)))
-
-(defn github-http->ssh
-  "Given a github http url, return the ssh version.
-
-  https://github.com/arohner/CircleCI.git -> git@github.com:arohner/CircleCI.git"
-  [http-url]
-  (let [repo (-> (re-find #"^https://github.com/(.*)$" http-url)
-                 (get 1))]
-    (str "git@github.com:" repo)))
 
 (defaction checkout []
   {:name "checkout"}
