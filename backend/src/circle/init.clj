@@ -7,7 +7,7 @@
   ;; (:require circle.backend.nodes
   ;;           circle.backend.project.rails
   ;;           circle.backend.project.circle)
-  (:gen-class :name circle.Init :main true)
+  (:gen-class :name circle.Init)
   )
 
 (def init*
