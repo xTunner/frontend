@@ -12,5 +12,7 @@ class HomeController < ApplicationController
 
     circle.run "circle.Init/-main"
     circle.init
+
+    JRClj.new("circle.util.time").ju_now
   end
 end

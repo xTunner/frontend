@@ -8,11 +8,10 @@ require "active_resource/railtie"
 # gem is loaded. clojure.jar is currently provided as part of the
 # circle uberjar.
 require 'java'
-Dir["#{File.dirname(__FILE__)}/../classes/*.jar"].each do |jar|
-  #$CLASSPATH << File.join(Rails.root, "classes")
-  require jar
+$CLASSPATH << "#{File.dirname(__FILE__)}/../../backend/src/"
+Dir["#{File.dirname(__FILE__)}/../../backend/lib/*.jar"].each do |jar|
+   require jar
 end
-
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
