@@ -44,29 +44,36 @@
      :out (str stdout)
      :err (str stderr)}))
 
-(defn with-session
+(defn session
   "Creates an SSH session on an arbitrary box. All keys are
-  required. f is a function of one argument, the ssh session, which
-  can be used with functions in clj-ssh.ssh"
-  [{:keys [username ip-addr public-key private-key]} f]
+  required."
+  [& {:keys [username ip-addr public-key private-key]}]
+  (require-args username ip-addr private-key)
+  (let [agent (ssh/create-ssh-agent false)
+        _ (ssh/add-identity agent "bogus"
+                            (.getBytes private-key)
+                            (when public-key
+                              (.getBytes public-key)) nil)
+        session (ssh/session agent
+                             ip-addr
+                             :username username
+                             :strict-host-key-checking :no)]
+    session))
+
+(defn with-session
+  "Calls f, a function of one argument, the ssh session, while connected."
+  [session-args f]
   (require-args username ip-addr public-key private-key)
-  (ssh/with-ssh-agent []
-    ;; JSch wants a name for each keypair, it will not store duplicate
-    ;; keypair names on repeated calls to add-identity. But we always use a new agent, so we're fine.
-    (let [_ (ssh/add-identity ssh/*ssh-agent* "bogus" 
-                              (.getBytes private-key)
-                              (.getBytes public-key) nil)
-          session (ssh/session ip-addr
-                               :username username
-                               :strict-host-key-checking :no)]
-      (try-try-again
-       {:sleep 1000
-        :tries 30
-        :catch [com.jcraft.jsch.JSchException]
-        :error-hook (fn [e] (errorf "caught %s" e))}
-       #(try
-          (ssh/with-connection session
-            (f session)))))))
+  (let [s (session session-args)]
+    (try-try-again
+     {:sleep 1000
+      :tries 30
+      :catch [com.jcraft.jsch.JSchException]
+      :error-hook (fn [e] (errorf "caught %s" e))}
+     #(try
+        (ssh/with-connection 
+          (f session))))))
+
 
 (defn remote-exec
   "Node is a map containing the keys required by with-session"
