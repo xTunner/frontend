@@ -46,6 +46,8 @@
                  [clj-time "0.3.1"]
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
+                 [org.eclipse.jgit/org.eclipse.jgit "1.1.0.201109151100-r"]
+                 [com.cemerick/pomegranate "0.0.1"]
                  
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
