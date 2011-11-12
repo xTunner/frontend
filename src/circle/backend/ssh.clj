@@ -1,10 +1,9 @@
 (ns circle.backend.ssh
-  (:require pallet.execute
-            pallet.compute)
-  (:use [circle.util.args :only (require-args)])
-  (:use [robert.bruce :only (try-try-again)])
+  (:require [clj-ssh.ssh :as ssh])
   (:use [clojure.tools.logging :only (errorf)])
-  (:require [clj-ssh.ssh :as ssh]))
+  (:use [robert.bruce :only (try-try-again)])
+  (:use [circle.util.args :only (require-args)])
+  (:use [circle.util.core :only (apply-map)]))
 
 (defn slurp-stream
   "given an input stream, read as much as possible and return it"
@@ -63,16 +62,15 @@
 (defn with-session
   "Calls f, a function of one argument, the ssh session, while connected."
   [session-args f]
-  (require-args username ip-addr public-key private-key)
-  (let [s (session session-args)]
+  (let [s (apply-map session session-args)]
     (try-try-again
      {:sleep 1000
       :tries 30
       :catch [com.jcraft.jsch.JSchException]
       :error-hook (fn [e] (errorf "caught %s" e))}
      #(try
-        (ssh/with-connection 
-          (f session))))))
+        (ssh/with-connection s
+          (f s))))))
 
 
 (defn remote-exec
