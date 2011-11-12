@@ -14,7 +14,7 @@
 
                  ;; Web
                  [noir "1.2.0"]
-                 [clj-url "1.0.2"]
+                 [clj-url "1.0.3"]
                  [clj-http "0.2.1"]
                  [clj-r53 "1.0.1"]
                  [commons-email "1.1"]
@@ -24,9 +24,6 @@
                  ;; DB
                  [c3p0 "0.9.1.2"]
                  [congomongo "0.1.7"]
-
-                 ;; log4mongo-java isn't available in maven repos. Checked into extra-jars/
-                 [org.log4mongo/log4mongo-java "0.7.0"]
                  
                  ;; Logging
                  [log4j "1.2.16"]
@@ -34,6 +31,8 @@
                  [org.slf4j/slf4j-api "1.6.2"]
                  [org.slf4j/slf4j-log4j12 "1.6.2"]
                  [org.clojure/tools.logging "0.2.3"]
+                 [org.log4mongo/log4mongo-java "0.7.0"]
+                 
                  [vmfest "0.2.3"]
                  
                  ;; Misc

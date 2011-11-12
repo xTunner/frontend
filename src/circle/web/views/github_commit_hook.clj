@@ -7,7 +7,7 @@
   (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.project.circle :as circle])
-  (:use [circle.backend.action.vcs :only (github-http->ssh)])
+  (:use [circle.backend.github-url :only (->ssh)])
   (:use [circle.backend.build :only (extend-group-with-revision)])
   (:use [clojure.tools.logging :only (infof)])
   (:use circle.web.views.common))
@@ -62,17 +62,16 @@
       (dosync
        (alter build merge 
               {:notify-email (-> github-json :repository :owner :email)
-               :vcs-url (github-http->ssh (-> github-json :repository :url))
+               :vcs-url (->ssh (-> github-json :repository :url))
                :repository (-> github-json :repository)
                :commits (-> github-json :commits)
                :vcs-revision (-> github-json :commits last :id)
                :num-nodes 1}))
       (infof "process-json: build: %s" @build)
-      (run/run-build build))))
+      (run/add-build build))))
 
 (defpage [:post "/github-commit"] []
   (infof "github post: %s" *request*)
   (def last-request *request*)
   (let [github-json (json/decode (-> *request* :params :payload))]
-    (def last-future (future (process-json github-json)))
     {:status 200 :body ""}))
