@@ -1,4 +1,5 @@
 (ns circle.backend.email
+  (:use [clojure.tools.logging :only (infof)])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.util.args :only (require-args)])
   (:require [circle.env :as env])
@@ -20,7 +21,7 @@
   ; http://forums.sun.com/thread.jspa?threadID=5351826, because
   ; apparently the naive way doesn't work.
   [& {:keys [to subject body] :as args}]
-  (println "email/send:" args)
+  (infof "sending: %s" (dissoc args :body))
   (require-args to subject body)
   (throw-if-not (> (count body) 1) "body must have at least one char")
   (let [email (new SimpleEmail)]

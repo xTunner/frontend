@@ -84,3 +84,9 @@
                                            :notify-email [:committer]))) => truthy)
   (provided
     (circle.backend.email/send :to anything :subject anything :body #"Test Project") => anything :times 1))
+
+(fact "build email doesn't throw when the owner is unknown"
+  (binding [circle.backend.email/send-email? false]
+    (successful? (run-build (minimal-build :project-name "Test Project"
+                                           :actions [(successful-action "1")]
+                                           :notify-email [:owner]))) => truthy))
