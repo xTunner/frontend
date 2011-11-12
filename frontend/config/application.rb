@@ -4,6 +4,16 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "active_resource/railtie"
 
+# Load clojure jars. clojure.jar needs to be loaded before the jrclj
+# gem is loaded. clojure.jar is currently provided as part of the
+# circle uberjar.
+require 'java'
+Dir["#{File.dirname(__FILE__)}/../classes/*.jar"].each do |jar|
+  #$CLASSPATH << File.join(Rails.root, "classes")
+  require jar
+end
+
+
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
   Bundler.require(*Rails.groups(:assets => %w(development test)))
