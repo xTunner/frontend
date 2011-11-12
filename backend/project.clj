@@ -79,8 +79,8 @@
                      [lein-daemon "0.4.1"]
                      [swank-clojure "1.4.0-SNAPSHOT"]
                      [clojure-source "1.2.1"]]
-  :main circle.Init ;; careful https://github.com/marick/Midje/issues/12
+  :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
   :jvm-opts ~jvm-opts
-  :daemon {:web {:ns circle.Init
+  :daemon {:web {:ns circle.init
                  :pidfile "circle.pid"}})
 
