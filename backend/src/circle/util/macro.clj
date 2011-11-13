@@ -1,6 +1,6 @@
 (ns circle.util.macro
   (:require [clojure.string :as str])
-;  (:use midje.sweet)
+  (:use midje.sweet)
   )
 
 (defn decompose-defn-args* [& args]
@@ -40,20 +40,20 @@
   [& args]
   `(apply decompose-defn-args* (quote ~args)))
 
-;; (fact
-;;   "decompose works"
-;;   (let [resp (decompose-defn-args foo [x] (+ x x))]
-;;     (:name resp) => 'foo
-;;     (-> resp :arities count) => 1
-;;     (-> resp :arities (first) :params) => '[x]
-;;     (-> resp :arities (first) :body) => '((+ x x))))
+(fact
+  "decompose works"
+  (let [resp (decompose-defn-args foo [x] (+ x x))]
+    (:name resp) => 'foo
+    (-> resp :arities count) => 1
+    (-> resp :arities (first) :params) => '[x]
+    (-> resp :arities (first) :body) => '((+ x x))))
 
-;; (fact "decompose handles multiple arities"
-;;   (let [resp (decompose-defn-args bar ([x] (+ x x)) ([x y] (+ x y)))]
-;;     (:name resp) => 'bar
-;;     (-> resp :arities count) => 2
-;;     (-> resp :arities (second) :params) => '[x y]
-;;     (-> resp :arities (second) :body) => '((+ x y))))
+(fact "decompose handles multiple arities"
+  (let [resp (decompose-defn-args bar ([x] (+ x x)) ([x y] (+ x y)))]
+    (:name resp) => 'bar
+    (-> resp :arities count) => 2
+    (-> resp :arities (second) :params) => '[x y]
+    (-> resp :arities (second) :body) => '((+ x y))))
 
 (defn defn-map* [arg-map]
   (let [defn-args (filter identity ((juxt :name :doc :attr-map) arg-map))

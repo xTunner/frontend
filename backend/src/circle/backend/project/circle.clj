@@ -13,7 +13,7 @@
   (:require [clojure.contrib.io :as io])
   (:use [circle.backend.action.tag :only (tag-revision)])
   (:use [circle.util.core :only (apply-if)])
-;  (:use [midje.sweet])
+  (:use [midje.sweet])
   )
 
 (defn circle-read-config-file
@@ -56,11 +56,11 @@
         pwd (-> cmd (first) (val) :pwd)]
     (bash body :environment env :pwd pwd)))
 
-;; (fact "parse-action-map works"
-;;   (let [cmd {(keyword "lein daemon start \":web\"") {:environment {:CIRCLE_ENV "production", :SWANK "true"}}}]
-;;     (parse-action-map cmd) => truthy
-;;     (provided
-;;       (bash "lein daemon start \":web\"" :environment {:CIRCLE_ENV "production", :SWANK "true"} :pwd nil) => truthy :times 1)))
+(fact "parse-action-map works"
+  (let [cmd {(keyword "lein daemon start \":web\"") {:environment {:CIRCLE_ENV "production", :SWANK "true"}}}]
+    (parse-action-map cmd) => truthy
+    (provided
+      (bash "lein daemon start \":web\"" :environment {:CIRCLE_ENV "production", :SWANK "true"} :pwd nil) => truthy :times 1)))
 
 (defn parse-action [cmd]
   (cond
