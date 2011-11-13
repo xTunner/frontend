@@ -8,8 +8,8 @@ require "active_resource/railtie"
 # gem is loaded. clojure.jar is currently provided as part of the
 # circle uberjar.
 require 'java'
-$CLASSPATH << "#{File.dirname(__FILE__)}/../../backend/src/"
-Dir["#{File.dirname(__FILE__)}/../../backend/lib/*.jar"].each do |jar|
+$CLASSPATH << "#{File.dirname(__FILE__)}/../backend/src/"
+Dir["#{File.dirname(__FILE__)}/../backend/lib/*.jar"].each do |jar|
    require jar
 end
 
