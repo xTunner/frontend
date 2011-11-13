@@ -46,6 +46,7 @@
                  [clj-time "0.3.1"]
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
+                 [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
                  [org.eclipse.jgit/org.eclipse.jgit "1.1.0.201109151100-r"]
                  [com.cemerick/pomegranate "0.0.1"]
                  
