@@ -67,6 +67,12 @@
    (string? cmd) (bash cmd)
    (map? cmd) (parse-action-map cmd)))
 
+(defn parse-notify [notifies]
+  (for [n notifies]
+    (if (re-find #"^:" n)
+      (keyword (.substring n 1))
+      n)))
+
 (defn fetch-data [num name]
   "Return a build object by combining config files, db contents and defaults"
   (let [config (circle-read-config-file)
@@ -75,7 +81,7 @@
         after (map #(apply % []) (-> known-actions name :suffix))
         config-data {:build-num num
                      :actions (concat before actions after)
-                     :notify-email (-> config name :notify-email)}]
+                     :notify-email (-> config name :notify-email (parse-notify))}]
     (merge config-data circle-db-data)))
 
 (defn circle-build []
