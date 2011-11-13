@@ -13,8 +13,7 @@
   (:require [clojure.contrib.io :as io])
   (:use [circle.backend.action.tag :only (tag-revision)])
   (:use [circle.util.core :only (apply-if)])
-  (:use [midje.sweet])
-  )
+  (:use [midje.sweet]))
 
 (defn circle-read-config-file
   []
