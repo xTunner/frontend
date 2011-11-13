@@ -1,9 +1,9 @@
 (ns circle.backend.build.email
-  (:require [circle.backend.build :as build])
-  (:require [circle.backend.email :as email])
-  (:use [clojure.core.incubator :only (-?>)])
+  (:require [clojure.string :as str])
   (:use [clojure.tools.logging :only (infof)])
-  (:use [arohner.utils :only (inspect)]))
+  (:use [clojure.core.incubator :only (-?>)])
+  (:require [circle.backend.build :as build])
+  (:require [circle.backend.email :as email]))
 
 (defn email-subject [build]
   (if (build/successful? build)
