@@ -2,8 +2,11 @@ build:
   type: build
   node: www   # name of node to use. unique per-project
   commands:
-    - lein deps
-    - lein midje
+    - lein deps:
+        pwd: Circle-1/backend
+    - lein midje:
+        pwd: Circle-1/backend
+    
   on-success: deploy # another build to trigger if this one is successful
   notify-email:   # list of people to email about build results. Recognized keys, :committer, :owner, or email literals.
     - :committer
@@ -13,8 +16,10 @@ deploy:
   type: deploy
 
   commands:
-    - lein deps
+    - lein deps:
+        pwd: Circle-2/backend
     - lein daemon start ":web":
+        pwd: Circle-2/backend
         environment:
           CIRCLE_ENV: "production"
           SWANK: "true"
