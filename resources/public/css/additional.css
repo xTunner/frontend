@@ -25,62 +25,16 @@
 	background: url("../img/bullet_blue.png") no-repeat top left;
 }
 
-.list_black li {
-	padding: 0 0 0 15px;
-	background: url("../img/bullet_black.png") no-repeat top left;
-}
-
 .list_green li {
-	padding: 0 0 0 15px;
-	background: url("../img/bullet_green.png") no-repeat top left;
-}
-
-.list_yellow li {
-	padding: 0 0 0 15px;
-	background: url("../img/bullet_yellow.png") no-repeat top left;
-}
-
-.list_teal li {
-	padding: 0 0 0 15px;
-	background: url("../img/bullet_teal.png") no-repeat top left;
-}
-
-.list_cherry li {
-	padding: 0 0 0 15px;
-	background: url("../img/bullet_cherry.png") no-repeat top left;
+    padding: 0 0 0 15px;
+    background: url("../img/bullet_green.png") no-repeat top left;
 }
 
 /* For buttons */
 
-.button_large_orange, .button_large_green, .button_large_yellow, .button_large_brown, .button_large_black {
+.button_large_green {
 	margin: 0 20px;
 }
-
-.button_large_orange {
-	border: 5px solid #EBEBEB !important;
-	text-shadow: -1px -1px 0 #CF7815 !important;
-	background: #C7480C !important;
-	background: url("../img/bg_fallback_cta_orange.gif") repeat-x center left !important;
-	background: -moz-linear-gradient(top, #FCA11C, #EC8317 50%, #E15F10 50%, #C7480C) !important;
-	background: -webkit-gradient(linear, left top, left bottom, from(#FCA11C), color-stop(50%, #EC8317), color-stop(50%, #E15F10), to(#C7480C)) !important;
-	-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-}
-
-	.button_large_orange:hover {
-		background: #C7480C !important;
-		background: url("../img/bg_fallback_cta_orange.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top, #FCA11C, #C7480C) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#FCA11C), to(#C7480C)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
-
-	.button_large_orange:active {
-		background: #C7480C !important;
-		background: url("../img/bg_fallback_cta_orange.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top,#C7480C, #FCA11C) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#C7480C), to(#FCA11C)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
 
 .button_large_green {
 	border: 5px solid #EBEBEB !important;
@@ -108,83 +62,6 @@
 		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
 	}
 
-.button_large_yellow {
-	border: 5px solid #EBEBEB !important;
-	text-shadow: -1px -1px 0 #CA9E0E !important;
-	background: #DF5A0B !important;
-	background: url("../img/bg_fallback_cta_yellow.gif") repeat-x center left !important;
-	background: -moz-linear-gradient(top, #EBC810, #EBAF10 50%, #DF810B 50%, #DF5A0B) !important;
-	background: -webkit-gradient(linear, left top, left bottom, from(#EBC810), color-stop(50%, #EBAF10), color-stop(50%, #DF810B), to(#DF5A0B)) !important;
-	-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-}
-
-	.button_large_yellow:hover {
-		background: #27876C !important;
-		background: url("../img/bg_fallback_cta_black.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top, #EBC810, #DF5A0B) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#EBC810), to(#DF5A0B)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
-
-	.button_large_yellow:active {
-		background: #27876C !important;
-		background: url("../img/bg_fallback_cta_black.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top,#DF5A0B, #EBC810) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#DF5A0B), to(#EBC810)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
-
-.button_large_brown {
-	border: 5px solid #EBEBEB !important;
-	text-shadow: -1px -1px 0 #593A2E !important;
-	background: #34221B !important;
-	background: url("../img/bg_fallback_cta_brown.gif") repeat-x center left !important;
-	background: -moz-linear-gradient(top, #794E3E, #613E32 50%, #462E24 50%, #34221B) !important;
-	background: -webkit-gradient(linear, left top, left bottom, from(#794E3E), color-stop(50%, #613E32), color-stop(50%, #462E24), to(#34221B)) !important;
-	-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-}
-
-	.button_large_brown:hover {
-		background: #C7480C !important;
-		background: url("../img/bg_fallback_cta_brown.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top, #794E3E, #34221B) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#794E3E), to(#34221B)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
-
-	.button_large_brown:active {
-		background: #C7480C !important;
-		background: url("../img/bg_fallback_cta_brown.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top,#34221B, #794E3E) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#34221B), to(#794E3E)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
-
-.button_large_black {
-	border: 5px solid #EBEBEB !important;
-	text-shadow: -1px -1px 0 #000000 !important;
-	background: #000000 !important;
-	background: url("../img/bg_fallback_cta_black.gif") repeat-x center left !important;
-	background: -moz-linear-gradient(top, #737373, #3A3A3A 50%, #292929 50%, #000000) !important;
-	background: -webkit-gradient(linear, left top, left bottom, from(#737373), color-stop(50%, #3A3A3A), color-stop(50%, #292929), to(#000000) !important);
-	-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-}
-
-	.button_large_black:hover {
-		background: #C7480C !important;
-		background: url("../img/bg_fallback_cta_black.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top, #737373, #000000) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#737373), to(#000000)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
-
-	.button_large_black:active {
-		background: #C7480C !important;
-		background: url("../img/bg_fallback_cta_black.gif") repeat-x center left !important;
-		background: -moz-linear-gradient(top,#000000, #737373) !important;
-		background: -webkit-gradient(linear, left top, left bottom, from(#000000), to(#737373)) !important;
-		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
-	}
 
 /*
  * Circle-specific rules from here on.
