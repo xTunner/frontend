@@ -1,37 +1,12 @@
 (ns circle.backend.action.bash
   (:use [arohner.utils :only (inspect)])
   (:require pallet.action-plan)
-  (:use [circle.util.core :only (apply-map apply-if)])
-  (:use [circle.util.predicates :only (named?)])
+  (:use [circle.util.core :only (apply-map)])
   (:use [circle.backend.build :only (*pwd* *env* log-ns build-log build-log-error)])
+  (:require [circle.sh :as sh])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.action :as action]))
-
-(defmacro quasiquote [& forms]
-  `(pallet.stevedore/quasiquote ~forms))
-
-(defn maybe-name
-  "Returns "
-  [x]
-  (apply-if (named? x) name x))
-
-(defn format-bash-cmd [body environment pwd]
-  (let [cd-form (when (seq pwd)
-                  (quasiquote (cd ~pwd)))
-        env-form (map (fn [[k v]]
-                        (format "export %s=%s" (maybe-name k) (maybe-name v))) environment)]
-    (concat cd-form env-form body)))
-
-(defn emit-form [body & {:keys [environment pwd]}]
-  (let [body (if (string? body)
-               [body]
-               body)
-        body (format-bash-cmd body environment (or pwd *pwd*))]
-    (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
-      (pallet.stevedore/with-line-number [*file* (:line (meta body))]
-        (binding [pallet.stevedore/*script-ns* *ns*]
-          (pallet.stevedore/emit-script body))))))
 
 (defn remote-bash
   "Execute bash code on the remote server.
@@ -39,7 +14,7 @@
    ssh-map is a map containing the keys :username, :public-key, :private-key :ip-addr. All keys are required."
   [ssh-map body & {:keys [environment
                           pwd]}]
-  (let [cmd (emit-form body
+  (let [cmd (sh/emit-form body
                        :environment environment
                        :pwd pwd)
         result (ssh/remote-exec ssh-map cmd)]
