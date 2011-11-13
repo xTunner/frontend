@@ -1,0 +1,168 @@
+
+/*************************************/
+/*** Additional elements rule sets ***/
+/*** These rule sets can be used if you wish to apply a different style than the default to the elements listed here ***/
+
+.element_type_title {
+	padding: 10px 0 9px 0;
+	border-top: 5px solid #D8D8D8;
+	border-bottom: 1px solid #D8D8D8;
+	margin: 40px 0 20px 0;
+}
+
+.push {
+	margin: 0 20px;
+}
+
+/* For lists */
+
+.list_blue, .list_black, .list_green, .list_yellow, .list_teal, .list_cherry {
+	margin: 0 0 20px;
+}
+
+.list_blue li {
+	padding: 0 0 0 15px;
+	background: url("../img/bullet_blue.png") no-repeat top left;
+}
+
+.list_green li {
+    padding: 0 0 0 15px;
+    background: url("../img/bullet_green.png") no-repeat top left;
+}
+
+/* For buttons */
+
+.button_large_green {
+	margin: 0 20px;
+}
+
+.button_large_green {
+	border: 5px solid #EBEBEB !important;
+	text-shadow: -1px -1px 0 #6DBA42 !important;
+	background: #2EB72B !important;
+	background: url("../img/bg_fallback_cta_green.gif") repeat-x center left !important;
+	background: -moz-linear-gradient(top, #A9E058, #77D94A 50%, #55C336 50%, #2EB72B) !important;
+	background: -webkit-gradient(linear, left top, left bottom, from(#A9E058), color-stop(50%, #77D94A), color-stop(50%, #55C336), to(#2EB72B)) !important;
+	-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
+}
+
+	.button_large_green:hover {
+		background: #2EB72B !important;
+		background: url("../img/bg_fallback_cta_green.gif") repeat-x center left !important;
+		background: -moz-linear-gradient(top, #A9E058, #2EB72B) !important;
+		background: -webkit-gradient(linear, left top, left bottom, from(#A9E058), to(#2EB72B)) !important;
+		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
+	}
+
+	.button_large_green:active {
+		background: #2EB72B !important;
+		background: url("../img/bg_fallback_cta_green.gif") repeat-x center left !important;
+		background: -moz-linear-gradient(top,#2EB72B, #A9E058) !important;
+		background: -webkit-gradient(linear, left top, left bottom, from(#2EB72B), to(#A9E058)) !important;
+		-webkit-background-clip: padding-box !important; /* fix for Chrome anti-aliasing issue */
+	}
+
+
+/*
+ * Circle-specific rules from here on.
+ */
+
+
+#left-panel {
+  width: 470px;
+  height: 320px;
+  float: left;
+}
+
+#right-panel {
+  width: 470px;
+  float: right;
+  height: 320px;
+
+  /* This is the only place I can
+   * get the button to sit in the
+   * right place. */
+  text-align: center; 
+}
+
+
+/* Vertical centering from
+ * http://www.jakpsatweb.cz/css/css-vertical-center-solution.html
+ */
+.vcenter1 {
+  display: table;
+  #position: relative;
+  overflow: hidden;
+}
+
+.vcenter2 {
+  #position: absolute;
+  #top: 50%;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.vcenter3 {
+  #position: relative;
+  #top: -50%;
+}
+
+.move-right {
+  /* Move the form closer to the
+   * center of the page. */
+  padding: 0 0px 0 50px;
+}
+
+
+/* The nice blue background for the form */
+.blue-box {
+  background: #2378A1;
+  border-radius: 18px;
+  -moz-border-radius: 18px;
+  border: 1px solid;
+  border-color: #2378A1;
+  width: 350px;
+}
+
+/* Center the text and move the whole title
+ * a litte bit closer to the center of the
+ * page. */
+#cititle {
+  text-align: center;
+  padding: 0 0px 0 50px;
+}
+
+/* The part of the "form" area which
+ * actually has the HTML form in it. */
+#actualform {
+  padding: 0px 20px 0 20px;
+  text-align: left;
+}
+
+/* The title of the form */
+.takepart {
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 20px 0 20px;
+}
+
+#actualform text-field {
+  margin-bottom: 10px;
+}
+
+/* Make the entire label sit to the right of
+ * the check-box. */
+#contact-label {
+  margin: -22px 0px 0 22px;
+  clear:both;
+  display:block;
+}
+
+.whenready {
+  color: #ffffff;
+  text-align: left;
+  padding: 0px 20px 0 25px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
