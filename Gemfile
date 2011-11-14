@@ -3,8 +3,10 @@ source 'http://rubygems.org'
 gem 'rails', '3.1.1'
 gem 'sqlite3'
 
-gem 'jruby-openssl'
-gem 'jrclj', :git => "git://github.com/pbiggar/jrclj.git"
+if RUBY_PLATFORM == 'java'
+  gem 'jruby-openssl'
+  gem 'jrclj', :git => "git://github.com/pbiggar/jrclj.git"
+end
 
 gem 'jquery-rails'
 gem "rspec-rails", ">= 2.7.0", :group => [:development, :test]

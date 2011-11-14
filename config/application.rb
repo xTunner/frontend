@@ -4,14 +4,17 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "active_resource/railtie"
 
-# Load clojure jars. clojure.jar needs to be loaded before the jrclj
-# gem is loaded. clojure.jar is currently provided as part of the
-# circle uberjar.
-require 'java'
-$CLASSPATH << "#{File.dirname(__FILE__)}/../backend/src/"
-Dir["#{File.dirname(__FILE__)}/../backend/lib/*.jar"].each do |jar|
-   require jar
+if RUBY_PLATFORM == 'java'
+  # Load clojure jars. clojure.jar needs to be loaded before the jrclj
+  # gem is loaded. clojure.jar is currently provided as part of the
+  # circle uberjar.
+  require 'java'
+  $CLASSPATH << "#{File.dirname(__FILE__)}/../backend/src/"
+  Dir["#{File.dirname(__FILE__)}/../backend/lib/*.jar"].each do |jar|
+    require jar
+  end
 end
+
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
