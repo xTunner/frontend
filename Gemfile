@@ -4,7 +4,7 @@ gem 'rails', '3.1.1'
 gem 'sqlite3'
 
 gem 'jruby-openssl'
-gem 'jrclj'
+gem 'jrclj', :git => "git://github.com/pbiggar/jrclj.git"
 
 gem 'jquery-rails'
 gem "rspec-rails", ">= 2.7.0", :group => [:development, :test]
