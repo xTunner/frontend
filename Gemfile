@@ -36,6 +36,8 @@ end
 group :development do
   gem 'haml-rails'
   gem 'rake'
+  gem 'hpricot'
+  gem 'ruby_parser'
 end
 
 
