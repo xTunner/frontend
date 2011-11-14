@@ -28,7 +28,8 @@
   (let [body (if (string? body)
                [body]
                body)
-        body (format-bash-cmd body environment (or pwd *pwd*))]
+        pwd (if pwd (str *pwd* "/" pwd) *pwd*)
+        body (format-bash-cmd body environment pwd)]
     (pallet.stevedore/with-script-language :pallet.stevedore.bash/bash
       (pallet.stevedore/with-line-number [*file* (:line (meta body))]
         (binding [pallet.stevedore/*script-ns* *ns*]
