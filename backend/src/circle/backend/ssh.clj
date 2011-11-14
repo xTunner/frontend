@@ -62,13 +62,13 @@
 (defn with-session
   "Calls f, a function of one argument, the ssh session, while connected."
   [session-args f]
-  (let [s (session session-args)]
-    (try-try-again
-     {:sleep 1000
-      :tries 30
-      :catch [com.jcraft.jsch.JSchException]
-      :error-hook (fn [e] (errorf "caught %s" e))}
-     #(try
+  (try-try-again
+   {:sleep 1000
+    :tries 30
+    :catch [com.jcraft.jsch.JSchException]
+    :error-hook (fn [e] (errorf "caught %s" e))}
+   #(try
+      (let [s (session session-args)]
         (ssh/with-connection s
           (f s))))))
 

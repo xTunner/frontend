@@ -1,8 +1,9 @@
 (ns circle.backend.action.bash
+  "functions for running bash on remote instances, and build actions for same."
   (:use [arohner.utils :only (inspect)])
   (:require pallet.action-plan)
   (:use [circle.util.core :only (apply-map)])
-  (:use [circle.backend.build :only (*pwd* *env* log-ns build-log build-log-error)])
+  (:use [circle.backend.build :only (*env* log-ns build-log build-log-error)])
   (:require [circle.sh :as sh])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])
