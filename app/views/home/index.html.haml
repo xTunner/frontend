@@ -3,13 +3,14 @@
     #header
       %h1#logo
         %a{:href => "/", :title => "Go to Circle homepage"}
-          %img#circle{:src => "/img/circle-transparent.png"}/
-          %img#circle-word{:src => "/img/circle-word.png"}/
+          = image_tag("circle-transparent.png", :class => "circle")
+          = image_tag("circle-word.png", :class => "circle-word")
+
       %ul#nav
         %li
-          %a.current_page{:href => "/"} Signup
+          = link_to "Signup", "/", :class => "current_page"
         %li
-          %a{:href => "/login"} Login
+          = link_to "Login", "/login"
       .clear
   #pitch_wrap
     #pitch
@@ -45,19 +46,19 @@
     #content
       #main_content_wide.left
         .box_medium.feature.separator_r
-          %img{:height => "55", :src => "img/icon_feature_04.png", :width => "60"}/
+          = image_tag "icon_feature_04.png", :height => "55", :width => "60"
           %h3 Minimal configuration
           %p In most cases, we'll just need access to your repo.
         .box_medium.feature
-          %img{:height => "55", :src => "img/icon_feature_01.png", :width => "60"}/
+          = image_tag "icon_feature_01.png", :height => "55", :width => "60"
           %h3 Go home early
           %p Push to a branch, and we'll automatically merge once the tests pass.
         .box_medium.feature.separator_r
-          %img{:height => "55", :src => "img/icon_feature_02.png", :width => "60"}/
+          = image_tag "icon_feature_02.png", :height => "55", :width => "60"
           %h3 Lightning fast tests
           %p Find out as soon as something breaks, using automatic parallelization, dependency analysis and test prioritization.
         .box_medium.feature
-          %img{:height => "55", :src => "img/icon_feature_03.png", :width => "60"}/
+          = image_tag "icon_feature_03.png", :height => 55, :width => "60"
           %h3 Continuous deployment
           %p Deploy your web app to prodution automatically once tests pass. Revert automatically based on your analytics data.
   .clear
@@ -69,7 +70,7 @@
     #social_info.box_small.separator_r
       %ul
         %li#twitter
-          %a{:href => "http://twitter.com/circleci"} follow @circleci
+          = link_to "follow @circleci", "http://twitter.com/circleci"
     #contact_info.box_small
       %h5/
       %ul
