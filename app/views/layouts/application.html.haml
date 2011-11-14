@@ -3,13 +3,19 @@
   %head
     %title Circle - Continuous Integration made easy
 
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+    %meta{:content => "Continuous Integration made easy", :name => "description"}
+    %meta{:content => "Circle, heroku, continuous integration, continuous deployment, CI, github", :name => "keywords"}
+    %meta{:content => "rCckS33lTuN6tiIrxLMykv_uRR0dMoHNM4XrR4yYUQ0", :name => "google-site-verification"}
+
     = stylesheet_link_tag    "application"
+    %link{:href => "http://fonts.googleapis.com/css?family=PT+Sans", :media => "screen", :rel => "stylesheet", :type => "text/css"}
     /[if lte IE 8]
       = stylesheet_link_tag  "conditional/ie"
 
     = javascript_include_tag "application"
     /[if lte IE 10]
-      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      %script{:src => "http://html5shiv.googlecode.com/svn/trunk/html5.js"}
 
     = csrf_meta_tags
 
@@ -22,11 +28,8 @@
         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();    %meta{:content => "rCckS33lTuN6tiIrxLMykv_uRR0dMoHNM4XrR4yYUQ0", :name => "google-site-verification"}/
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
-    %meta{:content => "Continuous Integration made easy", :name => "description"}/
-    %meta{:content => "Circle, heroku, continuous integration, continuous deployment, CI, github", :name => "keywords"}/
-    %link{:href => "http://fonts.googleapis.com/css?family=PT+Sans", :media => "screen", :rel => "stylesheet", :type => "text/css"}/
+      })();
+
 
   %body
     = yield
