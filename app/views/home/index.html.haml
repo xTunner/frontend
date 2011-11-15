@@ -2,13 +2,13 @@
   #header_wrap
     #header
       %h1#logo
-        %a{:href => "/", :title => "Go to Circle homepage"}
+        %a{:href => root_path, :title => "Go to Circle homepage"}
           = image_tag("circle-transparent.png", :class => "circle")
           = image_tag("circle-word.png", :class => "circle-word")
 
       %ul#nav
         %li
-          = link_to "Signup", "/", :class => "current_page"
+          = link_to "Signup", root_path, :class => "current_page"
         %li
           = link_to "Login", "/login"
       .clear
