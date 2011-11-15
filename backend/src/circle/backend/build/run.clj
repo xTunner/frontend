@@ -55,7 +55,7 @@
       (throw e))
     (finally
      (log-result b)
-     (finished b)
+     ;;(finished b)
      (when (and (-> @b :failed?) cleanup-on-failure) 
        (cleanup-nodes b)))))
 
