@@ -23,14 +23,15 @@
       yaml/parse-string))
 
 ;; The info we should have in the database
-(def circle-db-data {:project-name "Circle"
-                     :vcs-url "git@github.com:arohner/CircleCI.git"
-                     :vcs-revision (last-remote-commit)
-                     :aws-credentials circle.aws-credentials/AWS-access-credentials
-                     :r53-zone-id "ZBVDNEPFXWZR2"
-                     :num-nodes 1
-                     :lb-name "www"
-                     :group circle/circle-group})
+(defn circle-db-data []
+  {:project-name "Circle"
+   :vcs-url "git@github.com:arohner/CircleCI.git"
+   :vcs-revision (last-remote-commit)
+   :aws-credentials circle.aws-credentials/AWS-access-credentials
+   :r53-zone-id "ZBVDNEPFXWZR2"
+   :num-nodes 1
+   :lb-name "www"
+   :group circle/circle-group})
 
 (def known-actions {:build {:prefix [start-nodes checkout]
                             :suffix [stop-nodes]}
@@ -77,7 +78,7 @@
                         {:notify-email (-> config name :notify-email (parse-notify))
                          :build-num num
                          :actions []}
-                        circle-db-data))
+                        (circle-db-data)))
         actions (doall (map (partial parse-action b) (-> config name :commands)))
         before (map #(apply % []) (-> known-actions name :prefix))
         after (map #(apply % []) (-> known-actions name :suffix))]
