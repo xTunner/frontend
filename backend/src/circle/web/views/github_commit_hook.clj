@@ -73,5 +73,6 @@
 (defpage [:post "/github-commit"] []
   (infof "github post: %s" *request*)
   (def last-request *request*)
-  (let [github-json (future (json/decode (-> *request* :params :payload)))]
+  (let [github-json (json/decode (-> *request* :params :payload))]
+    (future (process-json github-json))
     {:status 200 :body ""}))
