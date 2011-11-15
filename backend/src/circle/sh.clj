@@ -4,9 +4,7 @@
   (:require [clojure.java.shell :as sh])
   (:use [circle.util.predicates :only (named?)])
   (:use [circle.backend.build :only (*env*)])
-  ;; (:require [circle.backend.build.pwd :as pwd])
-  (:use [circle.util.core :only (apply-if)])
-  (:use [arohner.utils :only (inspect)]))
+  (:use [circle.util.core :only (apply-if)]))
 
 (defmacro quasiquote [& forms]
   `(pallet.stevedore/quasiquote ~forms))
@@ -43,7 +41,7 @@
   ;; don't use c.j.shell's built-in support for :env and :dir, because
   ;; we'll have to use this code remotely, so prefer consistency
   ;; between local and remote.
-  (sh/sh "bash" :in (inspect (emit-form body :environment environment :pwd pwd)) 
+  (sh/sh "bash" :in (emit-form body :environment environment :pwd pwd) 
          :return-map true))
 
 (defmacro shq
