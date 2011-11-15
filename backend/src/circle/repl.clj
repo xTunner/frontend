@@ -7,7 +7,8 @@
     (use 'clojure.repl)
     (use '[clojure.contrib.ns-utils :only (docs)])
     (use '[clojure.contrib.repl-utils :exclude (apropos source)])
-    (use '[circle.backend.ec2 :only (instances print-instances)]))
+    (use '[circle.backend.ec2 :only (instances print-instances)])
+    (require '[somnium.congomongo :as mongo]))
   (println "repl/init done"))
 
 
