@@ -61,8 +61,7 @@
     (let [build (circle/circle-build)]
       (dosync
        (alter build merge 
-              {:notify-email (-> github-json :repository :owner :email)
-               :vcs-url (->ssh (-> github-json :repository :url))
+              {:vcs-url (->ssh (-> github-json :repository :url))
                :repository (-> github-json :repository)
                :commits (-> github-json :commits)
                :vcs-revision (-> github-json :commits last :id)
