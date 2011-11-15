@@ -11,9 +11,8 @@
   `(when (not ~test)
      (throwf ~@format-args)))
 
-(defmacro maybe
-  "Assuming that the body of code returns X, this macro returns X in
-  the case of no error and nil otherwise."
+(defmacro eat
+  "Executes body, catching all exceptions. Returns the result of body, or nil if exceptions where caught"
   [& body]
   `(try
      (do ~@body)

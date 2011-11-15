@@ -5,7 +5,7 @@
   (:require [circle.backend.build.run :as run])
   (:require circle.db)
   (:use [circle.backend.build.utils :only (minimal-build)])
-  (:use [circle.util.except :only (maybe)]))
+  (:use [circle.util.except :only (eat)]))
 
 (circle.db/init)
 
@@ -15,10 +15,10 @@
     (assert username)
     {:username username
      :ip-addr "localhost"
-     :public-key (or (maybe (slurp (format "%s/id_rsa.pub" ssh-dir)))
-                     (maybe (slurp (format "%s/id_dsa.pub" ssh-dir))))
-     :private-key (or (maybe (slurp (format "%s/id_rsa" ssh-dir)))
-                      (maybe  (slurp (format "%s/id_dsa" ssh-dir))))}))
+     :public-key (or (eat (slurp (format "%s/id_rsa.pub" ssh-dir)))
+                     (eat (slurp (format "%s/id_dsa.pub" ssh-dir))))
+     :private-key (or (eat (slurp (format "%s/id_rsa" ssh-dir)))
+                      (eat (slurp (format "%s/id_dsa" ssh-dir))))}))
 
 (defn localhost-name []
   (clojure.java.shell/sh "hostname"))
