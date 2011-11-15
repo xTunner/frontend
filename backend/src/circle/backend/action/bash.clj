@@ -16,8 +16,9 @@
   [ssh-map body & {:keys [environment
                           pwd]}]
   (let [cmd (sh/emit-form body
-                       :environment environment
-                       :pwd pwd)
+                          :environment environment
+                          :pwd pwd)
+        _ (build-log "running %s" body pwd environment cmd)
         result (ssh/remote-exec ssh-map cmd)]
     result))
 

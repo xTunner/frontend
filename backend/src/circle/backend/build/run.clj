@@ -35,25 +35,27 @@
     (infof "Build %s successful" (build/build-name b))
     (errorf "Build %s failed" (build/build-name b))))
 
-(defn run-build [build & {:keys [cleanup-on-failure]
+(defn run-build [b & {:keys [cleanup-on-failure]
                           :or {cleanup-on-failure true}}]
-  (def last-build build)
-  (infof "starting build: %s" (build/build-name build))
-  (when (= :deploy (:type build))
-    (throw-if-not (:vcs-revision build) "version-control revision is required for deploys"))
+  (def last-build b)
+  (infof "starting build: %s" (build/build-name b))
+  (when (= :deploy (:type b))
+    (throw-if-not (:vcs-revision b) "version-control revision is required for deploys"))
   (try
-    (build/with-pwd "" ;; bind here, so actions can set! it
-      (build/with-build-log build
-        (do-build* build)
-        (email/notify-build-results build)))
-    build
+    ;; pwd/with-pwd (build/build-dir b)
+    (build/with-build-log b
+      (do-build* b)
+      (email/notify-build-results b))
+    b
     (catch Exception e
-      (dosync (alter build assoc :failed? true))
-      (error e (format "caught exception on %s %s" (-> build :project-name) (-> build :build-num)))
+      (dosync (alter b assoc :failed? true))
+      (error e (format "caught exception on %s %s" (-> b :project-name) (-> b :build-num)))
       (when env/production?
-        (email/send-build-error-email build e))
+        (email/send-build-error-email b e))
       (throw e))
     (finally
-     (log-result build)
-     (when (and (-> @build :failed?) cleanup-on-failure) 
-       (cleanup-nodes build)))))
+     (log-result b)
+     (finished b)
+     (when (and (-> @b :failed?) cleanup-on-failure) 
+       (cleanup-nodes b)))))
+

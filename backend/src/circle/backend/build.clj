@@ -1,4 +1,6 @@
 (ns circle.backend.build
+  "Main definition of the Build object. "
+  (:require [clojure.string :as str])
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
@@ -31,31 +33,31 @@
   (ref (merge build-defaults args)))
 
 (defn extend-group-with-revision
-  "update the build with a new group that extends the existing group at the :group key."
+  "update the build, setting the pallet group-name to extends the
+  existing group with the VCS revision."
   [build]
   (dosync
    (alter build
           assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project-name) (-> @build :vcs-revision))))))
   build)
 
-(defn build-name [build]
-  (str (-> @build :project-name) "-" (-> @build :build-num)))
+(defn build-name
+  ([build]
+     (build-name (-> @build :project-name) (-> @build :build-num)))
+  ([project-name build-num]
+     (str project-name "-" build-num)))
+
+(defn checkout-dir
+  "Directory where the build will be checked out, on the build box."
+  [build]
+  (str/replace (build-name build) #" " ""))
 
 (defn successful? [build]
   (and (-> @build :stop-time)
        (-> @build :continue?)))
 
 (def ^{:dynamic true
-       :doc "present working directory on the build box commands will run in"} *pwd* "")
-
-(def ^{:dynamic true
-       :doc "A map of nvironment variables that will be set when commands are run"} *env* {})
-
-(defmacro with-pwd
-  "When set, each command will start in the specified directory. Dir is a string."
-  [dir & body]
-  `(binding [*pwd* ~dir]
-     ~@body))
+       :doc "A map of environment variables that will be set when commands are run"} *env* {})
 
 (defn log-ns
   "returns the name of the logger to use for this build "

@@ -34,6 +34,10 @@
         resp (bash/remote-bash (localhost-ssh-map) (sh/quasiquote (echo ~foo ~bar)))]
     resp => (clojure.java.shell/sh "echo" "foo" "bar")))
 
+(fact "remote-bash works with pwd"
+  (let [resp (bash/remote-bash (localhost-ssh-map) (sh/quasiquote (stat "zero")) :pwd "/dev")]
+    (-> resp :exit) => 0))
+
 (fact "bash actions are named after their commands"
   (let [build (minimal-build :actions [(bash/bash "hostname")])]
     (-> @build :actions (first) :name) => "hostname"))
@@ -51,4 +55,3 @@
     (binding [bash/ssh-map-for-build (fn [build] (localhost-ssh-map))]
       (let [result (run/run-build build)]
         (-> @build :action-results (first) :out (first) :message) => "bar\n"))))
-
