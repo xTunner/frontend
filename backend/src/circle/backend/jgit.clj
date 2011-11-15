@@ -23,12 +23,12 @@
 
 (defn clone
   "Clone a git repo at url, writing the directory to path"
-  [url & {:keys [path username ssh-priv-key]}]
+  [url & {:keys [path username ssh-key]}]
   (let [path (or path (default-repo-path url))
         repo (FileRepository. path)
         cmd (Git/cloneRepository)
-        cp (when (and username ssh-priv-key) 
-             (.setCredentialsProvider cmd (UsernamePasswordCredentialsProvider. username ssh-priv-key)))]
+        cp (when (and username ssh-key) 
+             (.setCredentialsProvider cmd (UsernamePasswordCredentialsProvider. username ssh-key)))]
     (.setURI cmd url)
     (when path
       (.setDirectory cmd (File. path)))
