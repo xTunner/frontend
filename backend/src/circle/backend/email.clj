@@ -45,4 +45,4 @@
       (.put "mail.smtp.socketFactory.fallback" "false")
       (.put "mail.smtp.starttls.enable" "true"))
     (when send-email?
-      (future (.send email)))))
+      (.send email))))
