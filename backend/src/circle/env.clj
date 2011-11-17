@@ -12,6 +12,10 @@
 (def local? (= env :local))
 (throw-if-not (= 1 (count (filter true? [production? staging? local?]))))
 
+(when production?
+  (alter-var-root (var midje.semi-sweet/*include-midje-checks*) (constantly false))
+  (alter-var-root (var clojure.test/*load-tests*) (constantly false)))
+
 (defn last-local-commit []
   (->
    (sh "git" "log" "-1" "--pretty=format:%H")
