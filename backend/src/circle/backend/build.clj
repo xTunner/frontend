@@ -4,6 +4,8 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
+  (:use [circle.util.model-validation :only (valid?)])
+  (:use [circle.util.model-validation-helpers :only (is-ref?)])
   (:use [clojure.tools.logging :only (log)]))
 
 (def build-defaults {:continue? true
@@ -49,8 +51,10 @@
 
 (defn checkout-dir
   "Directory where the build will be checked out, on the build box."
-  [build]
-  (str/replace (build-name build) #" " ""))
+  ([build]
+     (checkout-dir (-> @build :project-name) (-> @build :build-num)))
+  ([project-name build-num]
+     (str/replace (build-name project-name build-num) #" " "")))
 
 (defn successful? [build]
   (and (-> @build :stop-time)

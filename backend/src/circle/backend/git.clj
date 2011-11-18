@@ -1,6 +1,7 @@
 (ns circle.backend.git
   "fns for interacting with git."
   (:import java.io.File)
+  (:use [circle.util.core :only (printfln)])
   (:use [arohner.utils :only (inspect)])
   (:require [circle.sh :as sh]))
 
@@ -65,6 +66,10 @@
   (let [path (or path (default-repo-path url))]
     (if (repo-exists? path)
       (if update
-        (pull path))
-      (clone url :path path :ssh-key ssh-key))))
+        (do
+          (printfln "updating %s" path)
+          (pull path)))
+      (do
+        (printfln "cloning %s into %s" url path)
+        (clone url :path path :ssh-key ssh-key)))))
 

@@ -7,12 +7,13 @@
 (defn apply-map
   "Takes a fn and any number of arguments. Applies the arguments like
   apply, except that the last argument is converted into keyword
-  pairs, for functions that keyword arguments."
+  pairs, for functions that keyword arguments.
+
+  (apply foo :a :b {:c 1 :d 2}) => (foo :a :b :c 1 :d 2)"
   [f & args*]
   (let [normal-args (butlast args*)
         m (last args*)]
     (apply f (concat normal-args (flatten (seq m))))))
-
 
 (defn seq1
   "Converts a normal seq, with chunking behavior, to one-at-a-time. See http://blog.fogus.me/2010/01/22/de-chunkifying-sequences-in-clojure/"

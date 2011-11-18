@@ -1,4 +1,6 @@
 (ns circle.env
+  (:require midje.semi-sweet)
+  (:require clojure.test)
   (:use [clojure.java.shell :only (sh)])
   (:use [clojure.contrib.except :only (throw-if-not)]))
 

@@ -2,23 +2,18 @@
   "fns for running code locally, and compiling stevedore to bash"
   (:require pallet.stevedore)
   (:require [clojure.java.shell :as sh])
-  (:use [circle.util.predicates :only (named?)])
+  (:use [circle.util.coerce :only (to-name)])
   (:use [circle.backend.build :only (*env*)])
   (:use [circle.util.core :only (apply-if)]))
 
 (defmacro quasiquote [& forms]
   `(pallet.stevedore/quasiquote ~forms))
 
-(defn maybe-name
-  "Returns "
-  [x]
-  (apply-if (named? x) name x))
-
 (defn format-bash-cmd [body environment pwd]
   (let [cd-form (when (seq pwd)
                   (quasiquote (cd ~pwd)))
         env-form (map (fn [[k v]]
-                        (format "export %s=%s" (maybe-name k) (maybe-name v))) environment)]
+                        (format "export %s=%s" (to-name k) (to-name v))) environment)]
     (concat cd-form env-form body)))
 
 (defn emit-form

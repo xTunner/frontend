@@ -18,3 +18,10 @@
      (do ~@body)
      (catch Exception e#
        nil)))
+
+(defmacro assert!
+  "Asserts expr is truthy. Returns expr on success, or throws msg"
+  [expr & msg]
+  `(let [r# ~expr]
+     (throw-if-not r# ~@(or msg ["%s returned %s" ~expr expr]))
+     r#))
