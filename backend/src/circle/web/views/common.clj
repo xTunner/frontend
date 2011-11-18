@@ -10,7 +10,7 @@
 (defn css [path & {:keys [rel type media title] :as opts}]
   [:link (merge {:href (resolve-uri path)} opts)])
 
-(defn center-vertically 
+(defn center-vertically
   "Take the provided div and center it vertically, by adding classes and
   wrapping it's contents in more divs. It relies on additional.css having
   .vcenter{1,2,3} defined."
@@ -21,7 +21,7 @@
     [tag property-map [:div.vcenter2 (apply vector :div.vcenter3 inner-tags)]]))
 
 
-(defn center-vertically-span 
+(defn center-vertically-span
   "Take the provided div and center it vertically, by adding classes and
   wrapping it's contents in more divs. It relies on additional.css having
   .vcenter{1,2,3} defined."
@@ -87,7 +87,8 @@
        (unordered-list {:id "nav"}
                        [(link-to {:class "current_page"}
                                  "/" "Signup")
-                        (login-box)])
+;                        (login-box)
+                        ])
        [:div.clear]]]
      content
      [:div.clear]
