@@ -8,6 +8,7 @@
   (:require [circle.sh :as sh])
   (:use [circle.backend.action.bash :only (remote-bash-build)])
   (:require [circle.backend.build :as build])
+  (:require fs)
   (:use midje.sweet)
   (:use [circle.backend.action.user :only (home-dir)]))
 
