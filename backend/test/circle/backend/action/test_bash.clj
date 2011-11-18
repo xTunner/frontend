@@ -4,7 +4,7 @@
   (:require [circle.sh :as sh])
   (:require [circle.backend.build.run :as run])
   (:require circle.db)
-  (:use [circle.backend.build.utils :only (minimal-build)])
+  (:use [circle.backend.build.test-utils :only (minimal-build)])
   (:use [circle.util.except :only (eat)]))
 
 (circle.db/init)
