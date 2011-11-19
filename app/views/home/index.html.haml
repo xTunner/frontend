@@ -20,7 +20,11 @@
           %br
           made easy
       != centering("right-panel") do
-        = render 'signup_form'
+        - if flash[:done]
+          = render 'youre_done'
+        - else
+          = render 'signup_form'
+
       .clear
   #content_wrap
     #content
