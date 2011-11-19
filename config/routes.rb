@@ -1,10 +1,10 @@
 MongoidTest::Application.routes.draw do
 
-  root :to => "home#index"
   # devise_for :users
   # resources :users, :only => :create
 
-  match '/', :to => 'home#create', :action => :create
+  match '/', :to => 'home#create', :action => :create, :via => [:post]
+  root :to => "home#index"
 
 
   # The priority is based upon order of creation:

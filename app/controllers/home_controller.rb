@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
-  def new
+  def index
     @signup = Signup.new
 
     # clj = JRClj.new
@@ -18,5 +18,6 @@ class HomeController < ApplicationController
 
   def create
     Signup.create(:email => params[:email], :contact => params[:contact])
+    redirect_to root_path
   end
 end
