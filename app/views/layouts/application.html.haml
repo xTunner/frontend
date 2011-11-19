@@ -8,7 +8,7 @@
     %meta{:content => "Circle, heroku, continuous integration, continuous deployment, CI, github", :name => "keywords"}
     %meta{:content => "rCckS33lTuN6tiIrxLMykv_uRR0dMoHNM4XrR4yYUQ0", :name => "google-site-verification"}
 
-    -# Beware, the ordering matters here!!    
+    -# Beware, the ordering matters here!!
     = stylesheet_link_tag    "reset"
     = stylesheet_link_tag    "core"
     = stylesheet_link_tag    "colors_blue_and_green"
@@ -24,17 +24,7 @@
 
     = csrf_meta_tags
 
-    :javascript
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-25580673-1']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
+    = render :partial => 'google-analytics'
 
   %body
     = yield
