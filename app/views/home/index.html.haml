@@ -14,17 +14,13 @@
       .clear
   #pitch_wrap
     #pitch
-      #left-panel.vcenter1
-        .vcenter2
-          .vcenter3
-            %h1#cititle
-              Continuous Integration
-              %br
-              made easy
-      #right-panel.vcenter1
-        .vcenter2
-          .vcenter3
-            = render 'signup_form'
+      != centering("left-panel") do
+        %h1#cititle
+          Continuous Integration
+          %br
+          made easy
+      != centering("right-panel") do
+        = render 'signup_form'
       .clear
   #content_wrap
     #content
