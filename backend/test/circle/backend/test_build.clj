@@ -1,6 +1,6 @@
 (ns circle.backend.test-build
   (:use midje.sweet)
-  (:use [circle.backend.build.utils :only (minimal-build)])
+  (:use [circle.backend.build.test-utils :only (minimal-build)])
   (:use circle.backend.build))
 
 (fact "checkout-dir handles spaces"

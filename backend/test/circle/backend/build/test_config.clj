@@ -3,7 +3,7 @@
   (:use circle.backend.build.config)
   (:use [circle.backend.build :only (checkout-dir)])
   (:use [circle.backend.action.bash :only (bash)])
-  (:use [circle.backend.build.utils :only (minimal-build circle-config circle-project circle-github-json)])
+  (:use [circle.backend.build.test-utils :only (minimal-build circle-config circle-project circle-github-json)])
   (:use [circle.util.predicates :only (ref?)]))
 
 (fact "parse-action-map works"

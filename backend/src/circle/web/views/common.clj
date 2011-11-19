@@ -87,7 +87,7 @@
        (unordered-list {:id "nav"}
                        [(link-to {:class "current_page"}
                                  "/" "Signup")
-;                        (login-box)
+                        ;; (login-box)
                         ])
        [:div.clear]]]
      content
