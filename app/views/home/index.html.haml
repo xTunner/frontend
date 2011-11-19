@@ -24,34 +24,7 @@
       #right-panel.vcenter1
         .vcenter2
           .vcenter3
-            .move-right
-              .blue-box
-                %h2.takepart Sign up for the beta
-                %p.whenready We'll email you when we're ready.
-
-                %form{:action => "/",
-                      :method => "POST",
-                      :onsubmit => 'if (this.email.value == "Email address") { this.email.style.background = "red"; return false; }'}
-                  %fieldset#actualform
-                    %ul
-                      %li
-                        %input#email{:name => "email",
-                                     :onblur => "if (this.value == '') { this.value = 'Email address'};",
-                                     :onfocus => "this.style.background = 'white'; if (this.value == 'Email address') { this.value=''};",
-                                     :type => "text",
-                                     :value => "Email address"}
-                      %li
-                        %input#contact{:checked => "checked",
-                                       :name => "contact",
-                                       :type => "checkbox",
-                                       :value => "true"}
-                      %li
-                        %div
-                          %div
-                            %label#contact-label{:for => "contact"} May we contact you to ask about your platform, stack, test suite, etc?
-                  %fieldset
-                    %input.call_to_action{:type => "submit",
-                                          :value => "Get Notified"}
+            = render 'signup_form'
       .clear
   #content_wrap
     #content
