@@ -1,0 +1,49 @@
+nodes:
+  www:
+    ami: ami-a5c70ecc
+    instance-type: "m1.small"
+    username: ubuntu
+  
+    ## following only necessary for deployment
+    availability-zone: "us-east-1a" # customers *could* specify this, probably shouldn't care.
+    public-key: "backend/www.id_rsa.pub"
+    private-key: "backend/www.id_rsa"
+
+jobs:  
+  build:
+    template: build
+    node: www   # name of node to use. unique per-project
+    commands:
+      - lein deps:
+          pwd: backend
+      - lein midje:
+          pwd: backend
+          environment:
+            CIRCLE_ENV: "staging"
+    #  on-success: deploy # another build to trigger if this one is successful
+    notify-email:
+      # Recognized keys, :committer, :owner, or email literals.
+      - :committer
+      - :owner
+
+  deploy:
+    template: deploy
+    commands:
+      - lein deps:
+          pwd: backend
+      - lein daemon start ":web":
+          pwd: backend
+          environment:
+            CIRCLE_ENV: "production"
+            SWANK: "true"
+      - sudo /etc/init.d/nginx start
+
+schedule:
+  commit:
+    job: build
+  nightly:
+    job: long-tests  
+  
+    # branches:
+    #   only:
+    #   exclude:  

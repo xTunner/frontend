@@ -4,12 +4,14 @@
   (:use [circle.util.core :only (apply-map)]
         [circle.util.except :only (throwf)]
         [circle.util.args :only (require-args)])
-  (:use [clojure.tools.logging :only (infof error)])
+  (:use [clojure.tools.logging :only (infof error errorf)])
+  (:use [robert.bruce :only (try-try-again)])
   (:use [clojure.core.incubator :only (-?>)])
   (:use [arohner.utils :only (inspect)])
   (:use [doric.core :only (table)])
   (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
+           com.amazonaws.AmazonClientException
            com.amazonaws.AmazonServiceException
            (com.amazonaws.services.ec2.model CreateImageRequest
                                              DeleteKeyPairRequest
@@ -25,7 +27,14 @@
 (defmacro with-ec2-client
   [client & body]
   `(let [~client (AmazonEC2Client. aws-credentials)]
-     ~@body))
+     (try-try-again
+      {:sleep 1000
+       :tries 30
+       :catch [AmazonClientException
+               AmazonServiceException]
+       :error-hook (fn [e#] (errorf "caught %s" e#))}
+      #(do
+         ~@body))))
 
 (defn availability-zones []
   (-> (AmazonEC2Client. aws-credentials)

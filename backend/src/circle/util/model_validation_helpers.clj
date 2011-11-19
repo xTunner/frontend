@@ -1,4 +1,5 @@
-(ns circle.util.model-validation-helpers)
+(ns circle.util.model-validation-helpers
+  (:use [circle.util.predicates :only (ref?)]))
 
 (defmacro require-predicate [f & msg]
   `(fn [o#]
@@ -59,6 +60,9 @@
 
 (defn is-map? [& [msg]]
   (require-predicate map? msg))
+
+(defn is-ref? [& [msg]]
+  (require-predicate ref? msg))
 
 (defn maybe
   "HOF, takes a predicate, and returns a fn that is true if argument passed in is nil, or passes the predicate.

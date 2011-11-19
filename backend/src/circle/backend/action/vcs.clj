@@ -1,12 +1,14 @@
 (ns circle.backend.action.vcs
+  "build actions for checking out code."
   (:require [clj-url.core :as url])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.backend.action :only (defaction)])
   (:use [clojure.tools.logging :only (infof)])
   (:require [circle.backend.action.bash :as bash])
   (:require [circle.sh :as sh])
-  (:use [circle.backend.build :only (*pwd*)])
   (:use [circle.backend.action.bash :only (remote-bash-build)])
+  (:require [circle.backend.build :as build])
+  (:require fs)
   (:use midje.sweet)
   (:use [circle.backend.action.user :only (home-dir)]))
 
@@ -39,8 +41,8 @@
 (defmethod checkout-impl :default [{:keys [vcs]}]
   (throw (Exception. "don't know how to check out code of type" vcs)))
 
-(defn checkout-dir [build]
-  (str (home-dir build) "/" (-> @build :project-name) "-" (-> @build :build-num)))
+(defn checkout-dir [b]
+  (fs/join (home-dir b) (build/build-name b)))
 
 (defaction checkout []
   {:name "checkout"}
@@ -51,5 +53,4 @@
                                      :path dir
                                      :vcs (-> @build :vcs-url vcs-type)
                                      :revision (-> @build :vcs-revision)}))]
-      (set! *pwd* dir)
       result)))

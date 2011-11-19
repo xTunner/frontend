@@ -1,6 +1,7 @@
 (ns circle.model.project
   (:use [circle.util.validation :only (validate defn-v)])
   (:use [circle.util.model-validation :only (validate!)])
+  (:use [circle.util.except :only (assert!)])
   (:require [circle.backend.github-url :as github])
   (:use [circle.util.model-validation-helpers :only (require-keys key-types col-predicate)])
   (:require [somnium.congomongo :as mongo]))
@@ -16,9 +17,9 @@
 
 (defn project [& {:keys [name
                          vcs-type
-                         vcs-url ;; the url that github will call us on the post-commit hook
+                         vcs-url ;; the canonical url for the repo. Must match the URL that github will provide in the post-commit hook
                          aws-credentials
-                         github-ssh-key ;; an SSH private key authorized to checkout code
+                         ssh-key ;; an SSH private key authorized to checkout code
                          ami-id
                          actions]
                   :as args}]
@@ -34,5 +35,8 @@
 (defn-v get-by-url [url]
   (mongo/fetch-one :projects :where {:vcs-url url}))
 
-(defn github-ssh-key-for-url [url]
-  (-> url (get-by-url) :githb-ssh-key))
+(defn get-by-url! [url]
+  (assert! (get-by-url url) "Project with url %s not found" url))
+
+(defn ssh-key-for-url [url]
+  (-> url (get-by-url!) :ssh-key))

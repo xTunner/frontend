@@ -15,6 +15,11 @@
 ;;
 ;; https-url: used for git over http, https://arohner@github.com/arohner/CircleCI.git
 
+(defn github?
+  "True if this URL belongs to github.com"
+  [url]
+  (-> url (url/parse) :host (->> (re-find #"github.com")) (boolean)))
+
 (defn url-type
   "returns :top, :ssh or :http or nil if unrecognized"
   [u]

@@ -22,6 +22,7 @@
   (pallet.core/group-spec
    "circle"
    :circle-node-spec {:ami "ami-a5c70ecc"
+                      :name "www"
                       :availability-zone "us-east-1a"
                       :instance-type "m1.small"
                       :keypair-name "www"

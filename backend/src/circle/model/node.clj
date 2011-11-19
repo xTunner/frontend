@@ -4,8 +4,7 @@
   (:use [circle.util.model-validation-helpers :only (require-keys key-types)])
   (:require [somnium.congomongo :as mongo]))
 
-(def node-validation [(require-keys [:name :ami :username :keypair-name :public-key :private-key])
-                      (key-types {:name String})])
+(def node-validation [(require-keys [:name :project-id :ami :username :keypair-name :public-key :private-key])])
 
 (defmethod validate ::Node [tag obj]
   (validate! node-validation obj))
@@ -14,12 +13,12 @@
                       owner ;; project-id
                       ami
                       instance-type
-                      security-groups
                       availability-zone
-                      username
                       keypair-name
                       public-key
-                      private-key]
+                      private-key
+                      username
+                      security-groups]
                :as args}]
   (validate! node-validation args))
 

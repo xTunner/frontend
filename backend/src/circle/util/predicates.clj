@@ -1,5 +1,5 @@
 (ns circle.util.predicates
-  (:use [circle.util.core :only (seq1)]))
+  (:use [circle.util.core :only (seq1 apply-if)]))
 
 (defmacro instance-pred [name class]
   `(defn ~name [x#]

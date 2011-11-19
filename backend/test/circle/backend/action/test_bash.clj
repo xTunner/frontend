@@ -4,8 +4,8 @@
   (:require [circle.sh :as sh])
   (:require [circle.backend.build.run :as run])
   (:require circle.db)
-  (:use [circle.backend.build.utils :only (minimal-build)])
-  (:use [circle.util.except :only (maybe)]))
+  (:use [circle.backend.build.test-utils :only (minimal-build)])
+  (:use [circle.util.except :only (eat)]))
 
 (circle.db/init)
 
@@ -15,10 +15,10 @@
     (assert username)
     {:username username
      :ip-addr "localhost"
-     :public-key (or (maybe (slurp (format "%s/id_rsa.pub" ssh-dir)))
-                     (maybe (slurp (format "%s/id_dsa.pub" ssh-dir))))
-     :private-key (or (maybe (slurp (format "%s/id_rsa" ssh-dir)))
-                      (maybe  (slurp (format "%s/id_dsa" ssh-dir))))}))
+     :public-key (or (eat (slurp (format "%s/id_rsa.pub" ssh-dir)))
+                     (eat (slurp (format "%s/id_dsa.pub" ssh-dir))))
+     :private-key (or (eat (slurp (format "%s/id_rsa" ssh-dir)))
+                      (eat (slurp (format "%s/id_dsa" ssh-dir))))}))
 
 (defn localhost-name []
   (clojure.java.shell/sh "hostname"))
@@ -33,6 +33,10 @@
         bar "bar"
         resp (bash/remote-bash (localhost-ssh-map) (sh/quasiquote (echo ~foo ~bar)))]
     resp => (clojure.java.shell/sh "echo" "foo" "bar")))
+
+(fact "remote-bash works with pwd"
+  (let [resp (bash/remote-bash (localhost-ssh-map) (sh/quasiquote (stat "zero")) :pwd "/dev")]
+    (-> resp :exit) => 0))
 
 (fact "bash actions are named after their commands"
   (let [build (minimal-build :actions [(bash/bash "hostname")])]
@@ -51,4 +55,3 @@
     (binding [bash/ssh-map-for-build (fn [build] (localhost-ssh-map))]
       (let [result (run/run-build build)]
         (-> @build :action-results (first) :out (first) :message) => "bar\n"))))
-
