@@ -84,3 +84,11 @@
                      nil
                      :stream
                      {})))))
+
+(defn generate-keys
+  "Generate a new pair of SSH keys, returns a map"
+  []
+  (let [agent (ssh/create-ssh-agent false)
+        [priv pub] (clj-ssh.ssh/generate-keypair agent :rsa 1024 nil)]
+    {:private-key (String. priv)
+     :public-key (String. pub)}))
