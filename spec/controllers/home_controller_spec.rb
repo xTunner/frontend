@@ -7,7 +7,7 @@ describe HomeController do
     it "returns http success" do
       get 'index'
       response.should be_success
-      response.should have_selector("title", :content => "Circle - Continuous Integration made easy")
+      response.body.should have_selector("title", :content => "Circle - Continuous Integration made easy")
     end
   end
 end
