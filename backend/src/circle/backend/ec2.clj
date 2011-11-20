@@ -258,8 +258,7 @@
     :or {min-count 1
          max-count 1}
     :as args}]
-  (require-args ami availability-zone instance-type keypair-name)
-  (println "start-instances:" args)
+  (require-args ami availability-zone instance-type keypair-name security-groups)
   (with-ec2-client client
     (-> client
         (.runInstances (->
