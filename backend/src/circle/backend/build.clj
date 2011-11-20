@@ -23,11 +23,9 @@
                      commits
                      actions      ;; a seq of actions
                      action-results
-                     group ;; the pallet group spec to use for the build
-                     num-nodes ;; number of nodes to start/use
-                     nodes ;; nodes started by this build. Keep track so we can clean them up
-                     lb-name ;; name of the load-balancer to use
-                     continue? ;; if true, continue running the build. Failed actions will set this to false
+                     node         ;; Map containing keys required by ec2/start-instance
+                     lb-name      ;; name of the load-balancer to use
+                     continue?    ;; if true, continue running the build. Failed actions will set this to false
                      start-time
                      stop-time]
               :as args}]

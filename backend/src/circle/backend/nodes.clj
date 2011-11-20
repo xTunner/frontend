@@ -128,10 +128,3 @@
        node
        (dissoc :invoke-only :phases)
        (assoc :admin-user (-> session :parameters :host node-id :admin-user))))))
-
-(defn start-and-configure
-  "Takes a Pallet group spec containing :circle-node-spec. Starts an instance and configures it."
-  [group & {:keys [num-instances]}]
-  (let [instance-ids (ec2/start-instances (-> group :circle-node-spec))]
-    (configure-instance-ids instance-ids group)
-    instance-ids))

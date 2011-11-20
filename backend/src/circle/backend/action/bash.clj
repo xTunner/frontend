@@ -25,7 +25,7 @@
 (defn ssh-map-for-build [build]
   (let [instance-id (-> @build :instance-ids (first))
         ip-addr (ec2/public-ip instance-id)]
-    (merge (-> @build :group :circle-node-spec) {:ip-addr ip-addr})))
+    (merge (-> @build :node) {:ip-addr ip-addr})))
 
 (defn remote-bash-build
   [build body & {:as opts}]
