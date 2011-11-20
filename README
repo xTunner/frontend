@@ -1,4 +1,6 @@
-Welcome to the Circle application. The frontend - contained in this directory - is a fairly standard rails app, with notable non-standard things being JRuby and mongodb. The backend is a standard clojure app, and is in the backend/ directory
+Welcome to the Circle application. The frontend - contained in this directory - is a fairly standard
+rails app, with notable non-standard things being JRuby and mongodb. The backend is a standard
+clojure app, and is in the backend/ directory
 
 
 
