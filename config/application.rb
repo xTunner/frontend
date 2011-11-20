@@ -13,6 +13,9 @@ if RUBY_PLATFORM == 'java'
   Dir["#{File.dirname(__FILE__)}/../backend/lib/*.jar"].each do |jar|
     require jar
   end
+  Dir["#{File.dirname(__FILE__)}/../backend/lib/dev/*.jar"].each do |jar|
+    require jar
+  end
 end
 
 
