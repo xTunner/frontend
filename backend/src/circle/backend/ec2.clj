@@ -1,7 +1,7 @@
 (ns circle.backend.ec2
   (:require [clojure.string :as str])
   (:use [circle.aws-credentials :only (aws-credentials)])
-  (:use [circle.util.core :only (apply-map)]
+  (:use [circle.util.core :only (apply-map sha1)]
         [circle.util.except :only (throwf)]
         [circle.util.args :only (require-args)])
   (:use [clojure.tools.logging :only (infof error errorf)])
@@ -19,6 +19,7 @@
                                              DescribeImagesRequest
                                              DescribeInstancesRequest
                                              DescribeInstancesResult
+                                             DescribeKeyPairsRequest
                                              ImportKeyPairRequest
                                              Placement
                                              RunInstancesRequest
@@ -30,9 +31,13 @@
      (try-try-again
       {:sleep 1000
        :tries 30
-       :catch [AmazonClientException
-               AmazonServiceException]
-       :error-hook (fn [e#] (errorf "caught %s" e#))}
+       :catch [AmazonClientException]
+       :error-hook (fn [e#]
+                     (errorf "caught %s %s" (class e#) e#)
+                     ;; We don't want to catch (many) ServiceExceptions, because they can often be programming errors.
+                     (if (= (class e#) com.amazonaws.AmazonServiceException)
+                       false
+                       nil))}
       #(do
          ~@body))))
 
@@ -152,6 +157,30 @@
       (when (not= "InvalidKeyPair.Duplicate" (.getErrorCode e))
         (throw e)))))
 
+(defn describe-keypairs
+  "With no arguments, returns all keypairs. When passed names of keys returns information about only those keys. Returns nil if a specified key can't be found"
+  [& names]
+  (with-ec2-client client
+    (try
+      (let [request (DescribeKeyPairsRequest.)]
+        (when (seq names)
+          (.withKeyNames request names))
+        (-> client
+            (.describeKeyPairs request)
+            (->>
+             (.getKeyPairs)
+             (map bean))))
+      (catch AmazonServiceException e
+        (when (not= "InvalidKeyPair.NotFound" (-> e (bean) :errorCode))
+          (throw e))))))
+
+(defn ensure-keypair
+  "Makes sure the key is uploaded to AWS. "
+  [name pub-key]
+  (let [key-name (str name "-" (sha1 pub-key))]
+    (when-not (describe-keypairs key-name)
+      (import-keypair key-name pub-key))))
+
 (defn describe-image [ami]
   (with-ec2-client client
     (-> client
@@ -224,7 +253,10 @@
            max-count 
            availability-zone]
     :or {min-count 1
-         max-count 1}}]
+         max-count 1}
+    :as args}]
+  (require-args ami availability-zone instance-type keypair-name)
+  (println "start-instances:" args)
   (with-ec2-client client
     (-> client
         (.runInstances (->

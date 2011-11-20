@@ -39,12 +39,14 @@
 
 (defn git-fn*
   "Takes a seq of stevedore code. Executes it locally, with GIT_SSH and GIT_SSH_KEY set up."
-  [steve ssh-key]
+  [steve ssh-key & {:keys [repo]}]
   (with-temp-ssh-key-file [f ssh-key]
     (sh/sh steve
            :environment (when ssh-key
                           {"GIT_SSH" git-ssh-path
-                           "GIT_SSH_KEY" f}))))
+                           "GIT_SSH_KEY" f})
+           :pwd repo)))
+
 (defn clone
   "Clone a git repo at url, writing the directory to path"
   [url & {:keys [path ssh-key]}]
@@ -56,7 +58,9 @@
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
   (git-fn* (sh/quasiquote
-            (git pull)) ssh-key))
+            (git pull))
+           ssh-key
+           :repo repo))
 
 (defn ensure-repo
   "Ensures a repo is present, or clones it if not. Also updates the

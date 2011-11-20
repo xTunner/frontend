@@ -1,4 +1,6 @@
-(ns circle.util.core)
+(ns circle.util.core
+  (:use [arohner.utils :only (inspect)])
+  (:import java.security.MessageDigest))
 
 (defn printfln [& args]
   (apply printf args)
@@ -39,3 +41,18 @@
   (if test
     (apply f arg args)
     arg))
+
+(defn byte-array-to-hex-string [ba]
+  (-> ba
+      (org.apache.commons.codec.binary.Hex/encodeHex)
+      (String.)))
+
+(defn sha1
+  "Returns the SHA1. Takes a byte array or string"
+  [s]
+  (let [s (if (string? s)
+            (.getBytes s)
+            s)]
+    (-> (MessageDigest/getInstance "SHA-1")
+        (.digest s)
+        (byte-array-to-hex-string))))
