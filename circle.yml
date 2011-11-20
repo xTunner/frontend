@@ -29,6 +29,7 @@ jobs:
 
   deploy:
     template: deploy
+    node: www
     commands:
       - lein deps:
           pwd: backend
