@@ -158,7 +158,9 @@
         (throw e)))))
 
 (defn describe-keypairs
-  "With no arguments, returns all keypairs. When passed names of keys returns information about only those keys. Returns nil if a specified key can't be found"
+  "With no arguments, returns all keypairs. When passed names of keys
+  returns information about only those keys. Returns nil if a
+  specified key can't be found"
   [& names]
   (with-ec2-client client
     (try
@@ -175,11 +177,12 @@
           (throw e))))))
 
 (defn ensure-keypair
-  "Makes sure the key is uploaded to AWS. "
+  "Makes sure the key is uploaded to AWS. Returns the keypair name."
   [name pub-key]
   (let [key-name (str name "-" (sha1 pub-key))]
     (when-not (describe-keypairs key-name)
-      (import-keypair key-name pub-key))))
+      (import-keypair key-name pub-key))
+    key-name))
 
 (defn describe-image [ami]
   (with-ec2-client client
