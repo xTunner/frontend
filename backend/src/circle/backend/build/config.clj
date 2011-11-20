@@ -12,7 +12,6 @@
   (:use [circle.util.model-validation :only (validate!)])
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
-  (:use [circle.util.re :only (re-first)])
   (:use [circle.util.except :only (assert! throw-if-not)])
   (:use [circle.util.map :only (rename-keys)])
   (:require [clj-yaml.core :as yaml])
