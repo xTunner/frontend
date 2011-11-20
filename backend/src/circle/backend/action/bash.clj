@@ -1,6 +1,5 @@
 (ns circle.backend.action.bash
   "functions for running bash on remote instances, and build actions for same."
-  (:use [arohner.utils :only (inspect)])
   (:require pallet.action-plan)
   (:use [circle.util.core :only (apply-map)])
   (:use [circle.backend.build :only (*env* log-ns build-log build-log-error)])
@@ -18,8 +17,9 @@
   (let [cmd (sh/emit-form body
                           :environment environment
                           :pwd pwd)
-        _ (build-log "running %s" body pwd environment cmd)
+        _ (build-log "running %s %s %s %s" body pwd environment cmd)
         result (ssh/remote-exec ssh-map cmd)]
+    (build-log "%s returned" (-> result :exit)) ;; only log exit, rest should be handled by ssh
     result))
 
 (defn ssh-map-for-build [build]
