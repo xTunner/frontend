@@ -1,16 +1,18 @@
 (ns circle.backend.action.vcs
   "build actions for checking out code."
-  (:require [clj-url.core :as url])
-  (:use [circle.util.except :only (throw-if-not)])
-  (:use [circle.backend.action :only (defaction)])
-  (:use [clojure.tools.logging :only (infof)])
   (:require [circle.backend.action.bash :as bash])
-  (:require [circle.sh :as sh])
-  (:use [circle.backend.action.bash :only (remote-bash-build)])
   (:require [circle.backend.build :as build])
+  (:require [circle.sh :as sh])
   (:require fs)
+  (:use [arohner.utils :only (inspect)])
+  (:use [circle.backend.action :only (defaction abort!)])
+  (:use [circle.backend.action.bash :only (remote-bash-build)])
+  (:use [circle.backend.action.user :only (home-dir)])
+  (:use [circle.backend.github-url :only (->ssh)])
+  (:use [circle.util.except :only (throw-if-not)])
+  (:use [clojure.tools.logging :only (infof)])
   (:use midje.sweet)
-  (:use [circle.backend.action.user :only (home-dir)]))
+  (:require [clj-url.core :as url]))
 
 (defn vcs-type
   "returns the VCS type for a given url. Returns one of :git, :hg, :svn or nil, if unknown"
@@ -30,13 +32,15 @@
   (throw-if-not (pos? (.length url)) "url must be non-empty")
   (throw-if-not (pos? (.length path)) "path must be non-empty")
   (println "checking out" url " to " path)
-  (if revision
-    (remote-bash-build build (sh/quasiquote
-                              (git clone ~url ~path --no-checkout)
-                              (cd ~path)
-                              (git checkout ~revision)))
-    (remote-bash-build build (sh/quasiquote
-                              (git clone ~url ~path --depth 1)))))
+  (let [checkout-cmd (if revision
+                       (sh/quasiquote
+                        (git clone ~url ~path --no-checkout)
+                        (cd ~path)
+                        (git checkout ~revision))
+                       (sh/quasiquote
+                        (git clone ~url ~path --depth 1)))]
+    (remote-bash-build build checkout-cmd
+                       :environment {"SSH_ASKPASS" false})))
 
 (defmethod checkout-impl :default [{:keys [vcs]}]
   (throw (Exception. "don't know how to check out code of type" vcs)))
@@ -49,8 +53,10 @@
   (fn [build]
     (let [dir (checkout-dir build)
           result (-> (checkout-impl {:build build
-                                     :url (-> @build :vcs-url)
+                                     :url (->ssh (-> @build :vcs-url))
                                      :path dir
                                      :vcs (-> @build :vcs-url vcs-type)
                                      :revision (-> @build :vcs-revision)}))]
+      (when (not= 0 (-> result :exit))
+        (abort! build "checkout failed"))
       result)))
