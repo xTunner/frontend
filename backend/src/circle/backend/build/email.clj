@@ -40,21 +40,8 @@
               :subject "Circle exception"
               :body (str @build "\n" (except-to-string e))))
 
-(defn translate-recipient [build to]
-  (condp = to
-    :owner (-?> @build :repository :owner :email (vector))
-    :committer (->> (-> @build :commits)
-                    (map (fn [c]
-                           (-> c :author :email))))
-    [to]))
-
-(defn get-build-email-recipients [build]
-  (->> (-> @build :notify-email)
-       (mapcat #(translate-recipient build %))
-       (set)))
-
 (defn notify-build-results [build]
-  (let [recipients (get-build-email-recipients build)]
+  (let [recipients (-> @build :notify-email)]
     (if (seq recipients)
       (doseq [e recipients]
         (send-build-email build e))

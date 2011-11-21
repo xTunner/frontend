@@ -13,6 +13,7 @@
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
   (:use [circle.util.except :only (assert! throw-if-not)])
+  (:use [clojure.core.incubator :only (-?>)])
   (:use [circle.util.map :only (rename-keys)])
   (:require [clj-yaml.core :as yaml])
   (:import java.io.StringReader)
@@ -147,11 +148,26 @@
       (load-specific-node config node-name url)
       (load-default-node config))))
 
-(defn build-from-config [config project vcs-revision job-name build-num checkout-dir]
+(defn translate-email-recipient
+  "Translates an email recipient like :committer to an email address"
+  [github-json to]
+  (condp = to
+    :owner (-?> github-json :repository :owner :email (vector))
+    :committer (->> (-> github-json :commits)
+                    (map (fn [c]
+                           (-> c :author :email))))))
+
+(defn get-build-email-recipients
+  "Takes a seq of email notifiers, like :committer. returns email literals"
+  [notifies github-json]
+  (->> notifies
+       (mapcat #(translate-email-recipient github-json %))
+       (set)))
+
+(defn build-from-config [config project & {:keys [vcs-revision job-name build-num checkout-dir notify]}]
   (let [job (load-job config job-name)
         node (load-node config job (-> project :vcs-url))
-        actions (load-actions job checkout-dir)
-        notify (-> config :jobs job-name :notify-email (parse-notify))]
+        actions (load-actions job checkout-dir)]
     (build/build (merge
                   {:notify-email notify
                    :build-num build-num
@@ -170,7 +186,11 @@
         build-num 1
         vcs-revision (git/latest-local-commit repo)
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
-    (build-from-config config project vcs-revision job-name build-num checkout-dir)))
+    (build-from-config config project
+                       :vcs-revision
+                       :job-name job-name
+                       :build-num build-num
+                       :checkout-dir checkout-dir)))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
@@ -182,8 +202,14 @@
         project (project/get-by-url! url)
         schedule (-> config :schedule)
         vcs-revision (-> github-json :after)
-        build-num 1
         job-name (-> schedule :commit :job (keyword))
+        notify (-> config :jobs job-name :notify-email (parse-notify) (get-build-email-recipients github-json))
+        build-num 1
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (if (and config project)
-      (build-from-config config project vcs-revision job-name build-num checkout-dir))))
+      (build-from-config config project
+                         :vcs-revision vcs-revision
+                         :job-name job-name
+                         :build-num build-num
+                         :checkout-dir checkout-dir
+                         :notify notify))))

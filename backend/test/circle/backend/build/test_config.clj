@@ -30,14 +30,18 @@
         config (get-config-for-url (-> test/circle-project :vcs-url))
         checkout-dir (checkout-dir (-> project :name) 1)
         vcs-revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
-        b (build-from-config config test/circle-project vcs-revision :build 1 checkout-dir)]
+        b (build-from-config config test/circle-project
+                             :vcs-revision vcs-revision
+                             :job-name :build
+                             :build-num 1
+                             :checkout-dir checkout-dir)]
     (ref? b) => true
-    (-> @b :notify-email) => [:committer :owner]
     (-> @b :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"))
 
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-github-json)]
-    (ref? build) => true))
+    (ref? build) => true
+    (-> @build :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"))
 
 (fact "build loads the node and slurps the ssh keys"
   ;; The circle.yml contains :private-key, :public-key. Verify they were slurped.
@@ -46,3 +50,7 @@
     (-> @build :node :username) => "ubuntu"
     (-> @build :node :public-key) => #"^ssh-rsa"
     (-> @build :node :private-key) => #"BEGIN RSA PRIVATE KEY"))
+
+(fact "build email addresses are correct"
+  (let [build (build-from-json test/circle-github-json)]
+    (-> @build :notify-email) => #{"arohner@gmail.com"}))
