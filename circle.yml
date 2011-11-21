@@ -30,6 +30,9 @@ jobs:
   deploy:
     template: deploy
     node: www
+    notify-email:
+      - :owner
+
     commands:
       - lein deps:
           pwd: backend
