@@ -29,8 +29,11 @@
   (let [project test/circle-project
         config (get-config-for-url (-> test/circle-project :vcs-url))
         checkout-dir (checkout-dir (-> project :name) 1)
-        b (build-from-config  config test/circle-project :build 1 checkout-dir)]
-    (ref? b) => true))
+        vcs-revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
+        b (build-from-config config test/circle-project vcs-revision :build 1 checkout-dir)]
+    (ref? b) => true
+    (-> @b :notify-email) => [:committer :owner]
+    (-> @b :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"))
 
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-github-json)]

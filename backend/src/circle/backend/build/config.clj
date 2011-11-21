@@ -147,14 +147,15 @@
       (load-specific-node config node-name url)
       (load-default-node config))))
 
-(defn build-from-config [config project job-name build-num checkout-dir]
+(defn build-from-config [config project vcs-revision job-name build-num checkout-dir]
   (let [job (load-job config job-name)
         node (load-node config job (-> project :vcs-url))
         actions (load-actions job checkout-dir)
-        notify (-> config job-name :notify-email (parse-notify))]
+        notify (-> config :jobs job-name :notify-email (parse-notify))]
     (build/build (merge
                   {:notify-email notify
                    :build-num build-num
+                   :vcs-revision vcs-revision
                    :node node
                    :actions actions}
                   (rename-keys {:name :project-name} project)))))
@@ -165,9 +166,11 @@
   (let [project (project/get-by-name project-name)
         url (-> project :vcs-url)
         config (get-config-for-url url)
+        repo (git/default-repo-path url)
         build-num 1
+        vcs-revision (git/latest-local-commit repo)
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
-    (build-from-config config project job-name build-num checkout-dir)))
+    (build-from-config config project vcs-revision job-name build-num checkout-dir)))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
@@ -178,8 +181,9 @@
             (infof "couldn't find config for %s" url))
         project (project/get-by-url! url)
         schedule (-> config :schedule)
+        vcs-revision (-> github-json :after)
         build-num 1
         job-name (-> schedule :commit :job (keyword))
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (if (and config project)
-      (build-from-config config project job-name build-num checkout-dir))))
+      (build-from-config config project vcs-revision job-name build-num checkout-dir))))

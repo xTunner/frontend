@@ -6,5 +6,6 @@
 (defaction tag-revision []
   {:name "tag revision"}
   (fn [build]
+    (throw-if-not (-> @build :vcs-revision) "build must contain vcs revision")
     (tag/add-tags (-> @build :instance-ids)
-                   {:rev (-> @build :vcs-revision)})))
+                  {:rev (-> @build :vcs-revision)})))
