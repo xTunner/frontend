@@ -68,7 +68,7 @@
                  [org.cloudhoist/java "0.5.1"]
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
-                 [lein-daemon "0.4.1"]
+                 [lein-daemon "0.4.2"]
                  [pallet-rvm "0.1"]
                  [cdt "1.2.6.1-SNAPSHOT"]]
 
@@ -77,7 +77,7 @@
   :dev-dependencies [[lein-test-out "0.1.1"]
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
-                     [lein-daemon "0.4.1"]
+                     [lein-daemon "0.4.2"]
                      [swank-clojure "1.4.0-SNAPSHOT"]
                      [clojure-source "1.2.1"]]
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
