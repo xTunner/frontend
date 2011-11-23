@@ -60,6 +60,11 @@
                  [org.jclouds.driver/jclouds-jsch "1.2.1"]
                  [org.jclouds.provider/aws-ec2 "1.2.1"]
 
+                 ;; Requires github.com/pbiggar/jnr-posix
+                 [com.github.jnr/jnr-posix "2.1-SNAPSHOT"]
+                 [com.github.jnr/jnr-ffi "0.6.0"]
+                 [com.github.jnr/jnr-constants "0.8.2"]
+
                  ;; Pallet Crates
                  [org.cloudhoist/automated-admin-user "0.6.0"]
                  [org.cloudhoist/git "0.5.0"]
