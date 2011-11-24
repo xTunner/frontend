@@ -5,6 +5,7 @@ MongoidTest::Application.routes.draw do
 
   match '/', :to => 'home#create', :action => :create, :via => [:post]
   root :to => "home#index"
+  match '/hooks/github', :to => 'github#create', :via => [:post]
 
 
   # The priority is based upon order of creation:
