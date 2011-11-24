@@ -1,6 +1,6 @@
 GIT
-  remote: git://github.com/pbiggar/jrclj.git
-  revision: 09935ad2f326b65609da88bcb30874d7bfe4efab
+  remote: git://github.com/kyleburton/jrclj.git
+  revision: cc0a0be630eb01f64680811edc48270b5fe77dcb
   specs:
     jrclj (1.0.0)
 
