@@ -61,7 +61,7 @@
                  [org.jclouds.provider/aws-ec2 "1.2.1"]
 
                  ;; Requires github.com/pbiggar/jnr-posix
-                 [com.github.jnr/jnr-posix "2.1-SNAPSHOT"]
+                 [com.github.jnr/jnr-posix "2.1-5ad6cc85878cbaa4c698640a73578d8236119456"]
                  [com.github.jnr/jnr-ffi "0.6.0"]
                  [com.github.jnr/jnr-constants "0.8.2"]
 
