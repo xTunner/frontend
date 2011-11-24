@@ -17,7 +17,7 @@ if RUBY_PLATFORM == 'java'
     require jar
   end
 else
-  assert ENV['RAILS_ENV'] == "test"
+  raise unless ENV['RAILS_ENV'] == "test"
 end
 
 
