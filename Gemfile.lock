@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/kyleburton/jrclj.git
   revision: cc0a0be630eb01f64680811edc48270b5fe77dcb
+  branch: cc0a0be630eb01f64680811edc48270b5fe77dcb
   specs:
     jrclj (1.0.0)
 
