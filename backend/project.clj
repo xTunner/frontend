@@ -20,11 +20,11 @@
                  [commons-email "1.1"]
                  [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
-                 
+
                  ;; DB
                  [c3p0 "0.9.1.2"]
                  [congomongo "0.1.7"]
-                 
+
                  ;; Logging
                  [log4j "1.2.16"]
                  [log4j/apache-log4j-extras "1.1"]
@@ -32,11 +32,11 @@
                  [org.slf4j/slf4j-log4j12 "1.6.2"]
                  [org.clojure/tools.logging "0.2.3"]
                  [org.log4mongo/log4mongo-java "0.7.0"]
-                 
+
                  [vmfest "0.2.3"]
-                 
+
                  ;; Misc
-                 [swank-clojure "1.3.2"]
+                 [swank-clojure "1.4.0-SNAPSHOT"]
                  [commons-codec "1.4"]
                  [org.apache.commons/commons-compress "1.0"]
                  [org.xeustechnologies/jtar "1.0.4"]
@@ -49,7 +49,7 @@
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
                  [org.eclipse.jgit/org.eclipse.jgit "1.1.0.201109151100-r"]
                  [com.cemerick/pomegranate "0.0.1"]
-                 
+
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
                  [org.jclouds/jclouds-core "1.2.1"]
@@ -83,7 +83,6 @@
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
                      [lein-daemon "0.4.1"]
-                     [swank-clojure "1.4.0-SNAPSHOT"]
                      [clojure-source "1.2.1"]]
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
   :jvm-opts ~jvm-opts
