@@ -16,6 +16,8 @@ if RUBY_PLATFORM == 'java'
   Dir["#{File.dirname(__FILE__)}/../backend/lib/dev/*.jar"].each do |jar|
     require jar
   end
+else
+  assert ENV['RAILS_ENV'] == "test"
 end
 
 
