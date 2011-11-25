@@ -27,9 +27,10 @@
     = render :partial => 'google-analytics'
 
   %body
+    %ul.hmenu
+      = render 'shared/navigation'
+    - flash.each do |name, msg|
+      = content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String)
+
     = yield
--#   %ul.hmenu
--#     = render 'shared/navigation'
--#    - flash.each do |name, msg|
--#     = content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String)
 
