@@ -1,6 +1,11 @@
 MongoidTest::Application.routes.draw do
 
-  devise_for :users, :path => '/', :path_names => {:sign_in => 'login', :sign_out => 'logout'}
+  devise_for :users, :path => '/', :path_names => {:sign_in => 'login', :sign_out => 'logout'} do
+    get 'users', :to => 'users#show', :as => :user_root
+  end
+
+  resource :project
+
   match '/hooks/github', :to => 'github#create', :via => [:post]
 
   unauthenticated do
@@ -13,7 +18,7 @@ MongoidTest::Application.routes.draw do
     end
   end
 
-  root :to => "home#index"
+  root :to => "users#show"
 
 
   # The priority is based upon order of creation:
