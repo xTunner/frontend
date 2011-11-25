@@ -17,7 +17,7 @@ if RUBY_PLATFORM == 'java'
     require jar
   end
 else
-  raise if (ENV['RAILS_ENV'] == "production" or ENV["RAILS_ENV"] == "staging")
+  raise if (Rails.env == "production" or Rails.env == "staging")
 end
 
 

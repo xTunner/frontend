@@ -27,6 +27,6 @@ class Backend
 end
 
 Backend.mock = true
-if RUBY_PLATFORM == 'java' || ENV['RAILS_ENV'] != 'test' then
+if RUBY_PLATFORM == 'java' || Rails.env != 'test' then
   Backend.mock = false
 end
