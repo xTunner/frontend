@@ -1,7 +1,8 @@
 MongoidTest::Application.routes.draw do
 
-  devise_for :users
-  resource :users
+  devise_for :users do
+    get 'users', :to => 'users#show', :as => :user_root
+  end
 
   match '/', :to => 'home#create', :action => :create, :via => [:post]
   root :to => "home#index"
