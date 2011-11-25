@@ -5,9 +5,10 @@ class User
   # :rememberable, :trackable, :validatable and :omniauthable
   devise :registerable, :trackable
 
+  field :name
   field :contact, :type => Boolean
 
-  validates_presence_of :email, :contact
-  #  validates_uniqueness_of :email, :case_sensitive => false
-  attr_accessible :email, :contact
+  validates_presence_of :email, :contact, :name
+  validates_uniqueness_of :email, :case_sensitive => false
+  attr_accessible :name, :email, :contact
 end
