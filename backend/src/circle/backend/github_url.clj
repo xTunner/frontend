@@ -44,7 +44,7 @@
   https://github.com/arohner/CircleCI.git -> git@github.com:arohner/CircleCI.git"
   [url]
   (letfn [(replace-leading-slash [s]
-          (str/replace s #"^/" ""))]
+            (str/replace s #"^/" ""))]
     (condp = (url-type url)
       :ssh url
       :top (let [path (-> url (url/parse) :path (replace-leading-slash))]

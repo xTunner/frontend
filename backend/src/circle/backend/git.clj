@@ -1,7 +1,7 @@
 (ns circle.backend.git
   "fns for interacting with git."
   (:import java.io.File)
-  (:use [circle.util.core :only (printfln)])
+  (:use [clojure.tools.logging :only (infof)])
   (:use [arohner.utils :only (inspect)])
   (:require [circle.sh :as sh]))
 
@@ -39,7 +39,7 @@
 
 (defn git-fn*
   "Takes a seq of stevedore code. Executes it locally, with GIT_SSH and GIT_SSH_KEY set up."
-  [steve ssh-key & {:keys [repo]}]
+  [steve & {:keys [ssh-key repo]}]
   (with-temp-ssh-key-file [f ssh-key]
     (sh/sh steve
            :environment (when ssh-key
@@ -51,15 +51,19 @@
   "Clone a git repo at url, writing the directory to path"
   [url & {:keys [path ssh-key]}]
   (let [path (or path (default-repo-path url))]
+    (infof "git clone %s %s" url path)
     (git-fn* (sh/quasiquote
-              (git clone ~url ~path)) ssh-key)))
+              (git clone ~url ~path))
+             :ssh-key
+             ssh-key)))
 
 (defn pull
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
+  (infof "git pull %s" repo)
   (git-fn* (sh/quasiquote
             (git pull))
-           ssh-key
+           :ssh-key ssh-key
            :repo repo))
 
 (defn ensure-repo
@@ -69,11 +73,20 @@
           :or {update true}}]
   (let [path (or path (default-repo-path url))]
     (if (repo-exists? path)
-      (if update
-        (do
-          (printfln "updating %s" path)
-          (pull path)))
-      (do
-        (printfln "cloning %s into %s" url path)
-        (clone url :path path :ssh-key ssh-key)))))
+      (when update
+        (pull path))
+      (clone url :path path :ssh-key ssh-key))))
 
+(defn latest-local-commit
+  "Returns the most recent commit id, on the current branch."
+  [repo]
+  (->
+   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H")))
+   :out))
+
+(defn latest-remote-commit
+  "Returns the most recent on origin/master. Does not fetch."
+  [repo]
+  (->
+   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H" "origin/master")))
+   :out))

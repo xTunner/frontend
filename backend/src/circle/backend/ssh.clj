@@ -72,7 +72,6 @@
         (ssh/with-connection s
           (f s))))))
 
-
 (defn remote-exec
   "Node is a map containing the keys required by with-session"
   [node ^String cmd]

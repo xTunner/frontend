@@ -6,10 +6,11 @@
         [noir.request :only (*request*)])
   (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run])
+  (:require [circle.backend.build.config :as config])
   (:require [circle.backend.project.circle :as circle])
   (:use [circle.backend.github-url :only (->ssh)])
   (:use [circle.backend.build :only (extend-group-with-revision)])
-  (:use [clojure.tools.logging :only (infof)])
+  (:use [clojure.tools.logging :only (infof error)])
   (:use circle.web.views.common))
 
 (def sample-json (json/decode "{
@@ -57,21 +58,16 @@
 ;;; at least.
 (defn process-json [github-json]
   (def last-json github-json)
-  (when (= "CircleCI" (-> github-json :repository :name))
-    (let [build (circle/circle-build)]
-      (dosync
-       (alter build merge 
-              {:vcs-url (->ssh (-> github-json :repository :url))
-               :repository (-> github-json :repository)
-               :commits (-> github-json :commits)
-               :vcs-revision (-> github-json :commits last :id)
-               :num-nodes 1}))
+  (try
+    (let [build (config/build-from-json github-json)]
       (infof "process-json: build: %s" @build)
-      (run/run-build build))))
+      (run/run-build build))
+    (catch Exception e
+        (error e "error running build"))))
 
-(defpage [:post "/github-commit"] []
+(defpage github-hook [:post "/github-commit"] []
   (infof "github post: %s" *request*)
   (def last-request *request*)
   (let [github-json (json/decode (-> *request* :params :payload))]
-    (future (process-json github-json))
+    (def last-future (future (process-json github-json)))
     {:status 200 :body ""}))
