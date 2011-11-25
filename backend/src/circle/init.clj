@@ -1,4 +1,5 @@
 (ns circle.init
+  (:require circle.env) ;; env needs to be loaded before any circle source files containing tests 
   (:require circle.swank)
   (:require circle.db)
   (:require circle.web)
