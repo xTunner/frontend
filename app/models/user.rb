@@ -10,5 +10,5 @@ class User
 
 #  validates_presence_of :email, :contact, :name
 #  validates_uniqueness_of :email, :case_sensitive => false
-  attr_accessible :name, :email, :contact
+#  attr_accessible :name, :email, :contact
 end
