@@ -5,4 +5,9 @@
   %li
     = @project["vcs-url"]
 
-= @project.to_a
+.recent-jobs
+  = render @project.jobs.limit(10)
+
+= form_for [@project, Job.new], :remote => true do |f|
+  = f.submit "Trigger job"
+

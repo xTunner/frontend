@@ -3,5 +3,5 @@ class Project
   field :name, :type => String
   field :vcs_url, :type => String
 
-  has_many :job
+  has_many :jobs
 end
