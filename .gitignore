@@ -6,3 +6,4 @@ tmp/
 .rvmrc
 classes/*.jar
 TAGS
+dump
