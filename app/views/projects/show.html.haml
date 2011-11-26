@@ -1,0 +1,8 @@
+%h2
+  = @project.name
+
+%ul
+  %li
+    = @project["vcs-url"]
+
+= @project.to_a

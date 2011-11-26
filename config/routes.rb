@@ -4,7 +4,7 @@ MongoidTest::Application.routes.draw do
     get 'users', :to => 'users#show', :as => :user_root
   end
 
-  resource :project
+  resources :projects
 
   match '/hooks/github', :to => 'github#create', :via => [:post]
 
