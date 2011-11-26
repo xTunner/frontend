@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/kyleburton/jrclj.git
+  revision: cc0a0be630eb01f64680811edc48270b5fe77dcb
+  branch: cc0a0be630eb01f64680811edc48270b5fe77dcb
+  specs:
+    jrclj (1.0.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -34,6 +41,7 @@ GEM
     arel (2.2.1)
     bcrypt-ruby (3.0.1)
     bcrypt-ruby (3.0.1-java)
+    bouncy-castle-java (1.5.0146.1)
     bson (1.4.0)
     bson (1.4.0-java)
     bson_ext (1.4.0)
@@ -97,6 +105,8 @@ GEM
     jquery-rails (1.0.18)
       railties (~> 3.0)
       thor (~> 0.14)
+    jruby-openssl (0.7.4)
+      bouncy-castle-java
     json (1.6.1)
     json (1.6.1-java)
     json_pure (1.6.1)
@@ -219,6 +229,8 @@ DEPENDENCIES
   haml-rails
   hpricot
   jquery-rails
+  jrclj!
+  jruby-openssl
   launchy (>= 2.0.5)
   minitest
   mongoid (~> 2.3)
