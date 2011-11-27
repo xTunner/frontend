@@ -2,6 +2,7 @@
   (:require [org.danlarkin.json :as json])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.project.circle :as circle])
+  (:require [circle.backend.build.config :as config])
   (:use [circle.backend.github-url :only (->ssh)])
   (:use [clojure.tools.logging :only (infof)]))
 
@@ -21,3 +22,9 @@
 (defn github
   [url after ref json-string]
   (future (-> json-string json/decode process-json)))
+
+
+(defn run-build-from-jruby
+  [project-name job-name]
+  (let [build config/build-from-name project-name (keyword job-name)]
+    (future (run/run-build build))))

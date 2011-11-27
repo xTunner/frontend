@@ -27,6 +27,7 @@ class Backend
 
   def self.github_hook(url, after, ref, json)
     return if Backend.mock
+    self.initialize
 
     clj = JRClj.new "circle.hooks"
     clj.github url, after, ref, json
@@ -34,14 +35,10 @@ class Backend
 
   def self.build(project)
     return if Backend.mock
+    self.initialize
 
-    clj = JRClj.new
-
-    clj._import "circle.backend.build.config"
-    build_spec = clj.build_from_name(project.name, "build")
-
-    clj._import "circle.backend.build.run"
-    clj.run_build(build_spec)
+    clj = JRClj.new "circle.hooks"
+    clj.run_build_from_jruby(project.name, "build")
   end
 end
 
