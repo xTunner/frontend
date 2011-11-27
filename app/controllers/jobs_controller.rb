@@ -4,7 +4,6 @@ class JobsController < ApplicationController
   def create
     @project = Project.find(params[:project_id])
     @job = @project.jobs.create!
-    @job.save
 
     respond_with(@project, @job)
   end
