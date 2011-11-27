@@ -84,7 +84,5 @@
                      [lein-daemon "0.4.2"]
                      [clojure-source "1.2.1"]]
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
-  :jvm-opts ~jvm-opts
-  :daemon {:web {:ns circle.init
-                 :pidfile "circle.pid"}})
+  :jvm-opts ~jvm-opts)
 
