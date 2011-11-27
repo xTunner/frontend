@@ -16,6 +16,12 @@ if RUBY_PLATFORM == 'java'
   Dir["#{File.dirname(__FILE__)}/../backend/lib/dev/*.jar"].each do |jar|
     require jar
   end
+
+  # Initialize the backend early, before the server is being used to satisfy user requests, so that
+  # users never suffer the >1m startup times.
+  if (Rails.env == "production")
+    Backend.initialize
+  end
 else
   raise if (Rails.env == "production" or Rails.env == "staging")
 end

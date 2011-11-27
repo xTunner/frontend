@@ -16,14 +16,33 @@
 class Backend
   class_attribute :mock
 
-  def self.github_hook(url, after, ref, json)
+  # Start the backend, by calling circle.init/init, and setting up the right directory
+  def self.initialize
     return if Backend.mock
+
     clj = JRClj.new "circle.init"
     clj.maybe_change_dir
-    clj._import "circle.hooks"
+    clj.init
+  end
+
+  def self.github_hook(url, after, ref, json)
+    return if Backend.mock
+
+    clj = JRClj.new "circle.hooks"
     clj.github url, after, ref, json
   end
 
+  def self.build(project)
+    return if Backend.mock
+
+    clj = JRClj.new
+
+    clj._import "circle.backend.build.config"
+    build_spec = clj.build_from_name(project.name, "build")
+
+    clj._import "circle.backend.build.run"
+    clj.run_build(build_spec)
+  end
 end
 
 Backend.mock = true
