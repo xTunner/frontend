@@ -187,7 +187,7 @@
         vcs-revision (git/latest-local-commit repo)
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (build-from-config config project
-                       :vcs-revision
+                       :vcs-revision vcs-revision
                        :job-name job-name
                        :build-num build-num
                        :checkout-dir checkout-dir)))
