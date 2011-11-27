@@ -36,7 +36,6 @@
                  [vmfest "0.2.3"]
 
                  ;; Misc
-                 [swank-clojure "1.4.0-SNAPSHOT"]
                  [commons-codec "1.4"]
                  [org.apache.commons/commons-compress "1.0"]
                  [org.xeustechnologies/jtar "1.0.4"]
