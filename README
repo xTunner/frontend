@@ -37,6 +37,7 @@ JRuby exposes Ruby classes as Java classes, so we should be able to call them di
 rvm gemset create circle
 rvm gemset use circle
 rvm --rvmrc --create jruby-1.6.5@circle
+bundle install
 
 ## testing
 
