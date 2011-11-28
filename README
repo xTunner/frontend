@@ -28,3 +28,16 @@ To call Clojure code, we do not need to generate Java classes. Instead, we use J
 ### Calling Ruby from Clojure
 
 JRuby exposes Ruby classes as Java classes, so we should be able to call them directly using Clojure's builtin Java interface.
+
+## install notes
+
+* install RVM (from website, not ports)
+* rvm install jruby
+* rvm use jruby
+rvm gemset create circle
+rvm gemset use circle
+rvm --rvmrc --create jruby-1.6.5@circle
+
+## testing
+
+rspec spec/
