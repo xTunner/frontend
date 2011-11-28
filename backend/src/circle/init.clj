@@ -20,7 +20,8 @@
   (delay
    (try
      (circle.logging/init)
-     (circle.swank/init)
+     (when (System/getenv "CIRCLE_SWANK")
+       (circle.swank/init))
      (circle.db/init)
      (circle.repl/init)
      (println (java.util.Date.))
