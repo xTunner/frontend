@@ -1,8 +1,28 @@
 MongoidTest::Application.routes.draw do
 
-  root :to => "home#index"
-  devise_for :users
-  resources :users, :only => :show
+  devise_for :users, :path => '/', :path_names => {:sign_in => 'login', :sign_out => 'logout'} do
+    get 'users', :to => 'users#show', :as => :user_root
+  end
+
+  resources :projects do
+    resources :jobs
+  end
+
+
+  match '/hooks/github', :to => 'github#create', :via => [:post]
+
+  unauthenticated do
+    as :user do
+      # pre-launch signup form's target
+      match '/', :to => 'home#create', :action => :create, :via => [:post]
+
+      # homepage
+      root :to => "home#index"
+    end
+  end
+
+  root :to => "users#show"
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

@@ -1,0 +1,6 @@
+.project_name
+  = link_to(project.name, project_path(project.id))
+  &nbsp;
+  = link_to project.vcs_url do
+    = project.vcs_url
+  %br

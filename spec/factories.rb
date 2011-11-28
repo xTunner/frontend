@@ -6,3 +6,7 @@ Factory.define :user do |u|
   u.password 'please'
 end
 
+Factory.define :signup do |s|
+  s.email "test@email.com"
+  s.contact "true"
+end

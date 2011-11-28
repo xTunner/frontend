@@ -1,2 +1,4 @@
-%p
-  User: #{@user.name}
+= current_user.name
+= current_user.email
+= render :partial => 'project', :collection => @projects
+

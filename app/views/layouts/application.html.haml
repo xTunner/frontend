@@ -2,33 +2,21 @@
 %html
   %head
     %title Circle - Continuous Integration made easy
-    = stylesheet_link_tag    "application"
+
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+    %meta{:content => "Continuous Integration made easy", :name => "description"}
+
     = javascript_include_tag "application"
+
     = csrf_meta_tags
 
-    :javascript
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-25580673-1']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();    %meta{:content => "rCckS33lTuN6tiIrxLMykv_uRR0dMoHNM4XrR4yYUQ0", :name => "google-site-verification"}/
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
-    %meta{:content => "Continuous Integration made easy", :name => "description"}/
-    %meta{:content => "Circle, heroku, continuous integration, continuous deployment, CI, github", :name => "keywords"}/
-    /[if lte IE 8]
-      <link href="css/ie.css" rel="stylesheet" type="text/css" media="screen" />
-    /[if lte IE 10]
-      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    %link{:href => "http://fonts.googleapis.com/css?family=PT+Sans", :media => "screen", :rel => "stylesheet", :type => "text/css"}/
+    = render :partial => 'google-analytics'
 
   %body
+    %ul.hmenu
+      = render 'shared/navigation'
+    - flash.each do |name, msg|
+      = content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String)
+
     = yield
--#   %ul.hmenu
--#     = render 'shared/navigation'
--#    - flash.each do |name, msg|
--#     = content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String)
 

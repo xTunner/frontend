@@ -13,6 +13,17 @@ if RUBY_PLATFORM == 'java'
   Dir["#{File.dirname(__FILE__)}/../backend/lib/*.jar"].each do |jar|
     require jar
   end
+  Dir["#{File.dirname(__FILE__)}/../backend/lib/dev/*.jar"].each do |jar|
+    require jar
+  end
+
+  # Initialize the backend early, before the server is being used to satisfy user requests, so that
+  # users never suffer the >1m startup times.
+  if (Rails.env == "production")
+    Backend.initialize
+  end
+else
+  raise if (Rails.env == "production" or Rails.env == "staging")
 end
 
 
@@ -30,7 +41,7 @@ module MongoidTest
     # -- all .rb files in that directory are automatically loaded.
 
     # Custom directories with classes and modules you want to be autoloadable.
-    # config.autoload_paths += %W(#{config.root}/extras)
+    config.autoload_paths += %W(#{config.root}/lib)
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.

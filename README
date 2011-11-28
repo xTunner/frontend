@@ -1,6 +1,11 @@
-Welcome to the Circle application. The frontend - contained in this directory - is a fairly standard rails app, with notable non-standard things being JRuby and mongodb. The backend is a standard clojure app, and is in the backend/ directory
+Welcome to the Circle application. The frontend - contained in this directory - is a fairly standard
+rails app, with notable non-standard things being JRuby and mongodb. The backend is a standard
+clojure app, and is in the backend/ directory
 
+The backend is run in the same process as the frontend, and so the frontend needs some options:
+    jruby --1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m -s `which rspec` spec
 
+Substitude "`which rails` server", or whatever, so "`which rspec` spec".
 
 
 # Communicating between the frontend and the backend.

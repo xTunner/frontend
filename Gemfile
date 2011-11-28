@@ -5,7 +5,7 @@ gem 'sqlite3'
 
 if RUBY_PLATFORM == 'java'
   gem 'jruby-openssl'
-  gem 'jrclj', :git => "git://github.com/pbiggar/jrclj.git"
+  gem 'jrclj', :git => "git://github.com/kyleburton/jrclj.git", :branch => "cc0a0be630eb01f64680811edc48270b5fe77dcb"
 end
 
 gem 'jquery-rails'

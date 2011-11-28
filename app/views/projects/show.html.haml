@@ -1,0 +1,13 @@
+%h2
+  = @project.name
+
+%ul
+  %li
+    = @project["vcs-url"]
+
+#recent-jobs
+  = render @project.jobs.order_by([[:_id, :desc]]).limit 10
+
+= form_for [@project, Job.new], :remote => true do |f|
+  = f.submit "Trigger job"
+
