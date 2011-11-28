@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   def index
     @signup = Signup.new
+    render :layout => 'home'
   end
 
   def create
