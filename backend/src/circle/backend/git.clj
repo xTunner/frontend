@@ -1,6 +1,7 @@
 (ns circle.backend.git
   "fns for interacting with git."
   (:import java.io.File)
+  (:require [clojure.string :as str])
   (:use [clojure.tools.logging :only (infof)])
   (:use [arohner.utils :only (inspect)])
   (:require [circle.sh :as sh]))
@@ -90,3 +91,11 @@
   (->
    (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H" "origin/master")))
    :out))
+
+(defn committer-email
+  "Returns the email address of the committer"
+  [repo commit-id]
+  (->
+   (git-fn* (sh/quasiquote (git log ~commit-id -1 "--format=%ae")))
+   :out
+   (str/trim)))
