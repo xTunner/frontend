@@ -5,3 +5,23 @@
 require File.expand_path('../config/application', __FILE__)
 
 MongoidTest::Application.load_tasks
+
+JRUBY_OPTS = "--1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m"
+
+##
+## Note that we're using exec here, so this rake process is taken over
+## by the jruby process after the first exec. (To get live printing, and not have the rake process run for the life of the server).
+##
+
+def jruby_fn(cmd)
+  s = "jruby #{JRUBY_OPTS} -S #{cmd}"
+  exec s
+end
+
+task :test do
+  jruby_fn "rspec spec/"
+end
+
+task :server do
+  jruby_fn "rails server"
+end
