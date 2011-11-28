@@ -52,52 +52,6 @@
             :configure (pallet.phase/phase-fn
                         (pallet.action.package/package "git"))}))
 
-(def pallet-map (future {:user admin-user
-                         :compute (pallet.compute/service :aws)}))
-
-(defn lift [group & {:as args}]
-  (apply-map pallet.core/lift group (merge @pallet-map
-                                     args)))
-
-(defn converge [converge-map & {:as args}]
-  (apply-map pallet.core/converge converge-map (merge @pallet-map
-                                                      args)))
-
-(defn startup
-  "ensure there is one builder node"
-  []
-  (converge {circle.backend.nodes/builder-group 1}))
-
-(defn shutdown
-  "stop all builder nodes"
-  []
-  (converge {circle.backend.nodes/builder-group 0}))
-
-(defn install-package
-  "installs a new package at runtime. This is for demonstration purposes. The proper way to do this would be to modify the packages in the group definition."
-  [group package-name]
-  (lift group
-        :phase (pallet.phase/phase-fn (pallet.resource.package/package package-name))))
-
-(defn session
-  []
-  (lift (pallet.core/group-spec :anything)
-                      :phase (fn [session]
-                               session)))
-
-(defn all-nodes []
-  (-> (session)
-      :all-nodes
-      (->>
-       (map bean))))
-
-(defn group-names
-  "returns a seq strings"
-  []
-  (->> (all-nodes)
-       (map :group)
-       (distinct)))
-
 (defn pallet-compute-service
   "Returns a pallet compute service, so we can call pallet lift on arbitrary boxes (i.e. boxes not started by pallet)."
   [group-spec ip-addrs & {:keys [os]
@@ -113,18 +67,3 @@
   (pallet.core/lift group-spec
                     :phase :configure
                     :compute (pallet-compute-service group-spec (map ec2/public-ip instance-ids))))
-
-(defn node-info
-  "returns a seq of maps, one for each node. This node obj is required for several pallet fns."
-  [group-spec & {:keys [compute]}]
-  (let [session (lift group-spec
-                      :compute (or compute (-> @pallet-map :compute))
-                      :phase (fn [session]
-                               (-> session
-                                   (pallet.parameter/assoc-for-target [:admin-user] (pallet.session/admin-user session)))))]
-    (for [node (-> session :node-type :servers)
-          :let [node-id (-> node :node-id)]]
-      (->
-       node
-       (dissoc :invoke-only :phases)
-       (assoc :admin-user (-> session :parameters :host node-id :admin-user))))))

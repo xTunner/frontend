@@ -6,7 +6,6 @@
   (:require [circle.env :as env])
   (:use [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
-  (:use [circle.backend.nodes :only (node-info)])
   (:use [circle.logging :only (add-file-appender)])
   (:use [circle.util.except :only (throw-if throw-if-not)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))

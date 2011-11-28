@@ -95,12 +95,3 @@
                                                    :path true)
                               (remote-file/remote-file (str home "/.pallet/config.clj") :local-file "src/circle/pallet_config.clj" :no-versioning true))))}))
 
-(defn start
-  "start a new circle instance"
-  []
-  (nodes/converge {circle-group 1}))
-
-(defn stop
-  "start a new circle instance"
-  []
-  (nodes/converge {circle-group 0}))
