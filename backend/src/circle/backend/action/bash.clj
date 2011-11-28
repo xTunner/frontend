@@ -32,7 +32,9 @@
   (apply-map remote-bash (ssh-map-for-build build) body opts))
 
 (defn bash
-  "Returns a new action that executes bash on the host. Body is a string"
+  "Returns a new action that executes bash on the host. Body is a
+  string. If pwd is not specified, defaults to the root of the build's
+  checkout dir"
   [body & {:keys [name abort-on-nonzero environment pwd]
            :or {abort-on-nonzero true}
            :as opts}]
@@ -41,7 +43,8 @@
                    :act-fn (fn [build]
                              (binding [ssh/handle-out build-log
                                        ssh/handle-err build-log-error]
-                               (let [result (remote-bash-build build body :environment environment :pwd pwd)]
+                               (let [pwd (or pwd (-> @build :checkout-dir))
+                                     result (remote-bash-build build body :environment environment :pwd pwd)]
                                  (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                    (action/abort! build (str body " returned exit code " (-> result :exit))))
                                  (action/add-action-result result)
