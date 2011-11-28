@@ -46,3 +46,7 @@ Backend.mock = true
 if RUBY_PLATFORM == 'java' || Rails.env != 'test' then
   Backend.mock = false
 end
+
+at_exit do
+  JRClj.new("clojure.core").shutdown_agents
+end
