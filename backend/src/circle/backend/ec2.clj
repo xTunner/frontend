@@ -147,12 +147,13 @@
 (defn import-keypair
   "Uploads an SSH public key to AWS. When starting nodes, name will be
   passed to AWS. Use the private key to log into boxes after
-  started."
+  started. Returns the keypair name"
   [name pub-key]
   (try
     (with-ec2-client client
       (-> client
-          (.importKeyPair (ImportKeyPairRequest. name pub-key))))
+          (.importKeyPair (ImportKeyPairRequest. name pub-key))
+          (bean)))
     (catch AmazonServiceException e
       (when (not= "InvalidKeyPair.Duplicate" (.getErrorCode e))
         (throw e)))))
