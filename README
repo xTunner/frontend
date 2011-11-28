@@ -42,3 +42,11 @@ bundle install
 ## testing
 
 rspec spec/
+
+# todo
+cmdline to start rails server
+fix hang due to (future pallet)
+add rspec to tests
+ngnix port number
+
+jruby --1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m -S rails server
