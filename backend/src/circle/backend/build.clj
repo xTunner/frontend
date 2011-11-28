@@ -4,13 +4,37 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
-  (:use [circle.util.model-validation :only (valid?)])
-  (:use [circle.util.model-validation-helpers :only (is-ref?)])
+  (:require [circle.util.model-validation :as v])
+  (:use [circle.util.model-validation-helpers :only (is-ref? require-keys)])
   (:use [clojure.tools.logging :only (log)]))
 
 (def build-defaults {:continue? true
                      :num-nodes 1
                      :action-results []})
+
+(def node-validation
+  [(require-keys [:username
+                  :public-key
+                  :private-key
+                  :keypair-name])])
+
+(def build-validations 
+  [(require-keys [:project-name
+                  :build-num
+                  :vcs-url
+                  :vcs-revision
+                  :node])
+   (fn [build]
+     (v/validate node-validation (-> build :node)))])
+
+(defn validate [b]
+  (v/validate build-validations @b))
+
+(defn valid? [b]
+  (v/valid? build-validations @b))
+
+(defn validate! [b]
+  (v/validate! build-validations @b))
 
 (defn build [{:keys [project-name ;; string
                      build-num    ;; int
@@ -30,7 +54,9 @@
                      stop-time]
               :as args}]
   (require-args project-name build-num vcs-url actions)
-  (ref (merge build-defaults args)))
+  (let [b (ref (merge build-defaults args))]
+    (validate! b)
+    b))
 
 (defn extend-group-with-revision
   "update the build, setting the pallet group-name to extends the

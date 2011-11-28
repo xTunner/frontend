@@ -1,5 +1,6 @@
 (ns circle.model.project
   (:use [circle.util.validation :only (validate defn-v)])
+  (:use [clojure.core.incubator :only (-?>)])
   (:use [circle.util.model-validation :only (validate!)])
   (:use [circle.util.except :only (assert!)])
   (:require [circle.backend.github-url :as github])
@@ -39,4 +40,4 @@
   (assert! (get-by-url url) "Project with url %s not found" url))
 
 (defn ssh-key-for-url [url]
-  (-> url (get-by-url!) :ssh-key))
+  (-?> url (get-by-url) :ssh-key))

@@ -1,7 +1,7 @@
 (ns circle.backend.build.test-config
   (:use midje.sweet)
   (:use circle.backend.build.config)
-  (:use [circle.backend.build :only (checkout-dir)])
+  (:use [circle.backend.build :only (checkout-dir valid? validate)])
   (:use [circle.backend.action.bash :only (bash)])
   (:require [circle.backend.build.test-utils :as test])
   (:use [circle.util.predicates :only (ref?)]))
@@ -36,7 +36,8 @@
                              :build-num 1
                              :checkout-dir checkout-dir)]
     (ref? b) => true
-    (-> @b :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"))
+    (-> @b :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
+    (validate b) => nil))
 
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-github-json)]
@@ -49,8 +50,23 @@
     (-> @build :node) => map?
     (-> @build :node :username) => "ubuntu"
     (-> @build :node :public-key) => #"^ssh-rsa"
-    (-> @build :node :private-key) => #"BEGIN RSA PRIVATE KEY"))
+    (-> @build :node :private-key) => #"BEGIN RSA PRIVATE KEY"
+    (validate build) => nil))
+
+(tabular
+ (fact "build-from-url works"
+   (infer-build-from-url ?url) => ref?)
+ ?url
+ "https://github.com/travis-ci/travis-ci"
+ "https://github.com/arohner/CircleCI"
+ "https://github.com/edavis10/redmine")
 
 (fact "build email addresses are correct"
   (let [build (build-from-json test/circle-github-json)]
     (-> @build :notify-email) => #{"arohner@gmail.com"}))
+
+(tabular
+ (fact "infer project name works"
+   (infer-project-name ?url) => ?expected)
+ ?url ?expected
+ "https://github.com/rails/rails.git" "rails")

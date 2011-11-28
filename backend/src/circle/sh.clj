@@ -9,6 +9,11 @@
 (defmacro quasiquote [& forms]
   `(pallet.stevedore/quasiquote ~forms))
 
+(defmacro q
+  "shorthand for quasiquote"
+  [& forms]
+  `(quasiquote ~@forms))
+
 (defn format-bash-cmd [body environment pwd]
   (let [cd-form (when (seq pwd)
                   (quasiquote (cd ~pwd)))
@@ -38,6 +43,7 @@
   ;; between local and remote.
   (sh/sh "bash" :in (emit-form body :environment environment :pwd pwd) 
          :return-map true))
+
 
 (defmacro shq
   "like sh, but quasiquotes its arguments"

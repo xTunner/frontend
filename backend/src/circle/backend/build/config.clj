@@ -1,5 +1,8 @@
 (ns circle.backend.build.config
   "Functions for reading and parsing the build config"
+  (:use [clojure.core.incubator :only (-?>)])
+  (:require [circle.backend.ssh :as ssh])
+  (:require [clojure.string :as str])
   (:require [circle.backend.build :as build])
   (:require [circle.model.project :as project])
   (:require [circle.backend.github-url :as github])
@@ -12,8 +15,10 @@
   (:use [circle.util.model-validation :only (validate!)])
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
-  (:use [circle.util.except :only (assert! throw-if-not)])
+  (:use [circle.util.except :only (assert! throw-if-not throwf)])
   (:use [clojure.core.incubator :only (-?>)])
+  (:require [circle.backend.build.inference :as inference])
+  (:require circle.backend.build.inference.rails)
   (:use [circle.util.map :only (rename-keys)])
   (:require [clj-yaml.core :as yaml])
   (:import java.io.StringReader)
@@ -23,7 +28,7 @@
 (defn parse-config
   "Takes the unparsed config file contents."
   [config]
-  (-> config
+  (-?> config
       (StringReader.)
       yaml/parse-string))
 
@@ -33,10 +38,11 @@
   true)
 
 (defn load-config [path]
-  (-> path
-      (slurp)
-      (eat)
-      (parse-config)))
+  (let [config (-> path
+                   (slurp)
+                   (eat))]
+    (when config
+      (parse-config config))))
 
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
@@ -178,10 +184,11 @@
 
 (defn build-from-name
   "Given a project name and a build name, return a build. Helper method for repl"
-  [project-name job-name]
+  [project-name & {:keys [job-name]}]
   (let [project (project/get-by-name project-name)
         url (-> project :vcs-url)
         config (get-config-for-url url)
+        job-name (or job-name (-> config :jobs (first)))
         repo (git/default-repo-path url)
         build-num 1
         vcs-revision (git/latest-local-commit repo)
@@ -213,3 +220,51 @@
                          :build-num build-num
                          :checkout-dir checkout-dir
                          :notify notify))))
+
+(defn infer-project-name [url]
+  (-> url
+      (clj-url.core/parse)
+      :path
+      (str/split #"/")
+      (last)
+      (str/replace #"\.git$" "")))
+
+(defn minimal-project [url]
+  {:project-name (infer-project-name url)})
+
+(defn minimal-config [url]
+  {})
+
+(defn generate-keypair
+  "Generate a new SSH keypair, upload it to EC2. Returns a map"
+  []
+  (let [keys (ssh/generate-keys)
+        keypair-name (str (gensym "keypair"))]
+    (ec2/import-keypair keypair-name (:public-key keys))
+    (merge {:keypair-name keypair-name} keys)))
+
+(defn ensure-keypair
+  "Generates and uploads a keypair for the node, if it doesn't contain keys. Returns the updated node."
+  [node]
+  (if (not (:private-key node))
+    (merge node (generate-keypair))
+    node))
+
+(defn infer-build-from-url
+  "Assumes url does not have a circle.yml. Examine the source tree, and return a build"
+  [url]
+  (let [project (or (project/get-by-url url) (minimal-project url))
+        repo (git/default-repo-path url)
+        vcs-revision (git/latest-local-commit repo)
+        build-num 1
+        node (ensure-keypair (inference/node repo))
+        checkout-dir (build/checkout-dir (-> project :name) build-num)]
+    (build/build (merge (rename-keys {:name :project-name} project)
+                        {:vcs-url url
+                         :vcs-revision vcs-revision
+                         :build-num build-num
+                         :node node
+                         :checkout-dir checkout-dir
+                         :actions (inference/infer-actions repo)
+                         :notify ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
+                         }))))
