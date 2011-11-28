@@ -11,6 +11,18 @@
   (:use [circle.util.except :only (throw-if throw-if-not)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
 
+;; Clojure has queues, they're not very well documented. They work
+;; like other standard clojure structures, and support peek, pop,
+;; conj.
+
+(def queue (ref clojure.lang.PersistentQueue/EMPTY))
+
+(def in-progress (ref #{}))
+(def max-in-progress 5)
+(def run-agent (agent nil))
+
+(declare run-first)
+
 (defn start* [build]
   (dosync
    (alter build assoc :start-time (-> (time/now) .toDate))))
@@ -32,8 +44,16 @@
 
 (defn log-result [b]
   (if (build/successful? b)
-    (infof "Build %s successful" (build/build-name b))
+    (do
+      (println "Build successful" (build/build-name b))
+      (infof "Build %s successful" (build/build-name b)))
     (errorf "Build %s failed" (build/build-name b))))
+
+(defn finished [b]
+  (dosync
+   (infof "removing build %s from in-progress" (build/build-name b))
+   (alter in-progress disj b))
+  (run-first))
 
 (defn run-build [b & {:keys [cleanup-on-failure]
                           :or {cleanup-on-failure true}}]
@@ -59,3 +79,20 @@
      (when (and (-> @b :failed?) cleanup-on-failure) 
        (cleanup-nodes b)))))
 
+(defn may-start-build? []
+  (< (count @in-progress) max-in-progress))
+
+(defn run-first []
+  (dosync
+   (when (may-start-build?)
+     (when-let [b (peek @queue)]
+       (alter queue pop)
+       (alter in-progress conj b)
+       (send-off run-agent run-build b)
+       (infof "dequeing build %s" (build/build-name b))))))
+
+(defn add-build [b]
+  (dosync
+   (alter queue conj b)
+   (infof "adding build %s to the queue. There are %s queued builds" (build/build-name b) (count @queue)))
+  (run-first))
