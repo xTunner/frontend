@@ -15,8 +15,10 @@ jobs:
     template: build
     node: www   # name of node to use. unique per-project
     commands:
+      - bundle install
       - lein deps:
           pwd: backend
+      - rake test
       - lein midje:
           pwd: backend
           environment:
