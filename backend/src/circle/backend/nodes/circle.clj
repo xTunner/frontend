@@ -1,27 +1,34 @@
 (ns circle.backend.nodes.circle
   (:require pallet.core
             pallet.phase
-            [pallet.action.user :as user]
             [pallet.action.directory :as directory]
+            [pallet.action.exec-script :as exec-script]
             [pallet.action.package :as package]
             [pallet.action.remote-file :as remote-file]
             [pallet.action.service :as service]
+            [pallet.action.user :as user]
             [pallet.crate.automated-admin-user :as automated-admin-user]
             [pallet.crate.git :as git]
-            [pallet.crate.lein :as lein]
             [pallet.crate.java :as java]
-            [pallet.crate.ssh-key :as ssh-key]
+            [pallet.crate.lein :as lein]
             [pallet.crate.network-service :as network-service]
-            [pallet.crate.postgres :as postgres]
             [pallet.crate.nginx :as nginx]
+            [pallet.crate.postgres :as postgres]
+            ;;[pallet.crate.rvm :as rvm]
+            [pallet.crate.ssh-key :as ssh-key]
+            [pallet.crate.rubygems :as rubygems]
+            [pallet.stevedore :as stevedore]
             [pallet.thread-expr :as thread-expr]
-            [circle.backend.nodes :as nodes]))
+            [circle.sh :as sh]
+            [circle.backend.ssh :as ssh]
+            [circle.backend.nodes :as nodes])
+  (:use [arohner.utils :only (inspect)]))
 
 ;; this is our "memoized" circle box
 (def circle-group
   (pallet.core/group-spec
    "circle"
-   :circle-node-spec {:ami "ami-a5c70ecc"
+   :circle-node-spec {:ami "ami-85b47fec"
                       :name "www"
                       :availability-zone "us-east-1a"
                       :instance-type "m1.small"
@@ -58,19 +65,42 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
-                             (package/packages :aptitude ["nginx" "htop" "mongodb"])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems"])
                              (java/java :sun :jdk)
                              (git/git)
+                             (exec-script/exec-script
+                              ~(stevedore/checked-script
+                                "Update rubygems"
+                                (sudo "REALLY_GEM_UPDATE_SYSTEM=true" gem update --system)))
+
+                             ;;
+                             ;; We want this to work, but it doesn't,
+                             ;; because pallet doesn't support
+                             ;; exec-ing as non-root, and the sudo to
+                             ;; make this happen is really gnarly. For
+                             ;; now, this part is done by hand.
+                             
+                             ;; (rvm/rvm)
+                             ;; (rvm/install "jruby")
+                             ;; (rvm/with-rvm
+                             ;;  (rvm use "jruby")
+                             ;;  (rvm gemset create "circle")
+                             ;;  (rvm gemset use "circle")
+                             ;;  (gem install "bundler")
+                             ;;  (gem install "rspec"))
+
                              (nginx/site "circle"
                                          :listen 80
                                          :server_name "circle"
                                          :locations [{:location "/"
-                                                      :proxy_pass "http://localhost:8080"
+                                                      :proxy_pass "http://localhost:3000"
                                                       :proxy_headers {"X-Real-IP" "\\$remote_addr"
                                                                       "X-Forwarded-For" "\\$proxy_add_x_forwarded_for"
                                                                       "Host" "\\$http_host"}}])
                              (nginx/site "default" :action :disable)
-                             (service/service "nginx" :action :enable)                             
+                             (service/service "nginx" :action :enable)
+                             
+                             
                              ;;users
                              (thread-expr/let->
                               [username (-> session :user :username)
@@ -94,4 +124,3 @@
                                                    :create :action
                                                    :path true)
                               (remote-file/remote-file (str home "/.pallet/config.clj") :local-file "src/circle/pallet_config.clj" :no-versioning true))))}))
-

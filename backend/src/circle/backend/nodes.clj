@@ -67,3 +67,11 @@
   (pallet.core/lift group-spec
                     :phase :configure
                     :compute (pallet-compute-service group-spec (map ec2/public-ip instance-ids))))
+
+(defn memoize-group-spec
+  "Starts an instance, pallet configures it, creates a new image."
+  [group-spec image-name]
+  (let [instance-ids (ec2/start-instances (-> group-spec :circle-node-spec))]
+    (configure-instance-ids instance-ids group-spec)
+    (ec2/create-image (first instance-ids) image-name)))
+
