@@ -1,7 +1,8 @@
 (ns circle.env
   (:require midje.semi-sweet)
   (:require clojure.test)
-  (:use [clojure.java.shell :only (sh)])
+  (:use [circle.sh :only (sh)])
+  (:require [clojure.string :as str])
   (:use [clojure.contrib.except :only (throw-if-not)]))
 
 (def env (condp = (System/getenv "CIRCLE_ENV")
@@ -17,3 +18,17 @@
 (when production?
   (alter-var-root (var midje.semi-sweet/*include-midje-checks*) (constantly false))
   (alter-var-root (var clojure.test/*load-tests*) (constantly false)))
+
+(defn username
+  "Returns the username that started this JVM"
+  []
+  (-> (sh "whoami")
+      :out
+      (str/trim)))
+
+(defn hostname
+  "hostname of the box"
+  []
+  (-> (sh "hostname")
+      :out
+      (str/trim)))

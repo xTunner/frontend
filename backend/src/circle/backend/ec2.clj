@@ -9,6 +9,7 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:use [arohner.utils :only (inspect)])
   (:use [doric.core :only (table)])
+  (:require [circle.env :as env])
   (:require [circle.backend.ssh])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonClientException
@@ -21,6 +22,8 @@
                                              DescribeInstancesResult
                                              DescribeKeyPairsRequest
                                              ImportKeyPairRequest
+                                             Tag
+                                             CreateTagsRequest
                                              Placement
                                              RunInstancesRequest
                                              TerminateInstancesRequest)))
@@ -95,6 +98,28 @@
       (-> client
           (.terminateInstances (TerminateInstancesRequest. instance-ids))
           (bean)))))
+
+(defn tagmap
+  "Given an inst returned by instances, return the tags as a single map"
+  [inst]
+  (into {} (for [t (map bean (-> inst :tags))]
+             [(keyword (:key t)) (:value t)])))
+
+(defn my-instance?
+  "Given an instance returned by (instances) or (instance), return true if this username and hostname started the instance"
+  [inst]
+  (let [tags (tagmap inst)]
+    (and (= (env/hostname) (-> tags :hostname))
+         (= (env/username) (-> tags :username)))))
+
+(defn terminate-my-instances
+  "Terminate all instances with the same username and hostname tags as the current user"
+  []
+  (->>
+   (instances)
+   (filter my-instance?)
+   (map :instanceId)
+   (apply terminate-instances!)))
 
 (defn security-groups
   []
@@ -190,7 +215,9 @@
     (-> client
         (.describeImages (-> (DescribeImagesRequest.) (.withImageIds [ami]))))))
 
-(defn image-state [ami]
+(defn image-state
+  "Given an ami, return the state of the image, a keyword, like :pending or :available"
+  [ami]
   (-> (describe-image ami)
       (bean)
       :images
@@ -198,6 +225,22 @@
       (bean)
       :state
       (keyword)))
+
+(defn add-tags
+  "Adds tags to instances. instance-ids is a seq of strings, each an
+  instance-id (or ID of something that can be tagged). tags is a map."
+  [instance-ids tags]
+  (with-ec2-client client
+    (let [request (CreateTagsRequest. instance-ids (for [[k v] tags]
+                                                     (Tag. (name k) v)))]
+      (.createTags client request))))
+
+(defn describe-tags
+  "returns all tags on all instances"
+  ([]
+     (with-ec2-client client
+       (let [result (.describeTags client)]
+         (map bean (.getTags result))))))
 
 (defn block-until-running
   "Blocks until AWS claims the instance is running"
@@ -290,6 +333,8 @@
                                 :username username
                                 :public-key public-key
                                 :private-key private-key) instance-ids)
+    (add-tags instance-ids {:username (env/username)
+                            :hostname (env/hostname)})
     instance-ids))
 
 (defn print-instances []
