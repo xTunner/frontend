@@ -16,9 +16,10 @@
     (circle.util.chdir/chdir "backend")
     (println "Changing current working directory to" (fs/abspath (fs/cwd)))))
 
-(def init*
+(defonce init*
   (delay
    (try
+     (println "circle.init/init")
      (circle.logging/init)
      (when (System/getenv "CIRCLE_SWANK")
        (circle.swank/init))
