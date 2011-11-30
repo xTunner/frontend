@@ -1,15 +1,24 @@
-.topbar
-  .topbar-inner
-    .container-fluid
-      %a.brand{:href => '#'}
-        Circle
+.topbar-wrapper
+  .topbar{"data-dropdown" => "dropdown"}
+    .topbar-inner
+      .container-fluid
+        %h3
+          %a.brand{:href => '#'}
+            Circle
 
-      %ul.nav
-        %li.active
-          %a{:href => '#'}
-            = @project.name
-      %p.pull-right
-        = current_user.email
+        %ul.nav
+          %li.active
+            %a{:href => '#'}
+              = @project.name
+
+        %ul.nav.secondary-nav
+          %li.dropdown
+            %a.dropdown-toggle{:href => '#'}
+              = current_user.email
+            %ul.dropdown-menu
+              %li
+                %a{:href => '#'}
+                  Logout
 
 .container
   .content
