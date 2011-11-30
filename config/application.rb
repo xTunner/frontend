@@ -17,11 +17,6 @@ if RUBY_PLATFORM == 'java'
     require jar
   end
 
-  # Initialize the backend early, before the server is being used to satisfy user requests, so that
-  # users never suffer the >1m startup times.
-  if (Rails.env == "production")
-    Backend.initialize
-  end
 else
   raise if (Rails.env == "production" or Rails.env == "staging")
 end
@@ -69,5 +64,14 @@ module MongoidTest
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    
+    config.after_initialize do 
+      # Initialize the backend early, before the server is being used to satisfy user requests, so that
+      # users never suffer the >1m startup times.
+      if RUBY_PLATFORM == 'java'
+        Backend.initialize
+      end
+    end
   end
 end
+

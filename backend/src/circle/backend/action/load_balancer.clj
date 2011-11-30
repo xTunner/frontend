@@ -3,8 +3,7 @@
   (:require [circle.backend.nodes :as nodes])
   (:use [circle.backend.action :only (defaction)])
   (:require [circle.backend.load-balancer :as lb])
-  (:require [circle.backend.ec2 :as ec2])
-  (:require [circle.backend.ec2-tag :as tag]))
+  (:require [circle.backend.ec2 :as ec2]))
 
 (defaction add-instances []
   {:name "add to load balancer"}
@@ -55,7 +54,7 @@
   [lb-name current-rev]
   (let [lb-ids (set (lb/instance-ids lb-name))]
     (->>
-     (tag/describe-tags)
+     (ec2/describe-tags)
      (filter (fn [tag]
                (and (contains? lb-ids (-> tag :resourceId))
                     (= (-> tag :key) "rev")
