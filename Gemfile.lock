@@ -200,6 +200,9 @@ GEM
       json_pure
       rubyzip
     sexp_processor (3.0.8)
+    simple_form (1.5.2)
+      actionpack (~> 3.0)
+      activemodel (~> 3.0)
     spoon (0.0.1)
     sprockets (2.0.3)
       hike (~> 1.2)
@@ -249,6 +252,7 @@ DEPENDENCIES
   rspec-rails (>= 2.7.0)
   ruby_parser
   sass-rails (~> 3.1.4)
+  simple_form
   sqlite3
   turn
   twitter-bootstrap-rails!
