@@ -11,15 +11,30 @@
       %p.pull-right
         = current_user.email
 
+.container
+  .content
+    %h4
+      = @project.name
+    %h6
+      = @project["vcs-url"]
 
+    = render :partial => 'running'
+    = render :partial => 'running'
 
-%ul
-  %li
-    = @project["vcs-url"]
+    %table#recent-jobs
+      %thead
+        %tr
+          %th
+            Revision
+          %th
+            Author
+          %th
+            Success?
+          %th
+            \% complete
 
-#recent-jobs
-  = render @project.jobs.order_by([[:_id, :desc]]).limit 10
+      = render @project.jobs.order_by([[:_id, :desc]]).limit(10), :partial => 'job'
 
-= form_for [@project, Job.new], :remote => true do |f|
-  = f.submit "Trigger job"
+-#  = form_for [@project, Job.new], :remote => true do |f|
+-#    = f.submit "Trigger job"
 
