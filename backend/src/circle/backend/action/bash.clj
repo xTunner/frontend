@@ -41,12 +41,10 @@
   (let [name (or name (str body))]
     (action/action :name name
                    :act-fn (fn [build]
-                             (binding [ssh/handle-out build-log
-                                       ssh/handle-err build-log-error]
-                               (let [pwd (or pwd (-> @build :checkout-dir))
-                                     result (remote-bash-build build body :environment environment :pwd pwd)]
-                                 (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
-                                   (action/abort! build (str body " returned exit code " (-> result :exit))))
-                                 (action/add-action-result result)
-                                 result))))))
+                             (let [pwd (or pwd (-> @build :checkout-dir))
+                                   result (remote-bash-build build body :environment environment :pwd pwd)]
+                               (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
+                                 (action/abort! build (str body " returned exit code " (-> result :exit))))
+                               (action/add-action-result result)
+                               result)))))
 

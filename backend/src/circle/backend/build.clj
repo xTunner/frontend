@@ -5,6 +5,7 @@
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
   (:require [circle.util.model-validation :as v])
+  (:require [circle.backend.ssh :as ssh])
   (:use [circle.util.model-validation-helpers :only (is-ref? require-keys)])
   (:use [clojure.tools.logging :only (log)]))
 
@@ -95,7 +96,9 @@
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 
 (defmacro with-build-log [build & body]
-  `(binding [*log-ns* (log-ns ~build)]
+  `(binding [*log-ns* (log-ns ~build)
+             ssh/handle-out build-log
+             ssh/handle-err build-log-error]
      ~@body))
 
 (defn build-log [message & args]
