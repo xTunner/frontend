@@ -1,5 +1,13 @@
-%h2
-  = @project.name
+.topbar
+  .fill
+    .container
+      %a.brand{:href => '#'}
+        Circle
+
+      %ul.nav
+        %li.active
+          %a{:href => '#'}
+            = @project.name
 
 %ul
   %li
