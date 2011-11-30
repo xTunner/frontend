@@ -28,7 +28,7 @@
 (def circle-group
   (pallet.core/group-spec
    "circle"
-   :circle-node-spec {:ami "ami-85b47fec"
+   :circle-node-spec {:ami "ami-83d01bea"
                       :name "www"
                       :availability-zone "us-east-1a"
                       :instance-type "m1.small"
@@ -65,7 +65,7 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
-                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems"])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev"])
                              (java/java :sun :jdk)
                              (git/git)
                              (exec-script/exec-script
