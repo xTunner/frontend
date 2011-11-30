@@ -213,16 +213,15 @@
 (defn describe-image [ami]
   (with-ec2-client client
     (-> client
-        (.describeImages (-> (DescribeImagesRequest.) (.withImageIds [ami]))))))
+        (.describeImages (-> (DescribeImagesRequest.) (.withImageIds [ami])))
+        (.getImages)
+        (first)
+        (bean))))
 
 (defn image-state
   "Given an ami, return the state of the image, a keyword, like :pending or :available"
   [ami]
   (-> (describe-image ami)
-      (bean)
-      :images
-      (first)
-      (bean)
       :state
       (keyword)))
 
