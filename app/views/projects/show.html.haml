@@ -17,8 +17,7 @@
               = current_user.email
             %ul.dropdown-menu
               %li
-                %a{:href => '#'}
-                  = link_to('Logout', destroy_user_session_path, :method => :delete)
+                = link_to('Logout', destroy_user_session_path, :method => :delete)
 
 .container
   .content
