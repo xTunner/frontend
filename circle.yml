@@ -37,13 +37,11 @@ jobs:
       - :owner
 
     commands:
+      - rvm use jruby-1.6.5@circle --default
+      - bundle install
       - lein deps:
           pwd: backend
-      - lein daemon start ":web":
-          pwd: backend
-          environment:
-            CIRCLE_ENV: "production"
-            SWANK: "true"
+      - rake server
       - sudo /etc/init.d/nginx start
 
 schedule:
