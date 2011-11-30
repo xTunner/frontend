@@ -1,6 +1,6 @@
 .topbar
-  .fill
-    .container
+  .topbar-inner
+    .container-fluid
       %a.brand{:href => '#'}
         Circle
 
@@ -8,6 +8,10 @@
         %li.active
           %a{:href => '#'}
             = @project.name
+      %p.pull-right
+        = current_user.email
+
+
 
 %ul
   %li
