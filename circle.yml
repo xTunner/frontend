@@ -15,6 +15,7 @@ jobs:
     template: build
     node: www   # name of node to use. unique per-project
     commands:
+      - rvm use jruby-1.6.5@global --default
       - bundle install
       - lein deps:
           pwd: backend
