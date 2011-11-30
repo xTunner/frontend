@@ -26,5 +26,5 @@
 
 (defn run-build-from-jruby
   [project-name job-name]
-  (let [build config/build-from-name project-name (keyword job-name)]
+  (let [build (config/build-from-name project-name :job-name (keyword job-name))]
     (future (run/run-build build))))
