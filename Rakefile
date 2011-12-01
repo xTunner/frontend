@@ -6,7 +6,7 @@ require File.expand_path('../config/application', __FILE__)
 
 MongoidTest::Application.load_tasks
 
-JRUBY_OPTS = "--1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m"
+JRUBY_OPTS = "--1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m -J-Xmx1024m"
 
 ##
 ## Note that we're using exec here, so this rake process is taken over
@@ -14,7 +14,7 @@ JRUBY_OPTS = "--1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J
 ##
 
 def jruby_fn(cmd)
-  s = "jruby #{JRUBY_OPTS} -S #{cmd}"
+  s = "JRUBY_OPTS=\"#{JRUBY_OPTS}\" jruby -S #{cmd}"
   exec s
 end
 
@@ -25,3 +25,10 @@ end
 task :server do
   jruby_fn "rails server"
 end
+
+namespace :production do
+  task :server do
+    jruby_fn "trinidad --config -e production"
+  end
+end
+  
