@@ -50,10 +50,10 @@ group :development do
 end
 
 gem 'haml-rails'
-gem "trinidad"
 
-# Use unicorn as the web server
-# gem 'unicorn'
+gem "trinidad"
+gem "trinidad_daemon_extension"
+
 
 # Deploy with Capistrano
 # gem 'capistrano'
