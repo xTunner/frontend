@@ -28,7 +28,7 @@ end
 
 namespace :production do
   task :server do
-    jruby_fn "trinidad --config -e production"
+    jruby_fn "trinidad --config -e production --load daemon"
   end
 end
   
