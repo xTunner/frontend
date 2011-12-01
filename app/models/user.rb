@@ -8,6 +8,7 @@ class User
   field :name
   field :contact, :type => Boolean
   field :admin, :type => Boolean, :default => false
+  field :github_access_token
 
 #  validates_presence_of :email, :contact, :name
 #  validates_uniqueness_of :email, :case_sensitive => false

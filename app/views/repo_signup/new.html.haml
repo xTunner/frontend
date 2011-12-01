@@ -1,0 +1,17 @@
+= link_to("Provide us access to your github repos", @url)
+
+
+%h2 Whoa there! What information are you taking and why?
+
+%p
+  We need access to your repos to:
+  %ul
+    %li
+      Add a post-commit hook so we know when you've made a commit
+    %li
+      Add a deployment key so that we can clone your repos and run tests
+    %li
+      Github's permissions are quite coarse grained (no read-only access!), but we won't do anything
+      else without explicitly asking.
+
+

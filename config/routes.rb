@@ -8,8 +8,12 @@ MongoidTest::Application.routes.draw do
     resources :jobs
   end
 
+  # Allow users to sign up their repository
+  match 'repo_signup', :to => 'repo_signup#new', :via => [:get]
+  match '/hooks/github_callback', :to => 'repo_signup#github_reply', :via => [:get]
 
   match '/hooks/github', :to => 'github#create', :via => [:post]
+
 
   unauthenticated do
     as :user do
