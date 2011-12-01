@@ -2,6 +2,7 @@
   "fns for interacting with git."
   (:import java.io.File)
   (:require [clojure.string :as str])
+  (:use [circle.util.except :only (throw-if-not)])
   (:use [clojure.tools.logging :only (infof)])
   (:use [arohner.utils :only (inspect)])
   (:require [circle.sh :as sh]))
@@ -42,11 +43,13 @@
   "Takes a seq of stevedore code. Executes it locally, with GIT_SSH and GIT_SSH_KEY set up."
   [steve & {:keys [ssh-key repo]}]
   (with-temp-ssh-key-file [f ssh-key]
-    (sh/sh steve
-           :environment (when ssh-key
-                          {"GIT_SSH" git-ssh-path
-                           "GIT_SSH_KEY" f})
-           :pwd repo)))
+    (let [result (sh/sh steve
+                        :environment (when ssh-key
+                                       {"GIT_SSH" git-ssh-path
+                                        "GIT_SSH_KEY" f})
+                        :pwd repo)]
+      (throw-if-not (zero? (-> result :exit)) "git command %s returned %s: %s" (first steve) (-> result :exit) (-> result :err))
+      result)))
 
 (defn clone
   "Clone a git repo at url, writing the directory to path"
@@ -81,21 +84,25 @@
 (defn latest-local-commit
   "Returns the most recent commit id, on the current branch."
   [repo]
+  {:post [(do (infof "latest commit for %s is %s" repo %) true)]}
   (->
-   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H")))
+   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H"))
+            :repo repo)
    :out))
 
 (defn latest-remote-commit
   "Returns the most recent on origin/master. Does not fetch."
   [repo]
   (->
-   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H" "origin/master")))
+   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H" "origin/master"))
+            :repo repo)
    :out))
 
 (defn committer-email
   "Returns the email address of the committer"
   [repo commit-id]
   (->
-   (git-fn* (sh/quasiquote (git log ~commit-id -1 "--format=%ae")))
+   (git-fn* (sh/quasiquote (git log ~commit-id -1 "--format=%ae"))
+            :repo repo)
    :out
    (str/trim)))
