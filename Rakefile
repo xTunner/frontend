@@ -25,3 +25,8 @@ end
 task :server do
   jruby_fn "rails server"
 end
+
+task :midje do
+  Dir.chdir "backend"
+  exec "lein midje"
+end
