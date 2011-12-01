@@ -1,18 +1,3 @@
-require 'rest_client'
-
-# JRuby 1.9 broke SSL, http://jira.codehaus.org/browse/JRUBY-5529
-# This monkey patch comes from https://gist.github.com/969527, reference in that bug.
-Net::BufferedIO.class_eval do
-  BUFSIZE = 1024 * 16
-
-  def rbuf_fill
-    timeout(@read_timeout) {
-      @rbuf << @io.sysread(BUFSIZE)
-    }
-  end
-end
-
-
 class RepoSignupController < ApplicationController
   before_filter :authenticate_user!
 
@@ -29,45 +14,32 @@ class RepoSignupController < ApplicationController
   #
   # - A user signs up on the homepage. We likely won't handle that here.
   def new
-    # Simplest thing first, just display the form.
-    github_url = "https://github.com/login/oauth/authorize"
-#    client_id = "78a2ba87f071c28e65bb" # Circle
-    client_id = "586bf699b48f69a09d8c" # Circle_test
-    redirect_URI = hooks_github_callback_url # urI not urL
-    scope = "repo" # private repositories
-    query_string = {:client_id => client_id,
-      :scope => scope,
-      :redirect_uri => redirect_URI}
-      .to_query
 
-    @url = "#{github_url}?#{query_string}"
+    # TODO: put this into the logs in a more structured way. But for now, we have this so that we
+    # can compare it to people who follow through.
+    log.info "Started signup from #{params[:email]}"
 
-
+    redirect = hooks_github_callback_url
+    @url = Github.authorization_url redirect
     @project = Project.new
   end
 
-
   def github_reply
     code = params[:code]
-    access_token = params[:access_token]
     if code
-
-#    secret = "98cb9262b67ad26bed9191762a23445eeb2054e4" # Circle
-      secret = "1e93bdce2246fd69d9040875338b4137d525e400" # Circle_test
-      begin
-        @response = RestClient.post "https://github.com/login/oauth/access_token", {
-          :client_id => "586bf699b48f69a09d8c",
-          :client_secret => secret,
-          :code => code},
-        :accept => "application/json"
-
-        @access_token = JSON.parse(@response)["access_token"]
-
-        # store the token in the user
-        current_user.github_access_token = @access_token
-        current_user.save!
-      rescue => @e
-      end
+      access_token = Github.fetch_access_token(code)
+      current_user.github_access_token = access_token
+      current_user.save!
     end
+    # TODO: start a worker which gets a list of builds
+  end
+
+  def show
+    # fetch the list of repos
+    # TODO: in the background, check them out, infer them, and stream the build to the user.
+    # TODO: this means not waiting five minutes for the build to start!
+  end
+
+  def repo_list
   end
 end
