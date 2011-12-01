@@ -16,7 +16,7 @@ end
 
 class Github
 
-  def client_id
+  def self.client_id
     case Rails.env
     when "production"
       "78a2ba87f071c28e65bb"
@@ -44,7 +44,7 @@ class Github
     client_id = self.client_id
     scope = "repo" # private repositories
 
-    query_string = {:client_id => self.client_id,
+    query_string = {:client_id => client_id,
       :scope => scope,
       :redirect_uri => redirect}
       .to_query
@@ -60,7 +60,7 @@ class Github
       :code => code},
     :accept => "application/json"
 
-    access_token = JSON.parse(@response)["access_token"]
+    access_token = JSON.parse(response)["access_token"]
     return access_token
   end
 

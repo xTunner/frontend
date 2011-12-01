@@ -17,11 +17,24 @@ class RepoSignupController < ApplicationController
 
     # TODO: put this into the logs in a more structured way. But for now, we have this so that we
     # can compare it to people who follow through.
-    log.info "Started signup from #{params[:email]}"
+    logger.info "Started signup from #{params[:email]}"
 
     redirect = hooks_github_callback_url
     @url = Github.authorization_url redirect
     @project = Project.new
+
+    # How did they get here?
+    source = "unknown"
+    if params["exceptional"]
+      source = "exceptional"
+    elsif params["ourlist"]
+      source = "ourlist"
+    elsif params["homepage"]
+      source = "homepage"
+    end
+
+    current_user.signup_channel = source
+    current_user.save!
   end
 
   def github_reply

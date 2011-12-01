@@ -9,6 +9,7 @@ class User
   field :contact, :type => Boolean
   field :admin, :type => Boolean, :default => false
   field :github_access_token
+  field :signup_channel, :default => "unknown"
 
 #  validates_presence_of :email, :contact, :name
 #  validates_uniqueness_of :email, :case_sensitive => false
