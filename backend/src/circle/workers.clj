@@ -21,10 +21,41 @@
 
 (defn github
   [url after ref json-string]
-  (future (-> json-string json/decode process-json)))
+  (-> json-string json/decode process-json))
 
 
 (defn run-build-from-jruby
   [project-name job-name]
   (let [build (config/build-from-name project-name :job-name (keyword job-name))]
-    (future (run/run-build build))))
+    (run/run-build build)))
+
+
+
+;;; Workers. Handles starting workers, checking if they're done, and getting the result.
+; TODO: there are almost certainly threading errors here, such as worker-store being a thread-local
+; value.
+(def worker-store (ref {}))
+
+(defn run-worker [fn args]
+  "Call fn with args as a worker. Returns the id of the worker"
+  (dosync
+   (let [the-ref (future (apply fn args))
+         next-id (count @worker-store)]
+     (alter worker-store assoc next-id the-ref)
+     next-id)))
+
+(defn check-worker [id]
+  (dosync
+   (let [the-ref (get @worker-store id)]
+     (future-done? the-ref))))
+
+(defn resolve-worker [id]
+  (dosync
+   (let [the-ref (get @worker-store id)
+         _ (assert (future-done? the-ref))
+         result (deref the-ref)]
+     (alter worker-store dissoc id)
+     result)))
+
+
+
