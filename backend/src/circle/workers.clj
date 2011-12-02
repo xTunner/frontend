@@ -1,4 +1,4 @@
-(ns circle.hooks
+(ns circle.workers
   (:require [org.danlarkin.json :as json])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.project.circle :as circle])

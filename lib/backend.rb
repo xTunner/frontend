@@ -29,7 +29,7 @@ class Backend
     return if Backend.mock
     self.initialize
 
-    clj = JRClj.new "circle.hooks"
+    clj = JRClj.new "circle.workers"
     clj.github url, after, ref, json
   end
 
@@ -37,7 +37,7 @@ class Backend
     return if Backend.mock
     self.initialize
 
-    clj = JRClj.new "circle.hooks"
+    clj = JRClj.new "circle.workers"
     clj.run_build_from_jruby(project.name, "build")
   end
 end
