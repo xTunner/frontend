@@ -33,6 +33,6 @@ end
 
 namespace :production do
   task :server do
-    jruby_fn "trinidad --config -e production --load daemon"
+    exec "JRUBY_OPTS=\"#{JRUBY_OPTS}\" ./deploy.sh"
   end
 end

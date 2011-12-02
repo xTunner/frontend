@@ -52,8 +52,6 @@ end
 gem 'haml-rails'
 
 gem "trinidad"
-gem "trinidad_daemon_extension"
-
 
 # Deploy with Capistrano
 # gem 'capistrano'
