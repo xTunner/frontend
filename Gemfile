@@ -1,11 +1,13 @@
 source 'http://rubygems.org'
 
 gem 'rails', '3.1.1'
-gem 'sqlite3'
 
 if RUBY_PLATFORM == 'java'
   gem 'jruby-openssl'
   gem 'jrclj', :git => "git://github.com/kyleburton/jrclj.git", :branch => "cc0a0be630eb01f64680811edc48270b5fe77dcb"
+  gem 'activerecord-jdbcsqlite3-adapter'
+else
+  gem 'sqlite3'
 end
 
 gem 'jquery-rails'
@@ -38,20 +40,20 @@ group :test do
   gem "factory_girl_rails", ">= 1.3.0"
   gem "launchy", ">= 2.0.5"
   gem "minitest"
-  gem 'haml-rails'
   gem 'turn', :require => false  # Pretty printed test output
 end
 
 group :development do
-  gem 'haml-rails'
   gem 'rake'
   gem 'hpricot'
   gem 'ruby_parser'
 end
 
+gem 'haml-rails'
 
-# Use unicorn as the web server
-# gem 'unicorn'
+gem "trinidad"
+gem "trinidad_daemon_extension"
+
 
 # Deploy with Capistrano
 # gem 'capistrano'

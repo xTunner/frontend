@@ -41,7 +41,7 @@ jobs:
       - bundle install
       - lein deps:
           pwd: backend
-      - rake server
+      - rake production:server
       - sudo /etc/init.d/nginx start
 
 schedule:
