@@ -49,4 +49,18 @@ fi
 # If you use bundler, this might be useful to you:
 # if [[ -s Gemfile ]] && ! command -v bundle >/dev/null
 # then
-#   printf The
+#   printf "The rubygem 'bundler' is not installed. Installing it now.\n"
+#   gem install bundler
+# fi
+# if [[ -s Gemfile ]] && command -v bundle
+# then
+#   bundle install
+# fi
+
+if [[ $- == *i* ]] # check for interactive shells
+then
+    echo "Using: $(tput setaf 2)$GEM_HOME$(tput sgr0)" # show the user the ruby and gemset they are using in green
+else 
+	echo "Using: $GEM_HOME" # don't use colors in interactive shells
+fi
+
