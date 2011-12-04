@@ -26,6 +26,10 @@
   (future (apply fn args))
   nil)
 
+(defn blocking-worker [fn & args]
+  "Start a worker and block until it returns"
+  (apply fn args))
+
 (defn worker-done? [id]
   "Return if the worker is done. Throw an NPE if there is no such worker"
   (dosync

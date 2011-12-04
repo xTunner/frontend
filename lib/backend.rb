@@ -66,6 +66,13 @@ class Backend
     Backend.clj.start_worker(fn, *args)
   end
 
+  def self.blocking_worker(name, *args)
+    return nil if Backend.mock
+
+    fn = self._fn name
+    Backend.clj.blocking_worker(fn, *args)
+  end
+
   def self.worker_done?(id)
     return true if Backend.mock
 
