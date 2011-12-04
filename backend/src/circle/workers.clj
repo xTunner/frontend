@@ -42,7 +42,11 @@
   (dosync
    (let [as-int (int id)
          the-ref (get @worker-store as-int)
+         ; TODO: when we dereference this, it may result in throwing the
+         ; exception that occurred within the future. We want the stack trace
+         ; that appears on error to be that stack-trace.
          result (deref the-ref)]
+
      (alter worker-store dissoc as-int)
      result)))
 
