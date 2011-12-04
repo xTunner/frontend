@@ -47,38 +47,33 @@ class Backend
     # TODO: need to coerce args to clj types (it's fine for now
     # because Strings and ints are the same in both)
 
-    clj = JRClj.new "circle.workers"
     fn = self._fn name
-    clj.fire_worker(fn, *args)
+    Backend.clj.fire_worker(fn, *args)
   end
 
   def self.start_worker(name, *args)
     return 0 if Backend.mock
 
-    clj = JRClj.new "circle.workers"
     fn = self._fn name
-    clj.start_worker(fn, *args)
+    Backend.clj.start_worker(fn, *args)
   end
 
   def self.worker_done?(id)
     return true if Backend.mock
 
-    clj = JRClj.new("circle.workers")
-    clj.worker_done?(id)
+    Backend.clj.worker_done?(id)
   end
 
   def self.wait_for_worker(id)
     return nil if Backend.mock
 
-    clj = JRClj.new "circle.workers"
-    clj.wait_for_worker(id)
+    Backend.clj.wait_for_worker(id)
   end
 
   def self.worker_count
     return 1 if Backend.mock
 
-    clj = JRClj.new "circle.workers"
-    clj.worker_count
+    Backend.clj.worker_count
   end
 
 
@@ -86,12 +81,13 @@ class Backend
   def self.initialize
     return if Backend.mock
 
-    clj = JRClj.new "circle.init"
-    clj.maybe_change_dir
-    clj.init
+    Backend.clj = JRClj.new "circle.init", "circle.workers"
+    Backend.clj.maybe_change_dir
+    Backend.clj.init
   end
 
   class_attribute :mock
+  class_attribute :clj
 end
 
 Backend.mock = true
