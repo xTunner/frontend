@@ -96,13 +96,19 @@ class Backend
   def self.initialize
     return if Backend.mock
 
-    Backend.clj = JRClj.new "circle.init", "circle.workers"
     Backend.clj.maybe_change_dir
     Backend.clj.init
   end
 
+  def self.clj # I'm not sure I get this, it can be nil after being initialized?
+    if Backend._clj.nil?
+      Backend._clj = JRClj.new "circle.init", "circle.workers"
+    end
+    Backend._clj
+  end
+
   class_attribute :mock
-  class_attribute :clj
+  class_attribute :_clj
 end
 
 Backend.mock = true
