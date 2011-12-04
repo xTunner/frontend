@@ -25,14 +25,14 @@
   (-> json-string json/decode process-json))
 
 
-(def production-github {:client-id "78a2ba87f071c28e65bb"
-                        :secret "98cb9262b67ad26bed9191762a23445eeb2054e4"})
+(def production-github {:client_id "78a2ba87f071c28e65bb"
+                        :client_secret "98cb9262b67ad26bed9191762a23445eeb2054e4"})
 
-(def staging-github {:client-id "TODO"
-                     :secret "TODO"})
+(def staging-github {:client_id "TODO"
+                     :client_secret "TODO"})
 
-(def local-github {:client-id "586bf699b48f69a09d8c"
-                   :secret "1e93bdce2246fd69d9040875338b4137d525e400"})
+(def local-github {:client_id "586bf699b48f69a09d8c"
+                   :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
 
 (defn default []
   (cond
