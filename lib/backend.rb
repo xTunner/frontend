@@ -39,6 +39,14 @@ class Backend
     end
     raise "Error: no package" if package.empty?
 
+    # Make sure the package is required, or we can't fetch the function
+    require = RT.var("clojure.core", "require")
+    symbol = RT.var("clojure.core", "symbol")
+    keyword = RT.var("clojure.core", "keyword")
+    reload = keyword.invoke("reload") # reload the source automatically
+    require.invoke(symbol.invoke(package), reload)
+
+    # Actually fetch it.
     RT.var(package, function)
   end
 
