@@ -14,41 +14,71 @@
 # JRClj.new("circle.util.time").ju_now
 
 class Backend
-  class_attribute :mock
 
+  # TODO: refactor this until it's transparent
   def self.github_hook(url, after, ref, json)
-    self.run_worker "github", url, after, ref, json
+    self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json
   end
 
   def self.build(project)
-    self.run_worker "run-build-from-jruby", project.name, "build"
+    self.fire_worker "circle.workers/run-build-from-jruby", project.name, "build"
   end
 
-  # We launch workers using run_worker. On the clojure side, we use futures to launch the job.
+  # We launch workers using start_worker. On the clojure side, we use futures to launch the job.
   # The future is stored in a hash, indexed by integer. We return that integer to Ruby, where
   # we can then query it using check_worker, or get the value using resolve_worker. Note that
   # resolve_worker only returns the value once! So this is roughly equivalent to a proper
   # queue.
-  def self.run_worker(name, *args)
+
+  def self._fn(name)
+    """name can include a single '/' and/or any number of '.'s"""
+    (package, function) = name.split("/")
+    if function.nil? then
+      function = package
+      package = "clojure.core"
+    end
+    raise "Error: no package" if package.empty?
+
+    RT.var(package, function)
+  end
+
+  def self.fire_worker(name, *args)
+    return nil if Backend.mock
+    # TODO: need to coerce args to clj types (it's fine for now
+    # because Strings and ints are the same in both)
+
+    clj = JRClj.new "circle.workers"
+    fn = self._fn name
+    clj.fire_worker(fn, *args)
+  end
+
+  def self.start_worker(name, *args)
     return 0 if Backend.mock
 
     clj = JRClj.new "circle.workers"
-    fn = RT.var("circle.workers", name)
-    clj.run_worker(fn, args)
+    fn = self._fn name
+    clj.start_worker(fn, *args)
   end
 
-  def self.check_worker(id)
+  def self.worker_done?(id)
     return true if Backend.mock
 
-    clj = JRClj.new "circle.workers"
-    clj.check_worker(id)
+    clj = JRClj.new("circle.workers")
+    clj.worker_done?(id)
   end
 
-  def self.resolve_worker(id)
-    return Nil if Backend.mock
+  def self.wait_for_worker(id)
+    return nil if Backend.mock
 
     clj = JRClj.new "circle.workers"
-    clj.resolve_worker(id)
+    clj.wait_for_worker(id)
+  end
+
+  def self.worker_count
+    return 1 if Backend.mock
+
+    clj = JRClj.new "circle.workers"
+    clj.worker_count
   end
 
 
@@ -61,6 +91,7 @@ class Backend
     clj.init
   end
 
+  class_attribute :mock
 end
 
 Backend.mock = true
