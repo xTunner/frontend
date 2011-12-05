@@ -18,6 +18,7 @@ gem "devise", ">= 1.4.9"
 
 gem "simple_form"
 gem "rest-client"
+gem 'airbrake'
 
 
 # Gems used only for assets and not required

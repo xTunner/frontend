@@ -50,6 +50,9 @@ GEM
     activesupport (3.1.1)
       multi_json (~> 1.0)
     addressable (2.2.6)
+    airbrake (3.0.5)
+      activesupport
+      builder
     ansi (1.4.1)
     arel (2.2.1)
     bcrypt-ruby (3.0.1-java)
@@ -233,6 +236,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
+  airbrake
   bson_ext (~> 1.4)
   capybara (>= 1.1.1)
   coffee-rails (~> 3.1.1)
