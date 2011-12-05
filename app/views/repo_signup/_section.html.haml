@@ -1,12 +1,10 @@
-%h1
+%h1{:class => class_for_header(@step, index)}
   = header
-  Class is:
-  = class_for_header(@step, index)
 
-- if body then
-  = render :partial => body
-  Class is:
-  = class_for_subsection(@step, index)
+%div{:class => "body#{index} #{class_for_subsection(@step, index)}"}
+  - if body then
+    = render :partial => body
 
-- if explanation then
-  = render :partial => explanation
+%div{:class => "explanation #{class_for_subsection(@step, index)}"}
+  - if explanation then
+    = render :partial => explanation
