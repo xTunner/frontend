@@ -7,6 +7,9 @@
 
     = stylesheet_link_tag "application"
 
+    -# Airbrake catches errors, so it goes first.
+    = airbrake_javascript_notifier
+
     = javascript_include_tag "application"
     = javascript_include_tag "smart-js-poller"
     = javascript_include_tag params[:controller]

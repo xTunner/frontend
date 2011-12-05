@@ -8,6 +8,9 @@
     %meta{:content => "Circle, heroku, continuous integration, continuous deployment, CI, github", :name => "keywords"}
     %meta{:content => "rCckS33lTuN6tiIrxLMykv_uRR0dMoHNM4XrR4yYUQ0", :name => "google-site-verification"}
 
+    -# Airbrake catches errors, so it goes first.
+    = airbrake_javascript_notifier
+
     -# Beware, the ordering matters here!!
     = stylesheet_link_tag    "home/reset"
     = stylesheet_link_tag    "home/core"
@@ -28,4 +31,3 @@
 
   %body
     = yield
-
