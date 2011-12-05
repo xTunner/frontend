@@ -13,36 +13,37 @@ class RepoSignupController < ApplicationController
   #   TODO: this requires them to have a password with us!! Not completely friendly.
   #
   # - A user signs up on the homepage. We likely won't handle that here.
-  def new
-
-    # TODO: put this into the logs in a more structured way. But for now, we have this so that we
-    # can compare it to people who follow through.
-    logger.info "Started signup from #{params[:email]}"
-
-    redirect = hooks_github_callback_url
-    @url = Github.authorization_url redirect
-    @project = Project.new
-
-    # How did they get here?
-    current_user.signup_channel = params["source"]
-#    current_user.signup_referer = params["http-referer"]
-    current_user.save!
-  end
-
-  def github_reply
+  def all
     code = params[:code]
-    if code
+    access_token = current_user.github_access_token
+
+    # I can't make this routing work, so we'll just hardcode it. In the future,
+    # this might be better to do with some kind of state-machine plugin, but
+    # that's too much hassle for now.
+
+    # Step 1 - nothing
+    if code.nil? and access_token.nil? then
+      # TODO: put this into the logs in a more structured way. But for now, we have this so that we
+      # can compare it to people who follow through.
+      logger.info "Started signup from #{params[:email]}"
+
+      # Some stats
+      current_user.signup_channel = params["source"]
+      current_user.signup_referer = request.env["HTTP_REFERER"]
+      current_user.save!
+
+      redirect = github_oauth_url
+      @url = Github.authorization_url redirect
+      render :template => :new
+    elsif code then
       @fetcher = Github.fetch_access_token(current_user, code)
+      render :template => :github_reply
+    elsif access_token then
+      # TODO: fetch the list of repos
+      render :template => :github_reply
     end
     # TODO: start a worker which gets a list of builds
-  end
-
-  def show
-    # fetch the list of repos
     # TODO: in the background, check them out, infer them, and stream the build to the user.
     # TODO: this means not waiting five minutes for the build to start!
-  end
-
-  def repo_list
   end
 end

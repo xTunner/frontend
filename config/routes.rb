@@ -1,22 +1,25 @@
 MongoidTest::Application.routes.draw do
 
+  # User authentication
   devise_for :users, :path => '/', :path_names => {:sign_in => 'login', :sign_out => 'logout'} do
     get 'users', :to => 'users#show', :as => :user_root
   end
 
+  # Main project UI
   resources :projects do
     resources :jobs
   end
 
-  # Allow users to sign up their repository
-  match 'repo_signup', :to => 'repo_signup#new', :via => [:get]
-  match '/hooks/github_callback', :to => 'repo_signup#github_reply', :via => [:get]
+  # Signup form (for repositories)
+  match 'add-repo', :to => 'repo_signup#all', :via => [:get]
 
+  # Github post-commit hook
   match '/hooks/github', :to => 'github#create', :via => [:post]
 
-  # Provide the ability to poll for workers
+  # Polling for backend workers
   match '/hooks/fetcher/:id', :to => 'fetcher#done'
 
+  # Homepage (landing page for un-logged-in users)
   unauthenticated do
     as :user do
       # pre-launch signup form's target
@@ -27,6 +30,7 @@ MongoidTest::Application.routes.draw do
     end
   end
 
+  # Default page for signed-in users.
   root :to => "users#show"
 
 
