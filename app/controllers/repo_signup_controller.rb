@@ -16,7 +16,8 @@ class RepoSignupController < ApplicationController
   def all
     code = params[:code]
     access_token = current_user.github_access_token
-    @step = (1,1)
+    @step = 1
+    @substep = 1
 
     redirect = add_repo_url
     @url = Github.authorization_url redirect
@@ -34,17 +35,22 @@ class RepoSignupController < ApplicationController
       current_user.signup_referer = request.env["HTTP_REFERER"]
       current_user.save!
 
-      @step = (1,1)
+      @step = 1
+      @substep = 1
 
     elsif code and access_token.nil? then
       # just after coming back from the github redirect
       @fetcher = Github.fetch_access_token(current_user, code)
       @step = 1
       @substep = 2
+
     elsif access_token then
+      @step = 2
+      @substep = 1
+
     #   # TODO: fetch the list of repos
     #   render :template => :github_reply
-    # end
+    end
     # # TODO: start a worker which gets a list of builds
     # # TODO: in the background, check them out, infer them, and stream the build to the user.
     # # TODO: this means not waiting five minutes for the build to start!
