@@ -1,3 +1,15 @@
-// Place all the styles related to the repo_signup controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+.hidden {
+    display: none;
+}
+
+.visible {
+}
+
+.subdued {
+    color: #ccc;
+    background: #eee;
+}
+
+.highlighted {
+    background: #ff;
+}

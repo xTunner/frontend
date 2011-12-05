@@ -6,6 +6,7 @@
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
 
     = stylesheet_link_tag "application"
+    = stylesheet_link_tag params[:controller]
 
     -# Airbrake catches errors, so it goes first.
     = airbrake_javascript_notifier
