@@ -14,6 +14,8 @@ MongoidTest::Application.routes.draw do
 
   match '/hooks/github', :to => 'github#create', :via => [:post]
 
+  # Provide the ability to poll for workers
+  match '/hooks/fetcher/:id', :to => 'fetcher#done'
 
   unauthenticated do
     as :user do

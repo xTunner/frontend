@@ -24,25 +24,15 @@ class RepoSignupController < ApplicationController
     @project = Project.new
 
     # How did they get here?
-    source = "unknown"
-    if params["exceptional"]
-      source = "exceptional"
-    elsif params["ourlist"]
-      source = "ourlist"
-    elsif params["homepage"]
-      source = "homepage"
-    end
-
-    current_user.signup_channel = source
+    current_user.signup_channel = params["source"]
+#    current_user.signup_referer = params["http-referer"]
     current_user.save!
   end
 
   def github_reply
     code = params[:code]
     if code
-      access_token = Github.fetch_access_token(code)
-      current_user.github_access_token = access_token
-      current_user.save!
+      @fetcher = Github.fetch_access_token(current_user, code)
     end
     # TODO: start a worker which gets a list of builds
   end
