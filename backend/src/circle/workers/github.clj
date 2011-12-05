@@ -70,10 +70,10 @@
   (let [endpoint "https://github.com/login/oauth/authorize"
         query-string (client/generate-query-string {:client_id (:client_id settings)
                                                     :scopes "repo"
-                                                    :redirect-uri redirect})]
+                                                    :redirect_uri redirect})]
     (str endpoint "?" query-string)))
 
 
 (fact "authorization-url works"
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
-  "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scopes=repo&redirect-uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
+  "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scopes=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
