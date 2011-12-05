@@ -26,13 +26,15 @@
   [url after ref json-string]
   (-> json-string json/decode process-json))
 
-
+;;; https://github.com/account/applications/4808
 (def production-github {:client_id "78a2ba87f071c28e65bb"
                         :client_secret "98cb9262b67ad26bed9191762a23445eeb2054e4"})
 
-(def staging-github {:client_id "TODO"
-                     :client_secret "TODO"})
+;;; https://github.com/account/applications/5042
+(def staging-github {:client_id "593c08e3973f3e534013"
+                     :client_secret "4f193c232eb94a9ae7bcf1c495a8a3e805dc3493"})
 
+;;; https://github.com/account/applications/4814
 (def local-github {:client_id "586bf699b48f69a09d8c"
                    :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
 
