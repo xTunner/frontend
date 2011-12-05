@@ -3,13 +3,13 @@
 
     = render :partial => "section",
              :locals => { :header => "Authorize us on Github",
-                          :body => "body1_1",
+                          :body => "body#{@step}_#{@substep}",
                           :explanation => "explanation1",
                           :index => 1}
 
     = render :partial => "section",
              :locals => { :header => "Pick a project",
-                          :body => "body2_1",
+                          :body => "body#{@step}_#{@substep}",
                           :explanation => nil,
                           :index => 2}
 
