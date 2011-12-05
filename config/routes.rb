@@ -11,7 +11,7 @@ MongoidTest::Application.routes.draw do
   end
 
   # Signup form (for repositories)
-  match 'add-repo', :to => 'repo_signup#all', :via => [:get]
+  match 'add-repo', :to => 'repo_signup#all', :via => [:get], :as => :add_repo
 
   # Github post-commit hook
   match '/hooks/github', :to => 'github#create', :via => [:post]

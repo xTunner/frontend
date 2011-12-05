@@ -1,0 +1,12 @@
+%h1
+  = header
+  Class is:
+  = class_for_header(@step, index)
+
+- if body then
+  = render :partial => body
+  Class is:
+  = class_for_subsection(@step, index)
+
+- if explanation then
+  = render :partial => explanation

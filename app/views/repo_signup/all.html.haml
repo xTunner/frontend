@@ -1,0 +1,20 @@
+.container
+  .contents
+
+    = render :partial => "section",
+             :locals => { :header => "Authorize us on Github",
+                          :body => "body1_1",
+                          :explanation => "explanation1",
+                          :index => 1}
+
+    = render :partial => "section",
+             :locals => { :header => "Pick a project",
+                          :body => "body2_1",
+                          :explanation => nil,
+                          :index => 2}
+
+    = render :partial => "section",
+             :locals => { :header => "Profit",
+                          :explanation => "explanation3",
+                          :body => nil,
+                          :index => 3}

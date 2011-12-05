@@ -16,12 +16,14 @@ class RepoSignupController < ApplicationController
   def all
     code = params[:code]
     access_token = current_user.github_access_token
+    @step = (1,1)
 
-    # I can't make this routing work, so we'll just hardcode it. In the future,
-    # this might be better to do with some kind of state-machine plugin, but
-    # that's too much hassle for now.
+    redirect = add_repo_url
+    @url = Github.authorization_url redirect
 
-    # Step 1 - nothing
+
+
+    # Step 1 - nothing's happened yet
     if code.nil? and access_token.nil? then
       # TODO: put this into the logs in a more structured way. But for now, we have this so that we
       # can compare it to people who follow through.
@@ -32,18 +34,19 @@ class RepoSignupController < ApplicationController
       current_user.signup_referer = request.env["HTTP_REFERER"]
       current_user.save!
 
-      redirect = github_oauth_url
-      @url = Github.authorization_url redirect
-      render :template => :new
-    elsif code then
+      @step = (1,1)
+
+    elsif code and access_token.nil? then
+      # just after coming back from the github redirect
       @fetcher = Github.fetch_access_token(current_user, code)
-      render :template => :github_reply
+      @step = 1
+      @substep = 2
     elsif access_token then
-      # TODO: fetch the list of repos
-      render :template => :github_reply
-    end
-    # TODO: start a worker which gets a list of builds
-    # TODO: in the background, check them out, infer them, and stream the build to the user.
-    # TODO: this means not waiting five minutes for the build to start!
+    #   # TODO: fetch the list of repos
+    #   render :template => :github_reply
+    # end
+    # # TODO: start a worker which gets a list of builds
+    # # TODO: in the background, check them out, infer them, and stream the build to the user.
+    # # TODO: this means not waiting five minutes for the build to start!
   end
 end

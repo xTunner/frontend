@@ -1,0 +1,34 @@
+
+.authorize
+  .header Authorize us with Github
+  .body1
+    = link_to(@url, "Click here")
+  .body2
+    Authorizing
+  .body3
+    Authorized!
+  .explanation
+    We need github access to check out your code and run your tests. We'll also
+    add a post-commit hook and deployment keys so that everything is smooth and
+    hassle-free for you. We won't do any more without explicitly asking, and of
+    course all of this can be disabled from your account page on Github.
+
+.select
+  .header Pick your projects
+  .body1
+    Fetching project list
+  .body2
+    Project list - render a partial
+    checkboxes: Include: forks, public repos
+    Done button.
+
+.profit
+  .header Thanks!
+  .body1
+    We'll start running tests on your X projects ASAP. Rails and clojure
+    projects are pretty much ready, and we'll have them to you soon. Other
+    languages/platforms/paradigms will come soon: we're using the projects you
+    add as guidance for what to work on next, so thanks!
+
+.finally
+  Any comments - what's important, what's not, what your goal is?
