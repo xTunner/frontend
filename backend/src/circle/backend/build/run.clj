@@ -43,9 +43,7 @@
 
 (defn log-result [b]
   (if (build/successful? b)
-    (do
-      (println "Build successful" (build/build-name b))
-      (infof "Build %s successful" (build/build-name b)))
+    (infof "Build %s successful" (build/build-name b))
     (errorf "Build %s failed" (build/build-name b))))
 
 (defn finished [b]
