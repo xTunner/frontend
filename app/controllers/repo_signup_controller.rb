@@ -50,12 +50,15 @@ class RepoSignupController < ApplicationController
       session[:next] = true
 
     when :fetching_projects
+      session[:next] = true
       # fetcher = Github.tentacles "repos/repos", current_user
 
     when :list_projects
+      session[:next] = true
       # TODO
 
     when :adding_keys
+      session[:next] = true
       # TODO
 
     when :done
