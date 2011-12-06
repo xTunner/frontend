@@ -12,8 +12,8 @@
 (fact "logging uses the same DB as congomongo uses"
   (let [message (str (gensym "logging-test"))
         fetcher #(mongo/fetch-count :logs
-                                  :where {:message message
-                                          :level "INFO"})
+                                    :where {:message message
+                                            :level "INFO"})
         log-entries-before (fetcher)
         _ (infof message)
         log-entries-after (fetcher)]

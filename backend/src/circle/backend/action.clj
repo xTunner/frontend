@@ -103,8 +103,9 @@
 
 (defn action-results
   "creates a new action results"
-  [act]
-  (ref {:name (:name act)}))
+  [build act]
+  (ref {:name (:name act)
+        :_build-ref (-> @build :_id)}))
 
 (defn add-action-result
   "Adds information about the action's result
@@ -126,7 +127,7 @@
 (defn run-action [build act]
   (throw-if-not (map? act) "action must be a ref")
   (binding [*current-action* act
-            *current-action-results* (action-results act)]
+            *current-action-results* (action-results build act)]
     (dosync
      (create-mongo-obj)
      (add-start-time))
