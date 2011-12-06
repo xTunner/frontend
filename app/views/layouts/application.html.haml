@@ -5,15 +5,19 @@
 
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
 
+    -# Stylesheets first
+    - if not params[:controller].start_with? "devise" then
+      = stylesheet_link_tag "controller-specific/" + params[:controller]
     = stylesheet_link_tag "application"
-    = stylesheet_link_tag params[:controller]
 
-    -# Airbrake catches errors, so it goes first.
-    = airbrake_javascript_notifier
 
-    = javascript_include_tag "application"
+    -# JS
+    = airbrake_javascript_notifier # Load airbrake before any other JS, to catch run-time exceptions.
+
     = javascript_include_tag "smart-js-poller"
-    = javascript_include_tag params[:controller]
+    = javascript_include_tag "application"
+    - if not params[:controller].start_with? "devise" then
+      = javascript_include_tag "controller-specific/" + params[:controller]
 
     = csrf_meta_tags
 
