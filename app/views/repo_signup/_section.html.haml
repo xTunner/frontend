@@ -1,10 +1,10 @@
-%h1{:class => class_for_header(@step, index)}
+%h1{:class => "header #{class_for_header(@step, index)}", :id => "header#{index}"}
   = header
 
-%div{:class => "body#{index} #{class_for_subsection(@step, index)}"}
+%div{:class => "body #{class_for_subsection(@step, index)}", :id => "body#{index}"}
   - if body then
     = render :partial => body
 
-%div{:class => "explanation #{class_for_subsection(@step, index)}"}
+%div{:class => "explanation #{class_for_subsection(@step, index)}", :id => "explanation#{index}"}
   - if explanation then
     = render :partial => explanation

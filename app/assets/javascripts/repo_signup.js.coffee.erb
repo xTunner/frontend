@@ -1,19 +1,25 @@
 poller = () ->
   $.getJSON("/add-repo/dynamic",
     (data, textStatus) ->
-      alert data["state"]
       ready = data["ready"]
       if ready?
         if ready
-          adjust_page(data["step"], data["substep"], data["rendering"])
+          adjust_page(data["step"], data["rendering"])
         setTimeout(poller, 200)
   )
 
-adjust_page = (step, substep, rendering) ->
-  alert("adjusting")
-  alert(substep)
-  alert(step)
-  alert(rendering)
+adjust_page = (step, rendering) ->
+  for i in [1,2,3]
+    if i == step
+      $('#header' + i).removeClass("subdued")
+      $('#header' + i).addClass("highlighted")
+      $('#body' + i).removeClass("hidden")
+      $('#explanation' + i).removeClass("hidden")
+    else
+      $('#header' + i).removeClass("highlighted")
+      $('#header' + i).addClass("subdued")
+      $('#body' + i).addClass("hidden")
+      $('#explanation' + i).addClass("hidden")
 
 $(document).ready ->
   setTimeout(poller, 200)

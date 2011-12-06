@@ -98,6 +98,8 @@ class RepoSignupController < ApplicationController
       :adding_keys
     when :adding_keys
       :done
+    when :done
+      :done # saturate
     end
   end
 
@@ -148,10 +150,9 @@ class RepoSignupController < ApplicationController
 
     result = {
       :step => step,
-      :substep => substep,
       :ready => ready,
       :result => result,
-      :state => state
+      :state => state,
     }.to_json
     puts result
     render :json => result
