@@ -6,10 +6,11 @@
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
 
     = stylesheet_link_tag "application"
-
     = javascript_include_tag "application"
+
     - if not params[:controller].start_with? "devise" then
-      = javascript_include_tag params[:controller]
+      = javascript_include_tag "controller-specific/" + params[:controller]
+      = stylesheet_link_tag "controller-specific/" + params[:controller]
 
     = csrf_meta_tags
 
