@@ -13,21 +13,18 @@ class RepoSignupController < ApplicationController
   #   TODO: this requires them to have a password with us!! Not completely friendly.
   #
   # - A user signs up on the homepage. We likely won't handle that here.
+
   def all
+    @url = Github.authorization_url add_repo_url
+
     code = params[:code]
     access_token = current_user.github_access_token
-    @step = 1
-    @substep = 1
 
-    redirect = add_repo_url
-    @url = Github.authorization_url redirect
-
-
-
-    # Step 1 - nothing's happened yet
-    if code.nil? and access_token.nil? then
-      # TODO: put this into the logs in a more structured way. But for now, we have this so that we
-      # can compare it to people who follow through.
+    state = starting_state(code, access_token)
+    case state
+    when :start
+      # TODO: put this into the logs in a more structured way. But for now, we
+      # have this so that we can compare it to people who follow through.
       logger.info "Started signup from #{params[:email]}"
 
       # Some stats
@@ -35,24 +32,104 @@ class RepoSignupController < ApplicationController
       current_user.signup_referer = request.env["HTTP_REFERER"]
       current_user.save!
 
-      @step = 1
-      @substep = 1
+    when :authorizing
+      fetcher = Github.fetch_access_token(current_user, code)
 
-    elsif code and access_token.nil? then
-      # just after coming back from the github redirect
-      @fetcher = Github.fetch_access_token(current_user, code)
-      @step = 1
-      @substep = 2
+    when :fetch_projects
+      # fetcher = Github.tentacles "repos/repos", current_user
 
-    elsif access_token then
-      @step = 2
-      @substep = 1
+    when :list_projects
+      # TODO
 
-    #   # TODO: fetch the list of repos
-    #   render :template => :github_reply
+    when :adding_keys
+      # TODO
+
+    when :done
+      #TODO
     end
+
+    (@step, @substep) = step_for_state(state)
+    session[:state] = state
+    session[:fetcher] = fetcher
+
     # # TODO: start a worker which gets a list of builds
     # # TODO: in the background, check them out, infer them, and stream the build to the user.
     # # TODO: this means not waiting five minutes for the build to start!
+  end
+
+
+  def starting_state(code, access_token)
+    if code.nil? and access_token.nil?
+      :start
+    elsif code and access_token.nil? then
+      :authorizing
+    else
+      :list_projects
+    end
+  end
+
+  def next_state(state)
+    case state
+    when :start
+       # They need to click to github and come back, we can't do this for them.
+      :start
+    when :authorizing
+      :authorized
+    when :authorized
+      :fetching_projects
+    when :fetching_projects
+      :list_projects
+    when :list_projects
+      :adding_keys
+    when :adding_keys
+      :done
+    end
+  end
+
+
+  def step_for_state(state)
+    case state
+    when :start
+      [1,1]
+    when :authorizing
+      [1,2]
+    when :authorized
+      [1,3]
+    when :fetching_projects
+      [2,1]
+    when :list_project
+      [2,2]
+    when :adding_keys
+      [2,3]
+    when :done
+      [3,1]
+    end
+  end
+
+
+  def dynamic
+    state = session[:state]
+    fetcher = session[:fetcher]
+    if fetcher then
+      ready = Backend.worker_done? fetcher
+      if ready then
+        result = Backend.wait_for_worker fetcher
+        session[:fetcher] = null
+
+        state = next_state(state)
+        session[:state] = state
+        (step, substep) = step_for_state(next_state(state))
+      end
+    end
+
+    result = {
+      :step => step,
+      :substep => substep,
+      :ready => ready,
+      :result => result,
+      :state => state
+    }.to_json
+    puts result
+    render :json => result
   end
 end

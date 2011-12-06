@@ -1,18 +1,21 @@
+poller = (retry) ->
+  $.getJSON("/add-repo/dynamic",
+    (data, textStatus) ->
+      ready = data["ready"]
+      alert data["state"]
+      if ready? # otherwise nothing is being fetched
+        if ready
+          adjust_page(data["step"], data["substep"], data["rendering"])
+        else
+          # Result just isn't ready yet, but it's coming
+          retry()
+  )
 
-# Replace ASAP with the latest content.
-# poller = (retry) ->
-#     $.get(<%= "/add-repo/content" =>,
-#           (data, textStatus) ->
-#                             else if data
-#                                 alert("success")
-#                                 # TODO: fix redirections
-#                             else
-#                                 alert("backward")
-#                                 history.back()
-#           )
+adjust_page = (step, substep, rendering) ->
+  alert("adjusting")
+  alert(substep)
+  alert(step)
+  alert(rendering)
 
-
-
-
-# $(document).ready ->
-#   $.smartPoller(10, poller)
+$(document).ready ->
+  $.smartPoller(10, poller)
