@@ -8,7 +8,8 @@
     = stylesheet_link_tag "application"
 
     = javascript_include_tag "application"
-    = javascript_include_tag params[:controller]
+    - if not params[:controller].start_with? "devise" then
+      = javascript_include_tag params[:controller]
 
     = csrf_meta_tags
 
@@ -20,4 +21,3 @@
         = content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String)
 
     = yield
-
