@@ -21,6 +21,17 @@ class RepoSignupController < ApplicationController
     access_token = current_user.github_access_token
 
     state = starting_state(code, access_token)
+    @step, @substep = step_for_state(state)
+    start_job(state, params)
+    session[:state] = state
+  end
+
+  def start_job(state, params)
+    # TODO: refactor this duplication
+    code = params[:code]
+    access_token = current_user.github_access_token
+
+    # Start whatever job the state requires
     case state
     when :start
       # TODO: put this into the logs in a more structured way. But for now, we
@@ -35,7 +46,10 @@ class RepoSignupController < ApplicationController
     when :authorizing
       fetcher = Github.fetch_access_token(current_user, code)
 
-    when :fetch_projects
+    when :authorized
+      session[:next] = true
+
+    when :fetching_projects
       # fetcher = Github.tentacles "repos/repos", current_user
 
     when :list_projects
@@ -48,8 +62,6 @@ class RepoSignupController < ApplicationController
       #TODO
     end
 
-    (@step, @substep) = step_for_state(state)
-    session[:state] = state
     session[:fetcher] = fetcher
 
     # # TODO: start a worker which gets a list of builds
@@ -97,7 +109,7 @@ class RepoSignupController < ApplicationController
       [1,3]
     when :fetching_projects
       [2,1]
-    when :list_project
+    when :list_projects
       [2,2]
     when :adding_keys
       [2,3]
@@ -114,12 +126,21 @@ class RepoSignupController < ApplicationController
       ready = Backend.worker_done? fetcher
       if ready then
         result = Backend.wait_for_worker fetcher
-        session[:fetcher] = null
-
-        state = next_state(state)
-        session[:state] = state
-        (step, substep) = step_for_state(next_state(state))
+        session[:fetcher] = nil
       end
+    end
+
+    # Just move through the states
+    if session[:next] then
+      ready = true
+      session[:next] = false
+    end
+
+    if ready then
+      state = next_state(state)
+      start_job(state, params)
+      session[:state] = state
+      step, substep = step_for_state(next_state(state))
     end
 
     result = {

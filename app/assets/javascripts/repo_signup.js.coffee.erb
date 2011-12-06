@@ -1,14 +1,12 @@
-poller = (retry) ->
+poller = () ->
   $.getJSON("/add-repo/dynamic",
     (data, textStatus) ->
-      ready = data["ready"]
       alert data["state"]
-      if ready? # otherwise nothing is being fetched
+      ready = data["ready"]
+      if ready?
         if ready
           adjust_page(data["step"], data["substep"], data["rendering"])
-        else
-          # Result just isn't ready yet, but it's coming
-          retry()
+        setTimeout(poller, 200)
   )
 
 adjust_page = (step, substep, rendering) ->
@@ -18,4 +16,4 @@ adjust_page = (step, substep, rendering) ->
   alert(rendering)
 
 $(document).ready ->
-  $.smartPoller(10, poller)
+  setTimeout(poller, 200)
