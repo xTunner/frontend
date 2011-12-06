@@ -3,6 +3,8 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "action_mailer/railtie"
 require "active_resource/railtie"
+require 'sprockets/railtie'
+
 
 if RUBY_PLATFORM == 'java'
   # Load clojure jars. clojure.jar needs to be loaded before the jrclj
@@ -64,8 +66,8 @@ module MongoidTest
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
-    
-    config.after_initialize do 
+
+    config.after_initialize do
       # Initialize the backend early, before the server is being used to satisfy user requests, so that
       # users never suffer the >1m startup times.
       if RUBY_PLATFORM == 'java'
@@ -74,4 +76,3 @@ module MongoidTest
     end
   end
 end
-
