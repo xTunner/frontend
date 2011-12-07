@@ -35,6 +35,8 @@ else
   fi
 fi
 
+export JRUBY_OPTS="--1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m -J-Xmx1024m"
+
 #
 # If you use an RVM gemset file to install a list of gems (*.gems), you can have
 # it be automatically loaded. Uncomment the following and adjust the filename if

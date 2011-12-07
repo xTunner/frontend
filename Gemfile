@@ -30,8 +30,10 @@ group :assets do
   # The less version requires v8, which doesn't work with JRuby. See
   # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
   # for deciding the correct option.
-  gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
+
 end
+
+gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
 
 group :test do
   gem "cucumber-rails", ">= 1.1.1"
@@ -53,8 +55,6 @@ end
 gem 'haml-rails'
 
 gem "trinidad"
-gem "trinidad_daemon_extension"
-
 
 # Deploy with Capistrano
 # gem 'capistrano'

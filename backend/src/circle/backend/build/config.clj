@@ -199,27 +199,7 @@
                        :build-num build-num
                        :checkout-dir checkout-dir)))
 
-(defn build-from-json
-  "Given a parsed github commit hook json, return a build that needs to be run, or nil"
-  [github-json]
-  (let [url (-> github-json :repository :url)
-        config (get-config-for-url url)
-        _ (when-not config
-            (infof "couldn't find config for %s" url))
-        project (project/get-by-url! url)
-        schedule (-> config :schedule)
-        vcs-revision (-> github-json :after)
-        job-name (-> schedule :commit :job (keyword))
-        notify (-> config :jobs job-name :notify-email (parse-notify) (get-build-email-recipients github-json))
-        build-num 1
-        checkout-dir (build/checkout-dir (-> project :name) build-num)]
-    (if (and config project)
-      (build-from-config config project
-                         :vcs-revision vcs-revision
-                         :job-name job-name
-                         :build-num build-num
-                         :checkout-dir checkout-dir
-                         :notify notify))))
+
 
 (defn infer-project-name [url]
   (-> url
@@ -268,3 +248,26 @@
                          :actions (inference/infer-actions repo)
                          :notify ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
                          }))))
+
+(defn build-from-json
+  "Given a parsed github commit hook json, return a build that needs to be run, or nil"
+  [github-json]
+  (let [url (-> github-json :repository :url)
+        config (get-config-for-url url)
+        _ (when-not config
+            (infof "couldn't find config for %s" url))
+        project (project/get-by-url! url)
+        schedule (-> config :schedule)
+        vcs-revision (-> github-json :after)
+        job-name (-> schedule :commit :job (keyword))
+        notify (-> config :jobs job-name :notify-email (parse-notify) (get-build-email-recipients github-json))
+        build-num 1
+        checkout-dir (build/checkout-dir (-> project :name) build-num)]
+    (if (and config project)
+      (build-from-config config project
+                         :vcs-revision vcs-revision
+                         :job-name job-name
+                         :build-num build-num
+                         :checkout-dir checkout-dir
+                         :notify notify)
+      (infer-build-from-url url))))

@@ -6,8 +6,14 @@
         [circle.util.args :only (require-args)])
   (:require [circle.util.model-validation :as v])
   (:require [circle.backend.ssh :as ssh])
+  (:require [circle.model.project :as project])
   (:use [circle.util.model-validation-helpers :only (is-ref? require-keys)])
+  (:use [circle.util.predicates :only (ref?)])
+  (:require [somnium.congomongo :as mongo])
+  (:require [circle.util.mongo :as c-mongo])
   (:use [clojure.tools.logging :only (log)]))
+
+(def build-coll :build) ;; mongo collection for builds
 
 (def build-defaults {:continue? true
                      :num-nodes 1
@@ -26,16 +32,40 @@
                   :vcs-revision
                   :node])
    (fn [build]
-     (v/validate node-validation (-> build :node)))])
+     (v/validate node-validation (-> build :node)))
+   (fn [b]
+     (when (and (= :deploy (:type b)) (not (-> b :vcs-revision)))
+       "version-control revision is required for deploys"))])
 
 (defn validate [b]
-  (v/validate build-validations @b))
+  (v/validate build-validations b))
 
 (defn valid? [b]
-  (v/valid? build-validations @b))
+  (v/valid? build-validations b))
 
-(defn validate! [b]
-  (v/validate! build-validations @b))
+(defn validate!
+  "Validates the contents of a build. i.e. pass the map, not the ref"
+  [b]
+  {:pre [(not (ref? b))]}
+  (v/validate! build-validations b))
+
+(defn ensure-project-id
+  "Ensure that the build has a mongo ref to the project"
+  [b]
+  (when-not (-> @b :_project-id)
+    (let [project (project/get-by-url! (-> @b :vcs-url))]
+      (dosync
+       (alter b assoc :_project-id (-> project :_id)))))
+  b)
+
+(defn update-mongo
+  "Given a build ref, update the mongo row with the current values of b."
+  [b]
+  (c-mongo/ensure-object-id-ref build-coll b)
+  (ensure-project-id b)
+  (mongo/update! build-coll
+                 {:_id (-> @b :_id)}
+                 (dissoc @b :node :actions :action-results :continue?)))
 
 (defn build [{:keys [project-name ;; string
                      build-num    ;; int
@@ -54,10 +84,7 @@
                      start-time
                      stop-time]
               :as args}]
-  (require-args project-name build-num vcs-url actions)
-  (let [b (ref (merge build-defaults args))]
-    (validate! b)
-    b))
+  (ref (merge build-defaults args) :validator validate!))
 
 (defn extend-group-with-revision
   "update the build, setting the pallet group-name to extends the

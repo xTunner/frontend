@@ -1,10 +1,5 @@
 ---
 classes_dir: backend/src/
 libs_dir: backend/lib/
-public: ./app/assets
-jruby_max_runtimes: 1
+public: ./public/assets
 
-# this is currently broken on ubuntu https://github.com/trinidad/trinidad_daemon_extension/issues/4
-# extensions:
-#   daemon:
-#     pid_file: ./trinidad.pid

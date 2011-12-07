@@ -6,7 +6,7 @@
   (:require [circle.backend.build.test-utils :as test])
   (:use [circle.util.predicates :only (ref?)]))
 
-(test/ensure-project)
+(test/ensure-circle-project)
 
 (fact "parse-action-map works"
   (let [b (test/minimal-build)
@@ -37,7 +37,7 @@
                              :checkout-dir checkout-dir)]
     (ref? b) => true
     (-> @b :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
-    (validate b) => nil))
+    (validate @b) => nil))
 
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-github-json)]
@@ -51,7 +51,7 @@
     (-> @build :node :username) => "ubuntu"
     (-> @build :node :public-key) => #"^ssh-rsa"
     (-> @build :node :private-key) => #"BEGIN RSA PRIVATE KEY"
-    (validate build) => nil))
+    (validate @build) => nil))
 
 (tabular
  (fact "build-from-url works"

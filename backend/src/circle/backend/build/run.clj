@@ -43,38 +43,38 @@
 
 (defn log-result [b]
   (if (build/successful? b)
-    (do
-      (println "Build successful" (build/build-name b))
-      (infof "Build %s successful" (build/build-name b)))
+    (infof "Build %s successful" (build/build-name b))
     (errorf "Build %s failed" (build/build-name b))))
 
 (defn finished [b]
   (dosync
    (infof "removing build %s from in-progress" (build/build-name b))
    (alter in-progress disj b))
+  (build/update-mongo b)
   (run-first))
 
 (defn run-build [b & {:keys [cleanup-on-failure]
                           :or {cleanup-on-failure true}}]
   (def last-build b)
   (infof "starting build: %s" (build/build-name b))
-  (when (= :deploy (:type b))
-    (throw-if-not (:vcs-revision b) "version-control revision is required for deploys"))
   (try
-    ;; pwd/with-pwd (build/build-dir b)
     (build/with-build-log b
+      (build/update-mongo b)
       (do-build* b)
       (email/notify-build-results b))
     b
     (catch Exception e
-      (dosync (alter b assoc :failed? true))
-      (error e (format "caught exception on %s %s" (-> b :project-name) (-> b :build-num)))
+      (println "run-build: except: " b)
+      (error e (format "caught exception on %s %s" (-> @b :project-name) (-> @b :build-num)))
+      (println "assoc'ing failed?=true")
+      (dosync
+       (alter b assoc :failed? true))
       (when env/production?
         (email/send-build-error-email b e))
       (throw e))
     (finally
      (log-result b)
-     ;;(finished b)
+     (finished b)
      (when (and (-> @b :failed?) cleanup-on-failure) 
        (cleanup-nodes b)))))
 
