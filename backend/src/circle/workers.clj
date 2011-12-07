@@ -8,14 +8,7 @@
 
 (defn process-json [github-json]
   (when (= "CircleCI" (-> github-json :repository :name))
-    (let [build (circle/circle-build)]
-      (dosync
-       (alter build merge
-              {:vcs-url (->ssh (-> github-json :repository :url))
-               :repository (-> github-json :repository)
-               :commits (-> github-json :commits)
-               :vcs-revision (-> github-json :commits last :id)
-               :num-nodes 1}))
+    (let [build (config/build-from-json github-json)]
       (infof "process-json: build: %s" @build)
       (run/run-build build))))
 
