@@ -11,9 +11,7 @@ module RepoSignupHelper
   # This uses step, not substep, since the field will either be visible or
   # hidden depending on the step, not the substep.
   def class_for_subsection(step, index)
-    if step == index then
-      "visible"
-    else
+    if step != index then
       "hidden"
     end
   end

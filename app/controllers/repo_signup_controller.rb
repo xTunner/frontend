@@ -146,13 +146,16 @@ class RepoSignupController < ApplicationController
       start_job(state, params)
       session[:state] = state
       step, substep = step_for_state(next_state(state))
+      body = render_to_string :partial => "body#{step}_#{substep}"
+      explanation = render_to_string :partial => "explanation#{step}"
     end
 
     result = {
       :step => step,
       :ready => ready,
-      :result => result,
       :state => state,
+      :body => body,
+      :explanation => explanation,
     }.to_json
     puts result
     render :json => result

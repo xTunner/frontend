@@ -4,22 +4,26 @@ poller = () ->
       ready = data["ready"]
       if ready?
         if ready
-          adjust_page(data["step"], data["rendering"])
+          adjust_page(data["step"], data["body"], data["explanation"])
         setTimeout(poller, 200)
   )
 
-adjust_page = (step, rendering) ->
+adjust_page = (step, body, explanation) ->
   for i in [1,2,3]
     if i == step
-      $('#header' + i).removeClass("subdued")
-      $('#header' + i).addClass("highlighted")
-      $('#body' + i).removeClass("hidden")
-      $('#explanation' + i).removeClass("hidden")
+      if body
+        $("#body#{i} > .contents").replaceWith(body)
+      if explanation
+        $("#explanation#{i} > .contents").replaceWith(explanation)
+      $("#header#{i}").removeClass("subdued")
+      $("#header#{i}").addClass("highlighted")
+      $("#body#{i}").removeClass("hidden")
+      $("#explanation#{i}").removeClass("hidden")
     else
-      $('#header' + i).removeClass("highlighted")
-      $('#header' + i).addClass("subdued")
-      $('#body' + i).addClass("hidden")
-      $('#explanation' + i).addClass("hidden")
+      $("#header#{i}").removeClass("highlighted")
+      $("#header#{i}").addClass("subdued")
+      $("#body#{i}").addClass("hidden")
+      $("#explanation#{i}").addClass("hidden")
 
 $(document).ready ->
   setTimeout(poller, 200)

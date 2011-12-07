@@ -2,9 +2,14 @@
   = header
 
 %div{:class => "body #{class_for_subsection(@step, index)}", :id => "body#{index}"}
-  - if body then
-    = render :partial => body
+  .contents
+    - if index == @step
+      = render :partial => "body#{@step}_#{@substep}"
+    - else
+      = render :partial => "body#{index}_1"
+
 
 %div{:class => "explanation #{class_for_subsection(@step, index)}", :id => "explanation#{index}"}
-  - if explanation then
-    = render :partial => explanation
+  .contents
+    - if index == @step
+      = render :partial => "explanation#{index}"
