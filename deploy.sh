@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## simple little script to daemonize the server. Don't call this directly, use rake. Expects that JRUBY_OPTS is already set. 
+## simple little script to daemonize the server. Don't call this directly, use rake. Expects that JRUBY_OPTS is already set.
 
 PID_PATH=trinidad.pid
 if [ -e $PID_PATH ]
@@ -9,7 +9,7 @@ then
     exit 1;
 fi
 
-jruby -S trinidad --config -e production < /dev/null &> trinidad.log &  
+trinidad --config -e production < /dev/null &> trinidad.log &
 PID=$!
 echo "pid= $!"
 echo $PID > trinidad.pid
