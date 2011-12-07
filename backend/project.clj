@@ -11,11 +11,12 @@
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [clj-json "0.4.0"] ;; noir pulls in clj-json 0.3.2 which isn't compatible w/ clojure 1.3. Put this dep ahead to pull it in first.
+                 [slingshot "0.9.0"]
+
                  [org.codehaus.jackson/jackson-core-asl "1.8.5"] ; clj-json
                                         ; pulls in 1.5.0, which has a bug which
                                ; prevents tentacles from working. Put
                                         ; this dep first
-                 [slingshot "0.5.0"]
 
                  ;; Web
                  [noir "1.2.0"]

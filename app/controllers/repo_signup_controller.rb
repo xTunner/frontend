@@ -21,9 +21,9 @@ class RepoSignupController < ApplicationController
     access_token = current_user.github_access_token
 
     state = starting_state(code, access_token)
+    session[:state] = state
     @step, @substep = step_for_state(state)
     start_job(state, params)
-    session[:state] = state
   end
 
   def start_job(state, params)
@@ -50,8 +50,7 @@ class RepoSignupController < ApplicationController
       session[:next] = true
 
     when :fetching_projects
-      session[:next] = true
-      # fetcher = Github.tentacles "repos/repos", current_user
+      fetcher = Github.tentacles "repos/repos", current_user
 
     when :list_projects
       session[:next] = true
@@ -79,7 +78,7 @@ class RepoSignupController < ApplicationController
     elsif code and access_token.nil? then
       :authorizing
     else
-      :list_projects
+      :fetching_projects
     end
   end
 
@@ -152,6 +151,7 @@ class RepoSignupController < ApplicationController
 
     result = {
       :step => step,
+      :substep => substep,
       :ready => ready,
       :state => state,
       :body => body,
