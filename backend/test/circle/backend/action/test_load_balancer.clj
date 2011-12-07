@@ -28,23 +28,4 @@
     (run-build build :cleanup-on-failure false)
     (successful? build) => falsey))
 
-(fact "stubbing works"
-  (lb/healthy? "lb-bogus" ["i-foo"]) => false
-  (provided
-    (lb/healthy? "lb-bogus" ["i-bogus"]) => false))
 
-(defn bogus [x] x)
-
-(fact "stubbing works"
-  (bogus "foo") => "foo"
-  (provided
-    (bogus :bar) => "foo"))
-
-(fact "provided can stub invisible fns"
-  (circle.bogus/bar 3) => 10
-  (provided (circle.bogus/foo 3) => 5))
-
-(fact "provided can stub apply'd fns"
-  (circle.bogus/bar* 3) => 10
-  (provided
-    (apply circle.bogus/foo [3]) => 5))
