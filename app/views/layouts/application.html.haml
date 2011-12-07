@@ -14,7 +14,6 @@
     -# JS
     = airbrake_javascript_notifier # Load airbrake before any other JS, to catch run-time exceptions.
 
-    = javascript_include_tag "smart-js-poller"
     = javascript_include_tag "application"
     - if not params[:controller].start_with? "devise" then
       = javascript_include_tag "controller-specific/" + params[:controller]
