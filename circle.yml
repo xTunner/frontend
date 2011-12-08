@@ -44,6 +44,20 @@ jobs:
       - rake production:server
       - sudo /etc/init.d/nginx start
 
+  staging:
+    template: staging
+    node: www
+    notify-email:
+      - :owner
+
+    commands:
+      - rvm use jruby-1.6.5@circle --default
+      - bundle install
+      - lein deps:
+          pwd: backend
+      - rake production:server
+      - sudo /etc/init.d/nginx start
+
 schedule:
   commit:
     job: build

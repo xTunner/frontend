@@ -46,13 +46,15 @@
 
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
-  [url]
+  [url & {:keys [vcs-revision]}]
   (let [ssh-key (project/ssh-key-for-url url)
         repo (git/default-repo-path url)
         git-url (if (github/github? url)
                   (github/->ssh url)
                   url)]
     (git/ensure-repo git-url :ssh-key ssh-key :path repo)
+    (when vcs-revision
+      (git/checkout repo vcs-revision))
     (-> repo
         (fs/join "circle.yml")
         (load-config))))
@@ -184,14 +186,14 @@
 
 (defn build-from-name
   "Given a project name and a build name, return a build. Helper method for repl"
-  [project-name & {:keys [job-name]}]
+  [project-name & {:keys [job-name vcs-revision]}]
   (let [project (project/get-by-name project-name)
         url (-> project :vcs-url)
-        config (get-config-for-url url)
+        config (get-config-for-url url :vcs-revision vcs-revision)
         job-name (or job-name (-> config :jobs (first)))
         repo (git/default-repo-path url)
         build-num 1
-        vcs-revision (git/latest-local-commit repo)
+        vcs-revision (or vcs-revision (git/latest-local-commit repo))
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (build-from-config config project
                        :vcs-revision vcs-revision

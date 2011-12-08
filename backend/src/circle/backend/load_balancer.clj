@@ -148,7 +148,7 @@
        (filter #(= "Instance is in terminated state." (:description %))) ;; there doesn't appear to be a useful, specific error code, so use the description string.
        (map :instanceId)))
 
-(defn healthy? [lb-name & instance-ids]
+(defn healthy? [lb-name instance-ids]
   (->> instance-ids
        (apply get-health lb-name)
        (every? #(= "InService" (:state %)))))

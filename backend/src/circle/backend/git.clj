@@ -61,6 +61,14 @@
              :ssh-key
              ssh-key)))
 
+(defn checkout
+  "git checkout cmd"
+  [repo revision]
+  (infof "git checkout %s" repo)
+  (git-fn* (sh/quasiquote
+            (git checkout ~revision))
+           :repo repo))
+
 (defn pull
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
@@ -78,6 +86,7 @@
   (let [path (or path (default-repo-path url))]
     (if (repo-exists? path)
       (when update
+        (checkout path "master") ;; you have to be on a branch to pull
         (pull path))
       (clone url :path path :ssh-key ssh-key))))
 

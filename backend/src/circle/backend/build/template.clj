@@ -17,7 +17,12 @@
                                :suffix [tag-revision
                                         lb/add-instances
                                         lb/wait-for-healthy
-                                        lb/shutdown-remove-old-revisions]}})
+                                        lb/shutdown-remove-old-revisions]}
+
+                      :staging {:prefix [start-nodes
+                                         checkout
+                                         rvm/trust]
+                                :suffix [tag-revision]}})
 
 (defn find [name]
   (-> name keyword build-templates))
