@@ -50,7 +50,6 @@
   nil [n]
   nil)
 
-
 (fact "conversions work"
   (convert-to-ruby nil) => (ruby/eval "nil")
   (convert-to-ruby "a string") => (ruby/eval "'a string'")
@@ -61,7 +60,6 @@
   (convert-to-ruby {:foo "bar",    5 nil,     "x" 7.0,   :baa [5 "mrah" {:boo :foo}]}) =>
        (ruby/eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}")
   (convert-to-ruby {:x "foo" :y "bar" 5 nil}) => (ruby/eval "{:x => 'foo', :y => 'bar', 5 => nil}"))
-
 
 (defn call-clojure-from-ruby [f args]
   (convert-to-ruby

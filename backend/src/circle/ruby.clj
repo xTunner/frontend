@@ -6,31 +6,20 @@
   (:import org.jruby.RubySymbol)
   (:use midje.sweet))
 
-(def engine
-  (->
-   (ScriptEngineManager.)
-   (.getEngineByName "jruby")))
+(defn ruby []
+  (org.jruby.Ruby/getGlobalRuntime))
 
-(defn eval
-  "Eval a ruby string."
-  [s]
-  (-> engine
-      (.eval s)))
-
-(def ruby
-  (-> (ScriptingContainer.)
-      (.getProvider)
-      (.getRuntime)))
-
+(defn eval [s]
+  (-> (ruby) (.evalScriptlet s)))
 
 (defn intern-keyword
   "Given a java string, return a ruby keyword"
   [s]
-  (RubySymbol/newSymbol ruby s))
+  (RubySymbol/newSymbol (ruby) s))
 
 (defn ->array [c]
   "Convert a java.util.Collection to a Ruby array"
-  (let [new-c (org.jruby.RubyArray/newArray ruby [])]
+  (let [new-c (org.jruby.RubyArray/newArray (ruby) [])]
     (.addAll new-c c)
     new-c))
 
@@ -41,7 +30,7 @@
 
 (defn ->string [s]
   "Convert a java.lang.String to a Ruby String"
-  (org.jruby.RubyString/newString ruby s))
+  (org.jruby.RubyString/newString (ruby) s))
 
 (fact "convert to array"
   (->array [5 6 7]) => (eval "[5, 6, 7]"))
