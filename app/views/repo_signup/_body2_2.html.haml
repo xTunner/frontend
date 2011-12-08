@@ -1,4 +1,31 @@
-%ul
-  %li Project list - render a partial
-  %li checkboxes: Include: forks, public repos
-  %li Done button.
+%h4
+  Add projects to Circle
+
+= form_tag("TODO", :method => :post, :remote => true) do |f|
+  %table
+    %thead
+      %tr
+        %th Project
+        %th Description
+        %th Language
+        %th.hidden Fork?
+        %th.hidden Public?
+        %th Add?
+    - @result.each do |project|
+      %tr
+        %td
+          CircleCI
+        %td
+          arohner/circleci
+        %td
+          Clojure
+        %td.hidden
+          No
+        %td.hidden
+          No
+        %td
+          = check_box_tag "arohner/circleci", "add", true # TODO: add project id here
+
+  = check_box_tag("public", :id => "public")
+  = check_box_tag("forks", :id => "forks")
+  = submit_tag("Add projects")

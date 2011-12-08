@@ -33,7 +33,7 @@ class RepoSignupController < ApplicationController
     if fetcher then
       ready = Backend.worker_done? fetcher
       if ready then
-        result = Backend.wait_for_worker fetcher
+        @result = Backend.wait_for_worker fetcher
         session[:fetcher] = nil
       end
     end
