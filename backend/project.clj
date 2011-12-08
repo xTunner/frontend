@@ -87,6 +87,8 @@
   :dev-dependencies [[lein-test-out "0.1.1"]
                      [midje "1.2.0"]
                      [lein-midje "1.0.4"]
-                     [clojure-source "1.2.1"]]
+                     [clojure-source "1.2.1"]
+                     [org.jruby/jruby "1.6.5"]]
+
   :main ^{:skip-aot true} circle.init ;; careful https://github.com/marick/Midje/issues/12
   :jvm-opts ~jvm-opts)
