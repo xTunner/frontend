@@ -2,4 +2,4 @@
 classes_dir: backend/src/
 libs_dir: backend/lib/
 public: ./public/assets
-
+jruby_max_runtimes: 1

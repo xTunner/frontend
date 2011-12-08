@@ -1,7 +1,10 @@
 (ns circle.backend.action.load-balancer
   (:import com.amazonaws.AmazonClientException)
   (:require [circle.backend.nodes :as nodes])
-  (:use [circle.backend.action :only (defaction)])
+  (:use [circle.backend.action :only (defaction abort!)])
+  (:use [circle.util.except :only (throw-if-not)])
+  (:use [circle.backend.build :only (build-log)])
+  (:use [robert.bruce :only (try-try-again)])
   (:require [circle.backend.load-balancer :as lb])
   (:require [circle.backend.ec2 :as ec2]))
 
@@ -15,39 +18,31 @@
                       :let [az (ec2/get-availability-zone i)]]
                 (lb/ensure-availability-zone lb-name az))
             result (lb/add-instances lb-name instance-ids)]
-        {:success true
-         :out (format "add" instance-ids "to load balancer" lb-name "successful")})
+        (build-log "added %s to load balancer %s successful" instance-ids lb-name))
       (catch AmazonClientException e
         (println "add-instances:" e)
         {:success false
          :continue false
          :err (.getMessage e)}))))
 
-(defn wait-for-healthy* [lb-name & {:keys [instance-ids 
-                                           retries ;; number of times to retry
-                                           sleep ;; how long to sleep between attempt, seconds
-                                           ]}]
-  (loop [retries retries]
-    (if (> retries 0)
-      (if (apply lb/healthy? lb-name instance-ids)
-        true
-        (do
-          (Thread/sleep (* 1000 sleep))
-          (recur (dec retries))))
-      false)))
+(defn lb-healthy-retries
+  "Number of times to retry when waiting for the LB to become healthy. Defn so it can be rebound w/ midje"
+  []
+  (* 3 12))
 
 (defaction wait-for-healthy []
   {:name "wait for nodes LB healthy"}
   (fn [build]
-    (let [instance-ids (-> @build :instance-ids)]
-      (if (wait-for-healthy* (-> @build :lb-name)
-                             :instance-ids instance-ids
-                             :sleep 10
-                             :retries 10)
-        {:success true
-         :out (str instance-ids "are all healthy")}
-        {:success false
-         :continue false}))))
+    (let [instance-ids (-> @build :instance-ids)
+          lb-name (-> @build :lb-name)]
+      (try
+        (try-try-again
+         {:sleep 5000
+          :tries (lb-healthy-retries)}
+         #(throw-if-not (lb/healthy? lb-name instance-ids) "instances not healthy"))
+        (build-log "instances %s all healthy in load balancer %s" instance-ids lb-name)
+        (catch Exception e
+          (abort! build (format "load balancer didn't report healthy for %s" instance-ids)))))))
 
 (defn get-old-revisions
   "Returns all instance-ids attached to the load balancer that aren't tagged with current-rev"
