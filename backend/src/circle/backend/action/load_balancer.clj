@@ -28,7 +28,7 @@
 (defn lb-healthy-retries
   "Number of times to retry when waiting for the LB to become healthy. Defn so it can be rebound w/ midje"
   []
-  12)
+  (* 3 12))
 
 (defaction wait-for-healthy []
   {:name "wait for nodes LB healthy"}
