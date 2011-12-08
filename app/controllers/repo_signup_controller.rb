@@ -26,6 +26,49 @@ class RepoSignupController < ApplicationController
     start_job(state, params)
   end
 
+
+  def dynamic
+    state = session[:state]
+    fetcher = session[:fetcher]
+    if fetcher then
+      ready = Backend.worker_done? fetcher
+      if ready then
+        result = Backend.wait_for_worker fetcher
+        session[:fetcher] = nil
+      end
+    end
+
+    # Just move through the states
+    if session[:next] then
+      ready = true
+      session[:next] = false
+    end
+
+    if ready then
+      state = next_state(state)
+      session[:state] = state
+      step, substep = step_for_state(state)
+      start_job(state, params)
+
+      body = render_to_string :partial => "body#{step}_#{substep}"
+      explanation = render_to_string :partial => "explanation#{step}"
+    end
+
+    keep_polling = (not ready.nil?)
+    result = {
+      :step => step,
+      :substep => substep,
+      :ready => ready,
+      :keep_polling => keep_polling,
+      :state => state,
+      :body => body,
+      :explanation => explanation,
+    }.to_json
+    puts result
+    render :json => result
+  end
+
+
   def start_job(state, params)
     # TODO: refactor this duplication
     code = params[:code]
@@ -43,18 +86,19 @@ class RepoSignupController < ApplicationController
       current_user.signup_referer = request.env["HTTP_REFERER"]
       current_user.save!
 
+      # STOP
+
     when :authorizing
-      fetcher = Github.fetch_access_token(current_user, code)
+      session[:fetcher] = Github.fetch_access_token(current_user, code)
 
     when :authorized
       session[:next] = true
 
     when :fetching_projects
-      fetcher = Github.tentacles "repos/repos", current_user
+      session[:fetcher] = Github.tentacles "repos/repos", current_user
 
     when :list_projects
-      session[:next] = true
-      # TODO
+      # STOP
 
     when :adding_keys
       session[:next] = true
@@ -63,8 +107,6 @@ class RepoSignupController < ApplicationController
     when :done
       #TODO
     end
-
-    session[:fetcher] = fetcher
 
     # # TODO: start a worker which gets a list of builds
     # # TODO: in the background, check them out, infer them, and stream the build to the user.
@@ -123,41 +165,4 @@ class RepoSignupController < ApplicationController
   end
 
 
-  def dynamic
-    state = session[:state]
-    fetcher = session[:fetcher]
-    if fetcher then
-      ready = Backend.worker_done? fetcher
-      if ready then
-        result = Backend.wait_for_worker fetcher
-        session[:fetcher] = nil
-      end
-    end
-
-    # Just move through the states
-    if session[:next] then
-      ready = true
-      session[:next] = false
-    end
-
-    if ready then
-      state = next_state(state)
-      start_job(state, params)
-      session[:state] = state
-      step, substep = step_for_state(next_state(state))
-      body = render_to_string :partial => "body#{step}_#{substep}"
-      explanation = render_to_string :partial => "explanation#{step}"
-    end
-
-    result = {
-      :step => step,
-      :substep => substep,
-      :ready => ready,
-      :state => state,
-      :body => body,
-      :explanation => explanation,
-    }.to_json
-    puts result
-    render :json => result
-  end
 end

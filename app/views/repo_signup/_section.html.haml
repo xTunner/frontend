@@ -5,8 +5,6 @@
   .contents
     - if index == @step
       = render :partial => "body#{@step}_#{@substep}"
-    - else
-      = render :partial => "body#{index}_1"
 
 
 %div{:class => "explanation #{class_for_subsection(@step, index)}", :id => "explanation#{index}"}
