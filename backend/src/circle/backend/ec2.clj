@@ -333,7 +333,8 @@
                                 :public-key public-key
                                 :private-key private-key) instance-ids)
     (add-tags instance-ids {:username (env/username)
-                            :hostname (env/hostname)})
+                            :hostname (env/hostname)
+                            :timestamp (str (java.util.Date.))})
     instance-ids))
 
 (defn print-instances []

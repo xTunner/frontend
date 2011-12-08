@@ -1,4 +1,5 @@
 (ns circle.backend.action.tag
+  (:require [circle.backend.build :as build])
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.util.except :only (throw-if-not)])
   (:require [circle.backend.nodes :as nodes])
@@ -9,4 +10,5 @@
   (fn [build]
     (throw-if-not (-> @build :vcs-revision) "build must contain vcs revision")
     (ec2/add-tags (-> @build :instance-ids)
-                  {:rev (-> @build :vcs-revision)})))
+                  {:rev (-> @build :vcs-revision)
+                   :build (build/build-name @build)})))
