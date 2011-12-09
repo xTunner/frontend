@@ -2,6 +2,12 @@
   Add projects to Circle
 
 = form_tag("TODO", :method => :post, :remote => true) do |f|
+  = label_tag :public, "show public"
+  = check_box_tag("public")
+  %br
+  = label_tag :forks, "show forks"
+  = check_box_tag("fork")
+  
   %table#projects
     %thead
       %tr
@@ -28,15 +34,26 @@
           %td
             = check_box_tag "arohner/circleci", "add", true # TODO: add project id here
 
-  = check_box_tag("public", :id => "public")
-  = check_box_tag("forks", :id => "forks")
   = submit_tag("Add projects")
 
 :javascript
+  var project_table;
   $(document).ready(function() {
-    $('#projects').dataTable({
-      "bFilter": false,
+    project_table = $('#projects').dataTable({
+      <!-- "bFilter": false, -->
       "bPaginate": false,
       "bSort": true,
-      "bInfo": false});
+      "bInfo": false,
+      <!-- "aoColumnDefs": [{"bVisible": false, "aTargets": [3, 4]}] -->
+     });
+    $('#fork').click(function() {
+      if ($('#fork').is(':checked'))
+      {
+        project_table.fnFilter(".*", 3, true);
+      }
+      else
+      {
+        project_table.fnFilter("false", 3, true);
+      }
+    });
   })
