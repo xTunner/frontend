@@ -2,30 +2,41 @@
   Add projects to Circle
 
 = form_tag("TODO", :method => :post, :remote => true) do |f|
-  %table
+  %table#projects
     %thead
       %tr
         %th Project
         %th Description
         %th Language
-        %th.hidden Fork?
-        %th.hidden Public?
+        %th Fork?
+        %th Public?
         %th Add?
-    - @result.each do |project|
-      %tr
-        %td
-          CircleCI
-        %td
-          arohner/circleci
-        %td
-          Clojure
-        %td.hidden
-          No
-        %td.hidden
-          No
-        %td
-          = check_box_tag "arohner/circleci", "add", true # TODO: add project id here
+    %tbody
+      - @result.each do |project|
+        %tr
+          %td
+            - name = "#{project[:owner][:login]}/#{project[:name]}"
+            = name
+          %td
+            = project[:description]
+          %td
+            = project[:language]
+          %td
+            = project[:fork]
+          %td
+            = not project[:private]
+          %td
+            = check_box_tag "arohner/circleci", "add", true # TODO: add project id here
 
   = check_box_tag("public", :id => "public")
   = check_box_tag("forks", :id => "forks")
   = submit_tag("Add projects")
+
+:javascript
+  $(document).ready(function() {
+    $('#projects').dataTable({
+      "bFilter": false,
+      "bPaginate": false,
+      "bSort": true,
+      "bInfo": false});
+  })
