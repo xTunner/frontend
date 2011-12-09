@@ -248,7 +248,7 @@
                          :node node
                          :checkout-dir checkout-dir
                          :actions (inference/infer-actions repo)
-                         :notify ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
+                         :notify_emails ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
                          }))))
 
 (defn build-from-json
