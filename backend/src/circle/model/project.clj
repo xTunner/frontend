@@ -10,7 +10,7 @@
 (def project-validation [(require-keys [:name
                                         :vcs_type
                                         :vcs_url
-                                        :aws-credentials])
+                                        :aws_credentials])
                          (col-predicate :vcs_url #(= :top (github/url-type %)) "github url must be https://github.com/foo/bar")])
 
 (defmethod validate ::Project [tag obj]
@@ -19,8 +19,8 @@
 (defn project [& {:keys [name
                          vcs_type
                          vcs_url ;; the canonical url for the repo. Must match the URL that github will provide in the post-commit hook
-                         aws-credentials
-                         ssh-key ;; an SSH private key authorized to checkout code
+                         aws_credentials
+                         ssh_private_key ;; an SSH private key authorized to checkout code
                          ami-id
                          actions]
                   :as args}]
@@ -40,4 +40,4 @@
   (assert! (get-by-url url) "Project with url %s not found" url))
 
 (defn ssh-key-for-url [url]
-  (-?> url (get-by-url) :ssh-key))
+  (-?> url (get-by-url) :ssh_private_key))
