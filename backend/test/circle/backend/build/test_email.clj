@@ -24,7 +24,7 @@
 
 (fact "notify email works"
   (build/successful? (run-build (minimal-build :actions [(successful-action "1")]
-                                               :notify-email ["foo@bar.com"
+                                               :notify_emails ["foo@bar.com"
                                                               "baz@bar.com"]))) => truthy
   (provided
     (circle.backend.email/send :to "foo@bar.com" :subject anything :body anything) => anything :times 1

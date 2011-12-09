@@ -73,7 +73,7 @@
                      vcs-revision ;; if present, the commit that caused the build to be run, or nil
                      aws_credentials ;; map containing :user and :password
                      r53-zone-id ;; zone-id of the domain we're managing. Required for DNS updates.
-                     notify-email ;; a seq of email addresses to notify when build is done
+                     notify_emails ;; a seq of email addresses to notify when build is done
                      repository
                      commits
                      actions      ;; a seq of actions

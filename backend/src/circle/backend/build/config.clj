@@ -177,7 +177,7 @@
         node (load-node config job (-> project :vcs_url))
         actions (load-actions job checkout-dir)]
     (build/build (merge
-                  {:notify-email notify
+                  {:notify_emails notify
                    :build-num build-num
                    :vcs-revision vcs-revision
                    :node node
@@ -262,7 +262,7 @@
         schedule (-> config :schedule)
         vcs-revision (-> github-json :after)
         job-name (-> schedule :commit :job (keyword))
-        notify (-> config :jobs job-name :notify-email (parse-notify) (get-build-email-recipients github-json))
+        notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
         build-num 1
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (if (and config project)

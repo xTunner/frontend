@@ -41,7 +41,7 @@
               :body (str @build "\n" (except-to-string e))))
 
 (defn notify-build-results [build]
-  (let [recipients (-> @build :notify-email)]
+  (let [recipients (-> @build :notify_emails)]
     (if (seq recipients)
       (doseq [e recipients]
         (send-build-email build e))

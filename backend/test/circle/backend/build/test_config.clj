@@ -63,7 +63,7 @@
 
 (fact "build email addresses are correct"
   (let [build (build-from-json test/circle-github-json)]
-    (-> @build :notify-email) => #{"arohner@gmail.com"}))
+    (-> @build :notify_emails) => #{"arohner@gmail.com"}))
 
 (tabular
  (fact "infer project name works"
