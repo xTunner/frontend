@@ -80,9 +80,18 @@
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
   "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scope=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
 
+
 (defn add-deploy-key
   "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
-  [user-repo  github_access_token]
-  (let [[username repo-name] (clojure.string/split user-repo #"/")
+  [username repo-name github_access_token project-id]
+  (let [project (mongo/fetch-by-id :projects (mongo/object-id project-id))
         keypair (ssh/generate-keys)]
+    (mongo/update! :projects project (merge project {:ssh_public_key (-> keypair :public-key)
+                                                     :ssh_private_key (-> keypair :private-key)}))
+    ;TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
     (tentacles/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
+
+(defn add-hooks
+  "Add all the hooks we care about to the user's repo"
+  [username reponame github-access-token]
+  (tentacles.repos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))

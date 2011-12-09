@@ -1,7 +1,7 @@
 %h4
   Add projects to Circle
 
-= form_tag("TODO", :method => :post, :remote => true) do |f|
+= form_tag(add_repo_form_url, :method => :post, :remote => true) do |f|
   = label_tag :public, "show public"
   = check_box_tag("public")
   %br
@@ -32,10 +32,11 @@
           %td
             = not project[:private]
           %td
-            = check_box_tag "arohner/circleci", "add", true # TODO: add project id here
+            = check_box_tag name, "add_project", true # checked
 
   = submit_tag("Add projects")
 
+-# TECHNICAL_DEBT make this coffeescript
 :javascript
   var project_table;
   $(document).ready(function() {
@@ -77,6 +78,4 @@
     });
     $('#public').prop("checked", false);
     hide_public();
-    
-    
   })

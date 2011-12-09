@@ -164,5 +164,23 @@ class RepoSignupController < ApplicationController
     end
   end
 
-
+  # The form AJAX posts to here
+  def form
+    projects = []
+    params.each do |key, value| 
+      if value == "add_project"
+        projects.push(key)
+      end
+    end
+    # TECHNICAL_DEBT sanitize input
+    # authorization: who owns project IMPORTANT
+    projects.each do |user_repo_pair|
+      username, projectname = user_repo_pair.split "/"
+      p = Project.create(:project_name => projectname, :vcs_url => "https://github.com/#{username}/#{projectname}")
+      
+      Github.add_deploy_key(current_user, p, username, projectname)
+      Github.add_commit_hook(username, projectname, current_user)
+    end
+    render :status => 200, :text => ""
+  end
 end
