@@ -39,21 +39,25 @@
 :javascript
   var project_table;
   $(document).ready(function() {
+    show_forks = function () { project_table.fnFilter(".*", 3, true);};
+    hide_forks = function () { project_table.fnFilter("false", 3, true);};
+
     project_table = $('#projects').dataTable({
-      <!-- "bFilter": false, -->
       "bPaginate": false,
       "bSort": true,
       "bInfo": false,
-      <!-- "aoColumnDefs": [{"bVisible": false, "aTargets": [3, 4]}] -->
+      "aoColumnDefs": [{"bVisible": false, "aTargets": [3, 4]}]
      });
-    $('#fork').click(function() {
+    $('#fork').change(function() {
       if ($('#fork').is(':checked'))
       {
-        project_table.fnFilter(".*", 3, true);
+        show_forks();
       }
       else
       {
-        project_table.fnFilter("false", 3, true);
+        hide_forks();
       }
     });
+    $('#fork').prop("checked", false);
+    hide_forks();
   })
