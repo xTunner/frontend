@@ -8,6 +8,7 @@
 
 
 %div{:class => "explanation #{class_for_subsection(@step, index)}", :id => "explanation#{index}"}
-  .contents
-    - if index == @step
-      = render :partial => "explanation#{index}"
+  .row
+    .contents.span12.offset2
+      - if index == @step
+        = render :partial => "explanation#{index}"

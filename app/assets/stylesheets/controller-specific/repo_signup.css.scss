@@ -2,15 +2,7 @@
     display: none;
 }
 
-.subdued {
-    color: #ccc;
-    background: #eee;
-}
-
-.highlighted {
-    background: #ff0;
-}
-
+/* checkboxes for add projects form */
 .show_cb {
     padding-top: 10px;
 }
@@ -42,13 +34,14 @@
     height: 60px;
 }
 
+#github_link div {
+    font-weight: bold;
+}
+
 .github_img {
     float: right;
-    /* padding-left: 10px; */
 }
 
 .github_center_box {
-    /* position: relative; */
-    width: 90%;
-    /* padding-left: -10px; */
+    width: 95%;
 }
