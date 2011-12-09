@@ -18,3 +18,37 @@
     float: none;
     font-weight: bold;
 }
+
+.vcenter1 {
+  display: table;
+  #position: relative;
+  overflow: hidden;
+}
+
+.vcenter2 {
+  #position: absolute;
+  #top: 50%;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.vcenter3 {
+  #position: relative;
+  #top: -50%;
+}
+
+#github_link {
+    float: left;
+    height: 60px;
+}
+
+.github_img {
+    float: right;
+    /* padding-left: 10px; */
+}
+
+.github_center_box {
+    /* position: relative; */
+    width: 90%;
+    /* padding-left: -10px; */
+}

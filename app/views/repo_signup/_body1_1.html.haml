@@ -1,4 +1,9 @@
-.alert-message.block-message#body1
-  %a{ :href => @url}
-    Authorize
-    = image_tag("octocat.png", :height => "60px")
+#body1.row
+  .span4.offset6
+    %a{ :href => @url, :class => "btn github_center_box"}
+      != centering("github_link") do
+        Authorize us on GitHub
+
+      .github_img
+        = image_tag("octocat.png", :height => "60px")  
+        
