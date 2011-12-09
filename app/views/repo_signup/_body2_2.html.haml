@@ -42,6 +42,9 @@
     show_forks = function () { project_table.fnFilter(".*", 3, true);};
     hide_forks = function () { project_table.fnFilter("false", 3, true);};
 
+    show_public = function () { project_table.fnFilter(".*", 4, true);};
+    hide_public = function () { project_table.fnFilter("false", 4, true);};
+
     project_table = $('#projects').dataTable({
       "bPaginate": false,
       "bSort": true,
@@ -58,6 +61,22 @@
         hide_forks();
       }
     });
+
     $('#fork').prop("checked", false);
     hide_forks();
+
+    $('#public').change(function() {
+      if ($('#public').is(':checked'))
+      {
+        show_public();
+      }
+      else
+      {
+        hide_public();
+      }
+    });
+    $('#public').prop("checked", false);
+    hide_public();
+    
+    
   })
