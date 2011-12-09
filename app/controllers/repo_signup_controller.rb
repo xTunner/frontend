@@ -64,7 +64,7 @@ class RepoSignupController < ApplicationController
       :body => body,
       :explanation => explanation,
     }.to_json
-    puts result
+
     render :json => result
   end
 
@@ -100,10 +100,6 @@ class RepoSignupController < ApplicationController
     when :list_projects
       # STOP
 
-    when :adding_keys
-      session[:next] = true
-      # TODO
-
     when :done
       #TODO
     end
@@ -119,6 +115,8 @@ class RepoSignupController < ApplicationController
       :start
     elsif code and access_token.nil? then
       :authorizing
+    elsif session[:done]
+      :done
     else
       :fetching_projects
     end
@@ -136,8 +134,6 @@ class RepoSignupController < ApplicationController
     when :fetching_projects
       :list_projects
     when :list_projects
-      :adding_keys
-    when :adding_keys
       :done
     when :done
       :done # saturate
@@ -157,8 +153,6 @@ class RepoSignupController < ApplicationController
       [2,1]
     when :list_projects
       [2,2]
-    when :adding_keys
-      [2,3]
     when :done
       [3,1]
     end
@@ -181,6 +175,8 @@ class RepoSignupController < ApplicationController
       Github.add_deploy_key(current_user, p, username, projectname)
       Github.add_commit_hook(username, projectname, current_user)
     end
-    render :status => 200, :text => ""
+    session[:done] = true
+    session[:state] = next_state(session[:state])
+    redirect_to add_repo_url
   end
 end
