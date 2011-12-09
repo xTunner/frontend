@@ -26,7 +26,7 @@
                   :keypair-name])])
 
 (def build-validations 
-  [(require-keys [:project-name
+  [(require-keys [:project_name
                   :build-num
                   :vcs_url
                   :vcs-revision
@@ -67,7 +67,7 @@
                  {:_id (-> @b :_id)}
                  (dissoc @b :node :actions :action-results :continue?)))
 
-(defn build [{:keys [project-name ;; string
+(defn build [{:keys [project_name ;; string
                      build-num    ;; int
                      vcs_url
                      vcs-revision ;; if present, the commit that caused the build to be run, or nil
@@ -92,19 +92,19 @@
   [build]
   (dosync
    (alter build
-          assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project-name) (-> @build :vcs-revision))))))
+          assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project_name) (-> @build :vcs-revision))))))
   build)
 
 (defn build-name
   ([build]
-     (build-name (-> @build :project-name) (-> @build :build-num)))
+     (build-name (-> @build :project_name) (-> @build :build-num)))
   ([project-name build-num]
      (str project-name "-" build-num)))
 
 (defn checkout-dir
   "Directory where the build will be checked out, on the build box."
   ([build]
-     (checkout-dir (-> @build :project-name) (-> @build :build-num)))
+     (checkout-dir (-> @build :project_name) (-> @build :build-num)))
   ([project-name build-num]
      (str/replace (build-name project-name build-num) #" " "")))
 
@@ -118,7 +118,7 @@
 (defn log-ns
   "returns the name of the logger to use for this build "
   [build]
-  (symbol (str "circle.build." (-> @build :project-name) "-" (-> @build :build-num))))
+  (symbol (str "circle.build." (-> @build :project_name) "-" (-> @build :build-num))))
 
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 

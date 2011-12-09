@@ -4,7 +4,7 @@
   (:use [circle.backend.action.vcs :only (checkout)])
   (:use [circle.backend.action.bash :only (bash)]))
 
-;; (def rails-build (build {:project-name "rails"
+;; (def rails-build (build {:project_name "rails"
 ;;                         :build-num 1
 ;;                         :actions [(checkout "git://github.com/rails/rails.git")
 ;;                                   (bash [(bundle install)])

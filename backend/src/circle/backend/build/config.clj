@@ -182,7 +182,7 @@
                    :vcs-revision vcs-revision
                    :node node
                    :actions actions}
-                  (rename-keys {:name :project-name} project)))))
+                  (rename-keys {:name :project_name} project)))))
 
 (defn build-from-name
   "Given a project name and a build name, return a build. Helper method for repl"
@@ -212,7 +212,7 @@
       (str/replace #"\.git$" "")))
 
 (defn minimal-project [url]
-  {:project-name (infer-project-name url)})
+  {:project_name (infer-project-name url)})
 
 (defn minimal-config [url]
   {})
@@ -241,7 +241,7 @@
         build-num 1
         node (ensure-keypair (inference/node repo))
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
-    (build/build (merge (rename-keys {:name :project-name} project)
+    (build/build (merge (rename-keys {:name :project_name} project)
                         {:vcs_url url
                          :vcs-revision vcs-revision
                          :build-num build-num

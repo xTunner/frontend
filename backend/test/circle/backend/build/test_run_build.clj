@@ -14,7 +14,7 @@
     nil))
 
 (defn successful-build []
-  (minimal-build :project-name "succesful build"
+  (minimal-build :project_name "succesful build"
                  :actions [(successful-action "1")
                            (successful-action "2")
                            (successful-action "3")]))
