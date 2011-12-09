@@ -19,7 +19,7 @@
               {:vcs_url (->ssh (-> github-json :repository :url))
                :repository (-> github-json :repository)
                :commits (-> github-json :commits)
-               :vcs-revision (-> github-json :commits last :id)
+               :vcs_revision (-> github-json :commits last :id)
                :num-nodes 1}))
       (infof "process-json: build: %s" @build)
       (run/run-build build))))

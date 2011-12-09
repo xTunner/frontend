@@ -56,7 +56,7 @@
                                      :url (->ssh (-> @build :vcs_url))
                                      :path dir
                                      :vcs (-> @build :vcs_url vcs-type)
-                                     :revision (-> @build :vcs-revision)}))]
+                                     :revision (-> @build :vcs_revision)}))]
       (when (not= 0 (-> result :exit))
         (abort! build "checkout failed"))
       result)))

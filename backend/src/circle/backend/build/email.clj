@@ -14,7 +14,7 @@
   (format "Build %s successful" (build/build-name build)))
 
 (defn fail-email-body [build]
-  (str "Build of " (-> @build :vcs-revision) " failed " (str/join "\n" (map #(str (:out %) (:err %)) (-> @build :action-results)))))
+  (str "Build of " (-> @build :vcs_revision) " failed " (str/join "\n" (map #(str (:out %) (:err %)) (-> @build :action-results)))))
 
 (defn email-body [build]
   (if (build/successful? build)

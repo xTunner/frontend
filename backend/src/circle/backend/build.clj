@@ -29,12 +29,12 @@
   [(require-keys [:project_name
                   :build_num
                   :vcs_url
-                  :vcs-revision
+                  :vcs_revision
                   :node])
    (fn [build]
      (v/validate node-validation (-> build :node)))
    (fn [b]
-     (when (and (= :deploy (:type b)) (not (-> b :vcs-revision)))
+     (when (and (= :deploy (:type b)) (not (-> b :vcs_revision)))
        "version-control revision is required for deploys"))])
 
 (defn validate [b]
@@ -70,7 +70,7 @@
 (defn build [{:keys [project_name ;; string
                      build_num    ;; int
                      vcs_url
-                     vcs-revision ;; if present, the commit that caused the build to be run, or nil
+                     vcs_revision ;; if present, the commit that caused the build to be run, or nil
                      aws_credentials ;; map containing :user and :password
                      notify_emails ;; a seq of email addresses to notify when build is done
                      repository
@@ -91,7 +91,7 @@
   [build]
   (dosync
    (alter build
-          assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project_name) (-> @build :vcs-revision))))))
+          assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project_name) (-> @build :vcs_revision))))))
   build)
 
 (defn build-name

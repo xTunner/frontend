@@ -17,7 +17,7 @@
   (build/build {:project_name "succesful build"
                 :build_num 1
                 :vcs_url "git@github.com:foo/bar.git"
-                :vcs-revision "f00b4r"
+                :vcs_revision "f00b4r"
                 :actions [(successful-action "1")
                           (successful-action "2")
                           (successful-action "3")]}))

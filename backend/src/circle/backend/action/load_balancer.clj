@@ -62,7 +62,7 @@
     (try
       (let [lb-name (-> @build :lb-name)
             old-instances (get-old-revisions lb-name
-                                             (-> @build :vcs-revision))
+                                             (-> @build :vcs_revision))
             terminated-instances (lb/terminated-instances lb-name)]
         (println "shutdown-remove-old:" old-instances)
         (when (seq old-instances)

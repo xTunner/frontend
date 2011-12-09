@@ -46,15 +46,15 @@
 
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
-  [url & {:keys [vcs-revision]}]
+  [url & {:keys [vcs_revision]}]
   (let [ssh-key (project/ssh-key-for-url url)
         repo (git/default-repo-path url)
         git-url (if (github/github? url)
                   (github/->ssh url)
                   url)]
     (git/ensure-repo git-url :ssh-key ssh-key :path repo)
-    (when vcs-revision
-      (git/checkout repo vcs-revision))
+    (when vcs_revision
+      (git/checkout repo vcs_revision))
     (-> repo
         (fs/join "circle.yml")
         (load-config))))
@@ -172,31 +172,31 @@
        (mapcat #(translate-email-recipient github-json %))
        (set)))
 
-(defn build-from-config [config project & {:keys [vcs-revision job-name build_num checkout-dir notify]}]
+(defn build-from-config [config project & {:keys [vcs_revision job-name build_num checkout-dir notify]}]
   (let [job (load-job config job-name)
         node (load-node config job (-> project :vcs_url))
         actions (load-actions job checkout-dir)]
     (build/build (merge
                   {:notify_emails notify
                    :build_num build_num
-                   :vcs-revision vcs-revision
+                   :vcs_revision vcs_revision
                    :node node
                    :actions actions}
                   (rename-keys {:name :project_name} project)))))
 
 (defn build-from-name
   "Given a project name and a build name, return a build. Helper method for repl"
-  [project-name & {:keys [job-name vcs-revision]}]
+  [project-name & {:keys [job-name vcs_revision]}]
   (let [project (project/get-by-name project-name)
         url (-> project :vcs_url)
-        config (get-config-for-url url :vcs-revision vcs-revision)
+        config (get-config-for-url url :vcs_revision vcs_revision)
         job-name (or job-name (-> config :jobs (first)))
         repo (git/default-repo-path url)
         build-num 1
-        vcs-revision (or vcs-revision (git/latest-local-commit repo))
+        vcs_revision (or vcs_revision (git/latest-local-commit repo))
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (build-from-config config project
-                       :vcs-revision vcs-revision
+                       :vcs_revision vcs_revision
                        :job-name job-name
                        :build_num build-num
                        :checkout-dir checkout-dir)))
@@ -237,13 +237,13 @@
   [url]
   (let [project (or (project/get-by-url url) (minimal-project url))
         repo (git/default-repo-path url)
-        vcs-revision (git/latest-local-commit repo)
+        vcs_revision (git/latest-local-commit repo)
         build-num 1
         node (ensure-keypair (inference/node repo))
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (build/build (merge (rename-keys {:name :project_name} project)
                         {:vcs_url url
-                         :vcs-revision vcs-revision
+                         :vcs_revision vcs_revision
                          :build_num build-num
                          :node node
                          :checkout-dir checkout-dir
@@ -260,14 +260,14 @@
             (infof "couldn't find config for %s" url))
         project (project/get-by-url! url)
         schedule (-> config :schedule)
-        vcs-revision (-> github-json :after)
+        vcs_revision (-> github-json :after)
         job-name (-> schedule :commit :job (keyword))
         notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
         build-num 1
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (if (and config project)
       (build-from-config config project
-                         :vcs-revision vcs-revision
+                         :vcs_revision vcs_revision
                          :job-name job-name
                          :build_num build-num
                          :checkout-dir checkout-dir
