@@ -27,7 +27,7 @@
 
 (def build-validations 
   [(require-keys [:project_name
-                  :build-num
+                  :build_num
                   :vcs_url
                   :vcs-revision
                   :node])
@@ -68,11 +68,10 @@
                  (dissoc @b :node :actions :action-results :continue?)))
 
 (defn build [{:keys [project_name ;; string
-                     build-num    ;; int
+                     build_num    ;; int
                      vcs_url
                      vcs-revision ;; if present, the commit that caused the build to be run, or nil
                      aws_credentials ;; map containing :user and :password
-                     r53-zone-id ;; zone-id of the domain we're managing. Required for DNS updates.
                      notify_emails ;; a seq of email addresses to notify when build is done
                      repository
                      commits
@@ -97,14 +96,14 @@
 
 (defn build-name
   ([build]
-     (build-name (-> @build :project_name) (-> @build :build-num)))
+     (build-name (-> @build :project_name) (-> @build :build_num)))
   ([project-name build-num]
      (str project-name "-" build-num)))
 
 (defn checkout-dir
   "Directory where the build will be checked out, on the build box."
   ([build]
-     (checkout-dir (-> @build :project_name) (-> @build :build-num)))
+     (checkout-dir (-> @build :project_name) (-> @build :build_num)))
   ([project-name build-num]
      (str/replace (build-name project-name build-num) #" " "")))
 
@@ -118,7 +117,7 @@
 (defn log-ns
   "returns the name of the logger to use for this build "
   [build]
-  (symbol (str "circle.build." (-> @build :project_name) "-" (-> @build :build-num))))
+  (symbol (str "circle.build." (-> @build :project_name) "-" (-> @build :build_num))))
 
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 

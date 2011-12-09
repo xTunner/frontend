@@ -65,7 +65,7 @@
     b
     (catch Exception e
       (println "run-build: except: " b)
-      (error e (format "caught exception on %s %s" (-> @b :project_name) (-> @b :build-num)))
+      (error e (format "caught exception on %s %s" (-> @b :project_name) (-> @b :build_num)))
       (println "assoc'ing failed?=true")
       (dosync
        (alter b assoc :failed? true))

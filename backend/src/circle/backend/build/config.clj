@@ -172,13 +172,13 @@
        (mapcat #(translate-email-recipient github-json %))
        (set)))
 
-(defn build-from-config [config project & {:keys [vcs-revision job-name build-num checkout-dir notify]}]
+(defn build-from-config [config project & {:keys [vcs-revision job-name build_num checkout-dir notify]}]
   (let [job (load-job config job-name)
         node (load-node config job (-> project :vcs_url))
         actions (load-actions job checkout-dir)]
     (build/build (merge
                   {:notify_emails notify
-                   :build-num build-num
+                   :build_num build_num
                    :vcs-revision vcs-revision
                    :node node
                    :actions actions}
@@ -198,7 +198,7 @@
     (build-from-config config project
                        :vcs-revision vcs-revision
                        :job-name job-name
-                       :build-num build-num
+                       :build_num build-num
                        :checkout-dir checkout-dir)))
 
 
@@ -244,7 +244,7 @@
     (build/build (merge (rename-keys {:name :project_name} project)
                         {:vcs_url url
                          :vcs-revision vcs-revision
-                         :build-num build-num
+                         :build_num build-num
                          :node node
                          :checkout-dir checkout-dir
                          :actions (inference/infer-actions repo)
@@ -269,7 +269,7 @@
       (build-from-config config project
                          :vcs-revision vcs-revision
                          :job-name job-name
-                         :build-num build-num
+                         :build_num build-num
                          :checkout-dir checkout-dir
                          :notify notify)
       (infer-build-from-url url))))

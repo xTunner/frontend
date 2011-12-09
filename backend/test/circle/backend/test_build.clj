@@ -5,7 +5,7 @@
 
 (fact "checkout-dir handles spaces"
   (let [b (minimal-build :project_name "test proj"
-                         :build-num 42)]
+                         :build_num 42)]
     (checkout-dir b) => #"testproj-42"))
 
 (fact "ensure-project-id works"

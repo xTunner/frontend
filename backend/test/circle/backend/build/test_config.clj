@@ -33,7 +33,7 @@
         b (build-from-config config test/circle-project
                              :vcs-revision vcs-revision
                              :job-name :build
-                             :build-num 1
+                             :build_num 1
                              :checkout-dir checkout-dir)]
     (ref? b) => true
     (-> @b :vcs-revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
