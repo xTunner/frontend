@@ -1,13 +1,25 @@
 (ns circle.ruby
   (:refer-clojure :exclude [eval])
-  (:import javax.script.ScriptEngine)
-  (:import javax.script.ScriptEngineManager)
-  (:import org.jruby.embed.ScriptingContainer)
   (:import org.jruby.RubySymbol)
+  (:import java.lang.ref.WeakReference)
   (:use midje.sweet))
 
+;; This is the runtime all ruby requests will go through. It's
+;; unlikely that Rails' runtime will be returned by getGlobalRuntime,
+;; meaning that all rails variables and monkeypatching will not be
+;; visible. To make them visible, call init from rails first.
+
+;; Use a weakref to prevent this atom from keeping the ruby instance alive
+(def runtime (atom (WeakReference. (org.jruby.Ruby/getGlobalRuntime))))
+
+(defn init
+  "Call this from the rails runtime, passing in JRuby.runtime. This
+  will be used for all calls."
+  [r]
+  (swap! runtime (constantly (WeakReference. r))))
+
 (defn ruby []
-  (org.jruby.Ruby/getGlobalRuntime))
+  (-> runtime deref (.get)))
 
 (defn eval [s]
   (-> (ruby) (.evalScriptlet s)))

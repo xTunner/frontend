@@ -12,6 +12,7 @@
 # circle.init
 
 # JRClj.new("circle.util.time").ju_now
+require 'jruby'
 
 class Backend
 
@@ -91,19 +92,25 @@ class Backend
     Backend.clj.worker_count
   end
 
-
-  # Start the backend, by calling circle.init/init, and setting up the right directory.
   def self.initialize
-    return if Backend.mock
+    if Backend._clj.nil?
+      init_ns = JRClj.new("circle.init")
+      init_ns.init
+      init_ns.maybe_change_dir
+      JRClj.new("circle.ruby").init(JRuby.runtime) 
 
-    Backend.clj.maybe_change_dir
-    Backend.clj.init
+      Backend._clj = JRClj.new "circle.workers"
+    end
   end
 
+  def self.eager_initialize
+    initialize
+    # TODO walk all clojure ns
+  end
+
+  # Start the backend, by calling circle.init/init, and setting up the right directory.
   def self.clj # I'm not sure I get this, it can be nil after being initialized?
-    if Backend._clj.nil?
-      Backend._clj = JRClj.new "circle.init", "circle.workers"
-    end
+    initialize
     Backend._clj
   end
 
