@@ -18,7 +18,8 @@
         %th Public?
         %th Add?
     %tbody
-      - @result.each do |project|
+      - @result.sort_by{|a| DateTime.parse(a[:pushed_at])}.reverse.each do |project|
+        - recent = ((DateTime.parse(project[:pushed_at]) > 3.months.ago) and (project[:private]) and (not project[:fork]))
         %tr
           %td
             - name = "#{project[:owner][:login]}/#{project[:name]}"
@@ -32,7 +33,7 @@
           %td
             = not project[:private]
           %td
-            = check_box_tag name, "add_project", true # checked
+            = check_box_tag name, "add_project", recent
 
   = submit_tag("Add projects")
 
@@ -48,7 +49,7 @@
 
     project_table = $('#projects').dataTable({
       "bPaginate": false,
-      "bSort": true,
+      "bSort": false,
       "bInfo": false,
       "aoColumnDefs": [{"bVisible": false, "aTargets": [3, 4]}]
      });
