@@ -12,7 +12,7 @@
                  [org.clojure/clojure-contrib "1.2.0"]
 
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                 ;;; TECHNICAL DEBT
+                 ;;; TECHNICAL_DEBT
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
                  ;; noir pulls in clj-json 0.3.2 which isn't compatible w/
@@ -31,6 +31,8 @@
                  [org.codehaus.jackson/jackson-core-asl "1.8.5"]
 
 
+                 ;; we added new feature, oauth token support
+                 [tentacles "0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5"]
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -72,7 +74,7 @@
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
                  [com.cemerick/pomegranate "0.0.1"]
-                 [tentacles "0.1.1"]
+                 
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]

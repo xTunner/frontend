@@ -7,6 +7,8 @@
   (:require [clj-http.client :as client])
   (:require [circle.env :as env])
   (:require [somnium.congomongo :as mongo])
+  (:require [tentacles.repos :as tentacles])
+  (:require [circle.backend.ssh :as ssh])
   (:use [midje.sweet]))
 
 (defn process-json [github-json]
@@ -46,6 +48,7 @@
 
 (def settings (default))
 
+; TECHNICAL_DEBT upstream this
 (defn fetch-github-access-token [userid code]
   "After sending a customer to github to provide us with oauth permission, github
   redirects them back, providing us with a temporary code. We can use this code to ask
@@ -76,3 +79,10 @@
 (fact "authorization-url works"
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
   "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scope=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
+
+(defn add-deploy-key
+  "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
+  [user-repo  github_access_token]
+  (let [[username repo-name] (clojure.string/split user-repo #"/")
+        keypair (ssh/generate-keys)]
+    (tentacles/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
