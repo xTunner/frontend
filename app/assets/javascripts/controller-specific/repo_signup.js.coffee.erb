@@ -7,6 +7,8 @@ poller = () ->
         setTimeout(poller, 200)
   )
 
+<% environment.context_class.instance_eval { include RepoSignupHelper } %>
+
 adjust_page = (step, body, explanation) ->
   for i in [1,2,3]
     if i == step
@@ -18,13 +20,13 @@ adjust_page = (step, body, explanation) ->
         node = $("#explanation#{i} > .contents")
         node.empty()
         node.append(explanation)
-      $("#header#{i}").removeClass("subdued")
-      $("#header#{i}").addClass("highlighted")
+      $("#header#{i}").removeClass("<%= inactive_header_style %>")
+      $("#header#{i}").addClass("<%= active_header_style %>")
       $("#body#{i}").removeClass("hidden")
       $("#explanation#{i}").removeClass("hidden")
     else
-      $("#header#{i}").removeClass("highlighted")
-      $("#header#{i}").addClass("subdued")
+      $("#header#{i}").removeClass("<%= active_header_style %>")
+      $("#header#{i}").addClass("<%= inactive_header_style %>")
       $("#body#{i}").addClass("hidden")
       $("#explanation#{i}").addClass("hidden")
 

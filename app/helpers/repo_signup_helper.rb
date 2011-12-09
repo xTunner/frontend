@@ -1,10 +1,18 @@
 module RepoSignupHelper
 
+  def active_header_style()
+    "success"
+  end
+
+  def inactive_header_style()
+    "info"
+  end
+
   def class_for_header(step, index)
     if step == index then
-      "highlighted"
+      active_header_style
     else
-      "subdued"
+      inactive_header_style
     end
   end
 
