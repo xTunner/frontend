@@ -174,7 +174,7 @@
 
 (defn build-from-config [config project & {:keys [vcs-revision job-name build-num checkout-dir notify]}]
   (let [job (load-job config job-name)
-        node (load-node config job (-> project :vcs-url))
+        node (load-node config job (-> project :vcs_url))
         actions (load-actions job checkout-dir)]
     (build/build (merge
                   {:notify-email notify
@@ -188,7 +188,7 @@
   "Given a project name and a build name, return a build. Helper method for repl"
   [project-name & {:keys [job-name vcs-revision]}]
   (let [project (project/get-by-name project-name)
-        url (-> project :vcs-url)
+        url (-> project :vcs_url)
         config (get-config-for-url url :vcs-revision vcs-revision)
         job-name (or job-name (-> config :jobs (first)))
         repo (git/default-repo-path url)
@@ -242,7 +242,7 @@
         node (ensure-keypair (inference/node repo))
         checkout-dir (build/checkout-dir (-> project :name) build-num)]
     (build/build (merge (rename-keys {:name :project-name} project)
-                        {:vcs-url url
+                        {:vcs_url url
                          :vcs-revision vcs-revision
                          :build-num build-num
                          :node node

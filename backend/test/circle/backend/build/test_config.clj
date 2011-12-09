@@ -27,7 +27,7 @@
 
 (fact "build-from-config works"
   (let [project test/circle-project
-        config (get-config-for-url (-> test/circle-project :vcs-url))
+        config (get-config-for-url (-> test/circle-project :vcs_url))
         checkout-dir (checkout-dir (-> project :name) 1)
         vcs-revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
         b (build-from-config config test/circle-project

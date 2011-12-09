@@ -8,17 +8,17 @@
   (:require [somnium.congomongo :as mongo]))
 
 (def project-validation [(require-keys [:name
-                                        :vcs-type
-                                        :vcs-url
+                                        :vcs_type
+                                        :vcs_url
                                         :aws-credentials])
-                         (col-predicate :vcs-url #(= :top (github/url-type %)) "github url must be https://github.com/foo/bar")])
+                         (col-predicate :vcs_url #(= :top (github/url-type %)) "github url must be https://github.com/foo/bar")])
 
 (defmethod validate ::Project [tag obj]
   (validate! project-validation obj))
 
 (defn project [& {:keys [name
-                         vcs-type
-                         vcs-url ;; the canonical url for the repo. Must match the URL that github will provide in the post-commit hook
+                         vcs_type
+                         vcs_url ;; the canonical url for the repo. Must match the URL that github will provide in the post-commit hook
                          aws-credentials
                          ssh-key ;; an SSH private key authorized to checkout code
                          ami-id
@@ -34,7 +34,7 @@
   (mongo/fetch-one :projects :where {:name name}))
 
 (defn-v get-by-url [url]
-  (mongo/fetch-one :projects :where {:vcs-url url}))
+  (mongo/fetch-one :projects :where {:vcs_url url}))
 
 (defn get-by-url! [url]
   (assert! (get-by-url url) "Project with url %s not found" url))

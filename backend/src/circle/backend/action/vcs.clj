@@ -53,9 +53,9 @@
   (fn [build]
     (let [dir (checkout-dir build)
           result (-> (checkout-impl {:build build
-                                     :url (->ssh (-> @build :vcs-url))
+                                     :url (->ssh (-> @build :vcs_url))
                                      :path dir
-                                     :vcs (-> @build :vcs-url vcs-type)
+                                     :vcs (-> @build :vcs_url vcs-type)
                                      :revision (-> @build :vcs-revision)}))]
       (when (not= 0 (-> result :exit))
         (abort! build "checkout failed"))

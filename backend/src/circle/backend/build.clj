@@ -28,7 +28,7 @@
 (def build-validations 
   [(require-keys [:project-name
                   :build-num
-                  :vcs-url
+                  :vcs_url
                   :vcs-revision
                   :node])
    (fn [build]
@@ -53,7 +53,7 @@
   "Ensure that the build has a mongo ref to the project"
   [b]
   (when-not (-> @b :_project-id)
-    (let [project (project/get-by-url! (-> @b :vcs-url))]
+    (let [project (project/get-by-url! (-> @b :vcs_url))]
       (dosync
        (alter b assoc :_project-id (-> project :_id)))))
   b)
@@ -69,7 +69,7 @@
 
 (defn build [{:keys [project-name ;; string
                      build-num    ;; int
-                     vcs-url
+                     vcs_url
                      vcs-revision ;; if present, the commit that caused the build to be run, or nil
                      aws-credentials ;; map containing :user and :password
                      r53-zone-id ;; zone-id of the domain we're managing. Required for DNS updates.
