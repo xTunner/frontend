@@ -1,12 +1,13 @@
 %h4
-  Add projects to Circle
-
 = form_tag(add_repo_form_url, :method => :post, :remote => true) do |f|
-  = label_tag :public, "show public"
-  = check_box_tag("public")
-  %br
-  = label_tag :forks, "show forks"
-  = check_box_tag("fork")
+  #filter.row
+    .offset8.span2.show_cb
+      = check_box_tag("public")
+      = label_tag :public, "show public"
+    .span2.show_cb
+      = check_box_tag("fork")
+      = label_tag :forks, "show forks"
+
   
   %table#projects
     %thead
@@ -57,6 +58,8 @@
       "aoColumnDefs": [{"bVisible": false, "aTargets": [3, 4]}]
      });
      $('#projects_filter input').attr('placeholder', 'Search..');
+     $('#projects_filter').remove().appendTo('#filter');
+     $('#projects_filter').addClass('span4');
     $('#fork').change(function() {
       if ($('#fork').is(':checked'))
       {
