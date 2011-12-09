@@ -46,8 +46,6 @@
 
 (def settings (default))
 
-
-
 (defn fetch-github-access-token [userid code]
   "After sending a customer to github to provide us with oauth permission, github
   redirects them back, providing us with a temporary code. We can use this code to ask
@@ -71,11 +69,10 @@
   "The URL that we send a user to, to allow them authorize us for oauth. Redirect is where the should be redirected afterwards"
   (let [endpoint "https://github.com/login/oauth/authorize"
         query-string (client/generate-query-string {:client_id (:client_id settings)
-                                                    :scopes "repo"
+                                                    :scope "repo"
                                                     :redirect_uri redirect})]
     (str endpoint "?" query-string)))
 
-
 (fact "authorization-url works"
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
-  "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scopes=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
+  "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scope=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
