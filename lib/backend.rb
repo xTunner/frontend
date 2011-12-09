@@ -44,7 +44,9 @@ class Backend
     require = RT.var("clojure.core", "require")
     symbol = RT.var("clojure.core", "symbol")
     keyword = RT.var("clojure.core", "keyword")
-    reload = keyword.invoke("reload") # reload the source automatically
+    if "development" == ENV["RAILS_ENV"] 
+      reload = keyword.invoke("reload") # reload the source automatically
+    end
     require.invoke(symbol.invoke(package), reload)
 
     # Actually fetch it.
