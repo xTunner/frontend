@@ -25,7 +25,7 @@ jobs:
           environment:
             CIRCLE_ENV: "staging"
     #  on-success: deploy # another build to trigger if this one is successful
-    notify-email:
+    notify_emails:
       # Recognized keys, :committer, :owner, or email literals.
       - :committer
       - :owner
@@ -33,7 +33,7 @@ jobs:
   deploy:
     template: deploy
     node: www
-    notify-email:
+    notify_emails:
       - :owner
 
     commands:
@@ -47,7 +47,7 @@ jobs:
   staging:
     template: staging
     node: www
-    notify-email:
+    notify_emails:
       - :owner
 
     commands:
