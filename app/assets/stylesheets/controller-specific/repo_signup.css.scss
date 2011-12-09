@@ -11,9 +11,10 @@
     background: #ff0;
 }
 
+.show_cb {
+    padding-top: 10px;
+}
 .show_cb label {
     float: none;
-    padding-top: 12px;
-    border-top: 12px;
-    vert-align: center;
+    font-weight: bold;
 }

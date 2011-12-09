@@ -3,10 +3,10 @@
   #filter.row
     .offset8.span2.show_cb
       = check_box_tag("public")
-      = label_tag :public, "show public"
+      = label_tag :public, "Public?"
     .span2.show_cb
       = check_box_tag("fork")
-      = label_tag :forks, "show forks"
+      = label_tag :forks, "Forks?"
 
   
   %table#projects
@@ -36,7 +36,7 @@
           %td
             = check_box_tag name, "add_project", recent
 
-  = submit_tag("Add projects")
+  = button_tag("Add projects", :class => "btn primary")
 
 -# TECHNICAL_DEBT make this coffeescript
 :javascript
