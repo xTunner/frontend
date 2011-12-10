@@ -77,3 +77,7 @@
  "https://github.com/arohner/CircleCI" "https://github.com/arohner/CircleCI"
  "git@github.com:arohner/CircleCI.git" "https://github.com/arohner/CircleCI" 
  "https://arohner@github.com/arohner/CircleCI.git" "https://github.com/arohner/CircleCI")
+
+(defn canonical-url
+  [username password]
+  (format "https://github.com/%s/%s" username password))
