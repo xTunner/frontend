@@ -1,17 +1,4 @@
-# There are lots of way's of calling backend code, this allows us to mock it
-
-# clj = JRClj.new
-# clj.inc 0
-
-# circle = JRClj.new "circle.init"
-
-# db = JRClj.new "circle.db"
-# db.run "circle.db/init"
-
-# circle.run "circle.init/-main"
-# circle.init
-
-# JRClj.new("circle.util.time").ju_now
+# TECHNICAL_DEBT: this stuff is not tested at all
 require 'jruby'
 
 class Backend
@@ -44,10 +31,12 @@ class Backend
     require = RT.var("clojure.core", "require")
     symbol = RT.var("clojure.core", "symbol")
     keyword = RT.var("clojure.core", "keyword")
-    if "development" == ENV["RAILS_ENV"] 
+    if "development" == ENV["RAILS_ENV"]
       reload = keyword.invoke("reload") # reload the source automatically
+      require.invoke(symbol.invoke(package), reload)
+    else
+      require.invoke(symbol.invoke(package))
     end
-    require.invoke(symbol.invoke(package), reload)
 
     # Actually fetch it.
     RT.var(package, function)
@@ -99,7 +88,7 @@ class Backend
       init_ns = JRClj.new("circle.init")
       init_ns.init
       init_ns.maybe_change_dir
-      JRClj.new("circle.ruby").init(JRuby.runtime) 
+      JRClj.new("circle.ruby").init(JRuby.runtime)
 
       Backend._clj = JRClj.new "circle.workers"
     end
