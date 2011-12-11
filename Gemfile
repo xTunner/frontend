@@ -19,6 +19,8 @@ gem "devise", ">= 1.4.9"
 gem "simple_form"
 gem "rest-client"
 gem 'airbrake'
+gem 'cancan'
+gem 'mongoid_session_store'
 
 
 # Gems used only for assets and not required
