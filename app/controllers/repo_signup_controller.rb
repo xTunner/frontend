@@ -1,5 +1,4 @@
 class RepoSignupController < ApplicationController
-  before_filter :authenticate_user!
 
   # The is the page where users give us access to their repos. There are several ways to get here:
   #
@@ -18,7 +17,7 @@ class RepoSignupController < ApplicationController
     @url = Github.authorization_url add_repo_url
 
     code = params[:code]
-    access_token = current_user.github_access_token
+    access_token = session[:access_token]
 
     state = starting_state(code, access_token)
     session[:state] = state
@@ -72,7 +71,7 @@ class RepoSignupController < ApplicationController
   def start_job(state, params)
     # TODO: refactor this duplication
     code = params[:code]
-    access_token = current_user.github_access_token
+    access_token = session[:access_token]
 
     # Start whatever job the state requires
     case state
@@ -82,20 +81,19 @@ class RepoSignupController < ApplicationController
       logger.info "Started signup from #{params[:email]}"
 
       # Some stats
-      current_user.signup_channel = params["source"]
-      current_user.signup_referer = request.env["HTTP_REFERER"]
-      current_user.save!
+      session[:channel] = params["source"]
+      session[:referrer] = request.env["HTTP_REFERER"]
 
       # STOP
 
     when :authorizing
-      session[:fetcher] = Github.fetch_access_token(current_user, code)
+      session[:fetcher] = Github.fetch_access_token code
 
     when :authorized
       session[:next] = true
 
     when :fetching_projects
-      session[:fetcher] = Github.tentacles "repos/repos", current_user
+      session[:fetcher] = Github.tentacles "repos/repos", session[:access_token]
 
     when :list_projects
       # TECHNICAL_DEBT: this is horrific, and just keeps getting worse
@@ -104,8 +102,7 @@ class RepoSignupController < ApplicationController
       # stop
 
     when :done
-      # next time, start at :fetching_projects action in starting_state
-      session[:done] = nil
+      # Stay here until the user enters their password
     end
 
     # # TODO: start a worker which gets a list of builds

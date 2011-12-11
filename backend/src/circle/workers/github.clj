@@ -49,7 +49,7 @@
 (def settings (default))
 
 ; TECHNICAL_DEBT upstream this
-(defn fetch-github-access-token [userid code]
+(defn fetch-github-access-token [code]
   "After sending a customer to github to provide us with oauth permission, github
   redirects them back, providing us with a temporary code. We can use this code to ask
   github for an access token."
@@ -59,14 +59,7 @@
         json (-> response :body json/decode)
         access-token (-> json :access_token)
         error? (-> json :error)]
-    (if error?
-      false ; TODO: we don't have a good way of raising errors to our
-                     ; attention. Use Airbrake.
-      (let [user (mongo/fetch-by-id :users (mongo/object-id userid))
-            updated (merge user {:github_access_token access-token})]
-        (assert user)
-        (mongo/update! :users user updated)
-        true))))
+    error?))
 
 (defn authorization-url [redirect]
   "The URL that we send a user to, to allow them authorize us for oauth. Redirect is where the should be redirected afterwards"
