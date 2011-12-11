@@ -1,9 +1,13 @@
 class Project
   include Mongoid::Document
-  field :name, :type => String
-  field :vcs_url, :type => String
+  field :name
+  field :vcs_url
   field :ssh_private_key
   field :ssh_public_key
 
+  has_and_belongs_to_many :users
+
   has_many :jobs # TECHNICAL_DEBT: s/jobs/builds/
+
+  attr_accessible :name, :vcs_url
 end

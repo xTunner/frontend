@@ -1,0 +1,40 @@
+class Ability
+  include CanCan::Ability
+
+  def initialize(user)
+    user ||= User.new # guest user (not logged in)
+
+    cannot :manage, :all # default to no access
+
+    can :manage, User, :id => user.id # only users may check out their own page
+
+    # can do |action, subject_class, subject|
+    #   puts action
+    #   puts subject_class
+    #   puts subject
+    # end
+
+    # can :manage, Project do |p|
+    #   puts p
+    #   puts p.user_ids
+    #   puts user
+    #   puts user.id
+    #   puts       p.user_ids.include? user.id
+    #   p.user_ids.include? user.id
+    # end
+
+    # The first argument to `can` is the action you are giving the user permission to do.
+    # If you pass :manage it will apply to every action. Other common actions here are
+    # :read, :create, :update and :destroy.
+    #
+    # The second argument is the resource the user can perform the action on. If you pass
+    # :all it will apply to every resource. Otherwise pass a Ruby class of the resource.
+    #
+    # The third argument is an optional hash of conditions to further filter the objects.
+    # For example, here the user can only update published articles.
+    #
+    #   can :update, Article, :published => true
+    #
+    # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
+  end
+end

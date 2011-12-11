@@ -24,7 +24,7 @@
     %h4
       = @project.name
     %h6
-      = @project["vcs-url"]
+      = @project["vcs_url"]
 
     = render :partial => 'running'
     = render :partial => 'running'
@@ -45,4 +45,3 @@
 
 -#  = form_for [@project, Job.new], :remote => true do |f|
 -#    = f.submit "Trigger job"
-

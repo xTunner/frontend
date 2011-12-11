@@ -212,7 +212,7 @@
       (str/replace #"\.git$" "")))
 
 (defn minimal-project [url]
-  {:project_name (infer-project-name url)})
+  {:name (infer-project-name url)})
 
 (defn minimal-config [url]
   {})

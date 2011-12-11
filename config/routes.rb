@@ -1,14 +1,14 @@
 MongoidTest::Application.routes.draw do
 
   # User authentication
-  devise_for :users, :path => '/', :path_names => {:sign_in => 'login', :sign_out => 'logout'} do
-    get 'users', :to => 'users#show', :as => :user_root
-  end
+  devise_for :users, :path => '/', :path_names => {:sign_in => 'login', :sign_out => 'logout'}
+
+  match '/gh/:user/:project', :to => 'projects#github_show', :as => :github_project
 
   # Main project UI
-  resources :projects do
-    resources :jobs
-  end
+#  resources :projects do
+#    resources :jobs
+#  end
 
   # Signup form (for repositories)
   # //TECHNICAL_DEBT rename this controller to add-repo
@@ -34,7 +34,7 @@ MongoidTest::Application.routes.draw do
   end
 
   # Default page for signed-in users.
-  root :to => "users#show"
+  root :to => "users#dashboard"
 
 
   # The priority is based upon order of creation:
