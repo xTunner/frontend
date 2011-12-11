@@ -8,19 +8,22 @@ class Ability
 
     can :manage, User, :id => user.id # only users may check out their own page
 
+    can :manage, Project do |p|
+      p.user_ids.include? user.id
+    end
+
+
+
+
     # can do |action, subject_class, subject|
     #   puts action
     #   puts subject_class
     #   puts subject
-    # end
-
-    # can :manage, Project do |p|
-    #   puts p
-    #   puts p.user_ids
-    #   puts user
-    #   puts user.id
-    #   puts       p.user_ids.include? user.id
-    #   p.user_ids.include? user.id
+    #   if not subject.nil? then
+    #     subject.each do |s|
+    #       puts s
+    #     end
+    #   end
     # end
 
     # The first argument to `can` is the action you are giving the user permission to do.
