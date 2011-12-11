@@ -4,8 +4,8 @@ class Github
     Backend.blocking_worker "circle.workers.github/authorization-url", redirect
   end
 
-  def self.fetch_access_token(code)
-    Backend.start_worker "circle.workers.github/fetch-github-access-token", code
+  def self.fetch_access_token(user, code)
+    Backend.start_worker "circle.workers.github/fetch-github-access-token", user.id.to_s, code
   end
 
   def self.tentacles(command, user)

@@ -13,18 +13,61 @@ class RepoSignupController < ApplicationController
   #
   # - A user signs up on the homepage. We likely won't handle that here.
 
+  # https://github.com/plataformatec/devise/wiki/How-To:-Create-a-guest-user
+
+  # Obviously, we're going to be using guest users. Do not call
+  # current_user anywhere in the controller until after we're certain
+  # the user must be logged in
+  def current_or_guest_user
+    if current_user
+      if session[:guest_user_id]
+        logging_in
+        # guest_user.destroy
+        session[:guest_user_id] = nil
+      end
+      current_user
+    else
+      guest_user
+    end
+  end
+
+  def guest_user
+    if session[:guest_user_id]
+      begin
+        return User.find session[:guest_user_id]
+      rescue Exception => e
+      end
+    end
+    u = create_guest_user
+    sign_in(:user, u)
+    session[:guest_user_id] = u.id
+    u
+  end
+
+  def logging_in
+  end
+
+  def create_guest_user
+    id = BSON::ObjectId.new()
+    u = User.create(:_id => id, :email => "guest_#{id.to_s}")
+    u.save(:validate => false)
+    u
+  end
+
   def all
     @url = Github.authorization_url add_repo_url
 
     code = params[:code]
-    access_token = session[:access_token]
+    access_token = current_or_guest_user.github_access_token
 
     state = starting_state(code, access_token)
     session[:state] = state
     @step, @substep = step_for_state(state)
     start_job(state, params)
+    @user = current_or_guest_user # the body3_1 form will need access to this user.
+    puts "session = #{session}"
+    puts "flash = #{flash[:error]}"
   end
-
 
   def dynamic
     state = session[:state]
@@ -71,7 +114,7 @@ class RepoSignupController < ApplicationController
   def start_job(state, params)
     # TODO: refactor this duplication
     code = params[:code]
-    access_token = session[:access_token]
+    access_token = current_or_guest_user.github_access_token
 
     # Start whatever job the state requires
     case state
@@ -81,24 +124,25 @@ class RepoSignupController < ApplicationController
       logger.info "Started signup from #{params[:email]}"
 
       # Some stats
-      session[:channel] = params["source"]
-      session[:referrer] = request.env["HTTP_REFERER"]
+      current_or_guest_user.signup_channel = params["source"]
+      current_or_guest_user.signup_referer = request.env["HTTP_REFERER"]
 
       # STOP
 
     when :authorizing
-      session[:fetcher] = Github.fetch_access_token code
+      session[:fetcher] = Github.fetch_access_token current_or_guest_user, code
+
 
     when :authorized
       session[:next] = true
 
     when :fetching_projects
-      session[:fetcher] = Github.tentacles "repos/repos", session[:access_token]
+      session[:fetcher] = Github.tentacles "repos/repos", current_or_guest_user
 
     when :list_projects
       # TECHNICAL_DEBT: this is horrific, and just keeps getting worse
+      puts "list_projects: #{@result}"
       session[:allowed_urls] = @result.map { |p| p[:html_url] }
-
       # stop
 
     when :done
@@ -189,11 +233,11 @@ class RepoSignupController < ApplicationController
         project = Project.create :name => projectname, :vcs_url => gh_url
       end
 
-      project.users << current_user
+      project.users << current_or_guest_user
       project.save()
 
-      Github.add_deploy_key current_user, project, username, projectname
-      Github.add_commit_hook username, projectname, current_user
+      Github.add_deploy_key current_or_guest_user, project, username, projectname
+      Github.add_commit_hook username, projectname, current_or_guest_user
     end
     session[:done] = true
     redirect_to add_repo_url
