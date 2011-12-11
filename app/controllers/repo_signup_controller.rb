@@ -55,7 +55,7 @@ class RepoSignupController < ApplicationController
     end
 
     keep_polling = (not ready.nil?)
-    result = {
+    packet = {
       :step => step,
       :substep => substep,
       :ready => ready,
@@ -65,7 +65,7 @@ class RepoSignupController < ApplicationController
       :explanation => explanation,
     }.to_json
 
-    render :json => result
+    render :json => packet
   end
 
 
