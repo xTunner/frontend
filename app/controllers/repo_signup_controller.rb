@@ -98,10 +98,14 @@ class RepoSignupController < ApplicationController
       session[:fetcher] = Github.tentacles "repos/repos", current_user
 
     when :list_projects
-      # STOP
+      # TECHNICAL_DEBT: this is horrific, and just keeps getting worse
+      session[:allowed_urls] = @result.map { |p| p[:html_url] }
+
+      # stop
 
     when :done
-      #TODO
+      # next time, start at :fetching_projects action in starting_state
+      session[:done] = nil
     end
 
     # # TODO: start a worker which gets a list of builds
@@ -125,7 +129,7 @@ class RepoSignupController < ApplicationController
   def next_state(state)
     case state
     when :start
-       # They need to click to github and come back, we can't do this for them.
+      # They need to click to github and come back, we can't do this for them.
       :start
     when :authorizing
       :authorized
@@ -161,22 +165,40 @@ class RepoSignupController < ApplicationController
   # The form AJAX posts to here
   def form
     projects = []
-    params.each do |key, value| 
+    params.each do |key, value|
       if value == "add_project"
-        projects.push(key)
+        projects.push key
       end
     end
-    # TECHNICAL_DEBT sanitize input
-    # authorization: who owns project IMPORTANT
+
+    # TECHNICAL_DEBT (minor for now): a better way to model github is to
+    # constantly sync projects and users into special GH models, and look them
+    # up directly.
+
+    # Add all projects the user has access to.
     projects.each do |user_repo_pair|
       username, projectname = user_repo_pair.split "/"
-      p = Project.create(:project_name => projectname, :vcs_url => "https://github.com/#{username}/#{projectname}")
-      
-      Github.add_deploy_key(current_user, p, username, projectname)
-      Github.add_commit_hook(username, projectname, current_user)
+      gh_url = Backend.blocking_worker "circle.backend.github-url/canonical-url", username, projectname
+
+      project = Project.where(:vcs_url => gh_url).first
+
+      allowed_urls = session[:allowed_urls] || []
+      session[:allowed_urls] = nil
+      allowed = allowed_urls.any? { |u| u == gh_url }
+
+      next if not allowed
+
+      if not project
+        project = Project.create :name => projectname, :vcs_url => gh_url
+      end
+
+      project.users << current_user
+      project.save()
+
+      Github.add_deploy_key current_user, project, username, projectname
+      Github.add_commit_hook username, projectname, current_user
     end
     session[:done] = true
-    session[:state] = next_state(session[:state])
     redirect_to add_repo_url
   end
 end
