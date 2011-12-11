@@ -6,9 +6,9 @@ MongoidTest::Application.routes.draw do
   match '/gh/:user/:project', :to => 'projects#github_show', :as => :github_project
 
   # Main project UI
-#  resources :projects do
+  resources :projects do
 #    resources :jobs
-#  end
+  end
 
   # Signup form (for repositories)
   # //TECHNICAL_DEBT rename this controller to add-repo
