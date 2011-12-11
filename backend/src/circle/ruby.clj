@@ -24,34 +24,76 @@
 (defn eval [s]
   (-> (ruby) (.evalScriptlet s)))
 
-(defn intern-keyword
-  "Given a java string, return a ruby keyword"
-  [s]
-  (RubySymbol/newSymbol (ruby) s))
 
-(defn ->array [c]
-  "Convert a java.util.Collection to a Ruby array"
-  (let [new-c (org.jruby.RubyArray/newArray (ruby) [])]
-    (.addAll new-c c)
-    new-c))
+(defmulti ->ruby
+  "Convert Ruby data to Clojure data"
+  class)
 
-(defn ->hash [h]
-  "Convert a java.util.Map to a Ruby HashMap"
-  (assert (instance? java.util.Map h))
-  h)
+(defmethod ->ruby
+  clojure.lang.IPersistentMap [m]
+  (let [new-h (org.jruby.RubyHash. (ruby))]
+    (->> m
+         (map (fn [[k v]] [(->ruby k) (->ruby v)]))
+         (into {})
+         (.putAll new-h))
+    new-h))
 
-(defn ->string [s]
-  "Convert a java.lang.String to a Ruby String"
+(defmethod ->ruby
+  clojure.lang.Keyword [k]
+  (RubySymbol/newSymbol (ruby) (name k)))
+
+(defmethod ->ruby
+  clojure.lang.Sequential [v]
+  (let [new-a (org.jruby.RubyArray/newArray (ruby) [])
+        values (map ->ruby v)]
+    (.addAll new-a values)
+    new-a))
+
+(defmethod ->ruby
+  java.lang.String [s]
   (org.jruby.RubyString/newString (ruby) s))
 
-(fact "convert to array"
-  (->array [5 6 7]) => (eval "[5, 6, 7]"))
+(defmethod ->ruby
+  java.lang.Float [n]
+  (org.jruby.RubyFloat. (ruby) n))
 
-(fact "eval returns ruby objects"
-  (class (eval ":foo")) => org.jruby.RubySymbol)
+(defmethod ->ruby
+  java.lang.Double [n]
+  (org.jruby.RubyFloat. (ruby) n))
 
-(fact "intern-returns-keyword"
-  (intern-keyword "foo") => (eval ":foo"))
+(defmethod ->ruby
+  java.lang.Integer [n]
+  (org.jruby.RubyFixnum. (ruby) n))
 
-(fact "convert to hash"
-  (->hash {5 6}) => (eval "{5 => 6}"))
+(defmethod ->ruby
+  java.lang.Long [n]
+  (org.jruby.RubyFixnum. (ruby) n))
+
+(defmethod ->ruby
+  java.lang.Boolean [b]
+  (if b
+    (-> (ruby) (.getTrue))
+    (-> (ruby) (.getFalse))))
+
+(defmethod ->ruby
+  nil [n]
+  (-> (ruby) (.getNil)))
+
+(fact "conversions work"
+  (->ruby nil) => (eval "nil")
+  (->ruby "a string") => (eval "'a string'")
+  (->ruby -5.0) => (eval "-5.0")
+  (->ruby 172) => (eval "172")
+  (->ruby (Long/MAX_VALUE)) => (eval (str Long/MAX_VALUE))
+  (->ruby :foo) => (eval ":foo")
+  (->ruby [5 6 7]) => (eval "[5, 6, 7]")
+  (->ruby {5 6}) => (eval "{5 => 6}")
+  (class (eval ":foo")) => org.jruby.RubySymbol
+
+  ;; complex nested structures
+  (->ruby [:foo "bar" 5 nil]) => (eval "[:foo, 'bar', 5, nil]")
+  (->ruby '(:foo "bar" 5 nil)) => (eval "[:foo, 'bar', 5, nil]")
+  (->ruby {:x "foo" :y "bar" 5 nil}) => (eval "{:x => 'foo', :y => 'bar', 5 => nil}")
+
+  (->ruby {:foo "bar",    5 nil,     "x" 7.0,   :baa [5 "mrah" {:boo :foo}]}) =>
+    (eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}"))

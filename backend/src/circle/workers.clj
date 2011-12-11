@@ -14,56 +14,8 @@
 
 ;;; Workers. Handles starting workers, checking if they're done, and getting the
 ;;; result.
-
-(defmulti convert-to-ruby
-  "Convert Ruby data to Clojure data"
-  class)
-
-(defmethod convert-to-ruby
-  clojure.lang.IPersistentMap [m]
-  (->> m
-       (map (fn [[k v]] [(convert-to-ruby k) (convert-to-ruby v)]))
-       (into {})
-       (ruby/->hash)))
-
-(defmethod convert-to-ruby
-  clojure.lang.Keyword [k]
-  (ruby/intern-keyword (name k)))
-
-(defmethod convert-to-ruby
-  clojure.lang.IPersistentVector [s]
-  (ruby/->array (map convert-to-ruby s)))
-
-(defmethod convert-to-ruby
-  java.lang.String [s]
-  (ruby/->string s))
-
-(defmethod convert-to-ruby
-  java.lang.Number [i]
-  i)
-
-(defmethod convert-to-ruby
-  java.lang.Boolean [b]
-  b)
-
-(defmethod convert-to-ruby
-  nil [n]
-  nil)
-
-(fact "conversions work"
-  (convert-to-ruby nil) => (ruby/eval "nil")
-  (convert-to-ruby "a string") => (ruby/eval "'a string'")
-  (convert-to-ruby -5.0) => (ruby/eval "-5.0")
-  (convert-to-ruby :foo) => (ruby/eval ":foo")
-  (convert-to-ruby [:foo "bar" 5 nil]) => (ruby/eval "[:foo, 'bar', 5, nil]")
-
-  (convert-to-ruby {:foo "bar",    5 nil,     "x" 7.0,   :baa [5 "mrah" {:boo :foo}]}) =>
-       (ruby/eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}")
-  (convert-to-ruby {:x "foo" :y "bar" 5 nil}) => (ruby/eval "{:x => 'foo', :y => 'bar', 5 => nil}"))
-
 (defn call-clojure-from-ruby [f args]
-  (convert-to-ruby
-   (apply f args)))
+  (ruby/->ruby (apply f args)))
 
 (def worker-store (ref {}))
 
