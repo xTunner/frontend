@@ -19,9 +19,6 @@ MongoidTest::Application.routes.draw do
   # Github post-commit hook
   match '/hooks/github', :to => 'github#create', :via => [:post]
 
-  # Polling for backend workers
-  match '/hooks/fetcher/:id', :to => 'fetcher#done'
-
   # Homepage (landing page for un-logged-in users)
   unauthenticated do
     as :user do
