@@ -75,7 +75,6 @@ class JoinController < ApplicationController
       project = Project.where(:vcs_url => gh_url).first
 
       allowed_urls = session[:allowed_urls] || []
-      session[:allowed_urls] = nil
       allowed = allowed_urls.any? { |u| u == gh_url }
 
       next if not allowed
@@ -90,6 +89,8 @@ class JoinController < ApplicationController
       Github.add_deploy_key current_or_guest_user, project, username, projectname
       Github.add_commit_hook username, projectname, current_or_guest_user
     end
+
+    session[:allowed_urls] = nil
 
     increment_state
     do_state_action
