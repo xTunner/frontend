@@ -3,15 +3,14 @@ MongoidTest::Application.routes.draw do
   # User authentication
   devise_for :users, :path => '/',
     :path_names => {:sign_in => 'login', :sign_out => 'logout', :sign_up => "welcome"},
-    :controllers => {:registrations => "registrations"}
+    :controllers => {:registrations => "registrations"},
+    :only => [:sessions, :registrations]
 
 
   match '/gh/:user/:project', :to => 'projects#github_show', :as => :github_project
 
   # Main project UI
-  resources :projects do
-#    resources :jobs
-  end
+  resources :projects, :only => [:show]
 
   # Signup form (for repositories)
   match '/join/dynamic', :to => 'join#dynamic', :via => [:get], :as => :join_dynamic
