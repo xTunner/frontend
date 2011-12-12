@@ -3,8 +3,7 @@ MongoidTest::Application.routes.draw do
   # User authentication
   devise_for :users, :path => '/',
     :path_names => {:sign_in => 'login', :sign_out => 'logout', :sign_up => "welcome"},
-    :controllers => {:registrations => "registrations"},
-    :only => [:sessions, :registrations]
+    :controllers => {:registrations => "registrations"}
 
 
   match '/gh/:user/:project', :to => 'projects#github_show', :as => :github_project
