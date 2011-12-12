@@ -1,4 +1,49 @@
-= current_user.name
-= current_user.email
-= render :partial => 'project', :collection => @projects
+.container
+  .row
+    .alert-message.block-message.notice.span8.offset3
+      %h2
+        Thanks for joining!
 
+      %p
+        We're currently checking out your code, and starting to run your builds, so
+        that you will have an awesome experience.
+
+      %br
+
+      %p
+        Assuming you use Rails or Clojure, we should have all your tests running
+        within a few days. If you use something fancier, we'll have you up and
+        running as soon as we can.
+
+      %br
+
+      %p
+        Thanks for giving us access to your code. It lets us see the real demand,
+        and actively work on stuff you care about. If you have any qualms,
+        questions or feature requests, please get in contact with Paul:
+
+      %br
+
+      %ul
+        %li
+          = mail_to "paul@circleci.com"
+        %li
+          +1 415 341 2432
+
+  %table#projects
+    %thead
+      %tr
+        %th Project
+        %th Github
+        %th Status
+    %tbody
+      - @projects.each do |project|
+        %tr
+          %td
+            -# = link_to(project.name, project_path(project))
+            = project.name
+          %td
+            = link_to project.vcs_url do
+              = project.vcs_url
+          %td
+            Looking into it :)
