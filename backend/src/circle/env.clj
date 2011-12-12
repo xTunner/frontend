@@ -5,7 +5,7 @@
   (:require [clojure.string :as str])
   (:use [clojure.contrib.except :only (throw-if-not)]))
 
-(def env (condp = (System/getenv "CIRCLE_ENV")
+(def env (condp = (System/getenv "RAILS_ENV")
            "production" :production
            "staging" :staging
            nil :local))
