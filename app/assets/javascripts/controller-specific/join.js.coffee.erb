@@ -33,3 +33,4 @@ adjust_page = (step, body, explanation) ->
 
 $(document).ready ->
   setTimeout(poller, 200)
+  history.replaceState(null, null, "<%= Rails.application.routes.url_helpers.join_path %>")
