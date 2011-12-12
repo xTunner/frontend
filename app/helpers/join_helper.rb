@@ -1,4 +1,4 @@
-module RepoSignupHelper
+module JoinHelper
 
   def active_header_style()
     "success"

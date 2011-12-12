@@ -14,10 +14,9 @@ MongoidTest::Application.routes.draw do
   end
 
   # Signup form (for repositories)
-  # //TECHNICAL_DEBT rename this controller to add-repo
-  match '/add-repo/dynamic', :to => 'repo_signup#dynamic', :via => [:get], :as => :add_repo_dynamic
-  match '/add-repo', :to => 'repo_signup#all', :via => [:get], :as => :add_repo
-  match '/add-repo', :to => 'repo_signup#form', :via => [:post], :as => :add_repo_form
+  match '/join/dynamic', :to => 'join#dynamic', :via => [:get], :as => :join_dynamic
+  match '/join', :to => 'join#all', :via => [:get], :as => :join
+  match '/join', :to => 'join#form', :via => [:post], :as => :join_form
 
   # Github post-commit hook
   match '/hooks/github', :to => 'github#create', :via => [:post]

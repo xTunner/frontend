@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe RepoSignupController do
+describe JoinController do
 
   it "should track the source" do
     pending

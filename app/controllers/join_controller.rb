@@ -1,4 +1,4 @@
-class RepoSignupController < ApplicationController
+class JoinController < ApplicationController
 
 
   # When the user is not yet signed up, we get their project information from
@@ -13,7 +13,7 @@ class RepoSignupController < ApplicationController
 
 
   def all
-    @url = Github.authorization_url add_repo_url
+    @url = Github.authorization_url join_url
 
     code = params[:code]
     access_token = current_or_guest_user.github_access_token
@@ -23,8 +23,6 @@ class RepoSignupController < ApplicationController
     @step, @substep = step_for_state(state)
     start_job(state, params)
     @user = current_or_guest_user # the body3_1 form will need access to this user.
-    puts "session = #{session}"
-    puts "flash = #{flash[:error]}"
   end
 
   def dynamic
@@ -99,7 +97,6 @@ class RepoSignupController < ApplicationController
 
     when :list_projects
       # TECHNICAL_DEBT: this is horrific, and just keeps getting worse
-      puts "list_projects: #{@result}"
       session[:allowed_urls] = @result.map { |p| p[:html_url] }
       # stop
 
@@ -197,7 +194,7 @@ class RepoSignupController < ApplicationController
       Github.add_commit_hook username, projectname, current_or_guest_user
     end
     session[:done] = true
-    redirect_to add_repo_url
+    redirect_to join_url
   end
 
 

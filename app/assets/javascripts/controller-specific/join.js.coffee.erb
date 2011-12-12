@@ -1,5 +1,5 @@
 poller = () ->
-  $.getJSON("/add-repo/dynamic",
+  $.getJSON("<%= Rails.application.routes.url_helpers.join_dynamic_path %>",
     (data, textStatus) ->
       if data["ready"]
         adjust_page(data["step"], data["body"], data["explanation"])
@@ -7,7 +7,8 @@ poller = () ->
         setTimeout(poller, 200)
   )
 
-<% environment.context_class.instance_eval { include RepoSignupHelper } %>
+<%# Include a helper for the header styles below %>
+<% environment.context_class.instance_eval { include JoinHelper } %>
 
 adjust_page = (step, body, explanation) ->
   for i in [1,2,3]
