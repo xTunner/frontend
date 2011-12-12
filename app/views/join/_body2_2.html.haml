@@ -56,10 +56,10 @@
                     "sEmptyTable": "No projects found",
                      "sZeroRecords": "No projects match your filters"},
       "aoColumnDefs": [{"bVisible": false, "aTargets": [3, 4]}]
-     });
-     $('#projects_filter input').attr('placeholder', 'Filter..');
-     $('#projects_filter').remove().appendTo('#filter');
-     $('#projects_filter').addClass('span4');
+    });
+    $('#projects_filter input').attr('placeholder', 'Filter...');
+    $('#projects_filter').detach().appendTo('#filter');
+    $('#projects_filter').addClass('span4');
     $('#fork').change(function() {
       if ($('#fork').is(':checked'))
       {
