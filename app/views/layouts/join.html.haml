@@ -1,0 +1,27 @@
+!!!
+%html
+  %head
+    %title Circle - Continuous Integration made easy
+
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+
+    -# Stylesheets first
+    = stylesheet_link_tag "application"
+    - if not params[:controller].start_with? "devise" then
+      = stylesheet_link_tag "controller-specific/" + params[:controller]
+
+    -# JS
+    = javascript_include_tag "application"
+    - if not params[:controller].start_with? "devise" then
+      = javascript_include_tag "controller-specific/" + params[:controller]
+
+    = csrf_meta_tags
+
+    = render :partial => 'google-analytics'
+
+  %body
+    %ul.hmenu
+      - flash.each do |name, msg|
+        = content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String)
+
+    = yield
