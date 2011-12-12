@@ -1,6 +1,5 @@
 %h2 Sign up
 = form_for(@user, :url => user_registration_path) do |f|
-  = devise_error_messages!
   %div
     = f.label :name
     %br/

@@ -1,58 +1,16 @@
 class RepoSignupController < ApplicationController
 
-  # The is the page where users give us access to their repos. There are several ways to get here:
-  #
-  # - We send the user an invite, using devise. At this point, they are a real user, and the token
-  #   handles the authentication. We'll just solve this case for now. We get their email from the
-  #   Signup object.
-  #
-  # - We get a user from Exceptional. They have a token and an email address (slightly obscured). We
-  #   store the token, and manually verify with Ben that we can charge them. We set them up as a
-  #   normal user.
-  #   TODO: this requires them to have a password with us!! Not completely friendly.
-  #
-  # - A user signs up on the homepage. We likely won't handle that here.
 
-  # https://github.com/plataformatec/devise/wiki/How-To:-Create-a-guest-user
+  # When the user is not yet signed up, we get their project information from
+  # them first. We store all this in a "guest" user, and then at the end, we
+  # sign the guest user in, and update the information with their real info. The
+  # reason we go this way, instead of storing the information in a session, is
+  # that it works just fine this way, and changing it is a hassle. In
+  # particular, if we change it, we have to find a way for the front/back end to
+  # pass information around, which is a bit of a refactoring away from working
+  # well.
 
-  # Obviously, we're going to be using guest users. Do not call
-  # current_user anywhere in the controller until after we're certain
-  # the user must be logged in
-  def current_or_guest_user
-    if current_user
-      if session[:guest_user_id]
-        logging_in
-        # guest_user.destroy
-        session[:guest_user_id] = nil
-      end
-      current_user
-    else
-      guest_user
-    end
-  end
 
-  def guest_user
-    if session[:guest_user_id]
-      begin
-        return User.find session[:guest_user_id]
-      rescue Exception => e
-      end
-    end
-    u = create_guest_user
-    sign_in(:user, u)
-    session[:guest_user_id] = u.id
-    u
-  end
-
-  def logging_in
-  end
-
-  def create_guest_user
-    id = BSON::ObjectId.new()
-    u = User.create(:_id => id, :email => "guest_#{id.to_s}")
-    u.save(:validate => false)
-    u
-  end
 
   def all
     @url = Github.authorization_url add_repo_url
@@ -203,7 +161,6 @@ class RepoSignupController < ApplicationController
     end
   end
 
-  # The form AJAX posts to here
   def form
     projects = []
     params.each do |key, value|
@@ -242,4 +199,48 @@ class RepoSignupController < ApplicationController
     session[:done] = true
     redirect_to add_repo_url
   end
+
+
+
+    # https://github.com/plataformatec/devise/wiki/How-To:-Create-a-guest-user
+
+  # Obviously, we're going to be using guest users. Do not call
+  # current_user anywhere in the controller until after we're certain
+  # the user must be logged in
+  def current_or_guest_user
+    if current_user
+      if session[:guest_user_id]
+        logging_in
+        # guest_user.destroy
+        session[:guest_user_id] = nil
+      end
+      current_user
+    else
+      guest_user
+    end
+  end
+
+  def guest_user
+    if session[:guest_user_id]
+      begin
+        return User.find session[:guest_user_id]
+      rescue Exception => e
+      end
+    end
+    u = create_guest_user
+    session[:guest_user_id] = u.id
+    u
+  end
+
+  def logging_in
+  end
+
+  def create_guest_user
+    id = BSON::ObjectId.new()
+    u = User.create(:_id => id, :email => "guest_#{id.to_s}")
+    u.save(:validate => false)
+    u
+  end
+
+
 end

@@ -18,12 +18,11 @@ class User
   validates_uniqueness_of :email, :case_sensitive => false
   attr_accessible :name, :contact, :email, :password, :password_confirmation
 
+  # https://github.com/plataformatec/devise/wiki/How-To:-Allow-users-to-edit-their-account-without-providing-a-password
+  # Guest users start with a blank password, but we ask them to update them
+  # later. However, without this hack, they won't be able to validate their
+  # blank password, and devise will throw a caniption.
   def update_with_password(params = {})
-    puts "User update_w_password: #{params}"
-    if params[:password].blank?
-      params.delete(:password)
-      params.delete(:password_confirmation) if params[:password_confirmation].blank?
-    end
     update_attributes(params)
   end
 
