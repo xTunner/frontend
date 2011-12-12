@@ -1,9 +1,27 @@
-- if user_signed_in?
-  %li
-    = link_to('Logout', destroy_user_session_path, :method=>'delete')
-- else
-  %li
-    = link_to('Login', new_user_session_path)
+.topbar-wrapper
+  .topbar{"data-dropdown" => "dropdown"}
+    .topbar-inner
+      .container-fluid
+        %h3
+          %a.brand{:href => '#'}
+            Circle
+
+        = render :partial => 'topbar_middle'
+
+        %ul.nav.secondary-nav
+          %li.dropdown
+            %a.dropdown-toggle{:href => '#'}
+              = current_user.email
+            %ul.dropdown-menu
+              %li
+                = link_to('Logout', destroy_user_session_path, :method => :delete)
+
+-# - if user_signed_in?
+-#   %li
+-#     = link_to('Logout', destroy_user_session_path, :method=>'delete')
+-# - else
+-#   %li
+-#     = link_to('Login', new_user_session_path)
 
 -#- if user_signed_in?
 -#  %li
