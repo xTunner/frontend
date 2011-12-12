@@ -23,7 +23,7 @@ MongoidTest::Application.routes.draw do
   unauthenticated do
     as :user do
       # pre-launch signup form's target
-      match '/', :to => 'home#create', :action => :create, :via => [:post]
+      match '/notify-signup', :to => 'home#create', :action => :create, :via => [:post], :as => :notify_signup
 
       # homepage
       root :to => "home#index"

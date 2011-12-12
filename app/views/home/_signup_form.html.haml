@@ -3,7 +3,7 @@
     %h2.takepart Sign up for the beta
     %p.whenready We'll email you when we're ready.
 
-    = form_tag("/", :onsubmit => 'if (this.email.value == "Email address") { this.email.style.background = "red"; return false; }') do
+    = form_tag(notify_signup_path, :onsubmit => 'if (this.email.value == "Email address") { this.email.style.background = "red"; return false; }') do
       %fieldset#actualform
         %ul
           %li
