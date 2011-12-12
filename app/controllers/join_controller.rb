@@ -97,7 +97,8 @@ class JoinController < ApplicationController
       session[:allowed_urls] = @result.map { |p| p[:html_url] }
       # stop
 
-    when :done
+    when :signup
+      session[:signup] = false
       # Stay here until the user enters their password
     end
 
@@ -110,8 +111,10 @@ class JoinController < ApplicationController
   def starting_state(code, access_token)
     if code.nil? and access_token.nil?
       :start
-    elsif code and access_token.nil? then
+    elsif code and access_token.nil?
       :authorizing
+    elsif session[:signup]
+      :signup
     else
       :fetching_projects
     end
@@ -129,9 +132,9 @@ class JoinController < ApplicationController
     when :fetching_projects
       :list_projects
     when :list_projects
-      :done
-    when :done
-      :done # saturate
+      :signup
+    when :signup
+      :signup # saturate
     end
   end
 
@@ -148,7 +151,7 @@ class JoinController < ApplicationController
       [2,1]
     when :list_projects
       [2,2]
-    when :done
+    when :signup
       [3,1]
     end
   end
@@ -188,17 +191,17 @@ class JoinController < ApplicationController
       Github.add_deploy_key current_or_guest_user, project, username, projectname
       Github.add_commit_hook username, projectname, current_or_guest_user
     end
-    if current_user.sign_in_count > 0
+    if current_or_guest_user.sign_in_count > 0
       redirect_to root_url
     else
+      session[:signup] = true
       redirect_to join_url
     end
   end
 
 
 
-    # https://github.com/plataformatec/devise/wiki/How-To:-Create-a-guest-user
-
+  # https://github.com/plataformatec/devise/wiki/How-To:-Create-a-guest-user
   # Obviously, we're going to be using guest users. Do not call
   # current_user anywhere in the controller until after we're certain
   # the user must be logged in
