@@ -12,6 +12,11 @@ class User
   field :signup_channel
   field :signup_referer
 
+  # For making the form nicer, we try to prefetch these from github. When
+  # they're not available in time, we need a default.
+  field :fetched_name, :default => ""
+  field :fetched_email, :default => ""
+
   has_and_belongs_to_many :projects
 
   validates_presence_of :email

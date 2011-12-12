@@ -1,13 +1,14 @@
-%h2 Sign up
+%h2 We've got your code - better tell us who you are!
+
 = form_for(@user, :url => user_registration_path) do |f|
   %div
     = f.label :name
     %br/
-    = f.text_field :name
+    = f.text_field :name, :value => @user.fetched_name
   %div
     = f.label :email
     %br/
-    = f.email_field :email
+    = f.email_field :email, :value => @user.fetched_email
   %div
     = f.label :password
     %br/

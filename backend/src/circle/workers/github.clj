@@ -7,7 +7,8 @@
   (:require [clj-http.client :as client])
   (:require [circle.env :as env])
   (:require [somnium.congomongo :as mongo])
-  (:require [tentacles.repos :as tentacles])
+  (:require [tentacles.repos :as trepos])
+  (:require [tentacles.users :as tusers])
   (:require [circle.backend.ssh :as ssh])
   (:use [midje.sweet]))
 
@@ -80,6 +81,15 @@
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
   "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scope=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
 
+(defn add-user-details [userid]
+  (let [user (mongo/fetch-by-id :users (mongo/object-id userid))
+        token (:github_access_token user)
+        json (tentacles.users/me {:oauth_token token})
+        email (-> json :email)
+        name (-> json :name)
+        new-user (merge user {:fetched_name name :fetched_email email})]
+    (mongo/update! :users user new-user)))
+
 
 (defn add-deploy-key
   "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
@@ -88,10 +98,10 @@
         keypair (ssh/generate-keys)]
     (mongo/update! :projects project (merge project {:ssh_public_key (-> keypair :public-key)
                                                      :ssh_private_key (-> keypair :private-key)}))
-    ;TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
-    (tentacles/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
+                                        ;TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
+    (trepos/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
 
 (defn add-hooks
   "Add all the hooks we care about to the user's repo"
   [username reponame github-access-token]
-  (tentacles.repos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))
+  (trepos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))

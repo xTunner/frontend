@@ -144,6 +144,7 @@ class JoinController < ApplicationController
 
     when :fetching_projects
       session[:fetcher] = Github.tentacles "repos/repos", current_or_guest_user
+      Backend.fire_worker "circle.workers.github/add-user-details", current_or_guest_user.id.to_s
 
     when :list_projects
       session[:allowed_urls] = @result.map { |p| p[:html_url] }
