@@ -9,9 +9,6 @@ class JoinController < ApplicationController
   # particular, if we change it, we have to find a way for the front/back end to
   # pass information around, which is a bit of a refactoring away from working
   # well.
-
-
-
   def all
     @url = Github.authorization_url join_url
 
@@ -115,8 +112,6 @@ class JoinController < ApplicationController
       :start
     elsif code and access_token.nil? then
       :authorizing
-    elsif session[:done]
-      :done
     else
       :fetching_projects
     end
@@ -193,8 +188,11 @@ class JoinController < ApplicationController
       Github.add_deploy_key current_or_guest_user, project, username, projectname
       Github.add_commit_hook username, projectname, current_or_guest_user
     end
-    session[:done] = true
-    redirect_to join_url
+    if current_user.sign_in_count > 0
+      redirect_to root_url
+    else
+      redirect_to join_url
+    end
   end
 
 
