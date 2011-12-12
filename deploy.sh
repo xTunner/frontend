@@ -9,7 +9,7 @@ then
     exit 1;
 fi
 
-trinidad --config -e production < /dev/null &> trinidad.log &
+trinidad < /dev/null &> trinidad.log &
 PID=$!
 echo "pid= $!"
 echo $PID > trinidad.pid
