@@ -11,19 +11,14 @@ class JoinController < ApplicationController
   # well.
   def all
     @url = Github.authorization_url join_url
+    @user = current_or_guest_user
 
-    code = params[:code]
-    access_token = current_or_guest_user.github_access_token
-
-    state = starting_state(code, access_token)
-    session[:state] = state
-    @step, @substep = step_for_state(state)
-    start_job(state, params)
-    @user = current_or_guest_user # the body3_1 form will need access to this user.
+    initialize_state
+    @step, @substep = step_for_state
+    do_state_action
   end
 
   def dynamic
-    state = session[:state]
     fetcher = session[:fetcher]
     if fetcher then
       ready = Backend.worker_done? fetcher
@@ -33,29 +28,26 @@ class JoinController < ApplicationController
       end
     end
 
-    # Just move through the states
-    if session[:next] then
-      ready = true
-      session[:next] = false
-    end
+    # TODO I used to move this along using the session[:next] thing
 
-    if ready then
-      state = next_state(state)
-      session[:state] = state
-      step, substep = step_for_state(state)
-      start_job(state, params)
+    if ready
 
+      increment_state
+      do_state_action
+
+      step, substep = step_for_state
       body = render_to_string :partial => "body#{step}_#{substep}"
       explanation = render_to_string :partial => "explanation#{step}"
     end
 
-    keep_polling = (not ready.nil?)
+    keep_polling = (not session[:stop])
+    session[:stop] = false
+
     packet = {
       :step => step,
       :substep => substep,
       :ready => ready,
       :keep_polling => keep_polling,
-      :state => state,
       :body => body,
       :explanation => explanation,
     }.to_json
@@ -63,100 +55,7 @@ class JoinController < ApplicationController
     render :json => packet
   end
 
-
-  def start_job(state, params)
-    # TODO: refactor this duplication
-    code = params[:code]
-    access_token = current_or_guest_user.github_access_token
-
-    # Start whatever job the state requires
-    case state
-    when :start
-      # TODO: put this into the logs in a more structured way. But for now, we
-      # have this so that we can compare it to people who follow through.
-      logger.info "Started signup from #{params[:email]}"
-
-      # Some stats
-      current_or_guest_user.signup_channel = params["source"]
-      current_or_guest_user.signup_referer = request.env["HTTP_REFERER"]
-
-      # STOP
-
-    when :authorizing
-      session[:fetcher] = Github.fetch_access_token current_or_guest_user, code
-
-
-    when :authorized
-      session[:next] = true
-
-    when :fetching_projects
-      session[:fetcher] = Github.tentacles "repos/repos", current_or_guest_user
-
-    when :list_projects
-      # TECHNICAL_DEBT: this is horrific, and just keeps getting worse
-      session[:allowed_urls] = @result.map { |p| p[:html_url] }
-      # stop
-
-    when :signup
-      session[:signup] = false
-      # Stay here until the user enters their password
-    end
-
-    # # TODO: start a worker which gets a list of builds
-    # # TODO: in the background, check them out, infer them, and stream the build to the user.
-    # # TODO: this means not waiting five minutes for the build to start!
-  end
-
-
-  def starting_state(code, access_token)
-    if code.nil? and access_token.nil?
-      :start
-    elsif code and access_token.nil?
-      :authorizing
-    elsif session[:signup]
-      :signup
-    else
-      :fetching_projects
-    end
-  end
-
-  def next_state(state)
-    case state
-    when :start
-      # They need to click to github and come back, we can't do this for them.
-      :start
-    when :authorizing
-      :authorized
-    when :authorized
-      :fetching_projects
-    when :fetching_projects
-      :list_projects
-    when :list_projects
-      :signup
-    when :signup
-      :signup # saturate
-    end
-  end
-
-
-  def step_for_state(state)
-    case state
-    when :start
-      [1,1]
-    when :authorizing
-      [1,2]
-    when :authorized
-      [1,3]
-    when :fetching_projects
-      [2,1]
-    when :list_projects
-      [2,2]
-    when :signup
-      [3,1]
-    end
-  end
-
-  def form
+  def add_projects
     projects = []
     params.each do |key, value|
       if value == "add_project"
@@ -191,11 +90,105 @@ class JoinController < ApplicationController
       Github.add_deploy_key current_or_guest_user, project, username, projectname
       Github.add_commit_hook username, projectname, current_or_guest_user
     end
+
+    increment_state
+    do_state_action
     if current_or_guest_user.sign_in_count > 0
       redirect_to root_url
     else
-      session[:signup] = true
       redirect_to join_url
+    end
+  end
+
+
+  def increment_state
+    session[:state] =
+      case session[:state]
+      when :start
+        session[:stop] = true
+        :start
+      when :authorizing
+        :fetching_projects
+      when :fetching_projects
+        session[:stop] = true
+        :list_projects
+      when :list_projects
+        :signup
+      when :signup
+        session[:stop] = true
+        :signup
+      end
+  end
+
+
+  def do_state_action
+    code = params[:code]
+    access_token = current_or_guest_user.github_access_token
+
+    # Start whatever job the state requires
+    case session[:state]
+    when :start
+      # TODO: put this into the logs in a more structured way. But for now, we
+      # have this so that we can compare it to people who follow through.
+      logger.info "Started signup from #{params[:email]}"
+
+      # Some stats
+      current_or_guest_user.signup_channel = params["source"]
+      current_or_guest_user.signup_referer = request.env["HTTP_REFERER"]
+
+      session[:stop] = true
+
+
+    when :authorizing
+      session[:fetcher] = Github.fetch_access_token current_or_guest_user, code
+
+    when :fetching_projects
+      session[:fetcher] = Github.tentacles "repos/repos", current_or_guest_user
+
+    when :list_projects
+      session[:allowed_urls] = @result.map { |p| p[:html_url] }
+
+    end
+
+
+    # # TODO: start a worker which gets a list of builds
+    # # TODO: in the background, check them out, infer them, and stream the build to the user.
+    # # TODO: this means not waiting five minutes for the build to start!
+  end
+
+
+  def initialize_state
+    code = params[:code]
+    access_token = current_or_guest_user.github_access_token
+
+    session[:state] =
+      if current_or_guest_user.sign_in_count > 0
+        :fetching_projects
+      elsif code.nil? and access_token.nil?
+        :start
+      elsif code and access_token.nil?
+        :authorizing
+      elsif current_or_guest_user.projects.count > 0
+        # They have a project but havent signed in yet, give them the form
+        :signup
+      else
+        # authenticated, but no projects, show them the project form
+        :fetching_projects
+      end
+  end
+
+  def step_for_state
+    case session[:state]
+    when :start
+      [1,1]
+    when :authorizing
+      [1,2]
+    when :fetching_projects
+      [2,1]
+    when :list_projects
+      [2,2]
+    when :signup
+      [3,1]
     end
   end
 
@@ -208,8 +201,6 @@ class JoinController < ApplicationController
   def current_or_guest_user
     if current_user
       if session[:guest_user_id]
-        logging_in
-        # guest_user.destroy
         session[:guest_user_id] = nil
       end
       current_user
@@ -230,15 +221,11 @@ class JoinController < ApplicationController
     u
   end
 
-  def logging_in
-  end
-
   def create_guest_user
     id = BSON::ObjectId.new()
     u = User.create(:_id => id, :email => "guest_#{id.to_s}")
     u.save(:validate => false)
     u
   end
-
 
 end

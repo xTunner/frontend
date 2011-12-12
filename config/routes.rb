@@ -16,7 +16,7 @@ MongoidTest::Application.routes.draw do
   # Signup form (for repositories)
   match '/join/dynamic', :to => 'join#dynamic', :via => [:get], :as => :join_dynamic
   match '/join', :to => 'join#all', :via => [:get], :as => :join
-  match '/join', :to => 'join#form', :via => [:post], :as => :join_form
+  match '/join', :to => 'join#add_projects', :via => [:post], :as => :join_form
 
   # Github post-commit hook
   match '/hooks/github', :to => 'github#create', :via => [:post]
