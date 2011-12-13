@@ -1,14 +1,9 @@
 %h1{:class => "header #{class_for_header(@step, index)} alert-message", :id => "header#{index}"}
   = header
 
+
+
 %div{:class => "body #{class_for_subsection(@step, index)}", :id => "body#{index}"}
   .contents
     - if index == @step
       = render :partial => "body#{@step}_#{@substep}"
-
-
-%div{:class => "explanation #{class_for_subsection(@step, index)}", :id => "explanation#{index}"}
-  .row
-    .contents.span12.offset2
-      - if index == @step
-        = render :partial => "explanation#{index}"

@@ -37,7 +37,6 @@ class JoinController < ApplicationController
 
       step, substep = step_for_state
       body = render_to_string :partial => "body#{step}_#{substep}"
-      explanation = render_to_string :partial => "explanation#{step}"
     end
 
     keep_polling = (not session[:stop])
@@ -49,7 +48,6 @@ class JoinController < ApplicationController
       :ready => ready,
       :keep_polling => keep_polling,
       :body => body,
-      :explanation => explanation,
     }.to_json
 
     render :json => packet
