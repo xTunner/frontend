@@ -18,12 +18,12 @@ end
 
 namespace :production do
   task :server do
-    exec "JRUBY_OPTS=\"#{JRUBY_OPTS}\" RAILS_ENV=\"production\" ./deploy.sh"
+    exec "RAILS_ENV=\"production\" ./deploy.sh"
   end
 end
 
 namespace :staging do
   task :server do
-    exec "JRUBY_OPTS=\"#{JRUBY_OPTS}\" RAILS_ENV=\"staging\" ./deploy.sh"
+    exec "RAILS_ENV=\"staging\" ./deploy.sh"
   end
 end
