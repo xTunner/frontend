@@ -9,6 +9,7 @@
   (:require [somnium.congomongo :as mongo])
   (:require [tentacles.repos :as trepos])
   (:require [tentacles.users :as tusers])
+  (:require [tentacles.orgs :as torgs])
   (:require [circle.backend.ssh :as ssh])
   (:use [midje.sweet]))
 
@@ -105,3 +106,12 @@
   "Add all the hooks we care about to the user's repo"
   [username reponame github-access-token]
   (trepos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))
+
+(defn all-repos
+  "Returns all repos the current user can access. Use this over tentacles.repos/repos, because this will return repos belonging to organizations as well"
+  [github-access-token]
+  (let [normal-repos (trepos/repos {:oauth_token github-access-token})
+        orgs (torgs/orgs {:oauth_token github-access-token})
+        org-repos (mapcat (fn [o]
+                            (torgs/repos (-> o :login) {:oauth_token github-access-token})) orgs)]
+    (concat normal-repos org-repos)))

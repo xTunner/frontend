@@ -31,8 +31,8 @@
                  [org.codehaus.jackson/jackson-core-asl "1.8.5"]
 
 
-                 ;; we added new feature, oauth token support
-                 [tentacles "0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5"]
+                 ;; we added new fn, org/repos
+                 [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

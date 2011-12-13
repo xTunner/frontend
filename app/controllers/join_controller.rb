@@ -144,7 +144,7 @@ class JoinController < ApplicationController
       session[:fetcher] = Github.fetch_access_token current_or_guest_user, code
 
     when :fetching_projects
-      session[:fetcher] = Github.tentacles "repos/repos", current_or_guest_user
+      session[:fetcher] = Github.all_repos current_or_guest_user
       Backend.fire_worker "circle.workers.github/add-user-details", current_or_guest_user.id.to_s
 
     when :list_projects
