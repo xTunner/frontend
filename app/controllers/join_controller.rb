@@ -39,14 +39,11 @@ class JoinController < ApplicationController
       body = render_to_string :partial => "body#{step}_#{substep}"
     end
 
-    keep_polling = (not session[:stop])
-    session[:stop] = false
-
     packet = {
       :step => step,
       :substep => substep,
       :ready => ready,
-      :keep_polling => keep_polling,
+      :keep_polling => keep_polling?,
       :body => body,
     }.to_json
 
@@ -99,22 +96,33 @@ class JoinController < ApplicationController
     end
   end
 
+  def keep_polling?
+    case session[:state]
+    when :start
+      false
+    when :authorizing
+      true
+    when :fetching_projects
+      true
+    when :list_projects
+      false
+    when :signup
+      false
+    end
+  end
 
   def increment_state
     session[:state] =
       case session[:state]
       when :start
-        session[:stop] = true
         :start
       when :authorizing
         :fetching_projects
       when :fetching_projects
-        session[:stop] = true
         :list_projects
       when :list_projects
         :signup
       when :signup
-        session[:stop] = true
         :signup
       end
   end
@@ -135,7 +143,6 @@ class JoinController < ApplicationController
       current_or_guest_user.signup_channel = params["source"]
       current_or_guest_user.signup_referer = request.env["HTTP_REFERER"]
 
-      session[:stop] = true
 
 
     when :authorizing
