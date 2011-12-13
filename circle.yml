@@ -19,7 +19,7 @@ jobs:
       - bundle install
       - lein deps:
           pwd: backend
-      - rake test
+      - bundle exec rspec spec
       - lein midje:
           pwd: backend
           environment:
