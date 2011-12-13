@@ -110,8 +110,8 @@
 (defn all-repos
   "Returns all repos the current user can access. Use this over tentacles.repos/repos, because this will return repos belonging to organizations as well"
   [github-access-token]
-  (let [normal-repos (trepos/repos {:oauth_token github-access-token})
-        orgs (torgs/orgs {:oauth_token github-access-token})
-        org-repos (mapcat (fn [o]
-                            (torgs/repos (-> o :login) {:oauth_token github-access-token})) orgs)]
-    (concat normal-repos org-repos)))
+  (let [normal-repos (future (trepos/repos {:oauth_token github-access-token}))
+        orgs (future (torgs/orgs {:oauth_token github-access-token}))
+        org-repos (doall (map (fn [o]
+                                (future (torgs/repos (-> o :login) {:oauth_token github-access-token}))) @orgs))]
+    (concat @normal-repos (mapcat deref org-repos))))
