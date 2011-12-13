@@ -96,4 +96,14 @@
   (->ruby {:x "foo" :y "bar" 5 nil}) => (eval "{:x => 'foo', :y => 'bar', 5 => nil}")
 
   (->ruby {:foo "bar",    5 nil,     "x" 7.0,   :baa [5 "mrah" {:boo :foo}]}) =>
-    (eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}"))
+  (eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}"))
+
+(defn rspec
+  "runs rspec. Useful from clojure repl"
+  []
+  (eval "
+require 'rubygems'
+require 'rspec/core/rake_task'
+
+RSpec::Core::Runner.run(['spec'])
+"))
