@@ -2,6 +2,7 @@
   (:require [org.danlarkin.json :as json])
   (:require [circle.backend.project.circle :as circle])
   (:require [circle.backend.build.run :as run])
+  (:require [circle.backend.build.config :as config])
   (:use [circle.backend.github-url :only (->ssh)])
   (:use [clojure.tools.logging :only (infof)])
   (:require [clj-http.client :as client])
@@ -14,17 +15,10 @@
   (:use [midje.sweet]))
 
 (defn process-json [github-json]
-  (when (= "CircleCI" (-> github-json :repository :name))
-    (let [build (circle/circle-build)]
-      (dosync
-       (alter build merge
-              {:vcs_url (->ssh (-> github-json :repository :url))
-               :repository (-> github-json :repository)
-               :commits (-> github-json :commits)
-               :vcs_revision (-> github-json :commits last :id)
-               :num-nodes 1}))
-      (infof "process-json: build: %s" @build)
-      (run/run-build build))))
+  (infof "process-json: %s" github-json)
+  (let [build (config/build-from-json github-json)]
+    (infof "process-json: build: %s" @build)
+    (run/run-build build)))
 
 (defn start-build-from-hook
   [url after ref json-string]
