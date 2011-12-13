@@ -47,6 +47,7 @@
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
   [url & {:keys [vcs_revision]}]
+  {:pre [url]}
   (let [ssh-key (project/ssh-key-for-url url)
         repo (git/default-repo-path url)
         git-url (if (github/github? url)
@@ -188,6 +189,7 @@
   "Given a project name and a build name, return a build. Helper method for repl"
   [project-name & {:keys [job-name vcs_revision]}]
   (let [project (project/get-by-name project-name)
+        _ (throw-if-not project "project %s not found" project-name)
         url (-> project :vcs_url)
         config (get-config-for-url url :vcs_revision vcs_revision)
         job-name (or job-name (-> config :jobs (first)))

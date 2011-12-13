@@ -12,6 +12,7 @@
 (defn project-name
   "Infer the project name from the URL"
   [url]
+  {:pre [url]}
   (last (clojure.string/split url #"/")))
 
 (defn repo-exists? [path]
@@ -21,6 +22,7 @@
    (= 0)))
 
 (defn default-repo-path [url]
+  {:pre [url]}
   (str repo-root (project-name url)))
 
 (defmacro with-temp-ssh-key-file
