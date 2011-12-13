@@ -22,7 +22,9 @@
                       :staging {:prefix [start-nodes
                                          checkout
                                          rvm/trust]
-                                :suffix [tag-revision]}})
+                                :suffix [tag-revision]}
+                      :empty {:prefix []
+                              :suffix []}})
 
 (defn find [name]
   (-> name keyword build-templates))
