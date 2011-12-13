@@ -41,7 +41,9 @@ jobs:
       - bundle install
       - lein deps:
           pwd: backend
-      - rake production:server
+      - rake production:server:
+          environment:
+            CIRCLE_SWANK: "true"
       - sudo /etc/init.d/nginx start
 
   staging:
