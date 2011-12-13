@@ -80,11 +80,11 @@ class JoinController < ApplicationController
       next if not allowed
 
       if not project
-        project = Project.create :name => projectname, :vcs_url => gh_url
+        project = Project.create! :name => projectname, :vcs_url => gh_url
       end
 
       project.users << current_or_guest_user
-      project.save()
+      project.save!
 
       Github.add_deploy_key current_or_guest_user, project, username, projectname
       Github.add_commit_hook username, projectname, current_or_guest_user
