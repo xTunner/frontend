@@ -10,7 +10,7 @@
                                        checkout
                                        rvm/trust]
                               :suffix [stop-nodes]}
-                      
+
                       :deploy {:prefix [start-nodes
                                         checkout
                                         rvm/trust]

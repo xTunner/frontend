@@ -25,7 +25,7 @@
                   :private-key
                   :keypair-name])])
 
-(def build-validations 
+(def build-validations
   [(require-keys [:project_name
                   :build_num
                   :vcs_url

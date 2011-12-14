@@ -99,7 +99,7 @@
   (eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}"))
 
 (defn rspec
-  "runs rspec. Useful from clojure repl"
+  "runs rspec. Useful from clojure repl. "
   []
   (eval "
 require 'rubygems'

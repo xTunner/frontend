@@ -203,8 +203,6 @@
                        :build_num build-num
                        :checkout-dir checkout-dir)))
 
-
-
 (defn infer-project-name [url]
   (-> url
       (clj-url.core/parse)

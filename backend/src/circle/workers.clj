@@ -2,6 +2,7 @@
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.project.circle :as circle])
   (:require [circle.backend.build.config :as config])
+  (:use [clojure.tools.logging :only (infof errorf error)])
   (:require [circle.ruby :as ruby])
   (:use midje.sweet))
 
