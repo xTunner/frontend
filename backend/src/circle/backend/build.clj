@@ -67,6 +67,10 @@
                  {:_id (-> @b :_id)}
                  (dissoc @b :node :actions :action-results :continue?)))
 
+(defn find-build-by-name
+  "Returns a build obj, or nil"
+  [project build-num])
+
 (defn build [{:keys [project_name ;; string
                      build_num    ;; int
                      vcs_url

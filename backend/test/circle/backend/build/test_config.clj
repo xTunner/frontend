@@ -7,6 +7,7 @@
   (:use [circle.util.predicates :only (ref?)]))
 
 (test/ensure-circle-project)
+(test/ensure-test-project)
 
 (fact "parse-action-map works"
   (let [b (test/minimal-build)

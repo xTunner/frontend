@@ -19,18 +19,40 @@
 
 (def worker-store (ref {}))
 
+(defmacro log-future
+  "Takes a function to be called in a future. Starts the future and logs the result at the end"
+  [& body]
+  `(future
+     (try
+       (let [result# (do ~@body)]
+         (infof "%s returned %s" (quote  ~@body) result#)
+         result#)
+       (catch Exception e#
+         (error e# "%s threw" ~@body)
+         (throw e#)))))
+
+(fact "log-future returns futures"
+  ;; A normal future will return a future object here, even if the
+  ;; code obviously throws an exception. Make sure that's the case
+  ;; here as well.
+  (log-future (/ 1 0)) => future?)
+
+(fact "log-future works"
+  @(log-future (apply + [1 1])) => 2)
+
 (defn start-worker [f & args]
   "Call fn with args as a worker. Returns the id of the worker"
-  (let [fut (future
-              (call-clojure-from-ruby f args))]
+  (let [fut (log-future
+             (call-clojure-from-ruby f args))]
     (dosync
      (let [next-id (count @worker-store)]
+       (infof "starting worker id %s for %s" next-id f)
        (alter worker-store assoc next-id fut)
        next-id))))
 
 (defn fire-worker [f & args]
   "Start a worker, but don't wait for a response"
-  (future (call-clojure-from-ruby f args))
+  (log-future (call-clojure-from-ruby f args))
   nil)
 
 (defn blocking-worker [f & args]
