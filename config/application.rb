@@ -10,6 +10,7 @@ if RUBY_PLATFORM == 'java'
   # Load clojure jars. clojure.jar needs to be loaded before the jrclj gem is loaded.
   require 'java'
   $CLASSPATH << "#{File.dirname(__FILE__)}/../backend/src/"
+  $CLASSPATH << "#{File.dirname(__FILE__)}/../backend/test/"
   Dir["#{File.dirname(__FILE__)}/../backend/lib/*.jar"].each do |jar|
     require jar
   end
