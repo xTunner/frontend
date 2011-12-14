@@ -224,6 +224,9 @@ GEM
     trinidad_jars (1.0.1)
     turn (0.8.3)
       ansi
+    twitter_bootstrap_form_for (1.0.5)
+      actionpack (~> 3)
+      railties (~> 3)
     tzinfo (0.3.31)
     uglifier (1.1.0)
       execjs (>= 0.3.0)
@@ -267,4 +270,5 @@ DEPENDENCIES
   trinidad
   turn
   twitter-bootstrap-rails!
+  twitter_bootstrap_form_for
   uglifier (>= 1.0.3)

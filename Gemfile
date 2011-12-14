@@ -36,6 +36,7 @@ group :assets do
 end
 
 gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
+gem 'twitter_bootstrap_form_for'
 
 group :test do
   gem "cucumber-rails", ">= 1.1.1"
