@@ -5,6 +5,8 @@ tmp/
 .sass-cache/
 .rvmrc
 classes/*.jar
+jars/*.jar
+lib/dev/*.jar
 TAGS
 dump
 repos

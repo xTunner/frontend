@@ -103,6 +103,10 @@
                  [cdt "1.2.6.1-SNAPSHOT"]]
 
   :repositories {"circle-artifacts" "http://artifacts.circleci.com:8081/nexus/content/groups/all-repos/"}
+  :library-path "jars"
+
+  ;; https://github.com/technomancy/leiningen/issues/89
+  ;; can't set lib/dev path
   :omit-default-repositories true
   :dev-dependencies [[lein-test-out "0.1.1"]
                      [midje "1.2.0"]
