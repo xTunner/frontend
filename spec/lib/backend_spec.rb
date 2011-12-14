@@ -5,6 +5,7 @@ describe Backend do
 
   it "can call a clojure.core function" do
     id = Backend.start_worker "+", 4, 5
+    sleep 0.1
     Backend.worker_done?(id).should == true # shouldnt take long
     Backend.wait_for_worker(id).should == 9
   end
