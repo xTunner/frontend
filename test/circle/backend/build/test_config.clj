@@ -1,7 +1,8 @@
 (ns circle.backend.build.test-config
+  (:require [clojure.string :as str])
   (:use midje.sweet)
   (:use circle.backend.build.config)
-  (:use [circle.backend.build :only (checkout-dir valid? validate)])
+  (:use [circle.backend.build :only (checkout-dir valid? validate successful?)])
   (:use [circle.backend.action.bash :only (bash remote-bash-build)])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])
@@ -13,20 +14,22 @@
 (test/ensure-circle-project)
 (test/ensure-test-project)
 
+(fact "parse-action-map works"
+  (against-background
+    ;;; Stub checkout dir to be /usr. Later, we will pass "bin" to :pwd, so the ls will run in /usr/bin
+    (checkout-dir anything) => "/usr")
+  (let [dir "bin"
+        cmd {(keyword "ls") {:environment {:CIRCLE_ENV "production", :SWANK "true"}
+                             :pwd dir}}
+        b (test/minimal-build :actions [(parse-action-map cmd)])
+        expected-pwd (format "%s/%s" (checkout-dir b) dir)
+        _ (run/run-build b)]
+    (successful? b) => truthy
 
-;; This test used to assume we could determine the pwd when creating
-;; the build. That functionality has been moved, now we determine the
-;; pwd when running the build.
-
-;; (fact "parse-action-map works"
-;;   (let [b (test/minimal-build)
-;;         _ (println "build")
-;;         dir "backend"
-;;         expected-pwd (format "%s/%s" (checkout-dir b) dir)
-;;         cmd {(keyword "lein daemon start \":web\"") {:environment {:CIRCLE_ENV "production", :SWANK "true"}}}]
-;;     (parse-action-map cmd) => truthy
-;;     (provided
-;;       (remote-bash-build  b "lein daemon start \":web\"" :environment {:CIRCLE_ENV "production", :SWANK "true"} :pwd expected-pwd) => truthy :times 1)))
+    ;; ssh into localhost, ls /usr/bin. Assert the output of ls
+    ;; contains some well-known files, proving that the :pwd was set
+    ;; properly
+    (-> @b :action-results (first) :out (first) :message (str/split #"\n") (set) (contains? "cd"))))
 
 (fact "load-job works"
   (load-job test/circle-config :build) => truthy)

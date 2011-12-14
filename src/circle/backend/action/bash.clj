@@ -3,7 +3,7 @@
   (:require pallet.action-plan)
   (:require fs)
   (:use [circle.util.core :only (apply-map)])
-  (:use [circle.backend.build :only (*env* log-ns build-log build-log-error)])
+  (:use [circle.backend.build :only (*env* log-ns build-log build-log-error checkout-dir)])
   (:require [circle.sh :as sh])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])
@@ -51,7 +51,7 @@
   (let [name (or name (str body))]
     (action/action :name name
                    :act-fn (fn [build]
-                             (let [pwd (fs/join (-> @build :checkout-dir) (or pwd "/"))
+                             (let [pwd (fs/join (checkout-dir build) (or pwd "/"))
                                    result (remote-bash-build build body :environment environment :pwd pwd)]
                                (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                  (action/abort! build (str body " returned exit code " (-> result :exit))))
