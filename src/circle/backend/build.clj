@@ -50,8 +50,15 @@
   {:pre [(not (ref? b))]}
   (v/validate! build-validations b))
 
+(def build-dissoc-keys
+  ;; Keys on build that shouldn't go into mongo, for whatever reason
+  [:node :actions :action-results])
+
 (defn insert! [b]
-  (mongo/insert! build-coll (dissoc @b :_id)))
+  (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
+    (dosync
+     (alter b assoc :_id (-> return :_id)))
+    b))
 
 (defn update-mongo
   "Given a build ref, update the mongo row with the current values of b."
@@ -60,7 +67,7 @@
   (c-mongo/ensure-object-id-ref build-coll b)
   (mongo/update! build-coll
                  {:_id (-> @b :_id)}
-                 (dissoc @b :node :actions :action-results :continue?)))
+                 (apply dissoc @b build-dissoc-keys)))
 
 (defn find-build-by-name
   "Returns a build obj, or nil"
@@ -83,10 +90,10 @@
                      stop_time]
               :as args}]
   (let [project (project/get-by-url! vcs_url)
-        build-num (project/next-build-num project)]
+        build_num (or build_num (project/next-build-num project))]
     (ref (merge build-defaults
                 args
-                {:build_num build-num
+                {:build_num build_num
                  :_project_id (-> project :_id)})
          :validator validate!)))
 
@@ -110,10 +117,10 @@
   ([build]
      (checkout-dir (-> @build :project_name) (-> @build :build_num)))
   ([project-name build-num]
-     (str/replace (build-name project-name build-num) #" " "")))
+     (str/replace (build-name project-name build-num) #" " "-")))
 
 (defn successful? [build]
-  (and (-> @build :stop-time)
+  (and (-> @build :stop_time)
        (-> @build :continue?)))
 
 (def ^{:dynamic true
