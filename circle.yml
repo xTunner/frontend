@@ -6,8 +6,8 @@ nodes:
 
     ## following only necessary for deployment
     availability-zone: "us-east-1a" # customers *could* specify this, probably shouldn't care.
-    public-key: "backend/www.id_rsa.pub"
-    private-key: "backend/www.id_rsa"
+    public-key: "www.id_rsa.pub"
+    private-key: "www.id_rsa"
     security-groups: ["www"]
 
 jobs:
