@@ -27,13 +27,13 @@
   (validate! project-validation args)
   args)
 
-(defn-v insert! [^::Project p]
+(defn insert! [p]
   (mongo/insert! :projects p))
 
-(defn-v get-by-name [name]
+(defn get-by-name [name]
   (mongo/fetch-one :projects :where {:name name}))
 
-(defn-v get-by-url [url]
+(defn get-by-url [url]
   (mongo/fetch-one :projects :where {:vcs_url url}))
 
 (defn get-by-url! [url]
@@ -41,3 +41,11 @@
 
 (defn ssh-key-for-url [url]
   (-?> url (get-by-url) :ssh_private_key))
+
+(defn next-build-num
+  "returns a unique build number to use"
+  [p]
+  ;; for projects that don't have a build seq, set it to 1 first
+  (mongo/fetch-and-modify :projects {:_id (:_id p)
+                                     :next_build_seq nil} {:$set {:next_build_seq 1}})
+  (-> (mongo/fetch-and-modify :projects {:_id (:_id p)} {:$inc {:next_build_seq 1}}) :next_build_seq))
