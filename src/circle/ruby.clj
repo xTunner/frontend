@@ -24,7 +24,6 @@
 (defn eval [s]
   (-> (ruby) (.evalScriptlet s)))
 
-
 (defmulti ->ruby
   "Convert Ruby data to Clojure data"
   class)

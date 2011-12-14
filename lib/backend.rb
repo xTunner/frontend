@@ -87,7 +87,6 @@ class Backend
     if Backend._clj.nil?
       init_ns = JRClj.new("circle.init")
       init_ns.init
-      init_ns.maybe_change_dir
       JRClj.new("circle.ruby").init(JRuby.runtime)
 
       Backend._clj = JRClj.new "circle.workers"

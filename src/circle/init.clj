@@ -9,19 +9,6 @@
   (:require circle.backend.build.config)
   (:require fs))
 
-(defonce maybe-change-dir*
-  ;; "Change the current working directory to backend/. Although changing it to the project root makes
-  ;; more conceptual sense, there are lots of entrypoints to the clojure code (for example, tests,
-  ;; swank, etc) which are hard to get a hook on, but making sure there is a hook into the Rails code
-  ;; is easy. It makes more code to write this in JRuby, but it's written now, so why change it.cl"
-  (delay
-   (when (= (fs/exists? "Gemfile"))
-     (circle.util.chdir/chdir "backend")
-     (println "Changing current working directory to" (fs/abspath (fs/cwd))))))
-
-(defn maybe-change-dir []
-  @maybe-change-dir*)
-
 (defonce init*
   (delay
    (try
