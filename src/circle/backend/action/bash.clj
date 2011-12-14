@@ -1,6 +1,7 @@
 (ns circle.backend.action.bash
   "functions for running bash on remote instances, and build actions for same."
   (:require pallet.action-plan)
+  (:require fs)
   (:use [circle.util.core :only (apply-map)])
   (:use [circle.backend.build :only (*env* log-ns build-log build-log-error)])
   (:require [circle.sh :as sh])
@@ -41,7 +42,7 @@
   (let [name (or name (str body))]
     (action/action :name name
                    :act-fn (fn [build]
-                             (let [pwd (or pwd (-> @build :checkout-dir))
+                             (let [pwd (fs/join (-> @build :checkout-dir) (or pwd "/"))
                                    result (remote-bash-build build body :environment environment :pwd pwd)]
                                (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                  (action/abort! build (str body " returned exit code " (-> result :exit))))

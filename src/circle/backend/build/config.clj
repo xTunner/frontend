@@ -69,35 +69,32 @@
 
 (defn parse-action-map
   "Converts user command string into a bash action."
-  [checkout-dir cmd]
+  [cmd]
   (validate-action-map cmd)
   (let [body (-> cmd (first) (key))
         body (apply-if (keyword? body) name body)
         env (-> cmd (first) (val) :environment)
-        pwd (-> cmd (first) (val) :pwd)
-        final-pwd (if pwd
-                    (fs/join checkout-dir pwd)
-                    checkout-dir)]
-    (bash body :environment env :pwd final-pwd)))
+        pwd (-> cmd (first) (val) :pwd)]
+    (bash body :environment env :pwd pwd)))
 
-(defn parse-action [checkout-dir cmd]
+(defn parse-action [cmd]
   (cond
-   (string? cmd) (bash cmd :pwd checkout-dir)
-   (map? cmd) (parse-action-map checkout-dir cmd)))
+   (string? cmd) (bash cmd)
+   (map? cmd) (parse-action-map cmd)))
 
 (defn validate-job [job]
   (validate! [(require-keys [:template])] job))
 
-(defn parse-actions [job checkout-dir]
-  (doall (map (partial parse-action checkout-dir) (-> job :commands))))
+(defn parse-actions [job]
+  (doall (map parse-action (-> job :commands))))
 
 (defn load-actions
   "Finds job in config, loads approprate template and parses actions"
-  [job checkout-dir]
+  [job]
   (let [template-name (-> job :template)
         template (template/find template-name)
         _ (throw-if-not template "could not find template %s" template-name)
-        actions (parse-actions job checkout-dir)
+        actions (parse-actions job)
         before (map #(apply % []) (-> template :prefix))
         after (map #(apply % []) (-> template :suffix))]
     (concat before actions after)))
@@ -173,14 +170,18 @@
        (mapcat #(translate-email-recipient github-json %))
        (set)))
 
-(defn build-from-config [config project & {:keys [vcs_revision job-name build_num checkout-dir notify]}]
-  (let [job (load-job config job-name)
+(defn build-from-config [config project & {:keys [vcs_revision job-name build_num notify]}]
+  (let [job-name (or job-name (-> config :jobs (first) (key)))
+        job (load-job config job-name)
         node (load-node config job (-> project :vcs_url))
-        actions (load-actions job checkout-dir)]
+        schedule (-> config :schedule)
+        actions (load-actions job)]
+    (assert job-name)
     (build/build (merge
                   {:notify_emails notify
                    :build_num build_num
                    :vcs_revision vcs_revision
+                   :job-name job-name
                    :node node
                    :actions actions}
                   (rename-keys {:name :project_name} project)))))
@@ -194,14 +195,10 @@
         config (get-config-for-url url :vcs_revision vcs_revision)
         job-name (or job-name (-> config :jobs (first)))
         repo (git/default-repo-path url)
-        build-num 1
-        vcs_revision (or vcs_revision (git/latest-local-commit repo))
-        checkout-dir (build/checkout-dir (-> project :name) build-num)]
+        vcs_revision (or vcs_revision (git/latest-local-commit repo))]
     (build-from-config config project
                        :vcs_revision vcs_revision
-                       :job-name job-name
-                       :build_num build-num
-                       :checkout-dir checkout-dir)))
+                       :job-name job-name)))
 
 (defn infer-project-name [url]
   (-> url
@@ -217,59 +214,32 @@
 (defn minimal-config [url]
   {})
 
-(defn generate-keypair
-  "Generate a new SSH keypair, upload it to EC2. Returns a map"
-  []
-  (let [keys (ssh/generate-keys)
-        keypair-name (str (gensym "keypair"))]
-    (ec2/import-keypair keypair-name (:public-key keys))
-    (merge {:keypair-name keypair-name} keys)))
-
-(defn ensure-keypair
-  "Generates and uploads a keypair for the node, if it doesn't contain keys. Returns the updated node."
-  [node]
-  (if (not (:private-key node))
-    (merge node (generate-keypair))
-    node))
-
 (defn infer-build-from-url
   "Assumes url does not have a circle.yml. Examine the source tree, and return a build"
   [url]
-  (let [project (or (project/get-by-url url) (minimal-project url))
+  (let [project (project/get-by-url url)
+        project-name (or (-> project :name) (infer-project-name url))
         repo (git/default-repo-path url)
         vcs_revision (git/latest-local-commit repo)
-        build-num 1
-        node (ensure-keypair (inference/node repo))
-        checkout-dir (build/checkout-dir (-> project :name) build-num)]
-    (build/build (merge (rename-keys {:name :project_name} project)
-                        {:vcs_url url
-                         :vcs_revision vcs_revision
-                         :build_num build-num
-                         :node node
-                         :checkout-dir checkout-dir
-                         :actions (inference/infer-actions repo)
-                         :notify_emails ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
-                         }))))
+        node (inference/node repo)]
+    (build/build {:project_name project-name
+                  :vcs_url url
+                  :vcs_revision vcs_revision
+                  :node node
+                  :actions (inference/infer-actions repo)
+                  :notify_emails ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
+                  })))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
   [github-json]
   (let [url (-> github-json :repository :url)
         config (get-config-for-url url)
-        _ (when-not config
-            (infof "couldn't find config for %s" url))
         project (project/get-by-url! url)
-        schedule (-> config :schedule)
-        vcs_revision (-> github-json :after)
-        job-name (-> schedule :commit :job (keyword))
-        notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
-        build-num 1
-        checkout-dir (build/checkout-dir (-> project :name) build-num)]
+        job-name (or (-> config :schedule :commit :job (keyword)) (-> config :jobs (first) (key)))
+        vcs-revision (-> github-json :after)]
     (if (and config project)
       (build-from-config config project
-                         :vcs_revision vcs_revision
-                         :job-name job-name
-                         :build_num build-num
-                         :checkout-dir checkout-dir
-                         :notify notify)
+                         :vcs_revision vcs-revision
+                         :notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json)))
       (infer-build-from-url url))))

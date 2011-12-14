@@ -13,20 +13,17 @@
   (:require [circle.util.mongo :as c-mongo])
   (:use [clojure.tools.logging :only (log)]))
 
-(def build-coll :build) ;; mongo collection for builds
+(def build-coll :builds) ;; mongo collection for builds
 
 (def build-defaults {:continue? true
                      :num-nodes 1
                      :action-results []})
 
 (def node-validation
-  [(require-keys [:username
-                  :public-key
-                  :private-key
-                  :keypair-name])])
+  [(require-keys [:username])])
 
 (def build-validations
-  [(require-keys [:project_name
+  [(require-keys [:_project_id
                   :build_num
                   :vcs_url
                   :vcs_revision
@@ -35,7 +32,11 @@
      (v/validate node-validation (-> build :node)))
    (fn [b]
      (when (and (= :deploy (:type b)) (not (-> b :vcs_revision)))
-       "version-control revision is required for deploys"))])
+       "version-control revision is required for deploys"))
+   (fn [b]
+     (when-not (and (-> b :build_num (integer?))
+                    (-> b :build_num (pos?)))
+       "build_num must be a positive integer"))])
 
 (defn validate [b]
   (v/validate build-validations b))
@@ -49,20 +50,14 @@
   {:pre [(not (ref? b))]}
   (v/validate! build-validations b))
 
-(defn ensure-project-id
-  "Ensure that the build has a mongo ref to the project"
-  [b]
-  (when-not (-> @b :_project-id)
-    (let [project (project/get-by-url! (-> @b :vcs_url))]
-      (dosync
-       (alter b assoc :_project-id (-> project :_id)))))
-  b)
+(defn insert! [b]
+  (mongo/insert! build-coll (dissoc @b :_id)))
 
 (defn update-mongo
   "Given a build ref, update the mongo row with the current values of b."
   [b]
+  (assert (-> @b :_id))
   (c-mongo/ensure-object-id-ref build-coll b)
-  (ensure-project-id b)
   (mongo/update! build-coll
                  {:_id (-> @b :_id)}
                  (dissoc @b :node :actions :action-results :continue?)))
@@ -84,10 +79,16 @@
                      node         ;; Map containing keys required by ec2/start-instance
                      lb-name      ;; name of the load-balancer to use
                      continue?    ;; if true, continue running the build. Failed actions will set this to false
-                     start-time
-                     stop-time]
+                     start_time
+                     stop_time]
               :as args}]
-  (ref (merge build-defaults args) :validator validate!))
+  (let [project (project/get-by-url! vcs_url)
+        build-num (project/next-build-num project)]
+    (ref (merge build-defaults
+                args
+                {:build_num build-num
+                 :_project_id (-> project :_id)})
+         :validator validate!)))
 
 (defn extend-group-with-revision
   "update the build, setting the pallet group-name to extends the

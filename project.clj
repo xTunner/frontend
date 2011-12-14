@@ -74,7 +74,6 @@
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
                  [com.cemerick/pomegranate "0.0.1"]
-                 
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]

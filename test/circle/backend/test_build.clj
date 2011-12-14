@@ -10,5 +10,4 @@
 
 (fact "ensure-project-id works"
   (let [b (minimal-build)]
-    (ensure-project-id b)
-    @b => (contains {:_project-id truthy})))
+    @b => (contains {:_project_id truthy})))

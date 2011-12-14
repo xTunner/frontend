@@ -4,6 +4,7 @@
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.backend.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
+  (:use [circle.backend.build.config :only (infer-build-from-url)])
   (:use [circle.util.predicates :only (ref?)]))
 
 (circle.db/init)
@@ -28,3 +29,6 @@
     (for [res (-> @build :action-results)]
       (> (-> res :stop-time) (-> res :start-time)) => true)
     (successful? build) => truthy))
+
+(fact "build of dummy project is successful"
+  (-> "https://github.com/arohner/circle-dummy-project" (infer-build-from-url) (run-build) (successful?)) => true)
