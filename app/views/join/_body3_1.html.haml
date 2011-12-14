@@ -1,21 +1,10 @@
 %h2
   We've got your code - we'd better get you an account
 
-= form_for(@user, :url => user_registration_path) do |f|
-  %div
-    = f.label :name
-    %br/
-    = f.text_field :name, :value => @user.fetched_name
-  %div
-    = f.label :email
-    %br/
-    = f.email_field :email, :value => @user.fetched_email
-  %div
-    = f.label :password
-    %br/
-    = f.password_field :password
-  -# %div
-  -#   = f.label :password_confirmation
-  -#   %br/
+= twitter_bootstrap_form_for(@user, :url => user_registration_path) do |f|
+  = f.text_field :name, :value => @user.fetched_name
+  = f.email_field :email, :value => @user.fetched_email
+  = f.password_field :password
   -#   = f.password_field :password_confirmation
-  %div= f.submit "Sign up", :class => "btn primary"
+  .clearfix.input
+    = f.submit "Sign up", :class => "btn primary"

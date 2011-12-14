@@ -1,0 +1,30 @@
+#footer {
+
+	border-top: 2px solid #D8D8D8;
+	background: #EBEBEB;
+  height: 50px;
+
+  font-family: "Lucida Grande",Tahoma,Arial,Verdana,sans-serif;
+  padding-top: 20px;
+
+  #copyright {
+    color: #939393;
+    font-size: 11px;
+  }
+
+  #twitter {
+    padding-left: 25px;
+    background: url("icon_social_01.png") no-repeat top left;
+  }
+
+  #twitter a {
+    font-size: 13px;
+    color: #2B95C8;
+    text-decoration: none;
+  }
+
+  #contact_info {
+    font-size: 14px;
+    color: #2B95C8;
+  }
+}
