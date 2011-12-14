@@ -10,6 +10,8 @@
     - if not params[:controller].start_with? "devise" then
       = stylesheet_link_tag "controller-specific/" + params[:controller]
 
+    = stylesheet_link_tag "shared/footer"
+
     -# JS
     = javascript_include_tag "application"
     - if not params[:controller].start_with? "devise" then
