@@ -69,7 +69,7 @@
       (println "assoc'ing failed?=true")
       (dosync
        (alter b assoc :failed? true))
-      (when env/production?
+      (when (env/production?)
         (email/send-build-error-email b e))
       (throw e))
     (finally

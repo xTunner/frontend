@@ -43,16 +43,17 @@
                      :client_secret "4f193c232eb94a9ae7bcf1c495a8a3e805dc3493"})
 
 ;;; https://github.com/account/applications/4814
-(def local-github {:client_id "586bf699b48f69a09d8c"
+(def development-github {:client_id "586bf699b48f69a09d8c"
                    :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
 
 (defn default []
   (cond
-   env/production? production-github
-   env/staging? staging-github
-   env/local? local-github))
+   (env/production?) production-github
+   (env/staging?) staging-github
+   (env/development?) development-github))
 
-(def settings (default))
+(defn settings []
+  (default))
 
 ; TECHNICAL_DEBT upstream this
 (defn fetch-github-access-token [userid code]
@@ -60,7 +61,7 @@
   redirects them back, providing us with a temporary code. We can use this code to ask
   github for an access token."
   (let [response (client/post "https://github.com/login/oauth/access_token"
-                              {:form-params (assoc settings :code code)
+                              {:form-params (assoc (settings) :code code)
                                :accept :json})
         json (-> response :body json/decode)
         access-token (-> json :access_token)
@@ -77,7 +78,7 @@
 (defn authorization-url [redirect]
   "The URL that we send a user to, to allow them authorize us for oauth. Redirect is where the should be redirected afterwards"
   (let [endpoint "https://github.com/login/oauth/authorize"
-        query-string (client/generate-query-string {:client_id (:client_id settings)
+        query-string (client/generate-query-string {:client_id (:client_id (settings))
                                                     :scope "repo"
                                                     :redirect_uri redirect})]
     (str endpoint "?" query-string)))
