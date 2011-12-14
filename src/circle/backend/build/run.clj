@@ -33,6 +33,7 @@
 (defn do-build* [build]
   (throw-if (-> @build :start-time) "refusing to run started build")
   (start* build)
+  (build/update-mongo build)
   (doseq [act (-> @build :actions)]
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
@@ -59,7 +60,6 @@
   (infof "starting build: %s" (build/build-name b))
   (try
     (build/with-build-log b
-      (build/update-mongo b)
       (do-build* b)
       (email/notify-build-results b))
     b
