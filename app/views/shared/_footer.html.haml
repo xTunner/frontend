@@ -1,14 +1,8 @@
-#footer_wrap
-  #footer
-    .box_wide.separator_r
+#footer.bottombar
+  .row
+    .span4.offset2
       %p#copyright Copyright &copy; 2011 Circle
-    #social_info.box_small.separator_r
-      %ul
-        %li#twitter
-          = link_to "follow @circleci", "http://twitter.com/circleci"
-    #contact_info.box_small
-      %ul
-        %li
-          %h5
-            questions@circleci.com
-    .clear
+    .offset3.span4#twitter
+      = link_to "follow @circleci", "http://twitter.com/circleci"
+    .offset0.span4#contact_info
+      questions@circleci.com
