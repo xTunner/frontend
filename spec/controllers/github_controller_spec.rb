@@ -76,14 +76,14 @@ describe GithubController do
   end
 
   it "The github hook successfully triggers builds" do
-    start_time = Time.now
     JRClj.new("circle.init").init()
     JRClj.new("circle.backend.build.test-utils").ensure_test_project()
     pre_count = Build.where(:project_name => "Dummy Project").count()
     post :create, :payload => dummy_json
-    post_count = Build.where(:project_name => "Dummy Project").count()
+    sleep 1
 
-    (post_count > pre_count).should_be true
+    post_count = Build.where(:project_name => "Dummy Project").count()
+    (post_count > pre_count).should be_true
   end
 
   it "should fail due to invalid json" do
