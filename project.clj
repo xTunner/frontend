@@ -27,7 +27,7 @@
                  [slingshot "0.9-80af18e4f9541c61ba5a0c62be28c4eb535bcd4c"]
 
                  ;; clj-json pulls in 1.5.0, which has a bug which prevents
-                 ;; tentacles from working. Putthis dep first
+                 ;; tentacles from working. Put this dep first
                  [org.codehaus.jackson/jackson-core-asl "1.8.5"]
 
 
