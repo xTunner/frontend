@@ -79,10 +79,7 @@
                      build_num    ;; int
                      vcs_url
                      vcs_revision ;; if present, the commit that caused the build to be run, or nil
-                     aws_credentials ;; map containing :user and :password
                      notify_emails ;; a seq of email addresses to notify when build is done
-                     repository
-                     commits
                      actions      ;; a seq of actions
                      action-results
                      node         ;; Map containing keys required by ec2/start-instance
