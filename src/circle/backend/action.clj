@@ -9,6 +9,8 @@
         [clojure.tools.logging :only (errorf)])
   (:require [somnium.congomongo :as mongo]))
 
+(def action-log-coll :action_logs)
+
 (defrecord Action [name
                    act-fn ;; an fn of one argument, the session. If returns falsy, the action has "failed" and the on-fail code is run
                    ])
@@ -55,7 +57,7 @@
 (defn create-mongo-obj
   "Start recording an action in the DB. Save the Mongo ID in the action for later records"
   []
-  (let [obj (mongo/insert! "action_log" {})]
+  (let [obj (mongo/insert! action-log-coll {})]
     (dosync
      (alter *current-action-results* assoc :_id (-> obj :_id)))))
 
@@ -63,7 +65,7 @@
   [f & args]
   (dosync
    (apply alter *current-action-results* f args))
-  (mongo/update! "action_log"
+  (mongo/update! action-log-coll
                  (select-keys @*current-action-results* [:_id])
                  @*current-action-results*))
 
