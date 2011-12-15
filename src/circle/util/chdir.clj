@@ -1,9 +1,8 @@
 (ns circle.util.chdir
   (:require fs)
-  (:import (jnr.posix POSIXFactory
-                      POSIXHandler))
+  (:import (org.jruby.ext.posix POSIXFactory
+                                POSIXHandler))
   (:use midje.sweet))
-
 
 (def handler (proxy [POSIXHandler]
                  []
@@ -28,10 +27,13 @@
                (getPID []
                  (rand-int 65536))))
 
-
 (def C (POSIXFactory/getPOSIX handler true))
 
-(defn chdir [new]
-  (let [abs (fs/normpath new)]
-    (System/setProperty "user.dir" abs)
-    (= (.chdir C abs) 0))) ; sets the dir for things that don't use "user.dir", like core/slurp
+(defn pid
+  "Returns the pid of the current JVM"
+  []
+  (.getpid C))
+
+(defn children
+  ""
+  [])

@@ -3,7 +3,7 @@
   (:require pallet.action-plan)
   (:require fs)
   (:use [circle.util.core :only (apply-map)])
-  (:use [circle.backend.build :only (*env* log-ns build-log build-log-error checkout-dir)])
+  (:use [circle.backend.build :only (log-ns build-log build-log-error checkout-dir)])
   (:require [circle.sh :as sh])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])

@@ -4,7 +4,6 @@
   (:require circle.db)
   (:require circle.repl)
   (:require circle.logging)
-  (:require circle.util.chdir)
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
   (:require fs))
@@ -14,7 +13,7 @@
    (try
      (println "circle.init/init")
      (circle.logging/init)
-     (when (System/getenv "CIRCLE_SWANK")
+     (when (= "true" (System/getenv "CIRCLE_SWANK"))
        (circle.swank/init))
      (circle.db/init)
      (circle.repl/init)

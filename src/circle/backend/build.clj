@@ -1,6 +1,7 @@
 (ns circle.backend.build
   "Main definition of the Build object. "
   (:require [clojure.string :as str])
+  (:require fs)
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
@@ -17,7 +18,6 @@
 (def build-coll :builds) ;; mongo collection for builds
 
 (def build-defaults {:continue? true
-                     :num-nodes 1
                      :action-results []})
 
 (def node-validation
@@ -123,9 +123,6 @@
 (defn successful? [build]
   (and (-> @build :stop_time)
        (-> @build :continue?)))
-
-(def ^{:dynamic true
-       :doc "A map of environment variables that will be set when commands are run"} *env* {})
 
 (defn log-ns
   "returns the name of the logger to use for this build "
