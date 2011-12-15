@@ -1,13 +1,13 @@
 = twitter_bootstrap_form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f|
   = f.inputs "Sign in" do
     = f.email_field :email
-    = f.password_field :password
+    = f.password_field :password do
+      %br
+      = link_to "(Forgot your password?)", new_password_path(resource_name), :class => "aside_small"
 
     = f.toggles do
       = f.check_box :remember_me, "Remember me"
 
-    .clearfix.input
-      = link_to "(Forgot your password?)", new_password_path(resource_name), :class => "aside_small"
 
     = f.actions do
       = f.submit "Sign in"
