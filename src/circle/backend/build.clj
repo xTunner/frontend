@@ -18,7 +18,6 @@
 (def build-coll :builds) ;; mongo collection for builds
 
 (def build-defaults {:continue? true
-                     :num-nodes 1
                      :action-results []})
 
 (def node-validation
