@@ -92,11 +92,11 @@
 
 (defn add-end-time
   []
-  (record assoc :end-time (time/ju-now)))
+  (record assoc :end_time (time/ju-now)))
 
 (defn add-exit-code
   [exit-code]
-  (record assoc :exit-code exit-code))
+  (record assoc :exit_code exit-code))
 
 (defn add-err
   "Appends stderr strings to action result"
