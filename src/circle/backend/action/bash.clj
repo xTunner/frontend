@@ -1,8 +1,9 @@
 (ns circle.backend.action.bash
   "functions for running bash on remote instances, and build actions for same."
   (:require pallet.action-plan)
+  (:require fs)
   (:use [circle.util.core :only (apply-map)])
-  (:use [circle.backend.build :only (*env* log-ns build-log build-log-error)])
+  (:use [circle.backend.build :only (*env* log-ns build-log build-log-error checkout-dir)])
   (:require [circle.sh :as sh])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.backend.ec2 :as ec2])
@@ -22,14 +23,23 @@
     (build-log "%s returned" (-> result :exit)) ;; only log exit, rest should be handled by ssh
     result))
 
-(defn ssh-map-for-build [build]
-  (let [instance-id (-> @build :instance-ids (first))
-        ip-addr (ec2/public-ip instance-id)]
-    (merge (-> @build :node) {:ip-addr ip-addr})))
+(defn ensure-ip-addr
+  "Make sure the build's node has an ip address."
+  [build]
+  (if (not (-> @build :node :ip-addr))
+    (do
+      (assert (-> @build :instance-ids (seq)))
+      (let [instance-id (-> @build :instance-ids (first))
+          ip-addr (ec2/public-ip instance-id)
+          new-node (merge (-> @build :node) {:ip-addr ip-addr})]
+      (dosync
+       (alter build assoc :node new-node))))
+    build))
 
 (defn remote-bash-build
   [build body & {:as opts}]
-  (apply-map remote-bash (ssh-map-for-build build) body opts))
+  (ensure-ip-addr build)
+  (apply-map remote-bash (-> @build :node) body opts))
 
 (defn bash
   "Returns a new action that executes bash on the host. Body is a
@@ -41,7 +51,7 @@
   (let [name (or name (str body))]
     (action/action :name name
                    :act-fn (fn [build]
-                             (let [pwd (or pwd (-> @build :checkout-dir))
+                             (let [pwd (fs/join (checkout-dir build) (or pwd "/"))
                                    result (remote-bash-build build body :environment environment :pwd pwd)]
                                (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                  (action/abort! build (str body " returned exit code " (-> result :exit))))

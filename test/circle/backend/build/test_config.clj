@@ -1,21 +1,35 @@
 (ns circle.backend.build.test-config
+  (:require [clojure.string :as str])
   (:use midje.sweet)
   (:use circle.backend.build.config)
-  (:use [circle.backend.build :only (checkout-dir valid? validate)])
-  (:use [circle.backend.action.bash :only (bash)])
+  (:use [circle.backend.build :only (checkout-dir valid? validate successful?)])
+  (:use [circle.backend.action.bash :only (bash remote-bash-build)])
+  (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])
+  (:require circle.init)
+  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
 
+(circle.init/init)
 (test/ensure-circle-project)
 (test/ensure-test-project)
 
 (fact "parse-action-map works"
-  (let [b (test/minimal-build)
-        dir (checkout-dir b)
-        cmd {(keyword "lein daemon start \":web\"") {:environment {:CIRCLE_ENV "production", :SWANK "true"}}}]
-    (parse-action-map dir cmd) => truthy
-    (provided
-      (bash "lein daemon start \":web\"" :environment {:CIRCLE_ENV "production", :SWANK "true"} :pwd dir) => truthy :times 1)))
+  (against-background
+    ;;; Stub checkout dir to be /usr. Later, we will pass "bin" to :pwd, so the ls will run in /usr/bin
+    (checkout-dir anything) => "/usr")
+  (let [dir "bin"
+        cmd {(keyword "ls") {:environment {:CIRCLE_ENV "production", :SWANK "true"}
+                             :pwd dir}}
+        b (test/minimal-build :actions [(parse-action-map cmd)])
+        expected-pwd (format "%s/%s" (checkout-dir b) dir)
+        _ (run/run-build b)]
+    (successful? b) => truthy
+
+    ;; ssh into localhost, ls /usr/bin. Assert the output of ls
+    ;; contains some well-known files, proving that the :pwd was set
+    ;; properly
+    (-> @b :action-results (first) :out (first) :message (str/split #"\n") (set) (contains? "cd"))))
 
 (fact "load-job works"
   (load-job test/circle-config :build) => truthy)
@@ -29,13 +43,10 @@
 (fact "build-from-config works"
   (let [project test/circle-project
         config (get-config-for-url (-> test/circle-project :vcs_url))
-        checkout-dir (checkout-dir (-> project :name) 1)
         vcs_revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
         b (build-from-config config test/circle-project
                              :vcs_revision vcs_revision
-                             :job-name :build
-                             :build_num 1
-                             :checkout-dir checkout-dir)]
+                             :job-name :build)]
     (ref? b) => true
     (-> @b :vcs_revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
     (validate @b) => nil))
@@ -56,11 +67,14 @@
 
 (tabular
  (fact "build-from-url works"
-   (infer-build-from-url ?url) => ref?)
+   (do
+     (test/ensure-project {:vcs_url ?url})
+     (infer-build-from-url ?url)) => ref?)
  ?url
  "https://github.com/travis-ci/travis-ci"
  "https://github.com/arohner/CircleCI"
- "https://github.com/edavis10/redmine")
+ "https://github.com/edavis10/redmine"
+ "https://github.com/arohner/circle-dummy-project")
 
 (fact "build email addresses are correct"
   (let [build (build-from-json test/circle-github-json)]

@@ -74,7 +74,6 @@
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
                  [com.cemerick/pomegranate "0.0.1"]
-                 
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
@@ -85,11 +84,6 @@
                  [org.jclouds.driver/jclouds-log4j "1.2.1"]
                  [org.jclouds.driver/jclouds-jsch "1.2.1"]
                  [org.jclouds.provider/aws-ec2 "1.2.1"]
-
-                 ;; Requires github.com/pbiggar/jnr-posix
-                 [com.github.jnr/jnr-posix "2.1-5ad6cc85878cbaa4c698640a73578d8236119456"]
-                 [com.github.jnr/jnr-ffi "0.6.0"]
-                 [com.github.jnr/jnr-constants "0.8.2"]
 
                  ;; Pallet Crates
                  [org.cloudhoist/automated-admin-user "0.6.0"]

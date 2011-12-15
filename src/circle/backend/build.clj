@@ -11,22 +11,20 @@
   (:use [circle.util.predicates :only (ref?)])
   (:require [somnium.congomongo :as mongo])
   (:require [circle.util.mongo :as c-mongo])
+  (:require [circle.sh :as sh])
   (:use [clojure.tools.logging :only (log)]))
 
-(def build-coll :build) ;; mongo collection for builds
+(def build-coll :builds) ;; mongo collection for builds
 
 (def build-defaults {:continue? true
                      :num-nodes 1
                      :action-results []})
 
 (def node-validation
-  [(require-keys [:username
-                  :public-key
-                  :private-key
-                  :keypair-name])])
+  [(require-keys [:username])])
 
 (def build-validations
-  [(require-keys [:project_name
+  [(require-keys [:_project_id
                   :build_num
                   :vcs_url
                   :vcs_revision
@@ -35,7 +33,11 @@
      (v/validate node-validation (-> build :node)))
    (fn [b]
      (when (and (= :deploy (:type b)) (not (-> b :vcs_revision)))
-       "version-control revision is required for deploys"))])
+       "version-control revision is required for deploys"))
+   (fn [b]
+     (when-not (and (-> b :build_num (integer?))
+                    (-> b :build_num (pos?)))
+       "build_num must be a positive integer"))])
 
 (defn validate [b]
   (v/validate build-validations b))
@@ -49,23 +51,24 @@
   {:pre [(not (ref? b))]}
   (v/validate! build-validations b))
 
-(defn ensure-project-id
-  "Ensure that the build has a mongo ref to the project"
-  [b]
-  (when-not (-> @b :_project-id)
-    (let [project (project/get-by-url! (-> @b :vcs_url))]
-      (dosync
-       (alter b assoc :_project-id (-> project :_id)))))
-  b)
+(def build-dissoc-keys
+  ;; Keys on build that shouldn't go into mongo, for whatever reason
+  [:actions :action-results])
+
+(defn insert! [b]
+  (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
+    (dosync
+     (alter b assoc :_id (-> return :_id)))
+    b))
 
 (defn update-mongo
   "Given a build ref, update the mongo row with the current values of b."
   [b]
+  (assert (-> @b :_id))
   (c-mongo/ensure-object-id-ref build-coll b)
-  (ensure-project-id b)
   (mongo/update! build-coll
                  {:_id (-> @b :_id)}
-                 (dissoc @b :node :actions :action-results :continue?)))
+                 (apply dissoc @b build-dissoc-keys)))
 
 (defn find-build-by-name
   "Returns a build obj, or nil"
@@ -84,10 +87,16 @@
                      node         ;; Map containing keys required by ec2/start-instance
                      lb-name      ;; name of the load-balancer to use
                      continue?    ;; if true, continue running the build. Failed actions will set this to false
-                     start-time
-                     stop-time]
+                     start_time
+                     stop_time]
               :as args}]
-  (ref (merge build-defaults args) :validator validate!))
+  (let [project (project/get-by-url! vcs_url)
+        build_num (or build_num (project/next-build-num project))]
+    (ref (merge build-defaults
+                args
+                {:build_num build_num
+                 :_project_id (-> project :_id)})
+         :validator validate!)))
 
 (defn extend-group-with-revision
   "update the build, setting the pallet group-name to extends the
@@ -109,10 +118,10 @@
   ([build]
      (checkout-dir (-> @build :project_name) (-> @build :build_num)))
   ([project-name build-num]
-     (str/replace (build-name project-name build-num) #" " "")))
+     (str/replace (build-name project-name build-num) #" " "-")))
 
 (defn successful? [build]
-  (and (-> @build :stop-time)
+  (and (-> @build :stop_time)
        (-> @build :continue?)))
 
 (def ^{:dynamic true
@@ -138,3 +147,30 @@
 (defn build-log-error [message & args]
   (when *log-ns*
     (log *log-ns* :error nil (apply format message args))))
+
+(defn build-with-instance-id
+  "Returns the build from the DB with the given instance-id"
+  [id]
+  (mongo/fetch-one build-coll :where {:instance-ids id}))
+
+(defn ssh
+  "Opens a terminal window that SSHs into intance with the provided id.
+
+Assumes:
+  1) the instance was started by a build
+  2) the build is in the DB
+  3) the instance is still running
+  4) this clojure process is on OSX"
+
+  [instance-id]
+  (let [build (build-with-instance-id instance-id)
+        ssh-private-key (-> build :node :private-key)
+        username (-> build :node :username)
+        ip-addr (-> build :node :ip-addr)
+        key-temp-file (fs/tempfile "ssh")
+        _ (spit key-temp-file ssh-private-key)
+        _ (fs/chmod "-r" key-temp-file)
+        _ (fs/chmod "u+r" key-temp-file)
+        ssh-cmd (format "ssh -i %s %s@%s" key-temp-file username ip-addr)
+        tell-cmd (format "'tell app \"Terminal\" \ndo script \"%s\"\n end tell'" ssh-cmd)]
+    (sh/shq (osascript -e ~tell-cmd))))

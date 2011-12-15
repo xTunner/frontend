@@ -24,16 +24,16 @@
 
 (defn start* [build]
   (dosync
-   (alter build assoc :start-time (-> (time/now) .toDate))))
+   (alter build assoc :start_time (-> (time/now) .toDate))))
 
 (defn stop* [build]
   (dosync
-   (alter build assoc :stop-time (-> (time/now) .toDate))))
+   (alter build assoc :stop_time (-> (time/now) .toDate))))
 
 (defn do-build* [build]
-  (throw-if (-> @build :start-time) "refusing to run started build")
+  (throw-if (-> @build :start_time) "refusing to run started build")
   (start* build)
-  (build/update-mongo build)
+  (build/insert! build)
   (doseq [act (-> @build :actions)]
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
@@ -69,13 +69,13 @@
       (println "assoc'ing failed?=true")
       (dosync
        (alter b assoc :failed? true))
-      (when env/production?
+      (when (env/production?)
         (email/send-build-error-email b e))
       (throw e))
     (finally
      (log-result b)
      (finished b)
-     (when (and (-> @b :failed?) cleanup-on-failure) 
+     (when (and (-> @b :failed?) cleanup-on-failure)
        (cleanup-nodes b)))))
 
 (defn may-start-build? []

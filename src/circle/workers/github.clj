@@ -1,6 +1,7 @@
 (ns circle.workers.github
   (:require [org.danlarkin.json :as json])
   (:require [circle.backend.project.circle :as circle])
+  (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.config :as config])
   (:use [circle.backend.github-url :only (->ssh)])
@@ -11,11 +12,13 @@
   (:require [tentacles.repos :as trepos])
   (:require [tentacles.users :as tusers])
   (:require [tentacles.orgs :as torgs])
+  (:require circle.backend.build.test-utils)
   (:require [circle.backend.ssh :as ssh])
   (:use [midje.sweet]))
 
 (defn process-json [github-json]
   (infof "process-json: %s" github-json)
+  (def last-json github-json)
   (let [build (config/build-from-json github-json)]
     (infof "process-json: build: %s" @build)
     (run/run-build build)))
@@ -23,6 +26,13 @@
 (defn start-build-from-hook
   [url after ref json-string]
   (-> json-string json/decode process-json))
+
+(fact "start-build-from-hook works with dummy project"
+  (circle.backend.build.test-utils/ensure-test-project)
+  (let [json "{\"before\":\"5aef35982fb2d34e9d9d4502f6ede1072793222d\",\"repository\":{\"url\":\"https://github.com/arohner/circle-dummy-project\",\"name\":\"github\",\"description\":\"You're lookin' at it.\",\"watchers\":5,\"forks\":2,\"private\":1,\"owner\":{\"email\":\"chris@ozmm.org\",\"name\":\"defunkt\"}},\"commits\":[{\"id\":\"78f58846a049bb6772dcb298163b52c4657c7d45\",\"url\":\"https://github.com/arohner/circle-dummy-project/commit/78f58846a049bb6772dcb298163b52c4657c7d45\",\"author\":{\"email\":\"arohner@gmail.com\",\"name\":\"Allen Rohner\"},\"message\":\"okay i give in\",\"timestamp\":\"2008-02-15T14 =>57 =>17-08 =>00\",\"added\":[\"filepath.rb\"]}],\"after\":\"de8251ff97ee194a289832576287d6f8ad74e3d0\",\"ref\":\"refs/heads/master\"}"
+        build (start-build-from-hook nil nil nil json)]
+    (-> build (build/successful?)) => true
+    (-> @build :build_num) => integer?))
 
 ;;; https://github.com/account/applications/4808
 (def production-github {:client_id "78a2ba87f071c28e65bb"
@@ -33,16 +43,17 @@
                      :client_secret "4f193c232eb94a9ae7bcf1c495a8a3e805dc3493"})
 
 ;;; https://github.com/account/applications/4814
-(def local-github {:client_id "586bf699b48f69a09d8c"
+(def development-github {:client_id "586bf699b48f69a09d8c"
                    :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
 
 (defn default []
   (cond
-   env/production? production-github
-   env/staging? staging-github
-   env/local? local-github))
+   (env/production?) production-github
+   (env/staging?) staging-github
+   (env/development?) development-github))
 
-(def settings (default))
+(defn settings []
+  (default))
 
 ; TECHNICAL_DEBT upstream this
 (defn fetch-github-access-token [userid code]
@@ -50,7 +61,7 @@
   redirects them back, providing us with a temporary code. We can use this code to ask
   github for an access token."
   (let [response (client/post "https://github.com/login/oauth/access_token"
-                              {:form-params (assoc settings :code code)
+                              {:form-params (assoc (settings) :code code)
                                :accept :json})
         json (-> response :body json/decode)
         access-token (-> json :access_token)
@@ -67,7 +78,7 @@
 (defn authorization-url [redirect]
   "The URL that we send a user to, to allow them authorize us for oauth. Redirect is where the should be redirected afterwards"
   (let [endpoint "https://github.com/login/oauth/authorize"
-        query-string (client/generate-query-string {:client_id (:client_id settings)
+        query-string (client/generate-query-string {:client_id (:client_id (settings))
                                                     :scope "repo"
                                                     :redirect_uri redirect})]
     (str endpoint "?" query-string)))

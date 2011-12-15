@@ -8,7 +8,6 @@ require 'sprockets/railtie'
 
 if RUBY_PLATFORM == 'java'
   # Load clojure jars. clojure.jar needs to be on the classpath before the jrclj gem is loaded.
-  puts "require 'java'"
   require 'java'
   root_dir = "#{File.dirname(__FILE__)}/../"
   $CLASSPATH << "#{root_dir}/src/"

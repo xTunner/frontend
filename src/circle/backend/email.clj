@@ -12,11 +12,11 @@
 (def password "powerful development did finally")
 (def smtp-server "smtp.gmail.com")
 
-(def ^:dynamic send-email? (if env/production?
+(def ^:dynamic send-email? (if (env/production?)
                              true
                              false))
 
-(defn send 
+(defn send
   ; translated from
   ; http://forums.sun.com/thread.jspa?threadID=5351826, because
   ; apparently the naive way doesn't work.

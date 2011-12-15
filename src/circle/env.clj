@@ -5,17 +5,25 @@
   (:require [clojure.string :as str])
   (:use [clojure.contrib.except :only (throw-if-not)]))
 
-(def env (condp = (System/getenv "RAILS_ENV")
-           "production" :production
-           "staging" :staging
-           nil :local))
+(def env (or (keyword (System/getenv "RAILS_ENV")) :development))
 
-(def production? (= env :production))
-(def staging? (= env :staging))
-(def local? (= env :local))
-(throw-if-not (= 1 (count (filter true? [production? staging? local?]))))
+(defn set-env
+  "Takes a string, a rails environment setting"
+  [rails-env]
+  (alter-var-root (var env) (constantly (keyword rails-env))))
 
-(when production?
+(defn production? []
+  (= env :production))
+(defn staging? []
+  (= env :staging))
+(defn test? []
+  (= env :test))
+(defn development? []
+  (= env :development))
+
+(throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)]))))
+
+(when (production?)
   (alter-var-root (var midje.semi-sweet/*include-midje-checks*) (constantly false))
   (alter-var-root (var clojure.test/*load-tests*) (constantly false)))
 
