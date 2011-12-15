@@ -39,7 +39,7 @@
         (when ~f
           (.delete ~f))))))
 
-(def git-ssh-path "./git_ssh.sh")
+(def git-ssh-path (fs/abspath "git_ssh.sh"))
 
 (defn git-fn*
   "Takes a seq of stevedore code. Executes it locally, with GIT_SSH and GIT_SSH_KEY set up."
@@ -89,7 +89,7 @@
     (if (repo-exists? path)
       (when update
         (checkout path "master") ;; you have to be on a branch to pull
-        (pull path))
+        (pull path :ssh-key ssh-key))
       (clone url :path path :ssh-key ssh-key))))
 
 (defn latest-local-commit
