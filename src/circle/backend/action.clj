@@ -88,7 +88,7 @@
 
 (defn add-start-time
   []
-  (record assoc :start-time (time/ju-now)))
+  (record assoc :start_time (time/ju-now)))
 
 (defn add-end-time
   []
