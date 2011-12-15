@@ -72,7 +72,7 @@
 
 (defn project-name [b]
   {:pre [(-> @b :_project_id)]}
-  (-> @b :_project_id (mongo/fetch-by-id :projects) :name))
+  (-> @b :_project_id (project/get-by-id) :name))
 
 (defn build [{:keys [build_num    ;; int
                      vcs_url

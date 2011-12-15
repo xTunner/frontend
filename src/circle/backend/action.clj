@@ -15,19 +15,9 @@
                    act-fn ;; an fn of one argument, the session. If returns falsy, the action has "failed" and the on-fail code is run
                    ])
 
-(defrecord ActionResult [name ;;mandatory
-                         success  ;; boolean, required
-                         continue ;; boolean, required
-                         start-time
-                         end-time
-                         out  ;; stdout from the command, a string (optional)
-                         err  ;; stderr from the command, a string (optional)
-                         exit ;; exit status from the command (optional)
-                         ])
-
 (def ActionResult-validator
   [(is-map?)
-   (require-keys [:name :start-time :end-time])
+   (require-keys [:name :start_time :end_time])
    (col-predicate :success (maybe bool?) ":success must be a bool")
    (col-predicate :continue (maybe bool?) ":continue must be a bool")
    (col-predicate :out (maybe vector?) ":out must be a vector")
