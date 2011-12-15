@@ -32,7 +32,7 @@
   (let [build (test/minimal-build :actions [(bash/bash "hostname")])]
     (let [result (run/run-build build)]
       (-> @build :action-results (count)) => 1
-      (-> @build :action-results (first) :exit-code) => 0
+      (-> @build :action-results (first) :exit_code) => 0
       (-> @build :action-results (first) :out (first) :message) => (-> (test/localhost-name) :out))))
 
 (fact "bash action passes env"
