@@ -29,6 +29,9 @@
 (defn insert! [p]
   (mongo/insert! :projects p))
 
+(defn get-by-id [id]
+  (mongo/fetch-one :projects :where {:_id id}))
+
 (defn get-by-name [name]
   (mongo/fetch-one :projects :where {:name name}))
 

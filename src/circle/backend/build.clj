@@ -71,12 +71,11 @@
                  {:_id (-> @b :_id)}
                  (apply dissoc @b build-dissoc-keys)))
 
-(defn find-build-by-name
-  "Returns a build obj, or nil"
-  [project build-num])
+(defn project-name [b]
+  {:pre [(-> @b :_project_id)]}
+  (-> @b :_project_id (project/fetch-by-id) :name))
 
-(defn build [{:keys [project_name ;; string
-                     build_num    ;; int
+(defn build [{:keys [build_num    ;; int
                      vcs_url
                      vcs_revision ;; if present, the commit that caused the build to be run, or nil
                      notify_emails ;; a seq of email addresses to notify when build is done
@@ -102,19 +101,19 @@
   [build]
   (dosync
    (alter build
-          assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (-> @build :project_name) (-> @build :vcs_revision))))))
+          assoc-in [:group :group-name] (keyword (.toLowerCase (format "%s-%s" (project-name build) (-> @build :vcs_revision))))))
   build)
 
 (defn build-name
   ([build]
-     (build-name (-> @build :project_name) (-> @build :build_num)))
+     (build-name (project-name build) (-> @build :build_num)))
   ([project-name build-num]
      (str project-name "-" build-num)))
 
 (defn checkout-dir
   "Directory where the build will be checked out, on the build box."
   ([build]
-     (checkout-dir (-> @build :project_name) (-> @build :build_num)))
+     (checkout-dir (project-name build) (-> @build :build_num)))
   ([project-name build-num]
      (str/replace (build-name project-name build-num) #" " "-")))
 
@@ -125,7 +124,7 @@
 (defn log-ns
   "returns the name of the logger to use for this build "
   [build]
-  (symbol (str "circle.build." (-> @build :project_name) "-" (-> @build :build_num))))
+  (symbol (str "circle.build." (project-name build) "-" (-> @build :build_num))))
 
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 
