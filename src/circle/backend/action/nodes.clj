@@ -40,13 +40,16 @@
       (dosync
        (alter build assoc :instance-ids instance-ids)))))
 
-(defaction stop-nodes []
-  {:name "stop nodes"}
-  (fn [build]
-    (apply ec2/terminate-instances! (-> @build :instance-ids))))
-
 (defn cleanup-nodes [build]
   (let [ids (-> @build :instance-ids)]
     (when (seq ids)
-      (errorf "terminating nodes %s" ids)
-      (apply ec2/terminate-instances! ids))))
+      (infof "terminating nodes %s" ids)
+      (apply ec2/terminate-instances! ids))
+    (infof "deleting keypair %s" (-> @build :node :keypair-name))
+    (ec2/delete-keypair (-> @build :node :keypair-name))))
+
+(defaction stop-nodes []
+  {:name "stop nodes"}
+  (fn [build]
+    (cleanup-nodes build)))
+
