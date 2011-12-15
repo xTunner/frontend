@@ -56,7 +56,7 @@
   (let [proc (.exec (Runtime/getRuntime)
                     "bash")]
     (with-open [osw (OutputStreamWriter. (.getOutputStream proc) "UTF-8")]
-      (.write osw ^String (inspect (emit-form cmd :environment environment :pwd pwd))))
+      (.write osw ^String (emit-form cmd :environment environment :pwd pwd)))
     proc))
 
 (defn process-exit-code
