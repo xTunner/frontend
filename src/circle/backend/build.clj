@@ -11,6 +11,7 @@
   (:use [circle.util.predicates :only (ref?)])
   (:require [somnium.congomongo :as mongo])
   (:require [circle.util.mongo :as c-mongo])
+  (:require [circle.sh :as sh])
   (:use [clojure.tools.logging :only (log)]))
 
 (def build-coll :builds) ;; mongo collection for builds
@@ -52,7 +53,7 @@
 
 (def build-dissoc-keys
   ;; Keys on build that shouldn't go into mongo, for whatever reason
-  [:node :actions :action-results])
+  [:actions :action-results])
 
 (defn insert! [b]
   (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
@@ -146,3 +147,30 @@
 (defn build-log-error [message & args]
   (when *log-ns*
     (log *log-ns* :error nil (apply format message args))))
+
+(defn build-with-instance-id
+  "Returns the build from the DB with the given instance-id"
+  [id]
+  (mongo/fetch-one build-coll :where {:instance-ids id}))
+
+(defn ssh
+  "Opens a terminal window that SSHs into intance with the provided id.
+
+Assumes:
+  1) the instance was started by a build
+  2) the build is in the DB
+  3) the instance is still running
+  4) this clojure process is on OSX"
+
+  [instance-id]
+  (let [build (build-with-instance-id instance-id)
+        ssh-private-key (-> build :node :private-key)
+        username (-> build :node :username)
+        ip-addr (-> build :node :ip-addr)
+        key-temp-file (fs/tempfile "ssh")
+        _ (spit key-temp-file ssh-private-key)
+        _ (fs/chmod "-r" key-temp-file)
+        _ (fs/chmod "u+r" key-temp-file)
+        ssh-cmd (format "ssh -i %s %s@%s" key-temp-file username ip-addr)
+        tell-cmd (format "'tell app \"Terminal\" \ndo script \"%s\"\n end tell'" ssh-cmd)]
+    (sh/shq (osascript -e ~tell-cmd))))
