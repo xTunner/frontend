@@ -28,7 +28,7 @@
   [build]
   (if (not (-> @build :node :ip-addr))
     (do
-      (assert (-> @build :node :instance-ids (seq)))
+      (assert (-> @build :instance-ids (seq)))
       (let [instance-id (-> @build :instance-ids (first))
           ip-addr (ec2/public-ip instance-id)
           new-node (merge (-> @build :node) {:ip-addr ip-addr})]
