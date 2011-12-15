@@ -3,7 +3,6 @@
   (:require pallet.stevedore)
   (:require [clojure.java.shell :as sh])
   (:use [circle.util.coerce :only (to-name)])
-  (:use [circle.backend.build :only (*env*)])
   (:use [circle.util.core :only (apply-if)]))
 
 (defmacro quasiquote [& forms]
