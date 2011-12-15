@@ -4,7 +4,6 @@
   (:require circle.db)
   (:require circle.repl)
   (:require circle.logging)
-  (:require circle.util.chdir)
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
   (:require fs))
