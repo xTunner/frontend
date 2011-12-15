@@ -44,13 +44,17 @@
 
 ;;; https://github.com/account/applications/4814
 (def development-github {:client_id "586bf699b48f69a09d8c"
+                         :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
+(def test-github {:client_id "586bf699b48f69a09d8c"
                    :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
 
 (defn default []
   (cond
    (env/production?) production-github
    (env/staging?) staging-github
-   (env/development?) development-github))
+   (env/development?) development-github
+   (env/test?) test-github))
+
 
 (defn settings []
   (default))
