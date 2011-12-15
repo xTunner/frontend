@@ -13,7 +13,7 @@
    (try
      (println "circle.init/init")
      (circle.logging/init)
-     (when (System/getenv "CIRCLE_SWANK")
+     (when (= "true" (System/getenv "CIRCLE_SWANK"))
        (circle.swank/init))
      (circle.db/init)
      (circle.repl/init)

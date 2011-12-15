@@ -183,8 +183,7 @@
                    :vcs_revision vcs_revision
                    :job-name job-name
                    :node node
-                   :actions actions}
-                  (rename-keys {:name :project_name} project)))))
+                   :actions actions}))))
 
 (defn build-from-name
   "Given a project name and a build name, return a build. Helper method for repl"
@@ -222,8 +221,7 @@
         repo (git/default-repo-path url)
         vcs_revision (git/latest-local-commit repo)
         node (inference/node repo)]
-    (build/build {:project_name project-name
-                  :vcs_url url
+    (build/build {:vcs_url url
                   :vcs_revision vcs_revision
                   :node node
                   :actions (inference/infer-actions repo)

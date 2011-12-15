@@ -18,13 +18,13 @@
     (lb-action/lb-healthy-retries) => 2)
   (let [lb-name "lb-bogus"
         instance-ids ["i-bogus"]
-        build (minimal-build :project_name "lb wait for healthy test"
-                 :instance-ids instance-ids
-                 :lb-name lb-name
-                 :actions [(successful-action "1")
-                           (lb-action/wait-for-healthy)
-                           (successful-action "2")])]
-    
+        build (minimal-build
+               :instance-ids instance-ids
+               :lb-name lb-name
+               :actions [(successful-action "1")
+                         (lb-action/wait-for-healthy)
+                         (successful-action "2")])]
+
     (run-build build :cleanup-on-failure false)
     (successful? build) => falsey))
 

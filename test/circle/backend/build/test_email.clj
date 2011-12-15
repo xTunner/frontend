@@ -14,8 +14,7 @@
     nil))
 
 (defn successful-build []
-  (build/build {:project_name "succesful build"
-                :build_num 1
+  (build/build {:build_num 1
                 :vcs_url "git@github.com:foo/bar.git"
                 :vcs_revision "f00b4r"
                 :actions [(successful-action "1")

@@ -4,8 +4,7 @@
   (:use circle.backend.build))
 
 (fact "checkout-dir handles spaces"
-  (let [b (minimal-build :project_name "test proj"
-                         :build_num 42)]
+  (let [b (minimal-build :build_num 42)]
     (checkout-dir b) => "test-proj-42"))
 
 (fact "ensure-project-id works"

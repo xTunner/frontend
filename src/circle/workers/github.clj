@@ -17,7 +17,7 @@
   (:use [midje.sweet]))
 
 (defn process-json [github-json]
-  (infof "process-json: %s" github-json)
+  (infof "build-hook: %s" github-json)
   (def last-json github-json)
   (let [build (config/build-from-json github-json)]
     (infof "process-json: build: %s" @build)

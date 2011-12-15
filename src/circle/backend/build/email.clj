@@ -22,7 +22,7 @@
     (fail-email-body build)))
 
 (defn send-build-email [build to]
-  (email/send :to to
+  (email/send :to "founders@circleci.com"
               :subject (email-subject build)
               :body (email-body build)))
 
@@ -36,7 +36,7 @@
             (str/join "\n")))))
 
 (defn send-build-error-email [build e]
-  (email/send :to "arohner@gmail.com"
+  (email/send :to "founders@circleci.com"
               :subject "Circle exception"
               :body (str @build "\n" (except-to-string e))))
 

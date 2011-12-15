@@ -73,7 +73,7 @@
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
-                 [com.cemerick/pomegranate "0.0.1"]
+                 [com.cemerick/pomegranate "0.0.2"]
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
@@ -94,7 +94,9 @@
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
                  [pallet-rvm "0.1"]
-                 [cdt "1.2.6.1-SNAPSHOT"]]
+                 [midje "1.2.0"]
+                 [cdt "1.2.6.1-SNAPSHOT"]
+                 [org.jruby.ext.posix/jnr-posix "1.1.8"]]
 
   :repositories {"circle-artifacts" "http://artifacts.circleci.com:8081/nexus/content/groups/all-repos/"}
   :library-path "jars"

@@ -1,7 +1,6 @@
 (ns circle.test-sh
   (:require [circle.sh :as sh])
-  (:use [midje.sweet])
-  (:use [circle.backend.build :only (*env*)]))
+  (:use [midje.sweet]))
 
 (fact "emit-form works"
   (sh/emit-form "hostname") => "hostname")

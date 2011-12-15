@@ -9,8 +9,7 @@
 
 (def project-validation [(require-keys [:name
                                         :vcs_type
-                                        :vcs_url
-                                        :aws_credentials])
+                                        :vcs_url])
                          (col-predicate :vcs_url #(= :top (github/url-type %)) "github url must be https://github.com/foo/bar")])
 
 (defmethod validate ::Project [tag obj]
@@ -29,6 +28,9 @@
 
 (defn insert! [p]
   (mongo/insert! :projects p))
+
+(defn get-by-id [id]
+  (mongo/fetch-one :projects :where {:_id id}))
 
 (defn get-by-name [name]
   (mongo/fetch-one :projects :where {:name name}))
