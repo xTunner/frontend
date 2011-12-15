@@ -178,7 +178,8 @@
         actions (load-actions job)]
     (assert job-name)
     (build/build (merge
-                  {:notify_emails notify
+                  {:vcs_url (-> project :vcs_url)
+                   :notify_emails notify
                    :build_num build_num
                    :vcs_revision vcs_revision
                    :job-name job-name
