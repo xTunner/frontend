@@ -183,8 +183,7 @@
                    :vcs_revision vcs_revision
                    :job-name job-name
                    :node node
-                   :actions actions}
-                  (rename-keys {:name :project_name} project)))))
+                   :actions actions}))))
 
 (defn build-from-name
   "Given a project name and a build name, return a build. Helper method for repl"
