@@ -4,7 +4,10 @@
   (:require [circle.backend.build.config :as config])
   (:use [clojure.tools.logging :only (infof errorf error)])
   (:require [circle.ruby :as ruby])
-  (:use midje.sweet))
+  (:use midje.sweet)
+  (:require [clj-airbrake.core :as airbrake])
+  (:require [circle.env :as env])
+  (:require [fs]))
 
 ; TODO: find another home for this
 (defn run-build-from-jruby
@@ -29,7 +32,8 @@
          (infof "%s returned %s" (quote  ~@body) result#)
          result#)
        (catch Exception e#
-         (error e# "%s threw" ~@body)
+         (error e# "%s threw" (quote ~@body))
+         (airbrake/notify "3ccfad1720b6acd8c82e9b30d4b95a30" env/env (fs/cwd) e# {:body (quote ~@body) :future true :url "http://fakeurl.com"})
          (throw e#)))))
 
 (fact "log-future returns futures"
