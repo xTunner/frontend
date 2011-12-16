@@ -17,7 +17,7 @@
   (= env :development))
 
 (defn validate-env []
-  (throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)])))))
+  (throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)]))) "Unexpected environment: %s" (str env)))
 
 (validate-env)
 

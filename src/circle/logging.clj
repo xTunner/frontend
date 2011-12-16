@@ -11,7 +11,7 @@
                                      RollingFileAppender))
   (:import org.apache.commons.logging.LogFactory)
   (:import org.log4mongo.MongoDbAppender)
-  (:use [circle.db :only (mongo-map)])
+  (:use [circle.db :only (default-db)])
   (:use [clojure.contrib.string :only (as-str)]))
 
 (defn set-level [logger level]
@@ -20,7 +20,7 @@
 (def circle-layout (EnhancedPatternLayout. "%p [%d] %t - %c - %m%n"))
 
 (defn init []
-  (let [{:keys [db host port username password]} mongo-map
+  (let [{:keys [db host port username password]} (default-db)
         mongo-appender (doto (MongoDbAppender.)
                          (.setDatabaseName (as-str db))
                          (.setCollectionName "logs")

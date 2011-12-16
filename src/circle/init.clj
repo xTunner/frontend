@@ -12,10 +12,9 @@
   (delay
    (try
      (println "circle.init/init")
-     (circle.logging/init)
+     (circle.db/init)
      (when (= "true" (System/getenv "CIRCLE_SWANK"))
        (circle.swank/init))
-     (circle.db/init)
      (circle.repl/init)
      (println (java.util.Date.))
      true
