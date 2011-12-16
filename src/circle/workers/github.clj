@@ -87,7 +87,6 @@
         new-user (merge user {:fetched_name name :fetched_email email})]
     (mongo/update! :users user new-user)))
 
-
 (defn add-deploy-key
   "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
   [username repo-name github_access_token project-id]

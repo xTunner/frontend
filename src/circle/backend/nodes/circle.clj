@@ -104,8 +104,7 @@
                                                                       "Host" "\\$http_host"}}])
                              (nginx/site "default" :action :disable)
                              (service/service "nginx" :action :enable)
-                             
-                             
+
                              ;;users
                              (thread-expr/let->
                               [username (-> session :user :username)
