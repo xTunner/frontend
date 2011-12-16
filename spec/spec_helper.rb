@@ -31,14 +31,16 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
-  # Clean up the database
-  require 'database_cleaner'
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.orm = "mongoid"
-  end
+  if ENV["RAILS_ENV"] == "test"
+    require 'database_cleaner'
+    config.before(:suite) do
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.orm = "mongoid"
+    end
 
-  config.before(:each) do
-    DatabaseCleaner.clean
+    config.before(:each) do
+      puts "cleaning DB!"
+      DatabaseCleaner.clean
+    end
   end
 end
