@@ -1,6 +1,6 @@
 .bundle
 db/*.sqlite3
-log/*.log
+log/
 tmp/
 .sass-cache/
 .rvmrc
@@ -10,3 +10,5 @@ lib/dev/*.jar
 TAGS
 dump
 repos
+*.log
+*.log.gz

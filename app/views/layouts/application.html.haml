@@ -7,13 +7,11 @@
 
     -# Stylesheets first
     = stylesheet_link_tag "application"
-    - if not params[:controller].start_with? "devise" then
-      = stylesheet_link_tag "controller-specific/" + params[:controller]
+    = stylesheet_link_tag "controller-specific/" + params[:controller]
 
     -# JS
     = javascript_include_tag "application"
-    - if not params[:controller].start_with? "devise" then
-      = javascript_include_tag "controller-specific/" + params[:controller]
+    = javascript_include_tag "controller-specific/" + params[:controller]
 
     = csrf_meta_tags
 

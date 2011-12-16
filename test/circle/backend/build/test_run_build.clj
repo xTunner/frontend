@@ -35,12 +35,11 @@
 
 (fact "builds insert into the DB"
   (let [build (run-build (successful-build))]
-    (println "build-num:" (-> @build :build_num))
     (successful? build) => truthy
+    (-> @build :_project_id) => truthy
     (-> @build :build_num) => integer?
     (-> @build :build_num) => pos?
-    (let [builds (mongo/fetch :builds :where {:project_name (-> @build :project_name)
-                                              :build_num (-> @build :build_num)})]
+    (let [builds (mongo/fetch :builds :where {:_id (-> @build :_project_id)})]
       (count builds) => 1)))
 
 (fact "successive builds use incrementing build-nums"
