@@ -94,15 +94,9 @@
                               (gem install bundler)
                               (gem install rspec))
 
-                             (nginx/site "circle"
-                                         :listen 80
-                                         :server_name "circle"
-                                         :locations [{:location "/"
-                                                      :proxy_pass "http://localhost:3000"
-                                                      :proxy_headers {"X-Real-IP" "\\$remote_addr"
-                                                                      "X-Forwarded-For" "\\$proxy_add_x_forwarded_for"
-                                                                      "Host" "\\$http_host"}}])
-                             (nginx/site "default" :action :disable)
+                             (remote-file/remote-file "/etc/nginx/sites-enabled/circle" :local-file "nginx-circle.conf" :no-versioning true)
+                             (remote-file/remote-file "/etc/nginx/certs/circleci.com.crt" :local-file "circleci.com.crt" :no-versioning true)
+                             (remote-file/remote-file "/etc/nginx/certs/circleci.com.key" :local-file "circleci.com.key" :no-versioning true)
                              (service/service "nginx" :action :enable)
 
                              ;;users
