@@ -17,11 +17,9 @@ jobs:
     commands:
       - rvm use jruby-1.6.5@circle --default
       - bundle install
-      - lein deps:
-          pwd: backend
+      - lein deps
       - bundle exec rspec spec
       - lein midje:
-          pwd: backend
           environment:
             CIRCLE_ENV: "staging"
     #  on-success: deploy # another build to trigger if this one is successful
@@ -39,8 +37,7 @@ jobs:
     commands:
       - rvm use jruby-1.6.5@circle --default
       - bundle install
-      - lein deps:
-          pwd: backend
+      - lein deps
       - rake production:server:
           environment:
             CIRCLE_SWANK: "true"
@@ -55,8 +52,7 @@ jobs:
     commands:
       - rvm use jruby-1.6.5@circle --default
       - bundle install
-      - lein deps:
-          pwd: backend
+      - lein deps
       - rake staging:server
       - sudo /etc/init.d/nginx start
 
