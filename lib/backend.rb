@@ -86,7 +86,7 @@ class Backend
   def self.initialize
     if Backend._clj.nil?
       init_ns = JRClj.new("circle.init")
-      JRClj.new("circle.env").set_env(ENV["RAILS_ENV"])
+      JRClj.new("circle.env").set_env(Rails.env)
       init_ns.init()
       JRClj.new("circle.ruby").init(JRuby.runtime)
 

@@ -7,11 +7,6 @@
 
 (def env (or (keyword (System/getenv "RAILS_ENV")) :development))
 
-(defn set-env
-  "Takes a string, a rails environment setting"
-  [rails-env]
-  (alter-var-root (var env) (constantly (keyword rails-env))))
-
 (defn production? []
   (= env :production))
 (defn staging? []
@@ -21,9 +16,18 @@
 (defn development? []
   (= env :development))
 
-(throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)]))))
+(defn validate-env []
+  (throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)])))))
 
-(when (production?)
+(validate-env)
+
+(defn set-env
+  "Takes a string, a rails environment setting"
+  [rails-env]
+  (alter-var-root (var env) (constantly (keyword rails-env)))
+  (validate-env))
+
+(when (or (production?) (staging?))
   (alter-var-root (var midje.semi-sweet/*include-midje-checks*) (constantly false))
   (alter-var-root (var clojure.test/*load-tests*) (constantly false)))
 
