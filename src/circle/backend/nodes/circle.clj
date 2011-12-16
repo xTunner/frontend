@@ -14,7 +14,7 @@
             [pallet.crate.network-service :as network-service]
             [pallet.crate.nginx :as nginx]
             [pallet.crate.postgres :as postgres]
-            ;;[pallet.crate.rvm :as rvm]
+            [pallet.crate.rvm :as rvm]
             [pallet.crate.ssh-key :as ssh-key]
             [pallet.crate.rubygems :as rubygems]
             [pallet.stevedore :as stevedore]
@@ -37,6 +37,17 @@
                       :username "ubuntu"
                       :public-key (slurp "www.id_rsa.pub")
                       :private-key (slurp "www.id_rsa")}))
+
+(defmacro user-code
+  "Runs a seq of stevedore commands as the non-sudo user"
+  [session & cmds]
+  `(let [cmds# (stevedore/with-script-language :pallet.stevedore.bash/bash
+                (clojure.string/join ";" (map (fn [c#]
+                                                (stevedore/emit-script [c#])) (quote ~cmds))))]
+    (-> ~session
+        (exec-script/exec-checked-script
+         "rvm cmd"
+         ("sudo" "-i" "-u" (unquote (-> ~session :user :username)) "bash" "-c" (unquote (format "\"%s\"" cmds#)))))))
 
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
@@ -66,28 +77,22 @@
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
                              (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs"])
-                             (java/java :sun :jdk)
+                             (java/java :openjdk :jdk)
                              (git/git)
                              (exec-script/exec-script
                               ~(stevedore/checked-script
                                 "Update rubygems"
                                 (sudo "REALLY_GEM_UPDATE_SYSTEM=true" gem update --system)))
 
-                             ;;
-                             ;; We want this to work, but it doesn't,
-                             ;; because pallet doesn't support
-                             ;; exec-ing as non-root, and the sudo to
-                             ;; make this happen is really gnarly. For
-                             ;; now, this part is done by hand.
-                             
-                             ;; (rvm/rvm)
-                             ;; (rvm/install "jruby")
-                             ;; (rvm/with-rvm
-                             ;;  (rvm use "jruby")
-                             ;;  (rvm gemset create "circle")
-                             ;;  (rvm gemset use "circle")
-                             ;;  (gem install "bundler")
-                             ;;  (gem install "rspec"))
+                             (rvm/rvm)
+                             (user-code
+                              (source "~/.bash_profile") ;; make sure RVM is loaded
+                              (rvm install jruby)
+                              (rvm use jruby)
+                              (rvm gemset create circle)
+                              (rvm gemset use circle)
+                              (gem install bundler)
+                              (gem install rspec))
 
                              (nginx/site "circle"
                                          :listen 80

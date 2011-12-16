@@ -36,7 +36,7 @@
     (let [instance-ids (ec2/start-instances (-> @build :node))
           group (-> @build :group)]
       (when group
-        (nodes/configure-instance-ids instance-ids))
+        (nodes/configure instance-ids))
       (dosync
        (alter build assoc :instance-ids instance-ids)))))
 
