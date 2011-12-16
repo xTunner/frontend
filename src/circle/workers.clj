@@ -5,7 +5,7 @@
   (:use [clojure.tools.logging :only (infof errorf error)])
   (:require [circle.ruby :as ruby])
   (:use midje.sweet)
-  (:require [clj-airbrake.core :as airbrake])
+  (:use [circle.airbrake :only (airbrake)])
   (:require [circle.env :as env])
   (:require [fs]))
 
@@ -33,7 +33,7 @@
          result#)
        (catch Exception e#
          (error e# "%s threw" (quote ~@body))
-         (airbrake/notify "3ccfad1720b6acd8c82e9b30d4b95a30" env/env (fs/cwd) e# {:body (quote ~@body) :future true :url "http://fakeurl.com"})
+         (airbrake {:body (quote ~@body) :future true})
          (throw e#)))))
 
 (fact "log-future returns futures"
