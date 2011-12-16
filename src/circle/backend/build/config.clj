@@ -179,6 +179,7 @@
     (assert job-name)
     (build/build (merge
                   {:vcs_url (-> project :vcs_url)
+                   :lb-name (-> project :lb-name)
                    :notify_emails notify
                    :build_num build_num
                    :vcs_revision vcs_revision
