@@ -4,7 +4,6 @@
   (:require [circle.backend.build.config :as config])
   (:use [clojure.tools.logging :only (infof errorf error)])
   (:require [circle.ruby :as ruby])
-  (:use midje.sweet)
   (:use [circle.airbrake :only (airbrake)])
   (:require [circle.env :as env])
   (:require [fs]))
@@ -14,7 +13,6 @@
   [project-name job-name]
   (let [build (config/build-from-name project-name :job-name (keyword job-name))]
     (run/run-build build)))
-
 
 ;;; Workers. Handles starting workers, checking if they're done, and getting the
 ;;; result.
@@ -35,15 +33,6 @@
          (error e# "%s threw" (quote ~@body))
          (airbrake {:body (quote ~@body) :future true})
          (throw e#)))))
-
-(fact "log-future returns futures"
-  ;; A normal future will return a future object here, even if the
-  ;; code obviously throws an exception. Make sure that's the case
-  ;; here as well.
-  (log-future (/ 1 0)) => future?)
-
-(fact "log-future works"
-  @(log-future (apply + [1 1])) => 2)
 
 (defn start-worker [f & args]
   "Call fn with args as a worker. Returns the id of the worker"

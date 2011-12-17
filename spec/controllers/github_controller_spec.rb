@@ -43,10 +43,9 @@ sample = {
 
 
 sample_json = JSON.generate(sample)
-puts "sample_json = #{sample_json} #{sample_json.class}"
 sample["repository"]["url"] = "https://github.com/arohner/circle-dummy-project"
 sample["commits"] = [{ "id" => "78f58846a049bb6772dcb298163b52c4657c7d45",
-                       "url" => "http =>//github.com/arohner/circle-dummy-project/commit/78f58846a049bb6772dcb298163b52c4657c7d45",
+                       "url" => "http://github.com/arohner/circle-dummy-project/commit/78f58846a049bb6772dcb298163b52c4657c7d45",
                        "author" => {
                          "email" => "arohner@gmail.com",
                          "name" => "Allen Rohner"
@@ -65,8 +64,6 @@ end
 user_ns = RT.var("clojure.core", "find-ns").invoke(symbolize("user"))
 Var.intern(user_ns, symbolize("foo"), dummy_json)
 
-
-puts "dummy_json = #{dummy_json} #{dummy_json.class}"
 describe GithubController do
 
   it "checks the json has a URL" do
@@ -78,11 +75,17 @@ describe GithubController do
   it "The github hook successfully triggers builds" do
     JRClj.new("circle.init").init()
     JRClj.new("circle.backend.build.test-utils").ensure_test_project()
-    pre_count = Build.where(:project_name => "Dummy Project").count()
-    post :create, :payload => dummy_json
-    sleep 1
 
-    post_count = Build.where(:project_name => "Dummy Project").count()
+    vcs_url = "https://github.com/arohner/circle-dummy-project"
+    project = Project.where(:vcs_url => vcs_url).first()
+
+    project.should be_true
+
+    pre_count = Build.where(:vcs_url => vcs_url).count()
+    post :create, :payload => dummy_json
+    sleep 3
+
+    post_count = Build.where(:vcs_url => vcs_url).count()
     (post_count > pre_count).should be_true
   end
 

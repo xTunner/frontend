@@ -98,7 +98,11 @@
   (eval "{:foo => 'bar', 5 => nil, 'x' => 7.0, :baa=> [5, 'mrah', {:boo => :foo}]}"))
 
 (defn rspec
-  "runs rspec. Useful from clojure repl. "
+  "runs rspec. Useful from clojure repl.
+
+Note that rspec will run in whatever RAILS_ENV you started in, so you
+  probably want to start in RAILS_ENV=test, or rspec will clear your
+  DB, or tests will fail because they assume the DB cleaner runs."
   []
   (eval "
 require 'rubygems'

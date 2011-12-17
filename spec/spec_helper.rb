@@ -39,7 +39,6 @@ RSpec.configure do |config|
     end
 
     config.before(:each) do
-      puts "cleaning DB!"
       DatabaseCleaner.clean
     end
   end
