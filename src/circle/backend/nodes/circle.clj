@@ -94,6 +94,8 @@
                               (gem install bundler)
                               (gem install rspec))
 
+                             (directory/directory "/etc/nginx/certs" :action :create)
+                             (file/file "/etc/nginx/sites-enabled/default" :action :delete)
                              (remote-file/remote-file "/etc/nginx/sites-enabled/circle" :local-file "nginx-circle.conf" :no-versioning true)
                              (remote-file/remote-file "/etc/nginx/certs/circleci.com.crt" :local-file "circleci.com.crt" :no-versioning true)
                              (remote-file/remote-file "/etc/nginx/certs/circleci.com.key" :local-file "circleci.com.key" :no-versioning true)
