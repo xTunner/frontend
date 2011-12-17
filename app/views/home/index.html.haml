@@ -9,8 +9,8 @@
       %ul#nav
         %li
           = link_to "Signup", root_path, :class => "current_page"
-        -#%li
-          = link_to "Login", "/login"
+        %li
+          = link_to "Login", new_user_session_url # aka login
       .clear
   #pitch_wrap
     #pitch
