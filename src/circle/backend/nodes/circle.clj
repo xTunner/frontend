@@ -3,6 +3,7 @@
             pallet.phase
             [pallet.action.directory :as directory]
             [pallet.action.exec-script :as exec-script]
+            [pallet.action.file :as file]
             [pallet.action.package :as package]
             [pallet.action.remote-file :as remote-file]
             [pallet.action.service :as service]
@@ -94,6 +95,8 @@
                               (gem install bundler)
                               (gem install rspec))
 
+                             (directory/directory "/etc/nginx/certs" :action :create)
+                             (file/file "/etc/nginx/sites-enabled/default" :action :delete)
                              (remote-file/remote-file "/etc/nginx/sites-enabled/circle" :local-file "nginx-circle.conf" :no-versioning true)
                              (remote-file/remote-file "/etc/nginx/certs/circleci.com.crt" :local-file "circleci.com.crt" :no-versioning true)
                              (remote-file/remote-file "/etc/nginx/certs/circleci.com.key" :local-file "circleci.com.key" :no-versioning true)
