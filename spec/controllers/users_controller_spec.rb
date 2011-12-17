@@ -1,12 +1,10 @@
 require 'spec_helper'
 
 describe UsersController do
+  login_user
 
-#  describe "GET 'show'" do
-#    it "returns http success" do
-#      get 'show'
-#      response.should be_success
-#    end
-#  end
+  it "should have a current_user" do
+    subject.current_user.should_not be_nil
+  end
 
 end
