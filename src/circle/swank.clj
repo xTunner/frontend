@@ -3,7 +3,7 @@
   (:require [circle.env :as env]))
 
 (defn port []
-  (case
+  (cond
       (env/test?) 5004
       :else 4005))
 
