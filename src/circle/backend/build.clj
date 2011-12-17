@@ -127,7 +127,7 @@
 
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 
-(defn- ssh-build-log
+(defn ssh-build-log
   "This is a different function from the normal build log because 1)
   ssh/handle-out won't pass format arguments. 2) if the string does happen to
   contain a %s, we don't want format throwing because we have a %s and
@@ -136,7 +136,7 @@
   (when *log-ns*
     (log *log-ns* :info nil s)))
 
-(defn- ssh-build-log-error [s]
+(defn ssh-build-log-error [s]
   (when *log-ns*
     (log *log-ns* :error nil s)))
 
