@@ -8,7 +8,7 @@
 ;;; How to use this: At the repl, call (render). Paste the output into Posterous's advanced theming box. Hit save.
 
 (defn render []
-  (let [absolute-url "http://www.circleci.com/"
+  (let [absolute-url "https://circleci.com/"
         path "resources/posterous_theme.html"]
     (hiccup.core/with-base-url absolute-url
       (print (posterous)))))
