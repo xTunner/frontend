@@ -43,10 +43,9 @@ sample = {
 
 
 sample_json = JSON.generate(sample)
-puts "sample_json = #{sample_json} #{sample_json.class}"
 sample["repository"]["url"] = "https://github.com/arohner/circle-dummy-project"
 sample["commits"] = [{ "id" => "78f58846a049bb6772dcb298163b52c4657c7d45",
-                       "url" => "http =>//github.com/arohner/circle-dummy-project/commit/78f58846a049bb6772dcb298163b52c4657c7d45",
+                       "url" => "http://github.com/arohner/circle-dummy-project/commit/78f58846a049bb6772dcb298163b52c4657c7d45",
                        "author" => {
                          "email" => "arohner@gmail.com",
                          "name" => "Allen Rohner"
@@ -65,8 +64,6 @@ end
 user_ns = RT.var("clojure.core", "find-ns").invoke(symbolize("user"))
 Var.intern(user_ns, symbolize("foo"), dummy_json)
 
-
-puts "dummy_json = #{dummy_json} #{dummy_json.class}"
 describe GithubController do
 
   it "checks the json has a URL" do
