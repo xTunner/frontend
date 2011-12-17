@@ -236,10 +236,11 @@
   (let [url (-> github-json :repository :url)
         config (get-config-for-url url)
         project (project/get-by-url! url)
-        job-name (or (-> config :schedule :commit :job (keyword)) (-> config :jobs (first) (key)))
         vcs-revision (-> github-json :after)]
     (if (and config project)
-      (build-from-config config project
-                         :vcs_revision vcs-revision
-                         :notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json)))
+      (let [job-name (or (-> config :schedule :commit :job (keyword)) (-> config :jobs (first) (key)))]
+        (build-from-config config project
+                           :vcs_revision vcs-revision
+                           :notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))))
+
       (infer-build-from-url url))))
