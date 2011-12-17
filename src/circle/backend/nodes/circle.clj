@@ -29,7 +29,7 @@
 (def circle-group
   (pallet.core/group-spec
    "circle"
-   :circle-node-spec {:ami "ami-0b805562"
+   :circle-node-spec {:ami "ami-3bb46152"
                       :name "www"
                       :availability-zone "us-east-1a"
                       :instance-type "m1.small"
