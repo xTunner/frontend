@@ -3,6 +3,7 @@
             pallet.phase
             [pallet.action.directory :as directory]
             [pallet.action.exec-script :as exec-script]
+            [pallet.action.file :as file]
             [pallet.action.package :as package]
             [pallet.action.remote-file :as remote-file]
             [pallet.action.service :as service]
