@@ -1,6 +1,6 @@
 nodes:
   www:
-    ami: ami-efd61d86
+    ami: ami-3bb46152
     instance-type: "m1.small"
     username: ubuntu
 
