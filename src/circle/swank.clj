@@ -4,7 +4,7 @@
 
 (defn port []
   (cond
-      (env/test?) 5004
+      (env/test?) 4006
       :else 4005))
 
 (defn init []
