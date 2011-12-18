@@ -25,6 +25,9 @@
   [url after ref json-string]
   (-> json-string json/decode process-json))
 
+;;; TECHNICAL_DEBT: These are on pbiggar's account, we should probably change
+;;; that at some point.
+
 ;;; https://github.com/account/applications/4808
 (def production-github {:client_id "78a2ba87f071c28e65bb"
                         :client_secret "98cb9262b67ad26bed9191762a23445eeb2054e4"})
@@ -33,9 +36,13 @@
 (def staging-github {:client_id "593c08e3973f3e534013"
                      :client_secret "4f193c232eb94a9ae7bcf1c495a8a3e805dc3493"})
 
-;;; https://github.com/account/applications/4814
-(def development-github {:client_id "586bf699b48f69a09d8c"
-                         :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
+;;; https://github.com/account/applications/5518
+;;; circlehost:3000
+(def development-github {:client_id "383faf01b98ac355f183"
+                         :client_secret "7efaf34f808af2fee26c5532f0ceafd2c475a1ce"})
+
+;;; https://github.com/account/applications/4818
+;;; circlehost:3001
 (def test-github {:client_id "586bf699b48f69a09d8c"
                    :client_secret "1e93bdce2246fd69d9040875338b4137d525e400"})
 
