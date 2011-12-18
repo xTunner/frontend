@@ -1,59 +1,55 @@
 Welcome to the Circle application. The frontend - contained in this directory - is a fairly standard
 rails app, with notable non-standard things being JRuby and mongodb. The backend is a standard
-clojure app, and is in the backend/ directory
+clojure app, and is also in this directory.
 
-The backend is run in the same process as the frontend, and so the frontend needs some options:
-    jruby --1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m -s `which rspec` spec
-
-Substitude "`which rails` server", or whatever, so "`which rspec` spec".
+The backend is run in the same process as the frontend. This all works so long as you use RVM.
 
 
 # Communicating between the frontend and the backend.
 
-
-## Via the database
-
-Both the frontend and the backend use the same mongodb database. If at all possible, they should use the database to communicate.
-
-
-## In process
-
-The frontend and backend both run in the same JVM, in the same process. For now, we are calling one from the other to simplify prototyping.
+- To call clojure from ruby, esp for workers, see lib/Backend.rb
+- To call ruby from clojure, see src/Circle/ruby.clj
+- Both ends use the same mongodb database. Synchronization occurs in src/circle/db.clj and config/environements/*.rb
 
 
-### Calling clojure from Ruby
 
-To call Clojure code, we do not need to generate Java classes. Instead, we use JRClj:
+## Setting up dependencies.
 
-    circle = JRClj.new "circle.init"
-    circle.init
-    circle.run "circle.init/-main"
+* install RVM
+  $ bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer) # dont use your package manager.
+  $ rvm install jruby
+  $ rvm gemset create circle
+  $ bundle install
+  $ cd CircleCI
+    This should activate rvm, and rvm should print a message to that effect)
 
 
-### Calling Ruby from Clojure
+## Environments and environmental variables
 
-JRuby exposes Ruby classes as Java classes, so we should be able to call them directly using Clojure's builtin Java interface.
+   - set circlehost to 127.0.0.1 in your /etc/hosts
+   - set CIRCLE_SWANK=true to connect to your VM via emacs+slime.
+     - M-x slime-connect -> 127.0.0.1 -> 4005
+     - only accessible from the same box, must ssh to it.
 
-## Install
 
-* install RVM (from website, not ports)
-* rvm install jruby
-* rvm use jruby
-rvm gemset create circle
-rvm gemset use circle
-rvm --rvmrc --create jruby-1.6.5@circle
-bundle install
+   - Environments are set using RAILS_ENV. Options are:
+     - development
+       - default
+       - runs on circlehost:3000
+       - swank runs on port 4005
 
-## Running
+     - test
+       - set by default for rspec
+       - swank is on port 4006
+       - runs on circlehost:3001
+       - To run rspec fast, do:
+         $ RAILS_ENV=test CIRCLE_SWANK=true rails console
+         - then connect visa swank and run (circle.ruby/rspec)
 
-rake server
+     - production
+       - DANGER: live database. If running on your local machine, be very fucking careful.
+       - sits behind the nginx load balancer
 
-## Testing
-
-rake test
-
-# todo
-add rspec to tests
-ngnix port number
-
-jruby --1.9 -J-XX:+CMSClassUnloadingEnabled -J-XX:+UseConcMarkSweepGC -J-XX:MaxPermSize=256m -S rails server
+     - staging
+       - currently has no load balancer
+       - should run on staging.circleci.com
