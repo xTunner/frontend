@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [eval])
   (:import org.jruby.RubySymbol)
   (:import java.lang.ref.WeakReference)
+  (:require fs)
   (:use midje.sweet))
 
 ;; This is the runtime all ruby requests will go through. It's
@@ -103,10 +104,13 @@
 Note that rspec will run in whatever RAILS_ENV you started in, so you
   probably want to start in RAILS_ENV=test, or rspec will clear your
   DB, or tests will fail because they assume the DB cleaner runs."
-  []
-  (eval "
+  [& subdirs]
+  (let [subdirs (if (empty? subdirs) [""] subdirs)
+        subdirs (map #(fs/join "spec" %) subdirs)
+        command (format "
 require 'rubygems'
 require 'rspec/core/rake_task'
 
-RSpec::Core::Runner.run(['spec'])
-"))
+RSpec::Core::Runner.run(%s)
+" (vec subdirs))]
+    (eval command)))
