@@ -2,7 +2,7 @@
   (:require [clojure.string :as str])
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:use [circle.util.core :only (apply-map sha1)]
-        [circle.util.except :only (throwf)]
+        [circle.util.except :only (throwf throw-if-not)]
         [circle.util.args :only (require-args)])
   (:use [clojure.tools.logging :only (infof error errorf)])
   (:use [robert.bruce :only (try-try-again)])
@@ -75,7 +75,7 @@
    (map bean)
    (filter #(not= :terminated (-?> % :state (bean) :name (keyword))))
    (map #(update-in % [:state] bean))))
-  
+
 (defn all-instance-ids []
   (map :instanceId (instances)))
 
@@ -253,7 +253,7 @@
                    ;; this is an eventual consistency 'race'. Sometimes AWS
                    ;; reports the instance is not there right after it's
                    ;; started.
-                   (when (not= "InvalidInstanceID.NotFound" (.getErrorCode e)) 
+                   (when (not= "InvalidInstanceID.NotFound" (.getErrorCode e))
                      (throw e))))
           state (-?> inst :state :name (keyword))
           ip (-> inst :publicIpAddress)
@@ -296,7 +296,7 @@
            security-groups
            instance-type
            min-count ;; min number of instances to start
-           max-count 
+           max-count
            availability-zone]
     :or {min-count 1
          max-count 1}
@@ -348,10 +348,19 @@
        (table [:instanceId :state-name :publicIpAddress :imageId :security-groups :tags])
        (println)))
 
+
+(defn image-wait-for-ready [image-name]
+  (try-try-again
+   {:sleep 15
+    :tries (* 4 10)}
+   #(throw-if-not (= :available (image-state image-name)) "AMI did not become available in timeout window")))
+
 (defn create-image
-  "Create an AMI from a running instance. Returns the new AMI-id"
+  "Create an AMI from a running instance. Returns the new AMI-id. Blocks until the image is available."
   [instance-id image-name]
   (with-ec2-client client
-    (-> client
-        (.createImage (CreateImageRequest. instance-id image-name))
-        (.getImageId))))
+    (let [ami (-> client
+                  (.createImage (CreateImageRequest. instance-id image-name))
+                  (.getImageId))]
+      (image-wait-for-ready ami)
+      ami)))
