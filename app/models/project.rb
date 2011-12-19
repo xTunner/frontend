@@ -11,4 +11,12 @@ class Project
   has_many :jobs # TECHNICAL_DEBT: s/jobs/builds/
 
   attr_accessible :name, :vcs_url
+
+  def github_project_name
+    result = vcs_url.sub("https://github.com/", "")
+    if result[-1] == "/" then
+      result = result[0..-2]
+    end
+    result
+  end
 end
