@@ -3,8 +3,8 @@ require 'factory_girl'
 # NOTE: this file does not automatically reload in Rails server. Use load() or restart the server.
 
 Factory.define :project do |p|
-  p.name "test project"
-  p.vcs_url "https://testapp/test/account/"
+  p.name "My test project"
+  p.vcs_url "https://github.com/circleci/circle-dummy-project/"
 end
 
 Factory.define :user do |u|
