@@ -55,6 +55,19 @@ module MongoidTest
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
+
+    # Allow FactoryGirl to reload properly
+    # http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console/
+    ActionDispatch::Callbacks.after do
+      # Reload the factories
+      if Rails.env.development? || Rails.env.test?
+        unless FactoryGirl.factories.blank? # first init will load factories, this should only run on subsequent reloads
+          FactoryGirl.factories.clear
+          FactoryGirl.find_definitions
+        end
+      end
+    end
+
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
 

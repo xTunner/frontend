@@ -42,7 +42,6 @@ sample = {
 }
 
 
-sample_json = JSON.generate(sample)
 sample["repository"]["url"] = "https://github.com/arohner/circle-dummy-project"
 sample["commits"] = [{ "id" => "78f58846a049bb6772dcb298163b52c4657c7d45",
                        "url" => "http://github.com/arohner/circle-dummy-project/commit/78f58846a049bb6772dcb298163b52c4657c7d45",
@@ -65,12 +64,6 @@ user_ns = RT.var("clojure.core", "find-ns").invoke(symbolize("user"))
 Var.intern(user_ns, symbolize("foo"), dummy_json)
 
 describe GithubController do
-
-  it "checks the json has a URL" do
-    post :create, :payload => sample_json
-    response.should be_success
-    response.body.should == " " # rails render :nothing returns a doc of length 1, for some reason
-  end
 
   it "The github hook successfully triggers builds" do
     JRClj.new("circle.init").init()
@@ -101,4 +94,3 @@ describe GithubController do
     }.should raise_error
   end
 end
-

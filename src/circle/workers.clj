@@ -46,7 +46,7 @@
 
 (defn fire-worker [f & args]
   "Start a worker, but don't wait for a response"
-  (log-future (call-clojure-from-ruby f args))
+  (log-future (apply f args))
   nil)
 
 (defn blocking-worker [f & args]
