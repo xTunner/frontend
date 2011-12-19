@@ -4,6 +4,7 @@ class Project
   field :vcs_url
   field :ssh_private_key
   field :ssh_public_key
+  field :visible, :type => Boolean, :default => false
 
   has_and_belongs_to_many :users
 
