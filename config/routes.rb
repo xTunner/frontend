@@ -6,7 +6,7 @@ MongoidTest::Application.routes.draw do
     :controllers => {:registrations => "registrations"}
 
 
-  match '/gh/:user/:project', :to => 'projects#github_show', :as => :github_project
+  match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }
 
   # Main project UI
   resources :projects, :only => [:show]

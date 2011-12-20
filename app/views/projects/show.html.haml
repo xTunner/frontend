@@ -3,24 +3,26 @@
     %h4
       = @project.name
     %h6
-      = @project["vcs_url"]
+      = @project.vcs_url
 
-    = render :partial => 'running'
-    = render :partial => 'running'
+    -#    = render :partial => 'running'
 
     %table#recent-jobs
       %thead
         %tr
           %th
+            \#
+          %th
             Revision
+            -#          %th
+            -#          Author
           %th
-            Author
+            Started at
           %th
-            Success?
-          %th
-            \% complete
+            Time taken
+      %tbody
+        = render :collection => @recent_builds, :partial => 'build'
 
-      = render @project.jobs.order_by([[:_id, :desc]]).limit(10), :partial => 'job'
 
--#  = form_for [@project, Job.new], :remote => true do |f|
+-#  = form_for [@project, Build.new], :remote => true do |f|
 -#    = f.submit "Trigger job"

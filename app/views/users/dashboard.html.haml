@@ -40,10 +40,15 @@
       - @projects.each do |project|
         %tr
           %td
-            -# = link_to(project.name, project_path(project))
-            = project.name
+            - if project.visible?
+              = link_to(project.name, github_project_path(project))
+            - else
+              = project.name
           %td
             = link_to project.vcs_url do
               = project.vcs_url
           %td
-            Coming soon
+            - if project.visible
+              Running!
+            - else
+              Coming soon
