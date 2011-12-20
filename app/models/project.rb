@@ -1,6 +1,5 @@
 class Project
   include Mongoid::Document
-  include Mongoid::Slugify
 
   field :name
   field :vcs_url
@@ -13,13 +12,11 @@ class Project
 
   attr_accessible :name, :vcs_url
 
-
-  after_validation :generate_slug
-  def generate_slug
-    # This has a '/' in it, so the constraints also needed to be loosened in config/routes.rb
-    self.slug = github_project_name
+  # TECHNICAL_DEBT - TODO - WARNING - HACK - BEWARE
+  # I can't quite figure out how this looks the project up, so it must be a linear search!
+  def to_param
+    github_project_name
   end
-
 
   def github_project_name
     result = vcs_url.sub("https://github.com/", "")
