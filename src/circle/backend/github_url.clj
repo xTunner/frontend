@@ -75,9 +75,9 @@
    (->top ?url) => ?expected)
  ?url ?expected
  "https://github.com/arohner/CircleCI" "https://github.com/arohner/CircleCI"
- "git@github.com:arohner/CircleCI.git" "https://github.com/arohner/CircleCI" 
+ "git@github.com:arohner/CircleCI.git" "https://github.com/arohner/CircleCI"
  "https://arohner@github.com/arohner/CircleCI.git" "https://github.com/arohner/CircleCI")
 
 (defn canonical-url
-  [username password]
-  (format "https://github.com/%s/%s" username password))
+  ([username_and_password] (format "https://github.com/%s" username_and_password))
+  ([username password] (canonical-url (str format "%s/%s" username password))))
