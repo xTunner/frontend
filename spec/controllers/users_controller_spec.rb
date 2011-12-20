@@ -3,6 +3,8 @@ require 'spec_helper'
 describe UsersController do
   login_user
   render_views
+  let(:page) { Capybara::Node::Simple.new(@response.body) }
+
 
   it "should have a current_user" do
     subject.current_user.should_not be_nil
@@ -21,26 +23,36 @@ describe UsersController do
     response.body.should have_content("Thanks for joining")
   end
 
-  it "should list all your projects" do
-    user = subject.current_user
-    project = user.projects[0]
-    project.visible = true
-    project.save()
+  describe "dashboard" do
+    before(:each) do
+      @user = subject.current_user
+      @project = @user.projects[0]
+    end
 
-    get :dashboard
-    response.body.should_not have_content("Coming soon")
-    response.body.should have_content("Running")
-    response.body.should have_link(project.name)
+    it "should list all your projects" do
+      @project.visible = true
+      @project.save!
+
+      get :dashboard
+      response.body.should_not have_content("Coming soon")
+      response.body.should have_content("Running")
+      response.body.should have_link(@project.name)
+    end
+
+    it "shouldn't link to invisible projects" do
+      get :dashboard
+      response.body.should have_content(@project.name)
+      response.body.should_not have_link(@project.name)
+      response.body.should have_content("Coming soon")
+    end
+
+    it "should use the pretty names", :type => :request do
+      @project.visible = true
+      @project.save()
+
+      get :dashboard
+      link = page.find_link(@project.name)
+      link['href'].should == "/gh/" + @project.github_project_name
+    end
   end
-
-  it "shouldn't link to invisible projects" do
-    user = subject.current_user
-    project = user.projects[0]
-
-    get :dashboard
-    response.body.should have_content(project.name)
-    response.body.should_not have_link(project.name)
-    response.body.should have_content("Coming soon")
-  end
-
 end

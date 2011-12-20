@@ -14,9 +14,10 @@ class Project
   attr_accessible :name, :vcs_url
 
 
+  after_validation :generate_slug
   def generate_slug
     # This has a '/' in it, so the constraints also needed to be loosened in config/routes.rb
-    github_project_name
+    self.slug = github_project_name
   end
 
 

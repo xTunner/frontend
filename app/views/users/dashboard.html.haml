@@ -40,8 +40,8 @@
       - @projects.each do |project|
         %tr
           %td
-            - if project.visible
-              = link_to(project.name, project_path(project))
+            - if project.visible?
+              = link_to(project.name, github_project_path(project))
             - else
               = project.name
           %td
