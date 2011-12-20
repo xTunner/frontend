@@ -1,0 +1,15 @@
+%tr{ :class => (build.failed? ? "fail" : "success") }
+  %td
+    = build.build_num
+
+  %td
+    = build.vcs_revision
+
+  %td
+    = build.start_time.to_s(:pretty)
+
+  %td
+    = build.stop_time - build.start_time
+
+
+-#= build.to_json

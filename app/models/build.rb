@@ -4,4 +4,6 @@ class Build
 
   field :vcs_url
   field :start_date
+
+  belongs_to :project
 end

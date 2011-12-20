@@ -8,7 +8,7 @@ class Project
   field :visible, :type => Boolean, :default => false
 
   has_and_belongs_to_many :users
-  has_many :jobs # TECHNICAL_DEBT: s/jobs/builds/
+  has_many :builds
 
   attr_accessible :name, :vcs_url
 
