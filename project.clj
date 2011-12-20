@@ -94,7 +94,7 @@
                  [org.cloudhoist/java "0.5.1"]
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
-                 [pallet-rvm "0.2.0"]
+                 [pallet-rvm "0.2.1"]
                  [midje "1.2.0"]
                  [cdt "1.2.6.1-SNAPSHOT"]
                  [org.jruby.ext.posix/jnr-posix "1.1.8"]]
