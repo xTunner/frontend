@@ -67,7 +67,7 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
-                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs"])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb"])
                              (java/java :openjdk :jdk)
                              (git/git)
                              (exec-script/exec-script
