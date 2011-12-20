@@ -50,6 +50,13 @@
          "rvm cmd"
          ("sudo" "-i" "-u" (unquote (-> ~session :user :username)) "bash" "-c" (unquote (format "\"%s\"" cmds#)))))))
 
+(defn install-rvm-profile [session]
+  (-> session
+      (remote-file/remote-file "~/rvm.sed" :local-file "pallet/ruby/rvm.sed" :no-versioning true)
+      (exec-script/exec-checked-script
+       "Installing RVM in the profile"
+       (sudo "-i" "-u" ~(-> session :user :username) bash "-c" "\"sed -f rvm.sed ~/.bashrc > ~/.bashrc-new && mv ~/.bashrc-new ~/.bashrc\""))))
+
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
   (pallet.core/group-spec
@@ -86,8 +93,9 @@
                                 (sudo "REALLY_GEM_UPDATE_SYSTEM=true" gem update --system)))
 
                              (rvm/rvm)
+                             (install-rvm-profile)
                              (user-code
-                              (source "~/.bash_profile") ;; make sure RVM is loaded
+                              (source "~/.bashrc") ;; make sure RVM is loaded
                               (rvm install jruby)
                               (rvm use jruby)
                               (rvm gemset create circle)
