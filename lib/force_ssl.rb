@@ -3,8 +3,9 @@
 ## all SSL traffic for us, making the built-in force SSL useless.
 ##
 
-## This 'mostly' working, Abandoning for now. AWS sends a different
-## header to indicate whether the request was on https
+## This 'mostly' working, the only real issue is that we're not keying
+## on the correct header that AWS sends to indicate whether the
+## request was on https
 
 class ForceSSL
   def initialize(app)
@@ -12,8 +13,6 @@ class ForceSSL
   end
 
   def call(env)
-    puts "ForceSSL: call: env=#{env}"
-    # logger.info "ForceSSL env: #{env}"
     if env['HTTPS'] == 'on' || env['HTTP_X_FORWARDED_PROTO'] == 'https'
       puts "ForceSSL: calling"
       @app.call(env)
