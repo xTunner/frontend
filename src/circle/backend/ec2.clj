@@ -351,7 +351,7 @@
 
 (defn image-wait-for-ready [image-name]
   (try-try-again
-   {:sleep 15
+   {:sleep 15000
     :tries (* 4 10)}
    #(throw-if-not (= :available (image-state image-name)) "AMI did not become available in timeout window")))
 
@@ -362,5 +362,6 @@
     (let [ami (-> client
                   (.createImage (CreateImageRequest. instance-id image-name))
                   (.getImageId))]
+      (println image-name "=>" ami)
       (image-wait-for-ready ami)
       ami)))
