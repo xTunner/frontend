@@ -10,16 +10,12 @@
     %table#recent-jobs
       %thead
         %tr
-          %th
-            \#
-          %th
-            Revision
-            -#          %th
-            -#          Author
-          %th
-            Started at
-          %th
-            Time taken
+          %th #
+          %th Success
+          %th Revision
+          -#          %th Author
+          %th Started at
+          %th Time taken
       %tbody
         = render :collection => @recent_builds, :partial => 'build'
 
