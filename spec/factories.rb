@@ -4,7 +4,7 @@ require 'factory_girl'
 
 Factory.define :project do |p|
   p.name "My test project"
-  p.vcs_url "https://github.com/circleci/circle-dummy-project/"
+  p.vcs_url "https://github.com/circleci/circle-dummy-project"
 end
 
 Factory.define :unowned_project, :class => Project do |p|
