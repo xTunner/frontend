@@ -47,6 +47,7 @@ group :test do
   gem "launchy", ">= 2.0.5"
   gem "minitest"
   gem 'turn', :require => false  # Pretty printed test output
+  gem 'flexmock'
 end
 
 group :development do

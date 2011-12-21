@@ -3,13 +3,15 @@
     = build.build_num
 
   %td
-    = build.vcs_revision
+    = revision_link(build.vcs_url, build.vcs_revision)
+
+  -# TODO: need the commit log and the author
 
   %td
-    = build.start_time.to_s(:pretty)
+    = as_commit_time build.start_time
 
   %td
-    = build.stop_time - build.start_time
+    = as_length_of_build build.start_time, build.stop_time
 
 
 -#= build.to_json
