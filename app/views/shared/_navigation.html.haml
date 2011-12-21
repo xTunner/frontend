@@ -3,16 +3,16 @@
     .topbar-inner
       .container-fluid
         %h3
-          %a.brand{:href => '#'}
-            Circle
+          = link_to "Circle", root_path, :class => :brand
 
         = render :partial => 'topbar_middle'
 
         %ul.nav.secondary-nav
           %li.dropdown
-            %a.dropdown-toggle{:href => '#'}
-              = current_user.email
+            = link_to current_user.email, '#', :class => "dropdown-toggle"
             %ul.dropdown-menu
+              %li
+                = link_to('Add more projects', join_path)
               %li
                 = link_to('Logout', destroy_user_session_path, :method => :delete)
 

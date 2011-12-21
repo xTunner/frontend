@@ -80,4 +80,4 @@
 
 (defn canonical-url
   ([username_and_password] (format "https://github.com/%s" username_and_password))
-  ([username password] (canonical-url (str format "%s/%s" username password))))
+  ([username password] (canonical-url (format "%s/%s" username password))))

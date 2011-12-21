@@ -21,7 +21,7 @@ gem "rest-client"
 gem 'airbrake'
 gem 'cancan'
 gem 'mongoid_session_store'
-gem 'mongoid-slugify'
+
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -47,6 +47,7 @@ group :test do
   gem "launchy", ">= 2.0.5"
   gem "minitest"
   gem 'turn', :require => false  # Pretty printed test output
+  gem 'flexmock'
 end
 
 group :development do
