@@ -7,9 +7,10 @@
 }
 
 .fail {
-   background-color: red;
+   font-weight: bold;
+   color: #ff4040; // somewhat painful red
 }
 
-.success {
-   background-color: green;
+.pass {
+   color: #1BE039; // inoffensive green
 }
