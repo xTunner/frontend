@@ -8,6 +8,8 @@ MongoidTest::Application.routes.draw do
 
   match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }
 
+  match '/admin', :to => 'admin#show', :as => :admin
+
   # Main project UI
   resources :projects, :only => [:show]
 

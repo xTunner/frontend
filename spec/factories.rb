@@ -27,6 +27,10 @@ Factory.define :github_user, :class => User do |u|
   u.name 'Circle Dummy user'
 end
 
+Factory.define :admin_user, :parent => :user do |u|
+  u.admin true
+end
+
 Factory.define :signup do |s|
   s.email "test@email.com"
   s.contact "true"

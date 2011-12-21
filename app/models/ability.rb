@@ -12,6 +12,9 @@ class Ability
       p.user_ids.include? user.id
     end
 
+    can :show, :admin if user.admin?
+
+
 
 
 
