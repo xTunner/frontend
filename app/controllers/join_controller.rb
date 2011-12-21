@@ -169,12 +169,12 @@ class JoinController < ApplicationController
     access_token = current_or_guest_user.github_access_token
 
     session[:state] =
-      if current_or_guest_user.sign_in_count > 0
-        :fetching_projects
-      elsif code.nil? and access_token.nil?
+      if code.nil? and access_token.nil?
         :start
       elsif code and access_token.nil?
         :authorizing
+      elsif current_or_guest_user.sign_in_count > 0
+        :fetching_projects
       elsif current_or_guest_user.projects.count > 0
         # They have a project but havent signed in yet, give them the form
         :signup
