@@ -1,6 +1,6 @@
 nodes:
   www:
-    ami: ami-25a3764c
+    ami: ami-13d90c7a
     instance-type: "m1.small"
     username: ubuntu
 
@@ -38,6 +38,7 @@ jobs:
       - rvm use jruby-1.6.5@circle --default
       - bundle install
       - lein deps
+      - rake assets:precompile
       - rake production:server:
           environment:
             CIRCLE_SWANK: "true"
@@ -53,6 +54,7 @@ jobs:
       - rvm use jruby-1.6.5@circle --default
       - bundle install
       - lein deps
+      - rake assets:precompile
       - rake staging:server
       - sudo /etc/init.d/nginx start
 

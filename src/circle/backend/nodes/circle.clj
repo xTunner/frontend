@@ -22,7 +22,8 @@
             [pallet.thread-expr :as thread-expr]
             [circle.sh :as sh]
             [circle.backend.ssh :as ssh]
-            [circle.backend.nodes :as nodes])
+            [circle.backend.nodes :as nodes]
+            [circle.backend.pallet :as circle-pallet])
   (:use [arohner.utils :only (inspect)]))
 
 ;; this is our "memoized" circle box
@@ -38,24 +39,6 @@
                       :username "ubuntu"
                       :public-key (slurp "www.id_rsa.pub")
                       :private-key (slurp "www.id_rsa")}))
-
-(defmacro user-code
-  "Runs a seq of stevedore commands as the non-sudo user"
-  [session & cmds]
-  `(let [cmds# (stevedore/with-script-language :pallet.stevedore.bash/bash
-                (clojure.string/join ";" (map (fn [c#]
-                                                (stevedore/emit-script [c#])) (quote ~cmds))))]
-    (-> ~session
-        (exec-script/exec-checked-script
-         "rvm cmd"
-         ("sudo" "-i" "-u" (unquote (-> ~session :user :username)) "bash" "-c" (unquote (format "\"%s\"" cmds#)))))))
-
-(defn install-rvm-profile [session]
-  (-> session
-      (remote-file/remote-file "~/rvm.sed" :local-file "pallet/ruby/rvm.sed" :no-versioning true)
-      (exec-script/exec-checked-script
-       "Installing RVM in the profile"
-       (sudo "-i" "-u" ~(-> session :user :username) bash "-c" "\"sed -f rvm.sed ~/.bashrc > ~/.bashrc-new && mv ~/.bashrc-new ~/.bashrc\""))))
 
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
@@ -84,7 +67,7 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
-                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs"])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb"])
                              (java/java :openjdk :jdk)
                              (git/git)
                              (exec-script/exec-script
@@ -93,8 +76,8 @@
                                 (sudo "REALLY_GEM_UPDATE_SYSTEM=true" gem update --system)))
 
                              (rvm/rvm)
-                             (install-rvm-profile)
-                             (user-code
+                             (circle-pallet/install-rvm-profile)
+                             (circle-pallet/user-code
                               (source "~/.bashrc") ;; make sure RVM is loaded
                               (rvm install jruby)
                               (rvm use jruby)

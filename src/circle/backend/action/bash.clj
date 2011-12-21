@@ -30,8 +30,8 @@
     (do
       (assert (-> @build :instance-ids (seq)))
       (let [instance-id (-> @build :instance-ids (first))
-          ip-addr (ec2/public-ip instance-id)
-          new-node (merge (-> @build :node) {:ip-addr ip-addr})]
+            ip-addr (ec2/public-ip instance-id)
+            new-node (merge (-> @build :node) {:ip-addr ip-addr})]
       (dosync
        (alter build assoc :node new-node))))
     build))

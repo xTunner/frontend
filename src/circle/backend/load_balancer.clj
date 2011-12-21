@@ -4,6 +4,7 @@
            (com.amazonaws.services.elasticloadbalancing.model
             ConfigureHealthCheckRequest
             CreateLoadBalancerRequest
+            CreateLoadBalancerListenersRequest
             DeleteLoadBalancerRequest
             DeregisterInstancesFromLoadBalancerRequest
             DescribeInstanceHealthRequest
@@ -93,18 +94,30 @@
 
       (doto request
         (.setLoadBalancerName name)
-        (.setListeners (for [listener listeners]
-                         (Listener. (-> listener :protocol)
-                                    (-> listener :load-balancer-port)
-                                    (-> listener :instance-port))))
+        (.setListeners (for [listener listeners
+                             :let [l (Listener. (-> listener :protocol)
+                                                (-> listener :load-balancer-port)
+                                                (-> listener :instance-port))
+                                   _ (when (-> listener :ssl-arn)
+                                       (.setSSLCertificateId l (-> listener :ssl-arn)))]]
+                         l))
         (.setAvailabilityZones availability-zones))
-      
-      (-> client 
+
+      (-> client
           (.createLoadBalancer request)
           (.getDNSName))
 
       (when health-check
         (apply-map configure-health-check name health-check)))))
+
+(defn add-listener
+  "Adds a new listener to the given load balancer. ssl-arn:optional, the ARN of the SSL Certificate. Required for SSL Listeners"
+  [lb-name {:keys [protocol load-balancer-port instance-port ssl-arn]}]
+  (with-elb-client client
+    (let [listener (Listener. protocol load-balancer-port instance-port)
+          _ (when ssl-arn (.setSSLCertificateId listener ssl-arn))
+          request (CreateLoadBalancerListenersRequest. lb-name [listener])]
+      (.createLoadBalancerListeners client request))))
 
 (defn describe-balancer [lb-name]
   (with-elb-client client
