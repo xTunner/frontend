@@ -16,9 +16,10 @@
 (defn ensure-keypair
   "If the node does not contain keypair-name, upload the keys to EC2. Node must already have private keys"
   [node]
+  {:pre [(-> node :public-key)]}
   (if (not (:keypair-name node))
-    (let [keypair-name (str "keypair-" (-> keys :public-key (sha1)))]
-      (ec2/import-keypair keypair-name (:public-key keys))
+    (let [keypair-name (str "keypair-" (-> node :public-key (sha1)))]
+      (ec2/import-keypair keypair-name (:public-key node))
       (merge {:keypair-name keypair-name} node))
     node))
 
