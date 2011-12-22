@@ -12,8 +12,6 @@ class Project
 
   attr_accessible :name, :vcs_url
 
-  # TECHNICAL_DEBT - TODO - WARNING - HACK - BEWARE
-  # I can't quite figure out how this looks the project up, so it must be a linear search!
   def to_param
     github_project_name
   end
