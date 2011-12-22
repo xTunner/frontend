@@ -6,9 +6,13 @@ MongoidTest::Application.routes.draw do
     :controllers => {:registrations => "registrations"}
 
 
-  match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }
+  match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }, :via => [:get]
+
+  match '/gh/:project', :to => 'builds#create', :as => :project_builds, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }, :via => [:post]
 
   match '/admin', :to => 'admin#show', :as => :admin
+
+  # TECHNICAL_DEBT: these aren't RESTful, and they're not clean
 
   # Main project UI
   resources :projects, :only => [:show]

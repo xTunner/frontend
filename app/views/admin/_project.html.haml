@@ -1,0 +1,30 @@
+%tr
+  %td
+    = link_to project.name, github_project_path(project)
+  %td
+    = link_to project.vcs_url
+  %td
+    = project.users.map {|u| u.email }
+  %td
+    = project.visible
+  %td
+    = form_for [project, Build.new], :remote => true do |f|
+      = f.submit "Trigger job"
+
+
+- if project.builds.count > 0
+  %tr
+    %td{:colspan => 5}
+      %table
+        %thead
+          %tr
+            %th #
+            %th status
+            %th rev
+            %th started
+            %th time taken
+
+        %tbody
+          -# TECHNICAL_DEBT copied
+          %thead
+            = render :collection => project.builds, :partial => 'projects/build'

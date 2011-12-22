@@ -1,1 +1,12 @@
-ADMIN page. Oh noes!
+%h2 Hidden projects
+
+%table
+  %thead
+    %tr
+      %th Name
+      %th url
+      %th users
+      %th visible
+      %th trigger
+  %tbody
+    = render :collection => @projects, :partial => 'project'
