@@ -6,9 +6,9 @@ MongoidTest::Application.routes.draw do
     :controllers => {:registrations => "registrations"}
 
 
-  match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }, :via => [:get]
+  match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => /[a-z\/\-A-Z0-9_]+/ }, :via => [:get]
 
-  match '/gh/:project', :to => 'builds#create', :as => :project_builds, :constraints => { :project => /[a-z\/\-A-Z0-9]+/ }, :via => [:post]
+  match '/gh/:project', :to => 'builds#create', :as => :project_builds, :constraints => { :project => /[a-z\/\-A-Z0-9_]+/ }, :via => [:post]
 
   match '/admin', :to => 'admin#show', :as => :admin
 
