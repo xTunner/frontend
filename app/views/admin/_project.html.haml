@@ -1,14 +1,14 @@
 %tr
   %td
-    = link_to project.name, github_project_path(project)
+    = link_to project.github_project_name, github_project_path(project)
   %td
-    = link_to project.vcs_url
+    = link_to "repo", project.vcs_url
   %td
-    = project.users.map {|u| u.email }
+    = project.users.map { |u| u.known_email }
   %td
     = project.visible
   %td
-    = form_for [project, Build.new], :remote => true do |f|
+    = twitter_bootstrap_form_for [project, Build.new], :remote => true do |f|
       = f.submit "Trigger job"
 
 
