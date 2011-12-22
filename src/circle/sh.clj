@@ -2,21 +2,24 @@
   "fns for running code locally, and compiling stevedore to bash"
   (:import java.io.OutputStreamWriter)
   (:require pallet.stevedore)
+  (:use [arohner.utils :only (inspect)])
   (:require [clojure.java.shell :as sh])
   (:use [circle.util.coerce :only (to-name)])
   (:use [circle.util.core :only (apply-if)]))
 
-(defmacro quasiquote [& forms]
-  `(pallet.stevedore/quasiquote ~forms))
+(defmacro q1
+  "Quasiquote a single stevedore form, i.e. (rvm use foo)"
+  [form]
+  `(pallet.stevedore/quasiquote ~form))
 
 (defmacro q
-  "shorthand for quasiquote"
+  "Quasiquote a seq of stevedore forms, ((rvm use foo) (bash bar))"
   [& forms]
-  `(quasiquote ~@forms))
+  `(pallet.stevedore/quasiquote (~@forms)))
 
 (defn format-bash-cmd [body environment pwd]
   (let [cd-form (when (seq pwd)
-                  (quasiquote (cd ~pwd)))
+                  (q (cd ~pwd)))
         env-form (map (fn [[k v]]
                         (format "export %s=%s" (to-name k) (to-name v))) environment)]
     (concat cd-form env-form body)))
@@ -47,7 +50,7 @@
 (defmacro shq
   "like sh, but quasiquotes its arguments"
   [body & {:keys [environment pwd]}]
-  `(sh (quasiquote ~body) :environment ~environment :pwd ~pwd))
+  `(sh (q ~body) :environment ~environment :pwd ~pwd))
 
 (defn process
   "Like sh, but returns the process object, which can be used to safely stop the thread. Cmd is a bash strings. environment is a map of strings to strings."

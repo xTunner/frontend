@@ -58,7 +58,7 @@
   [url & {:keys [path ssh-key]}]
   (let [path (or path (default-repo-path url))]
     (infof "git clone %s %s" url path)
-    (git-fn* (sh/quasiquote
+    (git-fn* (sh/q
               (git clone ~url ~path))
              :ssh-key
              ssh-key)))
@@ -67,7 +67,7 @@
   "git checkout cmd"
   [repo revision]
   (infof "git checkout %s" repo)
-  (git-fn* (sh/quasiquote
+  (git-fn* (sh/q
             (git checkout ~revision))
            :repo repo))
 
@@ -75,7 +75,7 @@
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
   (infof "git pull %s" repo)
-  (git-fn* (sh/quasiquote
+  (git-fn* (sh/q
             (git pull))
            :ssh-key ssh-key
            :repo repo))
@@ -97,7 +97,7 @@
   [repo]
   {:post [(do (infof "latest commit for %s is %s" repo %) true)]}
   (->
-   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H"))
+   (git-fn* (sh/q (git log -1 "--pretty=format:%H"))
             :repo repo)
    :out))
 
@@ -105,7 +105,7 @@
   "Returns the most recent on origin/master. Does not fetch."
   [repo]
   (->
-   (git-fn* (sh/quasiquote (git log -1 "--pretty=format:%H" "origin/master"))
+   (git-fn* (sh/q (git log -1 "--pretty=format:%H" "origin/master"))
             :repo repo)
    :out))
 
@@ -113,7 +113,7 @@
   "Returns the email address of the committer"
   [repo commit-id]
   (->
-   (git-fn* (sh/quasiquote (git log ~commit-id -1 "--format=%ae"))
+   (git-fn* (sh/q (git log ~commit-id -1 "--format=%ae"))
             :repo repo)
    :out
    (str/trim)))
