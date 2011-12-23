@@ -10,8 +10,8 @@
 
 ; TODO: find another home for this
 (defn run-build-from-jruby
-  [project-name job-name]
-  (let [build (config/build-from-name project-name :job-name (keyword job-name))]
+  [project-url job-name]
+  (let [build (config/build-from-url project-url :job-name (keyword job-name))]
     (run/run-build build)))
 
 ;;; Workers. Handles starting workers, checking if they're done, and getting the
