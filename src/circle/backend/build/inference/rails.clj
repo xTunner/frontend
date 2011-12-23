@@ -21,6 +21,12 @@
       (seq)
       (boolean)))
 
+(defn test-unit? [repo]
+  (-> (fs/join repo "test")
+      (fs/listdir)
+      (seq)
+      (boolean)))
+
 (defn find-example-yml
   "Look in repo/config/ for a file named database.example.yml or similar, and return the path, or nil"
   [repo]
@@ -66,8 +72,9 @@
     (->>
      [(when use-bundler?
         (bundle-install))
-      (if (rspec? repo)
-        (rspec-test :bundler? use-bundler?)
+      (when (rspec? repo)
+        (rspec-test :bundler? use-bundler?))
+      (when (test-unit? repo)
         (rake-test :bundler? use-bundler?))]
      (filter identity))))
 

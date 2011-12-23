@@ -42,7 +42,7 @@
     (ssh/remote-exec node "chmod +x bin/git_ssh.sh")))
 
 (defn private-key-name [build]
-  (format "%s.id_rsa" (build/build-name build)))
+  (format "%s.id_rsa" (clojure.string/replace (build/build-name build) #" " "-")))
 
 (defn private-key-path [build]
   (format ".ssh/%s" (private-key-name build)))
@@ -50,11 +50,14 @@
 (defn ensure-ssh-keys
   "Makes sure the ssh keys necessary to check out the project are on the remote box"
   [build]
-  (git/with-temp-ssh-key-file [file (-> @build :vcs-private-key)]
-    (println "file=" file)
-    (ssh/scp (-> @build :node) :direction :to-remote
-             :local-path (str file)
-             :remote-path (format "~/.ssh/%s.id_rsa" (build/build-name build)))))
+  (when (-> @build :vcs-private-key)
+    (let [node (-> @build :node)]
+      (ssh/remote-exec node "mkdir -p ~/bin")
+      (git/with-temp-ssh-key-file [file (-> @build :vcs-private-key)]
+        (ssh/scp node
+                 :direction :to-remote
+                 :local-path (str file)
+                 :remote-path (private-key-path build))))))
 
 (defmulti checkout-impl (fn [{:keys [vcs url path]}]
                           vcs))
@@ -82,7 +85,7 @@
   (throw (Exception. "don't know how to check out code of type" vcs)))
 
 (defn checkout-dir [b]
-  (fs/join (home-dir b) (build/build-name b)))
+  (fs/join (home-dir b) (build/checkout-dir b)))
 
 (defaction checkout []
   {:name "checkout"}
