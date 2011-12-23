@@ -4,6 +4,7 @@
   (:require [circle.backend.ssh :as ssh])
   (:require [clojure.string :as str])
   (:require [circle.backend.build :as build])
+  (:require [circle.backend.build.run :as run])
   (:require [circle.model.project :as project])
   (:require [circle.backend.github-url :as github])
   (:require [circle.backend.ec2 :as ec2])
@@ -251,7 +252,6 @@
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
   [github-json]
   (let [url (-> github-json :repository :url)
-        config (get-config-for-url url)
-        project (project/get-by-url! url)
-        vcs-revision (-> github-json :after)]
-    (build-from-url url :vcs_revision vcs-revision)))
+        vcs-revision (-> github-json :after)
+        build (build-from-url url :vcs_revision vcs-revision)]
+    (run/run-build build)))
