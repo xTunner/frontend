@@ -3,7 +3,7 @@ class AdminController < ApplicationController
   authorize_resource :class => false
 
   def show
-    @projects = Project.all
+    @projects = Project.order_by([[:vcs_url, :asc]])
     @projects.each { |p| p.include_builds! }
   end
 end
