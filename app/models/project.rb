@@ -1,7 +1,6 @@
 class Project
   include Mongoid::Document
 
-  field :name
   field :vcs_url
   field :ssh_private_key
   field :ssh_public_key
