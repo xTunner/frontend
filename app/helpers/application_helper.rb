@@ -62,5 +62,9 @@ module ApplicationHelper
     link_to(revision[0..8], url + "/commit/" + revision)
   end
 
+  def as_action_timestamp(time)
+    time.strftime("%T.%3N")
+  end
+
 
 end
