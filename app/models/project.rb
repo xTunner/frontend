@@ -1,5 +1,7 @@
 class Project
   include Mongoid::Document
+  include Mongoid::Timestamps
+  include Mongoid::Versioning
 
   field :vcs_url
   field :ssh_private_key
