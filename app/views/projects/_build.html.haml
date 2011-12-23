@@ -1,6 +1,6 @@
 %tr
   %td{ :class => build.status }
-    = build.build_num
+    = link_to(build.build_num, github_project_path(@project) + "/" + build.build_num.to_s)
 
   %td{ :class => build.status }
     = build.status
@@ -20,6 +20,3 @@
       Still running
     - else
       = as_length_of_build build.start_time, build.stop_time
-
-
--#= build.to_json
