@@ -6,11 +6,12 @@
   (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.model.project :as project])
+  (:require [circle.model.spec :as spec])
   (:require [circle.backend.github-url :as github])
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.git :as git])
   (:require [circle.backend.build.template :as template])
-  (:require circle.backend.build.nodes.rails)
+  (:require [circle.backend.build.nodes.rails :as rails])
   (:use [clojure.tools.logging :only (infof error)])
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.util.model-validation :only (validate!)])
@@ -45,6 +46,34 @@
     (when config
       (parse-config config))))
 
+(defn db-config [commands]
+  {:nodes {:www
+           {:ami (-> circle.backend.nodes.rails/rails-node :ami)
+            :instance-type "m1.small"
+            :username "ubuntu"
+            :security-groups ["www"]
+            :availability-zone "us-east-1a"}}
+   :jobs {:build
+          {:template :build
+           :node :www
+           :commands commands}}
+   :schedule {:commit
+              {:job :build}}})
+
+(defn spec-commands [spec]
+  (->> spec
+       ((juxt :setup :dependencies :compile :test))
+       (mapcat (fn [line]
+                 (str/split line #"\r\n")))
+       (filter #(> (.length %) 0))))
+
+(defn get-config-from-db [url]
+  (let [project (project/get-by-url url)
+        spec (spec/get-spec-for-project project)
+        commands (spec-commands spec)]
+    (when commands
+      (db-config commands))))
+
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
   [url & {:keys [vcs-revision]}]
@@ -57,9 +86,11 @@
     (git/ensure-repo git-url :ssh-key ssh-key :path repo)
     (when vcs-revision
       (git/checkout repo vcs-revision))
-    (-> repo
+    (or
+     (get-config-from-db url)
+     (-> repo
         (fs/join "circle.yml")
-        (load-config))))
+        (load-config)))))
 
 (defn validate-action-map [cmd]
   (validate! [(is-map?)
@@ -245,7 +276,6 @@
                            :vcs_revision vcs-revision
                            :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
                            ))
-
       (infer-build-from-url url))))
 
 (defn build-from-json

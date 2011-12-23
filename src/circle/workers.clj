@@ -11,13 +11,8 @@
 
 ; TODO: find another home for this
 (defn run-build-from-jruby
-  [url config]
-  (let [project (project/get-by-url url)
-        config (or config (config/get-config-for-url url))
-        build (-> config
-                  config/parse-config
-                  (config/build-from-config project :notify "founders@circleci.com"))
-        _ (println build)]
+  [url]
+  (let [build (config/build-from-url url)]
     (run/run-build build)))
 
 ;;; Workers. Handles starting workers, checking if they're done, and getting the
