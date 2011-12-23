@@ -42,11 +42,10 @@ describe UsersController do
     it "shouldn't link to invisible projects" do
       get :dashboard
       response.body.should have_content(@project.github_project_name)
-      # This test fails because it finds the link by partially matching it. Need
-      # to fully match it. However, I need to move on now, so I'm letting this
-      # test fail for now.
-      response.body.should_not have_link(@project.github_project_name)
-      response.body.should have_text("Coming soon")
+
+      link_xpath = "//a[normalize-space(text())='#{@project.github_project_name}']"
+      response.body.should_not have_xpath(link_xpath)
+      response.body.should have_content("Coming soon")
     end
 
     it "should use the pretty names", :type => :request do
