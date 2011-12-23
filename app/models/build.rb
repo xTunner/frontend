@@ -7,8 +7,19 @@ class Build
   field :failed?, :type => Boolean
   field :start_time, :type => Time, :default => nil
   field :stop_time, :type => Time, :default => nil
+  field :build_num, :type => Integer
 
   belongs_to :project
+
+  def the_project
+    # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't have access to the build model directly
+    Project.where(vcs_url: vcs_url).first
+  end
+
+  def logs
+    ActionLog.where("_build-ref" => id).all
+  end
+
 
   def status
     if self.failed? == true
