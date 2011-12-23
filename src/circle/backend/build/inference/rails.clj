@@ -41,43 +41,35 @@
         (fs/copy example-yml db-yml)
         (errorf "couldn't find database.yml for project, things probably aren't going to end well")))))
 
-(defn bundle-fn
-  "Wraps a one-line stevedore script in 'bundle exec', if the project
-  is using bundler. Returns new stevedore, or unmodified stevedore."
-  [build steve]
-  (if (-> @build :bundler?)
-    (concat '[bundle exec] (first steve))
-    steve))
-
 (defn rspec-test
   "action to run the rspec tests"
-  []
-  (action :name "rspec tests"
-          :act-fn (fn [build]
-                    (bash (bundle-fn build (sh/q (rspec spec)))))))
+  [& {:keys [bundler?]}]
+  (if bundler?
+    (bash (sh/q (bundle exec rspec spec)))
+    (bash (sh/q (rspec spec)))))
 
 (defn rake-test
   "action to run rake test"
-  []
-  (action :name "rake tests"
-          :act-fn (fn [build]
-                    (bash (bundle-fn build (sh/q (rake test)))))))
+  [& {:keys [bundler?]}]
+  (if bundler?
+    (bash (sh/q (bundle exec rake test)))
+    (bash (sh/q (rake test)))))
 
 (defn bundle-install []
-  (action :name "bundle install"
-          :act-fn (fn [build]
-                    (bash (sh/q (bundle exec))))))
+  (bash (sh/q (bundle install))
+        :name "bundle install"))
 
 (defn actions
   "Returns the set of actions necessary for this project"
   [repo]
-  (->>
-   [(when (bundler? repo)
-      (bundle-install))
-    (if (rspec? repo)
-      (rspec-test)
-      (rake-test))]
-   (filter identity)))
+  (let [use-bundler? (bundler? repo)]
+    (->>
+     [(when use-bundler?
+        (bundle-install))
+      (if (rspec? repo)
+        (rspec-test :bundler? use-bundler?)
+        (rake-test :bundler? use-bundler?))]
+     (filter identity))))
 
 (defmethod inference/infer-actions* :rails [_ repo]
   (actions repo))

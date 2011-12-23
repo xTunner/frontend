@@ -11,6 +11,9 @@
   (:use [circle.backend.github-url :only (->ssh)])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [clojure.tools.logging :only (infof)])
+  (:require [circle.backend.git :as git])
+  (:require [circle.backend.ssh :as ssh])
+  (:use [circle.util.core :only (apply-if)])
   (:use midje.sweet)
   (:require [clj-url.core :as url]))
 
@@ -25,22 +28,55 @@
      (= (-> url url/parse :protocol) "git") :git
      :else nil)))
 
+(def remote-git-ssh-path "bin/git_ssh.sh") ;; where we'll put the git_ssh.sh script on the remote box
+
+(defn ensure-git-ssh
+  "Makes sure the git-ssh script is on the remote box"
+  [build]
+  (let [node (-> @build :node)]
+    (ssh/remote-exec node "mkdir -p ~/bin")
+    (ssh/scp node
+             :direction :to-remote
+             :local-path git/git-ssh-path
+             :remote-path "bin/git_ssh.sh")
+    (ssh/remote-exec node "chmod +x bin/git_ssh.sh")))
+
+(defn private-key-name [build]
+  (format "%s.id_rsa" (build/build-name build)))
+
+(defn private-key-path [build]
+  (format ".ssh/%s" (private-key-name build)))
+
+(defn ensure-ssh-keys
+  "Makes sure the ssh keys necessary to check out the project are on the remote box"
+  [build]
+  (git/with-temp-ssh-key-file [file (-> @build :vcs-private-key)]
+    (println "file=" file)
+    (ssh/scp (-> @build :node) :direction :to-remote
+             :local-path (str file)
+             :remote-path (format "~/.ssh/%s.id_rsa" (build/build-name build)))))
+
 (defmulti checkout-impl (fn [{:keys [vcs url path]}]
                           vcs))
 
 (defmethod checkout-impl :git [{:keys [build url path revision]}]
   (throw-if-not (pos? (.length url)) "url must be non-empty")
   (throw-if-not (pos? (.length path)) "path must be non-empty")
+  (ensure-git-ssh build)
+  (ensure-ssh-keys build)
   (println "checking out" url " to " path)
-  (let [checkout-cmd (if revision
-                       (sh/quasiquote
+  (let [cmd-env {"SSH_ASKPASS" false}
+        cmd-env (apply-if (-> @build :vcs-private-key) merge cmd-env {"GIT_SSH" remote-git-ssh-path
+                                                                      "GIT_SSH_KEY" (private-key-path build)})
+        checkout-cmd (if revision
+                       (sh/q
                         (git clone ~url ~path --no-checkout)
                         (cd ~path)
                         (git checkout ~revision))
-                       (sh/quasiquote
+                       (sh/q
                         (git clone ~url ~path --depth 1)))]
     (remote-bash-build build checkout-cmd
-                       :environment {"SSH_ASKPASS" false})))
+                       :environment cmd-env)))
 
 (defmethod checkout-impl :default [{:keys [vcs]}]
   (throw (Exception. "don't know how to check out code of type" vcs)))

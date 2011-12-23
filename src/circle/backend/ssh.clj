@@ -3,6 +3,7 @@
   (:use [clojure.tools.logging :only (errorf)])
   (:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.args :only (require-args)])
+  (:use [circle.util.except :only (throwf)])
   (:use [circle.util.core :only (apply-map)]))
 
 (defn slurp-stream
@@ -83,6 +84,22 @@
                      nil
                      :stream
                      {})))))
+
+(defn scp
+  "Scp one or more files. Direction is a keyword, either :to-remote
+  or :to-local.
+
+  The 'source' side of the connection may be a seq of
+  strings. i.e. when transferring to-remote, local-path can be a
+  seq. When transferring to-local, remote-path can be a seq of paths"
+
+  [node & {:keys [local-path remote-path direction]}]
+  (with-session node
+    (fn [ssh-session]
+      (cond
+       (= :to-remote direction) (ssh/scp-to ssh-session local-path remote-path)
+       (= :to-local direction) (ssh/scp-from ssh-session remote-path local-path)
+       :else (throwf "direction must be :to-local or :to-remote")))))
 
 (defn generate-keys
   "Generate a new pair of SSH keys, returns a map"

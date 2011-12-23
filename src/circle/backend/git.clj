@@ -16,10 +16,11 @@
   (last (clojure.string/split url #"/")))
 
 (defn repo-exists? [path]
-  (->
-   (sh/shq [(stat ~path)])
-   (:exit)
-   (= 0)))
+  (let [git-dir (fs/join path ".git")]
+    (->
+     (sh/shq [(stat ~path)])
+     (:exit)
+     (= 0))))
 
 (defn default-repo-path [url]
   {:pre [url]}

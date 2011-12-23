@@ -160,7 +160,7 @@
   (mongo/fetch-one build-coll :where {:instance-ids id}))
 
 (defn ssh
-  "Opens a terminal window that SSHs into intance with the provided id.
+  "Opens a terminal window that SSHs into instance with the provided id.
 
 Assumes:
   1) the instance was started by a build

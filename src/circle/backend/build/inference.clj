@@ -1,12 +1,13 @@
 (ns circle.backend.build.inference
-  "fns for creating a build from a source tree")
+  "fns for creating a build from a source tree"
+  (:require [circle.backend.build.template :as template]))
 
 (defn infer-repo-type
   "Attempts to figure out what kind of project this repo is. Returns a
   keyword, such as :rails, or nil"
   [repo]
   :rails) ;;FIXME, always returns rails right now
-  
+
 
 (defmulti infer-actions* (fn [type repo-path]
                            type))
@@ -25,4 +26,4 @@
  seq of build actions."
   [repo]
   (let [repo-type (infer-repo-type repo)]
-    (infer-actions* repo-type repo)))
+    (template/apply-template :build (infer-actions* repo-type repo))))
