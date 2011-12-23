@@ -1,28 +1,25 @@
-- @logs.each do |l|
-  .command
-    = l.name
-    = surround '(', ')' do
-      = l.start_time
-      = l.end_time
+.container
+  - @logs.each do |l|
+    %div{ :class => [0, nil].include?(l["exit_code"]) ? "alert-message success" : "alert-message error" }
+      = l.name
+      = surround '(', ')' do
+        = l.start_time
+        = l.end_time
 
-  .rest
-    - if l["out"]
-      %table
-        %thead
-          %tr
-            %th Timestamp
-            %th stdout
-            %th stderr
-        %tbody
-          - l["out"].each do |o|
+    .rest
+      - if l["out"]
+        %table
+          %thead
             %tr
-              %td
-                = o["time"]
-              %td
-                %pre
-                  - if o["type"] == "out"
-                    = o["message"]
-              %td
-                %pre
-                  - if o["type"] == "err"
-                    = o["message"]
+              %th Timestamp
+              %th stdout/stderr
+          %tbody
+            - l["out"].each do |o|
+              - if o["message"] != ""
+                %tr
+                  %td
+                    = o["time"]
+                  %td
+                    %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
+                      %pre
+                        = o["message"]
