@@ -45,7 +45,7 @@
         config (get-config-for-url (-> test/circle-project :vcs_url))
         vcs_revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
         b (build-from-config config test/circle-project
-                             :vcs_revision vcs_revision
+                             :vcs-revision vcs_revision
                              :job-name :build)]
     (ref? b) => true
     (-> @b :vcs_revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
@@ -76,9 +76,12 @@
  "https://github.com/edavis10/redmine"
  "https://github.com/arohner/circle-dummy-project")
 
-(fact "build email addresses are correct"
-  (let [build (build-from-json test/circle-github-json)]
-    (-> @build :notify_emails) => #{"arohner@gmail.com"}))
+;;
+;; This test works, but we've temporarily hard-coded the email addresses until we start mailing customers.
+
+;; (fact "build email addresses are correct"
+;;   (let [build (build-from-json test/circle-github-json)]
+;;     (-> @build :notify_emails) => #{"arohner@gmail.com"}))
 
 (tabular
  (fact "infer project name works"

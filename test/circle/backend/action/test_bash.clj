@@ -17,11 +17,11 @@
 (fact "remote-bash works with quoted forms"
   (let [foo "foo"
         bar "bar"
-        resp (bash/remote-bash (test/localhost-ssh-map) (sh/quasiquote (echo ~foo ~bar)))]
+        resp (bash/remote-bash (test/localhost-ssh-map) (sh/q (echo ~foo ~bar)))]
     resp => (clojure.java.shell/sh "echo" "foo" "bar")))
 
 (fact "remote-bash works with pwd"
-  (let [resp (bash/remote-bash (test/localhost-ssh-map) (sh/quasiquote (stat "zero")) :pwd "/dev")]
+  (let [resp (bash/remote-bash (test/localhost-ssh-map) (sh/q (stat "zero")) :pwd "/dev")]
     (-> resp :exit) => 0))
 
 (fact "bash actions are named after their commands"
@@ -36,6 +36,6 @@
       (-> @build :action-results (first) :out (first) :message) => (-> (test/localhost-name) :out))))
 
 (fact "bash action passes env"
-  (let [build (test/minimal-build :actions [(bash/bash (sh/quasiquote (echo "$FOO")) :environment {"FOO" "bar"})])]
+  (let [build (test/minimal-build :actions [(bash/bash (sh/q (echo "$FOO")) :environment {"FOO" "bar"})])]
     (let [result (run/run-build build)]
       (-> @build :action-results (first) :out (first) :message) => "bar\n")))

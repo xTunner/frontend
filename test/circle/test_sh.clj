@@ -6,7 +6,7 @@
   (sh/emit-form "hostname") => "hostname")
 
 (fact "emit-form handles stevedore"
-  (sh/emit-form (sh/quasiquote (hostname))) => "hostname")
+  (sh/emit-form (sh/q (hostname))) => "hostname")
 
 (fact "format-bash-command handles pwd"
   (sh/emit-form "hostname" :pwd "/home/test") => "cd /home/test\nhostname\n")
@@ -29,10 +29,10 @@
   => "cd /home/test\nexport CIRCLE_ENV=production\nexport SWANK=true\nlein run\n")
 
 (fact "sh works"
-  (let [resp (sh/sh (sh/quasiquote (hostname)))]
+  (let [resp (sh/sh (sh/q (hostname)))]
     resp => (just (clojure.java.shell/sh "hostname" :return-map true))))
 
 (fact "sh w/ pwd works"
-  (let [resp (sh/sh (sh/quasiquote (stat zero))
+  (let [resp (sh/sh (sh/q (stat zero))
                     :pwd "/dev")]
     (-> resp :exit) => 0))

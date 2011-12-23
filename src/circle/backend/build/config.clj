@@ -46,7 +46,7 @@
 
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
-  [url & {:keys [vcs_revision]}]
+  [url & {:keys [vcs-revision]}]
   {:pre [url]}
   (let [ssh-key (project/ssh-key-for-url url)
         repo (git/default-repo-path url)
@@ -54,8 +54,8 @@
                   (github/->ssh url)
                   url)]
     (git/ensure-repo git-url :ssh-key ssh-key :path repo)
-    (when vcs_revision
-      (git/checkout repo vcs_revision))
+    (when vcs-revision
+      (git/checkout repo vcs-revision))
     (-> repo
         (fs/join "circle.yml")
         (load-config))))
@@ -92,12 +92,8 @@
   "Finds job in config, loads approprate template and parses actions"
   [job]
   (let [template-name (-> job :template)
-        template (template/find template-name)
-        _ (throw-if-not template "could not find template %s" template-name)
-        actions (parse-actions job)
-        before (map #(apply % []) (-> template :prefix))
-        after (map #(apply % []) (-> template :suffix))]
-    (concat before actions after)))
+        actions (parse-actions job)]
+    (template/apply-template template-name actions)))
 
 (defn load-job [config job-name]
   (throw-if-not (keyword? job-name) "job name must be a keyword")
@@ -128,8 +124,8 @@
     (try
       (let [pub-key-path (-> node :public-key)
             priv-key-path (-> node :private-key)
-            pub-key (slurp pub-key-path)
-            priv-key (slurp priv-key-path)]
+            pub-key (slurp (fs/join (git/default-repo-path url) pub-key-path))
+            priv-key (slurp (fs/join (git/default-repo-path url) priv-key-path))]
         {:private-key priv-key
          :public-key pub-key
          :keypair-name (ec2/ensure-keypair (keypair-name priv-key-path) pub-key)})
@@ -170,7 +166,20 @@
        (mapcat #(translate-email-recipient github-json %))
        (set)))
 
-(defn build-from-config [config project & {:keys [vcs_revision job-name build_num notify]}]
+(defn add-project-info
+  "Adds a bunch of relevant information from the project to the build
+  obj. All arguments can be overridden with keyword args. Proto-build
+  is a map that hasn't been turned into a build yet"
+  [project proto-build & {:as opts}]
+  (merge
+   {:vcs_url (-> project :vcs_url)
+    :lb-name (-> project :lb-name)
+    :vcs-private-key (-> project :ssh_private_key)
+    :vcs-public-key (-> project :ssh_public_key)}
+   proto-build
+   opts))
+
+(defn build-from-config [config project & {:keys [vcs-revision job-name build_num notify]}]
   (let [job-name (or job-name (-> config :jobs (first) (key)))
         job (load-job config job-name)
         node (load-node config job (-> project :vcs_url))
@@ -180,26 +189,15 @@
         repo (git/default-repo-path url)
         vcs_revision (or vcs_revision (git/latest-local-commit repo))]
     (assert job-name)
-    (build/build (merge
-                  {:vcs_url (-> project :vcs_url)
-                   :lb-name (-> project :lb-name)
-                   :notify_emails notify
-                   :build_num build_num
-                   :vcs_revision vcs_revision
-                   :job-name job-name
-                   :node node
-                   :actions actions}))))
-
-(defn build-from-name
-  "Given a project name and a build name, return a build. Helper method for repl"
-  [project-name & {:keys [job-name vcs_revision]}]
-  (let [project (project/get-by-name project-name)
-        _ (throw-if-not project "project %s not found" project-name)
-        url (-> project :vcs_url)
-        config (get-config-for-url url :vcs_revision vcs_revision)]
-    (build-from-config config project
-                       :vcs_revision vcs_revision
-                       :job-name job-name)))
+    (->>
+     {:notify_emails notify
+      :build_num build_num
+      :vcs_revision vcs-revision
+      :job-name job-name
+      :node node
+      :actions actions}
+     (add-project-info project)
+     (build/build))))
 
 (defn infer-project-name [url]
   (-> url
@@ -221,14 +219,33 @@
   (let [project (project/get-by-url url)
         project-name (or (-> project :name) (infer-project-name url))
         repo (git/default-repo-path url)
-        vcs_revision (git/latest-local-commit repo)
+        vcs-revision (git/latest-local-commit repo)
         node (inference/node repo)]
-    (build/build {:vcs_url url
-                  :vcs_revision vcs_revision
-                  :node node
-                  :actions (inference/infer-actions repo)
-                  :notify_emails ["arohner@gmail.com"] ;; don't use :committer yet, these people might not be using circle
-                  })))
+    (build/build
+     (add-project-info project
+                       {:vcs_url url
+                        :vcs_revision vcs-revision
+                        :node node
+                        :actions (inference/infer-actions repo)
+                        :notify_emails ["founders@circleci.com"] ;; don't use :committer yet, these people might not be using circle
+                        }))))
+
+(defn build-from-url
+  "Given a project url and a build name, return a build. Helper method for repl"
+  [url & {:keys [job-name vcs-revision]}]
+  (let [project (project/get-by-url! url)
+        repo (git/default-repo-path url)
+        vcs-revision (or vcs-revision (git/latest-local-commit repo))
+        config (get-config-for-url url :vcs_revision vcs-revision)
+        job-name (or job-name (-> config :jobs (first)))]
+    (if (and config project)
+      (let [job-name (or (-> config :schedule :commit :job (keyword)) (-> config :jobs (first) (key)))]
+        (build-from-config config project
+                           :vcs_revision vcs-revision
+                           :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
+                           ))
+
+      (infer-build-from-url url))))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
@@ -237,10 +254,4 @@
         config (get-config-for-url url)
         project (project/get-by-url! url)
         vcs-revision (-> github-json :after)]
-    (if (and config project)
-      (let [job-name (or (-> config :schedule :commit :job (keyword)) (-> config :jobs (first) (key)))]
-        (build-from-config config project
-                           :vcs_revision vcs-revision
-                           :notify (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))))
-
-      (infer-build-from-url url))))
+    (build-from-url url :vcs_revision vcs-revision)))
