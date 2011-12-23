@@ -45,7 +45,7 @@
         config (get-config-for-url (-> test/circle-project :vcs_url))
         vcs_revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
         b (build-from-config config test/circle-project
-                             :vcs_revision vcs_revision
+                             :vcs-revision vcs_revision
                              :job-name :build)]
     (ref? b) => true
     (-> @b :vcs_revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
