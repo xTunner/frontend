@@ -187,7 +187,7 @@
         actions (load-actions job)
         url (-> project :vcs_url)
         repo (git/default-repo-path url)
-        vcs_revision (or vcs_revision (git/latest-local-commit repo))]
+        vcs-revision (or vcs-revision (git/latest-local-commit repo))]
     (assert job-name)
     (->>
      {:notify_emails notify
