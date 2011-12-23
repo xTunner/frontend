@@ -4,10 +4,6 @@ class AdminController < ApplicationController
 
   def show
     @projects = Project.all
-
-    # we're using mongo, right? ha!
-    @projects.each do |p|
-      p.builds = Build.where(vcs_url: p.vcs_url).order_by([[:build_num, :desc]]).limit(5)
-    end
+    @projects.each { |p| p.include_builds! }
   end
 end

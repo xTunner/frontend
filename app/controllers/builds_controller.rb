@@ -1,25 +1,23 @@
 require 'backend'
 
 class BuildsController < ApplicationController
+  before_filter :authenticate_user!
   respond_to :html, :json
 
   def create
-    url = Backend.blocking_worker "circle.backend.github-url/canonical-url", params[:project]
-    @project = Project.where(vcs_url: url).first
+    @project = Project.from_github_name params[:project]
+    authorize! :manage, @project
 
     Backend.build(@project)
 
-    render :text => ""
-
+    render :nothing => true
   end
 
   def show
-    url = Backend.blocking_worker "circle.backend.github-url/canonical-url", params[:project]
-    @project = Project.where(vcs_url: url).first
+    @project = Project.from_github_name params[:project]
+    authorize! :read, @project
 
-    id = params[:id]
-    @build = Build.where(vcs_url: url, build_num: id).first
-
+    @build = @project.build_numbered params[:id]
     @logs = @build.logs
   end
 

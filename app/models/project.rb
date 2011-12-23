@@ -1,3 +1,5 @@
+# require 'backend'
+
 class Project
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -15,6 +17,31 @@ class Project
 
   def to_param
     github_project_name
+  end
+
+  def self.from_url(url)
+    projects = Project.where(:vcs_url => url)
+    projects.first
+  end
+
+  def self.from_github_name(name)
+    url = Backend.blocking_worker "circle.backend.github-url/canonical-url", name
+    self.from_url(url)
+  end
+
+  # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the clojure side.
+  def recent_builds
+    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(20)
+  end
+
+  def build_numbered(num) # bad things happen if we call this "build"
+    Build.where(:vcs_url => vcs_url, :build_num => num).first
+  end
+
+  # # TECHNICAL_DEBT - we're using mongo badly here, this should be free!
+  def include_builds!
+    # we're using mongo, right? ha!
+    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(5)
   end
 
   def github_project_name

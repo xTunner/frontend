@@ -2,15 +2,14 @@ class ProjectsController < ApplicationController
   before_filter :authenticate_user!
 
   def show
-    url = Backend.blocking_worker "circle.backend.github-url/canonical-url", params[:project]
-    @project = Project.where(vcs_url: url).first
-
+    @project = Project.from_github_name params[:project]
     authorize! :read, @project
 
-    # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the clojure side.
-    @recent_builds = Build.where(vcs_url: @project.vcs_url).order_by([[:build_num, :desc]]).limit(20)
+    @recent_builds = @project.recent_builds
 
     render "show"
   end
 
+  def edit
+  end
 end
