@@ -5,9 +5,11 @@ class Spec
   include Mongoid::Timestamps
 
   # These are really arrays of fields, but it's easier to use \n as a delimiter for now.
-  field :setup, :type => String, default => ""
-  field :dependencies, :type => String, default => ""
-  field :dependencies, :type => String, default => ""
-  field :test, :type => String, default => ""
+  field :setup, :type => String, :default => ""
+  field :dependencies, :type => String, :default => ""
+  field :compile, :type => String, :default => ""
+  field :test, :type => String, :default => ""
+
+  belongs_to :project
 
 end

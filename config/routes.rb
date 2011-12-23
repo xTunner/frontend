@@ -11,6 +11,7 @@ MongoidTest::Application.routes.draw do
   match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => github_regex }, :via => [:get]
   match '/gh/:project', :to => 'builds#create', :as => :project_builds, :constraints => { :project => github_regex }, :via => [:post]
   match '/gh/:project/edit', :to => 'projects#edit', :as => :github_project_edit, :constraints => { :project => github_regex }, :via => [:get]
+  match '/gh/:project', :to => 'projects#update', :as => :github_project_update, :constraints => { :project => github_regex }, :via => [:put]
 
 
   match '/gh/:project/:id', :to => 'builds#show', :as => :build, :constraints => { :project => github_regex, :id => /\d+/ }, :via => [:get]

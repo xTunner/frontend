@@ -8,7 +8,7 @@ class Ability
 
     can :manage, User, :id => user.id # only users may check out their own page
 
-    can :read, Project do |p|
+    can :manage, Project do |p|
       p.user_ids.include? user.id
     end
 

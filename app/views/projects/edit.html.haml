@@ -1,0 +1,47 @@
+.container-fluid
+  .content
+    .row
+      .span6.offset2.alert-message.block-message.info
+        Enter a list of commands for each build phase. Each line is a separate
+        program invocation, and any failing program (with an exit code of 0), will stop the build.
+        After saving the form, you may test your builds with the trigger button.
+
+        We'll monitor your settings here to improve Circle.
+
+
+    - @specs.each do |s|
+      = twitter_bootstrap_form_for s, :url => github_project_update_path do |f|
+        = f.inputs "Project settings", :class => 'form-stacked' do
+
+          = f.text_area :setup, 'Machine image setup', :value => s.setup, :class => "xxlarge", :rows => 10
+          %span.help-block
+            List of bash commands to set up your box. Most dependencies should already be
+            installed, but you can `sudo apt-get install` those that aren't. We'll
+            cache these steps so that they don't need to be run when they change.
+
+          %br
+
+          = f.text_area :dependencies, 'Project dependencies', :value => s.dependencies, :class => "xxlarge", :rows => 10
+          %span.help-block
+            List of bash commands to install your project's libraries and
+            dependencies. For example, `bundle install` for Rails or `lein deps`
+            for Clojure. We'll cache these steps so to make them fast.
+
+          %br
+
+          = f.text_area :compile, :value => s.compile, :class => "xxlarge", :rows => 10
+          %span.help-block
+            List of bash commands to compile your code, for example 'configure',
+            'make', or 'ant build'. You can usually ignore this for interpreted
+            languages.
+
+          %br
+
+          = f.text_area :test, :value => s.test, :class => "xxlarge", :rows => 10
+          %span.help-block
+            List of bash commands to test your code. For example, 'rake test', 'rspec spec', 'make check', etc.
+
+          %br
+
+        = f.actions do
+          = f.submit "Update project settings", :class => "btn primary"

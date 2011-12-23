@@ -12,12 +12,25 @@ class ProjectsController < ApplicationController
     authorize! :read, @project
 
     @recent_builds = @project.recent_builds
-
-    render "show"
   end
 
   def edit
     @project = Project.from_github_name params[:project]
     authorize! :read, @project
+
+    @specs = @project.specs
+    if @specs == []
+      @specs = [@project.specs.create]
+    end
+  end
+
+  def update
+    @project = Project.from_github_name params[:project]
+    authorize! :manage, @project
+
+    @project.specs[0].update_attributes(params["spec"])
+    @project.specs[0].save
+
+    redirect_to github_project_edit_path(@project)
   end
 end
