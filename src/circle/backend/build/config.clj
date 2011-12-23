@@ -184,7 +184,10 @@
         job (load-job config job-name)
         node (load-node config job (-> project :vcs_url))
         schedule (-> config :schedule)
-        actions (load-actions job)]
+        actions (load-actions job)
+        url (-> project :vcs_url)
+        repo (git/default-repo-path url)
+        vcs_revision (or vcs_revision (git/latest-local-commit repo))]
     (assert job-name)
     (->>
      {:notify_emails notify

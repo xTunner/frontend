@@ -12,6 +12,13 @@ class Ability
       p.user_ids.include? user.id
     end
 
+    can :read, Build do |b|
+      b.the_project.user_ids.include? user.id
+    end
+
+    can :manage, :all if user.admin?
+
+
 
 
 

@@ -41,9 +41,9 @@
         %tr
           %td
             - if project.visible?
-              = link_to(project.name, github_project_path(project))
+              = link_to(project.github_project_name, github_project_path(project))
             - else
-              = project.name
+              = project.github_project_name
           %td
             = link_to project.vcs_url do
               = project.vcs_url

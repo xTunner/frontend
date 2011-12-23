@@ -6,12 +6,18 @@
   (:require [circle.ruby :as ruby])
   (:use [circle.airbrake :only (airbrake)])
   (:require [circle.env :as env])
-  (:require [fs]))
+  (:require [fs])
+  (:require [circle.model.project :as project]))
 
 ; TODO: find another home for this
 (defn run-build-from-jruby
-  [project-url job-name]
-  (let [build (config/build-from-url project-url :job-name (keyword job-name))]
+  [url config]
+  (let [project (project/get-by-url url)
+        config (or config (config/get-config-for-url url))
+        build (-> config
+                  config/parse-config
+                  (config/build-from-config project :notify "founders@circleci.com"))
+        _ (println build)]
     (run/run-build build)))
 
 ;;; Workers. Handles starting workers, checking if they're done, and getting the

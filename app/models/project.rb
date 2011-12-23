@@ -1,7 +1,6 @@
 class Project
   include Mongoid::Document
 
-  field :name
   field :vcs_url
   field :ssh_private_key
   field :ssh_public_key
@@ -12,8 +11,6 @@ class Project
 
   attr_accessible :name, :vcs_url
 
-  # TECHNICAL_DEBT - TODO - WARNING - HACK - BEWARE
-  # I can't quite figure out how this looks the project up, so it must be a linear search!
   def to_param
     github_project_name
   end
@@ -26,4 +23,8 @@ class Project
     result
   end
 
+  def config
+    # For now, just read circle.yml for everyone, and see what happens.
+    File.read("#{File.dirname(__FILE__)}/../../circle.yml")
+  end
 end

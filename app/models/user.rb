@@ -23,6 +23,14 @@ class User
   validates_uniqueness_of :email, :case_sensitive => false
   attr_accessible :name, :contact, :email, :password, :password_confirmation
 
+  def known_email
+    if email.include? "@"
+      email
+    else
+      "!!<#{fetched_email}>!!"
+    end
+  end
+
   # https://github.com/plataformatec/devise/wiki/How-To:-Allow-users-to-edit-their-account-without-providing-a-password
   # Guest users start with a blank password, but we ask them to update them
   # later. However, without this hack, they won't be able to validate their

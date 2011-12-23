@@ -1,9 +1,9 @@
 %tr
-  %td{ :class => (build.failed? ? "fail" : "pass") }
+  %td{ :class => build.status }
     = build.build_num
 
-  %td{ :class => (build.failed? ? "fail" : "pass") }
-    = build.failed? ? "FAIL" : "PASS"
+  %td{ :class => build.status }
+    = build.status
 
   %td
     = revision_link(build.vcs_url, build.vcs_revision)
@@ -12,11 +12,14 @@
 
   -# TODO: need the commit log and the author
 
-  %td{ :class => (build.failed? ? "fail" : "pass") }
+  %td{ :class => build.status }
     = as_commit_time build.start_time
 
-  %td{ :class => (build.failed? ? "fail" : "pass") }
-    = as_length_of_build build.start_time, build.stop_time
+  %td{ :class => build.status }
+    - if build.status == :running
+      Still running
+    - else
+      = as_length_of_build build.start_time, build.stop_time
 
 
 -#= build.to_json

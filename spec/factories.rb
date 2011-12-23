@@ -4,7 +4,7 @@ require 'factory_girl'
 
 Factory.define :project do |p|
   p.name "My test project"
-  p.vcs_url "https://github.com/circleci/circle-dummy-project/"
+  p.vcs_url "https://github.com/circleci/circle-dummy-project"
 end
 
 Factory.define :unowned_project, :class => Project do |p|
@@ -25,6 +25,10 @@ Factory.define :github_user, :class => User do |u|
   u.email 'vendors@circleci.com'
   u.password 'habit review loss loss'
   u.name 'Circle Dummy user'
+end
+
+Factory.define :admin_user, :parent => :user do |u|
+  u.admin true
 end
 
 Factory.define :signup do |s|

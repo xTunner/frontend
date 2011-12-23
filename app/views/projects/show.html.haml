@@ -18,7 +18,3 @@
           %th Time taken
       %tbody
         = render :collection => @recent_builds, :partial => 'build'
-
-
--#  = form_for [@project, Build.new], :remote => true do |f|
--#    = f.submit "Trigger job"
