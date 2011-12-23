@@ -9,7 +9,7 @@ class Backend
   end
 
   def self.build(project)
-    self.fire_worker "circle.workers/run-build-from-jruby", project.name, "build"
+    self.fire_worker "circle.workers/run-build-from-jruby", project.vcs_url, project.config
   end
 
   # We launch workers using start_worker. On the clojure side, we use futures to launch the job.

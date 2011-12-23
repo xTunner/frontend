@@ -128,8 +128,8 @@
     (try
       (let [pub-key-path (-> node :public-key)
             priv-key-path (-> node :private-key)
-            pub-key (slurp (fs/join (git/default-repo-path url) pub-key-path))
-            priv-key (slurp (fs/join (git/default-repo-path url) priv-key-path))]
+            pub-key (slurp pub-key-path)
+            priv-key (slurp priv-key-path)]
         {:private-key priv-key
          :public-key pub-key
          :keypair-name (ec2/ensure-keypair (keypair-name priv-key-path) pub-key)})
@@ -175,7 +175,10 @@
         job (load-job config job-name)
         node (load-node config job (-> project :vcs_url))
         schedule (-> config :schedule)
-        actions (load-actions job)]
+        actions (load-actions job)
+        url (-> project :vcs_url)
+        repo (git/default-repo-path url)
+        vcs_revision (or vcs_revision (git/latest-local-commit repo))]
     (assert job-name)
     (build/build (merge
                   {:vcs_url (-> project :vcs_url)
@@ -193,10 +196,7 @@
   (let [project (project/get-by-name project-name)
         _ (throw-if-not project "project %s not found" project-name)
         url (-> project :vcs_url)
-        config (get-config-for-url url :vcs_revision vcs_revision)
-        job-name (or job-name (-> config :jobs (first)))
-        repo (git/default-repo-path url)
-        vcs_revision (or vcs_revision (git/latest-local-commit repo))]
+        config (get-config-for-url url :vcs_revision vcs_revision)]
     (build-from-config config project
                        :vcs_revision vcs_revision
                        :job-name job-name)))

@@ -23,4 +23,8 @@ class Project
     result
   end
 
+  def config
+    # For now, just read circle.yml for everyone, and see what happens.
+    File.read("#{File.dirname(__FILE__)}/../../circle.yml")
+  end
 end
