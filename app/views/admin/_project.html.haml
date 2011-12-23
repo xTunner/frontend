@@ -9,7 +9,7 @@
     = project.visible
   %td
     = twitter_bootstrap_form_for [project, Build.new], :remote => true do |f|
-      = f.submit "Trigger job"
+      = f.submit "Trigger job", :disable_with => "Submitting..."
 
 
 - if project.builds.count > 0
