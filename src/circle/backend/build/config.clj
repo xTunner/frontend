@@ -64,13 +64,13 @@
   (->> spec
        ((juxt :setup :dependencies :compile :test))
        (mapcat (fn [line]
-                 (str/split line #"\r\n")))
+                 (str/split (or line "") #"\r\n")))
        (filter #(> (.length %) 0))))
 
 (defn get-config-from-db [url]
   (let [project (project/get-by-url url)]
     (when-let [spec (spec/get-spec-for-project project)]
-      (when-let [commands (spec-commands spec)]
+      (when-let [commands (seq (spec-commands spec))]
         (db-config commands)))))
 
 (defn get-config-for-url
@@ -265,16 +265,12 @@
   "Given a project url and a build name, return a build. Helper method for repl"
   [url & {:keys [job-name vcs-revision]}]
   (let [project (project/get-by-url! url)
-        repo (git/default-repo-path url)
-        vcs-revision (or vcs-revision (git/latest-local-commit repo))
-        config (get-config-for-url url :vcs_revision vcs-revision)
-        job-name (or job-name (-> config :jobs (first)))]
+        config (get-config-for-url url :vcs_revision vcs-revision)]
     (if (and config project)
-      (let [job-name (or (-> config :schedule :commit :job (keyword)) (-> config :jobs (first) (key)))]
-        (build-from-config config project
-                           :vcs_revision vcs-revision
-                           :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
-                           ))
+      (build-from-config config project
+                         :vcs_revision vcs-revision
+                         :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
+                         :job-name job-name)
       (infer-build-from-url url))))
 
 (defn build-from-json
