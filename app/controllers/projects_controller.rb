@@ -29,6 +29,9 @@ class ProjectsController < ApplicationController
     @project.specs[0].update_attributes(params["spec"])
     @project.specs[0].save
 
+    # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
+    Backend.build(@project)
+
     redirect_to github_project_edit_path(@project)
   end
 end
