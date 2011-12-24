@@ -31,18 +31,12 @@ class Project
   end
 
   # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the clojure side.
-  def recent_builds
-    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(20)
+  def recent_builds(limit=10)
+    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(limit)
   end
 
   def build_numbered(num) # bad things happen if we call this "build"
     Build.where(:vcs_url => vcs_url, :build_num => num).first
-  end
-
-  # # TECHNICAL_DEBT - we're using mongo badly here, this should be free!
-  def include_builds!
-    # we're using mongo, right? ha!
-    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(5)
   end
 
   def github_project_name

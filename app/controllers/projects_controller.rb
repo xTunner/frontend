@@ -10,8 +10,6 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.from_github_name params[:project]
     authorize! :read, @project
-
-    @recent_builds = @project.recent_builds
   end
 
   def edit
