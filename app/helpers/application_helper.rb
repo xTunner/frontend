@@ -66,5 +66,13 @@ module ApplicationHelper
     time.strftime("%T.%3N")
   end
 
+  def trigger_project_button(project)
+    twitter_bootstrap_form_for [project, Build.new], :remote => true do |f|
+      f.submit "Trigger build", :disable_with => "Submitting..."
+    end
+  end
+
+
+
 
 end
