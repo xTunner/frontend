@@ -26,4 +26,4 @@
 
         %tbody
           -# TECHNICAL_DEBT copied
-          = render :collection => project.recent_builds(20), :partial => 'projects/build', :locals => {:project => project}
+          = render :collection => project.recent_builds(3), :partial => 'projects/build', :locals => {:project => project}
