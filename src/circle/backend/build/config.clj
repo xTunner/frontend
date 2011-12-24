@@ -69,10 +69,11 @@
 
 (defn get-config-from-db [url]
   (let [project (project/get-by-url url)
-        spec (spec/get-spec-for-project project)
-        commands (spec-commands spec)]
-    (when commands
-      (db-config commands))))
+        spec (spec/get-spec-for-project project)]
+    (when spec
+      (println spec)
+      (let [commands (spec-commands spec)]
+        (db-config commands)))))
 
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
