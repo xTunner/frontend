@@ -70,7 +70,8 @@
 (defn get-config-from-db [url]
   (let [project (project/get-by-url url)
         spec (spec/get-spec-for-project project)
-        commands (spec-commands spec)]
+        commands (when spec
+                   (spec-commands spec))]
     (when commands
       (db-config commands))))
 
