@@ -3,4 +3,6 @@
     = link_to @project.github_project_name, '#', :class => "dropdown-toggle"
     %ul.dropdown-menu
       %li
+        = link_to 'See project', github_project_path(@project)
+      %li
         = link_to 'Edit project', github_project_edit_path(@project)
