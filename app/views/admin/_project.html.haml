@@ -8,6 +8,8 @@
   %td
     = project.visible
   %td
+    = link_to 'edit', github_project_edit_path(project)
+  %td
     = trigger_project_button(project)
 
 - if project.recent_builds.count > 0
