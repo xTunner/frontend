@@ -1,5 +1,6 @@
 .container
   .content
+    = trigger_project_button(@project)
     -#    = render :partial => 'running'
 
     %table#recent-jobs
@@ -12,4 +13,4 @@
           %th Started at
           %th Time taken
       %tbody
-        = render :collection => @recent_builds, :partial => 'build'
+        = render :collection => @project.recent_builds(30), :partial => 'build', :locals => {:project => @project}

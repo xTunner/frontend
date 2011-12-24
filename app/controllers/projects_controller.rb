@@ -1,7 +1,7 @@
 class ProjectsController < ApplicationController
   before_filter :authenticate_user!
 
-  # TECHNICAL_DEBT: this isn't looked up directly in the contrller action, and
+  # TECHNICAL_DEBT: this isn't looked up directly in the controller action, and
   # so load_and_authorize_resource wont work. So we need to authorize everything
   # manually. Dangerous and easy to miss one! A solution is to add the
   # configuration setting which creates an error every time we miss one, that's
@@ -10,8 +10,6 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.from_github_name params[:project]
     authorize! :read, @project
-
-    @recent_builds = @project.recent_builds
   end
 
   def edit
@@ -30,6 +28,9 @@ class ProjectsController < ApplicationController
 
     @project.specs[0].update_attributes(params["spec"])
     @project.specs[0].save
+
+    # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
+    Backend.build(@project)
 
     redirect_to github_project_edit_path(@project)
   end

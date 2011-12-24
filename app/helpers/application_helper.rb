@@ -41,7 +41,7 @@ module ApplicationHelper
   def as_length_of_build(start, stop)
     # TECHNICAL_DEBT: we should add stop_times for all builds, and then update the DB
     if stop == nil
-      return "unknown"
+      stop = Time.now
     end
 
     seconds = (stop - start).to_i
@@ -65,6 +65,14 @@ module ApplicationHelper
   def as_action_timestamp(time)
     time.strftime("%T.%3N")
   end
+
+  def trigger_project_button(project)
+    twitter_bootstrap_form_for [project, Build.new], :remote => true do |f|
+      f.submit "Trigger build", :disable_with => "Submitting..."
+    end
+  end
+
+
 
 
 end

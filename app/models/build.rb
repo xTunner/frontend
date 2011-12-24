@@ -4,7 +4,7 @@ class Build
 
   field :vcs_url
 
-  field :failed?, :type => Boolean
+  field :failed?, :type => Boolean, :defailt => nil
   field :start_time, :type => Time, :default => nil
   field :stop_time, :type => Time, :default => nil
   field :build_num, :type => Integer
@@ -22,10 +22,12 @@ class Build
 
 
   def status
-    if self.failed? == true
-      :fail
-    elsif self.failed? == false
-      :success
+    if self.stop_time
+      if self.failed? == true
+        :fail
+      else
+        :success
+      end
     elsif (self.start_time + 24.hours) < Time.now
       :killed
     else

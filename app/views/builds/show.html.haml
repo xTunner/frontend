@@ -3,7 +3,7 @@
     %div{ :class => [0, nil].include?(l["exit_code"]) ? "alert-message success" : "alert-message error" }
       = l.name
       = surround '(', ')' do
-        = as_length_of_build(l.start_time, l.end_time)
+        = as_length_of_build(l.start_time, l[:end_time])
 
     .rest
       - if l["out"]

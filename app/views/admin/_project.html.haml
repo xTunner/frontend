@@ -8,14 +8,14 @@
   %td
     = project.visible
   %td
-    = twitter_bootstrap_form_for [project, Build.new], :remote => true do |f|
-      = f.submit "Trigger job", :disable_with => "Submitting..."
+    = link_to 'edit', github_project_edit_path(project)
+  %td
+    = trigger_project_button(project)
 
-
-- if project.builds.count > 0
+- if project.recent_builds.count > 0
   %tr
     %td{:colspan => 5}
-      %table
+      %table.inner
         %thead
           %tr
             %th #
@@ -26,5 +26,4 @@
 
         %tbody
           -# TECHNICAL_DEBT copied
-          %thead
-            = render :collection => project.builds, :partial => 'projects/build'
+          = render :collection => project.recent_builds(3), :partial => 'projects/build', :locals => {:project => project}

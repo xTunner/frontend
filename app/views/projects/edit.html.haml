@@ -3,11 +3,9 @@
     .row
       .span6.offset4.alert-message.block-message.info
         Enter a list of commands for each build phase. Each line is a separate
-        program invocation, and any failing program (with an exit code of 0), will stop the build.
-        After saving the form, you may test your builds with the trigger button.
+        program invocation, and any failing program (with a non-zero exit code), will stop the build.
         %br
         %br
-
         We'll monitor your settings here to improve Circle.
         %br
         %br
@@ -25,6 +23,7 @@
                 List of bash commands to set up your box. Most dependencies should already be
                 installed, but you can `sudo apt-get install` those that aren't. We'll
                 cache these steps so that they don't need to be run when they change.
+              = f.submit "Save and run", :class => "btn primary"
 
               %br
 
@@ -33,6 +32,7 @@
                 List of bash commands to install your project's libraries and
                 dependencies. For example, `bundle install` for Rails or `lein deps`
                 for Clojure. We'll cache these steps so to make them fast.
+              = f.submit "Save and test", :class => "btn primary"
 
               %br
 
@@ -41,14 +41,16 @@
                 List of bash commands to compile your code, for example 'configure',
                 'make', or 'ant build'. You can usually ignore this for interpreted
                 languages.
+              = f.submit "Save and test", :class => "btn primary"
 
               %br
 
               = f.text_area :test, :value => s.test, :class => "xxlarge", :rows => 10
               %span.help-block
                 List of bash commands to test your code. For example, 'rake test', 'rspec spec', 'make check', etc.
+              = f.submit "Save and test", :class => "btn primary"
 
               %br
 
             = f.actions do
-              = f.submit "Update project settings", :class => "btn primary"
+              = f.submit "Save and test", :class => "btn primary"

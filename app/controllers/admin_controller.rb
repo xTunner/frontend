@@ -4,6 +4,5 @@ class AdminController < ApplicationController
 
   def show
     @projects = Project.order_by([[:vcs_url, :asc]])
-    @projects.each { |p| p.include_builds! }
   end
 end

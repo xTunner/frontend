@@ -15,3 +15,7 @@
                 = link_to('Add more projects', join_path)
               %li
                 = link_to('Logout', destroy_user_session_path, :method => :delete)
+              - if current_user.admin?
+                %li.divider
+                %li
+                  = link_to('Admin', admin_path)
