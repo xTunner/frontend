@@ -53,3 +53,40 @@ The backend is run in the same process as the frontend. This all works so long a
      - staging
        - currently has no load balancer
        - should run on staging.circleci.com
+
+
+# Deploying to production
+
+Set the lb-name flag in your DB:
+
+    $ mongo circle
+    > p = db.projects.find({vcs_url: "https://github.com/arohner/CircleCI"})[0]
+    > p["lb-name"] = "www"
+    > db.projects.save(p)
+
+From any REPL, run the command:
+
+    > (def b (circle.backend.build.config/build-from-url "https://github.com/arohner/CircleCI" :job-name :deploy))
+    > (clojure.pprint/pprint b)  ;; inspect the build
+    > (circle.backend.build.run/run-build b) ;; actually deploy
+
+Watch the console output to see if it's finished, and look at (print-instances)
+in a repl to see more information about the nodes.
+
+
+## Building an AMI:
+
+We currently use a single AMI for all nodes. To build a new one:
+
+ - edit the AMI pallet definition: rails-group in circle/backend/nodes/rails.clj
+ - initialize a test AMI from the definition:
+
+   > (def group circle.backend.nodes.rails/rails-group)
+   > (circle.backend.nodes/start-and-configure group)
+
+ - Turn it into a proper AMI:
+
+   > (circle.backend.nodes/memoize-group-spec group "some name for the image")
+
+ - Edit the source to use this image: set the :ami value in rails-node in
+   circle/backend/nodes/rails.clj to the new AMI name.
