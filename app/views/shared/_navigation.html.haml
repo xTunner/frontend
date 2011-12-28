@@ -16,4 +16,4 @@
               %li
                 = link_to('Logout', destroy_user_session_path, :method => :delete)
               - if current_user.admin?
-                = render :partial => 'admin'
+                = render :partial => 'shared/admin'
