@@ -1,24 +1,29 @@
 .container
   - @logs.each do |l|
-    %div{ :class => [0, nil].include?(l["exit_code"]) ? "alert-message success" : "alert-message error" }
-      = l.name
-      = surround '(', ')' do
-        = as_length_of_build(l.start_time, l[:end_time])
+    -# wrapper allows the header and detail be siblings, for the JS
+    .wrapper
+      .action_header{ :class => action_header_style(l) }
+        %span.command
+          $
+          = l.name
+        %span.time
+          = surround '(', ')' do
+            = as_length_of_build(l.start_time, l[:end_time])
 
-    .rest
-      - if l["out"]
-        %table
-          %thead
-            %tr
-              %th Time
-              %th stdout/stderr
-          %tbody
-            - l["out"].each do |o|
-              - if o["message"] != ""
-                %tr
-                  %td
-                    = as_action_timestamp(o["time"])
-                  %td
-                    %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
-                      %pre
-                        = o["message"]
+      .detail{ :class => action_log_style(l) }
+        - if l["out"]
+          %table
+            %thead
+              %tr
+                %th Time
+                %th stdout/stderr
+            %tbody
+              - l["out"].each do |o|
+                - if o["message"] != ""
+                  %tr
+                    %td
+                      = as_action_timestamp(o["time"])
+                    %td
+                      %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
+                        %pre
+                          = o["message"]

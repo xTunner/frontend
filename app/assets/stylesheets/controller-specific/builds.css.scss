@@ -1,0 +1,37 @@
+.action_header {
+   background-repeat: no-repeat;
+    padding: 6px 0px 6px 40px;
+   margin: 5px 0px 5px 10px;
+}
+
+.action_header.success {
+   background-image: image-url("builds/green_minus.png");
+   background-color: #57A957;
+}
+
+.action_header.success.minimize {
+   background-image: image-url("builds/green_plus.png");
+}
+
+.action_header.error {
+   background-color: red;
+   background-image: image-url("builds/red_minus.png");
+}
+
+.action_header.error.minimize {
+   background-color: red;
+   background-image: image-url("builds/red_plus.png");
+}
+
+.detail.minimize {
+   display: none;
+}
+
+.time {
+   font-size: 14px;
+}
+
+.command {
+   font-weight: bold;
+   font-size: 18px;
+}
