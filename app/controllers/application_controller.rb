@@ -2,7 +2,13 @@ class ApplicationController < ActionController::Base
   protect_from_forgery # CXRF protection
 
   # dont render any action that cancan hasn't authorized.
-  check_authorization :unless => :devise_controller?
+  check_authorization :unless => :allowed_vendor_controller?
+
+  def allowed_vendor_controller?
+    false ||
+      devise_controller? || # devise does authentication itself
+      self.class == SwitchUserController # See SwitchUser#setup
+  end
 
 
   # Specify the layout for the controller; rails looks for a layout with the
