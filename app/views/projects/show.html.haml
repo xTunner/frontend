@@ -7,10 +7,10 @@
       %thead
         %tr
           %th #
-          %th Success
           %th Revision
           -#          %th Author
-          %th Started at
+          %th Started
           %th Time taken
+          %th Status
       %tbody
         = render :collection => @project.recent_builds(30), :partial => 'build', :locals => {:project => @project}
