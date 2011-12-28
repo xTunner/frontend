@@ -4,22 +4,23 @@
    margin: 5px 0px 5px 10px;
 }
 
-.action_header.success {
+.action_header.success { background-color: #57A957; }
+.action_header.error { background-color: #EE5F5B; }
+
+
+.action_header.success.contents {
    background-image: image-url("builds/green_minus.png");
-   background-color: #57A957;
 }
 
-.action_header.success.minimize {
+.action_header.success.contents.minimize {
    background-image: image-url("builds/green_plus.png");
 }
 
-.action_header.error {
-   background-color: red;
+.action_header.error.contents {
    background-image: image-url("builds/red_minus.png");
 }
 
-.action_header.error.minimize {
-   background-color: red;
+.action_header.error.contents.minimize {
    background-image: image-url("builds/red_plus.png");
 }
 

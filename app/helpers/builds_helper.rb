@@ -1,6 +1,10 @@
 module BuildsHelper
   def action_header_style(log)
-    log.success? ? "action_button success minimize" : "action_button error"
+    css = log.success? ? "success minimize" : "error"
+    if log["out"]
+      css += " contents"
+    end
+    css
   end
 
   def action_log_style(log)
