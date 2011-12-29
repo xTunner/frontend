@@ -1,0 +1,8 @@
+-# TECHNICAL_DEBY - this is the 3rd copy-and-paste just to get the active-class in the right place
+%ul.nav
+  %li
+    = link_to @project.github_project_name, github_project_path(@project)
+  %li
+    = link_to 'Edit', github_project_edit_path(@project)
+  %li.active
+    = link_to @build.build_num, github_project_path(@project) + "/" + @build.build_num.to_s

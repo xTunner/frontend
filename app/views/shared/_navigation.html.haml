@@ -5,7 +5,14 @@
         %h3
           = link_to "Circle", root_path, :class => :brand
 
-        = render :partial => 'topbar_middle'
+
+        - begin
+          = render :partial => 'topbar_' + params[:controller]
+        - rescue ActionView::MissingTemplate
+
+        - begin
+          = render :partial => 'topbar_' + params[:action]
+        - rescue ActionView::MissingTemplate
 
         %ul.nav.secondary-nav
           %li.dropdown
