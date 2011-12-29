@@ -1,29 +1,8 @@
 .container
   .row
     .alert-message.block-message.notice.span8.offset3
-      %h2
-        Thanks for joining!
-
-      %p
-        We're currently checking out your code, and starting to run your builds, so
-        that you will have an awesome experience. Expect your first test email soon!
-
-      %br
-
-      %p
-        Assuming you use Rails or Clojure, we should have all your tests running
-        within a few days. If you use something fancier, we'll have you up and
-        running as soon as we can.
-
-      %br
-
-      %p
-        Thanks for giving us access to your code. It lets us see the real demand,
-        and actively work on stuff you care about. If you have any qualms,
-        questions or feature requests, please get in contact with Paul:
-
-      %br
-
+      Your builds should now be working, and please alert us if this is not the case. You can message us directly via the white envelop below.
+      As always, please feel free to contact us directly:
       %ul
         %li
           = mail_to "paul@circleci.com"
@@ -40,15 +19,9 @@
       - @projects.each do |project|
         %tr
           %td
-            - if project.visible?
-              = link_to(project.github_project_name, github_project_path(project))
-            - else
-              = project.github_project_name
+            = link_to(project.github_project_name, github_project_path(project))
           %td
             = link_to project.vcs_url do
               = project.vcs_url
           %td
-            - if project.visible
-              Running!
-            - else
-              Coming soon
+            Available

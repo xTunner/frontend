@@ -6,8 +6,6 @@
   %td
     = project.users.map { |u| u.known_email }
   %td
-    = project.visible
-  %td
     = link_to 'edit', github_project_edit_path(project)
   %td
     = trigger_project_button(project)
