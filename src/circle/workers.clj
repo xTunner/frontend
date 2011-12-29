@@ -31,8 +31,8 @@
          (infof "%s returned %s" (quote  ~@body) result#)
          result#)
        (catch Exception e#
-         (error e# "%s threw" (quote ~@body))
          (airbrake {:body (quote ~@body) :future true})
+         (error e# "%s threw" (quote ~@body))
          (throw e#)))))
 
 (defn start-worker [f & args]
