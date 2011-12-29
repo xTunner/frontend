@@ -2,15 +2,25 @@
   .content
     .row
       .span6.offset4.alert-message.block-message.info
-        Enter a list of commands for each build phase. Each line is a separate
-        program invocation, and any failing program (with a non-zero exit code), will stop the build.
-        %br
-        %br
-        We'll monitor your settings here to improve Circle.
+        We aim to build your projects automatically. As I'm sure you can
+        imagine, this won't work in some cases, so you can edit your build
+        manually as a fallback mechanism. We'll monitor these settings to
+        automatically infer them in the future, and to build our product around
+        the tools you really use.
+
         %br
         %br
 
-        = link_to("Return to project page", github_project_path(@project))
+        Enter a list of commands for each "build phase". Each line is a separate
+        program invocation, and any failing program (with a non-zero exit code),
+        will stop the build. Each command is arbitrary bash, so you can use
+        environmental variables, pipes, redirection, etc. If you customize one
+        phase, you need to fill them all in (fix coming soon).
+
+        %br
+        %br
+
+        All commands are run on Ubuntu 11.04 - please contact us if you need something else.
 
     .row
       .span10.offset2
@@ -18,39 +28,39 @@
           = twitter_bootstrap_form_for s, :url => github_project_update_path do |f|
             = f.inputs "Project settings", :class => 'form-stacked' do
 
+
+
               = f.text_area :setup, 'Machine image setup', :value => s.setup, :class => "xxlarge", :rows => 10
               %span.help-block
-                List of bash commands to set up your box. Most dependencies should already be
-                installed, but you can `sudo apt-get install` those that aren't. We'll
-                cache these steps so that they don't need to be run when they change.
-              = f.submit "Save and run", :class => "btn primary"
+                Commands to set up your box. Most dependencies should already be
+                installed, but you can `sudo apt-get install` those that aren't.
+              = f.submit "Save and test", :class => "btn primary"
 
-              %br
 
+
+            = f.inputs "", :class => 'form-stacked' do
               = f.text_area :dependencies, 'Project dependencies', :value => s.dependencies, :class => "xxlarge", :rows => 10
               %span.help-block
-                List of bash commands to install your project's libraries and
+                Commands to install your project's libraries and
                 dependencies. For example, `bundle install` for Rails or `lein deps`
                 for Clojure. We'll cache these steps so to make them fast.
               = f.submit "Save and test", :class => "btn primary"
 
-              %br
 
+
+            = f.inputs "", :class => 'form-stacked' do
               = f.text_area :compile, :value => s.compile, :class => "xxlarge", :rows => 10
               %span.help-block
-                List of bash commands to compile your code, for example 'configure',
+                Commands to compile your code, for example 'configure',
                 'make', or 'ant build'. You can usually ignore this for interpreted
                 languages.
               = f.submit "Save and test", :class => "btn primary"
 
-              %br
 
+
+
+            = f.inputs "", :class => 'form-stacked' do
               = f.text_area :test, :value => s.test, :class => "xxlarge", :rows => 10
               %span.help-block
-                List of bash commands to test your code. For example, 'rake test', 'rspec spec', 'make check', etc.
-              = f.submit "Save and test", :class => "btn primary"
-
-              %br
-
-            = f.actions do
+                Commands to test your code. For example, 'rake test', 'rspec spec', 'make check', etc.
               = f.submit "Save and test", :class => "btn primary"
