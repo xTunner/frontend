@@ -8,6 +8,8 @@ class Ability
 
     can :manage, User, :id => user.id # only users may check out their own page
 
+    # Spec's are not considered here because they are managed in the Projects
+    # controller, and the permissions here are per-controller.
     can :manage, Project do |p|
       p.user_ids.include? user.id
     end
