@@ -14,7 +14,7 @@ describe "Users" do
       click_button "Sign in"
 
       page.should have_content("Signed in successfully.")
-      page.should have_content("Thanks for joining!")
+      page.should have_content("Your builds should now be working")
     end
   end
 
@@ -75,7 +75,7 @@ describe "Users" do
       URI.parse(current_url).path.should == root_path
       page.should_not have_content("guest")
       page.should have_content(user.email)
-      page.should have_content "Thanks for joining!"
+      page.should have_content "Your builds should now be working"
       page.should have_content("circle-dummy-project")
     end
 

@@ -18,9 +18,9 @@ describe UsersController do
   end
 
 
-  it "should render and say thanks for joining" do
+  it "should render and have text" do
     get :dashboard
-    response.body.should have_content("Thanks for joining")
+    response.body.should have_content("Your builds")
   end
 
   describe "dashboard" do
@@ -30,28 +30,12 @@ describe UsersController do
     end
 
     it "should list all your projects" do
-      @project.visible = true
-      @project.save!
-
       get :dashboard
-      response.body.should_not have_content("Coming soon")
-      response.body.should have_content("Running")
+      response.body.should have_content("Available")
       response.body.should have_link(@project.github_project_name)
     end
 
-    it "shouldn't link to invisible projects" do
-      get :dashboard
-      response.body.should have_content(@project.github_project_name)
-
-      link_xpath = "//a[normalize-space(text())='#{@project.github_project_name}']"
-      response.body.should_not have_xpath(link_xpath)
-      response.body.should have_content("Coming soon")
-    end
-
     it "should use the pretty names", :type => :request do
-      @project.visible = true
-      @project.save()
-
       get :dashboard
       link = page.find_link(@project.github_project_name)
       link['href'].should == "/gh/" + @project.github_project_name
