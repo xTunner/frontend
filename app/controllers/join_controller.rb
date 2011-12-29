@@ -1,5 +1,5 @@
 class JoinController < ApplicationController
-
+  skip_authorization_check
 
   # When the user is not yet signed up, we get their project information from
   # them first. We store all this in a "guest" user, and then at the end, we
