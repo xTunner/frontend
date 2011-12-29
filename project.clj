@@ -92,7 +92,7 @@
                  [org.cloudhoist/postgres "0.6.1"]
                  [org.cloudhoist/rubygems "0.6.0"]
                  [org.cloudhoist/java "0.5.1"]
-                 [org.cloudhoist/node-js "0.5.0"]
+                 [org.cloudhoist/node-js "0.6.0-251878762734e6ffecdbdfe8e5c705869aa26b0b"]
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
                  [pallet-rvm "0.1-186bdde006ec2e22d5c96e1e0cd33f9e65848b01"]
