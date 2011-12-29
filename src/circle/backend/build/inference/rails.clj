@@ -62,7 +62,7 @@
     (bash (sh/q (rake test)))))
 
 (defn bundle-install []
-  (bash (sh/q (bundle install) :environment {:RAILS_GROUP :test})
+  (bash (sh/q (bundle install)) :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
 (defn actions
