@@ -108,11 +108,47 @@
   [username reponame github-access-token]
   (trepos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))
 
+(def default-repo-map  {
+   :url "https//api.github.com/repos/octocat/Hello-World"
+   :html_url "https//github.com/octocat/Hello-World"
+   :clone_url "https//github.com/octocat/Hello-World.git"
+   :git_url "git//github.com/octocat/Hello-World.git"
+   :ssh_url "git@github.comoctocat/Hello-World.git"
+   :svn_url "https//svn.github.com/octocat/Hello-World"
+   :owner { :login "octocat"
+             :id 1
+             :avatar_url "https//github.com/images/error/octocat_happy.gif"
+             :gravatar_id "somehexcode"
+             :url "https//api.github.com/users/octocat"}
+   :name "Hello-World"
+   :description "No description provided"
+   :homepage "https//github.com"
+   :language "unknown"
+   :private false
+   :fork false
+   :forks 0
+   :watchers 0
+   :size 1
+   :master_branch "master"
+   :open_issues 0
+   :pushed_at "1970-01-01T00:00:00Z"
+   :created_at "1970-01-01T00:00:00Z"})
+
 (defn all-repos
   "Returns all repos the current user can access. Use this over tentacles.repos/repos, because this will return repos belonging to organizations as well"
   [github-access-token]
   (let [normal-repos (future (trepos/repos {:oauth_token github-access-token}))
         orgs (future (torgs/orgs {:oauth_token github-access-token}))
         org-repos (doall (map (fn [o]
-                                (future (torgs/repos (-> o :login) {:oauth_token github-access-token}))) @orgs))]
-    (concat @normal-repos (mapcat deref org-repos))))
+                                (future (torgs/repos (-> o :login) {:oauth_token github-access-token}))) @orgs))
+        all (concat @normal-repos (mapcat deref org-repos))
+        all (map
+             (fn [repo]
+               (merge-with ;; don't overwrite the defaults with nil
+                (fn [first second]
+                  (if (nil? second)
+                    first
+                    second))
+                default-repo-map repo))
+             all)]
+    all))
