@@ -21,9 +21,6 @@ class Ability
     can :manage, :all if user.admin?
 
 
-
-
-
     # can do |action, subject_class, subject|
     #   puts action
     #   puts subject_class
