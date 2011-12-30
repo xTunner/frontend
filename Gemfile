@@ -61,6 +61,7 @@ end
 gem 'haml-rails'
 
 gem "trinidad"
+gem "trinidad_logging_extension"
 
 # Deploy with Capistrano
 # gem 'capistrano'
