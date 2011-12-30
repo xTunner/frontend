@@ -26,19 +26,23 @@
           %th
             Revision
           %th
+            Started at
+          %th
             Running time
           %th
             Status
 
       %tbody
         - @builds.each do |b|
-          %tr
+          %tr{ :class => b.status }
             %td
               = project_link_to b.the_project
             %td
               = build_link_to b, b.the_project
             %td
               = revision_link b.vcs_url, b.vcs_revision
+            %td
+              = as_commit_time b.start_time
             %td
               = as_length_of_build b.start_time, b.stop_time
             %td
