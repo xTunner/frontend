@@ -258,6 +258,7 @@
                         :vcs_revision vcs-revision
                         :node node
                         :actions (inference/infer-actions repo)
+                        :job-name "build-inferred"
                         :notify_emails ["founders@circleci.com"] ;; don't use :committer yet, these people might not be using circle
                         }))))
 
