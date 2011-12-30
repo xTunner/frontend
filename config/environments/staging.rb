@@ -46,9 +46,13 @@ MongoidTest::Application.configure do
   config.assets.precompile += %w( home/*.css home.js controller-specific/*.js controller-specific/*.css )
 
   # ActionMailer Config: production - deliveries, no errors raised
+  config.action_mailer.delivery_method = :mailgun
+  config.action_mailer.mailgun_settings = {
+    :api_key  => "key-5d84w45zxtl-c-mzqktp78vl657k9cn2",
+    :api_host => "https://api.mailgun.net/v2"
+  }
   config.action_mailer.default_url_options = { :host => 'circleci.com' }
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = true
+  config.action_mailer.perform_deliveries = false
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default :charset => "utf-8"
 

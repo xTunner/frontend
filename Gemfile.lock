@@ -87,6 +87,7 @@ GEM
       capybara (>= 1.1.1)
       cucumber (>= 1.1.1)
       nokogiri (>= 1.5.0)
+    curb (0.7.16)
     database_cleaner (0.7.0)
     devise (1.5.2)
       bcrypt-ruby (~> 3.0)
@@ -130,6 +131,10 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mailgun-rails (0.1.1)
+      actionmailer
+      activesupport
+      curb
     mime-types (1.17.2)
     minitest (2.8.1)
     mongo (1.5.1)
@@ -231,6 +236,8 @@ GEM
       jruby-rack (>= 1.0.9)
       trinidad_jars (>= 1.0.1)
     trinidad_jars (1.0.1)
+    trinidad_logging_extension (1.0.0)
+      trinidad (>= 0.9.1)
     turn (0.8.3)
       ansi
     twitter_bootstrap_form_for (1.0.5)
@@ -266,6 +273,7 @@ DEPENDENCIES
   jrclj!
   jruby-openssl
   launchy (>= 2.0.5)
+  mailgun-rails
   minitest
   mongoid (~> 2.3)
   mongoid-rspec (>= 1.4.4)
@@ -280,6 +288,7 @@ DEPENDENCIES
   simple_form
   switch_user
   trinidad
+  trinidad_logging_extension
   turn
   twitter-bootstrap-rails!
   twitter_bootstrap_form_for
