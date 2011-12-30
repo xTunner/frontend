@@ -5,3 +5,11 @@
 .inner {
    margin-bottom: 100px;
 }
+
+.icons {
+   white-space: nowrap;
+}
+
+.content {
+   padding-left: 40px;
+}

@@ -1,11 +1,45 @@
-.container
-  %table
-    %thead
-      %tr
-        %th Name
-        %th url
-        %th users
-        %th edit
-        %th trigger
-    %tbody
-      = render :collection => @projects, :partial => 'project'
+.container-fluid
+  .sidebar
+    %table.condensed-table
+      %tbody
+      - @projects.each do |p|
+        %tr
+          %td
+            = project_link_to p
+          %td.icons
+            [
+            = link_to p.users.count, "#", :title => p.users.map { |u| u.known_email }.join("|")
+            = link_to 'e', github_project_edit_path(p)
+            = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
+            = build_link_to p.latest_build, p
+            ]
+
+
+  .content
+    %table
+      %thead
+        %tr
+          %th
+            Project
+          %th
+            \#
+          %th
+            Revision
+          %th
+            Running time
+          %th
+            Status
+
+      %tbody
+        - @builds.each do |b|
+          %tr
+            %td
+              = project_link_to b.the_project
+            %td
+              = build_link_to b, b.the_project
+            %td
+              = revision_link b.vcs_url, b.vcs_revision
+            %td
+              = as_length_of_build b.start_time, b.stop_time
+            %td
+              = b.status

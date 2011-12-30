@@ -1,6 +1,6 @@
 %tr
   %td{ :class => build.status }
-    = link_to(build.build_num, github_project_path(project) + "/" + build.build_num.to_s)
+    = build_link_to(build, project)
 
   %td
     = revision_link(build.vcs_url, build.vcs_revision)
