@@ -18,6 +18,7 @@ MongoidTest::Application.routes.draw do
 
 
   match '/admin', :to => 'admin#show', :as => :admin
+  match '/admin/sandbox', :to => 'admin#sandbox', :as => :admin_sandbox # a catch all for tests
 
   # TECHNICAL_DEBT: these aren't RESTful, and they're not clean
 
