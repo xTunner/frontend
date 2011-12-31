@@ -78,9 +78,11 @@ module ApplicationHelper
     link_to p.github_project_name, github_project_path(p)
   end
 
-  def build_link_to(build, project)
+  def build_link_to(build, options={})
     begin
-      link_to build.build_num, github_project_path(project) + "/" + build.build_num.to_s
+      project = options[:project] || build.the_project
+      text = options[:text] || build.build_num
+      link_to text, github_project_path(project) + "/" + build.build_num.to_s
     rescue
       "" # new projects may have no builds available yet
     end
