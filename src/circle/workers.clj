@@ -31,7 +31,7 @@
          (infof "%s returned %s" (quote  ~@body) result#)
          result#)
        (catch Exception e#
-         (airbrake {:body (quote ~@body) :future true})
+         (airbrake :data {:body (quote ~@body) :future true})
          (error e# "%s threw" (quote ~@body))
          (throw e#)))))
 
