@@ -63,8 +63,7 @@
   redirects them back, providing us with a temporary code. We can use this code to ask
   github for an access token."
   (let [response (client/post "https://github.com/login/oauth/access_token"
-                              {:form-params (assoc (settings) :code code)
-                               :accept :json})
+                              {:form-params (assoc (settings) :code code) :accept :json})
         json (-> response :body json/decode)
         access-token (-> json :access_token)
         error? (-> json :error)]
