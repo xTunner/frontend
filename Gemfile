@@ -23,7 +23,6 @@ gem 'cancan'
 gem 'mongoid_session_store'
 gem 'switch_user'
 gem 'pusher'
-gem 'mailgun-rails'
 
 
 # Gems used only for assets and not required

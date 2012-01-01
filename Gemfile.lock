@@ -87,7 +87,6 @@ GEM
       capybara (>= 1.1.1)
       cucumber (>= 1.1.1)
       nokogiri (>= 1.5.0)
-    curb (0.7.16)
     database_cleaner (0.7.0)
     devise (1.5.2)
       bcrypt-ruby (~> 3.0)
@@ -131,10 +130,6 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mailgun-rails (0.1.1)
-      actionmailer
-      activesupport
-      curb
     mime-types (1.17.2)
     minitest (2.8.1)
     mongo (1.5.1)
@@ -273,7 +268,6 @@ DEPENDENCIES
   jrclj!
   jruby-openssl
   launchy (>= 2.0.5)
-  mailgun-rails
   minitest
   mongoid (~> 2.3)
   mongoid-rspec (>= 1.4.4)
