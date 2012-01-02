@@ -28,7 +28,7 @@
   `(future
      (try
        (let [result# (do ~@body)]
-         (infof "%s returned %s" (quote  ~@body) result#)
+         (infof "%s returned %s" (quote ~@body) result#)
          result#)
        (catch Exception e#
          (airbrake :data {:body (quote ~@body) :future true})
