@@ -108,20 +108,20 @@
   (trepos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))
 
 (def default-repo-map  {
-   :url "https//api.github.com/repos/octocat/Hello-World"
-   :html_url "https//github.com/octocat/Hello-World"
-   :clone_url "https//github.com/octocat/Hello-World.git"
-   :git_url "git//github.com/octocat/Hello-World.git"
+   :url "https://api.github.com/repos/octocat/Hello-World"
+   :html_url "https://github.com/octocat/Hello-World"
+   :clone_url "https;//github.com/octocat/Hello-World.git"
+   :git_url "git://github.com/octocat/Hello-World.git"
    :ssh_url "git@github.comoctocat/Hello-World.git"
-   :svn_url "https//svn.github.com/octocat/Hello-World"
+   :svn_url "https://svn.github.com/octocat/Hello-World"
    :owner { :login "octocat"
              :id 1
-             :avatar_url "https//github.com/images/error/octocat_happy.gif"
+             :avatar_url "https://github.com/images/error/octocat_happy.gif"
              :gravatar_id "somehexcode"
-             :url "https//api.github.com/users/octocat"}
+             :url "https://api.github.com/users/octocat"}
    :name "Hello-World"
    :description "No description provided"
-   :homepage "https//github.com"
+   :homepage "https://github.com"
    :language "unknown"
    :private false
    :fork false
