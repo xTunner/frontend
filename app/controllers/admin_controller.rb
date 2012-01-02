@@ -2,11 +2,9 @@
 # http://jira.codehaus.org/browse/JRUBY-5529
 # https://gist.github.com/969527
 Net::BufferedIO.class_eval do
-  BUFSIZE = 1024 * 16
-
   def rbuf_fill
     timeout(@read_timeout) {
-      @rbuf << @io.sysread(BUFSIZE)
+      @rbuf << @io.sysread(1024 * 16)
     }
   end
 end
