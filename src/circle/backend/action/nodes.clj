@@ -46,8 +46,9 @@
     (when (seq ids)
       (infof "terminating nodes %s" ids)
       (apply ec2/terminate-instances! ids))
-    (infof "deleting keypair %s" (-> @build :node :keypair-name))
-    (ec2/delete-keypair (-> @build :node :keypair-name))))
+    (when (-> @build :node :keypair-name)
+      (infof "deleting keypair %s" (-> @build :node :keypair-name))
+      (ec2/delete-keypair (-> @build :node :keypair-name)))))
 
 (defaction stop-nodes []
   {:name "stop nodes"}
