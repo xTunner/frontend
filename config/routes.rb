@@ -33,6 +33,14 @@ MongoidTest::Application.routes.draw do
   # Github post-commit hook
   match '/hooks/github', :to => 'github#create', :via => [:post]
 
+  namespace :api do
+    resource :system, :controller => "system" do
+      member do
+        post 'shutdown'
+      end
+    end
+  end
+
   # Homepage (landing page for un-logged-in users)
   unauthenticated do
     as :user do

@@ -4,7 +4,6 @@
   (:require [circle.backend.ssh :as ssh])
   (:require [clojure.string :as str])
   (:require [circle.backend.build :as build])
-  (:require [circle.backend.build.run :as run])
   (:require [circle.model.project :as project])
   (:require [circle.model.spec :as spec])
   (:require [circle.backend.github-url :as github])
@@ -258,6 +257,7 @@
                         :vcs_revision vcs-revision
                         :node node
                         :actions (inference/infer-actions repo)
+                        :job-name "build-inferred"
                         :notify_emails ["founders@circleci.com"] ;; don't use :committer yet, these people might not be using circle
                         }))))
 
@@ -268,7 +268,7 @@
         config (get-config-for-url url :vcs_revision vcs-revision)]
     (if (and config project)
       (build-from-config config project
-                         :vcs_revision vcs-revision
+                         :vcs-revision vcs-revision
                          :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
                          :job-name job-name)
       (infer-build-from-url url))))
@@ -277,6 +277,5 @@
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
   [github-json]
   (let [url (-> github-json :repository :url)
-        vcs-revision (-> github-json :after)
-        build (build-from-url url :vcs_revision vcs-revision)]
-    (run/run-build build)))
+        vcs-revision (-> github-json :after)]
+    (build-from-url url :vcs-revision vcs-revision)))

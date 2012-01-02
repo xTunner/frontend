@@ -11,4 +11,5 @@
     (throw-if-not (-> @build :vcs_revision) "build must contain vcs revision")
     (ec2/add-tags (-> @build :instance-ids)
                   {:rev (-> @build :vcs_revision)
-                   :build (build/build-name build)})))
+                   :build (build/build-name build)
+                   :job-name (-> @build :job-name)})))
