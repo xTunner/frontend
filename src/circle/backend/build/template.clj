@@ -17,8 +17,7 @@
 
    :deploy {:prefix [start-nodes
                      tag/tag-revision
-                     checkout
-                     rvm/trust]
+                     checkout]
             :suffix [lb/add-instances
                      lb/wait-for-healthy
                      lb/shutdown-remove-old-revisions]}
