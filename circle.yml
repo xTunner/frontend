@@ -37,6 +37,7 @@ jobs:
 
     commands:
       - rvm use jruby-1.6.5@circle --default
+      - rvm rvmrc trust
       - bundle install
       - lein deps
       - rake assets:precompile
@@ -53,6 +54,7 @@ jobs:
 
     commands:
       - rvm use jruby-1.6.5@circle --default
+      - rvm rvmrc trust
       - bundle install
       - lein deps
       - rake assets:precompile
