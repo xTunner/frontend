@@ -231,6 +231,8 @@ GEM
       jruby-rack (>= 1.0.9)
       trinidad_jars (>= 1.0.1)
     trinidad_jars (1.0.1)
+    trinidad_logging_extension (1.0.0)
+      trinidad (>= 0.9.1)
     turn (0.8.3)
       ansi
     twitter_bootstrap_form_for (1.0.5)
@@ -280,6 +282,7 @@ DEPENDENCIES
   simple_form
   switch_user
   trinidad
+  trinidad_logging_extension
   turn
   twitter-bootstrap-rails!
   twitter_bootstrap_form_for

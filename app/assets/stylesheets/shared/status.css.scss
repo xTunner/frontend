@@ -1,6 +1,10 @@
 .fail {
-   font-weight: bold;
    color: #ff4040; // somewhat painful red
+
+   A:link, A:visited {
+      color: #ff4040;
+      font-weight: bold;
+   }
 }
 
 .pass {

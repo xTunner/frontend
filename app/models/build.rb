@@ -13,7 +13,7 @@ class Build
 
   def the_project
     # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't have access to the build model directly
-    Project.where(vcs_url: vcs_url).first
+    Project.where(:vcs_url => vcs_url).first
   end
 
   def logs

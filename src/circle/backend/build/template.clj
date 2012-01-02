@@ -12,7 +12,6 @@
   {:build {:prefix [start-nodes
                     tag/tag-revision
                     checkout
-                    rvm/trust
                     rvm/rvm-use]
            :suffix [stop-nodes]}
 
@@ -26,9 +25,9 @@
 
    :staging {:prefix [start-nodes
                       tag/tag-revision
-                      checkout
-                      rvm/trust]
+                      checkout]
              :suffix []}
+
    :empty {:prefix []
            :suffix []}})
 

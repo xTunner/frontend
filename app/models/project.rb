@@ -34,6 +34,10 @@ class Project
     Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(limit)
   end
 
+  def latest_build
+    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(1).first
+  end
+
   def build_numbered(num) # bad things happen if we call this "build"
     Build.where(:vcs_url => vcs_url, :build_num => num).first
   end

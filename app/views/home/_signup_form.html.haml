@@ -12,9 +12,7 @@
                               :onfocus =>  "this.style.background = 'white'; if (this.value == 'Email address') { this.value=''};")
           %li
             = check_box_tag(:contact, 'true', true)
-          %li
-            %div
-              %div
-                = label_tag(:contact, "May we contact you to ask about your platform, stack, test suite, etc?", {:id => "contact-label"})
+            = label_tag(:contact, "May we contact you to ask about your platform, stack, test suite, etc?", {:id => "contact-label"})
+
       %fieldset
         = submit_tag("Get Notified", :class => :call_to_action)

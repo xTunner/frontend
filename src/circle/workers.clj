@@ -31,7 +31,7 @@
          (infof "%s returned %s" (quote  ~@body) result#)
          result#)
        (catch Exception e#
-         (airbrake {:body (quote ~@body) :future true})
+         (airbrake :data {:body (quote ~@body) :future true})
          (error e# "%s threw" (quote ~@body))
          (throw e#)))))
 
@@ -65,14 +65,14 @@
   "Block until the worker is done, and return it's result. Will only work once, next time it throws a NPE because the worker is no longer available"
   (dosync
    (let [as-int (int id)
-         fut (get @worker-store as-int)
-         ; TODO: when we dereference this, it may result in throwing the
-         ; exception that occurred within the future. We want the stack trace
-         ; that appears on error to be that stack-trace.
-         result (deref fut)]
-
+         fut (get @worker-store as-int)]
      (alter worker-store dissoc as-int)
-     result)))
+     ;; The actual clojure exception is wrapped in a ExecutionException.
+     (try
+       (let [result (deref fut)]
+         result)
+       (catch java.util.concurrent.ExecutionException e
+         (throw (.getCause e)))))))
 
 (defn worker-count []
   (dosync

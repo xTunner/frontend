@@ -66,13 +66,26 @@ module ApplicationHelper
     time.strftime("%T.%3N")
   end
 
-  def trigger_project_button(project)
+  def trigger_project_button(project, options={})
+    name = options[:name] || "Trigger build"
+    flash = options[:flash] || "Submitting..."
     twitter_bootstrap_form_for [project, Build.new], :remote => true do |f|
-      f.submit "Trigger build", :disable_with => "Submitting..."
+      f.submit name, :disable_with => flash
     end
   end
 
+  def project_link_to(p)
+    link_to p.github_project_name, github_project_path(p)
+  end
 
+  def build_link_to(build, options={})
+    begin
+      project = options[:project] || build.the_project
+      text = options[:text] || build.build_num
+      link_to text, github_project_path(project) + "/" + build.build_num.to_s
+    rescue
+      "" # new projects may have no builds available yet
+    end
 
-
+  end
 end
