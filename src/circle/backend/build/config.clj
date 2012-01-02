@@ -268,7 +268,7 @@
         config (get-config-for-url url :vcs_revision vcs-revision)]
     (if (and config project)
       (build-from-config config project
-                         :vcs_revision vcs-revision
+                         :vcs-revision vcs-revision
                          :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
                          :job-name job-name)
       (infer-build-from-url url))))
@@ -278,4 +278,4 @@
   [github-json]
   (let [url (-> github-json :repository :url)
         vcs-revision (-> github-json :after)]
-    (build-from-url url :vcs_revision vcs-revision)))
+    (build-from-url url :vcs-revision vcs-revision)))
