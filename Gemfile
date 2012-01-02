@@ -18,7 +18,7 @@ gem "devise", ">= 1.4.9"
 
 gem "simple_form"
 gem "rest-client"
-gem 'airbrake'
+#gem 'airbrake'
 gem 'cancan'
 gem 'mongoid_session_store'
 gem 'switch_user'
