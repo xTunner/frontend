@@ -231,7 +231,7 @@
   [instance-ids tags]
   (with-ec2-client client
     (let [request (CreateTagsRequest. instance-ids (for [[k v] tags]
-                                                     (Tag. (name k) v)))]
+                                                     (Tag. (name k) (name v))))]
       (.createTags client request))))
 
 (defn describe-tags
