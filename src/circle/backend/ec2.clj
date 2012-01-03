@@ -1,5 +1,6 @@
 (ns circle.backend.ec2
   (:require [clojure.string :as str])
+  (:require [clj-http.client :as http])
   (:use [circle.aws-credentials :only (aws-credentials)])
   (:use [circle.util.core :only (apply-map sha1)]
         [circle.util.except :only (throwf throw-if-not)]
@@ -26,7 +27,9 @@
                                              CreateTagsRequest
                                              Placement
                                              RunInstancesRequest
-                                             TerminateInstancesRequest)))
+                                             TerminateInstancesRequest
+                                             DescribeInstanceAttributeRequest
+                                             ModifyInstanceAttributeRequest)))
 
 (defmacro with-ec2-client
   [client & body]
@@ -365,3 +368,38 @@
       (println image-name "=>" ami)
       (image-wait-for-ready ami)
       ami)))
+
+(defn get-instance-attr [instance-id attr]
+  (with-ec2-client client
+    (-> client
+        (.describeInstanceAttribute (DescribeInstanceAttributeRequest. instance-id attr))
+        (.getInstanceAttribute)
+        (bean)
+        (get (keyword attr)))))
+
+(defn set-shutdown-behavior
+  "Specifies what the instance will do when 'shutdown' is run locally
+  on the instance. value can be the string or keyword 'stop' (ec2
+  instance is no longer running, but we still pay for the EBS volume)
+  or 'terminate' (also poweroff EBS)"
+  [instance-id value]
+  (with-ec2-client client
+    (let [request (doto (ModifyInstanceAttributeRequest.)
+                    (.setInstanceId instance-id)
+                    (.setInstanceInitiatedShutdownBehavior (name value)))]
+      (.modifyInstanceAttribute client request))))
+
+;; http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html?r=1890
+(def aws-metadata-url "http://169.254.169.254/latest/meta-data/")
+
+(defn self-metadata
+  "Returns metadata about the current instance. attr is a string/keyword"
+  [attr]
+  (let [resp (http/get (format "%s/%s" aws-metadata-url attr) {:throw-exceptions false})]
+    (when (= 200 (-> resp :status))
+      (-> resp :body))))
+
+(defn self-instance-id
+  "If the local box is an EC2 instance, returns the instance id, else nil."
+  []
+  (self-metadata "instance-id"))
