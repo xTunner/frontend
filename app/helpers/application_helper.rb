@@ -78,14 +78,30 @@ module ApplicationHelper
     link_to p.github_project_name, github_project_path(p)
   end
 
-  def build_link_to(build, options={})
+  def build_link_to(build, project=nil, options={})
+
     begin
       project = options[:project] || build.the_project
       text = options[:text] || build.build_num
-      link_to text, github_project_path(project) + "/" + build.build_num.to_s
+      anchor = github_project_path(project) + "/" + build.build_num.to_s
     rescue
-      "" # new projects may have no builds available yet
+      return "" # new projects may have no builds available yet
     end
+
+
+    # there are two sets of options, but we'll combine them for simplicity
+    # (the kind of simplicity that will bite us later I'm sure)
+    url_options = { :anchor => anchor }
+
+    unless options[:only_path].nil?
+      url_options[:only_path] = options[:only_path]
+    end
+
+    options.delete :text
+    options.delete :project
+    options.delete :only_path
+
+    link_to text, url_options[:anchor], options
 
   end
 end
