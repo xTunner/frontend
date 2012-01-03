@@ -56,7 +56,6 @@
 
 (defn run-build [b & {:keys [cleanup-on-failure]
                           :or {cleanup-on-failure true}}]
-  (def last-build b)
   (infof "starting build: %s" (build/build-name b))
   (try
     (build/with-build-log b
@@ -69,8 +68,7 @@
       (println "assoc'ing failed?=true")
       (dosync
        (alter b assoc :failed? true))
-      (when (env/production?)
-        (email/send-build-error-email b e))
+      (email/send-build-error-email b e)
       (throw e))
     (finally
      (log-result b)

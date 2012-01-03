@@ -6,7 +6,7 @@
     %p
       Commit #{@build.vcs_revision} has failed its tests!
       %br
-      = build_link_to @build, :text => "Read the full build report"
+      = build_link_to @build, :text => "Read the full build report", :only_path => false
 
     %p
       Failing command:
@@ -17,12 +17,9 @@
 
     %p
       Output:
-      %br
-      - @failing_log.out.each do |o|
-        &nbsp;
-        &nbsp;
-        = o["message"]
-        %br
+      %pre
+        - @failing_log.out.each do |o|
+          = o["message"]
 
     %p
       - if @failing_log["exit_code"] == nil
@@ -42,4 +39,4 @@
 
 
     %p
-      = build_link_to @build, :text => "Read the full build report"
+      = build_link_to @build, :text => "Read the full build report", :only_path => false

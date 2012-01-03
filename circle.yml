@@ -16,6 +16,7 @@ jobs:
     node: www   # name of node to use. unique per-project
     commands:
       - rvm use jruby-1.6.5@circle --default
+      - rvm rvmrc trust
       - bundle install
       - lein deps
       - bundle exec rspec spec
@@ -36,6 +37,7 @@ jobs:
 
     commands:
       - rvm use jruby-1.6.5@circle --default
+      - rvm rvmrc trust
       - bundle install
       - lein deps
       - rake assets:precompile
@@ -52,6 +54,7 @@ jobs:
 
     commands:
       - rvm use jruby-1.6.5@circle --default
+      - rvm rvmrc trust
       - bundle install
       - lein deps
       - rake assets:precompile

@@ -3,10 +3,10 @@
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.config :as config]))
 
-(defn one-click-deploy []
+(defn one-click-deploy [& args]
   "Deploy immediately"
   (let [build (config/build-from-url
                "https://github.com/arohner/CircleCI"
                :job-name
                :deploy)]
-    (run/run-build build)))
+    (apply run/run-build build args)))
