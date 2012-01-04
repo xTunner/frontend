@@ -4,8 +4,9 @@
 
 (defn port []
   (cond
-      (env/test?) 4006
-      :else 4005))
+   (System/getenv "SWANK_PORT") (Integer/parseInt (System/getenv "SWANK_PORT"))
+   (env/test?) 4006
+   :else 4005))
 
 (defn init []
   (when (= "true" (System/getenv "CIRCLE_SWANK"))
