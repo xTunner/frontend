@@ -83,8 +83,7 @@
                      node         ;; Map containing keys required by ec2/start-instance
                      lb-name      ;; name of the load-balancer to use
                      continue?    ;; if true, continue running the build. Failed actions will set this to false
-                     start_time
-                     stop_time]
+                     ]
               :as args}]
   (let [project (project/get-by-url! vcs_url)
         build_num (or build_num (project/next-build-num project))]
