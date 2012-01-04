@@ -1,12 +1,12 @@
 %h4
 = form_tag(join_form_url, :method => :post) do |f|
   #filter.row
-    .offset8.span2.show_cb
+    .offset7.span3.show_cb
       = check_box_tag("public")
-      = label_tag :public, "Public?"
+      = label_tag :public, "Show public repos?"
     .span2.show_cb
       = check_box_tag("fork")
-      = label_tag :forks, "Forks?"
+      = label_tag :forks, "Show forks?"
 
 
   %table#projects

@@ -1,16 +1,3 @@
-# HTTPS fails in JRuby --1.9, this works around it until they fix it in 1.6.6.
-# http://jira.codehaus.org/browse/JRUBY-5529
-# https://gist.github.com/969527
-Net::BufferedIO.class_eval do
-  def rbuf_fill
-    timeout(@read_timeout) {
-      @rbuf << @io.sysread(1024 * 16)
-    }
-  end
-end
-
-
-
 class SimpleMailer < ActionMailer::Base
   default :from => "Circle Builds <build-fairy@circleci.com>"
   include ApplicationHelper
@@ -33,16 +20,17 @@ class SimpleMailer < ActionMailer::Base
       @failing_log = @logs.last
       @other_logs = @logs[0..-1]
       raise if @failing_log.success?
-      mail(:to => @emails, :subject => "[Circle] Tests failed (#{@project.github_project_name} #{@build.build_num})", :template_name => "fail").deliver
+      mail(:to => @emails, :subject => "[#{@project.github_project_name}] Test #{@build.build_num} failed", :template_name => "fail").deliver
     else
       mail(:to => @emails, :subject => "[Circle] Tests succeeded (#{@project.github_project_name} #{@build.build_num})", :template_name => "success").deliver
     end
+
+    email.deliver
   end
 
   def build_error_email(build_id, error)
 #    @build = Build.find(build_id)
     mail(:to => "founders@circleci.com",
-         :subject => "#{Rails.env}: build exception",
-         :body => error)
+         :subject => "#{Rails.env}: build exception").deliver
   end
 end

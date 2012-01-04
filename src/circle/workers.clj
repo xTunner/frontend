@@ -9,14 +9,8 @@
   (:require [fs])
   (:require [circle.model.project :as project]))
 
-; TODO: find another home for this
-(defn run-build-from-jruby
-  [url]
-  (let [build (config/build-from-url url)]
-    (run/run-build build)))
-
-;;; Workers. Handles starting workers, checking if they're done, and getting the
-;;; result.
+;;; Workers.
+;;; Handles starting workers, checking if they're done, and getting the results.
 (defn call-clojure-from-ruby [f args]
   (ruby/->ruby (apply f args)))
 
