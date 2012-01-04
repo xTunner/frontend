@@ -10,7 +10,6 @@ SimpleMailer.build_email('%s')" (-> @build :_id))]
 
 
 (defn send-build-error-email [build error]
-  (let [code (format
-              "require 'simple_mailer'
-SimpleMailer.build_error_email('%s', '%s')" (-> @build :_id) error)]
-    (circle.ruby/eval code)))
+  (ruby/require-rails)
+  (ruby/ruby-require "simple_mailer")
+  (ruby/send (ruby/get-class "SimpleMailer") :build_error_email (-> @build :_id) error))
