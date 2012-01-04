@@ -55,8 +55,8 @@ describe "Users" do
 
       # have_content comes before host.shuld because capybara will wait for the former,
       # since they are ajaxy.
-      page.should have_content("Forks?")
-      page.should have_content("Public?")
+      page.should have_content("forks?")
+      page.should have_content("public?")
       page.should have_content("Language")
       URI.parse(current_url).host.should == "circlehost"
       URI.parse(current_url).port.should == 3001
