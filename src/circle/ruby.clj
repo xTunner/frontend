@@ -114,3 +114,40 @@ require 'rspec/core/rake_task'
 RSpec::Core::Runner.run(%s)
 " (vec subdirs))]
     (eval command)))
+
+(defn get-kernel
+  "Returns the Kernel module. Used for 'core' functions like puts"
+  []
+  (.getKernel (ruby)))
+
+(defn get-class
+  "Returns the class/module with the given name. With one arg, looks for a class in the root namespace. With two args, looks for a class/module defined under another class, like Foo::Bar"
+  ([name]
+     (.getClass (ruby) name))
+  ([parent name]
+     (.getClass parent name)))
+
+(defn send-no-arg* [obj method]
+  (.callMethod obj method))
+
+(defn send-1arg* [obj method arg]
+  (.callMethod obj method (->ruby arg)))
+
+(defn send-args* [obj method args]
+  (.callMethod obj method (into-array (->ruby [args]))))
+
+(defn send
+  "Call a method on a ruby object"
+  ([obj method & args]
+     (let [method (name method)
+           n-args (count args)]
+       (cond
+        (= 0 n-args) (send-no-arg* obj method)
+        (= 1 n-args) (send-1arg* obj method (first args))
+        :else (send-args* obj method args)))))
+
+(defn methods
+  "Returns the list of ruby methods on the obj"
+  [obj]
+  (seq (send obj :methods)))
+
