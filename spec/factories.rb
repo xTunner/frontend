@@ -20,8 +20,8 @@ end
 
 Factory.define :github_user, :class => User do |u|
   # This user doesnt have a username or email set up in their profile
-  u.email 'vendors@circleci.com'
-  u.password 'habit review loss loss'
+  u.email 'builds@circleci.com'
+  u.password 'engine process vast trace'
   u.name 'Circle Dummy user'
 end
 
