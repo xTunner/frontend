@@ -3,11 +3,9 @@
   (:use [clojure.tools.logging :only (info)]))
 
 (defn notify-build-results [build]
-  (let [code (format
-              "require 'simple_mailer'
-SimpleMailer.build_email('%s')" (-> @build :_id))]
-    (circle.ruby/eval code)))
-
+  (ruby/require-rails)
+  (ruby/ruby-require "simple_mailer")
+  (ruby/send (ruby/get-class "SimpleMailer") :build_email (-> @build :_id)))
 
 (defn send-build-error-email [build error]
   (ruby/require-rails)
