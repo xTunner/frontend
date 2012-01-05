@@ -69,6 +69,7 @@
                  [org.xeustechnologies/jtar "1.0.4"]
                  [arohner-utils "0.0.3"]
                  [clj-yaml "0.3.1"]
+                 [org.yaml/snakeyaml "1.9"] ;; clj-yaml 0.3.1 depends on snakeyaml 1.5, but jruby requires a later version
                  [fs "0.9.0"]
                  [clj-time "0.3.1"]
                  [doric "0.5.0"]
