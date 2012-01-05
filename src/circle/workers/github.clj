@@ -136,7 +136,10 @@
       (when (> num-hooks 1)
         (println (-> p :vcs_url) "has" num-hooks "circle hooks")
         (doseq [h (rest circle-hooks)]
-          (delete-hook {:username username :reponame project :github-access-token github-access-token :hook-id (-> h :id)}))))))
+          (delete-hook {:username username :reponame project :github-access-token github-access-token :hook-id (-> h :id)})))
+      (when (== 0 num-hooks)
+        (println (-> p :vcs_url) ":NO HOOK")
+        (inspect (add-hooks username project github-access-token))))))
 
 (def default-repo-map  {
    :url "https://api.github.com/repos/octocat/Hello-World"
