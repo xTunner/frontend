@@ -1,6 +1,6 @@
 (ns circle.backend.github-url
   (:use midje.sweet)
-  (:use [clj-url.core :as url])
+  (:require [clj-url.core :as url])
   (:use [circle.util.core :only (apply-if)])
   (:require [clojure.string :as str])
   (:use [arohner.utils :only (inspect)]))
@@ -81,3 +81,10 @@
 (defn canonical-url
   ([username_and_password] (format "https://github.com/%s" username_and_password))
   ([username password] (canonical-url (format "%s/%s" username password))))
+
+(defn parse
+  "Returns the username and project from a github url"
+  [url]
+  (let [resp (re-find #"https://github.com/([^/]+)/([^/]+)" url)]
+    {:username (get resp 1)
+     :project (get resp 2)}))

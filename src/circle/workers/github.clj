@@ -102,10 +102,41 @@
                                         ;TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
     (trepos/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
 
+(def circle-hook-url "www.circleci.com/hooks/github")
+
+(defn circle-hooks [username reponame github-access-token]
+  (->> (trepos/hooks username reponame {:oauth_token github-access-token})
+       (filter #(and (= "web" (-> % :name)) (= circle-hook-url (-> % :config :url))))))
+
+(defn has-circle-hook? [username reponame github-access-token]
+  (pos? (count (circle-hooks username reponame github-access-token))))
+
 (defn add-hooks
   "Add all the hooks we care about to the user's repo"
   [username reponame github-access-token]
-  (trepos/create-hook username reponame "web" {:url "www.circleci.com/hooks/github"} {:oauth_token github-access-token}))
+  (trepos/create-hook username reponame "web" {:url circle-hook-url} {:oauth_token github-access-token}))
+
+(defn ensure-hooks [username reponame github-access-token]
+  (if (has-circle-hook? username reponame github-access-token)
+    (infof "hook already present on %s/%s, not adding" username reponame)
+    (add-hooks username reponame github-access-token)))
+
+(defn delete-hook [{:keys [username reponame github-access-token hook-id] :as args}]
+  (println "delete-hook:" args)
+  (trepos/delete-hook username reponame hook-id {:oauth_token github-access-token}))
+
+(defn cleanup-hooks []
+  (doseq [p (mongo/fetch :projects)]
+    (let [{:keys [username project]} (circle.backend.github-url/parse (-> p :vcs_url))
+          user-id (-> p :user_ids (first))
+          user (mongo/fetch-one :users :where {:_id user-id})
+          github-access-token (-> user :github_access_token)
+          circle-hooks (circle-hooks username project github-access-token)
+          num-hooks (count circle-hooks)]
+      (when (> num-hooks 1)
+        (println (-> p :vcs_url) "has" num-hooks "circle hooks")
+        (doseq [h (rest circle-hooks)]
+          (delete-hook {:username username :reponame project :github-access-token github-access-token :hook-id (-> h :id)}))))))
 
 (def default-repo-map  {
    :url "https://api.github.com/repos/octocat/Hello-World"
