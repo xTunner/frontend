@@ -24,7 +24,7 @@ class Github
   end
 
   def self.add_commit_hook(username, reponame, user)
-    Backend.fire_worker "circle.workers.github/add-hooks", username, reponame, user.github_access_token
+    Backend.fire_worker "circle.workers.github/ensure-hooks", username, reponame, user.github_access_token
   end
 
 end
