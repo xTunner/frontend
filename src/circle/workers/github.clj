@@ -185,3 +185,9 @@
                 default-repo-map repo))
              all)]
     all))
+
+(defn api-key-for-project [project-url]
+  (let [project (mongo/fetch-one :projects :where {:vcs_url project-url})
+        _ (println (-> project :user_ids (first)))
+        user (mongo/fetch-one :users :where {:_id (-> project :user_ids (first))})]
+    (-> user :github_access_token)))
