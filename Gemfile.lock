@@ -283,6 +283,7 @@ DEPENDENCIES
   ruby_parser
   sass-rails (~> 3.1.4)
   simple_form
+  sqlite3
   switch_user
   trinidad
   trinidad_logging_extension

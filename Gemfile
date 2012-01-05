@@ -2,11 +2,14 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.1.1'
 
-if RUBY_PLATFORM == 'java'
+
+platforms :jruby do
   gem 'jruby-openssl'
   gem 'jrclj', :git => "git://github.com/kyleburton/jrclj.git", :branch => "cc0a0be630eb01f64680811edc48270b5fe77dcb"
   gem 'activerecord-jdbcsqlite3-adapter'
-else
+end
+
+platforms :ruby do
   gem 'sqlite3'
 end
 
