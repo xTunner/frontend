@@ -10,6 +10,20 @@ Factory.define :unowned_project, :class => Project do |p|
   p.vcs_url "https://github.com/circleci/circle-dummy-project2"
 end
 
+Factory.define :build do |b|
+  b.vcs_url "https://github.com/circleci/circle-dummy-project"
+  b.vcs_revision "abcdef1234566789"
+  b.start_time Time.now - 10.minutes
+  b.stop_time Time.now
+  b.build_num 1
+  b.after_create { |x| Factory(:user) } # always make a user, and therefore a project
+end
+
+Factory.define :action_log do |l|
+  l.exit_code 0
+end
+
+
 Factory.define :user do |u|
   u.name 'Test User'
   u.email 'user@test.com'
