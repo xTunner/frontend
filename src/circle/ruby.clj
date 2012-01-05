@@ -164,6 +164,9 @@ RSpec::Core::Runner.run(%s)
   ([parent name]
      (.getClass parent name)))
 
+(defn get-module [name]
+  (.getModule (ruby) name))
+
 (defn send
   "Call a method on a ruby object"
   [obj method & args]
