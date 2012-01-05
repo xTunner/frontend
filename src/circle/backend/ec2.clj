@@ -347,7 +347,7 @@
                (assoc :state-name (-> inst :state :name))
                (assoc :security-groups (str/join "," (for [g (:securityGroups inst)]
                                                        (.getGroupName g))))
-               (assoc :tags (into {} (for [t (map bean (-> inst :tags))] [(:key t) (:value t)]))))))
+               (assoc :tags (into (sorted-map) (for [t (map bean (-> inst :tags))] [(:key t) (:value t)]))))))
        (table [:instanceId :state-name :publicIpAddress :imageId :security-groups :tags])
        (println)))
 
