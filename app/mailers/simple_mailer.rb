@@ -33,4 +33,9 @@ class SimpleMailer < ActionMailer::Base
     mail(:to => "founders@circleci.com",
          :subject => "#{Rails.env}: build exception").deliver
   end
+
+  def test(address="founders@circleci.com")
+    mail(:to => address,
+         :subject => "#{Rails.env}: test email").deliver
+  end
 end
