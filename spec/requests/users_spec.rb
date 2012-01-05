@@ -46,7 +46,7 @@ describe "Users" do
       # cookies, then we'll be redirected straight to the join page, and we
       # won't stop on github.
       if URI.parse(current_url).host == "github.com"
-          fill_in "login", :with => "circleci"
+          fill_in "login", :with => "circle-test"
           fill_in "password", :with => user.password
           click_button "Log in"
       end
@@ -56,7 +56,7 @@ describe "Users" do
       # have_content comes before host.shuld because capybara will wait for the former,
       # since they are ajaxy.
       page.should have_content("forks?")
-      page.should have_content("public?")
+      page.should have_content("Show public repos?")
       page.should have_content("Language")
       URI.parse(current_url).host.should == "circlehost"
       URI.parse(current_url).port.should == 3001
