@@ -3,6 +3,7 @@ class Build
   include Mongoid::Document
 
   field :vcs_url
+  field :vcs_revision
 
   field :failed?, :type => Boolean, :defailt => nil
   field :start_time, :type => Time, :default => nil

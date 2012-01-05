@@ -24,8 +24,6 @@ class SimpleMailer < ActionMailer::Base
     else
       mail(:to => @emails, :subject => "[Circle] Tests succeeded (#{@project.github_project_name} #{@build.build_num})", :template_name => "success").deliver
     end
-
-    email.deliver
   end
 
   def build_error_email(build_id, error)
