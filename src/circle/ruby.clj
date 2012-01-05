@@ -6,7 +6,7 @@
   (:require fs)
   (:use midje.sweet))
 
-(declare eval ruby)
+(declare eval ruby get-class get-module)
 
 (defn new-runtime []
   (let [config (doto (org.jruby.RubyInstanceConfig.)
@@ -90,6 +90,10 @@
   (org.jruby.RubyString/newString (ruby) s))
 
 (defmethod ->ruby
+  org.bson.types.ObjectId [id]
+  (send (get-class (get-module "BSON") "ObjectId") :from_string (.toString id)))
+
+(defmethod ->ruby
   java.lang.Float [n]
   (org.jruby.RubyFloat. (ruby) n))
 
@@ -115,6 +119,8 @@
   nil [n]
   (-> (ruby) (.getNil)))
 
+(def sample-objectid-string "4ee6911fe4b05e6a4d3605fe")
+
 (fact "conversions work"
   (->ruby nil) => (eval "nil")
   (->ruby "a string") => (eval "'a string'")
@@ -126,6 +132,7 @@
   (->ruby [5 6 7]) => (eval "[5, 6, 7]")
   (->ruby {5 6}) => (eval "{5 => 6}")
   (class (eval ":foo")) => org.jruby.RubySymbol
+  (->ruby (org.bson.types.ObjectId. sample-objectid-string)) => (eval (format "BSON::ObjectId::from_string '%s'" sample-objectid-string))
 
   ;; complex nested structures
   (->ruby [:foo "bar" 5 nil]) => (eval "[:foo, 'bar', 5, nil]")
