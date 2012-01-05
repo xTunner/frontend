@@ -139,7 +139,7 @@
           (delete-hook {:username username :reponame project :github-access-token github-access-token :hook-id (-> h :id)})))
       (when (== 0 num-hooks)
         (println (-> p :vcs_url) ":NO HOOK")
-        (inspect (add-hooks username project github-access-token))))))
+        (add-hooks username project github-access-token)))))
 
 (def default-repo-map  {
    :url "https://api.github.com/repos/octocat/Hello-World"
