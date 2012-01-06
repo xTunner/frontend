@@ -15,14 +15,16 @@ class SimpleMailer < ActionMailer::Base
     @emails = "founders@circleci.com"
     @project = @build.the_project
 
-    if @build.failed?
+    subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{failed ? "failed" : "succeeded"}"
+
+    if failed
       @logs = @build.logs
       @failing_log = @logs.last
       @other_logs = @logs[0..-1]
-      raise if @failing_log.success?
-      mail(:to => @emails, :subject => "[#{@project.github_project_name}] Test #{@build.build_num} failed", :template_name => "fail").deliver
+      raise if @failing_log and @failing_log.success?
+      mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
     else
-      mail(:to => @emails, :subject => "[Circle] Tests succeeded (#{@project.github_project_name} #{@build.build_num})", :template_name => "success").deliver
+      mail(:to => @emails, :subject => subject, :template_name => "success").deliver
     end
   end
 
