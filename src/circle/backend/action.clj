@@ -74,7 +74,7 @@
   (errorf "Aborting build: %s" message)
   (add-output message :err-data? true)
   (dosync
-   (alter build assoc :continue? false :failed? true)))
+   (alter build assoc :continue? false :failed true)))
 
 (defn add-start-time
   []

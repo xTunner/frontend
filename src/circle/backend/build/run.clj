@@ -67,13 +67,13 @@
       (error e (format "caught exception on %s" (build/build-name b)))
       (println "assoc'ing failed?=true")
       (dosync
-       (alter b assoc :failed? true))
+       (alter b assoc :failed true))
       (email/send-build-error-email b e)
       (throw e))
     (finally
      (log-result b)
      (finished b)
-     (when (and (-> @b :failed?) cleanup-on-failure)
+     (when (and (-> @b :failed) cleanup-on-failure)
        (cleanup-nodes b)))))
 
 (defn may-start-build? []
