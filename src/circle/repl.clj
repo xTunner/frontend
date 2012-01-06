@@ -4,9 +4,10 @@
 
 (defn init []
   (with-ns 'user
-    (use 'clojure.repl)
+    (use '[clojure.repl :exclude (apropos)])
     (use '[clojure.contrib.ns-utils :only (docs)])
     (use '[clojure.contrib.repl-utils :exclude (apropos source)])
+    (use '[circle.util.repl])
     (use '[circle.backend.ec2 :only (print-instances)])
     (require '[circle.backend.ec2 :as ec2])
     (require '[somnium.congomongo :as mongo]))
