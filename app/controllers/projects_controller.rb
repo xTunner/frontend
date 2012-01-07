@@ -29,6 +29,6 @@ class ProjectsController < ApplicationController
     # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
     Backend.build(@project)
 
-    redirect_to github_project_edit_path(@project)
+    redirect_to github_project_path(@project)
   end
 end

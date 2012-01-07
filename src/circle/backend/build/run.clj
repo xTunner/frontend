@@ -67,7 +67,7 @@
     (catch Exception e
       (println "run-build: except: " b)
       (error e (format "caught exception on %s" (build/build-name b)))
-      (println "assoc'ing failed?=true")
+      (println "assoc'ing failed=true")
       (dosync
        (alter b assoc :failed true))
       (email/send-build-error-email b e)

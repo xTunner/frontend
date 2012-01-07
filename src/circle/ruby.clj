@@ -78,6 +78,15 @@
   (RubySymbol/newSymbol (ruby) (name k)))
 
 (defmethod ->ruby
+  org.jruby.runtime.builtin.IRubyObject [e]
+  e)
+
+;; RaiseException wraps an exception for Java, but isn't an IRubyObject.
+(defmethod ->ruby
+  org.jruby.exceptions.RaiseException [e]
+  (.getException e))
+
+(defmethod ->ruby
   clojure.lang.Sequential [v]
   (let [new-a (org.jruby.RubyArray/newArray (ruby) [])
         values (map ->ruby v)]
