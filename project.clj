@@ -54,6 +54,7 @@
                  [org.clojure/tools.logging "0.2.3"]
                  [org.log4mongo/log4mongo-java "0.7.0"]
                  [clj-airbrake "0.1.4"]
+                 [clj-growl "0.2.1"]
 
                  [vmfest "0.2.3"]
 
