@@ -47,7 +47,7 @@ MongoidTest::Application.configure do
 
   # ActionMailer Config: staging - do not perform deliveries
   config.action_mailer.delivery_method = :test
-  config.action_mailer.default_url_options = { :host => 'circleci.com' }
+  config.action_mailer.default_url_options = { :host => 'staging.circleci.com' }
   config.action_mailer.perform_deliveries = false
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default :charset => "utf-8"
