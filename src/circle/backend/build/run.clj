@@ -38,8 +38,10 @@
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
         (build/build-log "running %s" (-> act :name))
-        (action/run-action build act))))
+        (action/run-action build act)
+        (build/update-mongo build))))
   (stop* build)
+  (build/update-mongo build)
   build)
 
 (defn log-result [b]
