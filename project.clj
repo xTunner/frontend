@@ -15,10 +15,6 @@
                  ;;; TECHNICAL_DEBT
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-                 ;; noir pulls in clj-json 0.3.2 which isn't compatible w/
-                 ;; clojure 1.3. Put this dep ahead to pull it in first.
-                 [clj-json "0.4.0"]
-
                  ;; Slingshot make a breaking change in version 0.8, where
                  ;; slingshot.core was renamed to slingshot.slingshot.
                  ;; Unfortunately, pallet and clj-ssh use version 0.2 and 0.5,
@@ -39,7 +35,6 @@
 
 
                  ;; Web
-                 [noir "1.2.0"]
                  [clj-url "1.0.3"]
                  [clj-http "0.2.1"]
                  [clj-r53 "1.0.1"]
