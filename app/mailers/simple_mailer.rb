@@ -15,9 +15,9 @@ class SimpleMailer < ActionMailer::Base
     @emails = "founders@circleci.com"
     @project = @build.the_project
 
-    subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{failed ? "failed" : "succeeded"}"
+    subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{@build.failed ? "failed" : "succeeded"}"
 
-    if failed
+    if @build.failed
       @logs = @build.logs
       @failing_log = @logs.last
       @other_logs = @logs[0..-1]
