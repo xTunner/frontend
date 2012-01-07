@@ -11,7 +11,7 @@
             = link_to p.users.count, "#", :title => p.users.map { |u| u.known_email }.join("|")
             = link_to 'e', github_project_edit_path(p)
             = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
-            = build_link_to p.latest_build, :project => p
+            = build_link_to p.latest_build, p
             ]
 
   .content
