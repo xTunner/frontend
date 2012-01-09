@@ -3,7 +3,7 @@
     .alert-message.block-message.notice.span8.offset3
       Your builds should now be working, and please alert us if this is not the case. You can message us directly via the white envelope below.
       As always, please feel free to contact us directly:
-      %ul
+      %ul.contact
         %li
           = mail_to "paul@circleci.com"
         %li
@@ -13,7 +13,7 @@
     %thead
       %tr
         %th Project
-        %th Github
+        %th Latest build
         %th Status
     %tbody
       - @projects.each do |project|
@@ -21,7 +21,8 @@
           %td
             = link_to(project.github_project_name, github_project_path(project))
           %td
-            = link_to project.vcs_url do
-              = project.vcs_url
+            - if project.latest_build
+              = build_link_to (project.latest_build)
           %td
-            Available
+            - if project.latest_build
+              = project.latest_build.status
