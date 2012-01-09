@@ -37,7 +37,6 @@ group :assets do
   # The less version requires v8, which doesn't work with JRuby. See
   # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
   # for deciding the correct option.
-
 end
 
 gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
@@ -53,6 +52,7 @@ group :test do
   gem "minitest"
   gem 'turn', :require => false  # Pretty printed test output
   gem 'flexmock'
+  gem 'rspec-html-matchers'
 end
 
 group :development do
