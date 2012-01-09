@@ -14,7 +14,7 @@ platforms :ruby do
 end
 
 gem 'jquery-rails'
-gem "rspec-rails", ">= 2.7.0", :group => [:development, :test]
+gem "rspec-rails", ">= 2.7.0", :groups => [:development, :test]
 gem "bson_ext", "~> 1.4"
 gem "mongoid", "~> 2.3"
 gem "devise", ">= 1.4.9"
