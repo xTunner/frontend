@@ -34,13 +34,13 @@ class Build
 
 
   def status
-    if @stop_time
-      if @failed == true
+    if stop_time
+      if failed == true
         :fail
       else
         :success
       end
-    elsif (@start_time + 24.hours) < Time.now
+    elsif (start_time + 24.hours) < Time.now
       :killed
     else
       :running
