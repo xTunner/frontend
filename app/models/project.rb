@@ -10,7 +10,7 @@ class Project
   field :ssh_public_key
 
   has_and_belongs_to_many :users
-  has_many :builds
+#  has_many :builds
   has_many :specs
 
   attr_accessible :vcs_url

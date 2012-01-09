@@ -25,4 +25,6 @@
               = build_link_to (project.latest_build)
           %td
             - if project.latest_build
-              = project.latest_build.status
+              != bootstrap_status project.latest_build
+            - else
+              = link_to "Set up now", github_project_edit_path(project)

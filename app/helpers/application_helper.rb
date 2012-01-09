@@ -62,6 +62,21 @@ module ApplicationHelper
     link_to(revision[0..8], url + "/commit/" + revision)
   end
 
+  def bootstrap_status(build)
+    type = case build.status
+           when :fail
+             :important
+           when :killed
+             :notice
+           when :success
+             :success
+           when :running
+             :notice
+             end
+    "<span class='label #{type}'>#{ build.status }"
+  end
+
+
   def as_action_timestamp(time)
     time.strftime("%T.%3N")
   end

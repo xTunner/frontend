@@ -10,23 +10,19 @@ class Build
   field :build_num, :type => Integer
   field :failed, :type => Boolean, :default => nil
 
-  belongs_to :project
+#  belongs_to :project
 
   has_many :action_logs, :inverse_of => :thebuild
 
   def the_project
-    if @project
-      @project
-    else
-      # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't
-      # have access to the build model directly
-      Project.where(:vcs_url => vcs_url).first
-    end
+    # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't
+    # have access to the build model directly
+    Project.where(:vcs_url => vcs_url).first
   end
 
   def logs
-    if self.action_logs
-      self.action_logs
+    if action_logs.length > 0
+      action_logs
     else
       ActionLog.where("_build-ref" => id).all
     end
@@ -34,12 +30,10 @@ class Build
 
 
   def status
-    if stop_time
-      if failed == true
-        :fail
-      else
-        :success
-      end
+    if failed
+      :fail
+    elsif stop_time
+      :success
     elsif (start_time + 24.hours) < Time.now
       :killed
     else
