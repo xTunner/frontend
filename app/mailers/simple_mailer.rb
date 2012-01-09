@@ -20,7 +20,7 @@ class SimpleMailer < ActionMailer::Base
     if @build.failed
       @logs = @build.logs
       @failing_log = @logs.last
-      @other_logs = @logs[0..-1]
+      @other_logs = @logs[0..-2]
       raise if @failing_log and @failing_log.success?
       mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
     else
