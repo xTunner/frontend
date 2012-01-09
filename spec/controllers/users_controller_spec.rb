@@ -26,19 +26,19 @@ describe UsersController do
   describe "dashboard" do
     before(:each) do
       @user = subject.current_user
-      @project = @user.projects[0]
+      @projects = @user.projects
+      @project = @projects[0]
     end
 
     it "should list all your projects" do
       get :dashboard
-      response.body.should have_content("Available")
-      response.body.should have_link(@project.github_project_name)
-    end
+      response.body.should have_content("Status")
 
-    it "should use the pretty names", :type => :request do
-      get :dashboard
-      link = page.find_link(@project.github_project_name)
-      link['href'].should == "/gh/" + @project.github_project_name
+      @projects.each do |p|
+        response.body.should have_link(p.github_project_name)
+        link = page.find_link(p.github_project_name)
+        link['href'].should == "/gh/" + p.github_project_name
+      end
     end
   end
 end
