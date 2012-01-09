@@ -59,9 +59,12 @@ module MongoidTest
     # Allow FactoryGirl to reload properly
     # http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console/
     ActionDispatch::Callbacks.after do
+      # TECHNICAL_DEBT: this doesn't work, and slows me down every time I need
+      # to reload a factory and must restart the server
       # Reload the factories
       if Rails.env.test?
         unless FactoryGirl.factories.blank? # first init will load factories, this should only run on subsequent reloads
+          puts "Reloading factories"
           FactoryGirl.factories.clear
           FactoryGirl.find_definitions
         end
