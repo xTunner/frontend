@@ -13,7 +13,7 @@ class Project
   has_many :builds
   has_many :specs
 
-  attr_accessible :name, :vcs_url
+  attr_accessible :vcs_url
 
   def to_param
     github_project_name

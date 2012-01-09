@@ -11,8 +11,10 @@ class SimpleMailer < ActionMailer::Base
 
     @build = Build.find(build_id)
     @users = @build.the_project.users
-    #    @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
-    @emails = "founders@circleci.com"
+    @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
+    if Rails.env.production? # TODO: use the project's _visible_ attribute
+      @emails = "founders@circleci.com"
+    end
     @project = @build.the_project
 
     subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{@build.failed ? "failed" : "succeeded"}"
@@ -20,7 +22,7 @@ class SimpleMailer < ActionMailer::Base
     if @build.failed
       @logs = @build.logs
       @failing_log = @logs.last
-      @other_logs = @logs[0..-1]
+      @other_logs = @logs[0..-2]
       raise if @failing_log and @failing_log.success?
       mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
     else

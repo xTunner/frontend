@@ -2,48 +2,71 @@ require 'factory_girl'
 
 # NOTE: this file does not automatically reload in Rails server. Use load() or restart the server.
 
-Factory.define :project do |p|
-  p.vcs_url "https://github.com/circleci/circle-dummy-project"
-end
+FactoryGirl.define do
 
-Factory.define :unowned_project, :class => Project do |p|
-  p.vcs_url "https://github.com/circleci/circle-dummy-project2"
-end
+  factory :user do
+    name 'Test User'
+    email 'user@test.com'
+    password 'please'
+    after_create { |user| Factory(:project, :users => [user]) }
 
-Factory.define :build do |b|
-  b.vcs_url "https://github.com/circleci/circle-dummy-project"
-  b.vcs_revision "abcdef1234566789"
-  b.start_time Time.now - 10.minutes
-  b.stop_time Time.now
-  b.build_num 1
-  b.after_create { |x| Factory(:user) } # always make a user, and therefore a project
-end
+    factory :github_user do
+      # This user doesnt have a username or email set up in their profile
+      email 'builds@circleci.com'
+      password 'engine process vast trace'
+      name 'Circle Dummy user'
+    end
 
-Factory.define :action_log do |l|
-  l.exit_code 0
-end
-
-
-Factory.define :user do |u|
-  u.name 'Test User'
-  u.email 'user@test.com'
-  u.password 'please'
-  u.after_create { |x| Factory(:project, :users => [x]) }
-end
+    factory :admin_user do
+      admin true
+    end
+  end
 
 
-Factory.define :github_user, :class => User do |u|
-  # This user doesnt have a username or email set up in their profile
-  u.email 'builds@circleci.com'
-  u.password 'engine process vast trace'
-  u.name 'Circle Dummy user'
-end
+  factory :project do
+    vcs_url "https://github.com/circleci/circle-dummy-project"
 
-Factory.define :admin_user, :parent => :user do |u|
-  u.admin true
-end
+    factory :unowned_project do
+      vcs_url "https://github.com/circleci/circle-dummy-project2"
+    end
+  end
 
-Factory.define :signup do |s|
-  s.email "test@email.com"
-  s.contact "true"
+
+  factory :action_log do
+
+    factory :successful_log do
+      name "ls -l"
+      exit_code 0
+      out []
+    end
+
+    factory :failing_log do
+      name "not-a-real-program"
+      exit_code 127
+      out []
+    end
+  end
+
+  factory :build do
+    vcs_url "https://github.com/circleci/circle-dummy-project"
+    vcs_revision "abcdef123456789"
+    start_time Time.now - 10.minutes
+    stop_time Time.now
+    build_num 1
+    after_create { |b| Factory(:user) } # always make a user, and therefore a project
+
+    factory :successful_build do
+      failed false
+    end
+
+    factory :failing_build do
+      failed true
+    end
+  end
+
+
+  factory :signup do
+    email "test@email.com"
+    contact "true"
+  end
 end

@@ -14,7 +14,7 @@ platforms :ruby do
 end
 
 gem 'jquery-rails'
-gem "rspec-rails", ">= 2.7.0", :group => [:development, :test]
+gem "rspec-rails", ">= 2.7.0", :groups => [:development, :test]
 gem "bson_ext", "~> 1.4"
 gem "mongoid", "~> 2.3"
 gem "devise", ">= 1.4.9"
@@ -26,7 +26,9 @@ gem 'cancan'
 gem 'mongoid_session_store'
 gem 'switch_user'
 gem 'pusher'
-gem 'mail_safe'
+
+# In test, no mail gets sent anyway, but let's not mess with the email addresses
+gem 'mail_safe', :groups => [ :development, :production, :staging ]
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -37,7 +39,6 @@ group :assets do
   # The less version requires v8, which doesn't work with JRuby. See
   # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
   # for deciding the correct option.
-
 end
 
 gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
@@ -53,6 +54,7 @@ group :test do
   gem "minitest"
   gem 'turn', :require => false  # Pretty printed test output
   gem 'flexmock'
+  gem 'rspec-html-matchers'
 end
 
 group :development do
