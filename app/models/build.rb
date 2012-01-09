@@ -5,31 +5,42 @@ class Build
   field :vcs_url
   field :vcs_revision
 
-  field :failed, :type => Boolean, :default => nil
   field :start_time, :type => Time, :default => nil
   field :stop_time, :type => Time, :default => nil
   field :build_num, :type => Integer
+  field :failed, :type => Boolean, :default => nil
 
   belongs_to :project
 
+  has_many :action_logs, :inverse_of => :thebuild
+
   def the_project
-    # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't have access to the build model directly
-    Project.where(:vcs_url => vcs_url).first
+    if @project
+      @project
+    else
+      # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't
+      # have access to the build model directly
+      Project.where(:vcs_url => vcs_url).first
+    end
   end
 
   def logs
-    ActionLog.where("_build-ref" => id).all
+    if self.action_logs
+      self.action_logs
+    else
+      ActionLog.where("_build-ref" => id).all
+    end
   end
 
 
   def status
-    if self.stop_time
-      if self.failed == true
+    if @stop_time
+      if @failed == true
         :fail
       else
         :success
       end
-    elsif (self.start_time + 24.hours) < Time.now
+    elsif (@start_time + 24.hours) < Time.now
       :killed
     else
       :running

@@ -6,7 +6,7 @@
     %p
       Commit #{@build.vcs_revision} has passed all its tests!
       %br
-      = build_link_to @build, :text => "Read the full build report", :only_path => false
+      = build_absolute_link_to @build, :text => "Read the full build report"
 
     %p
       These commands were run, and were all successful:
@@ -20,4 +20,4 @@
 
 
     %p
-      = build_link_to @build, :text => "Read the full build report", :only_path => false
+      = build_absolute_link_to @build, :text => "Read the full build report"
