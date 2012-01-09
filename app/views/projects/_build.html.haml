@@ -1,5 +1,5 @@
 %tr
-  %td{ :class => build.status }
+  %td
     = build_link_to build, project
 
   %td
@@ -9,13 +9,13 @@
 
   -# TODO: need the commit log and the author
 
-  %td{ :class => build.status }
+  %td
     = as_commit_time build.start_time
 
-  %td{ :class => build.status }
+  %td
     = as_length_of_build build.start_time, build.stop_time
     - if build.status == :running
       (still running)
 
-  %td{ :class => build.status }
-    = build.status
+  %td
+    != bootstrap_status build
