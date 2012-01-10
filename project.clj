@@ -35,6 +35,7 @@
 
 
                  ;; Web
+                 [noir "1.2.1"] ;; this is necessary because of the posterous template in src/circle/web/views/posterous
                  [clj-url "1.0.3"]
                  [clj-http "0.2.1"]
                  [clj-r53 "1.0.1"]
