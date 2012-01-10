@@ -29,6 +29,10 @@ FactoryGirl.define do
     factory :unowned_project do
       vcs_url "https://github.com/circleci/circle-dummy-project2"
     end
+
+    factory :project_with_weird_characters do
+      vcs_url "https://github.com/._-_.-/-.__-.-/"
+    end
   end
 
 
