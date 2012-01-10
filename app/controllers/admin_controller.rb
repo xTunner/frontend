@@ -4,7 +4,7 @@ class AdminController < ApplicationController
 
   def show
     @projects = Project.order_by([[:vcs_url, :asc]])
-    @builds = Build.order_by([[:start_time, :desc]]).limit(20).all
+    @builds = Build.order_by([[:start_time, :desc]]).page params[:page]
   end
 
 end
