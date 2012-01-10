@@ -65,7 +65,7 @@
       (email/notify-build-results b))
     b
     (catch Exception e
-      (println "run-build: except: " b)
+      (println "run-build: except:" b)
       (error e (format "caught exception on %s" (build/build-name b)))
       (println "assoc'ing failed=true")
       (dosync
