@@ -1,4 +1,6 @@
-.container
+.container-fluid
+  On github:
+  = revision_link(@build.vcs_url, @build.vcs_revision)
   - @logs.each do |l|
     -# wrapper allows the header and detail be siblings, for the JS
     .wrapper
