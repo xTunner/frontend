@@ -15,7 +15,7 @@ describe SimpleMailer do
 
     mail.subject.should == "[circleci/circle-dummy-project] Test 1 succeeded"
     mail.to.should == ["user@test.com"]
-    mail.from.should == ["build-fairy@circleci.com"]
+    mail.from.should == ["builds@circleci.com"]
     mail.body.parts.length.should == 2
 
     html = mail.body.parts.find {|p| p.content_type.match /html/}.body.raw_source
@@ -51,7 +51,7 @@ describe SimpleMailer do
 
     mail.subject.should == "[circleci/circle-dummy-project] Test 1 failed"
     mail.to.should == ["user@test.com"]
-    mail.from.should == ["build-fairy@circleci.com"]
+    mail.from.should == ["builds@circleci.com"]
     mail.body.parts.length.should == 2
 
     html = mail.body.parts.find {|p| p.content_type.match /html/}.body.raw_source

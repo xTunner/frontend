@@ -20,7 +20,7 @@ describe UsersController do
 
   it "should render and have text" do
     get :dashboard
-    response.body.should have_content("Your builds")
+    response.body.should have_content("Latest build")
   end
 
   describe "dashboard" do
