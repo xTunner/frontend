@@ -1,30 +1,37 @@
 .container
   .row
     .alert-message.block-message.notice.span8.offset3
-      Your builds should now be working, and please alert us if this is not the case. You can message us directly via the white envelope below.
-      As always, please feel free to contact us directly:
+
+      We are setting up your projects for you, focusing on standard frameworks
+      like Rails, Node, Clojure, etc. If you have a non-standard project, you
+      can set it up manually using the 'edit' link.
+      %br
+      %br
+
+      If you have any problems, questions, feedback or comment, please message us directly via the white envelope below, or contact us directly:
       %ul.contact
         %li
-          = mail_to "paul@circleci.com"
+          (415) 341-2432
         %li
-          +1 415 341 2432
+          = mail_to "paul@circleci.com"
 
   %table#projects
     %thead
       %tr
+        %th Status
         %th Project
         %th Latest build
-        %th Status
+        %th Edit
     %tbody
       - @projects.each do |project|
         %tr
+          %td
+            - if project.latest_build
+              != bootstrap_status project.latest_build
           %td
             = link_to(project.github_project_name, github_project_path(project))
           %td
             - if project.latest_build
               = build_link_to (project.latest_build)
           %td
-            - if project.latest_build
-              != bootstrap_status project.latest_build
-            - else
-              = link_to "Set up now", github_project_edit_path(project)
+            = link_to "edit", github_project_edit_path(project)
