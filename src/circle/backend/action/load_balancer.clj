@@ -6,7 +6,8 @@
   (:use [circle.backend.build :only (build-log)])
   (:use [robert.bruce :only (try-try-again)])
   (:require [circle.backend.load-balancer :as lb])
-  (:require [circle.backend.ec2 :as ec2]))
+  (:require [circle.backend.ec2 :as ec2])
+  (:require [clojure.string :as str]))
 
 (defaction add-instances []
   {:name "add to load balancer"}
