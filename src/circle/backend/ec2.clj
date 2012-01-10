@@ -12,6 +12,7 @@
   (:use [doric.core :only (table)])
   (:require [circle.env :as env])
   (:require [circle.backend.ssh])
+  (:require [circle.backend.load-balancer :as lb])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonClientException
            com.amazonaws.AmazonServiceException
@@ -101,6 +102,16 @@
       (-> client
           (.terminateInstances (TerminateInstancesRequest. instance-ids))
           (bean)))))
+
+(def production-load-balancer "www")
+
+(defn safe-terminate
+  "Terminates instances that are not attached to the load balancer."
+  [& instance-ids]
+  (let [safe-instances (into #{} (lb/instances production-load-balancer))
+        kill-instances (remove #(contains? safe-instances %) instance-ids)]
+    (when (seq kill-instances)
+      (apply terminate-instances! kill-instances))))
 
 (defn tagmap
   "Given an inst returned by instances, return the tags as a single map"

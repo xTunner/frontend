@@ -7,7 +7,7 @@
   (:use [arohner.utils :only (inspect)])
   (:require [circle.sh :as sh]))
 
-(def repo-root "repos/")  ;; Root directory where we will check out repos
+(def repo-root "repos")  ;; Root directory where we will check out repos
 
 (defn project-name
   "Infer the project name from the URL"
@@ -24,7 +24,9 @@
 
 (defn default-repo-path [url]
   {:pre [url]}
-  (str repo-root (project-name url)))
+  ;;TECHNICAL_DEBT stick thread-id into the repo path to avoid a race
+  ;;condition when a customer triggers multiple builds
+  (fs/join repo-root (str "thread-" (-> (Thread/currentThread) (.getId))) (project-name url)))
 
 (defmacro with-temp-ssh-key-file
   "Writes the ssh-key to a temp file, executes body. f is the name of the variable that will hold the File for the ssh-key. Deletes the temp key file when done"

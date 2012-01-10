@@ -45,7 +45,7 @@
   (let [ids (-> @build :instance-ids)]
     (when (seq ids)
       (infof "terminating nodes %s" ids)
-      (apply ec2/terminate-instances! ids))
+      (apply ec2/safe-terminate ids))
     (when (-> @build :node :keypair-name)
       (infof "deleting keypair %s" (-> @build :node :keypair-name))
       (ec2/delete-keypair (-> @build :node :keypair-name)))))

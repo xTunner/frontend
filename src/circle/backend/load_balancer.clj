@@ -127,6 +127,16 @@
         (first)
         (bean))))
 
+(defn instances
+  "Returns a seq of instance-ids attached to LB"
+  [lb-name]
+  (->> lb-name
+       (describe-balancer)
+       :instances
+       (seq)
+       (map bean)
+       (map :instanceId)))
+
 (defn get-availability-zones [lb-name]
   (-> lb-name
       (describe-balancer)
