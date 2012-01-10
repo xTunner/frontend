@@ -28,7 +28,7 @@ gem 'switch_user'
 gem 'pusher'
 
 # In test, no mail gets sent anyway, but let's not mess with the email addresses
-gem 'mail_safe', :groups => [ :development, :production, :staging ]
+gem 'mail_safe', :groups => [ :development, :staging ]
 
 # Gems used only for assets and not required
 # in production environments by default.

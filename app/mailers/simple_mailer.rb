@@ -1,5 +1,5 @@
 class SimpleMailer < ActionMailer::Base
-  default :from => "Circle Builds <build-fairy@circleci.com>"
+  default :from => "Circle Builds <builds@circleci.com>"
   include ApplicationHelper
   helper :application
 
@@ -10,12 +10,13 @@ class SimpleMailer < ActionMailer::Base
   def build_email(build_id)
 
     @build = Build.find(build_id)
-    @users = @build.the_project.users
+    @project = @build.the_project
+    @users = @project.users
     @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
-    if Rails.env.production? # TODO: use the project's _visible_ attribute
+
+    if Rails.env.production? && !@project.visible
       @emails = "founders@circleci.com"
     end
-    @project = @build.the_project
 
     subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{@build.failed ? "failed" : "succeeded"}"
 
