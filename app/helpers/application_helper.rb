@@ -67,7 +67,7 @@ module ApplicationHelper
            when :fail
              :important
            when :killed
-             :notice
+             :warning
            when :success
              :success
            when :running
