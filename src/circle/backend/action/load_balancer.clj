@@ -18,7 +18,7 @@
                       :let [az (ec2/get-availability-zone i)]]
                 (lb/ensure-availability-zone lb-name az))
             result (lb/add-instances lb-name instance-ids)]
-        (build-log "added %s to load balancer %s successful" instance-ids lb-name))
+        (build-log "added %s to load balancer %s successful" (str/join ", " instance-ids) lb-name))
       (catch AmazonClientException e
         (println "add-instances:" e)
         {:success false
