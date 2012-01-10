@@ -78,6 +78,14 @@ describe SimpleMailer do
     b = Factory(:build)
     SimpleMailer.build_error_email(b.id, "a test error")
     ActionMailer::Base.deliveries.length.should == 1
+    mail = ActionMailer::Base.deliveries.last
+
+    mail.subject.should == "test: build exception"
+    mail.to.should == ["founders@circleci.com"]
+    mail.from.should == ["builds@circleci.com"]
+    mail.body.should include "a test error"
+    mail.body.should include b.vcs_url
+    mail.body.should include b.vcs_revision
   end
 
 
