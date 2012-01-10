@@ -14,7 +14,7 @@ describe "Users" do
       click_button "Sign in"
 
       page.should have_content("Signed in successfully.")
-      page.should have_content("Your builds should now be working")
+      page.should have_content("We are setting up your projects for you")
     end
   end
 
@@ -75,8 +75,9 @@ describe "Users" do
       URI.parse(current_url).path.should == root_path
       page.should_not have_content("guest")
       page.should have_content(user.email)
-      page.should have_content "Your builds should now be working"
+      page.should have_content "We are setting up your projects for you"
       page.should have_content("circle-dummy-project")
+      page.should have_content("edit")
     end
 
     it "if you stop before finishing, don't allow logins" do
