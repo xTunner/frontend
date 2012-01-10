@@ -103,7 +103,7 @@ module ApplicationHelper
       return "" # new projects may have no builds available yet
     end
 
-    link_to build.build_num, link
+    link_to "Build " + build.build_num.to_s, link
   end
 
 
