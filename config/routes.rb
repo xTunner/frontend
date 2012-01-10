@@ -5,8 +5,8 @@ MongoidTest::Application.routes.draw do
     :path_names => {:sign_in => 'login', :sign_out => 'logout', :sign_up => "welcome"},
     :controllers => {:registrations => "registrations"}
 
-  username_regex = '[a-zA-Z0-9_\-]+'
-  project_regex = '[a-zA-Z0-9_\-]+'
+  username_regex = '[a-zA-Z0-9_\-\.]+'
+  project_regex = '[a-zA-Z0-9_\-\.]+'
   github_regex = /#{username_regex}\/#{project_regex}/
   match '/gh/:project', :to => 'projects#show', :as => :github_project, :constraints => { :project => github_regex }, :via => [:get]
   match '/gh/:project', :to => 'builds#create', :as => :project_builds, :constraints => { :project => github_regex }, :via => [:post]

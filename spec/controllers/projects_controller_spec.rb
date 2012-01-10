@@ -19,4 +19,10 @@ describe ProjectsController do
     project = subject.current_user.projects[0]
     get 'show', :id => project.id
   end
+
+
+  it "should work for weird characters in the project url" do
+    github_project_path(Factory(:project_with_weird_characters))
+  end
+
 end
