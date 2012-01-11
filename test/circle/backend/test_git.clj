@@ -16,4 +16,5 @@
     (fs/deltree test-repo-path)
     (repo-exists? test-repo-path) => false
     (clone test-git-url :ssh-key ssh-key :path test-repo-path)
-    (repo-exists? test-repo-path) => true))
+    (repo-exists? test-repo-path) => true
+    (fs/exists? (fs/join test-repo-path "README.md")) => true))
