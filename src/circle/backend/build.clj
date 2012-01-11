@@ -55,10 +55,15 @@
   ;; Keys on build that shouldn't go into mongo, for whatever reason
   [:actions :action-results])
 
+(defn add-build-id [b id]
+  (when id
+    (dosync
+     (alter b assoc :_id id))
+    b))
+
 (defn insert! [b]
   (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
-    (dosync
-     (alter b assoc :_id (-> return :_id)))
+    (add-build-id b (-> return :_id))
     b))
 
 (defn update-mongo

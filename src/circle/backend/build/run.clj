@@ -24,7 +24,8 @@
 
 (defn start* [build]
   (dosync
-   (alter build assoc :start_time (-> (time/now) .toDate))))
+   (when-not (-> @build :start-time)
+     (alter build assoc :start_time (-> (time/now) .toDate)))))
 
 (defn stop* [build]
   (dosync
@@ -56,10 +57,11 @@
   (build/update-mongo b)
   (run-first))
 
-(defn run-build [b & {:keys [cleanup-on-failure]
+(defn run-build [b & {:keys [cleanup-on-failure id]
                           :or {cleanup-on-failure true}}]
   (infof "starting build: %s" (build/build-name b))
   (try
+    (build/add-build-id b id)
     (build/with-build-log b
       (do-build* b)
       (email/notify-build-results b))

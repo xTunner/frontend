@@ -40,7 +40,12 @@
     (-> @build :_project_id) => truthy
     (-> @build :build_num) => integer?
     (-> @build :build_num) => pos?
-    (let [builds (mongo/fetch :builds :where {:_id (-> @build :_project_id)})]
+    (let [builds (mongo/fetch :builds :where {:_id (-> @build :_id)})]
+      (count builds) => 1)))
+
+(fact "builds using the provided objectid"
+  (let [build (run-build (successful-build) :id "7")]
+    (let [builds (mongo/fetch :builds :where {:_id "7"})]
       (count builds) => 1)))
 
 (fact "successive builds use incrementing build-nums"
