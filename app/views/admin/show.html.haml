@@ -12,6 +12,10 @@
             = link_to 'e', github_project_edit_path(p)
             = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
             = build_link_to p.latest_build, p
+            - if p.visible
+              V
+            - else
+              \-
             ]
 
   .content
