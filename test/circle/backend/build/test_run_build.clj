@@ -4,7 +4,7 @@
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.backend.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
-  (:use [circle.backend.build.config :only (infer-build-from-url)])
+  (:use [circle.backend.build.config :only (build-from-url)])
   (:require [somnium.congomongo :as mongo])
   (:use [circle.util.predicates :only (ref?)]))
 
@@ -30,8 +30,16 @@
       (> (-> res :stop-time) (-> res :start-time)) => true)
     (successful? build) => truthy))
 
+(fact "dummy project does not start nodes"
+  ;;; This should be using the empty template, which does not start nodes
+  (-> "https://github.com/arohner/circle-dummy-project"
+      (build-from-url)
+      deref
+      :actions
+      (count)) => 0)
+
 (fact "build of dummy project is successful"
-  (-> "https://github.com/arohner/circle-dummy-project" (infer-build-from-url) (run-build) (successful?)) => true)
+  (-> "https://github.com/arohner/circle-dummy-project" (build-from-url) (run-build) (successful?)) => true)
 
 (fact "builds insert into the DB"
   (let [build (run-build (successful-build))]
