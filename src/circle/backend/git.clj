@@ -5,9 +5,23 @@
   (:use [circle.util.except :only (throw-if-not)])
   (:use [clojure.tools.logging :only (infof)])
   (:use [arohner.utils :only (inspect)])
+  (:use [circle.util.args :only (require-args)])
+  (:require fs)
   (:require [circle.sh :as sh]))
 
 (def repo-root "repos")  ;; Root directory where we will check out repos
+
+(defn locking-repo*
+  "Takes a repo path, and a fn of no args. Calls f while locking the repo"
+  [repo f]
+  (throw-if-not (instance? String repo))
+  (locking (.intern repo)
+    (f)))
+
+(defmacro with-repo-lock [repo & body]
+  `(locking-repo* ~repo
+                  (fn []
+                    ~@body)))
 
 (defn project-name
   "Infer the project name from the URL"
@@ -24,9 +38,7 @@
 
 (defn default-repo-path [url]
   {:pre [url]}
-  ;;TECHNICAL_DEBT stick thread-id into the repo path to avoid a race
-  ;;condition when a customer triggers multiple builds
-  (fs/join repo-root (str "thread-" (-> (Thread/currentThread) (.getId))) (project-name url)))
+  (fs/join repo-root (project-name url)))
 
 (defmacro with-temp-ssh-key-file
   "Writes the ssh-key to a temp file, executes body. f is the name of the variable that will hold the File for the ssh-key. Deletes the temp key file when done"
@@ -47,12 +59,14 @@
 (defn git-fn*
   "Takes a seq of stevedore code. Executes it locally, with GIT_SSH and GIT_SSH_KEY set up."
   [steve & {:keys [ssh-key repo]}]
+  (require-args steve repo)
   (with-temp-ssh-key-file [f ssh-key]
-    (let [result (sh/sh steve
-                        :environment (when ssh-key
-                                       {"GIT_SSH" git-ssh-path
-                                        "GIT_SSH_KEY" f})
-                        :pwd repo)]
+    (let [result (with-repo-lock repo
+                   (sh/sh steve
+                          :environment (when ssh-key
+                                         {"GIT_SSH" git-ssh-path
+                                          "GIT_SSH_KEY" f})
+                          :pwd repo))]
       (throw-if-not (zero? (-> result :exit)) "git command %s returned %s: %s" (first steve) (-> result :exit) (-> result :err))
       result)))
 
@@ -60,11 +74,14 @@
   "Clone a git repo at url, writing the directory to path"
   [url & {:keys [path ssh-key]}]
   (let [path (or path (default-repo-path url))]
+
     (infof "git clone %s %s" url path)
+    (fs/mkdirs path)
     (git-fn* (sh/q
               (git clone ~url ~path))
              :ssh-key
-             ssh-key)))
+             ssh-key
+             :repo path)))
 
 (defn checkout
   "git checkout cmd"
