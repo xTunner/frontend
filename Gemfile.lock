@@ -122,6 +122,10 @@ GEM
       bouncy-castle-java
     jruby-rack (1.1.1)
     json (1.6.3-java)
+    kaminari (0.13.0)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      railties (>= 3.0.0)
     launchy (2.0.5-java)
       addressable (~> 2.2.6)
       ffi (~> 1.0.9)
