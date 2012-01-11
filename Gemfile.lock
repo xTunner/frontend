@@ -276,6 +276,7 @@ DEPENDENCIES
   jquery-rails
   jrclj!
   jruby-openssl
+  kaminari
   launchy (>= 2.0.5)
   mail_safe
   minitest

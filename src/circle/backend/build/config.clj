@@ -16,11 +16,12 @@
   (:use [circle.util.model-validation :only (validate!)])
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
+  (:use [circle.util.string :only (length?)])
   (:use [circle.util.except :only (assert! throw-if-not throwf)])
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.build.inference :as inference])
   (:require circle.backend.build.inference.rails)
-  (:use [circle.util.map :only (rename-keys)])
+  (:use [circle.util.map :only (rename-keys map-vals)])
   (:require [clj-yaml.core :as yaml])
   (:import java.io.StringReader)
   (:use [arohner.utils :only (inspect)])
@@ -64,7 +65,7 @@
        ((juxt :setup :dependencies :compile :test))
        (mapcat (fn [line]
                  (str/split (or line "") #"\r\n")))
-       (filter #(> (.length %) 0))))
+       (filter length?)))
 
 (defn get-config-from-db [url]
   (let [project (project/get-by-url url)]
@@ -84,11 +85,9 @@
     (git/ensure-repo git-url :ssh-key ssh-key :path repo)
     (when vcs-revision
       (git/checkout repo vcs-revision))
-    (or
-     (get-config-from-db url)
-     (-> repo
+    (-> repo
         (fs/join "circle.yml")
-        (load-config)))))
+        (load-config))))
 
 (defn validate-action-map [cmd]
   (validate! [(is-map?)
@@ -243,12 +242,22 @@
 (defn minimal-config [url]
   {})
 
+(defn parse-spec-actions [spec]
+  (->> spec
+       (#(select-keys % [:pre-setup :setup :post-setup :pre-test :test :post-test]))
+       (map-vals (fn [lines]
+                   (->> (str/split (or lines "") #"\r\n")
+                        (filter length?)
+                        (map parse-action))))))
+
 (defn infer-build-from-url
   "Assumes url does not have a circle.yml. Examine the source tree, and return a build"
   [url]
   (let [project (project/get-by-url url)
         project-name (or (-> project :name) (infer-project-name url))
         repo (git/default-repo-path url)
+        spec (spec/get-spec-for-project project)
+        spec-actions (parse-spec-actions spec)
         vcs-revision (git/latest-local-commit repo)
         node (inference/node repo)]
     (build/build

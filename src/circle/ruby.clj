@@ -158,14 +158,17 @@ RSpec::Core::Runner.run(%s)
   ([parent name]
      (.getClass parent name)))
 
-(defn get-module [name]
-  (.getModule (ruby) name))
-
 (defn send
   "Call a method on a ruby object"
   [obj method & args]
   (throw-if-not obj "Can't call methods on nil")
   (.callMethod obj (name method) (into-array org.jruby.runtime.builtin.IRubyObject (map ->ruby args))))
+
+(defn get-module
+  ([name]
+     (.getModule (ruby) name))
+  ([parent module-name]
+     (send parent :const_get module-name)))
 
 (defn methods
   "Returns the list of ruby methods on the obj"
