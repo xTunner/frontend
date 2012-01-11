@@ -46,4 +46,4 @@
             %td
               = as_length_of_build b.start_time, b.stop_time
             %td
-              = b.status
+              != bootstrap_status(b)
