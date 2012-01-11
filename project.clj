@@ -26,6 +26,7 @@
                  ;; tentacles from working. Put this dep first
                  [org.codehaus.jackson/jackson-core-asl "1.8.5"]
 
+                 [clj-stacktrace "0.2.4"]  ;; swank needs >= 0.2.4, but noir depends on 0.2.3, and maven is dumb.
 
                  ;; we added new fn, org/repos
                  [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
@@ -60,7 +61,9 @@
                  [vmfest "0.2.3"]
 
                  ;; Misc
-                 [swank-clojure "1.3.3"]
+                 [swank-clojure "1.3.4"]
+
+
                  [commons-codec "1.4"]
                  [org.apache.commons/commons-compress "1.0"]
                  [org.xeustechnologies/jtar "1.0.4"]
