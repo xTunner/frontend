@@ -1,6 +1,6 @@
 (ns circle.backend.build.test-run-build
   (:use midje.sweet)
-  (:use [circle.backend.build.test-utils :only (minimal-build)])
+  (:use [circle.backend.build.test-utils :only (minimal-build ensure-test-user-and-project ensure-test-project)])
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.backend.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
@@ -9,6 +9,7 @@
   (:use [circle.util.predicates :only (ref?)]))
 
 (circle.db/init)
+(ensure-test-user-and-project)
 
 (defaction successful-action [act-name]
   {:name act-name}
