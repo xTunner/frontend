@@ -406,9 +406,14 @@
 (defn self-metadata
   "Returns metadata about the current instance. attr is a string/keyword"
   [attr]
-  (let [resp (http/get (format "%s/%s" aws-metadata-url attr) {:throw-exceptions false})]
-    (when (= 200 (-> resp :status))
-      (-> resp :body))))
+  (try
+    (let [resp (http/get (format "%s/%s" aws-metadata-url attr) {:throw-exceptions false
+                                                                 :socket-timeout 1000
+                                                                 :conn-timeout 1000})]
+      (when (= 200 (-> resp :status))
+        (-> resp :body)))
+    (catch org.apache.http.conn.ConnectTimeoutException e
+      nil)))
 
 (defn self-instance-id
   "If the local box is an EC2 instance, returns the instance id, else nil."
