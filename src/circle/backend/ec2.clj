@@ -32,6 +32,26 @@
                                              DescribeInstanceAttributeRequest
                                              ModifyInstanceAttributeRequest)))
 
+;; http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html?r=1890
+(def aws-metadata-url "http://169.254.169.254/latest/meta-data/")
+
+(defn self-metadata
+  "Returns metadata about the current instance. attr is a string/keyword"
+  [attr]
+  (try
+    (let [resp (http/get (format "%s/%s" aws-metadata-url attr) {:throw-exceptions false
+                                                                 :socket-timeout 1000
+                                                                 :conn-timeout 1000})]
+      (when (= 200 (-> resp :status))
+        (-> resp :body)))
+    (catch Exception e
+      nil)))
+
+(defn self-instance-id
+  "If the local box is an EC2 instance, returns the instance id, else nil."
+  []
+  (self-metadata "instance-id"))
+
 (defmacro with-ec2-client
   [client & body]
   `(let [~client (AmazonEC2Client. aws-credentials)]
@@ -347,7 +367,7 @@
                                 :public-key public-key
                                 :private-key private-key) instance-ids)
     (add-tags instance-ids {:username (env/username)
-                            :hostname (env/hostname)
+                            :hostname (or (self-instance-id) (env/hostname))
                             :timestamp (str (java.util.Date.))})
     instance-ids))
 
@@ -395,23 +415,3 @@
                     (.setInstanceId instance-id)
                     (.setInstanceInitiatedShutdownBehavior (name value)))]
       (.modifyInstanceAttribute client request))))
-
-;; http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html?r=1890
-(def aws-metadata-url "http://169.254.169.254/latest/meta-data/")
-
-(defn self-metadata
-  "Returns metadata about the current instance. attr is a string/keyword"
-  [attr]
-  (try
-    (let [resp (http/get (format "%s/%s" aws-metadata-url attr) {:throw-exceptions false
-                                                                 :socket-timeout 1000
-                                                                 :conn-timeout 1000})]
-      (when (= 200 (-> resp :status))
-        (-> resp :body)))
-    (catch org.apache.http.conn.ConnectTimeoutException e
-      nil)))
-
-(defn self-instance-id
-  "If the local box is an EC2 instance, returns the instance id, else nil."
-  []
-  (self-metadata "instance-id"))
