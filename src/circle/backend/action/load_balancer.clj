@@ -1,6 +1,8 @@
 (ns circle.backend.action.load-balancer
   (:import com.amazonaws.AmazonClientException)
   (:require [circle.backend.nodes :as nodes])
+  (:require [clj-http.client :as http])
+  (:use [clojure.tools.logging :only (infof)])
   (:use [circle.backend.action :only (defaction abort!)])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.backend.build :only (build-log)])
@@ -57,6 +59,14 @@
                     (not= (-> tag :value) current-rev))))
      (map #(-> % :resourceId)))))
 
+(defn graceful-shutdown [instance-id]
+  (infof "asking %s to shutdown gracefully" instance-id)
+  (let [resp (http/post (format "https://%s/api/system/shutdown" (ec2/public-ip instance-id))
+                        {:basic-auth ["bot@circleci.com" "brick amount must thirty"]
+                         ;; ignore SSL errors, in case this is a staging instance
+                         :insecure? true})]
+    (infof "graceful shutdown: got resp %s" resp)))
+
 (defaction shutdown-remove-old-revisions []
   {:name "remove old revisions"}
   (fn [build]
@@ -68,7 +78,7 @@
         (println "shutdown-remove-old:" old-instances)
         (when (seq old-instances)
           (lb/remove-instances lb-name old-instances)
-          (apply ec2/terminate-instances! old-instances))
+          (doall (map graceful-shutdown old-instances)))
         (when (seq terminated-instances)
           (lb/remove-instances lb-name terminated-instances))
         {:success true})
