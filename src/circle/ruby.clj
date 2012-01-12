@@ -87,6 +87,10 @@
   (.getException e))
 
 (defmethod ->ruby
+  java.lang.Exception [e]
+  e)
+
+(defmethod ->ruby
   clojure.lang.Sequential [v]
   (let [new-a (org.jruby.RubyArray/newArray (ruby) [])
         values (map ->ruby v)]

@@ -24,7 +24,9 @@ class SimpleMailer < ActionMailer::Base
       @logs = @build.logs
       @failing_log = @logs.last
       @other_logs = @logs[0..-2]
-      raise if @failing_log and @failing_log.success?
+      if @failing_log and @failing_log.success?
+        logger.error "Failing log didn't fail: #{@failing_log.to_s}"
+      end
       mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
     else
       mail(:to => @emails, :subject => subject, :template_name => "success").deliver
