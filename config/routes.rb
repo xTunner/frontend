@@ -37,6 +37,7 @@ MongoidTest::Application.routes.draw do
     resource :system, :controller => "system" do
       member do
         post 'shutdown'
+        get 'ping'
       end
     end
   end
