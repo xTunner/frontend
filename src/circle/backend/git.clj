@@ -74,6 +74,7 @@
   "Clone a git repo at url, writing the directory to path"
   [url & {:keys [path ssh-key]}]
   (let [path (or path (default-repo-path url))]
+
     (infof "git clone %s %s" url path)
     ;; all of the other git commands run in the repo working
     ;; directory, i.e. repos/CircleCI. mkdir our clone destination and

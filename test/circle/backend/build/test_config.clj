@@ -6,6 +6,9 @@
   (:use [circle.backend.action.bash :only (bash remote-bash-build)])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.model.project :as project])
+  (:require [circle.model.spec :as spec])
+  (:require [circle.backend.build.inference :as inference])
   (:require circle.init)
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
@@ -87,3 +90,22 @@
    (infer-project-name ?url) => ?expected)
  ?url ?expected
  "https://github.com/rails/rails.git" "rails")
+
+;.;. commands is {:pre-setup ["foo"],
+;.;.  :setup
+;.;.  [{:name "bar",
+;.;.    :act-fn
+;.;.    #<test_config$eval18791$fn__18792$fn__18795 circle.backend.build.test_config$eval18791$fn__18792$fn__18795@27a99bd8>}]}
+;.;.
+;.;.
+;.;. FAIL at (NO_SOURCE_FILE:1)
+;.;.     Expected: ["foo" "bar"]
+;.;.       Actual: ()
+(fact "configs merge with inference"
+  (->> (get-config-from-db "https://github.com/arohner/circle-dummy-project")
+       :actions
+       (map :name)) => ["foo" "bar"]
+  (provided
+    (project/get-by-url anything) => {}
+    (spec/get-spec-for-project anything) => {:pre-setup "foo"}
+    (inference/infer-actions anything) => {:setup [{:name "bar" :act-fn (fn [])}]}))
