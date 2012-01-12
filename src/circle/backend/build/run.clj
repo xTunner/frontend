@@ -1,9 +1,9 @@
 (ns circle.backend.build.run
   (:require [circle.backend.build.email :as email])
-  (:require [clj-time.core :as time])
   (:require [circle.backend.build :as build])
   (:use [arohner.utils :only (inspect fold)])
   (:require [circle.env :as env])
+  (:require [clj-time.core :as time])
   (:use [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
   (:use [circle.logging :only (add-file-appender)])
@@ -26,11 +26,10 @@
     (infof "Build %s successful" (build/build-name b))
     (errorf "Build %s failed" (build/build-name b))))
 
-(defn start [b]
-  (build/insert! b)
+(defn start [b id]
   (dosync
    (throw-if (-> @b :start_time) "refusing to run started build")
-   (alter b assoc :start_time (-> (time/now) .toDate))
+   (build/add-to-db b id)
    (alter in-progress conj b)))
 
 (defn finished [b]
@@ -40,11 +39,11 @@
    (alter b assoc :stop_time (-> (time/now) .toDate)))
   (build/update-mongo b))
 
-(defn run-build [b & {:keys [cleanup-on-failure]
+(defn run-build [b & {:keys [cleanup-on-failure id]
                           :or {cleanup-on-failure true}}]
-  (infof "starting build: %s" (build/build-name b))
+  (infof "starting build: %s, %s" (build/build-name b) id)
   (try
-    (start b)
+    (start b id)
     (build/with-build-log b
       (do-build* b)
       (finished b)

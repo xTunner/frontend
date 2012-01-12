@@ -32,11 +32,11 @@ class Project
 
   # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the clojure side.
   def recent_builds(limit=10)
-    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(limit)
+    Build.where(:vcs_url => vcs_url).order_by([[:start_time, :desc]]).limit(limit)
   end
 
   def latest_build
-    Build.where(:vcs_url => vcs_url).order_by([[:build_num, :desc]]).limit(1).first
+    recent_builds(1).first
   end
 
   def build_numbered(num) # bad things happen if we call this "build"

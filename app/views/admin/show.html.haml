@@ -12,6 +12,10 @@
             = link_to 'e', github_project_edit_path(p)
             = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
             = build_link_to p.latest_build, p
+            - if p.visible
+              V
+            - else
+              \-
             ]
 
   .content
@@ -36,9 +40,9 @@
         - @builds.each do |b|
           %tr{ :class => b.status }
             %td
-              = project_link_to b.the_project
+              = project_link_to b.project
             %td
-              = build_link_to b, b.the_project
+              = build_link_to b, b.project
             %td
               = revision_link b.vcs_url, b.vcs_revision
             %td
@@ -46,5 +50,5 @@
             %td
               = as_length_of_build b.start_time, b.stop_time
             %td
-              = b.status
+              != bootstrap_status(b)
     = paginate @builds

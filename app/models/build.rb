@@ -20,6 +20,14 @@ class Build
     Project.where(:vcs_url => vcs_url).first
   end
 
+  def project
+    the_project
+  end
+
+  def self.start(url)
+    Build.create! :start_time => Time.now, :vcs_url => url
+  end
+
   def logs
     if action_logs.length > 0
       action_logs
@@ -28,16 +36,21 @@ class Build
     end
   end
 
+  def started
+    status != :starting
+  end
 
   def status
     if failed
       :fail
     elsif stop_time
       :success
-    elsif (start_time + 24.hours) < Time.now
+    elsif (start_time + 3.hours) < Time.now
       :killed
-    else
+    elsif build_num != nil
       :running
+    else
+      :starting
     end
   end
 end

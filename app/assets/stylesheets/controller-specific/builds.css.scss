@@ -1,11 +1,12 @@
 .action_header {
    background-repeat: no-repeat;
-    padding: 6px 0px 6px 40px;
+   padding: 6px 0px 6px 40px;
    margin: 5px 0px 5px 10px;
 }
 
 .action_header.success { background-color: #57A957; }
 .action_header.error { background-color: #EE5F5B; }
+.action_header.running { background-color: #a0a0ee; }
 
 
 .action_header.success.contents {

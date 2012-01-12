@@ -24,14 +24,15 @@
         %th Edit
     %tbody
       - @projects.each do |project|
+        - build = project.latest_build
         %tr
           %td
-            - if project.latest_build
+            - if build
               != bootstrap_status project.latest_build
           %td
             = link_to(project.github_project_name, github_project_path(project))
           %td
-            - if project.latest_build
+            - if build
               = build_link_to (project.latest_build)
           %td
             = link_to "edit", github_project_edit_path(project)
