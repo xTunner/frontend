@@ -93,7 +93,9 @@ module MongoidTest
       bot = User.where(:email => "bot@circleci.com").first()
 
       if not bot
-        User.new(:email => "bot@circleci.com", :password => "brick amount must thirty", :admin => true).save!
+        u = User.new(:email => "bot@circleci.com", :password => "brick amount must thirty")
+        u.admin = true
+        u.save!
       end
     end
   end
