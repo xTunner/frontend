@@ -1,12 +1,13 @@
 (ns circle.system
   (:require [circle.backend.build.run :as run])
-  (:require [circle.backend.ec2 :as ec2]))
+  (:require [circle.backend.ec2 :as ec2])
+  (:use [clojure.tools.logging :only (infof)]))
 
 (defn graceful-shutdown
   "Shutdown there are no more running builds."
   []
   (letfn [(shutdown []
-            (infof "graceful shutdown watcher, count=%s")
+            (infof "graceful shutdown watcher, count=%s" (count @run/in-progress))
             (when (zero? (count @run/in-progress))
               (let [id (ec2/self-instance-id)]
                 (when id

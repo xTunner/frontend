@@ -2,6 +2,7 @@
   (:require [circle.backend.nodes :as nodes])
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.util.core :only (sha1)])
+  (:require [clj-http.client :as http])
   (:use [circle.backend.action :only (defaction add-action-result)])
   (:require [circle.backend.ssh :as ssh])
   (:use [clojure.tools.logging :only (infof errorf)]))
@@ -41,11 +42,24 @@
       (dosync
        (alter build assoc :instance-ids instance-ids)))))
 
-(defn cleanup-nodes [build]
+(defn graceful-shutdown [instance-id]
+  (infof "asking %s to shutdown gracefully" instance-id)
+  (let [resp (http/post (format "https://%s/api/system/shutdown" (ec2/public-ip instance-id))
+                        {:basic-auth ["bot@circleci.com" "brick amount must thirty"]
+                         ;; ignore SSL errors, in case this is a staging instance
+                         :insecure? true})]
+    (infof "graceful shutdown: got resp %s" resp)))
+
+(defn cleanup-nodes
+  "terminates nodes, and kills keypairs. if force is true, forcibly terminate the node, otherwise ask it to shutdown."
+  [build & {:keys [force]}]
   (let [ids (-> @build :instance-ids)]
     (when (seq ids)
       (infof "terminating nodes %s" ids)
-      (apply ec2/safe-terminate ids))
+      (if force
+        (apply ec2/safe-terminate ids)
+        (doseq [i ids]
+          (graceful-shutdown i))))
     (when (-> @build :node :keypair-name)
       (infof "deleting keypair %s" (-> @build :node :keypair-name))
       (ec2/delete-keypair (-> @build :node :keypair-name)))))
