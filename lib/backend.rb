@@ -5,11 +5,15 @@ class Backend
 
   # TODO: refactor this until it's transparent
   def self.github_hook(url, after, ref, json)
-    self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json
+    b = Build.start(url)
+    self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json, b.id.to_s
+    b
   end
 
   def self.build(project)
-    self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url
+    b = Build.start(project.vcs_url)
+    self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, b.id.to_s
+    b
   end
 
   # We launch workers using start_worker. On the clojure side, we use futures to launch the job.

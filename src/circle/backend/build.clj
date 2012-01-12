@@ -55,15 +55,9 @@
   ;; Keys on build that shouldn't go into mongo, for whatever reason
   [:actions :action-results])
 
-(defn add-build-id [b id]
-  (when id
-    (dosync
-     (alter b assoc :_id id))
-    b))
-
 (defn insert! [b]
   (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
-    (add-build-id b (-> return :_id))
+    (alter b assoc :_id (-> return :_id))
     b))
 
 (defn update-mongo
@@ -74,6 +68,19 @@
   (mongo/update! build-coll
                  {:_id (-> @b :_id)}
                  (apply dissoc @b build-dissoc-keys)))
+
+(defn sync-with-db [b id]
+  "Fetch the build from the db using id and merge it with b"
+  (dosync
+   (let [old (mongo/fetch-by-id build-coll (mongo/object-id id))]
+     (alter b merge old)
+     (update-mongo b))))
+
+(defn add-to-db [b id]
+  "If id is null, add build to database, else sync contents with existing db object"
+  (if id
+    (sync-with-db b id)
+    (insert! b)))
 
 (defn project-name [b]
   {:pre [(-> @b :_project_id)]}

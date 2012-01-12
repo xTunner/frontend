@@ -40,9 +40,9 @@
         - @builds.each do |b|
           %tr{ :class => b.status }
             %td
-              = project_link_to b.the_project
+              = project_link_to b.project
             %td
-              = build_link_to b, b.the_project
+              = build_link_to b, b.project
             %td
               = revision_link b.vcs_url, b.vcs_revision
             %td

@@ -58,6 +58,8 @@ module ApplicationHelper
   end
 
   def revision_link(url, revision)
+    return if url.nil? or revision.nil?
+
     # TECHNICAL_DEBT: github only
     link_to(revision[0..8], url + "/commit/" + revision)
   end
@@ -90,12 +92,15 @@ module ApplicationHelper
   end
 
   def project_link_to(project)
+    return unless project
     link_to project.github_project_name, github_project_path(project)
   end
 
 
   # TECHNICAL_DEBT: these shouldn't even exist, never mind being two separate functions.
   def build_link_to(build, project=nil)
+    return if build.nil? || build.build_num.nil?
+
     project = project || build.the_project
     begin
       link = github_project_path(project) + "/" + build.build_num.to_s
@@ -103,7 +108,8 @@ module ApplicationHelper
       return "" # new projects may have no builds available yet
     end
 
-    link_to "Build " + build.build_num.to_s, link
+    # TECHNICAL_DEBT: kill this function - this puts the word build where it shouldnt be.
+    link_to build.build_num.to_s, build_path(:project => build.project, :id => build.build_num)
   end
 
 

@@ -14,16 +14,16 @@
   (:require [tentacles.orgs :as torgs])
   (:require [circle.backend.ssh :as ssh]))
 
-(defn process-json [github-json]
+(defn process-json [github-json build-id]
   (infof "build-hook: %s" github-json)
   (def last-json github-json)
   (let [build (config/build-from-json github-json)]
     (infof "process-json: build: %s" @build)
-    (run/run-build build)))
+    (run/run-build build :id build-id)))
 
 (defn start-build-from-hook
-  [url after ref json-string]
-  (-> json-string json/decode process-json))
+  [url after ref json-string build-id]
+  (-> json-string json/decode (process-json build-id)))
 
 ;;; TECHNICAL_DEBT: These are on pbiggar's account, we should probably change
 ;;; that at some point.

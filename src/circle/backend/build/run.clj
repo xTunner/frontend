@@ -32,9 +32,8 @@
    (alter build assoc :stop_time (-> (time/now) .toDate))))
 
 (defn do-build* [build]
-  (throw-if (-> @build :start_time) "refusing to run started build")
   (start* build)
-  (build/insert! build)
+  (build/update-mongo build)
   (doseq [act (-> @build :actions)]
     (when (-> @build :continue?)
       (let [current-act-results-count (count (-> @build :action-results))]
@@ -59,9 +58,9 @@
 
 (defn run-build [b & {:keys [cleanup-on-failure id]
                           :or {cleanup-on-failure true}}]
-  (infof "starting build: %s" (build/build-name b))
+  (infof "starting build: %s, %s" (build/build-name b) id)
   (try
-    (build/add-build-id b id)
+    (build/add-to-db b id)
     (build/with-build-log b
       (do-build* b)
       (email/notify-build-results b))

@@ -20,6 +20,14 @@ class Build
     Project.where(:vcs_url => vcs_url).first
   end
 
+  def project
+    the_project
+  end
+
+  def self.start(url)
+    Build.create! :start_time => Time.now, :vcs_url => url
+  end
+
   def logs
     if action_logs.length > 0
       action_logs
