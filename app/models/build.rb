@@ -28,16 +28,21 @@ class Build
     end
   end
 
+  def started
+    status != :starting
+  end
 
   def status
     if failed
       :fail
     elsif stop_time
       :success
-    elsif (start_time + 24.hours) < Time.now
+    elsif (start_time + 3.hours) < Time.now
       :killed
-    else
+    elsif build_num != nil
       :running
+    else
+      :starting
     end
   end
 end

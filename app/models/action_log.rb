@@ -13,4 +13,14 @@ class ActionLog
   def success?
     exit_code == 0 || exit_code == nil
   end
+
+  def status
+    if end_time == nil
+      :running
+    elsif exit_code == 0 || exit_code == nil
+      :success
+    else
+      :error
+    end
+  end
 end
