@@ -89,6 +89,12 @@ module MongoidTest
       if RUBY_PLATFORM == 'java'
         Backend.initialize
       end
+
+      bot = User.where(:email => "bot@circleci.com").first()
+
+      if not bot
+        User.new(:email => "bot@circleci.com", :password => "brick amount must thirty", :admin => true).save!
+      end
     end
   end
 end
