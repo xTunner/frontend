@@ -83,10 +83,10 @@
         :name "bundle install"))
 
 (defmacro cmd [body & {:keys [environment]}]
-  `(bash (sh/q ~@body) :environment ~environment))
+  `(bash (sh/q1 (~@body)) :environment ~environment))
 
 (defmacro rake [& body]
-  `(cmd (~'rake ~@body --trace) :environment {:RAILS_ENV :test}))
+  `(cmd (~'rake ~@body ~'--trace) :environment {:RAILS_ENV :test}))
 
 (defn spec
   "Returns the set of actions necessary for this project"
@@ -97,23 +97,21 @@
                              found-db-yml)
         has-db-yml? (or (database-yml? repo) (find-database-yml repo))]
     (->>
-     {:setup [(when use-bundler?
-                (bundle-install))
-              (when need-cp-db-yml?
-                (bash (sh/q1 (cp ~found-db-yml "config/database.yml")) :name "copy database.yml"))
-              (when has-db-yml?
-                (rake db:create))
-              (cond
-               (schema-rb? repo) (rake db:schema:load)
-               (migrations? repo) (rake db:migrate)
-               :else nil)]
-      :test [(when (rspec? repo)
-               (rspec-test :bundler? use-bundler?))
-             (when (test-unit? repo)
-               (rake-test :bundler? use-bundler?))]}
-     (map/map-vals (fn [actions]
-                     (filter identity actions)))
-     (map/filter-vals (fn [actions] (-> actions (seq) (boolean)))))))
+     [(when use-bundler?
+        (bundle-install))
+      (when need-cp-db-yml?
+        (bash (sh/q1 (cp ~found-db-yml "config/database.yml")) :name "copy database.yml"))
+      (when has-db-yml?
+        (rake db:create))
+      (cond
+       (schema-rb? repo) (rake db:schema:load)
+       (migrations? repo) (rake db:migrate)
+       :else nil)
+      (when (rspec? repo)
+              (rspec-test :bundler? use-bundler?))
+            (when (test-unit? repo)
+              (rake-test :bundler? use-bundler?))]
+     (filter identity))))
 
 (defmethod inference/infer-actions* :rails [_ repo]
   (spec repo))

@@ -27,7 +27,7 @@
 (fact "db:create when db.yml action"
   (let [repo "test/circle/backend/build/inference/test_dirs/database_yml_2/"]
     (database-yml? repo) => true
-    (->> (spec repo) :setup (map :name))  => ["rake db:create"]))
+    (->> (spec repo) (map :name))  => ["rake db:create --trace"]))
 
 (fact "inference finds database yaml"
   (let [repo "test/circle/backend/build/inference/test_dirs/database_yml_1/"]
@@ -37,4 +37,4 @@
 (fact "copy database.example.yml to database.yml action"
   ;; repo with database.example.yml
   (let [example-repo "test/circle/backend/build/inference/test_dirs/database_yml_1/"]
-    (->> (spec example-repo) :setup (map :name)) => ["copy database.yml" "rake db:create"]))
+    (->> (spec example-repo) (map :name)) => ["copy database.yml" "rake db:create --trace"]))

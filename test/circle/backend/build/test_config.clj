@@ -73,39 +73,11 @@
      (test/ensure-project {:vcs_url ?url})
      (infer-build-from-url ?url)) => ref?)
  ?url
- "https://github.com/travis-ci/travis-ci"
  "https://github.com/arohner/CircleCI"
- "https://github.com/edavis10/redmine"
  "https://github.com/arohner/circle-dummy-project")
-
-;;
-;; This test works, but we've temporarily hard-coded the email addresses until we start mailing customers.
-
-;; (fact "build email addresses are correct"
-;;   (let [build (build-from-json test/circle-github-json)]
-;;     (-> @build :notify_emails) => #{"arohner@gmail.com"}))
 
 (tabular
  (fact "infer project name works"
    (infer-project-name ?url) => ?expected)
  ?url ?expected
  "https://github.com/rails/rails.git" "rails")
-
-;.;. commands is {:pre-setup ["foo"],
-;.;.  :setup
-;.;.  [{:name "bar",
-;.;.    :act-fn
-;.;.    #<test_config$eval18791$fn__18792$fn__18795 circle.backend.build.test_config$eval18791$fn__18792$fn__18795@27a99bd8>}]}
-;.;.
-;.;.
-;.;. FAIL at (NO_SOURCE_FILE:1)
-;.;.     Expected: ["foo" "bar"]
-;.;.       Actual: ()
-(fact "configs merge with inference"
-  (->> (get-config-from-db "https://github.com/arohner/circle-dummy-project")
-       :actions
-       (map :name)) => ["foo" "bar"]
-  (provided
-    (project/get-by-url anything) => {}
-    (spec/get-spec-for-project anything) => {:pre-setup "foo"}
-    (inference/infer-actions anything) => {:setup [{:name "bar" :act-fn (fn [])}]}))

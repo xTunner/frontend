@@ -85,9 +85,11 @@
     (git/ensure-repo git-url :ssh-key ssh-key :path repo)
     (when vcs-revision
       (git/checkout repo vcs-revision))
-    (-> repo
-        (fs/join "circle.yml")
-        (load-config))))
+    (or
+     (get-config-from-db url)
+     (-> repo
+         (fs/join "circle.yml")
+         (load-config)))))
 
 (defn validate-action-map [cmd]
   (validate! [(is-map?)
@@ -266,9 +268,7 @@
                         :vcs_revision vcs-revision
                         :node node
                         :actions (inference/infer-actions repo)
-                        :job-name "build-inferred"
-                        :notify_emails ["founders@circleci.com"] ;; don't use :committer yet, these people might not be using circle
-                        }))))
+                        :job-name "build-inferred"}))))
 
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"
@@ -278,7 +278,6 @@
     (if (and config project)
       (build-from-config config project
                          :vcs-revision vcs-revision
-                         :notify ["founders@circleci.com"] ;; (-> config :jobs job-name :notify_emails (parse-notify) (get-build-email-recipients github-json))
                          :job-name job-name)
       (infer-build-from-url url))))
 
