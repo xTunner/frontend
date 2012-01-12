@@ -38,7 +38,7 @@
                  ;; Web
                  [noir "1.2.1"] ;; this is necessary because of the posterous template in src/circle/web/views/posterous
                  [clj-url "1.0.3"]
-                 [clj-http "0.2.1"]
+                 [clj-http "0.2.7"]
                  [clj-r53 "1.0.1"]
                  [commons-email "1.1"]
                  [org.danlarkin/clojure-json "1.2-SNAPSHOT"]

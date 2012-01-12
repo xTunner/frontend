@@ -1,10 +1,11 @@
 (ns circle.backend.build.test-run-build
   (:use midje.sweet)
   (:use [circle.backend.build.test-utils :only (minimal-build)])
-  (:use [circle.backend.action :only (defaction)])
+  (:use [circle.backend.action :only (defaction action)])
   (:use [circle.backend.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
   (:use [circle.backend.build.config :only (build-from-url)])
+  (:require circle.system)
   (:require [somnium.congomongo :as mongo])
   (:use [circle.util.predicates :only (ref?)]))
 
@@ -54,3 +55,14 @@
   (let [first-build (run-build (successful-build))
         second-build (run-build (successful-build))]
     (> (-> @second-build :build_num) (-> @first-build :build_num)) => true))
+
+(fact "graceful shutdown calls ec2/terminate when there are no more builds"
+  (against-background
+    (circle.backend.ec2/self-instance-id) => "i-bogus"
+    (circle.backend.ec2/terminate-instances! "i-bogus") => anything :times 1)
+
+  (let [build (minimal-build :actions [(action :name "sleep" :act-fn (fn [build] (Thread/sleep 1000)))])
+        fut (future (run-build build))]
+    (circle.system/graceful-shutdown) => anything
+    @fut => anything
+    (successful? build) => true))

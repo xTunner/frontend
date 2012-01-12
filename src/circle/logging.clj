@@ -47,8 +47,6 @@
 
   (set-level "clj-ssh.ssh" Level/WARN))
 
-
-
 (defn add-file-appender [loggername filename]
   (.addAppender (Logger/getLogger loggername)
                 (doto (FileAppender.)
