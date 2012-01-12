@@ -1,7 +1,7 @@
 (ns circle.system
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.ec2 :as ec2])
-  (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
+  (:use [clojure.tools.logging :only (infof)]))
 
 (defn graceful-shutdown
   "Shutdown there are no more running builds."
