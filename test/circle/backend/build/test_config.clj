@@ -13,7 +13,6 @@
 (circle.init/init)
 (test/ensure-circle-project)
 (test/ensure-test-project)
-
 (fact "parse-action-map works"
   (against-background
     ;;; Stub checkout dir to be /usr. Later, we will pass "bin" to :pwd, so the ls will run in /usr/bin

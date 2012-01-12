@@ -7,8 +7,7 @@ module Api
 
     authorize_resource
     def shutdown
-      puts "shutdown!"
-      # render :text => ""
+      JRClj.new("circle.system").graceful_shutdown()
       head :ok
     end
   end

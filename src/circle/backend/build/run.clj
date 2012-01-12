@@ -1,68 +1,52 @@
 (ns circle.backend.build.run
   (:require [circle.backend.build.email :as email])
-  (:require [clj-time.core :as time])
   (:require [circle.backend.build :as build])
   (:use [arohner.utils :only (inspect fold)])
   (:require [circle.env :as env])
+  (:require [clj-time.core :as time])
   (:use [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
   (:use [circle.logging :only (add-file-appender)])
   (:use [circle.util.except :only (throw-if throw-if-not)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
 
-;; Clojure has queues, they're not very well documented. They work
-;; like other standard clojure structures, and support peek, pop,
-;; conj.
-
-(def queue (ref clojure.lang.PersistentQueue/EMPTY))
-
 (def in-progress (ref #{}))
-(def max-in-progress 5)
-(def run-agent (agent nil))
 
-(declare run-first)
-
-(defn start* [build]
-  (dosync
-   (when-not (-> @build :start-time)
-     (alter build assoc :start_time (-> (time/now) .toDate)))))
-
-(defn stop* [build]
-  (dosync
-   (alter build assoc :stop_time (-> (time/now) .toDate))))
-
-(defn do-build* [build]
-  (start* build)
-  (build/update-mongo build)
-  (doseq [act (-> @build :actions)]
-    (when (-> @build :continue?)
-      (let [current-act-results-count (count (-> @build :action-results))]
+(defn do-build* [b]
+  (doseq [act (-> @b :actions)]
+    (when (-> @b :continue?)
+      (let [current-act-results-count (count (-> @b :action-results))]
         (build/build-log "running %s" (-> act :name))
-        (action/run-action build act)
-        (build/update-mongo build))))
-  (stop* build)
-  (build/update-mongo build)
-  build)
+        (action/run-action b act)
+        (build/update-mongo b))))
+  b)
 
 (defn log-result [b]
   (if (build/successful? b)
     (infof "Build %s successful" (build/build-name b))
     (errorf "Build %s failed" (build/build-name b))))
 
+(defn start [b id]
+  (dosync
+   (throw-if (-> @b :start_time) "refusing to run started build")
+   (build/add-to-db b id)
+   (alter in-progress conj b)))
+
 (defn finished [b]
   (dosync
    (infof "removing build %s from in-progress" (build/build-name b))
-   (alter in-progress disj b))
-  (build/update-mongo b)
-  (run-first))
+   (alter in-progress disj b)
+   (alter b assoc :stop_time (-> (time/now) .toDate)))
+  (build/update-mongo b))
 
 (defn run-build [b & {:keys [cleanup-on-failure id]
                           :or {cleanup-on-failure true}}]
   (infof "starting build: %s, %s" (build/build-name b) id)
   (try
-    (build/add-to-db b id)
+    (start b id)
     (build/with-build-log b
       (do-build* b)
+      (finished b)
       (email/notify-build-results b))
     b
     (catch Exception e
@@ -75,24 +59,6 @@
       (throw e))
     (finally
      (log-result b)
-     (finished b)
+
      (when (and (-> @b :failed) cleanup-on-failure)
        (cleanup-nodes b)))))
-
-(defn may-start-build? []
-  (< (count @in-progress) max-in-progress))
-
-(defn run-first []
-  (dosync
-   (when (may-start-build?)
-     (when-let [b (peek @queue)]
-       (alter queue pop)
-       (alter in-progress conj b)
-       (send-off run-agent run-build b)
-       (infof "dequeing build %s" (build/build-name b))))))
-
-(defn add-build [b]
-  (dosync
-   (alter queue conj b)
-   (infof "adding build %s to the queue. There are %s queued builds" (build/build-name b) (count @queue)))
-  (run-first))

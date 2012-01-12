@@ -5,6 +5,7 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
+  (:require [clj-time.core :as time])
   (:require [circle.util.model-validation :as v])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.model.project :as project])
@@ -57,7 +58,8 @@
 
 (defn insert! [b]
   (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
-    (alter b assoc :_id (-> return :_id))
+    (alter b assoc :_id (-> return :_id)
+                   :start_time (-> (time/now) .toDate))
     b))
 
 (defn update-mongo
