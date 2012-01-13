@@ -63,8 +63,9 @@
                  ;; Misc
                  [swank-clojure "1.3.4"]
 
-
                  [commons-codec "1.4"]
+                 [org.clojure/core.cache "0.5.0"]
+
                  [org.apache.commons/commons-compress "1.0"]
                  [org.xeustechnologies/jtar "1.0.4"]
                  [arohner-utils "0.0.3"]

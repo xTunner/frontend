@@ -1,4 +1,4 @@
-(ns circle.backend.build.test-system
+(ns circle.test-system
   (:use midje.sweet)
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.backend.action :only (action)])

@@ -6,6 +6,9 @@
   (:use [circle.backend.action.bash :only (bash remote-bash-build)])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.model.project :as project])
+  (:require [circle.model.spec :as spec])
+  (:require [circle.backend.build.inference :as inference])
   (:require circle.init)
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
@@ -70,17 +73,8 @@
      (test/ensure-project {:vcs_url ?url})
      (infer-build-from-url ?url)) => ref?)
  ?url
- "https://github.com/travis-ci/travis-ci"
  "https://github.com/arohner/CircleCI"
- "https://github.com/edavis10/redmine"
  "https://github.com/arohner/circle-dummy-project")
-
-;;
-;; This test works, but we've temporarily hard-coded the email addresses until we start mailing customers.
-
-;; (fact "build email addresses are correct"
-;;   (let [build (build-from-json test/circle-github-json)]
-;;     (-> @build :notify_emails) => #{"arohner@gmail.com"}))
 
 (tabular
  (fact "infer project name works"

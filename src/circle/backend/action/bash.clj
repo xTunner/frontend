@@ -1,6 +1,7 @@
 (ns circle.backend.action.bash
   "functions for running bash on remote instances, and build actions for same."
   (:require pallet.action-plan)
+  (:require [clojure.string :as str])
   (:require fs)
   (:use [circle.util.core :only (apply-map)])
   (:use [circle.backend.build :only (log-ns build-log build-log-error checkout-dir)])
@@ -41,6 +42,11 @@
   (ensure-ip-addr build)
   (apply-map remote-bash (-> @build :node) body opts))
 
+(defn action-name [cmd]
+  (if (and (coll? cmd) (not (coll? (first cmd))))
+    (str/join " " cmd)
+    (str cmd)))
+
 (defn bash
   "Returns a new action that executes bash on the host. Body is a
   string. If pwd is not specified, defaults to the root of the build's
@@ -48,7 +54,7 @@
   [body & {:keys [name abort-on-nonzero environment pwd]
            :or {abort-on-nonzero true}
            :as opts}]
-  (let [name (or name (str body))]
+  (let [name (or name (action-name body))]
     (action/action :name name
                    :act-fn (fn [build]
                              (let [pwd (fs/join (checkout-dir build) (or pwd "/"))

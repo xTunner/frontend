@@ -39,3 +39,6 @@
   (let [build (test/minimal-build :actions [(bash/bash (sh/q (echo "$FOO")) :environment {"FOO" "bar"})])]
     (let [result (run/run-build build)]
       (-> @build :action-results (first) :out (first) :message) => "bar\n")))
+
+(fact "action name works"
+  (bash/action-name (sh/q1 (rspec spec))) => "rspec spec")

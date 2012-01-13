@@ -10,5 +10,11 @@ module Api
       JRClj.new("circle.system").graceful_shutdown()
       head :ok
     end
+
+    def ping
+      JRClj.new("circle.system")
+      head :ok
+    end
+
   end
 end
