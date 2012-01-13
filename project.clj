@@ -65,7 +65,7 @@
 
                  [commons-codec "1.4"]
                  [org.clojure/core.cache "0.5.0"]
-
+                 [robert/hooke "1.1.2"]
                  [org.apache.commons/commons-compress "1.0"]
                  [org.xeustechnologies/jtar "1.0.4"]
                  [arohner-utils "0.0.3"]
