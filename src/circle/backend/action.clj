@@ -7,6 +7,8 @@
         [circle.util.model-validation :only (validate!)]
         [circle.util.model-validation-helpers :only (is-map? require-keys col-predicate maybe)]
         [clojure.tools.logging :only (errorf)])
+  (:require [circle.backend.ssh :as ssh])
+  (:require [robert.hooke :as hooke])
   (:require [somnium.congomongo :as mongo]))
 
 (def action-log-coll :action_logs)
@@ -61,18 +63,18 @@
 
 (defn add-output
   "Appends stdout strings to action result"
-  [data & {:keys [err-data?]}]
+  [data & {:keys [column]
+           :or {column :out}}]
   (record (fn [action-result]
-            (let [key (if err-data? :err :out)]
-              (update-in action-result [:out] conj-vec {:type key
-                                                        :time (time/ju-now)
-                                                        :message data})))))
+            (update-in action-result [:out] conj-vec {:type column
+                                                      :time (time/ju-now)
+                                                      :message data}))))
 
 (defn abort!
   "Stop the build."
   [build message]
   (errorf "Aborting build: %s" message)
-  (add-output message :err-data? true)
+  (add-output message :column :err)
   (dosync
    (alter build assoc :continue? false :failed true)))
 
@@ -91,7 +93,7 @@
 (defn add-err
   "Appends stderr strings to action result"
   [err]
-  (add-output err :err-data? true))
+  (add-output err :column :err))
 
 (defn action-results
   "creates a new action results"
@@ -115,6 +117,19 @@
      (add-err err))
    (when exit
      (add-exit-code exit))))
+
+(defn update-out-hook [f str]
+  (when *current-action-results*
+    (add-output str))
+  (f str))
+
+(defn update-err-hook [f str]
+  (when *current-action-results*
+    (add-err str))
+  (f str))
+
+(hooke/add-hook #'ssh/handle-out update-out-hook)
+(hooke/add-hook #'ssh/handle-error update-err-hook)
 
 (defn run-action [build act]
   (throw-if-not (map? act) "action must be a ref")

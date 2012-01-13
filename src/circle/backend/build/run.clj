@@ -44,13 +44,13 @@
   (infof "starting build: %s, %s" (build/build-name b) id)
   (try
     (start b id)
-    (build/with-build-log b
+    (build/with-build-log-ns b
       (do-build* b)
       (finished b)
       (email/notify-build-results b))
     b
     (catch Exception e
-      (println "run-build: except:" b)
+      (println "run-build: except:" b e)
       (error e (format "caught exception on %s" (build/build-name b)))
       (println "assoc'ing failed=true")
       (dosync

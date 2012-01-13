@@ -21,7 +21,7 @@
   [^String out-str]
   (print out-str))
 
-(defn ^:dynamic handle-err [^String err-str]
+(defn ^:dynamic handle-error [^String err-str]
   (print err-str))
 
 (defn process-exec
@@ -35,7 +35,7 @@
                           (handle-out s))
                         (when-let [s (slurp-stream stderr-stream)]
                           (.append stderr s)
-                          (handle-err s)))]
+                          (handle-error s)))]
     (while (= -1 (-> shell (.getExitStatus)))
       (slurp-streams)
       (Thread/sleep 100))
