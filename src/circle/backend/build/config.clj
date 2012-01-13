@@ -123,7 +123,7 @@
   "Finds job in config, loads approprate template and parses actions"
   [job]
   (let [template-name (-> job :template)
-        actions (parse-actions job)]
+        actions (map #(merge % {:type :spec}) (parse-actions job))]
     (template/apply-template template-name actions)))
 
 (defn load-job [config job-name]
