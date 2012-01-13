@@ -147,12 +147,12 @@
     (->
      ;; In the order of the git-log man page
      {:parents (-> :P f (split #" "))
-      :author-name (f :an)
-      :author-email (f :ae)
-      :author-date (f :at)
-      :committer-name (f :cn)
-      :committer-email (f :ce)
-      :committer-date (f :ct)
+      :author_name (f :an)
+      :author_email (f :ae)
+      :author_date (f :at)
+      :committer_name (f :cn)
+      :committer_email (f :ce)
+      :committer_date (f :ct)
       :subject (f :s)
       :body (f :b)
       :branch (name-rev repo commit)})))
