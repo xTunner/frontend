@@ -18,12 +18,12 @@ end
 
 namespace :production do
   task :server do
-    exec "RAILS_ENV=\"production\" ./deploy.sh"
+    exec "RAILS_ENV=\"production\" CIRCLE_SWANK=\"true\"./deploy.sh"
   end
 end
 
 namespace :staging do
   task :server do
-    exec "RAILS_ENV=\"staging\" ./deploy.sh"
+    exec "RAILS_ENV=\"staging\" CIRCLE_SWANK=\"true\" ./deploy.sh"
   end
 end

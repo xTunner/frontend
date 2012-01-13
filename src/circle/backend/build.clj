@@ -14,7 +14,10 @@
   (:require [somnium.congomongo :as mongo])
   (:require [circle.util.mongo :as c-mongo])
   (:require [circle.sh :as sh])
-  (:use [clojure.tools.logging :only (log)]))
+  (:use [clojure.tools.logging :only (log)])
+  (:use [circle.util.string :only (non-empty?)])
+  (:require [circle.backend.github-url :as github-url])
+  (:require [robert.hooke :as hooke]))
 
 (def build-coll :builds) ;; mongo collection for builds
 
@@ -85,8 +88,10 @@
     (insert! b)))
 
 (defn project-name [b]
-  {:pre [(-> @b :_project_id)]}
-  (-> @b :_project_id (project/get-by-id) :name))
+  {:pre [(-> @b :_project_id)]
+   :post [(non-empty? %)]}
+  (or (-> @b :_project_id (project/get-by-id) :name)
+      (-> @b :vcs_url (github-url/parse) :project)))
 
 (defn build [{:keys [build_num    ;; int
                      vcs_url
@@ -145,18 +150,25 @@
   ssh/handle-out won't pass format arguments. 2) if the string does happen to
   contain a %s, we don't want format throwing because we have a %s and
   no extra args"
-  [s]
+  [str level]
   (when *log-ns*
-    (log *log-ns* :info nil s)))
+    (log *log-ns* level nil str)))
 
-(defn ssh-build-log-error [s]
-  (when *log-ns*
-    (log *log-ns* :error nil s)))
+(defn log-ssh-out
+  [level]
+  (fn [f str]
+    (ssh-build-log str level)
+    (f str)))
 
-(defmacro with-build-log [build & body]
-  `(binding [*log-ns* (log-ns ~build)
-             ssh/handle-out ssh-build-log
-             ssh/handle-err ssh-build-log-error]
+;; def, so hooke doesn't re-add hooks on every fn call
+(def handle-out (log-ssh-out :info))
+(def handle-err (log-ssh-out :error))
+
+(hooke/add-hook #'ssh/handle-out handle-out)
+(hooke/add-hook #'ssh/handle-error handle-err)
+
+(defmacro with-build-log-ns [build & body]
+  `(binding [*log-ns* (log-ns ~build)]
      ~@body))
 
 (defn build-log [message & args]
