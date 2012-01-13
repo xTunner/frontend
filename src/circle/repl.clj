@@ -10,7 +10,8 @@
     (use '[circle.util.repl])
     (use '[circle.backend.ec2 :only (print-instances)])
     (require '[circle.backend.ec2 :as ec2])
-    (require '[somnium.congomongo :as mongo]))
+    (require '[somnium.congomongo :as mongo])
+    (require '[circle.tasks]))
   (println "repl/init done"))
 
 

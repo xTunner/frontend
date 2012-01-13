@@ -1,5 +1,5 @@
-(ns circle.backend.build.deploy
-  "Deploying the circle app"
+(ns circle.tasks
+  "Like rake tasks, for the repl"
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.config :as config]))
 
