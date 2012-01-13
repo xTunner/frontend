@@ -36,8 +36,13 @@
 (defn find! [name]
   (assert! (find name) "could not find template %s" name))
 
+(defn load-actions [section]
+  (->> section
+       (map #(apply % []))
+       (map #(merge % {:type :infrastructure}))))
+
 (defn apply-template [template-name actions]
   (let [template (find! template-name)
-        before (map #(apply % []) (-> template :prefix))
-        after (map #(apply % []) (-> template :suffix))]
+        before (-> template :prefix (load-actions))
+        after (-> template :suffix (load-actions))]
     (concat before actions after)))
