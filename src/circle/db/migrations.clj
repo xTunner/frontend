@@ -5,7 +5,6 @@
 (clear-migrations)
 
 (def-migration "failed? -> failed"
+  :num 0
   :coll :builds
-  :query {:failed? {"$exists" true}}
   :transform #(set/rename-keys % {:failed? :failed}))
-
