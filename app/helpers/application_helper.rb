@@ -41,6 +41,7 @@ module ApplicationHelper
   end
 
   def as_length_of_build(start, stop)
+    return if start.nil?
     # TECHNICAL_DEBT: we should add stop_times for all builds, and then update the DB
     if stop == nil
       stop = Time.now
