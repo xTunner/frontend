@@ -58,6 +58,7 @@
       (email/send-build-error-email b e)
       (throw e))
     (finally
+     (finished b)
      (log-result b)
 
      (when (and (-> @b :failed) cleanup-on-failure)
