@@ -98,7 +98,7 @@
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
                  [pallet-rvm "0.1-186bdde006ec2e22d5c96e1e0cd33f9e65848b01"]
-                 [midje "1.2.0"]
+                 [midje "1.3.1"]
                  [cdt "1.2.6.1-SNAPSHOT"]
                  [org.jruby.ext.posix/jnr-posix "1.1.8"]]
 
@@ -109,7 +109,7 @@
   ;; can't set lib/dev path
   :omit-default-repositories true
   :dev-dependencies [[lein-test-out "0.1.1"]
-                     [midje "1.2.0"]
+                     [midje "1.3.1"]
                      [lein-midje "1.0.4"]
                      [clojure-source "1.2.1"]
                      [org.jruby/jruby "1.6.5.1"]]
