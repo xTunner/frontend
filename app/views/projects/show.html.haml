@@ -7,9 +7,40 @@
         %tr
           %th #
           %th Revision
-          -#          %th Author
+          %th Author
+          %th Log
           %th Started
           %th Time taken
           %th Status
       %tbody
-        = render :collection => @project.recent_builds(30), :partial => 'build', :locals => {:project => @project}
+        - @project.recent_builds(30).each do |build|
+          %tr
+            %td
+              = build_link_to build, @project
+
+            %td
+              = revision_link(build.vcs_url, build.vcs_revision)
+              - if build.branch
+                = surround '(', ')' do
+                  = build.branch
+
+            %td
+              = mail_to build.author_email, build.author_name
+
+            %td
+              - if build.body.to_s != "" # ignore nil and empty
+                = link_to build.subject, "#", { :title => build.body }
+              - else
+                = build.subject
+
+
+            %td
+              = as_commit_time build.start_time
+
+            %td
+              = as_length_of_build build.start_time, build.stop_time
+              - if build.status == :running
+                (still running)
+
+            %td
+              != bootstrap_status build
