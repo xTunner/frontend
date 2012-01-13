@@ -6,7 +6,6 @@
   (:require circle.logging)
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
-  (:require circle.backend.build.deploy)
   (:require fs))
 
 (defonce init*
