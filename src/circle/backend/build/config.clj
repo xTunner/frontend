@@ -16,7 +16,7 @@
   (:use [circle.util.model-validation :only (validate!)])
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
-  (:use [circle.util.string :only (length?)])
+  (:use [circle.util.string :only (non-empty?)])
   (:use [circle.util.except :only (assert! throw-if-not throwf)])
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.build.inference :as inference])
@@ -65,7 +65,7 @@
        ((juxt :setup :dependencies :compile :test))
        (mapcat (fn [line]
                  (str/split (or line "") #"\r\n")))
-       (filter length?)))
+       (filter non-empty?)))
 
 (defn get-config-from-db [url]
   (let [project (project/get-by-url url)]
@@ -249,7 +249,7 @@
        (#(select-keys % [:pre-setup :setup :post-setup :pre-test :test :post-test]))
        (map-vals (fn [lines]
                    (->> (str/split (or lines "") #"\r\n")
-                        (filter length?)
+                        (filter non-empty?)
                         (map parse-action))))))
 
 (defn infer-build-from-url

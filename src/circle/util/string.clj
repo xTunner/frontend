@@ -1,4 +1,5 @@
 (ns circle.util.string)
 
-(defn length? [s]
+(defn non-empty?
+  [s]
   (> (.length s) 0))
