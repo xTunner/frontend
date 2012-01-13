@@ -14,7 +14,9 @@
   (:require [somnium.congomongo :as mongo])
   (:require [circle.util.mongo :as c-mongo])
   (:require [circle.sh :as sh])
-  (:use [clojure.tools.logging :only (log)]))
+  (:use [clojure.tools.logging :only (log)])
+  (:use [circle.util.string :only (non-empty?)])
+  (:require [circle.backend.github-url :as github-url]))
 
 (def build-coll :builds) ;; mongo collection for builds
 
@@ -85,8 +87,10 @@
     (insert! b)))
 
 (defn project-name [b]
-  {:pre [(-> @b :_project_id)]}
-  (-> @b :_project_id (project/get-by-id) :name))
+  {:pre [(-> @b :_project_id)]
+   :post [(non-empty? %)]}
+  (or (-> @b :_project_id (project/get-by-id) :name)
+      (-> @b :vcs_url (github-url/parse) :project)))
 
 (defn build [{:keys [build_num    ;; int
                      vcs_url
