@@ -10,6 +10,8 @@ module ApplicationHelper
 
   # TODO: currently appearing in UTC, that's no good.
   def as_commit_time(commit_time)
+    return if commit_time.nil?
+
     now = Time.now
     relative = (now - commit_time).to_i
     timetoday = commit_time.strftime('%l:%M%p').downcase.strip
