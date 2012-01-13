@@ -14,6 +14,11 @@ class SimpleMailer < ActionMailer::Base
     @users = @project.users
     @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
 
+    # Don't fail when clojure tests have no users
+    if Rails.env.test? && @emails == []
+      @emails = "blackhole@circleci.com"
+    end
+
     if Rails.env.production? && !@project.visible
       @emails = "founders@circleci.com"
     end
