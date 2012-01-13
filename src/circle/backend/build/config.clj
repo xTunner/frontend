@@ -217,7 +217,8 @@
         actions (load-actions job)
         url (-> project :vcs_url)
         repo (git/default-repo-path url)
-        vcs-revision (or vcs-revision (git/latest-local-commit repo))]
+        vcs-revision (or vcs-revision (git/latest-local-commit repo))
+        commit-details (git/commit-details repo vcs-revision)]
     (assert job-name)
     (->>
      {:notify_emails notify
@@ -226,6 +227,7 @@
       :job-name job-name
       :node node
       :actions actions}
+     (merge commit-details)
      (add-project-info project)
      (build/build))))
 

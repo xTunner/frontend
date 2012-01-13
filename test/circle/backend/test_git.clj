@@ -18,3 +18,21 @@
     (clone test-git-url :ssh-key ssh-key :path test-repo-path)
     (repo-exists? test-repo-path) => true
     (fs/exists? (fs/join test-repo-path "README.md")) => true))
+
+(def known-commit "4ae57e3c6b6425465b7dd1d7ca2bb512777a927b")
+
+(fact "commit-details works"
+  (commit-details "." known-commit) =>
+  {:subject "Create a guest user when adding repos, allow the guest user to set username & password at the end of the wizard"
+   :committer-date "1323636643"
+   :author-name "Allen Rohner"
+   :parents ["1d3e617ac3abd287d63393d1ee03f13e4801b7c4"]
+   :author-email "arohner@gmail.com"
+   :author-date "1323636643"
+   :committer-name "Allen Rohner"
+   :body ""
+   :branch "remotes/origin/pairing"
+   :committer-email "arohner@gmail.com"})
+
+(fact "committer-email works"
+  (committer-email "." known-commit) => "arohner@gmail.com")

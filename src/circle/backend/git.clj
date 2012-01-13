@@ -6,6 +6,7 @@
   (:use [clojure.tools.logging :only (infof)])
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.args :only (require-args)])
+  (:use [clojure.string :only (split)])
   (:require fs)
   (:require [circle.sh :as sh]))
 
@@ -115,28 +116,53 @@
         (pull path :ssh-key ssh-key))
       (clone url :path path :ssh-key ssh-key))))
 
+(defn format-log
+  "Returns the output of git log --pretty=format:F"
+  [repo commit f]
+  (->
+   (git-fn* (sh/q (git log -1 ~commit ~(str "--pretty=format:%" (name f))))
+            :repo repo)
+   :out
+   (str/trim)))
+
+(defn name-rev
+  "Return the revision name for a commit"
+  [repo commit]
+  (->
+   (git-fn* (sh/q (git name-rev "--name-only" ~commit))
+            :repo repo)
+   :out
+   (str/trim)))
+
 (defn latest-local-commit
   "Returns the most recent commit id, on the current branch."
   [repo]
   {:post [(do (infof "latest commit for %s is %s" repo %) true)]}
-  (->
-   (git-fn* (sh/q (git log -1 "--pretty=format:%H"))
-            :repo repo)
-   :out))
+  (format-log repo :HEAD :H))
+
+(defn commit-details
+  "Returns a map of important commit information"
+  [repo commit]
+  (let [f #(format-log repo commit %)]
+    (->
+     ;; In the order of the git-log man page
+     {:parents (-> :P f (split #" "))
+      :author-name (f :an)
+      :author-email (f :ae)
+      :author-date (f :at)
+      :committer-name (f :cn)
+      :committer-email (f :ce)
+      :committer-date (f :ct)
+      :subject (f :s)
+      :body (f :b)
+      :branch (name-rev repo commit)})))
 
 (defn latest-remote-commit
   "Returns the most recent on origin/master. Does not fetch."
   [repo]
-  (->
-   (git-fn* (sh/q (git log -1 "--pretty=format:%H" "origin/master"))
-            :repo repo)
-   :out))
+  (format-log repo "origin/master" :H))
 
 (defn committer-email
   "Returns the email address of the committer"
-  [repo commit-id]
-  (->
-   (git-fn* (sh/q (git log ~commit-id -1 "--format=%ae"))
-            :repo repo)
-   :out
-   (str/trim)))
+  [repo commit]
+  (-> (format-log repo commit :ae) (str/trim)))
