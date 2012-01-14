@@ -15,7 +15,7 @@
    (alter migrations conj m)
    ;; Check the number mathes the position. This could be implicit, but explicit
    ;; feels safer.
-   (assert (= m (->> m :num (get migrations))))))
+   (assert (= m (->> m :num (get @migrations))))))
 
 (def mcol :migration_version)
 
