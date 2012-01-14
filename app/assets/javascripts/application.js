@@ -9,3 +9,12 @@
 //= require jquery-ui
 //= require bootstrap-dropdown
 //= require jquery.dataTables
+
+var App = {
+  Views: {},
+  Controllers: {},
+  init: function () {
+    new App.Controllers.Specs();
+    Backbone.history.start();
+  }
+};
