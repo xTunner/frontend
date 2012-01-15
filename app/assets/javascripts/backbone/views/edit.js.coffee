@@ -33,5 +33,8 @@ App.Views.Edit = Backbone.View.extend
 
 
   render: ->
-    $(@el).html("test")
+    context = {}
+    partials = {}
+    html = HoganTemplates["backbone/templates/projects/spec"].render(context, partials)
+    $(@el).html(html)
     @

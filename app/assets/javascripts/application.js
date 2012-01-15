@@ -11,3 +11,4 @@
 //= require jquery.dataTables
 //= require underscore
 //= require backbone
+//= require hogan
