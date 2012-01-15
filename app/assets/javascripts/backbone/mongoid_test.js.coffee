@@ -4,8 +4,11 @@
 #= require_tree ./views
 #= require_tree ./routers
 
-window.MongoidTest =
+window.App =
   Models: {}
   Collections: {}
   Routers: {}
   Views: {}
+  init: () ->
+    new App.Routers.Specs()
+    Backbone.history.start()

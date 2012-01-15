@@ -1,4 +1,4 @@
-App.Controllers.Specs = Backbone.Controller.extend
+App.Routers.Specs = Backbone.Router.extend
   routes:
     "gh/:project/edit": "edit"
 

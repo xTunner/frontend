@@ -9,14 +9,5 @@
 //= require jquery-ui
 //= require bootstrap-dropdown
 //= require jquery.dataTables
+//= require underscore
 //= require backbone
-
-App = {
-  Views: {},
-  Controllers: {},
-
-  init: function () {
-    new App.Controllers.Specs();
-    Backbone.history.start();
-  }
-}
