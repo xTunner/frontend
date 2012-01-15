@@ -33,8 +33,7 @@ App.Views.Edit = Backbone.View.extend
 
 
   render: ->
-    context = {}
-    partials = {}
-    html = HoganTemplates["backbone/templates/projects/spec"].render(context, partials)
+    alert JSON.stringify(@model.toJSON())
+    html = JST["backbone/templates/projects/spec"] @model
     $(@el).html(html)
     @

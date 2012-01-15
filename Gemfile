@@ -38,7 +38,7 @@ group :assets do
   gem 'sass-rails',   '~> 3.1.4'
   gem 'coffee-rails', '~> 3.1.1'
   gem 'uglifier', '>= 1.0.3'
-  gem 'hogan_assets'
+  gem 'haml_coffee_assets'
 
   # The less version requires v8, which doesn't work with JRuby. See
   # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
