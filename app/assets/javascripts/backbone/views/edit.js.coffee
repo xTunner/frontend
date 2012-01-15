@@ -33,7 +33,6 @@ App.Views.Edit = Backbone.View.extend
 
 
   render: ->
-    alert JSON.stringify(@model.toJSON())
     html = JST["backbone/templates/projects/spec"] @model
     $(@el).html(html)
     @

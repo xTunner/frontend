@@ -1,104 +1,171 @@
-= alert @project
+.row
+  .span6.offset4.alert-message.block-message.info
+    We aim to build your projects automatically. As I'm sure you can imagine,
+    this won't work in some cases, so you can edit your build manually as a
+    fallback mechanism. We'll monitor these settings to automatically infer them
+    in the future, and to build our product around the tools you really use.
 
-    -# is
-    -# .big
-    -#   inferred
-    -# by the magic of our inferrence technology.
-    -# Read more.
+    %br
+    %br
 
+    Enter a list of commands for each "build phase". Each line is a separate
+    program invocation, and any failing program (with a non-zero exit code),
+    will stop the build. Each command is arbitrary bash, so you can use
+    environmental variables, pipes, redirection, etc. If you customize one
+    phase, you need to fill them all in (fix coming soon).
 
-    -# %button.info
-    -#   Override inferece.
+    %br
+    %br
 
-    -# .span10.offset6
-    -#   - @specs.each do |s|
-    -#     = twitter_bootstrap_form_for s, :url => github_project_update_path do |f|
-    -#       = f.inputs "Project settings", :class => 'form-stacked' do
+    All commands are run on Ubuntu 11.04 - please contact us if you need something else.
 
-    -#         = f.text_area :setup, 'Machine image setup', :value => s.setup, :class => "xxlarge", :rows => 10
-    -#         %span.help-block
-    -#           Commands to set up your box. Most dependencies should already be
-    -#           installed, but you can
-    -#           %code
-    -#             sudo apt-get -y install
-    -#           those that aren't (don't forget the
-    -#           %code
-    -#             \-y
-    -#           though)!
-    -#         = f.submit "Save and test", :class => "btn primary"
+.row
+  .span10.offset2
 
+    %form.edit_spec{ accept-charset: "UTF-8", action: "/gh/#{ @get 'project' }" }
+      %fieldset.form-stacked
 
-
-    -#       = f.inputs "", :class => 'form-stacked' do
-    -#         = f.text_area :dependencies, 'Project dependencies', :value => s.dependencies, :class => "xxlarge", :rows => 10
-    -#         %span.help-block
-    -#           Commands to install your project's libraries and
-    -#           dependencies. For example,
-    -#           %code
-    -#             bundle install
-    -#           for Rails or
-    -#           %code
-    -#             lein deps
-    -#           for Clojure. We'll cache these steps so to make them fast.
-    -#         = f.submit "Save and test", :class => "btn primary"
+        %legend Project settings
+        .clearfix#spec_setup_input
+          %label{ for: "spec_setup" }
+            Machine image setup
+          .input
+            %textarea.xxlarge#spec_setup{ cols: 40, name: "spec[setup]", rows: 10 }
 
 
 
-    -#       = f.inputs "", :class => 'form-stacked' do
-    -#         = f.text_area :compile, :value => s.compile, :class => "xxlarge", :rows => 10
-    -#         %span.help-block
-    -#           Commands to compile your code, for example
-    -#           = succeed "," do
-    -#             %code
-    -#               configure
-    -#           = succeed "," do
-    -#             %code
-    -#               make
-    -#           or
-    -#           = succeed "." do
-    -#             %code
-    -#               ant build
-    -#           You can usually ignore this for interpreted languages.
-    -#         = f.submit "Save and test", :class => "btn primary"
+-# <fieldset class="form-stacked"><legend>Project settings</legend><div class="clearfix" id="spec_setup_input"><label for="spec_setup">Machine image setup</label><div class="input"><textarea class="xxlarge" cols="40" id="spec_setup" name="spec[setup]" rows="10"></textarea></div></div>
+-# <span class='help-block'>
+-# Commands to set up your box. Most dependencies should already be
+-# installed, but you can
+-# <code>sudo apt-get -y install</code>
+-# those that aren't (don't forget the
+-# <code>-y</code>
+-# though)!
+-# </span>
+-# <input class="btn primary" name="commit" type="submit" value="Save and test" />
+-# </fieldset><fieldset class="form-stacked"><legend></legend><div class="clearfix" id="spec_dependencies_input"><label for="spec_dependencies">Project dependencies</label><div class="input"><textarea class="xxlarge" cols="40" id="spec_dependencies" name="spec[dependencies]" rows="10"> bundle install</textarea></div></div>
+-# <span class='help-block'>
+-# Commands to install your project's libraries and
+-# dependencies. For example,
+-# <code>bundle install</code>
+-# for Rails or
+-# <code>lein deps</code>
+-# for Clojure. We'll cache these steps so to make them fast.
+-# </span>
+-# <input class="btn primary" name="commit" type="submit" value="Save and test" />
+-# </fieldset><fieldset class="form-stacked"><legend></legend><div class="clearfix" id="spec_compile_input"><label for="spec_compile">Compile</label><div class="input"><textarea class="xxlarge" cols="40" id="spec_compile" name="spec[compile]" rows="10"></textarea></div></div>
+-# <span class='help-block'>
+-# Commands to compile your code, for example
+-# <code>configure</code>,
+-# <code>make</code>,
+-# or
+-# <code>ant build</code>.
+-# You can usually ignore this for interpreted languages.
+-# </span>
+-# <input class="btn primary" name="commit" type="submit" value="Save and test" />
+-# </fieldset><fieldset class="form-stacked"><legend></legend><div class="clearfix" id="spec_test_input"><label for="spec_test">Test</label><div class="input"><textarea class="xxlarge" cols="40" id="spec_test" name="spec[test]" rows="10">bundle install&#x000A;rake spec</textarea></div></div>
+-# <span class='help-block'>
+-# Commands to test your code. For example,
+-# <code>rake test</code>,
+-# <code>rspec spec</code>,
+-# <code>make check</code>,
+-# etc.
+-# </span>
+-# <input class="btn primary" name="commit" type="submit" value="Save and test" />
+-# </fieldset></form>
+-# </div>
+-# </div>
+-# </div>
+-# </div>
+
+-#   %form
+-#     %formset inputs
+-#     %text_area
+-#       = @get "project"
+
+-# -#     = twitter_bootstrap_form_for s, :url => github_project_update_path do |f|
+-# -#       = f.inputs "Project settings", :class => 'form-stacked' do
+
+-# -#         = f.text_area :setup, 'Machine image setup', :value => s.setup, :class => "xxlarge", :rows => 10
+-# -#         %span.help-block
+-# -#           Commands to set up your box. Most dependencies should already be
+-# -#           installed, but you can
+-# -#           %code
+-# -#             sudo apt-get -y install
+-# -#           those that aren't (don't forget the
+-# -#           %code
+-# -#             \-y
+-# -#           though)!
+-# -#         = f.submit "Save and test", :class => "btn primary"
 
 
 
+-# -#       = f.inputs "", :class => 'form-stacked' do
+-# -#         = f.text_area :dependencies, 'Project dependencies', :value => s.dependencies, :class => "xxlarge", :rows => 10
+-# -#         %span.help-block
+-# -#           Commands to install your project's libraries and
+-# -#           dependencies. For example,
+-# -#           %code
+-# -#             bundle install
+-# -#           for Rails or
+-# -#           %code
+-# -#             lein deps
+-# -#           for Clojure. We'll cache these steps so to make them fast.
+-# -#         = f.submit "Save and test", :class => "btn primary"
 
-    -#       = f.inputs "", :class => 'form-stacked' do
-    -#         = f.text_area :test, :value => s.test, :class => "xxlarge", :rows => 10
-    -#         %span.help-block
-    -#           Commands to test your code. For example,
-    -#           = succeed "," do
-    -#             %code
-    -#               rake test
-    -#           = succeed "," do
-    -#             %code
-    -#               rspec spec
-    -#           = succeed "," do
-    -#             %code
-    -#               make check
-    -#           etc.
 
-    -#         = f.submit "Save and test", :class => "btn primary"
+-# -#       = f.inputs "", :class => 'form-stacked' do
+-# -#         = f.text_area :compile, :value => s.compile, :class => "xxlarge", :rows => 10
+-# -#         %span.help-block
+-# -#           Commands to compile your code, for example
+-# -#           = succeed "," do
+-# -#             %code
+-# -#               configure
+-# -#           = succeed "," do
+-# -#             %code
+-# -#               make
+-# -#           or
+-# -#           = succeed "." do
+-# -#             %code
+-# -#               ant build
+-# -#           You can usually ignore this for interpreted languages.
+-# -#         = f.submit "Save and test", :class => "btn primary"
 
-    -# .span6.offset0.alert-message.block-message.info
+-# -#       = f.inputs "", :class => 'form-stacked' do
+-# -#         = f.text_area :test, :value => s.test, :class => "xxlarge", :rows => 10
+-# -#         %span.help-block
+-# -#           Commands to test your code. For example,
+-# -#           = succeed "," do
+-# -#             %code
+-# -#               rake test
+-# -#           = succeed "," do
+-# -#             %code
+-# -#               rspec spec
+-# -#           = succeed "," do
+-# -#             %code
+-# -#               make check
+-# -#           etc.
 
-    -#   We aim to build your projects automatically. As I'm sure you can
-    -#   imagine, this won't work in some cases, so you can edit your build
-    -#   manually as a fallback mechanism. We'll monitor these settings to
-    -#   automatically infer them in the future, and to build our product around
-    -#   the tools you really use.
+-# -#         = f.submit "Save and test", :class => "btn primary"
 
-    -#   %br
-    -#   %br
+-# -# .span6.offset0.alert-message.block-message.info
 
-    -#   Enter a list of commands for each "build phase". Each line is a separate
-    -#   program invocation, and any failing program (with a non-zero exit code),
-    -#   will stop the build. Each command is arbitrary bash, so you can use
-    -#   environmental variables, pipes, redirection, etc. If you customize one
-    -#   phase, you need to fill them all in (fix coming soon).
+-# -#   We aim to build your projects automatically. As I'm sure you can
+-# -#   imagine, this won't work in some cases, so you can edit your build
+-# -#   manually as a fallback mechanism. We'll monitor these settings to
+-# -#   automatically infer them in the future, and to build our product around
+-# -#   the tools you really use.
+-# -#    %br
+-# -#   %br
 
-    -#   %br
-    -#   %br
+-# -#   Enter a list of commands for each "build phase". Each line is a separate
+-# -#   program invocation, and any failing program (with a non-zero exit code),
+-# -#   will stop the build. Each command is arbitrary bash, so you can use
+-# -#   environmental variables, pipes, redirection, etc. If you customize one
+-# -#   phase, you need to fill them all in (fix coming soon).
 
-    -#   All commands are run on Ubuntu 11.04 - please contact us if you need something else.
+-# -#   %br
+-# -#   %br
+
+-# -#   All commands are run on Ubuntu 11.04 - please contact us if you need something else.
