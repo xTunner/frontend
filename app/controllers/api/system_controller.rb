@@ -16,5 +16,8 @@ module Api
       head :ok
     end
 
+    def db_schema_version
+      render :text => JRClj.new("circle.db.migration-lib").db_schema_version
+    end
   end
 end
