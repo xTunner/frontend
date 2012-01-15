@@ -8,5 +8,6 @@ App.Routers.Specs = Backbone.Router.extend
     spec.fetch
       success: (model, resp) ->
         new App.Views.Edit { model: model }
-      error: () ->
+      error: (resp) ->
+        # TODO: doesn't actually do anything
         new Error { message: "Could not find project" }

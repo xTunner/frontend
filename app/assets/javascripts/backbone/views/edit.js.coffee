@@ -34,5 +34,4 @@ App.Views.Edit = Backbone.View.extend
 
   render: ->
     $(this.el).html("test")
-    alert("x")
     @

@@ -1,5 +1,6 @@
 class ProjectsController < ApplicationController
   before_filter :authenticate_user!
+  respond_to :html, :json
 
   # TECHNICAL_DEBT: this isn't looked up directly in the controller action, and
   # so load_and_authorize_resource wont work.
@@ -17,6 +18,8 @@ class ProjectsController < ApplicationController
     if @specs == []
       @specs = [@project.specs.create]
     end
+
+    respond_with @specs[0]
   end
 
   def update
