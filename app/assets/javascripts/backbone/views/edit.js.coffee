@@ -16,13 +16,12 @@ App.Views.Edit = Backbone.View.extend
       b: test2
 
     callbacks =
-
       success: (model, resp) ->
         new App.Views.Notice { message: msg }
         @model = model
         @render()
         @delegateEvents()
-        Backbone.history.saveLocation "gh/#{ @model.project }/edit"
+#        Backbone.history.navigate "gh/#{ @model.project }/edit", true
 
       failure: ->
         new App.Views.Error()
@@ -30,6 +29,10 @@ App.Views.Edit = Backbone.View.extend
     @model.save instance, callbacks
 
 
+  tagName: "li"
+
+
   render: ->
-    $(@el).html("test")
-    $(".content").html(@el)
+    $(this.el).html("test")
+    alert("x")
+    @

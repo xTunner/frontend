@@ -10,5 +10,10 @@ window.App =
   Routers: {}
   Views: {}
   init: () ->
-    new App.Routers.Specs()
-    Backbone.history.start()
+    router = new App.Routers.Specs()
+    Backbone.history.start { root: "/", pushState: true }
+    router.navigate(window.location.pathname, true)
+
+
+App.Views.AppView = Backbone.View.extend
+  el: $('#el')
