@@ -29,9 +29,9 @@ App.Views.Edit = Backbone.View.extend
     @model.save instance, callbacks
 
 
-  tagName: "li"
+  el: '#el'
 
 
   render: ->
-    $(this.el).html("test")
+    $(@el).html("test")
     @
