@@ -7,6 +7,7 @@
   (:use [circle.util.except :only (throw-if-not)])
   (:use [circle.backend.build :only (build-log)])
   (:use [robert.bruce :only (try-try-again)])
+  (:use [circle.api.client.system :only (graceful-shutdown)])
   (:require [circle.backend.load-balancer :as lb])
   (:require [circle.backend.ec2 :as ec2])
   (:require [clojure.string :as str]))
@@ -59,14 +60,6 @@
                     (not= (-> tag :value) current-rev))))
      (map #(-> % :resourceId)))))
 
-(defn graceful-shutdown [instance-id]
-  (infof "asking %s to shutdown gracefully" instance-id)
-  (let [resp (http/post (format "https://%s/api/system/shutdown" (ec2/public-ip instance-id))
-                        {:basic-auth ["bot@circleci.com" "brick amount must thirty"]
-                         ;; ignore SSL errors, in case this is a staging instance
-                         :insecure? true})]
-    (infof "graceful shutdown: got resp %s" resp)))
-
 (defaction shutdown-remove-old-revisions []
   {:name "remove old revisions"}
   (fn [build]
@@ -78,7 +71,7 @@
         (println "shutdown-remove-old:" old-instances)
         (when (seq old-instances)
           (lb/remove-instances lb-name old-instances)
-          (doall (map graceful-shutdown old-instances)))
+          (doall (map #(graceful-shutdown (ec2/public-ip %)) old-instances)))
         (when (seq terminated-instances)
           (lb/remove-instances lb-name terminated-instances))
         {:success true})
