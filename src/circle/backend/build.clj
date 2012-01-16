@@ -15,7 +15,6 @@
   (:require [circle.util.mongo :as c-mongo])
   (:require [circle.sh :as sh])
   (:use [clojure.tools.logging :only (log)])
-  (:use [circle.util.string :only (non-empty?)])
   (:require [circle.backend.github-url :as github-url])
   (:require [robert.hooke :as hooke]))
 
@@ -89,7 +88,7 @@
 
 (defn project-name [b]
   {:pre [(-> @b :_project_id)]
-   :post [(non-empty? %)]}
+   :post [(seq %)]}
   (or (-> @b :_project_id (project/get-by-id) :name)
       (-> @b :vcs_url (github-url/parse) :project)))
 

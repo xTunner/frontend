@@ -296,7 +296,10 @@
       (cond
        (= state :running) true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
-       :else (throwf "instance %s didn't start within timeout" instance-id)))))
+       :else (try
+               (terminate-instances! instance-id)
+               (finally
+                (throwf "instance %s didn't start within timeout" instance-id)))))))
 
 (defn block-until-ready
   "Block until we can successfully SSH into the box."

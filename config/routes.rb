@@ -38,6 +38,7 @@ MongoidTest::Application.routes.draw do
       member do
         post 'shutdown'
         get 'ping'
+        get 'db_schema_version'
       end
     end
   end

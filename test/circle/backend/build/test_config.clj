@@ -19,8 +19,8 @@
 (fact "parse-action-map works"
   (against-background
     ;;; Stub checkout dir to be /usr. Later, we will pass "bin" to :pwd, so the ls will run in /usr/bin
-    (checkout-dir anything) => "/usr")
-  (let [dir "bin"
+    (checkout-dir anything) => "/")
+  (let [dir "usr"
         cmd {(keyword "ls") {:environment {:CIRCLE_ENV "production", :SWANK "true"}
                              :pwd dir}}
         b (test/minimal-build :actions [(parse-action-map cmd)])

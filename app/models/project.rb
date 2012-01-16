@@ -10,11 +10,17 @@ class Project
   field :ssh_public_key
   field :visible, :type => Boolean, :default => false
 
+  field :setup, :type => String, :default => nil
+  field :dependencies, :type => String, :default => nil
+  field :compile, :type => String, :default => nil
+  field :test, :type => String, :default => nil
+
+
   has_and_belongs_to_many :users
 #  has_many :builds
   has_many :specs
 
-  attr_accessible :vcs_url
+  attr_accessible :vcs_url, :setup, :dependencies, :compile, :test
 
   def to_param
     github_project_name
