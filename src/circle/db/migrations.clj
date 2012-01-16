@@ -13,24 +13,24 @@
 
 (def-migration "infer empty specs"
   :num 1
-  :coll :specs
-  :transform (fn [spec]
-               (let [empty? (every? empty? ((juxt :dependencies :test :compile :setup) spec))]
-                 (println spec "empty?=" empty?)
-                 (apply-if empty? assoc spec :inferred true))))
+  :coll :projects
+  :transform (fn [project]
+               (let [spec (mongo/fetch-one :specs :where {:project_id (-> project :_id)})
+                     inferred? (or
+                                (nil? spec)
+                                (every? empty? ((juxt :dependencies :test :compile :setup) spec)))]
+                 (assoc project :inferred inferred?))))
 
 (def-migration "move specs into project"
   :num 2
   :coll :projects
   :transform (fn [p]
-               (assert (= 1 (mongo/fetch :specs :where {:project_id (:_id p)} :count? true)))
+               (assert (> 2 (mongo/fetch-count :specs :where {:project_id (:_id p)})))
                (let [spec (mongo/fetch-one :specs :where {:project_id (:_id p)})]
-                 (apply-if spec merge p (select-keys spec [:dependencies :setup :compile :test])))))
+                 (apply-if spec merge p (select-keys spec [:dependencies :setup :compile :test :inferred])))))
 
 ;; (def-migration "old builds w/ git commit info")
 
 "action tags; inferred, infrastructure, spec, test, setup"
 
 "add end time to old builds"
-
-

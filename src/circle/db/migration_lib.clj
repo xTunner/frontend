@@ -45,20 +45,26 @@
 
   (let [version (-> m :num)
         log (mongo/insert! :migration_log (merge (select-keys m [:name :num :coll]) {:start_time (-> (time/now) .toDate) :hostname (circle.env/hostname)}))
-        rows-affected (atom 0)]
+        rows-affected (atom 0)
+        last-row (atom {})]
     (try
       (doseq [row (mongo/fetch (-> m :coll) :where (merge (if-let [q (-> m :query)]
                                                             q
                                                             {}) {mcol {:$ne (-> m :num)}}))
-              :let [coll (-> m :coll)
+              :let [_ (swap! last-row (constantly row))
+                    coll (-> m :coll)
                     t (-> m :transform)
                     new (merge (t row) {mcol version})]]
         (mongo/update! coll row new)
         (swap! rows-affected inc))
       (mongo/update! :migration_log log (assoc log :end_time (-> (time/now) .toDate) :rows_affected @rows-affected :result :success))
-      (catch Exception e
-        (errorf e "error while running migration %s" m)
-        (mongo/update! :migration_log log (assoc log :end_time (-> (time/now) .toDate) :rows_affected @rows-affected :result :failed))
+      (catch Throwable e
+        (errorf e "error while running migration %s => %s" m @last-row)
+        (mongo/update! :migration_log log (assoc log
+                                            :end_time (-> (time/now) .toDate)
+                                            :rows_affected @rows-affected
+                                            :result :failed
+                                            :last-row @last-row))
         (throw e))))
   (infof "finished migration %s" (-> m :name)))
 
