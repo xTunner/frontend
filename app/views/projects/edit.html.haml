@@ -24,74 +24,70 @@
 
     .row
       .span10.offset2
-        - @specs.each do |s|
-          = twitter_bootstrap_form_for s, :url => github_project_update_path do |f|
-            = f.inputs "Project settings", :class => 'form-stacked' do
+        = twitter_bootstrap_form_for @spec, :url => github_project_update_path, :action => :edit, :controller => :project do |f|
+          = f.inputs "Project settings", :class => 'form-stacked' do
+            = f.text_area :setup, 'Machine image setup', :value => @spec.setup, :class => "xxlarge", :rows => 10
+            %span.help-block
+              Commands to set up your box. Most dependencies should already be
+              installed, but you can
+              %code
+                sudo apt-get -y install
+              those that aren't (don't forget the
+              %code
+                \-y
+              though)!
+            = f.submit "Save and test", :class => "btn primary"
 
 
 
-              = f.text_area :setup, 'Machine image setup', :value => s.setup, :class => "xxlarge", :rows => 10
-              %span.help-block
-                Commands to set up your box. Most dependencies should already be
-                installed, but you can
+          = f.inputs "", :class => 'form-stacked' do
+            = f.text_area :dependencies, 'Project dependencies', :value => @spec.dependencies, :class => "xxlarge", :rows => 10
+            %span.help-block
+              Commands to install your project's libraries and
+              dependencies. For example,
+              %code
+                bundle install
+              for Rails or
+              %code
+                lein deps
+              for Clojure. We'll cache these steps so to make them fast.
+            = f.submit "Save and test", :class => "btn primary"
+
+
+
+          = f.inputs "", :class => 'form-stacked' do
+            = f.text_area :compile, :value => @spec.compile, :class => "xxlarge", :rows => 10
+            %span.help-block
+              Commands to compile your code, for example
+              = succeed "," do
                 %code
-                  sudo apt-get -y install
-                those that aren't (don't forget the
+                  configure
+              = succeed "," do
                 %code
-                  \-y
-                though)!
-              = f.submit "Save and test", :class => "btn primary"
-
-
-
-            = f.inputs "", :class => 'form-stacked' do
-              = f.text_area :dependencies, 'Project dependencies', :value => s.dependencies, :class => "xxlarge", :rows => 10
-              %span.help-block
-                Commands to install your project's libraries and
-                dependencies. For example,
+                  make
+              or
+              = succeed "." do
                 %code
-                  bundle install
-                for Rails or
+                  ant build
+              You can usually ignore this for interpreted languages.
+            = f.submit "Save and test", :class => "btn primary"
+
+
+
+
+          = f.inputs "", :class => 'form-stacked' do
+            = f.text_area :test, :value => @spec.test, :class => "xxlarge", :rows => 10
+            %span.help-block
+              Commands to test your code. For example,
+              = succeed "," do
                 %code
-                  lein deps
-                for Clojure. We'll cache these steps so to make them fast.
-              = f.submit "Save and test", :class => "btn primary"
+                  rake test
+              = succeed "," do
+                %code
+                  rspec spec
+              = succeed "," do
+                %code
+                  make check
+              etc.
 
-
-
-            = f.inputs "", :class => 'form-stacked' do
-              = f.text_area :compile, :value => s.compile, :class => "xxlarge", :rows => 10
-              %span.help-block
-                Commands to compile your code, for example
-                = succeed "," do
-                  %code
-                    configure
-                = succeed "," do
-                  %code
-                    make
-                or
-                = succeed "." do
-                  %code
-                    ant build
-                You can usually ignore this for interpreted languages.
-              = f.submit "Save and test", :class => "btn primary"
-
-
-
-
-            = f.inputs "", :class => 'form-stacked' do
-              = f.text_area :test, :value => s.test, :class => "xxlarge", :rows => 10
-              %span.help-block
-                Commands to test your code. For example,
-                = succeed "," do
-                  %code
-                    rake test
-                = succeed "," do
-                  %code
-                    rspec spec
-                = succeed "," do
-                  %code
-                    make check
-                etc.
-
-              = f.submit "Save and test", :class => "btn primary"
+            = f.submit "Save and test", :class => "btn primary"
