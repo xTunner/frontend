@@ -14,13 +14,13 @@ class Project
   field :dependencies, :type => String, :default => nil
   field :compile, :type => String, :default => nil
   field :test, :type => String, :default => nil
+  field :inferred, :type => Boolean, :default => true
 
 
   has_and_belongs_to_many :users
 #  has_many :builds
-  has_many :specs
 
-  attr_accessible :vcs_url, :setup, :dependencies, :compile, :test
+  attr_accessible :setup, :dependencies, :compile, :test, :inferred
 
   def to_param
     github_project_name
@@ -62,7 +62,7 @@ class Project
     File.read("#{File.dirname(__FILE__)}/../../circle.yml")
   end
 
-  def update_spec(params)
-    self.update_attributes params.select_keys(["setup", "dependencies", "compile", "test"])
+  def to_json(options={})
+    super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url])
   end
 end

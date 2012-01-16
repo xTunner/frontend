@@ -11,7 +11,6 @@ class ProjectsController < ApplicationController
 
     respond_with @project do |f|
       f.html
-      # Security - Devise restricts this to only return attr_accessible attributes.
       f.json { render :json => @project }
     end
   end
@@ -27,11 +26,10 @@ class ProjectsController < ApplicationController
     @project = Project.from_github_name params[:project]
     authorize! :manage, @project
 
-    @project.update_spec(params["spec"])
+    @project.update(params["spec"])
     @project.save!
 
     # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
 #    Backend.build(@project)
-
   end
 end
