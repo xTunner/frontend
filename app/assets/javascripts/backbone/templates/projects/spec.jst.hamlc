@@ -38,9 +38,11 @@
         %span.help-block
           Commands to set up your box. Most dependencies should already be
           installed, but you can
-          <code>sudo apt-get -y install</code>
+          %code<
+            sudo apt-get -y install
           those that aren't (don't forget the
-          <code>-y</code>
+          %code<
+            \-y
           though)!
 
         %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
@@ -59,9 +61,11 @@
         %span.help-block
           Commands to install your project's libraries and
           dependencies. For example,
-          <code>bundle install</code>
+          %code<
+            bundle install
           for Rails or
-          <code>lein deps</code>
+          %code<
+            lein deps
           for Clojure.
 
         %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
