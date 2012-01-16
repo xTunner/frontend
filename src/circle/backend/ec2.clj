@@ -297,7 +297,7 @@
        (= state :running) true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
        :else (try
-               (ec2/terminate-instances! instance-id)
+               (terminate-instances! instance-id)
                (finally
                 (throwf "instance %s didn't start within timeout" instance-id)))))))
 
