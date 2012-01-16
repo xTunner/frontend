@@ -16,7 +16,6 @@
   :coll :specs
   :transform (fn [spec]
                (let [empty? (every? empty? ((juxt :dependencies :test :compile :setup) spec))]
-                 (println spec "empty?=" empty?)
                  (apply-if empty? assoc spec :inferred true))))
 
 (def-migration "move specs into project"
@@ -32,5 +31,3 @@
 "action tags; inferred, infrastructure, spec, test, setup"
 
 "add end time to old builds"
-
-
