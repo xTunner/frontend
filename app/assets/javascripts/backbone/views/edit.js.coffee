@@ -1,4 +1,4 @@
-App.Views.Edit = Backbone.View.extend
+App.Views.EditProject = Backbone.View.extend
 
   events:
     "submit and test": "save"
@@ -33,6 +33,6 @@ App.Views.Edit = Backbone.View.extend
 
 
   render: ->
-    html = JST["backbone/templates/projects/spec"] @model
+    html = JST["backbone/templates/projects/edit"] @model
     $(@el).html(html)
     @
