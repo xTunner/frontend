@@ -13,10 +13,13 @@
 
 (def-migration "infer empty specs"
   :num 1
-  :coll :specs
-  :transform (fn [spec]
-               (let [empty? (every? empty? ((juxt :dependencies :test :compile :setup) spec))]
-                 (apply-if empty? assoc spec :inferred true))))
+  :coll :projects
+  :transform (fn [project]
+               (let [spec (mongo/fetch-one :specs :where {:project_id (-> project :_id)})
+                     inferred? (or
+                                (nil? spec)
+                                (every? empty? ((juxt :dependencies :test :compile :setup) spec)))]
+                 (assoc project :inferred inferred?))))
 
 (def-migration "move specs into project"
   :num 2
