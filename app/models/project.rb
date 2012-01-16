@@ -61,4 +61,8 @@ class Project
     # For now, just read circle.yml for everyone, and see what happens.
     File.read("#{File.dirname(__FILE__)}/../../circle.yml")
   end
+
+  def update_spec(params)
+    self.update_attributes params.select_keys(["setup", "dependencies", "compile", "test"])
+  end
 end

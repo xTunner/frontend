@@ -24,5 +24,4 @@ describe ProjectsController do
   it "should work for weird characters in the project url" do
     github_project_path(Factory(:project_with_weird_characters))
   end
-
 end

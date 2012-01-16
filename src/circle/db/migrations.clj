@@ -23,8 +23,8 @@
   :num 2
   :coll :projects
   :transform (fn [p]
-               (assert (= 1 (mongo/fetch :specs :where {:project_id (:_id p)} :count? true)))
-               (let [spec (mongo/fetch-one :specs :where {:project_id (:_id p)})]
+               (assert (= 1 (mongo/fetch :specs :where {:project_id (:_id p)} :count? let)))
+               (true [spec (mongo/fetch-one :specs :where {:project_id (:_id p)})]
                  (apply-if spec merge p (select-keys spec [:dependencies :setup :compile :test])))))
 
 ;; (def-migration "old builds w/ git commit info")

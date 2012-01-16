@@ -24,9 +24,9 @@
 
     .row
       .span10.offset2
-        = twitter_bootstrap_form_for @spec, :url => github_project_update_path, :action => :edit, :controller => :project do |f|
+        = twitter_bootstrap_form_for @project, :url => github_project_update_path, :action => :edit, :controller => :project do |f|
           = f.inputs "Project settings", :class => 'form-stacked' do
-            = f.text_area :setup, 'Machine image setup', :value => @spec.setup, :class => "xxlarge", :rows => 10
+            = f.text_area :setup, 'Machine image setup', :value => @project.setup, :class => "xxlarge", :rows => 10
             %span.help-block
               Commands to set up your box. Most dependencies should already be
               installed, but you can
@@ -41,7 +41,7 @@
 
 
           = f.inputs "", :class => 'form-stacked' do
-            = f.text_area :dependencies, 'Project dependencies', :value => @spec.dependencies, :class => "xxlarge", :rows => 10
+            = f.text_area :dependencies, 'Project dependencies', :value => @project.dependencies, :class => "xxlarge", :rows => 10
             %span.help-block
               Commands to install your project's libraries and
               dependencies. For example,
@@ -56,7 +56,7 @@
 
 
           = f.inputs "", :class => 'form-stacked' do
-            = f.text_area :compile, :value => @spec.compile, :class => "xxlarge", :rows => 10
+            = f.text_area :compile, :value => @project.compile, :class => "xxlarge", :rows => 10
             %span.help-block
               Commands to compile your code, for example
               = succeed "," do
@@ -76,7 +76,7 @@
 
 
           = f.inputs "", :class => 'form-stacked' do
-            = f.text_area :test, :value => @spec.test, :class => "xxlarge", :rows => 10
+            = f.text_area :test, :value => @project.test, :class => "xxlarge", :rows => 10
             %span.help-block
               Commands to test your code. For example,
               = succeed "," do

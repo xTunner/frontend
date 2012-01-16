@@ -12,31 +12,14 @@ class ProjectsController < ApplicationController
   def edit
     @project = Project.from_github_name params[:project]
     authorize! :read, @project
-
-    if @project["setup"]
-      @spec = @project.specs[0]
-      @spec.setup = @project.setup
-      @spec.dependencies = @project.dependencies
-      @spec.compile = @project.compile
-      @spec.test = @project.test
-    else
-      @spec = @project.specs[0] || @project.specs.create
-    end
   end
 
   def update
     @project = Project.from_github_name params[:project]
     authorize! :manage, @project
 
-    if @project["setup"]
-      allowed_keys = ["setup", "dependencies", "compile", "test"]
-      attrs = params["spec"].select { |k,v| allowed_keys.include?(k) }
-      @project.update_attributes(attrs)
-      @project.save!
-    else
-      @project.specs[0].update_attributes(params["spec"])
-      @project.specs[0].save!
-    end
+    @project.update_spec(params["spec"])
+    @project.save!
 
     # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
     Backend.build(@project)
