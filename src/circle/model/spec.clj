@@ -4,5 +4,7 @@
 (def spec-coll :specs)
 
 (defn get-spec-for-project [project]
-  (-> (mongo/fetch-one spec-coll :where {:project_id (:_id project)})
-      (dissoc :version :versions)))
+  (if (not (nil? (-> project :setup)))
+    (select-keys project [:setup :dependencies :compile :test])
+    (-> (mongo/fetch-one spec-coll :where {:project_id (:_id project)})
+        (dissoc :version :versions))))
