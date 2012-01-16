@@ -19,9 +19,17 @@
                                        :method :post}))]
     (infof "graceful shutdown: got resp %s" resp)))
 
-(defn schema-version [ip-addr & {:keys [protocol] :as options}]
+(defn db-schema-version [ip-addr & {:keys [protocol] :as options}]
   (let [resp (api-call (merge options {:method :get
                                        :path "api/system/db_schema_version"
+                                       :ip-addr ip-addr
+                                       :options options}))]
+    (when (= 200 (-> resp :status))
+      (Integer/parseInt (-> resp :body)))))
+
+(defn code-schema-version [ip-addr & {:keys [protocol] :as options}]
+  (let [resp (api-call (merge options {:method :get
+                                       :path "api/system/code_schema_version"
                                        :ip-addr ip-addr
                                        :options options}))]
     (when (= 200 (-> resp :status))

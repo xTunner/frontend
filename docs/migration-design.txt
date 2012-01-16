@@ -1,0 +1,54 @@
+Migrations
+
+Goals:
+
+* Migrate DB data
+* support continuous deployment
+* support multiple masters writing to the same DB at the same time, with different schema versions
+
+Rules:
+
+We will be doing continuous deployment, with zero downtime. This means
+that multiple masters will be running at the same time, with different
+code versions. Old boxes can be expected to run for an hour after new
+boxes are deployed. New boxes should not write data that cannot be
+interpreted by other running masters.
+
+All migrations must not break backwards incompatibility. Let's say
+there is a master at schema version 1. During a deploy, a new master
+is started, at schema version 2. The new master must write DB rows in
+a way that is compatible with schema 1. New rows may contain
+additional columns, and write to new tables, but new rows should not
+be missing columns that are present in schema 1, nor should the
+semantics change on existing tables.
+
+After the master on schema 1 is terminated, a migration can be run
+that makes breaking changes relative to version 1.
+
+Implementation:
+
+There will be a table called migration_log, which contains a row for
+every migration that has been run. Before a migration starts, a new
+row will be inserted, containing the migration number, name, start
+time, and the hostname of the box running the migration. This
+effectively locks the table, because no other box should perform a
+migration while one is running.
+
+After the migration is done, the migration log row will be updated
+with the end time.
+
+The DB version is defined as the highest numbered migration in
+migration_log containing an end time.
+
+We can define the schema version of a box as the highest numbered
+migration present in the box's code.
+
+At any time, all migrations can be run up to the minimum of the all
+boxes schema versions. For example, if the schema is currently at
+version one, and there are two masters, at versions 4 and 5,
+migrations 2,3,4 can be run. Migration 5 can be run after the box at
+version 4 terminates.
+
+When running a migration, all affected rows will be updated with a
+column :migration_version. This is to allow failed/interrupted
+migrations to restart.
