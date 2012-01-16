@@ -51,3 +51,4 @@
   (mongo/fetch-and-modify :projects {:_id (:_id p)
                                      :next_build_seq nil} {:$set {:next_build_seq 1}})
   (-> (mongo/fetch-and-modify :projects {:_id (:_id p)} {:$inc {:next_build_seq 1}}) :next_build_seq))
+
