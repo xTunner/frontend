@@ -57,9 +57,12 @@
       (count builds) => 1)))
 
 (fact "builds using the provided objectid"
-  (let [build (run-build (successful-build) :id test-build-id)
-        builds (mongo/fetch :builds :where {:_id test-build-id})]
-    (count builds) => 1))
+  (let [id (org.bson.types.ObjectId.)
+        _ (mongo/insert! :builds {:_id id})
+        build (run-build (successful-build) :id (str id))
+        build-db (mongo/fetch-one :builds :where {:_id id})]
+    build-db => truthy
+    (-> build-db :stop_time) => truthy))
 
 (fact "successive builds use incrementing build-nums"
   (let [first-build (run-build (successful-build))
