@@ -109,24 +109,3 @@
           <code>make check</code>.
 
         %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
-
--# -# .span6.offset0.alert-message.block-message.info
-
--# -#   We aim to build your projects automatically. As I'm sure you can
--# -#   imagine, this won't work in some cases, so you can edit your build
--# -#   manually as a fallback mechanism. We'll monitor these settings to
--# -#   automatically infer them in the future, and to build our product around
--# -#   the tools you really use.
--# -#    %br
--# -#   %br
-
--# -#   Enter a list of commands for each "build phase". Each line is a separate
--# -#   program invocation, and any failing program (with a non-zero exit code),
--# -#   will stop the build. Each command is arbitrary bash, so you can use
--# -#   environmental variables, pipes, redirection, etc. If you customize one
--# -#   phase, you need to fill them all in (fix coming soon).
-
--# -#   %br
--# -#   %br
-
--# -#   All commands are run on Ubuntu 11.04 - please contact us if you need something else.
