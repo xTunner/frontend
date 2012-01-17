@@ -10,6 +10,8 @@ window.App =
   Routers: {}
   Views: {}
   init: () ->
-    router = new App.Routers.Projects()
+    @router = new App.Routers.Projects()
     Backbone.history.start { root: "/", pushState: true }
-    router.navigate(window.location.pathname, true)
+
+    href = window.location.pathname + window.location.hash
+    @router.navigate(href, true)

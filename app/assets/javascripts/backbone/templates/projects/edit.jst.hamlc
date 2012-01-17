@@ -1,111 +1,102 @@
-.row
-  .span6.offset4.alert-message.block-message.info
-    We aim to build your projects automatically. As I'm sure you can imagine,
-    this won't work in some cases, so you can edit your build manually as a
-    fallback mechanism. We'll monitor these settings to automatically infer them
-    in the future, and to build our product around the tools you really use.
-
-    %br
-    %br
-
-    Enter a list of commands for each "build phase". Each line is a separate
-    program invocation, and any failing program (with a non-zero exit code),
-    will stop the build. Each command is arbitrary bash, so you can use
-    environmental variables, pipes, redirection, etc. If you customize one
-    phase, you need to fill them all in (fix coming soon).
-
-    %br
-    %br
-
-    All commands are run on Ubuntu 11.04 - please contact us if you need something else.
-
-.row
-  .span10.offset2
-
-    %form.edit_spec
+.container-fluid
+  .sidebar
+    .well
+      %ul.menu
+        %li
+          %a{ href: "#settings" } Settings
+        %li
+          %a{ href: "#setup" } Machine Setup
+        %li
+          %a{ href: "#tests" } Tests
+        %li
+          %a{ href: "#hooks" } Hooks
 
 
-      %fieldset.form-stacked
-        %legend Project settings
+  .content
+    #el-content
+    -# %form.edit_spec
+    -#   .row
 
-        .clearfix#spec_setup_input
-          %label{ for: "setup" }
-            Machine image setup
-          .input
-            %textarea.xxlarge#setup{ cols: 40, name: "setup", rows: 10 }
-              = @get "setup"
+    -#     .span6.offset0
 
-        %span.help-block
-          Commands to set up your box. Most dependencies should already be
-          installed, but you can
-          %code<
-            sudo apt-get -y install
-          those that aren't (don't forget the
-          %code<
-            \-y
-          though)!
 
-        %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
+    -#       %fieldset.form-stacked
+    -#         %legend Setup the machine for your tests
+
+    -#         .clearfix#spec_setup_input
+    -#           %label{ for: "setup" }
+    -#             Pre-setup commands
+    -#           .input
+    -#             %textarea.xxlarge#setup{ cols: 40, name: "setup", rows: 10  }
+    -#               = @get "setup"
+
+    -#         %span.help-block
+    -#           Need to run some commands before our inferred ones? Enter them here.
+    -#           Install packages
+    -#           Prepare the machine for testing, by installing dependencies
+    -#           Commands to set up your box. Most dependencies should already be
+    -#           installed, but you can
+    -#           %code<
+    -#             sudo apt-get -y install
+    -#           those that aren't (don't forget the
+    -#           %code<
+    -#             \-y
+    -#           though)!
 
 
 
-      %fieldset.form-stacked
+    -#       %fieldset.form-stacked
 
-        .clearfix#dependencies_input
-          %label{ for: "dependencies" }
-            Project dependencies
-          .input
-            %textarea.xxlarge#dependencies{ cols: 40, name: "dependencies", rows: 10 }
-              = @get "dependencies"
+    -#         .clearfix#dependencies_input
+    -#           %label{ for: "dependencies" }
+    -#             Setup commands
+    -#           .input
+    -#             %textarea.xxlarge#dependencies{ cols: 40, name: "dependencies", rows: 10 }
+    -#               = @get "dependencies"
 
-        %span.help-block
-          Commands to install your project's libraries and
-          dependencies. For example,
-          %code<
-            bundle install
-          for Rails or
-          %code<
-            lein deps
-          for Clojure.
-
-        %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
+    -#         %span.help-block
+    -#           We'll infer the commands needed to setup your machine. If we get them
+    -#           wrong, you can overwrite them with the correct ones here.
 
 
+    -#     .span5.offset4
 
-      %fieldset.form-stacked
+    -#       %fieldset.form-stacked
+    -#         %legend Setup and run your tests
 
-        .clearfix#compile_input
-          %label{ for: "compile" }
-            Compile
-          .input
-            %textarea.xxlarge#compile{ cols: 40, name: "compile", rows: 10 }
-              = @get "compile"
 
-        %span.help-block
+    -#         .clearfix#compile_input
+    -#           %label{ for: "compile" }
+    -#             Pre-test commands
+    -#           .input
+    -#             %textarea.xxlarge#compile{ cols: 40, name: "compile", rows: 10 }
+    -#               = @get "compile"
 
-          Commands to compile your code, for example
-          <code>configure</code>,
-          <code>make</code>,
-          <code>ant build</code>,
-          You can usually ignore this for interpreted languages.
+    -#         %span.help-block
 
-        %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
+    -#           Commands to compile your code, for example
+    -#           <code>configure</code>,
+    -#           <code>make</code>,
+    -#           <code>ant build</code>,
+    -#           You can usually ignore this for interpreted languages.
 
 
 
-      %fieldset.form-stacked
+    -#       %fieldset.form-stacked
 
-        .clearfix#test_input
-          %label{ for: "test" }
-            Test
-          .input
-            %textarea.xxlarge#test{ cols: 40, name: "test", rows: 10 }
-              = @get "test"
+    -#         .clearfix#test_input
+    -#           %label{ for: "test" }
+    -#             Test commands
+    -#           .input
+    -#             %textarea.xxlarge#test{ cols: 40, name: "test", rows: 10 }
+    -#               = @get "test"
 
-        %span.help-block
-          Command to test your code. For example,
-          <code>rake test</code>,
-          <code>rspec spec</code>,
-          <code>make check</code>.
+    -#         %span.help-block
+    -#           Command to test your code. For example,
+    -#           <code>rake test</code>,
+    -#           <code>rspec spec</code>,
+    -#           <code>make check</code>.
 
-        %input.btn.primary{ name: "commit", type: "submit", value: "Save and test" }
+    -#   %input.btn.primary.large{ name: "commit", type: "submit", value: "Save and run your tests" }
+
+    -#   %input.btn.primary.large{ name: "commit", type: "submit", value: "Infer my project again" }
