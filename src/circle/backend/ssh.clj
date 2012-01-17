@@ -4,9 +4,10 @@
   (:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.args :only (require-args)])
   (:use [circle.util.except :only (throwf)])
+  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.core :only (apply-map)]))
 
-(defn slurp-stream
+(defn non-blocking-slurp
   "given an input stream, read as much as possible and return it"
   [stream]
   (when (pos? (.available stream))
@@ -18,28 +19,29 @@
 
 (defn ^:dynamic handle-out
   "Called periodically when the SSH command has output. Rebindable."
-  [^String out-str]
-  (print out-str))
+  [^String out-str])
 
-(defn ^:dynamic handle-error [^String err-str]
-  (print err-str))
+(defn ^:dynamic handle-error [^String err-str])
 
 (defn process-exec
   "Takes the exec map and processes it"
   [[shell stdout-stream stderr-stream]]
   (let [stdout (StringBuilder.)
         stderr (StringBuilder.)
-        slurp-streams (fn slurp-streams []
-                        (when-let [s (slurp-stream stdout-stream)]
-                          (.append stdout s)
-                          (handle-out s))
-                        (when-let [s (slurp-stream stderr-stream)]
-                          (.append stderr s)
-                          (handle-error s)))]
+        slurp-streams (fn slurp-streams [& {:keys [final?]}]
+                        (let [slurp-fn (if final?
+                                         slurp
+                                         non-blocking-slurp)]
+                          (when-let [s (slurp-fn stdout-stream)]
+                            (.append stdout s)
+                            (handle-out s))
+                          (when-let [s (slurp-fn stderr-stream)]
+                            (.append stderr s)
+                            (handle-error s))))]
     (while (= -1 (-> shell (.getExitStatus)))
       (slurp-streams)
       (Thread/sleep 100))
-    (slurp-streams)
+    (slurp-streams :final? true)
     {:exit (-> shell .getExitStatus)
      :out (str stdout)
      :err (str stderr)}))

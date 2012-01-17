@@ -56,7 +56,7 @@
   (mongo/update! :projects project (assoc project :state state :state_reason state_reason)))
 
 (defn get-state [project]
-  (or (-> project :state) :enabled))
+  (or (-> project :state (keyword)) :enabled))
 
 (defn set-uninferrable [project]
   (set-state project :disabled :state_reason :uninferrable))

@@ -61,5 +61,6 @@
                                    result (remote-bash-build build body :environment environment :pwd pwd)]
                                (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                  (action/abort! build (str body " returned exit code " (-> result :exit))))
+                               ;; only add exit code, :out and :err are handled by hooking ssh/handle-out and ssh/handle-err in action.clj
                                (action/add-action-result (select-keys result [:exit])))))))
 
