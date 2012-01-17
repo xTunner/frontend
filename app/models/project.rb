@@ -63,6 +63,7 @@ class Project
   end
 
   def to_json(options={})
-    super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url])
+    super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url, :_id])
   end
+
 end

@@ -1,32 +1,17 @@
 App.Views.EditProject = Backbone.View.extend
 
   events:
-    "submit and test": "save"
+    "submit form": "save"
 
 
   initialize: ->
     @render()
 
 
-  save: ->
-    msg = if @model.isNew() then "created" else "saved"
-
-    instance =
-      x: tet
-      b: test2
-
-    callbacks =
-      success: (model, resp) ->
-        new App.Views.Notice { message: msg }
-        @model = model
-        @render()
-        @delegateEvents()
-#        Backbone.history.navigate "gh/#{ @model.project }/edit", true
-
-      failure: ->
-        new App.Views.Error()
-
-    @model.save instance, callbacks
+  save: (e) ->
+    e.preventDefault()
+    @model.save @model
+    # no need to rerender I think
 
 
   el: '#el'
@@ -35,4 +20,5 @@ App.Views.EditProject = Backbone.View.extend
   render: ->
     html = JST["backbone/templates/projects/edit"] @model
     $(@el).html(html)
+    Backbone.ModelBinding.bind(@)
     @

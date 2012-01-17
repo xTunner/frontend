@@ -11,4 +11,5 @@
 //= require jquery.dataTables
 //= require underscore
 //= require backbone
+//= require backbone.modelbinding
 //= require hamlcoffee

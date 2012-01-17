@@ -20,16 +20,19 @@ class ProjectsController < ApplicationController
     authorize! :read, @project
   end
 
-  def
-
   def update
     @project = Project.from_github_name params[:project]
     authorize! :manage, @project
 
-    @project.update(params["spec"])
+    @project.update_attributes(params)
     @project.save!
 
     # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
-#    Backend.build(@project)
+    #    Backend.build(@project)
+
+    respond_with @project do |f|
+      f.html
+      f.json { render :nothing }
+    end
   end
 end

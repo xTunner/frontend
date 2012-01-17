@@ -1,6 +1,8 @@
 App.Models.Project = Backbone.Model.extend
   url: ->
     project = @get 'project'
-    "/gh/#{project}/"
+    "/gh/#{project}"
 
   urlRoot: "/"
+
+  idAttribute: "_id"

@@ -22,17 +22,17 @@
 .row
   .span10.offset2
 
-    %form.edit_spec{ accept-charset: "UTF-8", action: "/gh/#{ @get 'project' }" }
+    %form.edit_spec
 
 
       %fieldset.form-stacked
         %legend Project settings
 
         .clearfix#spec_setup_input
-          %label{ for: "spec_setup" }
+          %label{ for: "setup" }
             Machine image setup
           .input
-            %textarea.xxlarge#spec_setup{ cols: 40, name: "spec[setup]", rows: 10 }
+            %textarea.xxlarge#setup{ cols: 40, name: "setup", rows: 10 }
               = @get "setup"
 
         %span.help-block
@@ -51,11 +51,11 @@
 
       %fieldset.form-stacked
 
-        .clearfix#spec_dependencies_input
-          %label{ for: "spec_dependencies" }
+        .clearfix#dependencies_input
+          %label{ for: "dependencies" }
             Project dependencies
           .input
-            %textarea.xxlarge#spec_dependencies{ cols: 40, name: "spec[dependencies]", rows: 10 }
+            %textarea.xxlarge#dependencies{ cols: 40, name: "dependencies", rows: 10 }
               = @get "dependencies"
 
         %span.help-block
@@ -74,11 +74,11 @@
 
       %fieldset.form-stacked
 
-        .clearfix#spec_compile_input
-          %label{ for: "spec_compile" }
+        .clearfix#compile_input
+          %label{ for: "compile" }
             Compile
           .input
-            %textarea.xxlarge#spec_compile{ cols: 40, name: "spec[compile]", rows: 10 }
+            %textarea.xxlarge#compile{ cols: 40, name: "compile", rows: 10 }
               = @get "compile"
 
         %span.help-block
@@ -95,11 +95,11 @@
 
       %fieldset.form-stacked
 
-        .clearfix#spec_test_input
-          %label{ for: "spec_test" }
+        .clearfix#test_input
+          %label{ for: "test" }
             Test
           .input
-            %textarea.xxlarge#spec_test{ cols: 40, name: "spec[test]", rows: 10 }
+            %textarea.xxlarge#test{ cols: 40, name: "test", rows: 10 }
               = @get "test"
 
         %span.help-block
