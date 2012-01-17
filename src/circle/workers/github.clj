@@ -4,6 +4,7 @@
   (:require [circle.backend.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.config :as config])
+  (:require [circle.model.project :as project])
   (:use [circle.backend.github-url :only (->ssh)])
   (:use [clojure.tools.logging :only (infof)])
   (:require [clj-http.client :as client])
@@ -18,7 +19,7 @@
   (infof "build-hook: %s" github-json)
   (def last-json github-json)
   (let [build (config/build-from-json github-json)]
-    (infof "process-json: build: %s" @build)
+    (infof "process-json: running build: %s" @build)
     (run/run-build build :id build-id)))
 
 (defn start-build-from-hook

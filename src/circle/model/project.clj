@@ -51,3 +51,17 @@
   (mongo/fetch-and-modify :projects {:_id (:_id p)
                                      :next_build_seq nil} {:$set {:next_build_seq 1}})
   (-> (mongo/fetch-and-modify :projects {:_id (:_id p)} {:$inc {:next_build_seq 1}}) :next_build_seq))
+
+(defn set-state [project state & {:keys [state_reason]}]
+  (mongo/update! :projects project (assoc project :state state :state_reason state_reason)))
+
+(defn get-state [project]
+  (or (-> project :state) :enabled))
+
+(defn set-uninferrable [project]
+  (set-state project :disabled :state_reason :uninferrable))
+
+(defn enabled?
+  "True if this project should be running builds"
+  [project]
+  (-> project (get-state) (= :enabled)))
