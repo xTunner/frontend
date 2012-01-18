@@ -1,1 +1,43 @@
-Settings
+- if @get "inferred"
+  %h1
+    Your project is
+    %b
+      "inferred".
+  .row
+    .offset2.span8.alert-message.block-message.notice.larger-notice
+
+      We automatically infer your test settings based on what's in your repository.
+      Sometime this doesn't work, particularly if you have non-standard settings.
+
+  .row
+    .larger-notice
+
+      If your project is broken, simply override the inference:
+      %br
+      %br
+
+      %a.btn.primary.large{ href: "#setup" }
+        Change machine settings
+
+      %br
+      %br
+
+      %a.btn.primary.large{ href: "#tests" }
+        Change test settings
+
+
+- else
+  Your project is not inferred. Generally, this means you're doing something non-standard. If your project is broken, you should change:
+
+  %a{ href: "#setup" }
+    how the test machine is set up
+
+  or &emsp;
+  %a{ href: "#test" }<>
+    how the tests are run
+
+  \,
+
+  or
+  %a
+    go back to running tests manually.
