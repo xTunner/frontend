@@ -83,7 +83,7 @@
     ;; with-repo-lock.
     (fs/mkdirs path)
     (git-fn* (sh/q
-              (git clone ~url "."))
+              (git clone --depth=1 ~url "."))
              :ssh-key
              ssh-key
              :repo path)))
