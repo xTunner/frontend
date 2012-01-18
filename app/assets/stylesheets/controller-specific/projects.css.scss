@@ -28,7 +28,7 @@ p {
    -webkit-border-radius: $inforadius;
    -moz-border-radius: $inforadius;
    border-radius: $inforadius;
-   margin: 20px 0 0 0;
+   margin: 20px 0 0 40px;
    width: 300px;
    padding: 10px;
 }
@@ -42,17 +42,18 @@ p.long {
 }
 
 .infobox {
-   border:solid 10px transparent;
+   border: solid 10px transparent;
    border-right-color: $infocolor;
    position: absolute;
+   margin: 0 0 0 20px;
 }
 
 .infobox.short {
-   margin: -90px 0 0 -20px;
+   margin-top: -90px;
 }
 
 .infobox.long {
-   margin: -145px 0 0 -20px;
+   margin-top: -145px;
 }
 
 
