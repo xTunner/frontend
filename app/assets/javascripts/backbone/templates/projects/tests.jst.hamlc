@@ -64,4 +64,4 @@
 
     .row
       .offset1
-        %input.btn.primary.large{ name: "commit", type: "submit", value: "Save settings and run your tests" }
+        %input.btn.primary.span5.large{ name: "commit", type: "submit", value: "Save your commands and run tests", data-loading-text: "Saving and starting tests..." }

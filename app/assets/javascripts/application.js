@@ -8,6 +8,7 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require bootstrap-dropdown
+//= require bootstrap-buttons
 //= require jquery.dataTables
 //= require underscore
 //= require backbone

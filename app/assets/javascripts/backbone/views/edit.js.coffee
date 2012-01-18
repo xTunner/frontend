@@ -18,10 +18,17 @@ App.Views.EditProject = Backbone.View.extend
     @render()
 
 
-  save: (e) =>
+  save: (e) ->
     e.preventDefault()
-    @model.save @model
-    # no need to rerender I think
+
+    btn = $(e.target.commit)
+    btn.button 'loading'
+
+    @model.save @model,
+      success: ->
+        btn.button 'reset'
+      failure: ->
+        btn.button 'failure!'
 
 
   el: '#el'
