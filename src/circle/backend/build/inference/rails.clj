@@ -1,5 +1,6 @@
 (ns circle.backend.build.inference.rails
   (:use [clojure.core.incubator :only (-?>)])
+  (:require [clojure.string :as str])
   (:require [circle.backend.build :as build])
   (:require [circle.sh :as sh])
   (:require fs)
@@ -62,6 +63,14 @@
 (defn using-gem? [repo name]
   (re-file? (fs/join repo "Gemfile.lock") (re (format " %s " name))))
 
+(defn gem-version
+  "Attempts to find the version of the gem."
+  [repo gem-name]
+  (let [gem-contents (slurp (fs/join repo "Gemfile.lock"))]
+    (-> (re-find (re (format "\\s+%s \\(([0-9.]+)\\)" gem-name)) gem-contents)
+        (second)
+        (str/trim))))
+
 (defn data-mapper? [repo]
   (using-gem? repo "dm-rails"))
 
@@ -98,6 +107,14 @@
 (defn parse-db-yml [repo]
   (-?> (find-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
 
+(defn need-mysql-socket? [repo]
+  (let [db-config (parse-db-yml repo)]
+    (-> db-config :test :adapter (= "mysql"))))
+
+(defn mysql-socket-path [repo]
+  (let [db-config (parse-db-yml repo)]
+    (-> db-config :test :socket)))
+
 (defn ensure-db-user
   "Returns an action that creates a DB user & password when necessary, or nil"
   [repo]
@@ -119,10 +136,13 @@
 
 (defn rspec-test
   "action to run the rspec tests"
-  [& {:keys [bundler?]}]
-  (if bundler?
-    (bash (sh/q (bundle exec rspec spec)))
-    (bash (sh/q (rspec spec)))))
+  [repo & {:keys [bundler?]}]
+  (let [rspec-version (gem-version repo "rspec")
+        rspec-1? (= (nth rspec-version 0) \1) ;; if the rspec version starts with "1"
+        rspec-cmd (if rspec-1? 'spec 'rspec)]
+    (if bundler?
+      (bash (sh/q (bundle exec ~rspec-cmd spec)))
+      (bash (sh/q (~rspec-cmd spec))))))
 
 (defn rake-test
   "action to run rake test"
@@ -158,6 +178,8 @@
         (bundle-install))
       (when (need-cp-database-yml? repo)
         (cp-database-yml repo))
+      (when (need-mysql-socket? repo)
+        (mysql/ensure-socket (mysql-socket-path repo)))
       (ensure-db-user repo)
       (when has-db-yml?
         (rake db:create:all))
@@ -167,7 +189,7 @@
        (migrations? repo) (rake db:migrate)
        :else nil)
       (when (rspec? repo)
-        (rspec-test :bundler? use-bundler?))
+        (rspec-test repo :bundler? use-bundler?))
       (when (cucumber? repo)
         (cucumber-test :bundler? use-bundler?))
       (when (test-unit? repo)
