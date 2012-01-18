@@ -42,10 +42,13 @@
   (ensure-ip-addr build)
   (apply-map remote-bash (-> @build :node) body opts))
 
-(defn action-name [cmd]
-  (if (and (coll? cmd) (not (coll? (first cmd))))
-    (str/join " " cmd)
-    (str cmd)))
+(defn action-name [body]
+
+  (if (coll? body)
+    (->> body
+         (map #(str/join " " %))
+         (str/join "; "))
+    (str body)))
 
 (defn bash
   "Returns a new action that executes bash on the host. Body is a

@@ -1,4 +1,5 @@
 (ns circle.backend.build.inference.rails
+  (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.build :as build])
   (:require [circle.sh :as sh])
   (:require fs)
@@ -6,9 +7,11 @@
   (:use [clojure.tools.logging :only (errorf)])
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.backend.action :only (defaction action)])
+  (:use circle.util.fs)
   (:require [circle.util.map :as map])
   (:require circle.backend.nodes.rails)
-  (:require [circle.backend.build.inference :as inference]))
+  (:require [circle.backend.build.inference :as inference])
+  (:require [circle.backend.build.inference.mysql :as mysql]))
 
 (defn bundler?
   "True if this project is using bundler"
@@ -44,6 +47,12 @@
   (-> (fs/join repo "db" "schema.rb")
       (fs/exists?)))
 
+(defn data-mapper? [repo]
+  (re-file? (fs/join repo "Gemfile") #"gem 'dm-rails'"))
+
+(defn cucumber? [repo]
+  (-> (files-matching repo #".*\.feature$") (seq)))
+
 (defn find-database-yml
   "Look in repo/config/ for a file named database.example.yml or similar, and return the path, or nil"
   [repo]
@@ -53,6 +62,32 @@
                  (first))]
     (when yml
       (fs/join repo "config" yml))))
+
+(defn need-cp-database-yml? [repo]
+  (and (not (database-yml? repo))
+       (find-database-yml repo)))
+
+(defn cp-database-yml
+  "Return an action to cp the database.yml to the right spot"
+  [repo]
+  ;; find-database-yml returns the path relative to the current tree, but for a build action it needs to be relative to the checkout path
+  (let [db-yml-path (->> (find-database-yml repo)
+                         (fs/split)
+                         (drop 2)
+                         (apply fs/join))]
+    (bash (sh/q (cp ~db-yml-path "config/database.yml")) :name "copy database.yml")))
+
+(defn parse-db-yml [repo]
+  (-?> (find-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
+
+(defn ensure-db-user
+  "Returns an action that creates a DB user & password when necessary, or nil"
+  [repo]
+  (let [db-info (-> repo (parse-db-yml) :test)
+        db-type (-> db-info :adapter)]
+    (when db-info
+      (condp = db-type
+        "mysql" (mysql/create-user db-info)))))
 
 (defaction ensure-database-yml []
   {:name "ensuring database.yml exists and is in the proper location"}
@@ -68,22 +103,28 @@
   "action to run the rspec tests"
   [& {:keys [bundler?]}]
   (if bundler?
-    (bash (sh/q1 (bundle exec rspec spec)))
-    (bash (sh/q1 (rspec spec)))))
+    (bash (sh/q (bundle exec rspec spec)))
+    (bash (sh/q (rspec spec)))))
 
 (defn rake-test
   "action to run rake test"
   [& {:keys [bundler?]}]
   (if bundler?
-`    (bash (sh/q (bundle exec rake test)))
+    (bash (sh/q (bundle exec rake test)))
     (bash (sh/q (rake test)))))
+
+(defn cucumber-test
+  [& {:keys [bundler?]}]
+  (if bundler?
+    (bash (sh/q (bundle exec rake cucumber)))
+    (bash (sh/q (rake cucumber)))))
 
 (defn bundle-install []
   (bash (sh/q (bundle install)) :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
 (defmacro cmd [body & {:keys [environment]}]
-  `(bash (sh/q1 (~@body)) :environment ~environment))
+  `(bash (sh/q (~@body)) :environment ~environment))
 
 (defmacro rake [& body]
   `(cmd (~'rake ~@body ~'--trace) :environment {:RAILS_ENV :test}))
@@ -93,24 +134,26 @@
   [repo]
   (let [use-bundler? (bundler? repo)
         found-db-yml (find-database-yml repo)
-        need-cp-db-yml? (and (not (database-yml? repo))
-                             found-db-yml)
         has-db-yml? (or (database-yml? repo) (find-database-yml repo))]
     (->>
      [(when use-bundler?
         (bundle-install))
-      (when need-cp-db-yml?
-        (bash (sh/q1 (cp ~found-db-yml "config/database.yml")) :name "copy database.yml"))
+      (when (need-cp-database-yml? repo)
+        (cp-database-yml repo))
+      (ensure-db-user repo)
       (when has-db-yml?
         (rake db:create))
       (cond
+       (data-mapper? repo) (rake db:automigrate)
        (schema-rb? repo) (rake db:schema:load)
        (migrations? repo) (rake db:migrate)
        :else nil)
       (when (rspec? repo)
-              (rspec-test :bundler? use-bundler?))
-            (when (test-unit? repo)
-              (rake-test :bundler? use-bundler?))]
+        (rspec-test :bundler? use-bundler?))
+      (when (cucumber? repo)
+        (cucumber-test :bundler? use-bundler?))
+      (when (test-unit? repo)
+        (rake-test :bundler? use-bundler?))]
      (filter identity))))
 
 (defmethod inference/infer-actions* :rails [_ repo]

@@ -42,4 +42,4 @@
       (-> @build :action-results (first) :out (first) :message) => "bar\n")))
 
 (fact "action name works"
-  (bash/action-name (sh/q1 (rspec spec))) => "rspec spec")
+  (bash/action-name (sh/q (rspec spec))) => "rspec spec")

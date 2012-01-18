@@ -34,6 +34,16 @@
     (database-yml? repo) => false
     (find-database-yml repo) => (fs/join repo "config/database.example.yml")))
 
+(fact "data-mapper? works"
+  (let [repo "test/circle/backend/build/inference/test_dirs/dm_rails_1/"]
+    (data-mapper? repo) => true
+    (data-mapper? empty-repo) => falsey))
+
+(fact "call rake db:automigrate when using dm-rails"
+  (let [repo "test/circle/backend/build/inference/test_dirs/dm_rails_1/"]
+    (spec repo)
+    (->> (spec repo) (map :name) (into #{})) => (contains #"rake db:automigrate")))
+
 (fact "copy database.example.yml to database.yml action"
   ;; repo with database.example.yml
   (let [example-repo "test/circle/backend/build/inference/test_dirs/database_yml_1/"]
