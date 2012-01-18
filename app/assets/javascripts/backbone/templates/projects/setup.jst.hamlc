@@ -1,1 +1,70 @@
-Setup
+%h1 Setup your test machine
+
+%form.edit_spec
+  %fieldset.form-stacked
+
+    .row
+      .span8.clearfix#spec_setup_input
+        %label{ for: "setup" }
+          Pre-setup commands
+        .input
+          %textarea.span8#setup{ cols: 40, name: "setup", rows: 7  }
+            = @get "setup"
+
+
+
+      .span4
+        %p.short
+          %span.major
+            %b Pre-setup commands
+            run
+            %b before
+            our inferred commands. All commands are arbitrary bash
+            statements.
+
+          %br
+          %br
+
+          %span.minor
+            Use this to
+            install unusual packages or setup unusual services, such as specific
+            DNS provisions, connections to a private services, etc.
+
+
+        .infobox.short
+
+    %br
+    %br
+
+    .row
+      .span8.clearfix#dependencies_input
+        %label{ for: "dependencies" }
+          Setup commands
+        .input
+          %textarea.span8#dependencies{ cols: 40, name: "dependencies", rows: 7, placeholder: "Enter any text to replace our inferred commands" }
+            = @get "dependencies"
+
+
+      .span4
+        %p.long
+          %span.major
+            %b Setup commands
+            run
+            %b instead of
+            our inferred commands. If our inferred commands are not to your liking, replace them here.
+
+          %br
+          %br
+
+          %span.minor
+            Use this to override the specific pre-test commands we run, such as
+            <code>bundle install</code>,
+            <code>rvm use</code>,
+            <code>ant build</code>,
+            <code>configure</code>,
+            <code>make</code>, etc.
+
+          %br
+          %br
+            We constantly check this code to fix problems in our service.
+        .infobox.long

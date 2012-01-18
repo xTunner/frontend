@@ -19,3 +19,47 @@
    font-size: 24px;
    line-height: 30px;
 }
+
+
+$infocolor: #fecbc3;
+$inforadius: 10px;
+p {
+   background: $infocolor;
+   -webkit-border-radius: $inforadius;
+   -moz-border-radius: $inforadius;
+   border-radius: $inforadius;
+   margin: 20px 0 0 0;
+   width: 300px;
+   padding: 10px;
+}
+
+p.short {
+   height: 130px;
+}
+
+p.long {
+   height: 200px;
+}
+
+.infobox {
+   border:solid 10px transparent;
+   border-right-color: $infocolor;
+   position: absolute;
+}
+
+.infobox.short {
+   margin: -90px 0 0 -20px;
+}
+
+.infobox.long {
+   margin: -145px 0 0 -20px;
+}
+
+
+span.major {
+   font-size: 16px;
+}
+
+span.minor {
+   font-size: 12px;
+}
