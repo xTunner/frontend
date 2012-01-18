@@ -18,6 +18,13 @@
   [repo]
   (fs/exists? (fs/join repo "Gemfile")))
 
+(defn dot-gems? [repo]
+  (fs/exists? (fs/join repo ".gems")))
+
+(defn gemfile.lock?
+  [repo]
+  (fs/exists? (fs/join repo "Gemfile.lock")))
+
 (defn dir-contains-files? [dir]
   (-> (fs/listdir dir)
       (seq)
@@ -47,11 +54,27 @@
   (-> (fs/join repo "db" "schema.rb")
       (fs/exists?)))
 
+(defn re
+  "Creates a regex from a string"
+  [s]
+  (java.util.regex.Pattern/compile s))
+
+(defn using-gem? [repo name]
+  ;; Read the Gemfile (rather than Gemfile.lock), even though it's
+  ;; harder to parse, because not 100% of bundler projects have
+  ;; bundler.lock checked in. (and so far, there are no projects where
+  ;; we could have gotten the answer from reading Gemfile.lock but not
+  ;; Gemfile)
+  (re-file? (fs/join repo "Gemfile.lock") (re (format " %s " name))))
+
 (defn data-mapper? [repo]
-  (re-file? (fs/join repo "Gemfile") #"gem 'dm-rails'"))
+  (using-gem? "dm-rails"))
 
 (defn cucumber? [repo]
   (-> (files-matching repo #".*\.feature$") (seq)))
+
+(defn jasmine? [repo]
+  (using-gem? "jasmine-rails"))
 
 (defn find-database-yml
   "Look in repo/config/ for a file named database.example.yml or similar, and return the path, or nil"
