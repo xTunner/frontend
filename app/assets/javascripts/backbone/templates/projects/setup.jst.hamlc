@@ -4,8 +4,8 @@
   %fieldset.form-stacked
 
     .row
-      .span8.clearfix#spec_setup_input
-        %label{ for: "setup" }
+      .span8.clearfix
+        %label
           Pre-setup commands
         .input
           %textarea.span8#setup{ cols: 40, name: "setup", rows: 7  }
@@ -37,8 +37,8 @@
     %br
 
     .row
-      .span8.clearfix#dependencies_input
-        %label{ for: "dependencies" }
+      .span8.clearfix
+        %label
           Setup commands
         .input
           %textarea.span8#dependencies{ cols: 40, name: "dependencies", rows: 7, placeholder: "Enter any text to replace our inferred commands" }
@@ -68,3 +68,8 @@
           %br
             We constantly monitor this to fix problems in our service.
         .infobox.long
+
+    .row
+      .offset1
+        %a.btn.primary.large{ href: "#tests" }
+          Now set up your tests =>
