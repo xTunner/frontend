@@ -60,21 +60,16 @@
   (java.util.regex.Pattern/compile s))
 
 (defn using-gem? [repo name]
-  ;; Read the Gemfile (rather than Gemfile.lock), even though it's
-  ;; harder to parse, because not 100% of bundler projects have
-  ;; bundler.lock checked in. (and so far, there are no projects where
-  ;; we could have gotten the answer from reading Gemfile.lock but not
-  ;; Gemfile)
   (re-file? (fs/join repo "Gemfile.lock") (re (format " %s " name))))
 
 (defn data-mapper? [repo]
-  (using-gem? "dm-rails"))
+  (using-gem? repo "dm-rails"))
 
 (defn cucumber? [repo]
-  (-> (files-matching repo #".*\.feature$") (seq)))
+  (-> (files-matching repo "*.feature") (seq)))
 
 (defn jasmine? [repo]
-  (using-gem? "jasmine-rails"))
+  (using-gem? repo "jasmine-rails"))
 
 (defn find-database-yml
   "Look in repo/config/ for a file named database.example.yml or similar, and return the path, or nil"
