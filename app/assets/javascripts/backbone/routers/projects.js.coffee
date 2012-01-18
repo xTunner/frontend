@@ -1,15 +1,17 @@
 App.Routers.Projects = Backbone.Router.extend
   routes:
-    "/gh/:user/:project/edit*page": "edit"
+    "*page": "edit" # note that this isn't actually the blank url because Backbone's root url is set.
 
-  edit: (user, project, page) ->
-    page = page.substring 1 # remove starting "#"
-    if page == ""
-      page = "settings"
+  edit: (page) ->
 
+    [dc, dc, user, project, dc] = App.base_url.split /\// # dk means 'dontcare'
     project_name = "#{user}/#{project}"
-    project = new App.Models.Project { project: project_name }
 
-    project.fetch
-      success: (project, resp) ->
-        new App.Views.EditProject { model: project, page: page }
+    if App.view
+      App.view.set_page page
+    else
+      App.model = new App.Models.Project { project: project_name }
+      App.model.fetch
+        success: (model, resp) =>
+          App.view = new App.Views.EditProject { model: App.model }
+          App.view.set_page page
