@@ -2,16 +2,10 @@ App.Views.EditProject = Backbone.View.extend
 
   events:
     "submit form": "save"
-    "click a": "click_link"
 
 
   initialize: ->
     @options or= {}
-
-
-  click_link: (e) ->
-    e.preventDefault()
-    @set_page $(e.target).attr('href')
 
 
   set_page: (page) ->
