@@ -8,8 +8,8 @@
           %a{ href: "#setup" } Machine Setup
         %li
           %a{ href: "#tests" } Tests
-        %li
-          %a{ href: "#hooks" } Hooks
+        -#        %li
+        -#          %a{ href: "#hooks" } Hooks
 
 
   .content

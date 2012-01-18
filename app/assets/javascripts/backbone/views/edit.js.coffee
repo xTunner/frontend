@@ -4,12 +4,15 @@ App.Views.EditProject = Backbone.View.extend
     "submit form": "save"
     "click a": "click_link"
 
+
   initialize: ->
     @options or= {}
+
 
   click_link: (e) ->
     e.preventDefault()
     @set_page $(e.target).attr('href')
+
 
   set_page: (page) ->
     # handle both with and without a hash
@@ -17,8 +20,7 @@ App.Views.EditProject = Backbone.View.extend
       page = page.substring 1
 
     @options.page = page
-    target = (if page then "##{page}" else "")
-    App.router.navigate target
+    App.router.navigate page
     @render()
 
 
@@ -38,8 +40,6 @@ App.Views.EditProject = Backbone.View.extend
     page = @options.page or "settings"
     nested = JST["backbone/templates/projects/#{page}"] @model
     $(@el).find("#el-content").html(nested)
-
-
 
     @delegateEvents()
     Backbone.ModelBinding.bind(@)
