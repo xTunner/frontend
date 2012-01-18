@@ -165,7 +165,7 @@
         (cp-database-yml repo))
       (ensure-db-user repo)
       (when has-db-yml?
-        (rake db:create))
+        (rake db:create:all))
       (cond
        (data-mapper? repo) (rake db:automigrate)
        (schema-rb? repo) (rake db:schema:load)
