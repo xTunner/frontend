@@ -2,6 +2,7 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [clojure.string :as str])
   (:require [circle.backend.build :as build])
+  (:require [clj-yaml.core])
   (:require [circle.sh :as sh])
   (:require fs)
   (:use [arohner.utils :only (inspect)])
@@ -67,7 +68,7 @@
   "Attempts to find the version of the gem."
   [repo gem-name]
   (let [gem-contents (slurp (fs/join repo "Gemfile.lock"))]
-    (-> (re-find (re (format "\\s+%s \\(([0-9.]+)\\)" gem-name)) gem-contents)
+    (-?> (re-find (re (format "\\s+%s \\(([0-9.]+)\\)" gem-name)) gem-contents)
         (second)
         (str/trim))))
 
