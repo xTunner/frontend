@@ -64,3 +64,34 @@ span.major {
 span.minor {
    font-size: 12px;
 }
+
+// Trees and lists
+ul.tree, ul.tree ul {
+   list-style-type: none;
+//   background: url(projects/vline.png) repeat-y;
+   margin: 0;
+   padding: 0;
+}
+
+ul.tree ul {
+   margin-left: 10px;
+}
+
+ul.tree li {
+   padding: 0 12px;
+   line-height: 20px;
+   background: url(projects/node.png) no-repeat;
+   color: #369;
+   font-weight: bold;
+   margin-left: 10px;
+   font-size: 14px;
+}
+
+ul.tree li.last {
+   background: url(projects/lastnode.png) no-repeat;
+}
+
+a#menutitle {
+   font-size: 18px;
+   font-weight: bold;
+}

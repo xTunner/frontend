@@ -1,15 +1,15 @@
 .container-fluid
   .sidebar
     .well
-      %ul.menu
-        %li
-          %a{ href: "#settings" } Settings
+      %a#menutitle{ href: "#settings" }
+        Settings
+      %ul.tree
         %li
           %a{ href: "#setup" } Machine Setup
-        %li
+        %li.last
           %a{ href: "#tests" } Tests
-        -#        %li
-        -#          %a{ href: "#hooks" } Hooks
+          -#        %li
+          -#          %a{ href: "#hooks" } Hooks
 
 
   .content
