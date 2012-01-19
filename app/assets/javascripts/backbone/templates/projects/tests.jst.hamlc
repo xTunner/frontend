@@ -14,7 +14,7 @@
 
 
       .span4
-        %p.short
+        %p.short.infoboxtext
           %span.major
             These
             %b test commands
@@ -26,7 +26,7 @@
           %br
 
           %span.minor
-            As usual, all commands are arbitrary bash.
+            As usual, all commands are arbitrary bash, and run on Ubuntu 11.04.
         .infobox.short
 
     %br
@@ -42,7 +42,7 @@
 
 
       .span4
-        %p.long
+        %p.long.infoboxtext
           %span.major
             %b Extra test commands
             run

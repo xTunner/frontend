@@ -5,7 +5,7 @@
         Settings
       %ul.tree
         %li
-          %a{ href: "#setup" } Machine Setup
+          %a{ href: "#setup" } Test machine
         %li.last
           %a{ href: "#tests" } Tests
           -#        %li

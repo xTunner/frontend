@@ -23,7 +23,7 @@
 
 $infocolor: #fecbc3;
 $inforadius: 10px;
-p {
+p.infoboxtext {
    background: $infocolor;
    -webkit-border-radius: $inforadius;
    -moz-border-radius: $inforadius;
@@ -34,7 +34,7 @@ p {
 }
 
 p.short {
-   height: 130px;
+   height: 145px;
 }
 
 p.long {
@@ -94,4 +94,14 @@ ul.tree li.last {
 a#menutitle {
    font-size: 18px;
    font-weight: bold;
+}
+
+.massive {
+   font-size: 72px;
+   line-height: 72px;
+}
+
+
+.lower {
+   padding-top: 100px;
 }
