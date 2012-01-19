@@ -24,6 +24,8 @@ describe "Users" do
       host = "circlehost:3001"
       host! host
       Capybara.app_host = "http://" + host
+      # deliberately don't add to the DB - it's about to be created in the sign up form.
+      @user = Factory.build(:github_user)
     end
 
     it "selenium works", :js => true do
@@ -32,7 +34,6 @@ describe "Users" do
     it "straight pass through the form works", :js => true do
       # Create the user using build() so they wont be added to the DB.
       # Otherwise, the test will fail when we try to add a user.
-      user = Factory.build(:github_user)
 
       visit join_path
       URI.parse(current_url).host.should == "circlehost" # sanity check
@@ -47,7 +48,7 @@ describe "Users" do
       # won't stop on github.
       if URI.parse(current_url).host == "github.com"
           fill_in "login", :with => "circle-test"
-          fill_in "password", :with => user.password
+          fill_in "password", :with => @user.password
           click_button "Log in"
       end
 
@@ -66,15 +67,15 @@ describe "Users" do
 
       URI.parse(current_url).path.should == join_path
       page.should have_content("We've got your code - we'd better get you an account")
-      find_field('user_name').value.should == user.name
+      find_field('user_name').value.should == @user.name
       find_field('user_email').value.should == ""
-      fill_in "user_email", :with => user.email
-      fill_in "user_password", :with => user.password
+      fill_in "user_email", :with => @user.email
+      fill_in "user_password", :with => @user.password
       click_button "Sign up"
 
       URI.parse(current_url).path.should == root_path
       page.should_not have_content("guest")
-      page.should have_content(user.email)
+      page.should have_content(@user.email)
       page.should have_content "We are setting up your projects for you"
       page.should have_content("circle-dummy-project")
       page.should have_content("edit")
