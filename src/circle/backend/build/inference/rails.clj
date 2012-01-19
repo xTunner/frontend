@@ -78,7 +78,7 @@
   (using-gem? repo "dm-rails"))
 
 (defn cucumber? [repo]
-  (-> (files-matching repo "*.feature") (seq)))
+  (-> (files-matching (fs/join repo "features") #".*\.feature") (seq) (boolean)))
 
 (defn jasmine? [repo]
   (using-gem? repo "jasmine-rails"))
