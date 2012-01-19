@@ -106,7 +106,7 @@ describe "Projects", :js => true do
 
       click_button "Save commands and run your tests"
 
-      sleep 3
+      sleep 0.5 # wait for the PUT to save
       p = Project.from_url(@project.vcs_url)
 
       p.test.should == "echo a"

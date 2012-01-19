@@ -9,19 +9,19 @@ describe ProjectsController do
   end
 
   it "shouldn't be able to render unowned projects" do
-    project = Factory(:unowned_project)
+    project = FactoryGirl.create(:unowned_project)
     lambda {
-      get 'show', :id => project.id
+      get 'show', :project => project.github_project_name
     }.should raise_error(CanCan::AccessDenied)
   end
 
   it "should be able to access owned projects" do
     project = subject.current_user.projects[0]
-    get 'show', :id => project.id
+    get 'show', :project => project.github_project_name
   end
 
 
   it "should work for weird characters in the project url" do
-    github_project_path(Factory(:project_with_weird_characters))
+    github_project_path(FactoryGirl.create(:project_with_weird_characters))
   end
 end
