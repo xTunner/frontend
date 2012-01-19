@@ -67,10 +67,12 @@
 (defn gem-version
   "Attempts to find the version of the gem."
   [repo gem-name]
-  (let [gem-contents (slurp (fs/join repo "Gemfile.lock"))]
-    (-?> (re-find (re (format "\\s+%s \\(([0-9.]+)\\)" gem-name)) gem-contents)
-        (second)
-        (str/trim))))
+  (let [file-path (fs/join repo "Gemfile.lock")]
+    (when (fs/exists? file-path)
+      (let [gem-contents (slurp file-path)]
+        (-?> (re-find (re (format "\\s+%s \\(([0-9.]+)\\)" gem-name)) gem-contents)
+           (second)
+           (str/trim))))))
 
 (defn data-mapper? [repo]
   (using-gem? repo "dm-rails"))
@@ -136,38 +138,38 @@
         (fs/copy example-yml db-yml)
         (errorf "couldn't find database.yml for project, things probably aren't going to end well")))))
 
+(def ^{:dynamic true} use-bundler? true)
+
+(defn bash-cmd [body & {:keys [environment]}]
+  (bash (sh/q (~@body)) :environment ~environment))
+
+(defmacro bundler-cmd
+  "Takes a one-line stevedore. prepends 'bundle exec' if we're using bundler"
+  [body & {:keys [environment]}]
+  `(if use-bundler?
+     (sh/q (~'bundle ~'exec ~@body))
+     (sh/q ~body)))
+
 (defn rspec-test
   "action to run the rspec tests"
-  [repo & {:keys [bundler?]}]
+  [repo]
   (let [rspec-version (gem-version repo "rspec")
         rspec-1? (= (nth rspec-version 0) \1) ;; if the rspec version starts with "1"
         rspec-cmd (if rspec-1? 'spec 'rspec)]
-    (if bundler?
+    (if use-bundler?
       (bash (sh/q (bundle exec ~rspec-cmd spec)))
       (bash (sh/q (~rspec-cmd spec))))))
 
-(defn rake-test
-  "action to run rake test"
-  [& {:keys [bundler?]}]
-  (if bundler?
-    (bash (sh/q (bundle exec rake test)))
-    (bash (sh/q (rake test)))))
+(defmacro rake [& body]
+  `(bash (bundler-cmd (~'rake ~@body ~'--trace)) :environment {:RAILS_ENV :test}))
 
 (defn cucumber-test
-  [& {:keys [bundler?]}]
-  (if bundler?
-    (bash (sh/q (bundle exec rake cucumber)))
-    (bash (sh/q (rake cucumber)))))
+  []
+  (rake cucumber))
 
 (defn bundle-install []
   (bash (sh/q (bundle install)) :environment {:RAILS_GROUP :test}
         :name "bundle install"))
-
-(defmacro cmd [body & {:keys [environment]}]
-  `(bash (sh/q (~@body)) :environment ~environment))
-
-(defmacro rake [& body]
-  `(cmd (~'rake ~@body ~'--trace) :environment {:RAILS_ENV :test}))
 
 (defn spec
   "Returns the set of actions necessary for this project"
@@ -175,28 +177,29 @@
   (let [use-bundler? (bundler? repo)
         found-db-yml (find-database-yml repo)
         has-db-yml? (or (database-yml? repo) (find-database-yml repo))]
-    (->>
-     [(when use-bundler?
-        (bundle-install))
-      (when (need-cp-database-yml? repo)
-        (cp-database-yml repo))
-      (when (need-mysql-socket? repo)
-        (mysql/ensure-socket (mysql-socket-path repo)))
-      (ensure-db-user repo)
-      (when has-db-yml?
-        (rake db:create:all))
-      (cond
-       (data-mapper? repo) (rake db:automigrate)
-       (schema-rb? repo) (rake db:schema:load)
-       (migrations? repo) (rake db:migrate)
-       :else nil)
-      (when (rspec? repo)
-        (rspec-test repo :bundler? use-bundler?))
-      (when (cucumber? repo)
-        (cucumber-test :bundler? use-bundler?))
-      (when (test-unit? repo)
-        (rake-test :bundler? use-bundler?))]
-     (filter identity))))
+    (binding [use-bundler? (bundler? repo)]
+      (->>
+       [(when use-bundler?
+          (bundle-install))
+        (when (need-cp-database-yml? repo)
+          (cp-database-yml repo))
+        (when (need-mysql-socket? repo)
+          (mysql/ensure-socket (mysql-socket-path repo)))
+        (ensure-db-user repo)
+        (when has-db-yml?
+          (rake db:create:all))
+        (cond
+         (data-mapper? repo) (rake db:automigrate)
+         (schema-rb? repo) (rake db:schema:load)
+         (migrations? repo) (rake db:migrate)
+         :else nil)
+        (when (rspec? repo)
+          (rspec-test repo))
+        (when (cucumber? repo)
+          (cucumber-test))
+        (when (test-unit? repo)
+          (rake test))]
+       (filter identity)))))
 
 (defmethod inference/infer-actions* :rails [_ repo]
   (spec repo))

@@ -20,14 +20,20 @@
     (rspec? rspec-repo) => true
     (rspec? empty-repo) => false))
 
+(fact "rspec uses bundler when appropriate"
+  (let [bundler-repo "test/circle/backend/build/inference/test_dirs/rspec_1"]
+    (->> (spec bundler-repo) (map :name) (into #{})) => (contains #"bundle exec rspec spec"))
+  (let [no-bundler-repo "test/circle/backend/build/inference/test_dirs/no_bundler_1"]
+    (->> (spec no-bundler-repo) (map :name)) => ["rspec spec"]))
+
 (fact "rspec action"
   (let [repo "test/circle/backend/build/inference/test_dirs/rspec_1"]
-    (map :name (spec repo)) => ["rspec spec"]))
+    (->> (spec repo) (map :name) (into #{})) => (contains "bundle exec rspec spec")))
 
 (fact "db:create when db.yml action"
   (let [repo "test/circle/backend/build/inference/test_dirs/database_yml_2/"]
     (database-yml? repo) => true
-    (->> (spec repo) (map :name))  => ["rake db:create:all --trace"]))
+    (->> (spec repo) (map :name) (into #{}))  => (contains "bundle exec rake db:create:all --trace")))
 
 (fact "inference finds database yaml"
   (let [repo "test/circle/backend/build/inference/test_dirs/database_yml_1/"]
