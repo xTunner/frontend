@@ -131,6 +131,15 @@
 (hooke/add-hook #'ssh/handle-out update-out-hook)
 (hooke/add-hook #'ssh/handle-error update-err-hook)
 
+;; TODO: migration :type x => :source x
+(defn set-source [action source]
+  (assoc action :source source))
+
+(defn set-type [action type]
+  (assoc action :type type))
+
+
+
 (defn run-action [build act]
   (throw-if-not (map? act) "action must be a ref")
   (binding [*current-action* act

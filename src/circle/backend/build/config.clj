@@ -6,6 +6,7 @@
   (:require [circle.backend.build :as build])
   (:require [circle.model.project :as project])
   (:require [circle.model.spec :as spec])
+  (:require [circle.backend.action :as action])
   (:require [circle.backend.github-url :as github])
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.git :as git])
@@ -118,11 +119,14 @@
 (defn parse-actions [job]
   (doall (map parse-action (-> job :commands))))
 
+(defn set-spec [actions]
+  (map #(action/set-source % :spec) actions))
+
 (defn load-actions
   "Finds job in config, loads approprate template and parses actions"
   [job]
   (let [template-name (-> job :template)
-        actions (map #(merge % {:type :spec}) (parse-actions job))]
+        actions (set-spec (parse-actions job))]
     (template/apply-template template-name actions)))
 
 (defn load-job [config job-name]

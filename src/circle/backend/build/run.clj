@@ -40,7 +40,7 @@
    (alter b assoc :stop_time (-> (time/now) .toDate)))
   (let [project (build/get-project b)]
     (when (and (-> @b :actions (count) (zero?))
-               (-> project :inferred))
+               (-> project :inferred)) ;; TODO
       (project/set-uninferrable project)))
   (build/update-mongo b))
 
@@ -75,7 +75,8 @@
       (error e (format "caught exception on %s" (build/build-name b)))
       (println "assoc'ing failed=true")
       (dosync
-       (alter b assoc :failed true))
+       (alter b assoc :failed true)
+       (alter b assoc :infrastructure_fail true))
       (email/send-build-error-email b e)
       (throw e))
     (finally

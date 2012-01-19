@@ -103,7 +103,9 @@
                          (fs/split)
                          (drop 2)
                          (apply fs/join))]
-    (bash (sh/q (cp ~db-yml-path "config/database.yml")) :name "copy database.yml")))
+    (bash (sh/q (cp ~db-yml-path "config/database.yml"))
+          :name "copy database.yml"
+          :type :setup)))
 
 (defn parse-db-yml [repo]
   (-?> (find-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
@@ -142,31 +144,37 @@
         rspec-1? (= (nth rspec-version 0) \1) ;; if the rspec version starts with "1"
         rspec-cmd (if rspec-1? 'spec 'rspec)]
     (if bundler?
-      (bash (sh/q (bundle exec ~rspec-cmd spec)))
-      (bash (sh/q (~rspec-cmd spec))))))
+      (bash (sh/q (bundle exec ~rspec-cmd spec) :type :test))
+      (bash (sh/q (~rspec-cmd spec)) :type :test))))
 
 (defn rake-test
   "action to run rake test"
   [& {:keys [bundler?]}]
   (if bundler?
-    (bash (sh/q (bundle exec rake test)))
-    (bash (sh/q (rake test)))))
+    (bash (sh/q (bundle exec rake test)) :type :test)
+    (bash (sh/q (rake test)) :type :test)))
 
 (defn cucumber-test
   [& {:keys [bundler?]}]
   (if bundler?
-    (bash (sh/q (bundle exec rake cucumber)))
-    (bash (sh/q (rake cucumber)))))
+    (bash (sh/q (bundle exec rake cucumber)) :type :test)
+    (bash (sh/q (rake cucumber)) :type :test)))
 
 (defn bundle-install []
-  (bash (sh/q (bundle install)) :environment {:RAILS_GROUP :test}
+  (bash (sh/q (bundle install))
+        :type :setup
+        :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
-(defmacro cmd [body & {:keys [environment]}]
-  `(bash (sh/q (~@body)) :environment ~environment))
+(defmacro cmd [body & {:keys [environment type]}]
+  `(bash (sh/q (~@body))
+         :environment ~environment
+         :type ~type))
 
-(defmacro rake [& body]
-  `(cmd (~'rake ~@body ~'--trace) :environment {:RAILS_ENV :test}))
+(defmacro rake [body & {:keys [type]}]
+  `(cmd (~'rake ~body ~'--trace)
+        :environment {:RAILS_ENV :test}
+        :type ~type))
 
 (defn spec
   "Returns the set of actions necessary for this project"
@@ -183,11 +191,11 @@
         (mysql/ensure-socket (mysql-socket-path repo)))
       (ensure-db-user repo)
       (when has-db-yml?
-        (rake db:create:all))
+        (rake db:create:all :type setup))
       (cond
-       (data-mapper? repo) (rake db:automigrate)
-       (schema-rb? repo) (rake db:schema:load)
-       (migrations? repo) (rake db:migrate)
+       (data-mapper? repo) (rake db:automigrate :type :setup)
+       (schema-rb? repo) (rake db:schema:load :type :setup)
+       (migrations? repo) (rake db:migrate :type :setup)
        :else nil)
       (when (rspec? repo)
         (rspec-test repo :bundler? use-bundler?))

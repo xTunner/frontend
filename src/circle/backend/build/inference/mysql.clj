@@ -9,7 +9,8 @@
     (bash/bash (sh/q
                 (~(format "echo \"create user '%s'@'localhost' identified by '%s'\"" username password) "|" mysql -u root)
                 (~(format "echo \"grant all privileges on *.* to '%s'@'localhost'\"" username) "|" mysql -u root))
-               :name (format "create mysql user %s" username))))
+               :name (format "create mysql user %s" username)
+               :type :setup)))
 
 ;; the path for the mysql socket on our AMI
 (def ami-ubuntu-socket "/var/run/mysqld/mysqld.sock")
@@ -19,4 +20,6 @@
   [path]
   (when (not= path ami-ubuntu-socket)
     (bash/bash (sh/q
-                (ln -s ~ami-ubuntu-socket ~path)))))
+                (ln -s ~ami-ubuntu-socket ~path))
+               :type :setup
+               :name "Setup mysql socket")))
