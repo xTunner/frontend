@@ -123,7 +123,8 @@
         db-type (-> db-info :adapter)]
     (when db-info
       (condp = db-type
-        "mysql" (mysql/create-user db-info)))))
+        "mysql" (mysql/create-user db-info)
+        nil))))
 
 (defaction ensure-database-yml []
   {:name "ensuring database.yml exists and is in the proper location"}
