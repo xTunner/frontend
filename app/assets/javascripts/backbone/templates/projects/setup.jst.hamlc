@@ -26,9 +26,8 @@
           %br
 
           %span.minor
-            Use this to
-            install unusual packages or setup unusual services, such as specific
-            DNS provisions, connections to a private services, etc.
+            Use this to install unusual packages or setup unusual services, such
+            as specific DNS provisions, connections to a private services, etc.
 
 
         .infobox.short
