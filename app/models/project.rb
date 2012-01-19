@@ -10,17 +10,28 @@ class Project
   field :ssh_public_key
   field :visible, :type => Boolean, :default => false
 
+  # setup
+  # TECHNICAL_DEBT: this is actually the "pre-setup" field
   field :setup, :type => String, :default => nil
+
+  # TECHNICAL_DEBT: this is actually marked "setup" on the form
   field :dependencies, :type => String, :default => nil
-  field :compile, :type => String, :default => nil
+
+  # test settings
   field :test, :type => String, :default => nil
+  field :extra, :type => String, :default => nil
+
   field :inferred, :type => Boolean, :default => true
+
+  # TECHNICAL_DEBT: remove this, it's unused
+  field :compile, :type => String, :default => nil
+
 
 
   has_and_belongs_to_many :users
 #  has_many :builds
 
-  attr_accessible :setup, :dependencies, :compile, :test, :inferred
+  attr_accessible :setup, :dependencies, :compile, :test, :extra, :inferred
 
   def to_param
     github_project_name

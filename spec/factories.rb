@@ -1,14 +1,12 @@
 require 'factory_girl'
 
-# NOTE: this file does not automatically reload in Rails server. Use load() or restart the server.
-
 FactoryGirl.define do
 
   factory :user do
     name 'Test User'
     email 'user@test.com'
     password 'please'
-    after_create { |user| Factory(:project, :users => [user]) }
+    after_create { |user| FactoryGirl.create(:project, :users => [user]) }
 
     factory :github_user do
       # This user doesnt have a username or email set up in their profile
@@ -32,6 +30,21 @@ FactoryGirl.define do
 
     factory :project_with_weird_characters do
       vcs_url "https://github.com/._-_.-/-.__-.-/"
+    end
+
+    factory :project_with_specs do
+      vcs_url "https://github.com/circleci/project_with_specs"
+      setup "echo do setup"
+      dependencies "echo do dependencies"
+      compile "echo do compile"
+      test "echo do test"
+      # extra is a new field, but no-one put anythingi n compile so we're fine.
+      extra "echo do extra"
+      inferred false
+    end
+
+    factory :inferred_project do
+      inferred true
     end
   end
 
@@ -57,7 +70,7 @@ FactoryGirl.define do
     start_time Time.now - 10.minutes
     stop_time Time.now
     build_num 1
-    after_create { |b| Factory(:user) } # always make a user, and therefore a project
+    after_create { |b| FactoryGirl.create(:user) } # always make a user, and therefore a project
 
     factory :successful_build do
       failed false
