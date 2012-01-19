@@ -29,11 +29,11 @@
         %tr
           %td
             - if build
-              != bootstrap_status project.latest_build
+              != bootstrap_status build
           %td
             = link_to(project.github_project_name, github_project_path(project))
           %td
             - if build
-              = build_link_to (project.latest_build)
+              = build_link_to build
           %td
             = link_to "edit", github_project_edit_path(project)
