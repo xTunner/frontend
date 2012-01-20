@@ -67,7 +67,9 @@ module ApplicationHelper
     link_to(revision[0..8], url + "/commit/" + revision)
   end
 
-  def bootstrap_status(build)
+  def bootstrap_status(build, markup=nil)
+    markup ||= build.status
+
     type = case build.status
            when :fail
              :important
@@ -78,7 +80,7 @@ module ApplicationHelper
            when :running
              :notice
              end
-    "<span class='label #{type}'>#{ build.status }"
+    "<span class='label #{type}'>#{ markup }"
   end
 
 
