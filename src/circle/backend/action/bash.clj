@@ -10,16 +10,19 @@
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.action :as action]))
 
+(defn emit-command [body environment pwd]
+  (sh/emit-form body
+                :environment environment
+                :pwd pwd))
+
 (defn remote-bash
   "Execute bash code on the remote server.
 
    ssh-map is a map containing the keys :username, :public-key, :private-key :ip-addr. All keys are required."
   [ssh-map body & {:keys [environment
                           pwd]}]
-  (let [cmd (sh/emit-form body
-                          :environment environment
-                          :pwd pwd)
-        _ (build-log "running %s %s %s %s" body pwd environment cmd)
+  (let [cmd (emit-command body environment pwd)
+        _ (build-log "running (%s %s %s): %s" body pwd environment cmd)
         result (ssh/remote-exec ssh-map cmd)]
     (build-log "%s returned" (-> result :exit)) ;; only log exit, rest should be handled by ssh
     result))
@@ -43,7 +46,6 @@
   (apply-map remote-bash (-> @build :node) body opts))
 
 (defn action-name [body]
-
   (if (coll? body)
     (->> body
          (map #(str/join " " %))
@@ -54,11 +56,14 @@
   "Returns a new action that executes bash on the host. Body is a
   string. If pwd is not specified, defaults to the root of the build's
   checkout dir"
-  [body & {:keys [name abort-on-nonzero environment pwd]
+  [body & {:keys [name abort-on-nonzero environment pwd type]
            :or {abort-on-nonzero true}
            :as opts}]
-  (let [name (or name (action-name body))]
+  (let [name (or name (action-name body))
+        command (emit-command body environment pwd)]
     (action/action :name name
+                   :command command
+                   :type type
                    :act-fn (fn [build]
                              (let [pwd (fs/join (checkout-dir build) (or pwd "/"))
                                    result (remote-bash-build build body :environment environment :pwd pwd)]
@@ -66,4 +71,3 @@
                                  (action/abort! build (str body " returned exit code " (-> result :exit))))
                                ;; only add exit code, :out and :err are handled by hooking ssh/handle-out and ssh/handle-err in action.clj
                                (action/add-action-result (select-keys result [:exit])))))))
-

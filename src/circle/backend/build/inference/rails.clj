@@ -105,7 +105,9 @@
                          (fs/split)
                          (drop 2)
                          (apply fs/join))]
-    (bash (sh/q (cp ~db-yml-path "config/database.yml")) :name "copy database.yml")))
+    (bash (sh/q (cp ~db-yml-path "config/database.yml"))
+          :name "copy database.yml"
+          :type :setup)))
 
 (defn parse-db-yml [repo]
   (-?> (find-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
@@ -140,9 +142,6 @@
 
 (def ^{:dynamic true} use-bundler? true)
 
-(defn bash-cmd [body & {:keys [environment]}]
-  (bash (sh/q (~@body)) :environment ~environment))
-
 (defmacro bundler-cmd
   "Takes a one-line stevedore. prepends 'bundle exec' if we're using bundler"
   [body & {:keys [environment]}]
@@ -156,19 +155,25 @@
   (let [rspec-version (gem-version repo "rspec")
         rspec-1? (= (nth rspec-version 0) \1) ;; if the rspec version starts with "1"
         rspec-cmd (if rspec-1? 'spec 'rspec)]
-    (if use-bundler?
-      (bash (sh/q (bundle exec ~rspec-cmd spec)))
-      (bash (sh/q (~rspec-cmd spec))))))
+    (bash (bundler-cmd (~rspec-cmd "spec"))
+          :environment {:RAILS_ENV :test}
+          :type :test)))
 
-(defmacro rake [& body]
-  `(bash (bundler-cmd (~'rake ~@body ~'--trace)) :environment {:RAILS_ENV :test}))
+(defmacro rake
+  "Returns an action to run a single rake command"
+  [body & {:keys [type]}]
+  `(bash (bundler-cmd (~'rake ~body ~'--trace))
+         :environment {:RAILS_ENV :test}
+         :type ~type))
 
 (defn cucumber-test
   []
-  (rake cucumber))
+  (rake cucumber :type :test))
 
 (defn bundle-install []
-  (bash (sh/q (bundle install)) :environment {:RAILS_GROUP :test}
+  (bash (sh/q (bundle install))
+        :type :setup
+        :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
 (defn spec
@@ -187,18 +192,18 @@
           (mysql/ensure-socket (mysql-socket-path repo)))
         (ensure-db-user repo)
         (when has-db-yml?
-          (rake db:create:all))
+          (rake db:create:all :type :setup))
         (cond
-         (data-mapper? repo) (rake db:automigrate)
-         (schema-rb? repo) (rake db:schema:load)
-         (migrations? repo) (rake db:migrate)
+         (data-mapper? repo) (rake db:automigrate :type :setup)
+         (schema-rb? repo) (rake db:schema:load :type :setup)
+         (migrations? repo) (rake db:migrate :type :setup)
          :else nil)
         (when (rspec? repo)
           (rspec-test repo))
         (when (cucumber? repo)
-          (cucumber-test))
+          (rake cucumber :type :test))
         (when (test-unit? repo)
-          (rake test))]
+          (rake test :type :test))]
        (filter identity)))))
 
 (defmethod inference/infer-actions* :rails [_ repo]
