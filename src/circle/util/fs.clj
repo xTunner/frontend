@@ -8,7 +8,8 @@
 (defn all-files
   "Returns a list of all files in the repos"
   [dir]
-  (FileUtils/listFiles (io/as-file dir) nil true))
+  (when (fs/exists? dir)
+      (FileUtils/listFiles (io/as-file dir) nil true)))
 
 (defn files-matching
   "Returns a list of files that match re."
