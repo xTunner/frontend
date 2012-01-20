@@ -71,6 +71,7 @@
 
                              (remote-file/remote-file "/etc/rc.local" :local-file "pallet/rc.local" :mode "644" :no-versioning true)
                              (remote-file/remote-file "/home/ubuntu/.bashrc" :local-file "pallet/bashrc" :mode "644" :no-versioning true)
+                             (remote-file/remote-file "/home/ubuntu/.bash_profile" :local-file "pallet/bash_profile" :mode "644" :no-versioning true)
 
                              (java/java :openjdk :jdk)
                              (git/git)
