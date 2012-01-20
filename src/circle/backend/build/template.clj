@@ -39,7 +39,8 @@
 (defn load-actions [section]
   (->> section
        (map #(apply % []))
-       (map #(merge % {:type :infrastructure}))))
+       (map #(merge % {:type :infrastructure
+                       :source :template}))))
 
 (defn apply-template [template-name actions]
   (let [template (find! template-name)

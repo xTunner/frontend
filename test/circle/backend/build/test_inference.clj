@@ -2,11 +2,11 @@
   (:use midje.sweet)
   (:use circle.backend.build.inference))
 
-(fact "inferred actions have type :inferred"
+(fact "inferred actions have source :inferred"
   (let [example-repo "test/circle/backend/build/inference/test_dirs/database_yml_1/"
         actions (infer-actions example-repo)]
-    (every? :type actions) => true
+    (every? :source actions) => true
     (->> actions
-         (map :type)
+         (map :source)
          (into #{})
          (#(contains? % :inferred)))  => true))
