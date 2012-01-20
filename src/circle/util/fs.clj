@@ -16,9 +16,9 @@
   "Returns a list of all files in the repos"
   [dir]
   (when (fs/exists? dir)
-    (FileUtils/listFiles (io/as-file dir)
-                         symlink-filter
-                         symlink-filter)))
+    (map str (FileUtils/listFiles (io/as-file dir)
+                                  symlink-filter
+                                  symlink-filter))))
 
 (defn files-matching
   "Returns a list of files that match re."
