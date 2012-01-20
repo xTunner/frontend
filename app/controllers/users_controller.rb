@@ -4,6 +4,7 @@ class UsersController < ApplicationController
 
   def dashboard
     @projects = current_user.projects
+    @recent_builds = current_user.latest_project_builds
   end
 
 end

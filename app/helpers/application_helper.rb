@@ -60,11 +60,13 @@ module ApplicationHelper
     end
   end
 
-  def revision_link(url, revision)
+  def revision_link_to(url, revision, branch=nil)
     return if url.nil? or revision.nil?
 
     # TECHNICAL_DEBT: github only
-    link_to(revision[0..8], url + "/commit/" + revision)
+    link = link_to(revision[0..8], url + "/commit/" + revision)
+    link += " (#{branch})" if branch
+    link
   end
 
   def bootstrap_status(build, markup=nil)
@@ -82,7 +84,6 @@ module ApplicationHelper
              end
     "<span class='label #{type}'>#{ markup }"
   end
-
 
   def as_action_timestamp(time)
     time.strftime("%T.%3N")
@@ -128,5 +129,18 @@ module ApplicationHelper
     end
 
     link_to text, build_url(:project => project, :id => build.build_num.to_s)
+  end
+
+  def log_link_to(subject, body, limit=80)
+    return "" if subject.nil?
+
+    message = if subject.length > limit then subject.slice(0,limit) + "..." else subject end
+    if body
+      popup = subject + "\n" + body
+    else
+      popup = nil
+    end
+
+    link_to message, "#", { :title => popup }
   end
 end
