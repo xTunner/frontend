@@ -30,6 +30,10 @@
   (let [repo "test/circle/backend/build/inference/test_dirs/rspec_1"]
     (->> (spec repo) (map :name) (into #{})) => (contains "bundle exec rspec spec")))
 
+(fact "rspec actions have type :test"
+  (let [repo "test/circle/backend/build/inference/test_dirs/rspec_1"]
+    (->> (spec repo) (map :type) (into #{})) => (contains :test)))
+
 (fact "db:create when db.yml action"
   (let [repo "test/circle/backend/build/inference/test_dirs/database_yml_2/"]
     (database-yml? repo) => true
