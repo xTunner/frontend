@@ -2,7 +2,8 @@
                        "-XX:MaxPermSize=256m"
                        "-XX:+UseConcMarkSweepGC"
                        "-XX:+CMSClassUnloadingEnabled"]
-                      (when (not= (System/getenv "USER") "pbiggar")
+                      (when (not (or (= (System/getenv "USER") "pbiggar")
+                                     (= (System/getenv "CIRCLE_DEBUG") "false")))
                         ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"])))
 
 
