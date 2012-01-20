@@ -10,6 +10,9 @@
 ## this must match the value of the Xvfb display var in rc.local
 export DISPLAY=:99
 
+## Make apt and aptitude better about -y
+export DEBIAN_FRONTEND=noninteractive
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
