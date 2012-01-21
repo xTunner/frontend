@@ -60,7 +60,7 @@
   "Returns a new action that executes bash on the host. Body is a
   string. If pwd is not specified, defaults to the root of the build's
   checkout dir"
-  [body & {:keys [name abort-on-nonzero environment pwd type]
+  [body & {:keys [name abort-on-nonzero environment pwd type relative-timeout absolute-timeout]
            :or {abort-on-nonzero true}
            :as opts}]
   (let [name (or name (action-name body))
@@ -70,9 +70,13 @@
                    :type type
                    :act-fn (fn [build]
                              (try+
-                              (let [pwd (fs/join (checkout-dir build) (or pwd "/"))
-                                    result (apply-map remote-bash-build build body (merge {:relative-timeout (time/minutes 5)
-                                                                                           :absolute-timeout (time/hours 1)} opts))]
+                              (let [pwd (fs/join (checkout-dir build) pwd)
+                                    relative-timeout (or relative-timeout (time/minutes 5))
+                                    absolute-timeout (or absolute-timeout (time/hours 1))
+                                    opts (merge opts {:pwd pwd
+                                                      :relative-timeout relative-timeout
+                                                      :absolute-timeout absolute-timeout})
+                                    result (apply-map remote-bash-build build body opts)]
                                  (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                    (action/abort! build (str body " returned exit code " (-> result :exit))))
                                  ;; only add exit code, :out and :err are handled by hooking ssh/handle-out and ssh/handle-err in action.clj
