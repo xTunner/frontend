@@ -23,7 +23,10 @@ class User
 
   validates_presence_of :email
   validates_uniqueness_of :email, :case_sensitive => false
+
   attr_accessible :name, :contact, :email, :password, :password_confirmation
+
+  field :sent_first_build_email, :default => false
 
   def known_email
     if email.include? "@"
@@ -49,5 +52,8 @@ class User
     update_attributes(params)
   end
 
-
+  # True if there has been at least one build in every project the user owns
+  def build_in_every_project?
+    self.projects.all? {|p| p.latest_build}
+  end
 end

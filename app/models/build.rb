@@ -2,15 +2,21 @@
 class Build
   include Mongoid::Document
 
+  # Raw fields
   field :vcs_url
   field :vcs_revision
-
-  field :failed, :type => Boolean, :default => nil
-
-  field :start_time, :type => Time, :default => nil
-  field :stop_time, :type => Time, :default => nil
-
   field :build_num, :type => Integer
+  field :start_time, :type => Time, :default => nil
+  field :stop_time, :type => Time, :default => nil # can be empty
+  field :infrastructure_fail, :type => Boolean, :default => false
+  field :timedout, :type => Boolean, :default => false
+  has_many :action_logs, :inverse_of => :thebuild
+#  belongs_to :project
+
+
+  # Refined fields (opposite of 'raw")
+  # These fields need to be moved into the refined map
+  field :failed, :type => Boolean, :default => nil
   field :parents, :type => Array, :default => nil
   field :subject, :type => String, :default => nil
   field :body, :type => String, :default => nil
@@ -23,9 +29,9 @@ class Build
   field :author_name, :type => String, :default => nil
   field :author_date, :type => Time, :default => nil
 
-#  belongs_to :project
 
-  has_many :action_logs, :inverse_of => :thebuild
+
+
 
   def the_project
     # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't

@@ -2,7 +2,8 @@
                        "-XX:MaxPermSize=256m"
                        "-XX:+UseConcMarkSweepGC"
                        "-XX:+CMSClassUnloadingEnabled"]
-                      (when (not= (System/getenv "USER") "pbiggar")
+                      (when (not (or (= (System/getenv "USER") "pbiggar")
+                                     (= (System/getenv "CIRCLE_DEBUG") "false")))
                         ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"])))
 
 
@@ -72,7 +73,7 @@
                  [clj-yaml "0.3.1"]
                  [org.yaml/snakeyaml "1.9"] ;; clj-yaml 0.3.1 depends on snakeyaml 1.5, but jruby requires a later version
                  [fs "0.9.0"]
-                 [clj-time "0.3.1"]
+                 [clj-time "0.3.4"]
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.

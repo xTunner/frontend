@@ -72,11 +72,18 @@
 
 (defn abort!
   "Stop the build."
-  [build message]
+  [build message ]
   (errorf "Aborting build: %s" message)
   (add-output message :column :err)
   (dosync
    (alter build assoc :continue? false :failed true)))
+
+(defn abort-timeout!
+  "Abort the build due to a command timeout"
+  [build message]
+  (dosync
+   (abort! build message)
+   (alter build assoc :timedout true)))
 
 (defn add-start-time
   []
@@ -130,6 +137,15 @@
 
 (hooke/add-hook #'ssh/handle-out update-out-hook)
 (hooke/add-hook #'ssh/handle-error update-err-hook)
+
+;; TODO: migration :type x => :source x
+(defn set-source [action source]
+  (assoc action :source source))
+
+(defn set-type [action type]
+  (assoc action :type type))
+
+
 
 (defn run-action [build act]
   (throw-if-not (map? act) "action must be a ref")

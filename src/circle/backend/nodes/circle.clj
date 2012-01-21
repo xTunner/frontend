@@ -68,6 +68,11 @@
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
                              (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb"])
+
+                             (remote-file/remote-file "/etc/rc.local" :local-file "pallet/rc.local" :mode "755" :no-versioning true)
+                             (remote-file/remote-file "/home/ubuntu/.bashrc" :local-file "pallet/bashrc" :mode "644" :no-versioning true)
+                             (remote-file/remote-file "/home/ubuntu/.bash_profile" :local-file "pallet/bash_profile" :mode "644" :no-versioning true)
+
                              (java/java :openjdk :jdk)
                              (git/git)
                              (exec-script/exec-script
@@ -76,7 +81,6 @@
                                 (sudo "REALLY_GEM_UPDATE_SYSTEM=true" gem update --system)))
 
                              (rvm/rvm)
-                             (circle-pallet/install-rvm-profile)
                              (circle-pallet/user-code
                               (source "~/.bashrc") ;; make sure RVM is loaded
                               (rvm install jruby)

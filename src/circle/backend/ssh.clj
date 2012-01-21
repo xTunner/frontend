@@ -1,10 +1,12 @@
 (ns circle.backend.ssh
   (:require [clj-ssh.ssh :as ssh])
   (:use [clojure.tools.logging :only (errorf)])
+  (:require [clj-time.core :as time])
   (:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.args :only (require-args)])
   (:use [circle.util.except :only (throwf)])
   (:use [arohner.utils :only (inspect)])
+  (:use [slingshot.slingshot :only (throw+)])
   (:use [circle.util.core :only (apply-map)]))
 
 (defn non-blocking-slurp
@@ -24,21 +26,43 @@
 (defn ^:dynamic handle-error [^String err-str])
 
 (defn process-exec
-  "Takes the exec map and processes it"
-  [[shell stdout-stream stderr-stream]]
+  "Takes the exec map and processes it
+
+Options:
+   :relative-timeout - a joda period. terminate if it has been longer than period since the last stdout/stderr
+   :absolute-timeout - a joda period. terminate if the command takes longer than period, regardless of output"
+  [[shell stdout-stream stderr-stream] options]
   (let [stdout (StringBuilder.)
         stderr (StringBuilder.)
+        start-time (time/now)
+        relative (-> options :relative-timeout)
+        absolute (-> options :absolute-timeout)
+        end-time (when absolute
+                   (time/plus start-time absolute))
+        last-output (atom nil)
+        reset-timeout (fn [] (swap! last-output (constantly (time/now))))
         slurp-streams (fn slurp-streams [& {:keys [final?]}]
                         (let [slurp-fn (if final?
                                          slurp
                                          non-blocking-slurp)]
                           (when-let [s (slurp-fn stdout-stream)]
                             (.append stdout s)
+                            (reset-timeout)
                             (handle-out s))
                           (when-let [s (slurp-fn stderr-stream)]
                             (.append stderr s)
+                            (reset-timeout)
                             (handle-error s))))]
     (while (= -1 (-> shell (.getExitStatus)))
+      (when (and end-time (time/after? (time/now) end-time))
+        (throw+ {:type ::ssh-timeout
+                 :timeout-type :absolute
+                 :timeout absolute}))
+      (when (and relative (time/after? (time/now) (time/plus (or @last-output start-time) relative)))
+        (throw+ {:type ::ssh-timeout
+                 :timeout-type :relative
+                 :timeout relative}))
+
       (slurp-streams)
       (Thread/sleep 100))
     (slurp-streams :final? true)
@@ -62,30 +86,39 @@
                              :strict-host-key-checking :no)]
     session))
 
-(defn with-session
-  "Calls f, a function of one argument, the ssh session, while connected."
-  [session-args f]
+(defn retry-connect
+  "Connect to the server, retrying on failure. Returns an ssh session"
+  [session-args]
   (try-try-again
    {:sleep 1000
     :tries 30
     :catch [com.jcraft.jsch.JSchException]
     :error-hook (fn [e] (errorf "caught %s" e))}
-   #(try
-      (let [s (session session-args)]
-        (ssh/with-connection s
-          (f s))))))
+   #(let [s (session session-args)]
+      (ssh/connect s)
+      s)))
+
+(defn with-session
+  "Calls f, a function of one argument, the ssh session, while connected."
+  [session-args f]
+  (let [session (retry-connect session-args)]
+    (ssh/with-connection session
+      (f session))))
+
+(defn remote-exec-session [session cmd opts]
+  (process-exec
+   (ssh/ssh-exec session
+                 cmd
+                 nil
+                 :stream
+                 {})
+   opts))
 
 (defn remote-exec
   "Node is a map containing the keys required by with-session"
-  [node ^String cmd]
+  [node ^String cmd & {:keys [timeout] :as opts}]
   (with-session node
-    (fn [ssh-session]
-      (process-exec
-       (ssh/ssh-exec ssh-session
-                     cmd
-                     nil
-                     :stream
-                     {})))))
+    #(remote-exec-session % cmd (or opts {}))))
 
 (defn scp
   "Scp one or more files. Direction is a keyword, either :to-remote
