@@ -1,43 +1,30 @@
-- if @get "inferred"
-  %h1
-    Your project is
-    %b
-      "inferred".
-  .row
-    .offset2.span8.alert-message.block-message.notice.larger-notice
+%h1.less-padding
+  Settings for #{@get 'project'}
 
-      We automatically infer your test settings based on what's in your repository.
-      Sometime this doesn't work, particularly if you have non-standard settings.
+.more-padding
+  %a{ href: @github_url() }
+    = @github_url()
 
-  .row
-    .larger-notice
 
-      If your project is broken, simply override the inference:
-      %br
-      %br
 
+.row
+  .span6.alert-message.block-message.warning
+    - if @is_inferred()
+      %span.highlight
+        Your project settings are automatically inferred!
+      We automatically infer test settings and how to set up the machine for your project.
+      If your tests aren't working, you may need to manually override our inferrence.
+    - else
+      %span.highlight
+        You have overridden our inferred settings!
+      You can return to inferred by deleting your commands.
+
+
+.row
+  .span5.indent-slightly
+    - if @is_inferred()
       %a.btn.primary.large{ href: "#setup" }
-        Change machine settings
-
-      %br
-      %br
-
-      %a.btn.primary.large{ href: "#tests" }
-        Change test settings
-
-
-- else
-  Your project is not inferred. Generally, this means you're doing something non-standard. If your project is broken, you should change:
-
-  %a{ href: "#setup" }
-    how the test machine is set up
-
-  or &emsp;
-  %a{ href: "#test" }<>
-    how the tests are run
-
-  \,
-
-  or
-  %a
-    go back to running tests manually.
+        Override automatic inferrence
+    - else
+      %button.btn.primary.large.span6#reset
+        Delete your commands and revert to inferred

@@ -21,7 +21,7 @@
 }
 
 
-$infocolor: #fecbc3;
+$infocolor: #FDF5D9;
 $inforadius: 10px;
 p.infoboxtext {
    background: $infocolor;
@@ -104,4 +104,26 @@ a#menutitle {
 
 .lower {
    padding-top: 100px;
+}
+
+.highlight {
+   font-weight: bold;
+   font-size: 18px;
+}
+
+// Put the URL closer to the heading
+h1.less-padding {
+   margin-bottom: 0px;
+}
+
+.more-padding {
+   padding-bottom: 20px;
+}
+
+.indent-slightly {
+   padding-left: 15px;
+}
+
+.larger {
+   font-size: 18px;
 }

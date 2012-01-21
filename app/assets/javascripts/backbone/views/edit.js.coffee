@@ -2,6 +2,7 @@ App.Views.EditProject = Backbone.View.extend
 
   events:
     "submit form": "save"
+    "click #reset": "reset"
 
 
   initialize: ->
@@ -27,11 +28,24 @@ App.Views.EditProject = Backbone.View.extend
     @model.save @model,
       success: ->
         btn.button 'reset'
+        window.location = "#settings"
       failure: ->
         btn.button 'failure!'
+        alert "Error in saving project. Please try again. If it persists, please contact help."
 
 
   el: '#el'
+
+  reset: (e) ->
+    @model.set
+      "setup": ""
+      "compile": ""
+      "test": ""
+      "extra": ""
+      "dependencies": ""
+
+    @save e
+    @render()
 
 
   render: ->

@@ -38,14 +38,10 @@ FactoryGirl.define do
       dependencies "echo do dependencies"
       compile "echo do compile"
       test "echo do test"
-      # extra is a new field, but no-one put anythingi n compile so we're fine.
+      # extra is a new field, but no-one put anything in compile so we're fine.
       extra "echo do extra"
-      inferred false
     end
 
-    factory :inferred_project do
-      inferred true
-    end
   end
 
 
