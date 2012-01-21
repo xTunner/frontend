@@ -6,6 +6,7 @@
   (:require [clj-time.core :as time])
   (:use [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
+  (:require [circle.model.project :as project])
   (:use [circle.logging :only (add-file-appender)])
   (:use [circle.util.except :only (throw-if throw-if-not)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
@@ -37,7 +38,26 @@
    (infof "removing build %s from in-progress" (build/build-name b))
    (alter in-progress disj b)
    (alter b assoc :stop_time (-> (time/now) .toDate)))
+  (let [project (build/get-project b)]
+    (when (and (-> @b :actions (count) (zero?))
+               (-> project :inferred))
+      (project/set-uninferrable project)))
   (build/update-mongo b))
+
+(defn should-run-build-message
+  "Returns a user-visible string describing why the build isn't being run, or nil when there are no errors"
+  [b]
+  (let [project (build/get-project b)]
+    (cond
+     (not (project/enabled? project)) (format "Project %s is not enabled, skipping" (-> project :vcs_url))
+     :else nil)))
+
+(defn should-run-build? [b]
+  (if-let [msg (should-run-build-message b)]
+    (dosync
+     (alter b assoc :error_message msg)
+     false)
+    true))
 
 (defn run-build [b & {:keys [cleanup-on-failure id]
                           :or {cleanup-on-failure true}}]
@@ -45,7 +65,8 @@
   (try
     (start b id)
     (build/with-build-log-ns b
-      (do-build* b)
+      (when (should-run-build? b)
+        (do-build* b))
       (finished b)
       (email/notify-build-results b))
     b

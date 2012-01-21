@@ -43,20 +43,20 @@
   (circle.backend.build.template/find "build") => truthy)
 
 (fact "build-from-config works"
-  (let [project test/circle-project
-        config (get-config-for-url (-> test/circle-project :vcs_url))
-        vcs_revision "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
-        b (build-from-config config test/circle-project
+  (let [project test/test-project
+        config (get-config-for-url (-> test/test-project :vcs_url))
+        vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
+        b (build-from-config config test/test-project
                              :vcs-revision vcs_revision
                              :job-name :build)]
     (ref? b) => true
-    (-> @b :vcs_revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"
+    (-> @b :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"
     (validate @b) => nil))
 
 (fact "build-from-json works"
-  (let [build (build-from-json test/circle-github-json)]
+  (let [build (build-from-json test/circle-dummy-project-json)]
     (ref? build) => true
-    (-> @build :vcs_revision) => "9538736fc7e853db8dac3a6d2f35d6dcad8ec917"))
+    (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
 
 (fact "build loads the node and slurps the ssh keys"
   ;; The circle.yml contains :private-key, :public-key. Verify they were slurped.

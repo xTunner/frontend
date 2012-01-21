@@ -7,6 +7,7 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.args :only (require-args)])
   (:use [clojure.string :only (split)])
+  (:require [circle.backend.github-url :as github])
   (:require fs)
   (:require [circle.sh :as sh]))
 
@@ -28,7 +29,10 @@
   "Infer the project name from the URL"
   [url]
   {:pre [url]}
-  (last (clojure.string/split url #"/")))
+  (if (github/github? url)
+    (let [{:keys [username project]} (github/parse url)]
+      (format "%s/%s" username project))
+    (last (clojure.string/split url #"/"))))
 
 (defn repo-exists? [path]
   (let [git-dir (fs/join path ".git")]
@@ -83,7 +87,7 @@
     ;; with-repo-lock.
     (fs/mkdirs path)
     (git-fn* (sh/q
-              (git clone ~url "."))
+              (git clone --depth=1 ~url "."))
              :ssh-key
              ssh-key
              :repo path)))

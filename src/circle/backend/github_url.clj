@@ -85,6 +85,6 @@
 (defn parse
   "Returns the username and project from a github url"
   [url]
-  (let [resp (re-find #"https://github.com/([^/]+)/([^/]+)" url)]
+  (let [resp (re-find #"https://github.com/([^/]+)/([^/]+)" (->top url))]
     {:username (get resp 1)
      :project (get resp 2)}))

@@ -42,10 +42,13 @@
   (ensure-ip-addr build)
   (apply-map remote-bash (-> @build :node) body opts))
 
-(defn action-name [cmd]
-  (if (and (coll? cmd) (not (coll? (first cmd))))
-    (str/join " " cmd)
-    (str cmd)))
+(defn action-name [body]
+
+  (if (coll? body)
+    (->> body
+         (map #(str/join " " %))
+         (str/join "; "))
+    (str body)))
 
 (defn bash
   "Returns a new action that executes bash on the host. Body is a
@@ -61,5 +64,6 @@
                                    result (remote-bash-build build body :environment environment :pwd pwd)]
                                (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
                                  (action/abort! build (str body " returned exit code " (-> result :exit))))
+                               ;; only add exit code, :out and :err are handled by hooking ssh/handle-out and ssh/handle-err in action.clj
                                (action/add-action-result (select-keys result [:exit])))))))
 

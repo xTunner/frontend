@@ -108,7 +108,7 @@
   [{:keys [out err exit successful continue]
       :or {successful true
            continue true}
-      :as args}]
+    :as args}]
   (throw-if-not *current-action* "no action to update")
   (dosync
    (when out

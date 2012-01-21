@@ -276,7 +276,7 @@
   [url & {:keys [job-name vcs-revision]}]
   (let [project (project/get-by-url! url)
         config (get-config-for-url url :vcs_revision vcs-revision)]
-    (if (and config project)
+    (if (and config project (not (-> project :inferred)))
       (build-from-config config project
                          :vcs-revision vcs-revision
                          :job-name job-name)

@@ -142,6 +142,10 @@
   [build]
   (symbol (str "circle.build." (project-name build) "-" (-> @build :build_num))))
 
+(defn get-project [build]
+  {:post [%]}
+  (project/get-by-id (-> @build :_project_id)))
+
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 
 (defn ssh-build-log

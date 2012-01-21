@@ -1,0 +1,10 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    dm-observer (1.1.0)
+      dm-core (~> 1.1.0)
+    dm-rails (1.1.0)
+      actionpack (~> 3.0.4)
+      dm-active_model (~> 1.1.0)
+      dm-core (~> 1.1.0)
+      railties (~> 3.0.4)
