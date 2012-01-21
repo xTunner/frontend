@@ -72,11 +72,18 @@
 
 (defn abort!
   "Stop the build."
-  [build message]
+  [build message ]
   (errorf "Aborting build: %s" message)
   (add-output message :column :err)
   (dosync
    (alter build assoc :continue? false :failed true)))
+
+(defn abort-timeout!
+  "Abort the build due to a command timeout"
+  [build message]
+  (dosync
+   (abort! build message)
+   (alter build assoc :timedout true)))
 
 (defn add-start-time
   []

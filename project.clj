@@ -73,11 +73,12 @@
                  [clj-yaml "0.3.1"]
                  [org.yaml/snakeyaml "1.9"] ;; clj-yaml 0.3.1 depends on snakeyaml 1.5, but jruby requires a later version
                  [fs "0.9.0"]
-                 [clj-time "0.3.1"]
+                 [clj-time "0.3.4"]
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
                  [com.cemerick/pomegranate "0.0.2"]
+                 [slingshot "0.10.1"]
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
