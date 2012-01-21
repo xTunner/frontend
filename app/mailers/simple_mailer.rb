@@ -11,7 +11,7 @@ class SimpleMailer < ActionMailer::Base
 
     @build = Build.find(build_id)
     @project = @build.the_project
-    @users = @project.users.select {|u| u.sent_first_build_email}
+    @users = @project.users# .select {|u| u.sent_first_build_email}
     @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
 
     # Don't fail when clojure tests have no users
@@ -25,7 +25,7 @@ class SimpleMailer < ActionMailer::Base
 
     subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{@build.failed ? "failed" : "succeeded"}"
 
-    if @emails.count > 0
+    if @emails.length > 0
       if @build.failed
         @logs = @build.logs
         @failing_log = @logs.last
@@ -35,7 +35,7 @@ class SimpleMailer < ActionMailer::Base
         end
         mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
       else
-        mail(:to => [], :subject => subject, :template_name => "success").deliver
+        mail(:to => @emails, :subject => subject, :template_name => "success").deliver
       end
     end
   end
