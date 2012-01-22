@@ -16,7 +16,6 @@
          (catch Exception e#
            (println "1")
            (airbrake/airbrake :exception e#
-                              :force true
                               :data {:cmd (str (quote ~body))})))
        (catch Exception e#
          (.printStackTrace e#)

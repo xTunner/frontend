@@ -11,7 +11,7 @@ class SimpleMailer < ActionMailer::Base
 
     @build = Build.find(build_id)
     @project = @build.the_project
-    @users = @project.users
+    @users = @project.users# .select {|u| u.sent_first_build_email}
     @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
 
     # Don't fail when clojure tests have no users
@@ -25,17 +25,36 @@ class SimpleMailer < ActionMailer::Base
 
     subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{@build.failed ? "failed" : "succeeded"}"
 
-    if @build.failed
-      @logs = @build.logs
-      @failing_log = @logs.last
-      @other_logs = @logs[0..-2]
-      if @failing_log and @failing_log.success?
-        logger.error "Failing log didn't fail: #{@failing_log.to_s}"
+    if @emails.length > 0
+      if @build.failed
+        @logs = @build.logs
+        @failing_log = @logs.last
+        @other_logs = @logs[0..-2]
+        if @failing_log and @failing_log.success?
+          logger.error "Failing log didn't fail: #{@failing_log.to_s}"
+        end
+        mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
+      else
+        mail(:to => @emails, :subject => subject, :template_name => "success").deliver
       end
-      mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
-    else
-      mail(:to => @emails, :subject => subject, :template_name => "success").deliver
     end
+  end
+
+  # send the first email to user, if necessary
+  def maybe_send_first_email (user)
+    if not user.send_first_build_email and user.build_in_every_project?
+      send_first_email(user)
+    end
+  end
+
+  def send_first_email(user)
+    @projects = user.projects
+
+    mail(:to => user.email,
+         :subject => "All your projects have built",
+         :template_name => "first_build").deliver
+    user.sent_first_build_email = true
+    user.save!
   end
 
   def build_error_email(build_id, error)

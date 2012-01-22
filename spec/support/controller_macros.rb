@@ -3,7 +3,7 @@ module ControllerMacros
     before(:each) do
       @request.env["devise.mapping"] = Devise.mappings[:user]
       # If this is a problem, lookup the user using FactoryGirl.find(:user)
-      user = Factory(:user)
+      user = FactoryGirl.create(:user)
       sign_in user
     end
   end
@@ -12,7 +12,7 @@ module ControllerMacros
     before(:each) do
       @request.env["devise.mapping"] = Devise.mappings[:user]
       # If this is a problem, lookup the user using FactoryGirl.find(:user)
-      user = Factory(:admin_user)
+      user = FactoryGirl.create(:admin_user)
       sign_in user
     end
   end

@@ -27,6 +27,7 @@ gem 'mongoid_session_store'
 gem 'switch_user'
 gem 'pusher'
 gem 'kaminari'
+gem 'rails-backbone'
 
 # In test, no mail gets sent anyway, but let's not mess with the email addresses
 gem 'mail_safe', :groups => [ :development, :staging ]
@@ -37,6 +38,8 @@ group :assets do
   gem 'sass-rails',   '~> 3.1.4'
   gem 'coffee-rails', '~> 3.1.1'
   gem 'uglifier', '>= 1.0.3'
+  gem 'haml_coffee_assets'
+
   # The less version requires v8, which doesn't work with JRuby. See
   # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
   # for deciding the correct option.

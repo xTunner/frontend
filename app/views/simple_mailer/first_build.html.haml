@@ -1,0 +1,21 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+  %body
+    %p
+      Congratulations, Circle has now built all of your projects. You can see the results below
+
+    %p
+      %table#projects
+        %thead
+          %tr
+            %th Project
+            %th Result
+        %tbody
+          - @projects.each do |p|
+            %tr
+              %td
+                = link_to(p.github_project_name, github_project_url(p))
+              %td
+                = if p.latest_build; p.latest_build.status end
