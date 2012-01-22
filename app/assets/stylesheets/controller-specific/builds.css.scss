@@ -37,3 +37,11 @@
    font-weight: bold;
    font-size: 18px;
 }
+
+.output > span.err {
+   background-color: #ffdddd;
+}
+
+.output > span.out {
+   background-color: #ddffdd;
+}

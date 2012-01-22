@@ -13,4 +13,29 @@ module BuildsHelper
   def action_log_style(log)
     log.success? ? "minimize" : ""
   end
+
+
+  def action_log_output(logs)
+    return "" if logs.length == 0
+
+    buf = ""
+
+    type = nil
+    logs.each do |l|
+
+      # maybe close the last tag and open a new one
+      if type != l['type']
+        buf << "</span>"
+        type = l['type']
+        buf << "<span class='#{type}'>"
+      end
+
+
+      buf << "#{l['message']}"
+    end
+
+    # There should always be a tag open now
+    buf << "</span>"
+    buf
+  end
 end

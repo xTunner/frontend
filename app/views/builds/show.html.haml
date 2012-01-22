@@ -14,18 +14,22 @@
 
       .detail{ :class => action_log_style(l) }
         - if l["out"]
-          %table
-            %thead
-              %tr
-                %th Time
-                %th stdout/stderr
-            %tbody
-              - l["out"].each do |o|
-                - if o["message"] != ""
-                  %tr
-                    %td
-                      = as_action_timestamp(o["time"])
-                    %td
-                      %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
-                        %pre
-                          = o["message"]
+          %pre.output
+            = preserve do
+              !~ action_log_output(l.out)
+
+  -#%table
+    %thead
+      %tr
+        %th Time
+        %th stdout/stderr
+    %tbody
+      - l["out"].each do |o|
+        - if o["message"] != ""
+          %tr
+            %td
+              = as_action_timestamp(o["time"])
+            %td
+              %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
+                %pre
+                  = o["message"]
