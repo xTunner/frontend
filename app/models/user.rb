@@ -29,10 +29,10 @@ class User
   field :sent_first_build_email, :default => false
 
   def known_email
-    if email.include? "@"
-      email
-    else
+    if is_guest?
       "!!<#{fetched_email}>!!"
+    else
+      email
     end
   end
 
@@ -53,6 +53,10 @@ class User
     end
 
     return builds.sort_by! { |b| b.start_time }.reverse.slice(0, 20)
+  end
+
+  def is_guest?
+    !email.include?("@")
   end
 
 

@@ -11,8 +11,8 @@ class SimpleMailer < ActionMailer::Base
 
     @build = Build.find(build_id)
     @project = @build.the_project
-    @users = @project.users# .select {|u| u.sent_first_build_email}
-    @emails = @users.map { |u| u.email }.find_all { |e| e.include? "@" }
+    @users = @project.users.find_all { |u| !u.is_guest? }
+    @emails = @users.map { |u| u.email }
 
     # Don't fail when clojure tests have no users
     if Rails.env.test? && @emails == []
