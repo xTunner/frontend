@@ -56,7 +56,7 @@
 
 (def build-dissoc-keys
   ;; Keys on build that shouldn't go into mongo, for whatever reason
-  [:action-results])
+  [:actions :action-results])
 
 (defn insert! [b]
   (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
