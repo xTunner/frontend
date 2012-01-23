@@ -19,9 +19,9 @@ describe ApplicationHelper do
     end
   end
 
-  describe "revision_link" do
+  describe "revision_link_to" do
     it "should work for a simple url" do
-      revision_link("https://github.com/arohner/CircleCI", "b833cd06910ee92b6f9327261bcf4bd8f97200a8").should == '<a href="https://github.com/arohner/CircleCI/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8">b833cd069</a>'
+      revision_link_to("https://github.com/arohner/CircleCI", "b833cd06910ee92b6f9327261bcf4bd8f97200a8").should == '<a href="https://github.com/arohner/CircleCI/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8">b833cd069</a>'
     end
   end
 
