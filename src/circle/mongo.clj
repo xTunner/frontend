@@ -2,31 +2,54 @@
   (:require [robert.hooke :as hook])
   (:require [clojure.string :as str])
   (:require [somnium.congomongo :as mongo])
+  (:use [circle.util.core :only (defn-once)])
   (:use [circle.util.map :only (map-keys)]))
 
 (def warn-chars #{\? \!})
 
+(defn to-db-translate-name [col-name]
+  (-> col-name (name) (str/replace #"-" "_") (keyword)))
+
 (defn to-db-translate [row]
   (map-keys (fn [col]
-              (-> col (name) (str/replace #"-" "_") (keyword))) row))
+              (let [new-col (to-db-translate-name col)]
+                (when (and (not= col new-col) (not (nil? (get row new-col))))
+                  (println "to-db-translate:" row "new-col" new-col "exists")
+                  (assert false))
+
+                new-col)) row))
+
+(defn from-db-translate-name [col-name]
+  (-> col-name (name) (str/replace #"^.+_" "-") (keyword)))
 
 (defn from-db-translate [row]
+  (println "from-db-translate:" row)
   (map-keys (fn [col]
-              (-> col (name) (str/replace #"_" "-") (keyword))) row))
+              (let [new-col (from-db-translate-name col)]
+                (assert (nil? (get row new-col)))
+                new-col)) row))
 
 ;; fetch-by-id and fetch-one are implemented in terms of fetch, so we only need to hook this.
-(hook/add-hook mongo/fetch (fn [f & args]
-                             (->> (apply f args)
-                                  (map from-db-translate))))
 
-;; (hook/add-hook mongo/insert! (fn [f & args]
-;;                                (let [args (update-in (into [] args) [1] to-db-translate)]
-;;                                  (apply f args))))
+(defn-once init
+  (hook/add-hook #'mongo/fetch (fn [f & args]
+                                 (let [[coll kw-args] args
+                                       kw-args (apply hash-map kw-args)]
+                                   (-> kw-args
+                                       (update-in [:where] to-db-translate))
+                                   )
+                                 (->> (apply f args)
+                                      (map from-db-translate))))
 
-;; (hook/add-hook mongo/update! (fn [f & args]
-;;                                (let [args (update-in (into [] args) [2] to-db-translate)]
-;;                                  (apply f args))))
+  (hook/add-hook #'mongo/insert! (fn [f & args]
+                                   (let [args (update-in (into [] args) [1] to-db-translate)]
+                                     (apply f args))))
 
+  (hook/add-hook #'mongo/update! (fn [f & args]
+                                   (let [args (update-in (into [] args) [2] to-db-translate)]
+                                     (apply f args))))
 
-
-
+  (hook/add-hook #'mongo/add-index! (fn [f & args]
+                                      (let [args (update-in (into [] args) [1] #(map to-db-translate-name %))]
+                                        (println "mongo/add-index" args)
+                                        (apply f args)))))
