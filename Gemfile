@@ -16,7 +16,7 @@ end
 gem 'jquery-rails'
 gem "rspec-rails", ">= 2.7.0", :groups => [:development, :test]
 gem "bson_ext", "~> 1.4"
-gem "mongoid", "~> 2.3"
+gem "mongoid", "~> 2.4"
 gem "devise", ">= 1.4.9"
 
 gem "simple_form"
