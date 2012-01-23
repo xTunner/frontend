@@ -56,3 +56,19 @@
     (-> (MessageDigest/getInstance "SHA-1")
         (.digest s)
         (byte-array-to-hex-string))))
+
+(defmacro defn-once
+  "Defs a function of no arguments that will execute body only once,
+  the first time the function is called. On all future calls, returns
+  the cached return value from the first run.
+
+ ex:
+  (defn-once foo
+     (bar)
+     (time/now))"
+  [name & body]
+  `(do
+     (defonce name-delay#
+       (delay (do ~@body)))
+     (defn ~name []
+       @name-delay#)))
