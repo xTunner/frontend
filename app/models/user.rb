@@ -43,6 +43,18 @@ class User
     created_at || Time.new(2011, 12, 14, 22, 02, 15)
   end
 
+  # Latest builds for a project the user is a member of
+  def latest_project_builds
+    # TECHINCAL_DEBT: fucking hell, is there any way to do this that isn't really really expensive?
+    ps = projects
+    builds = []
+    ps.each do |p|
+      builds += p.recent_builds(30)
+    end
+
+    return builds.sort_by! { |b| b.start_time }.reverse.slice(0, 20)
+  end
+
 
   # https://github.com/plataformatec/devise/wiki/How-To:-Allow-users-to-edit-their-account-without-providing-a-password
   # Guest users start with a blank password, but we ask them to update them

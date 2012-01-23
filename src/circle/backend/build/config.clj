@@ -62,7 +62,7 @@
 
 (defn spec-commands [spec]
   (->> spec
-       ((juxt :setup :dependencies :compile :test))
+       ((juxt :setup :dependencies :compile :test :extra))
        (mapcat (fn [line]
                  (str/split (or line "") #"\r\n")))
        (remove empty?)))

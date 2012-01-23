@@ -1,39 +1,71 @@
-.container
-  .row
-    .alert-message.block-message.notice.span8.offset3
-
-      We are setting up your projects for you, focusing on standard frameworks
-      like Rails, Node, Clojure, etc. If you have a non-standard project, you
-      can set it up manually using the 'edit' link.
-      %br
-      %br
-
-      If you have any problems, questions, feedback or comment, please message
-      us via the Support button below, or contact us directly:
-      %ul.contact
-        %li
-          (415) 341-2432
-        %li
-          = mail_to "paul@circleci.com"
-
-  %table#projects
-    %thead
-      %tr
-        %th Last Status
-        %th Project
-        %th Latest build
-        %th Edit
-    %tbody
-      - @projects.each do |project|
-        - build = project.latest_build
+.container-fluid
+  .sidebar.well
+    %table.condensed-table
+      %thead
         %tr
-          %td
-            - if build
-              != bootstrap_status project.latest_build
-          %td
-            = link_to(project.github_project_name, github_project_path(project))
-          %td
-            - if build
-              = build_link_to (project.latest_build)
-          %td
-            = link_to "edit", github_project_edit_path(project)
+          %th
+            Projects
+      %tbody
+        - @projects.each do |p|
+          %tr
+            %td
+              = project_link_to p
+
+            %td.build_column
+              - b = p.latest_build
+              - if b
+                != bootstrap_status b, build_link_to(b, p)
+
+
+            %td.icons
+              = link_to 'edit', github_project_edit_path(p)
+
+  .content
+    .row
+      %h1
+        Latest builds
+
+      %table#projects
+        %thead
+          %tr
+            %th Project
+            %th #
+            %th Revision
+            %th Author
+            %th Log
+            %th Started
+            %th Time taken
+            %th Last Status
+            %th Edit
+        %tbody
+          - @recent_builds.each do |build|
+            - project = build.project
+            %tr
+              %td
+                = link_to(project.github_project_name, github_project_path(project))
+
+              %td
+                = build_link_to build
+
+              %td
+                = revision_link_to build.vcs_url, build.vcs_revision, build.branch
+
+              %td
+                = mail_to build.author_email, build.author_name
+
+              %td
+                = log_link_to(build.subject, build.body, 50)
+
+              %td
+                = as_commit_time build.start_time
+
+              %td
+                = as_length_of_build build.start_time, build.stop_time
+                - if build.status == :running
+                  (still running)
+
+              %td
+                != bootstrap_status build
+
+              %td
+                = link_to "edit", github_project_edit_path(project)

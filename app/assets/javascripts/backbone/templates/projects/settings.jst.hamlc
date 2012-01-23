@@ -1,0 +1,30 @@
+%h1.less-padding
+  Settings for #{@get 'project'}
+
+.more-padding
+  %a{ href: @github_url() }
+    = @github_url()
+
+
+
+.row
+  .span6.alert-message.block-message.warning
+    - if @is_inferred()
+      %span.highlight
+        Your project settings are automatically inferred!
+      We automatically infer test settings and how to set up the machine for your project.
+      If your tests aren't working, you may need to manually override our inferrence.
+    - else
+      %span.highlight
+        You have overridden our inferred settings!
+      You can return to inferred by deleting your commands.
+
+
+.row
+  .span5.indent-slightly
+    - if @is_inferred()
+      %a.btn.primary.large{ href: "#setup" }
+        Override automatic inferrence
+    - else
+      %button.btn.primary.large.span6#reset
+        Delete your commands and revert to inferred

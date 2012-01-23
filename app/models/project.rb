@@ -10,17 +10,26 @@ class Project
   field :ssh_public_key
   field :visible, :type => Boolean, :default => false
 
-  field :setup, :type => String, :default => nil
-  field :dependencies, :type => String, :default => nil
-  field :compile, :type => String, :default => nil
-  field :test, :type => String, :default => nil
+  # setup
+  # TECHNICAL_DEBT: this is actually the "pre-setup" field
+  field :setup, :type => String, :default => ""
+
+  # TECHNICAL_DEBT: this is actually marked "setup" on the form
+  field :dependencies, :type => String, :default => ""
+
+  # TECHNICAL_DEBT: remove this, it will soon be unused
+  field :compile, :type => String, :default => ""
+
+  # test settings
+  field :test, :type => String, :default => ""
+  field :extra, :type => String, :default => ""
+
 
 
   has_and_belongs_to_many :users
 #  has_many :builds
-  has_many :specs
 
-  attr_accessible :vcs_url, :setup, :dependencies, :compile, :test
+  attr_accessible :setup, :dependencies, :compile, :test, :extra
 
   def to_param
     github_project_name
@@ -36,7 +45,8 @@ class Project
     self.from_url(url)
   end
 
-  # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the clojure side.
+  # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the
+  # clojure side. That would kill basically all the code that follows!
   def recent_builds(limit=10)
     Build.where(:vcs_url => vcs_url).order_by([[:start_time, :desc]]).limit(limit)
   end
@@ -61,4 +71,18 @@ class Project
     # For now, just read circle.yml for everyone, and see what happens.
     File.read("#{File.dirname(__FILE__)}/../../circle.yml")
   end
+
+  def as_json(options={})
+    super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url, :_id])
+  end
+
+  def self.wait_for_project(url, options={})
+    start_time = Time.now
+    while true do
+      (Time.now - start_time).should < 1.seconds
+      p = Project.from_url url
+      return p if (p[options.keys[0]] == options.values[0])
+    end
+  end
+
 end

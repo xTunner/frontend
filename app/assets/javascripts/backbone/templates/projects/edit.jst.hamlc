@@ -1,0 +1,16 @@
+.container-fluid
+  .sidebar
+    .well
+      %a#menutitle{ href: "#settings" }
+        Test settings
+      %ul.tree
+        %li
+          %a{ href: "#setup" } Test machine
+        %li.last
+          %a{ href: "#tests" } Test suite
+          -#        %li
+          -#          %a{ href: "#hooks" } Hooks
+
+
+  .content
+    #el-content

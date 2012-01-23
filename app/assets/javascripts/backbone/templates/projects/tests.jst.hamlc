@@ -1,0 +1,67 @@
+%h1 Set your tests up
+
+%form.edit_spec
+  %fieldset.form-stacked
+
+    .row
+      .span8.clearfix
+        %label
+          Test commands
+        .input
+          %textarea.span8#test{ cols: 40, name: "test", rows: 7, placeholder: "Enter any text to replace our inferred commands" }
+            = @get "test"
+
+
+
+      .span4
+        %p.short.infoboxtext
+          %span.major
+            These
+            %b test commands
+            run
+            %b instead of
+            our inferred test commands. If our inferred commands are not to your liking, replace them here.
+
+          %br
+          %br
+
+          %span.minor
+            As usual, all commands are arbitrary bash, and run on Ubuntu 11.04.
+        .infobox.short
+
+    %br
+    %br
+
+    .row
+      .span8.clearfix
+        %label
+          Extra test commands
+        .input
+          %textarea.span8#extra{ cols: 40, name: "extra", rows: 7 }
+            = @get "extra"
+
+
+      .span4
+        %p.long.infoboxtext
+          %span.major
+            %b Extra test commands
+            run
+            %b after
+            our inferred commands. Add extra tests that we haven't thought of yet.
+
+          %br
+          %br
+
+          %span.minor
+            If there are truly tests we haven't thought of, send us feedback.
+
+          %br
+          %br
+            We're adding post-test hooks, like alerting hipchat, but you can put them here for now using
+            <code>curl</code>
+            if you like.
+        .infobox.long
+
+    .row
+      .offset1
+        %input.btn.primary.span5.large{ name: "commit", type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests..." }

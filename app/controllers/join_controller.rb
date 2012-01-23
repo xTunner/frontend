@@ -75,7 +75,9 @@ class JoinController < ApplicationController
       next if not allowed
 
       if not project
-        project = Project.create! :name => projectname, :vcs_url => gh_url
+        project = Project.new
+        project.vcs_url = gh_url
+        project.save
       end
 
       project.users << current_or_guest_user

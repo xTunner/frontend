@@ -1,6 +1,8 @@
 (ns circle.ruby
   (:refer-clojure :exclude [eval send methods])
   (:import org.jruby.RubySymbol)
+  (:import java.io.PrintWriter)
+  (:import java.io.StringWriter)
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.except :only (throw-if-not)])
   (:require fs))
@@ -60,6 +62,7 @@
   (ensure-runtime)
   (-> runtime deref (.get)))
 
+;; Each of these must return an IRubyObject.
 (defmulti ->ruby
   "Convert Ruby data to Clojure data"
   class)
@@ -86,9 +89,13 @@
   org.jruby.exceptions.RaiseException [e]
   (.getException e))
 
+;; Exceptions aren't IRubyObjects
 (defmethod ->ruby
   java.lang.Exception [e]
-  e)
+  (let [w (StringWriter.)
+        pw (PrintWriter. w)]
+    (.printStackTrace e pw)
+    (.toString w)))
 
 (defmethod ->ruby
   clojure.lang.Sequential [v]
@@ -130,6 +137,10 @@
 (defmethod ->ruby
   nil [n]
   (-> (ruby) (.getNil)))
+
+(defmethod ->ruby
+  :default [val]
+  (org.jruby.RubyString/newString (ruby) (format "Uncastable values: %s" val)))
 
 (def sample-objectid-string "4ee6911fe4b05e6a4d3605fe")
 

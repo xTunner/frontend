@@ -14,7 +14,7 @@
        (map (fn [s] {s 1})))))
 
 (defn all-spec-lines []
-  (->> (mongo/fetch :specs)
+  (->> (mongo/fetch :projects)
        (mapcat spec-distinct-lines)))
 
 (defn spec-histogram
@@ -29,28 +29,27 @@
 (defn projects-with
   "Returns a list of project urls that contain spec lines that match the regex"
   [re]
-  (->> (mongo/fetch :specs)
-       (map (fn [spec]
-              (let [project (mongo/fetch-one :projects :where {:_id (-> spec :project_id)})]
-                {:project (-> project :vcs_url)
-                 :lines (->> spec
-                             (spec-distinct-lines )
-                             (mapcat keys)
-                             (filter #(re-find re %)))})))
+  (->> (mongo/fetch :projects)
+       (map (fn [project]
+              {:project (-> project :vcs_url)
+               :lines (->> project
+                           (spec-distinct-lines)
+                           (mapcat keys)
+                           (filter #(re-find re %)))}))
        (filter (fn [{:keys [project lines]}]
                  (->> lines
                       (seq)
                       (boolean))))))
 
-(defn num-pure-inferred-projects
-  "Returns a list of projects purely inferred, and several builds"
-  []
-  (let [spec-project-ids (->> (mongo/fetch :specs) (map :project_id) (into #{}))
-        project-ids (->> (mongo/fetch :projects)
-                          (map :_id)
-                          (into #{}))
-        pure-inferred (set/difference project-ids spec-project-ids)]
-    (println (count pure-inferred) (first pure-inferred))
-    (->> pure-inferred
-         (map #(mongo/fetch-one :projects :where {:_id %}))
-         (map :vcs_url))))
+;; (defn num-pure-inferred-projects
+;;   "Returns a list of projects purely inferred, and several builds"
+;;   []
+;;   (let [
+;;         project-ids (->> (mongo/fetch :projects)
+;;                           (map :_id)
+;;                           (into #{}))
+;;         pure-inferred (set/difference project-ids spec-project-ids)]
+;;     (println (count pure-inferred) (first pure-inferred))
+;;     (->> pure-inferred
+;;          (map #(mongo/fetch-one :projects :where {:_id %}))
+;;          (map :vcs_url))))

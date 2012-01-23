@@ -1,6 +1,6 @@
 .container-fluid
   On github:
-  = revision_link(@build.vcs_url, @build.vcs_revision)
+  = revision_link_to @build.vcs_url, @build.vcs_revision
   - @logs.each do |l|
     -# wrapper allows the header and detail be siblings, for the JS
     .wrapper
@@ -14,11 +14,11 @@
 
       .detail{ :class => action_log_style(l) }
         - if l["out"]
-          %table
-            %thead
-              %tr
-                %th Time
-                %th stdout/stderr
+          %pre.output
+            = preserve do
+              !~ action_log_output(l.out)
+
+          -#%table
             %tbody
               - l["out"].each do |o|
                 - if o["message"] != ""
@@ -27,5 +27,5 @@
                       = as_action_timestamp(o["time"])
                     %td
                       %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
-                        %pre
-                          = o["message"]
+                    %pre
+                      !~ action_log_output([ o["message"] ] )
