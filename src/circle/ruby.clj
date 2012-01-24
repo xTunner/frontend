@@ -157,6 +157,11 @@ Note that rspec will run in whatever RAILS_ENV you started in, so you
 require 'rubygems'
 require 'rspec/core/rake_task'
 
+# http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console
+puts 'Reloading factories'
+FactoryGirl.factories.clear
+FactoryGirl.find_definitions
+
 RSpec::Core::Runner.run(%s)
 " (vec subdirs))]
     (eval command)))
