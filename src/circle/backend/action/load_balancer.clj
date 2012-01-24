@@ -5,7 +5,7 @@
   (:use [clojure.tools.logging :only (infof)])
   (:use [circle.backend.action :only (defaction abort!)])
   (:use [circle.util.except :only (throw-if-not)])
-  (:use [circle.backend.build :only (build-log)])
+  (:use [circle.model.build :only (build-log)])
   (:use [robert.bruce :only (try-try-again)])
   (:use [circle.api.client.system :only (graceful-shutdown)])
   (:require [circle.backend.load-balancer :as lb])

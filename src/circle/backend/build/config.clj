@@ -3,7 +3,7 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.ssh :as ssh])
   (:require [clojure.string :as str])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [circle.model.project :as project])
   (:require [circle.model.spec :as spec])
   (:require [circle.backend.action :as action])

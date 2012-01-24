@@ -1,6 +1,6 @@
 (ns circle.workers.test-github
   (:use circle.backend.build.test-utils)
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:use midje.sweet)
   (:use circle.workers.github))
 

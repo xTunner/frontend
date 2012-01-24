@@ -4,7 +4,7 @@
   (:use [circle.backend.action :only (defaction)])
   (:use midje.sweet)
   (:use [circle.backend.build.run :only (run-build)])
-  (:use [circle.backend.build :only (successful?)])
+  (:use [circle.model.build :only (successful?)])
   (:use circle.backend.build.test-utils))
 
 (defaction successful-action [act-name]

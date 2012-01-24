@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:require [circle.backend.action.bash :as bash])
   (:require [circle.sh :as sh])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])
   (:require [clj-time.core :as time])

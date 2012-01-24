@@ -2,7 +2,7 @@
   (:require [clojure.string :as str])
   (:use midje.sweet)
   (:use circle.backend.build.config)
-  (:use [circle.backend.build :only (checkout-dir valid? validate successful?)])
+  (:use [circle.model.build :only (checkout-dir valid? validate successful?)])
   (:use [circle.backend.action.bash :only (bash remote-bash-build)])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])

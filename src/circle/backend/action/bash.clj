@@ -4,7 +4,7 @@
   (:require [clojure.string :as str])
   (:require fs)
   (:use [circle.util.core :only (apply-map)])
-  (:use [circle.backend.build :only (log-ns build-log build-log-error checkout-dir)])
+  (:use [circle.model.build :only (log-ns build-log build-log-error checkout-dir)])
   (:use [slingshot.slingshot :only (try+)])
   (:use [circle.util.time :only (period-to-s)])
   (:require [circle.sh :as sh])

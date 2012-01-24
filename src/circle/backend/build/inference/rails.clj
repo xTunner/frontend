@@ -1,7 +1,7 @@
 (ns circle.backend.build.inference.rails
   (:use [clojure.core.incubator :only (-?>)])
   (:require [clojure.string :as str])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [clj-yaml.core])
   (:require [circle.sh :as sh])
   (:require fs)

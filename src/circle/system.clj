@@ -1,6 +1,6 @@
 (ns circle.system
   (:require [circle.backend.build.run :as run])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [circle.backend.ec2 :as ec2])
   (:use [clojure.tools.logging :only (infof)]))
 
