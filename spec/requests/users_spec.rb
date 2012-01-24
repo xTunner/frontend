@@ -14,7 +14,7 @@ describe "Users" do
       click_button "Sign in"
 
       page.should have_content("Signed in successfully.")
-      page.should have_content("We are setting up your projects for you")
+      page.should have_content("Latest builds")
     end
   end
 

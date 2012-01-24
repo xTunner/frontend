@@ -21,7 +21,7 @@ jobs:
       - lein deps
       - lein midje:
           environment:
-            CIRCLE_ENV: "test"
+            RAILS_ENV: "test"
       - bundle exec rspec spec:
           environment:
             DISPLAY: ":99"

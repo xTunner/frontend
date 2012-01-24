@@ -1,7 +1,7 @@
 ---
 classes_dir: src
 libs_dir: jars/
-public: ./public/assets
+public: ./public
 jruby_max_runtimes: 1
 
 extensions:
