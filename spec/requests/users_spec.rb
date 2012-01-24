@@ -76,7 +76,7 @@ describe "Users" do
       URI.parse(current_url).path.should == root_path
       page.should_not have_content("guest")
       page.should have_content(@user.email)
-      page.should have_content "We are setting up your projects for you"
+      page.should have_content "Latest builds"
       page.should have_content("circle-dummy-project")
       page.should have_content("edit")
     end
