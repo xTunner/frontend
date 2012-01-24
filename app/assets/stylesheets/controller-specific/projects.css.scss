@@ -68,7 +68,7 @@ span.minor {
 // Trees and lists
 ul.tree, ul.tree ul {
    list-style-type: none;
-//   background: url(projects/vline.png) repeat-y;
+//   background: image-url("projects/vline.png") repeat-y;
    margin: 0;
    padding: 0;
 }
@@ -80,7 +80,7 @@ ul.tree ul {
 ul.tree li {
    padding: 0 12px;
    line-height: 20px;
-   background: url(projects/node.png) no-repeat;
+   background: image-url("projects/node.png") no-repeat;
    color: #369;
    font-weight: bold;
    margin-left: 10px;
@@ -88,7 +88,7 @@ ul.tree li {
 }
 
 ul.tree li.last {
-   background: url(projects/lastnode.png) no-repeat;
+   background: image-url("projects/lastnode.png") no-repeat;
 }
 
 a#menutitle {

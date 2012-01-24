@@ -9,13 +9,14 @@ MongoidTest::Application.configure do
   config.action_controller.perform_caching = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_assets = false
+  # TODO: move this back to false after setting nginx to serve the assets.
+  config.serve_static_assets = true
 
   # Compress JavaScripts and CSS
   config.assets.compress = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Generate digests for assets URLs
   config.assets.digest = true
@@ -42,8 +43,30 @@ MongoidTest::Application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
+
+  # TECHNICAL_DEBT: Instead of all these separate files, we should merge them
+  # all into one using the =require functionality in the asset pipeline. We
+  # didn't do this at the start because of namespacing, but we should do it
+  # ASAP. Until we do it, each file listed here will be fetched using a separate
+  # HTTP request, and - worse - each file we use needs to be added to this line
+  # in both staging.rb and production.rb (and, of course, we won't notice in
+  # development because it uses live asset precompilation!). After adding the
+  # line, you must do a RAILS_ENV=staging rake assets:precompile if you wish to
+  # see this in a staging environment.
+
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-  config.assets.precompile += %w( home/*.css home.js controller-specific/*.js controller-specific/*.css )
+  config.assets.precompile += %w(
+                                  backbone/mongoid_test.js
+                                  controller-specific/**/*.js
+                                  controller-specific/*.js
+                                  home.js
+                                  live.js
+                                  wufoo.js
+                                  controller-specific/**/*.css
+                                  controller-specific/*.css
+                                  home/*.css
+                                  shared/*.css
+                                )
 
   # ActionMailer Config: staging - do not perform deliveries
   config.action_mailer.delivery_method = :test
