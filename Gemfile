@@ -14,13 +14,12 @@ platforms :ruby do
 end
 
 gem 'jquery-rails'
-gem "rspec-rails", ">= 2.7.0", :groups => [:development, :test]
 gem "bson_ext", "~> 1.4"
 gem "mongoid", "~> 2.4"
 gem "devise", ">= 1.4.9"
 
-gem "simple_form"
-gem "rest-client"
+gem "simple_form" # TODO: pretty sure we dont use this
+gem "rest-client" # TODO: unlikely that we use this
 gem 'airbrake'
 gem 'cancan'
 gem 'mongoid_session_store'
@@ -49,6 +48,7 @@ gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootst
 gem 'twitter_bootstrap_form_for'
 
 group :test do
+  gem "rspec-rails", ">= 2.7.0"
   gem "cucumber-rails", ">= 1.1.1"
   gem "capybara", ">= 1.1.1"
   gem "database_cleaner", ">= 0.6.7"
