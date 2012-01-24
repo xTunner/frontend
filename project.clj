@@ -49,6 +49,9 @@
                  [c3p0 "0.9.1.2"]
                  [congomongo "0.1.7"]
 
+                 ;; Queue
+                 [com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
+
                  ;; Logging
                  [log4j "1.2.16"]
                  [log4j/apache-log4j-extras "1.1"]

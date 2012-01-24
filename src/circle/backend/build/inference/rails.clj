@@ -100,10 +100,12 @@
 (defn cp-database-yml
   "Return an action to cp the database.yml to the right spot"
   [repo]
-  ;; find-database-yml returns the path relative to the current tree, but for a build action it needs to be relative to the checkout path
+  ;; find-database-yml returns the path relative to the current tree,
+  ;; but for a build action it needs to be relative to the checkout
+  ;; path
   (let [db-yml-path (->> (find-database-yml repo)
                          (fs/split)
-                         (drop 2)
+                         (drop 3) ;; drop repos/username/projectname from front of path
                          (apply fs/join))]
     (bash (sh/q (cp ~db-yml-path "config/database.yml"))
           :name "copy database.yml"
