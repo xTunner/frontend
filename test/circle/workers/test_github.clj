@@ -9,6 +9,7 @@
   (ensure-test-build)
   (let [json circle-dummy-project-json-str
         build (start-build-from-hook nil nil nil json test-build-id)]
+    (-> @build :vcs_url) => truthy
     (-> build (build/successful?)) => true
     (-> @build :build_num) => integer?))
 
