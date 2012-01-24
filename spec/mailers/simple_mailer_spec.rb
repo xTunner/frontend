@@ -2,108 +2,159 @@ require 'spec_helper'
 
 describe SimpleMailer do
 
-  it "should send a success email" do
-    # TECHNICAL_DEBT: these should be in the factory
-    b = Factory.create(:successful_build)
-    l = Factory(:successful_log)
-    b.action_logs.push l
-    b.save
-
-    SimpleMailer.build_email(b.id)
-    ActionMailer::Base.deliveries.length.should == 1
-    mail = ActionMailer::Base.deliveries.last
-
-    mail.subject.should == "[circleci/circle-dummy-project] Test 1 succeeded"
-    mail.to.should == ["user@test.com"]
-    mail.from.should == ["builds@circleci.com"]
-    mail.body.parts.length.should == 2
-
-    html = mail.body.parts.find {|p| p.content_type.match /html/}.body.raw_source
-    text = mail.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source
-
-    link = "http://circlehost:3000/gh/circleci/circle-dummy-project/1"
-    html.should have_tag "a", :text => "Read the full build report", :href => link
-    text.should include "Read the full build report: #{link}"
-
-    html.should include "Commit abcdef123456789 has passed all its tests!"
-    text.should include "Commit abcdef123456789 has passed all its tests!"
-
-    link = "http://circlehost:3000/gh/circleci/circle-dummy-project/1"
-    html.should have_tag "a", :text => "Read the full build report", :href => link
-    text.should include ": #{link}"
-
-    html.should include "These commands were run, and were all successful:"
-    html.should include "ls -l"
-    # check no more commands
-    text.should include "These commands were run, and were all successful:\n  ls -l\n\n"
+  def setup(project, user, build, log)
+    build = FactoryGirl.create(build)
+    project = FactoryGirl.create(project)
+    user = FactoryGirl.create(user)
+    log = FactoryGirl.create(log)
+    raise if build.vcs_url != project.vcs_url
+    project.users << user
+    build.action_logs << log
+    project.save!
+    build.save!
+    user.save!
+    log.save!
+    SimpleMailer.post_build_email_hook(build.id)
+    [project, user, build, log]
   end
 
-  it "should send a fail mail" do
-    # TECHNICAL_DEBT: these should be in the factory
-    b = Factory.create(:failing_build)
-    l = Factory(:failing_log)
-    b.action_logs.push l
-    b.save
+  describe "send mails to the author with the right contents" do
 
-    SimpleMailer.build_email(b.id)
-    ActionMailer::Base.deliveries.length.should == 1
-    mail = ActionMailer::Base.deliveries.last
+    it "should send a 'success' email" do
+      p, u, b, l = setup(:project, :email_lover, :successful_build, :successful_log)
 
-    mail.subject.should == "[circleci/circle-dummy-project] Test 1 failed"
-    mail.to.should == ["user@test.com"]
-    mail.from.should == ["builds@circleci.com"]
-    mail.body.parts.length.should == 2
+      ActionMailer::Base.deliveries.length.should == 1
+      mail = ActionMailer::Base.deliveries.last
 
-    html = mail.body.parts.find {|p| p.content_type.match /html/}.body.raw_source
-    text = mail.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source
+      mail.subject.should == "Success: circleci/circle-dummy-project#1 - user: That's right, I wrote some code"
+      mail.to.should == [u.email]
+      mail.from.should == ["builds@circleci.com"]
+      mail.body.parts.length.should == 2
 
-    link = "http://circlehost:3000/gh/circleci/circle-dummy-project/1"
-    html.should have_tag "a", :text => "Read the full build report", :href => link
-    text.should include ": #{link}"
+      html = mail.body.parts.find {|p| p.content_type.match /html/}.body.raw_source
+      text = mail.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source
 
-    html.should include "has failed its tests!"
-    text.should include "has failed its tests!"
+      link = "http://circlehost:3000/gh/circleci/circle-dummy-project/1"
+      html.should have_tag "a", :text => "Read the full build report", :href => link
+      text.should include "Read the full build report: #{link}"
 
-    html.should include "The rest of your commands were successful:"
-    # check no more commands
-    text.should include "The rest of your commands were successful:\n\n"
+      html.should include "Commit abcdef123456789 has passed all its tests!"
+      text.should include "Commit abcdef123456789 has passed all its tests!"
 
-    html.should include "Output"
-    html.should include "Exit code: 127"
-    text.should include "Output:\n\nExit code: 127"
+      link = "http://circlehost:3000/gh/circleci/circle-dummy-project/1"
+      html.should have_tag "a", :text => "Read the full build report", :href => link
+      text.should include ": #{link}"
+
+      html.should include "These commands were run, and were all successful:"
+      html.should include "ls -l"
+      # check no more commands
+      text.should include "These commands were run, and were all successful:\n  ls -l\n\n"
+    end
+
+    it "should send a fail mail to the author" do
+      p, u, b, l = setup(:project, :email_lover, :failing_build, :failing_log)
+
+      ActionMailer::Base.deliveries.length.should == 1
+      mail = ActionMailer::Base.deliveries.last
+
+      mail.subject.should == "Fail: circleci/circle-dummy-project#1 - user: That's right, I wrote some code"
+      mail.to.should == [u.email]
+      mail.from.should == ["builds@circleci.com"]
+      mail.body.parts.length.should == 2
+
+      html = mail.body.parts.find {|p| p.content_type.match /html/}.body.raw_source
+      text = mail.body.parts.find {|p| p.content_type.match /plain/}.body.raw_source
+
+      link = "http://circlehost:3000/gh/circleci/circle-dummy-project/1"
+      html.should have_tag "a", :text => "Read the full build report", :href => link
+      text.should include ": #{link}"
+
+      html.should include "has failed its tests!"
+      text.should include "has failed its tests!"
+
+      html.should include "The rest of your commands were successful:"
+      # check no more commands
+      text.should include "The rest of your commands were successful:\n\n"
+
+      html.should include "Output"
+      html.should include "Exit code: 127"
+      text.should include "Output:\n\nExit code: 127"
+    end
+
+    it "should send a 'fixed' email to the author" do
+      pending
+    end
+
+    it "should send a 'no tests' email to the author" do
+      pending
+    end
+
+    it "should send an 'infrastructure fail' email to the author" do
+      pending
+    end
+
+    it "should send an 'timedout' email to the author" do
+      pending
+    end
   end
 
+  describe "send emails to people who follow that branch" do
+    it "should send a 'success' email to an 'all' subscriber" do
+      pending
+    end
 
-  it "should send an error email" do
-    b = Factory(:build)
-    SimpleMailer.build_error_email(b.id, "a test error")
-    ActionMailer::Base.deliveries.length.should == 1
-    mail = ActionMailer::Base.deliveries.last
+    it "should send a 'fail' email to an 'all' subscriber" do
+      pending
+    end
 
-    mail.subject.should == "test: build exception"
-    mail.to.should == ["founders@circleci.com"]
-    mail.from.should == ["builds@circleci.com"]
-    mail.body.should include "a test error"
-    mail.body.should include b.vcs_url
-    mail.body.should include b.vcs_revision
+    it "should send a 'fixed' email to the author" do
+      pending
+    end
+
+    it "should send a 'no tests' email to the author" do
+      pending
+    end
+
+    it "should send an 'infrastructure fail' email to the author" do
+      pending
+    end
+
+    it "should send an 'timedout' email to the author" do
+      pending
+    end
   end
 
+  describe "shouldn't send mail to people who don't want them" do
+    it "should not send a success email" do
+      pending
+    end
 
-  it "should send a 'good transition' email" do
-    # old_build = failing_build
-    # new_build = passing_build
-    # main.should be_positive
-    # mail.should be_sent_to_all_recipients_of_previous_email
-    pending
+    it "should not send a failed email" do
+      pending
+    end
+
+    it "should not send a fixed email" do
+      pending
+    end
+
+    it "should not send a 'no tests' email" do
+      pending
+    end
+
+    it "should not send an 'infrastructure fail'" do
+      pending
+    end
+
+    it "should not send an 'timedout' email" do
+      pending
+    end
   end
 
   it "should send a first email" do
-#    "this is your first build"
-    pending
+    pending # check the contents
   end
 
-  it "should send a 'just broke it' mail" do
-    #    "hi john you broke the build"
+  it "should check the output doesn't have extra lines between it" do
     pending
   end
 end

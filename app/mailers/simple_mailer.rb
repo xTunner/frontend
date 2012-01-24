@@ -3,46 +3,49 @@ class SimpleMailer < ActionMailer::Base
   include ApplicationHelper
   helper :application
 
-  # Sends an email for a build:
-  # - work out who should be emailed based on their preferences
-  # - decide what type of email (depends on the branch, previous success)
-  # - email them
-  def build_email(build_id)
-
+  # Notifications via emails:
+  # We send notifications based on a user's preferences, and based on the status
+  # of the previous build.
+  def post_build_email_hook(build_id)
+    # common to all emails
     @build = Build.find(build_id)
-    @project = @build.the_project
-    @users = @project.users.find_all { |u| !u.is_guest? }
-    @emails = @users.map { |u| u.email }
+    @project = @build.project
+    @last_build = @build.parent_build
 
-    # Don't fail when clojure tests have no users
-    if Rails.env.test? && @emails == []
-      @emails = "blackhole@circleci.com"
-    end
+    @logs = @build.logs
+    @last_log = @logs.last
+    @other_logs = @logs[0..-2]
 
-    if Rails.env.production? && !@project.visible
-      @emails = "founders@circleci.com"
-    end
+    users = @project.users.find_all { |u| !u.is_guest? }
 
-    subject = "[#{@project.github_project_name}] Test #{@build.build_num} #{@build.failed ? "failed" : "succeeded"}"
+    # User specific emails, like "welcome"
+    users.each { |u| self.maybe_send_first_email u }
 
-    if @emails.length > 0
-      if @build.failed
-        @logs = @build.logs
-        @failing_log = @logs.last
-        @other_logs = @logs[0..-2]
-        if @failing_log and @failing_log.success?
-          logger.error "Failing log didn't fail: #{@failing_log.to_s}"
-        end
-        mail(:to => @emails, :subject => subject, :template_name => "fail").deliver
-      else
-        mail(:to => @emails, :subject => subject, :template_name => "success").deliver
-      end
-    end
+    # Emails for the build, like "pass" and "fail"
+    send_build_email users
   end
 
+  def send_build_email(users)
+    status = @build.status
+    subject =
+      "#{@build.status_as_title}: #{@project.github_project_name}##{@build.build_num} -" +
+      " #{@build.committer_handle}: #{@build.subject[0..50]}"
+
+    emails = users.find_all { |u| u.wants_build_email?(@build) }.map {|u| u.email }
+    return if emails == []
+
+    # TODO: stop doing this "visible" hack
+    if Rails.env.production? && !@project.visible
+      emails = ["founders@circleci.com"]
+    end
+
+    mail(:to => emails, :subject => subject, :template_name => status.to_s).deliver
+  end
+
+
   # send the first email to user, if necessary
-  def maybe_send_first_email (user)
-    if not user.send_first_build_email and user.build_in_every_project?
+  def maybe_send_first_email(user)
+    if user.sent_first_build_email and user.build_in_every_project?
       send_first_email(user)
     end
   end

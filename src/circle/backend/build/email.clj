@@ -7,7 +7,7 @@
   (straight-jacket
    (ruby/require-rails)
    (ruby/ruby-require "simple_mailer")
-   (ruby/send (ruby/get-class "SimpleMailer") :build_email (-> @build :_id))))
+   (ruby/send (ruby/get-class "SimpleMailer") :post_build_email_hook (-> @build :_id))))
 
 (defn send-build-error-email [build error]
   (straight-jacket

@@ -70,18 +70,29 @@ module ApplicationHelper
   end
 
   def bootstrap_status(build, markup=nil)
-    markup ||= build.status
+    markup ||= build.status_as_title
 
     type = case build.status
-           when :fail
+           when :failed
+             :important
+           when :infrastructure_fail
+             :warning
+           when :timedout
+             :important
+           when :no_tests
              :important
            when :killed
              :warning
+           when :fixed
+             :success
            when :success
              :success
            when :running
              :notice
-             end
+           when :starting
+             nil
+           end
+
     "<span class='label #{type}'>#{ markup }"
   end
 

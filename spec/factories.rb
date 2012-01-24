@@ -6,6 +6,7 @@ FactoryGirl.define do
     name 'Test User'
     email 'user@test.com'
     password 'please'
+    # TODO: get rid of this and let the associations happen later
     after_create { |user| FactoryGirl.create(:project, :users => [user]) }
 
     factory :github_user do
@@ -17,6 +18,18 @@ FactoryGirl.define do
 
     factory :admin_user do
       admin true
+    end
+
+    factory :email_hater do
+      name "Email hater"
+      email "hatesemail@circleci.com"
+      email_preferences {}
+    end
+
+    factory :email_lover do
+      name "Email lover"
+      email "lovesemail@circleci.com"
+      email_preferences {}
     end
   end
 
@@ -44,7 +57,6 @@ FactoryGirl.define do
 
   end
 
-
   factory :action_log do
 
     factory :successful_log do
@@ -65,6 +77,8 @@ FactoryGirl.define do
     vcs_revision "abcdef123456789"
     start_time Time.now - 10.minutes
     stop_time Time.now
+    committer_email "user@test.com"
+    subject "That's right, I wrote some code"
     build_num 1
     after_create { |b| FactoryGirl.create(:user) } # always make a user, and therefore a project
 
@@ -74,6 +88,13 @@ FactoryGirl.define do
 
     factory :failing_build do
       failed true
+    end
+
+    factory :last_build do
+    end
+
+    factory :fixed_build do
+      before_create { |b| FactoryGirl.create(:last_build) }
     end
   end
 
