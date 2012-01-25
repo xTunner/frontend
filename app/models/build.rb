@@ -76,17 +76,17 @@ class Build
   end
 
   def has_test_logs?
-    logs.length > 0
+    test_logs.length > 0
   end
 
   def status # Followed by '#E' if it's a valid email state
-    if failed
-      :failed #E
-    elsif infrastructure_fail
+    if infrastructure_fail
       :infrastructure_fail #E
     elsif timedout
       # TODO: can :killed be merged into this
       :timedout #E
+    elsif failed
+      :failed #E
     elsif stop_time
       if !has_test_logs?
         :no_tests #E
