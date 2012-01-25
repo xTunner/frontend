@@ -25,7 +25,7 @@ class ActionLog
     elsif success?
       :success
     else
-      :error
+      :failed
     end
   end
 end

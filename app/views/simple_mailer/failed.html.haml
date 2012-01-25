@@ -1,0 +1,13 @@
+%p
+  Commit #{@build.vcs_revision} has failed its tests!
+  %br
+  = render "full_build_report"
+
+= render "last_command"
+
+= render "exit_code"
+
+= render "rest_of_commands"
+
+%p
+  = render "full_build_report"

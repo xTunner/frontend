@@ -1,0 +1,12 @@
+%p
+  Failing command:
+  %br
+  &nbsp;
+  &nbsp;
+  #{@last_log.name}
+
+%p
+  Output:
+  %pre
+    - @last_log.out.each do |o|
+      = o["message"]

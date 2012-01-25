@@ -22,7 +22,7 @@ describe SimpleMailer do
   let(:out1) { { :type => "out", :time => nil, :message => "a message" } }
   let(:successful_log) { ActionLog.create(:type => "test", :name => "ls -l", :exit_code => 0, :out => [out1]) }
   let(:setup_log) { ActionLog.create(:type => "setup", :name => "ls -l", :exit_code => 0, :out => [out1]) }
-  let(:failing_log) { ActionLog.create(:type => "test", :name => "ls -l", :exit_code => 1, :out => []) }
+  let(:failing_log) { ActionLog.create(:type => "test", :name => "ls -l", :exit_code => 127, :out => []) }
 
   let(:std_attrs) do
     {
@@ -142,7 +142,7 @@ describe SimpleMailer do
                             [/^Fail:/],
                             [/has failed its tests!/,
                              /The rest of your commands were successful:/,
-                             /Output: /,
+                             /Output:/,
                              /Exit code: 127/]) do
       end
     end

@@ -2,6 +2,7 @@ class SimpleMailer < ActionMailer::Base
   default :from => "Circle Builds <builds@circleci.com>"
   include ApplicationHelper
   helper :application
+  layout 'mailer'
 
   # Notifications via emails:
   # We send notifications based on a user's preferences, and based on the status
@@ -14,7 +15,7 @@ class SimpleMailer < ActionMailer::Base
 
     @logs = @build.logs
     @last_log = @logs.last
-    @other_logs = @logs[0..-2]
+    @successful_logs = @logs.find_all { |l| l.success? }
 
     users = @project.users.find_all { |u| !u.is_guest? }
 

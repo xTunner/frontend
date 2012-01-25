@@ -1,23 +1,11 @@
-!!!
-%html
-  %head
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
-  %body
-    %p
-      Commit #{@build.vcs_revision} has passed all its tests!
-      %br
-      = build_absolute_link_to @build, :text => "Read the full build report"
+%p
+  Commit #{@build.vcs_revision} has passed all its tests!
+  %br
+    = render "full_build_report"
 
-    %p
-      These commands were run, and were all successful:
-      %br
-      - @build.logs.each do |o|
-        &nbsp;
-        &nbsp;
-        = o["name"]
-        %br
+  %p
+    These commands were run, and were all successful:
+    = render "successful_commands"
 
-
-
-    %p
-      = build_absolute_link_to @build, :text => "Read the full build report"
+  %p
+    = render "full_build_report"
