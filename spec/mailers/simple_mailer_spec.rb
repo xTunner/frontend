@@ -49,7 +49,7 @@ describe SimpleMailer do
   end
 
   let(:timedout_build) do
-    Build.create(std_attrs.merge(:action_logs => [failing_log], :failed => true, :timed_out => true))
+    Build.create(std_attrs.merge(:action_logs => [failing_log], :failed => true, :timedout => true))
   end
 
   let(:no_tests_build) do
