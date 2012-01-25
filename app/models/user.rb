@@ -97,6 +97,8 @@ class User
     follows_this_branch = build.branch == "master"
 
     prefs = email_preferences
+    prefs["on_success"] ||= []
+    prefs["on_fail"] ||= []
 
     # TECHNICAL_DEBT: refactor
     send = false
