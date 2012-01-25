@@ -1,5 +1,5 @@
 (ns circle.backend.action.tag
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:use [circle.backend.action :only (defaction)])
   (:use [circle.util.except :only (throw-if-not)])
   (:require [circle.backend.nodes :as nodes])

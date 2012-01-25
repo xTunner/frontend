@@ -1,7 +1,7 @@
 (ns circle.backend.action.vcs
   "build actions for checking out code."
   (:require [circle.backend.action.bash :as bash])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [circle.sh :as sh])
   (:require fs)
   (:use [arohner.utils :only (inspect)])

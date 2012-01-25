@@ -3,7 +3,7 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.ssh :as ssh])
   (:require [clojure.string :as str])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [circle.model.project :as project])
   (:require [circle.model.spec :as spec])
   (:require [circle.backend.action :as action])
@@ -73,6 +73,12 @@
       (when-let [commands (seq (spec-commands spec))]
         (db-config commands)))))
 
+(defn get-config-from-yml [url]
+  (let [repo (git/default-repo-path url)]
+    (-> repo
+      (fs/join "circle.yml")
+      (load-config))))
+
 (defn get-config-for-url
   "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
   [url & {:keys [vcs-revision]}]
@@ -87,9 +93,7 @@
       (git/checkout repo vcs-revision))
     (or
      (get-config-from-db url)
-     (-> repo
-         (fs/join "circle.yml")
-         (load-config)))))
+     (get-config-from-yml url))))
 
 (defn validate-action-map [cmd]
   (validate! [(is-map?)

@@ -3,11 +3,14 @@
   (:use [clojure.tools.logging :only (info)])
   (:use [circle.util.straight-jacket]))
 
+(defn notify-build-results* [build]
+  (ruby/require-rails)
+  (ruby/ruby-require "simple_mailer")
+  (ruby/send (ruby/get-class "SimpleMailer") :post_build_email_hook (-> @build :_id)))
+
 (defn notify-build-results [build]
   (straight-jacket
-   (ruby/require-rails)
-   (ruby/ruby-require "simple_mailer")
-   (ruby/send (ruby/get-class "SimpleMailer") :post_build_email_hook (-> @build :_id))))
+   (notify-build-results* build)))
 
 (defn send-build-error-email [build error]
   (straight-jacket

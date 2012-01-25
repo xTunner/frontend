@@ -1,4 +1,4 @@
-(ns circle.backend.build
+(ns circle.model.build
   "Main definition of the Build object. "
   (:require [clojure.string :as str])
   (:require fs)
@@ -58,11 +58,8 @@
   ;; Keys on build that shouldn't go into mongo, for whatever reason
   [:actions :action-results])
 
-(defn insert! [b]
-  (let [return (mongo/insert! build-coll (apply dissoc @b build-dissoc-keys))]
-    (alter b assoc :_id (-> return :_id)
-                   :start_time (-> (time/now) .toDate))
-    b))
+(defn insert! [row]
+  (mongo/insert! :builds (apply dissoc row build-dissoc-keys)))
 
 (defn update-mongo
   "Given a build ref, update the mongo row with the current values of b."

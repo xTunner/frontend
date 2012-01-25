@@ -2,7 +2,7 @@
   (:require [clojure.string :as str])
   (:use midje.sweet)
   (:use circle.backend.build.config)
-  (:use [circle.backend.build :only (checkout-dir valid? validate successful?)])
+  (:use [circle.model.build :only (checkout-dir valid? validate successful?)])
   (:use [circle.backend.action.bash :only (bash remote-bash-build)])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.test-utils :as test])
@@ -57,6 +57,17 @@
   (let [build (build-from-json test/circle-dummy-project-json)]
     (ref? build) => true
     (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
+
+(fact "get-config-from-yml works"
+  (get-config-from-yml "https://github.com/arohner/CircleCI") => map?)
+
+
+(fact "circle is not inferred"
+  ;; not a real "test", but currently circle shouldn't be inferred,
+  ;; and causes hard to find test failures when it's not.
+  (let [p (project/get-by-url"https://github.com/arohner/CircleCI")]
+    (-> p :inferred) => falsey
+    (-> (build-from-json test/circle-github-json) (deref) :job-name) => :build))
 
 (fact "build loads the node and slurps the ssh keys"
   ;; The circle.yml contains :private-key, :public-key. Verify they were slurped.

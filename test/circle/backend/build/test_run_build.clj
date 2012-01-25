@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [circle.backend.build.test-utils])
   (:use [circle.backend.action :only (defaction action)])
-  (:use [circle.backend.build :only (build successful?)])
+  (:use [circle.model.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
   (:require [circle.model.project :as project])
   (:use [circle.backend.build.config :only (build-from-url)])

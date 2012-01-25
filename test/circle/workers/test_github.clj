@@ -1,6 +1,6 @@
 (ns circle.workers.test-github
   (:use circle.backend.build.test-utils)
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:use midje.sweet)
   (:use circle.workers.github))
 
@@ -9,6 +9,7 @@
   (ensure-test-build)
   (let [json circle-dummy-project-json-str
         build (start-build-from-hook nil nil nil json test-build-id)]
+    (-> @build :vcs_url) => truthy
     (-> build (build/successful?)) => true
     (-> @build :build_num) => integer?))
 

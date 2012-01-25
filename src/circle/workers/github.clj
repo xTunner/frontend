@@ -1,7 +1,7 @@
 (ns circle.workers.github
   (:require [org.danlarkin.json :as json])
   (:require [circle.backend.project.circle :as circle])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:require [circle.backend.build.run :as run])
   (:require [circle.backend.build.config :as config])
   (:require [circle.model.project :as project])

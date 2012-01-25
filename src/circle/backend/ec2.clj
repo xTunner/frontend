@@ -277,8 +277,9 @@
 
 (defn block-until-running
   "Blocks until AWS claims the instance is running"
-  [instance-id & {:keys [timeout]
-                  :or {timeout 600}}]
+  [instance-id & {:keys [timeout sleep-interval]
+                  :or {timeout 30
+                       sleep-interval 10}}]
     (infof "block-until-running: waiting for instance %s to start" instance-id)
   (loop [timeout timeout]
     (let [inst (try
@@ -290,8 +291,7 @@
                    (when (not= "InvalidInstanceID.NotFound" (.getErrorCode e))
                      (throw e))))
           state (-?> inst :state :name (keyword))
-          ip (-> inst :publicIpAddress)
-          sleep-interval 5]
+          ip (-> inst :publicIpAddress)]
       (infof "block-until-running: %s %s" instance-id state)
       (cond
        (= state :running) true

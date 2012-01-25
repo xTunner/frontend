@@ -3,7 +3,7 @@
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.backend.action :only (action)])
   (:use [circle.backend.build.run :only (run-build)])
-  (:use [circle.backend.build :only (successful?)])
+  (:use [circle.model.build :only (successful?)])
   (:use [circle.backend.build.test-utils :only (minimal-build)])
   (:use circle.system))
 

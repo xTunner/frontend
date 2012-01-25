@@ -1,6 +1,6 @@
 (ns circle.backend.build.run
   (:require [circle.backend.build.email :as email])
-  (:require [circle.backend.build :as build])
+  (:require [circle.model.build :as build])
   (:use [arohner.utils :only (inspect fold)])
   (:require [circle.env :as env])
   (:require [clj-time.core :as time])
