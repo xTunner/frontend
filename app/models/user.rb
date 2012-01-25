@@ -35,7 +35,7 @@ class User
   validates_presence_of :email
   validates_uniqueness_of :email, :case_sensitive => false
 
-  attr_accessible :name, :contact, :email, :password, :password_confirmation
+  attr_accessible :name, :contact, :email, :password, :password_confirmation, :email_preferences
 
 
   def known_email
