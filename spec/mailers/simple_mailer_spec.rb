@@ -159,7 +159,7 @@ describe SimpleMailer do
     describe "infrastructure fail email" do
       it_should_behave_like("an email",
                             :infra_build,
-                            [/^Infrastructure fail:/],
+                            [/^Circle bug:/],
                             [/did not complete due to a problem with Circle's infrastructure. We're looking into it./]) do
         it "should CC us" do
           mail.cc.should == ["engineering@circleci.com"]
@@ -174,60 +174,12 @@ describe SimpleMailer do
                             [/timed out and could not be confirmed./]) do
       end
     end
-    it "should send a 'fixed' email to the author" do
-      pending
-    end
-  end
-
-
-  describe "send emails to people who follow that branch" do
-    it "should send a 'success' email to an 'all' subscriber" do
-      pending
-    end
-
-    it "should send a 'fail' email to an 'all' subscriber" do
-      pending
-    end
 
     it "should send a 'fixed' email to the author" do
       pending
     end
 
-    it "should send a 'no tests' email to the author" do
-      pending
-    end
-
-    it "should send an 'infrastructure fail' email to the author" do
-      pending
-    end
-
-    it "should send an 'timedout' email to the author" do
-      pending
-    end
-  end
-
-  describe "shouldn't send mail to people who don't want them" do
-    it "should not send a success email" do
-      pending
-    end
-
-    it "should not send a failed email" do
-      pending
-    end
-
-    it "should not send a fixed email" do
-      pending
-    end
-
-    it "should not send a 'no tests' email" do
-      pending
-    end
-
-    it "should not send an 'infrastructure fail'" do
-      pending
-    end
-
-    it "should not send an 'timedout' email" do
+    it "should handle the branch stuff" do
       pending
     end
   end
