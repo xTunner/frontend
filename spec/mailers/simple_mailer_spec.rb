@@ -151,7 +151,7 @@ describe SimpleMailer do
       it_should_behave_like("an email",
                             :no_tests_build,
                             [/^No tests:/],
-                            [/did not run any tests!/,
+                            [/did not run any tests, because it has no test commands!/,
                              /The rest of your commands were successful:/]) do
       end
     end
