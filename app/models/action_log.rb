@@ -1,7 +1,7 @@
 class ActionLog
   include Mongoid::Document
 
-  field :command, :type => String, :default => nil
+  field :command, :type => String, :default => -> { name }
   field :out
   field :exit_code, :type => Integer, :default => nil
   field :start_time, :type => Time
