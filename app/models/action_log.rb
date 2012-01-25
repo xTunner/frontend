@@ -22,7 +22,7 @@ class ActionLog
   def status
     if end_time == nil
       :running
-    elsif exit_code == 0 || exit_code == nil
+    elsif success?
       :success
     else
       :error
