@@ -148,7 +148,7 @@ class Build
     when :infrastructure_fail
       "Circle bug"
     when :timedout
-      "Timeout"
+      "Timed out"
     else
       raise "invalid option"
     end
