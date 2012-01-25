@@ -1,0 +1,11 @@
+%p
+  There was a bug in Circle's infrastructure that led to a problem testing commit #{@build.vcs_revision}. We have been notified and will fix the problem as soon as possible.
+  %br
+  = render "full_build_report"
+
+= render "last_command"
+
+= render "rest_of_commands"
+
+%p
+  = render "full_build_report"

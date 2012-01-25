@@ -113,7 +113,7 @@ describe SimpleMailer do
     end
 
     it "should list the revision number" do
-      html.should include "Commit abcdef0123456789"
+      html.should match /Commit abcdef0123456789/i
     end
 
     it "should list the commands" do
@@ -160,7 +160,8 @@ describe SimpleMailer do
       it_should_behave_like("an email",
                             :infra_build,
                             [/^Circle bug:/],
-                            [/did not complete due to a problem with Circle's infrastructure. We're looking into it./]) do
+                            [/There was a bug in Circle's infrastructure that led to a problem testing commit/,
+                             /We have been notified and will fix the problem as soon as possible./]) do
         it "should CC us" do
           mail.cc.should == ["engineering@circleci.com"]
         end
