@@ -39,7 +39,10 @@ class SimpleMailer < ActionMailer::Base
       emails = ["founders@circleci.com"]
     end
 
-    mail(:to => emails, :subject => subject, :template_name => status.to_s).deliver
+    cc = []
+    cc << "engineering@circleci.com" if status == :infrastrcture_fail
+
+    mail(:to => emails, :cc => cc, :subject => subject, :template_name => status.to_s).deliver
   end
 
 
