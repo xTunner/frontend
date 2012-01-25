@@ -5,6 +5,7 @@
   (:import java.io.StringWriter)
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.except :only (throw-if-not)])
+  (:require [clojure.string :as string])
   (:require fs))
 
 (declare eval ruby get-class get-module send)
@@ -150,8 +151,10 @@
 Note that rspec will run in whatever RAILS_ENV you started in, so you
   probably want to start in RAILS_ENV=test, or rspec will clear your
   DB, or tests will fail because they assume the DB cleaner runs."
-  [& subdirs]
-  (let [subdirs (if (empty? subdirs) [""] subdirs)
+  [& args]
+  (let [options (filter #(= (get % 0) \-) args)
+        subdirs (remove #(= (get % 0) \-) args)
+        subdirs (if (empty? subdirs) [""] subdirs)
         subdirs (map #(fs/join "spec" %) subdirs)
         command (format "
 require 'rubygems'
@@ -161,9 +164,11 @@ require 'rspec/core/rake_task'
 puts 'Reloading factories'
 FactoryGirl.factories.clear
 FactoryGirl.find_definitions
+RSpec.world.reset
+RSpec.world.shared_example_groups.clear
 
-RSpec::Core::Runner.run(%s)
-" (vec subdirs))]
+RSpec::Core::Runner.run([\"%s\"])
+" (string/join "\", \"" (concat options subdirs)))]
     (eval command)))
 
 (defn get-kernel
