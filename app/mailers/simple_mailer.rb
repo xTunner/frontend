@@ -31,18 +31,18 @@ class SimpleMailer < ActionMailer::Base
       "#{@build.status_as_title}: #{@project.github_project_name}##{@build.build_num} -" +
       " #{@build.committer_handle}: #{@build.subject[0..50]}"
 
-    emails = users.find_all { |u| u.wants_build_email?(@build) }.map {|u| u.email }
-    return if emails == []
+    cc = []
+    cc << "engineering@circleci.com" if status == :infrastructure_fail
+
+    to = users.find_all { |u| u.wants_build_email?(@build) }.map {|u| u.email }
+    return if to == [] && cc == []
 
     # TODO: stop doing this "visible" hack
     if Rails.env.production? && !@project.visible
-      emails = ["founders@circleci.com"]
+      to = ["founders@circleci.com"]
     end
 
-    cc = []
-    cc << "engineering@circleci.com" if status == :infrastrcture_fail
-
-    mail(:to => emails, :cc => cc, :subject => subject, :template_name => status.to_s).deliver
+    mail(:to => to, :cc => cc, :subject => subject, :template_name => status.to_s).deliver
   end
 
 
