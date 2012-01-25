@@ -6,8 +6,6 @@ FactoryGirl.define do
     name 'Test User'
     email 'user@test.com'
     password 'please'
-    # TODO: get rid of this and let the associations happen later
-    after_create { |user| FactoryGirl.create(:project, :users => [user]) }
 
     factory :github_user do
       # This user doesnt have a username or email set up in their profile
@@ -80,7 +78,6 @@ FactoryGirl.define do
     committer_email "user@test.com"
     subject "That's right, I wrote some code"
     build_num 1
-    after_create { |b| FactoryGirl.create(:user) } # always make a user, and therefore a project
 
     factory :successful_build do
       failed false
@@ -94,7 +91,6 @@ FactoryGirl.define do
     end
 
     factory :fixed_build do
-      before_create { |b| FactoryGirl.create(:last_build) }
     end
   end
 
