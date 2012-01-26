@@ -76,13 +76,12 @@ class Project
     super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url, :_id])
   end
 
-  def self.wait_for_project(url, options={})
-    start_time = Time.now
-    while true do
-      (Time.now - start_time).should < 1.seconds
-      p = Project.from_url url
-      return p if (p[options.keys[0]] == options.values[0])
-    end
-  end
+  # Allows mass-assignment, only for use from testing
+  def self.unsafe_create(attrs)
+    raise if !Rails.env.test?
 
+    p = Project.create!
+    attrs.each { |k, v| p.send("#{k}=", v) }
+    p
+  end
 end
