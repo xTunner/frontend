@@ -5,7 +5,7 @@
 }
 
 .action_header.success { background-color: #57A957; }
-.action_header.error { background-color: #EE5F5B; }
+.action_header.failed { background-color: #EE5F5B; }
 .action_header.running { background-color: #a0a0ee; }
 
 
@@ -17,11 +17,11 @@
    background-image: image-url("builds/green_plus.png");
 }
 
-.action_header.error.contents {
+.action_header.failed.contents {
    background-image: image-url("builds/red_minus.png");
 }
 
-.action_header.error.contents.minimize {
+.action_header.failed.contents.minimize {
    background-image: image-url("builds/red_plus.png");
 }
 
