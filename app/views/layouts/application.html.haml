@@ -8,13 +8,13 @@
     -# Airbrake catches errors, so it goes first.
     = airbrake_javascript_notifier
 
-    -# Stylesheets first
     = stylesheet_link_tag "application"
-    = stylesheet_link_tag "controller-specific/" + params[:controller]
-
-    -# JS
     = javascript_include_tag "application"
-    = javascript_include_tag "controller-specific/" + params[:controller]
+
+    - begin
+      = stylesheet_link_tag "controller-specific/" + params[:controller]
+      = javascript_include_tag "controller-specific/" + params[:controller]
+    - rescue AssetNotPrecompiledError
 
     = csrf_meta_tags
 
