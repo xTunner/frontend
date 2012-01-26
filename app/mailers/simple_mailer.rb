@@ -49,7 +49,8 @@ class SimpleMailer < ActionMailer::Base
 
   # send the first email to user, if necessary
   def maybe_send_first_email(user)
-    if user.sent_first_build_email and user.build_in_every_project?
+    return # disable until this is finished
+    if not user.sent_first_build_email and user.build_in_every_project?
       send_first_email(user)
     end
   end
