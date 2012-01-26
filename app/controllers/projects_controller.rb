@@ -27,8 +27,9 @@ class ProjectsController < ApplicationController
     @project.update_attributes(params)
     @project.save!
 
-    # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
-    #    Backend.build(@project)
+    # Automatically trigger another build, since after saving, you'll always
+    # want another build to run to test it.
+    Backend.build(@project)
 
     respond_with @project do |f|
       f.html
