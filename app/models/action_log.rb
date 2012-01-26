@@ -8,7 +8,7 @@ class ActionLog
   field :end_time, :type => Time, :default => nil
 
   field :name, :type => String
-  field :type, :type => String, :default => nil # setup, tests, etc - same names as the field in the spec
+  field :type, :type => String, :default => "test" # The default here is to support all the tests that happened earlier in life.
   field :source, :type => String, :default => nil # inferred, yaml or spec
 
 
