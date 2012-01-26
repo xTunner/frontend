@@ -26,5 +26,7 @@
       %a.btn.primary.large{ href: "#setup" }
         Override automatic inferrence
     - else
+      %a.btn.primary.large{ href: "#setup" }
+        Edit your project settings
       %button.btn.primary.large.span6#reset
         Delete your commands and revert to inferred
