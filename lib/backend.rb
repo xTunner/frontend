@@ -6,13 +6,17 @@ class Backend
   # TODO: refactor this until it's transparent
   def self.github_hook(url, after, ref, json)
     b = Build.start(url)
-    self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json, b.id.to_s
+    if not Backend.mock
+      self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json, b.id.to_s
+    end
     b
   end
 
   def self.build(project)
     b = Build.start(project.vcs_url)
-    self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, b.id.to_s
+    if not Backend.mock
+      self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, b.id.to_s
+    end
     b
   end
 
