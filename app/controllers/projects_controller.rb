@@ -32,7 +32,7 @@ class ProjectsController < ApplicationController
     if params[:setup]
       Backend.build(@project)
     elsif params[:hipchat_room]
-      Backend.blocking_worker "circle.workers.test_hipchat", @project.id
+      Backend.fire_worker "circle.backend.build.email/send-hipchat-setup-notification", @project.id.to_s
     end
 
     respond_with @project do |f|

@@ -31,6 +31,10 @@
 
                  ;; we added new fn, org/repos
                  [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
+
+                 ;; no jar available, so had to make our own
+                 [clipchat/clipchat "1.0.0-08aefea5bde6eef3dcc2e522bcd56c24ddc2cb5a"]
+
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -66,6 +70,8 @@
 
                  ;; Misc
                  [swank-clojure "1.3.4"]
+
+                 ;; Hooks
 
                  [commons-codec "1.4"]
                  [org.clojure/core.cache "0.5.0"]
