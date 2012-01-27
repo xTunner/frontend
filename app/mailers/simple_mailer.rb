@@ -28,10 +28,7 @@ class SimpleMailer < ActionMailer::Base
 
   def send_build_email(users)
     status = @build.status
-    subject =
-      "#{@build.status_as_title}: #{@project.github_project_name}##{@build.build_num} -" +
-      " #{@build.committer_handle}: #{@build.subject[0..50]}"
-
+    subject = @build.as_email_subject
     cc = []
     cc << "engineering@circleci.com" if status == :infrastructure_fail
 

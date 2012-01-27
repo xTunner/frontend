@@ -161,4 +161,11 @@ class Build
       branch
     end
   end
+
+  def as_email_subject
+    p = the_project
+    "#{status_as_title}: #{project.github_project_name}##{build_num}" +
+      " - " +
+      "#{committer_handle}: #{subject[0..50]}"
+  end
 end
