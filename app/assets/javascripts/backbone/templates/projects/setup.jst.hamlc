@@ -1,6 +1,6 @@
 %h1 Setup your test machine
 
-%form.edit_spec
+%form.spec_form
   %fieldset.form-stacked
 
     .row

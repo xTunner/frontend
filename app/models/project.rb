@@ -24,12 +24,16 @@ class Project
   field :test, :type => String, :default => ""
   field :extra, :type => String, :default => ""
 
+  # Notifications
+  field :hipchat_room
+  field :hipchat_api_token
+
 
 
   has_and_belongs_to_many :users
 #  has_many :builds
 
-  attr_accessible :setup, :dependencies, :compile, :test, :extra
+  attr_accessible :setup, :dependencies, :compile, :test, :extra, :hipchat_room, :hipchat_api_token
 
   def to_param
     github_project_name

@@ -1,6 +1,6 @@
 %h1 Set your tests up
 
-%form.edit_spec
+%form.spec_form
   %fieldset.form-stacked
 
     .row
@@ -64,4 +64,4 @@
 
     .row
       .offset1
-        %input.btn.primary.span5.large{ name: "commit", type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests..." }
+        %input.btn.primary.span5.large{ name: "save_specs", type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests..." }

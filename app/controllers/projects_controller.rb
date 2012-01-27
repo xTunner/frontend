@@ -29,7 +29,11 @@ class ProjectsController < ApplicationController
 
     # Automatically trigger another build, since after saving, you'll always
     # want another build to run to test it.
-    Backend.build(@project)
+    if params[:setup]
+      Backend.build(@project)
+    elsif params[:hipchat_room]
+      Backend.blocking_worker "circle.workers.test_hipchat", @project.id
+    end
 
     respond_with @project do |f|
       f.html
