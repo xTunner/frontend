@@ -6,13 +6,13 @@
       .span8.clearfix
         %label Room name
 
-        %input#hipchat_room{ type: "text", width: 20 }
+        %input.span4#hipchat_room{ type: "text" }
 
     .row
       .span5.clearfix
         %label API token
 
-        %input#hipchat_api_token{ type: "text", width: 60 }
+        %input.span5#hipchat_api_token{ type: "text" }
 
         %p
           To get your API token,
