@@ -8,7 +8,7 @@
         %label
           Test commands
         .input
-          %textarea.span8#test{ cols: 40, name: "test", rows: 7, placeholder: "Enter any text to replace our inferred commands" }
+          %textarea.span8#test{ cols: 40, name: "test", rows: 7, placeholder: "Replace out inferred test commands with your own inferred commands" }
             = @get "test"
 
 
@@ -37,12 +37,12 @@
         %label
           Extra test commands
         .input
-          %textarea.span8#extra{ cols: 40, name: "extra", rows: 7 }
+          %textarea.span8#extra{ cols: 40, name: "extra", rows: 7, placeholder: "Run extra test commands after the others finish" }
             = @get "extra"
 
 
       .span4
-        %p.long.infoboxtext
+        %p.short.infoboxtext
           %span.major
             %b Extra test commands
             run
@@ -56,11 +56,7 @@
             If there are truly tests we haven't thought of, send us feedback.
 
           %br
-          %br
-            We're adding post-test hooks, like alerting hipchat, but you can put them here for now using
-            <code>curl</code>
-            if you like.
-        .infobox.long
+        .infobox.short
 
     .row
       .offset1

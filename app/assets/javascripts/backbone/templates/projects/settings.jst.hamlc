@@ -17,7 +17,7 @@
     - else
       %span.highlight
         You have overridden our inferred settings!
-      You can return to inferred by deleting your commands.
+      We'll infer your setup again if you delete your commands.
 
 
 .row
