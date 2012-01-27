@@ -132,7 +132,7 @@ class Build
   def status_as_title
     case status
     when :failed
-      "Fail"
+      "Failed"
     when :no_tests
       "No tests"
     when :fixed
