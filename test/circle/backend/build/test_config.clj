@@ -61,6 +61,10 @@
 (fact "get-config-from-yml works"
   (get-config-from-yml "https://github.com/arohner/CircleCI") => map?)
 
+(fact "parse-spec-actions support different kinds of newline"
+  (-> :setup ((parse-spec-actions {:setup "1\n2"}))) => (maps-containing {:name "1"} {:name "2"})
+  (-> :setup ((parse-spec-actions {:setup "1\r\n2"}))) => (maps-containing {:name "1"} {:name "2"}))
+
 
 (fact "circle is not inferred"
   ;; not a real "test", but currently circle shouldn't be inferred,

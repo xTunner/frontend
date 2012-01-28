@@ -255,9 +255,11 @@
 
 (defn parse-spec-actions [spec]
   (->> spec
-       (#(select-keys % [:pre-setup :setup :post-setup :pre-test :test :post-test]))
+       (#(select-keys % [:setup :dependencies :compile :test :extra]))
        (map-vals (fn [lines]
-                   (->> (str/split (or lines "") #"\r\n")
+                   (->> lines
+                        (re-seq #".*")
+                        (vec)
                         (remove empty?)
                         (map parse-action))))))
 
