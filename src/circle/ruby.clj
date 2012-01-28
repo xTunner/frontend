@@ -178,22 +178,33 @@ RSpec::Core::Runner.run([\"%s\"])
 
 (defn get-class
   "Returns the class/module with the given name. With one arg, looks for a class in the root namespace. With two args, looks for a class/module defined under another class, like Foo::Bar"
-  ([name]
-     (.getClass (ruby) name))
-  ([parent name]
-     (.getClass parent name)))
+  ([name-str]
+     (.getClass (ruby) (name name-str)))
+  ([parent name-str]
+     (.getClass parent (name name-str))))
 
 (defn send
   "Call a method on a ruby object"
   [obj method & args]
-  (throw-if-not obj "Can't call methods on nil")
-  (.callMethod obj (name method) (into-array org.jruby.runtime.builtin.IRubyObject (map ->ruby args))))
+  (try
+    (throw-if-not obj "Can't call methods on nil")
+    (.callMethod obj (name method) (into-array org.jruby.runtime.builtin.IRubyObject (map ->ruby args)))
+    (catch org.jruby.exceptions.RaiseException e
+      (throw (Exception. (capture-exception-data e))))))
 
 (defn get-module
   ([name]
      (.getModule (ruby) name))
   ([parent module-name]
      (send parent :const_get module-name)))
+
+(defn ->instance
+  "Takes an object with an _id and fetches the ruby model's instance for that variable"
+  [class obj]
+  (let [id (-> obj :_id)
+        rid (->ruby id)
+        class (get-class class)]
+    (send class :find rid)))
 
 (defn methods
   "Returns the list of ruby methods on the obj"

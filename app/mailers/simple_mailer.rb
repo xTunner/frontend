@@ -7,9 +7,9 @@ class SimpleMailer < ActionMailer::Base
   # Notifications via emails:
   # We send notifications based on a user's preferences, and based on the status
   # of the previous build.
-  def post_build_email_hook(build_id)
+  def post_build_email_hook(build)
     # common to all emails
-    @build = Build.find(build_id)
+    @build = build
     @project = @build.project
     @last_build = @build.parent_build
 

@@ -9,17 +9,22 @@
 
 
 (defn send-email-build-notification [build]
-  (ruby/require-rails)
-  (ruby/ruby-require "simple_mailer")
-  (ruby/send (ruby/get-class "SimpleMailer") :post_build_email_hook (-> @build :_id)))
+  (ruby/ruby-require :simple_mailer)
+  (let [build (ruby/->instance :Build @build)
+        class (ruby/get-class :SimpleMailer)]
+    (ruby/send class :post_build_email_hook build)))
 
 (defn build-message [build]
-  (ruby/require-rails)
-  (let [build (ruby/send (ruby/get-class "Build") :find (-> @build :_id))]
-    {:status (ruby/send build :status)
-     :words (ruby/send build :status_in_words)
-     :title (ruby/send build :status_as_title)
-     :author (ruby/send build :committer_handle)}))
+  (ruby/send (ruby/->instance :Build build) :as_email_subject))
+
+(defn github-project-name [project]
+  (ruby/send (ruby/->instance :Project project) :github_project_name))
+
+(defn project-url [project]
+  (ruby/send (ruby/->instance :Project project) :absolute_url))
+
+(defn build-url [build]
+  (ruby/send (ruby/->instance :Build build) :absolute_url))
 
 (defn send-hipchat-message [project message & args]
   (let [token (-> :hipchat_api_token project)
@@ -29,25 +34,36 @@
        token
        {:room-id room
         :from "Circle"
+        :notify 1
         :message (apply format message args)}))))
 
 (defn send-hipchat-build-notification [build]
-  (let [project (build/get-project @build)
-        message (build-message build)]
-    (send-hipchat-message project message)))
+  (let [project (build/get-project build)
+        message (build-message @build)
+        url (build-url @build)]
+    (send-hipchat-message project "<a href='%s'>%s</a>" url message)))
 
 (defn send-hipchat-setup-notification [project-id]
-  (let [project (project/get-by-id (ObjectId. project-id))]
-    (send-hipchat-message project "Hipchat notifications enabled for %s" (-> :vcs_url project))))
+  (ruby/ruby-require :project)
+  (let [project (project/get-by-id (ObjectId. project-id))
+        url (project-url project)
+        project-name (github-project-name project)]
+    (send-hipchat-message project
+                          "Hi, welcome to Circle! Hipchat notifications are now enabled for <a href=\"%s\">%s</a>"
+                          url
+                          project-name)))
 
 
 
 (defn notify-build-results [build]
+  (ruby/require-rails)
+  (ruby/ruby-require :build)
+  (ruby/ruby-require :project)
   (straight-jacket (send-email-build-notification build))
   (straight-jacket (send-hipchat-build-notification build)))
 
 (defn send-build-error-email [build error]
   (straight-jacket
    (ruby/require-rails)
-   (ruby/ruby-require "simple_mailer")
-   (ruby/send (ruby/get-class "SimpleMailer") :build_error_email (-> @build :_id) error)))
+   (ruby/ruby-require :simple_mailer)
+   (ruby/send (ruby/get-class :SimpleMailer) :build_error_email (-> @build :_id) error)))
