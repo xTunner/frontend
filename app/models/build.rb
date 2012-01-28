@@ -168,4 +168,9 @@ class Build
       " - " +
       "#{committer_handle}: #{subject[0..50]}"
   end
+
+  def absolute_url
+    Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
+    Rails.application.routes.url_helpers.build_url self.project, self.build_num, :only_path => false
+  end
 end

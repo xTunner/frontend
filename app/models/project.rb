@@ -88,4 +88,9 @@ class Project
     attrs.each { |k, v| p.send("#{k}=", v) }
     p
   end
+
+  def absolute_url
+    Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
+    Rails.application.routes.url_helpers.github_project_url self, :only_path => false
+  end
 end
