@@ -90,13 +90,17 @@
   org.jruby.exceptions.RaiseException [e]
   (.getException e))
 
-;; Exceptions aren't IRubyObjects
-(defmethod ->ruby
-  java.lang.Exception [e]
-  (let [w (StringWriter.)
+(defn capture-exception-data [e]
+  "Returns a string via printStackTrace"
+    (let [w (StringWriter.)
         pw (PrintWriter. w)]
     (.printStackTrace e pw)
     (.toString w)))
+
+;; Exceptions aren't IRubyObjects
+(defmethod ->ruby
+  java.lang.Exception [e]
+  (capture-exception-data e))
 
 (defmethod ->ruby
   clojure.lang.Sequential [v]
