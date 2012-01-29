@@ -63,8 +63,7 @@ class Backend
   end
 
   def self.blocking_worker(name, *args)
-    return nil if Backend.mock
-
+    # We don't mock this since it will almost always be a short command
     fn = self._fn name
     Backend.clj.blocking_worker(fn, *args)
   end
@@ -114,7 +113,7 @@ class Backend
 end
 
 Backend.mock = true
-if RUBY_PLATFORM == 'java' || Rails.env != 'test' then
+if RUBY_PLATFORM == 'java' && !Rails.env.test? then
   Backend.mock = false
 end
 

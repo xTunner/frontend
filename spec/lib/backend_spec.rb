@@ -3,6 +3,14 @@ require 'backend'
 
 describe Backend do
 
+  before(:all) do
+    Backend.mock = false
+  end
+
+  after(:all) do
+    Backend.mock = true
+  end
+
   it "can call a clojure.core function" do
     id = Backend.start_worker "+", 4, 5
     sleep 0.1
