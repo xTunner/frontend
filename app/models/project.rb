@@ -86,6 +86,7 @@ class Project
 
     p = Project.create!
     attrs.each { |k, v| p.send("#{k}=", v) }
+    p.save!
     p
   end
 
