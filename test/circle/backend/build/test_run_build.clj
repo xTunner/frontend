@@ -36,7 +36,6 @@
     (successful? build) => truthy))
 
 (fact "dummy project does not start nodes"
-  (ensure-test-project)
   ;;; This should be using the empty template, which does not start nodes
   (-> "https://github.com/arohner/circle-dummy-project"
       (build-from-url)
@@ -70,9 +69,7 @@
     (> (-> @second-build :build_num) (-> @first-build :build_num)) => true))
 
 (fact "running an inferred build with zero actions marks the project disabled"
-  (let [build (minimal-build :actions [])
-        _ (ensure-test-user-and-project)
-        test-project (ensure-test-project)]
+  (let [build (minimal-build :actions [])]
     (dosync
      (alter build assoc :_project_id (-> test-project :_id))) => anything
      (run-build build) => anything
@@ -80,8 +77,6 @@
 
 (fact "running a disabled build"
   (let [build (minimal-build :actions [])
-        _ (ensure-test-user-and-project)
-        test-project (ensure-test-project)
         _ (project/set-uninferrable test-project)]
     (run-build build) => anything
     (-> @build :error_message) => string?
