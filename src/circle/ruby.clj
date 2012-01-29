@@ -207,8 +207,10 @@ RSpec::Core::Runner.run([\"%s\"])
   [class obj]
   (let [id (-> obj :_id)
         rid (->ruby id)
-        class (get-class class)]
-    (send class :find rid)))
+        class (get-class class)
+        instance (send class :find rid)]
+    (throw-if-not instance)
+    instance))
 
 (defn methods
   "Returns the list of ruby methods on the obj"
