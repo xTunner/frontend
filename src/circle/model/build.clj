@@ -80,8 +80,8 @@
 (defn add-to-db [b id]
   "If id is null, add build to database, else sync contents with existing db object"
   (if id
-    (sync-with-db b id)
-    (insert! b)))
+    (sync-with-db @b id)
+    (insert! @b)))
 
 (defn project-name [b]
   {:pre [(-> @b :_project_id)]
