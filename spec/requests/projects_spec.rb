@@ -4,33 +4,33 @@ describe "Projects", :js => true do
   describe "edit page" do
     let(:user) { User.create(:name => "Test User", :email => "user@test.com", :password => "please") }
 
-    let(:vcs_url) { "https://github.com/a/b" }
-    let(:simple_project) { Project.unsafe_create(:vcs_url => vcs_url, :users => [user]) }
-    let(:project_with_specs) { Project.unsafe_create(:vcs_url => vcs_url,
-                                          :users => [user],
-                                          :setup => "echo do setup",
-                                          :dependencies => "echo do dependencies",
-                                          :compile => "echo do compile",
-                                          :test => "echo do test",
-                                          # extra is a new field, but no-one put
-                                          # anything in compile so we're fine.
-                                          :extra => "echo do extra") }
+    let(:simple_url) { "https://github.com/a/simple" }
+    let(:pws_url) { "https://github.com/a/pws" }
+    let!(:simple_project) { Project.unsafe_create(:vcs_url => simple_url, :users => [user]) }
+    let!(:project_with_specs) { Project.unsafe_create(:vcs_url => pws_url,
+                                                     :users => [user],
+                                                     :setup => "echo do setup",
+                                                     :dependencies => "echo do dependencies",
+                                                     :compile => "echo do compile",
+                                                     :test => "echo do test",
+                                                     # extra is a new field, but no-one put
+                                                     # anything in compile so we're fine.
+                                                     :extra => "echo do extra") }
 
 
     before(:each) do
       host = "circlehost:3001"
       host! host
       Capybara.app_host = "http://" + host
-      user = login(:user)
+      login
     end
 
     #TECHNICAL_DEBT: this is slow, just log in once per user/project
-    def login(user_symbol)
+    def login
       visit '/login'
       fill_in "user_email", :with => user.email
       fill_in "user_password", :with => user.password
       click_button "Sign in"
-      return user
     end
 
     def _fill_in(target, options={})
@@ -63,8 +63,6 @@ describe "Projects", :js => true do
 
     def visit_project(project)
       @project = project
-      user.projects << @project
-      user.save
 
       visit root_path
       page.should have_link(@project.github_project_name)
@@ -82,6 +80,11 @@ describe "Projects", :js => true do
     def goto_tests
       click_link "Test suite"
       expect_fragment "tests"
+    end
+
+    def goto_hooks
+      click_link "Hooks"
+      expect_fragment "hooks"
     end
 
     def goto_settings
