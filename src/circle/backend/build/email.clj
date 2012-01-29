@@ -32,7 +32,7 @@
     (when (and token room)
       (clipchat.rooms/message
        token
-       {:room-id room
+       {:room_id room
         :from "Circle"
         :notify 1
         :message (apply format message args)}))))

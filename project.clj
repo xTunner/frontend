@@ -33,7 +33,7 @@
                  [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
 
                  ;; no jar available, so had to make our own
-                 [clipchat/clipchat "1.0.0-08aefea5bde6eef3dcc2e522bcd56c24ddc2cb5a"]
+                 [clipchat/clipchat "1.0.0-23401856a58a5c4c4ddfb3f362ef5ef9e4199724"]
 
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
