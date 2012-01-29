@@ -139,7 +139,7 @@ describe SimpleMailer do
     describe "failing email" do
       it_should_behave_like("an email",
                             :failing_build,
-                            [/^Fail:/],
+                            [/^Failed:/],
                             [/has failed its tests!/,
                              /The rest of your commands were successful:/,
                              /Output:/,
