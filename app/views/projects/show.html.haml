@@ -33,7 +33,8 @@
             = as_commit_time build.start_time
 
           %td
-            = as_length_of_build build.start_time, build.stop_time
+            - if build.status != :killed
+              = as_length_of_build build.start_time, build.stop_time
             - if build.status == :running
               (still running)
 
