@@ -32,9 +32,6 @@
                  ;; we added new fn, org/repos
                  [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
 
-                 ;; no jar available, so had to make our own
-                 [clipchat/clipchat "1.0.0-23401856a58a5c4c4ddfb3f362ef5ef9e4199724"]
-
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -55,6 +52,9 @@
 
                  ;; Queue
                  [com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
+
+                 ;; Hooks
+                 [clipchat/clipchat "1.0.0-SNAPSHOT"]
 
                  ;; Logging
                  [log4j "1.2.16"]
