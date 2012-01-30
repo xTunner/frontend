@@ -64,8 +64,8 @@
 (defn update-mongo
   "Given a build ref, update the mongo row with the current values of b."
   [b]
-  (assert (-> @b :_id))
   (c-mongo/ensure-object-id-ref build-coll b)
+  (assert (-> @b :_id))
   (mongo/update! build-coll
                  {:_id (-> @b :_id)}
                  (apply dissoc @b build-dissoc-keys)))
@@ -80,7 +80,7 @@
 (defn add-to-db [b id]
   "If id is null, add build to database, else sync contents with existing db object"
   (if id
-    (sync-with-db @b id)
+    (sync-with-db b id)
     (insert! @b)))
 
 (defn project-name [b]
