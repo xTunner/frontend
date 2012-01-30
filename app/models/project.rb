@@ -24,6 +24,10 @@ class Project
   field :test, :type => String, :default => ""
   field :extra, :type => String, :default => ""
 
+  field :state, :type => String, :default => nil
+  field :state_reason, :type => String, :default => nil
+
+
   # Notifications
   field :hipchat_room
   field :hipchat_api_token
@@ -93,5 +97,19 @@ class Project
   def absolute_url
     Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
     Rails.application.routes.url_helpers.github_project_url self, :only_path => false
+  end
+
+  def status
+    if state == "disabled"
+      if state_reason == "uninferrable"
+        :uninferrable
+      else
+        :disabled
+      end
+    elsif recent_builds.length == 0
+      :inactive
+    else
+      :active
+    end
   end
 end
