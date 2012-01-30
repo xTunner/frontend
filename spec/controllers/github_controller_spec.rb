@@ -67,7 +67,7 @@ describe GithubController do
 
   it "The github hook successfully triggers builds" do
     JRClj.new("circle.init").init()
-    JRClj.new("circle.backend.build.test-utils").ensure_test_project()
+    JRClj.new("circle.backend.build.test-utils").ensure_clean_test_project()
 
     vcs_url = "https://github.com/arohner/circle-dummy-project"
     project = Project.where(:vcs_url => vcs_url).first()
