@@ -110,5 +110,16 @@ class User
     send ||= !build.failed && (prefs["on_success"].include?("all"))
 
     return send
+  end
+
+  def self.add_bot
+    bot = User.where(:email => "bot@circleci.com").first()
+
+    if not bot
+      bot = User.new(:email => "bot@circleci.com",
+                     :password => "brick amount must thirty")
     end
+    bot.admin = true
+    bot.save!
+  end
 end

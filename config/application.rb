@@ -74,13 +74,7 @@ module MongoidTest
         Backend.initialize
       end
 
-      bot = User.where(:email => "bot@circleci.com").first()
-
-      if not bot
-        bot = User.new(:email => "bot@circleci.com", :password => "brick amount must thirty")
-      end
-      bot.admin = true
-      bot.save!
+      User.add_bot
     end
   end
 end
