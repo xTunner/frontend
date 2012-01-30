@@ -133,7 +133,7 @@ module ApplicationHelper
     end
 
     # TECHNICAL_DEBT: kill this function - this puts the word build where it shouldnt be.
-    link_to build.build_num.to_s, build_path(:project => build.project, :id => build.build_num)
+    link_to build.build_num.to_s, build_path(:project => project, :id => build.build_num)
   end
 
 
