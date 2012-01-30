@@ -65,7 +65,10 @@ module ApplicationHelper
 
     # TECHNICAL_DEBT: github only
     link = link_to(revision[0..8], url + "/commit/" + revision)
-    link += " (#{branch})" if branch
+    if branch
+      branch.sub!("remotes/origin/", "")
+      link += " (#{branch})"
+    end
     link
   end
 
