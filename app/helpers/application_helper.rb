@@ -51,8 +51,12 @@ module ApplicationHelper
     minutes = (seconds / 60).to_i
     hours = (minutes / 60).to_i
 
-    if hours > 0
+    if hours > 8
+      "#{hours}h"
+    elsif hours > 0
       "#{hours}h #{minutes % 60}m"
+    elsif minutes > 8
+      "#{minutes}m"
     elsif minutes > 0
       "#{minutes}m #{seconds % 60}s"
     else
