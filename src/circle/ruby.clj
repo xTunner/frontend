@@ -190,8 +190,8 @@ RSpec::Core::Runner.run([\"%s\"])
 (defn send
   "Call a method on a ruby object"
   [obj method & args]
+  (throw-if-not obj "Can't call methods on nil")
   (try
-    (throw-if-not obj "Can't call methods on nil")
     (.callMethod obj (name method) (into-array org.jruby.runtime.builtin.IRubyObject (map ->ruby args)))
     (catch org.jruby.exceptions.RaiseException e
       (throw (Exception. (capture-exception-data e))))))
