@@ -265,21 +265,23 @@
 
 (defn infer-build-from-url
   "Assumes url does not have a circle.yml. Examine the source tree, and return a build"
-  [url]
+  [url & {:keys [vcs-revision]}]
   (let [project (project/get-by-url url)
         project-name (or (-> project :name) (infer-project-name url))
         repo (git/default-repo-path url)
         spec (spec/get-spec-for-project project)
         spec-actions (parse-spec-actions spec)
-        vcs-revision (git/latest-local-commit repo)
+        vcs-revision (or vcs-revision (git/latest-local-commit repo))
+        commit-details (git/commit-details repo vcs-revision)
         node (inference/node repo)]
     (build/build
-     (add-project-info project
-                       {:vcs_url url
-                        :vcs_revision vcs-revision
-                        :node node
-                        :actions (inference/infer-actions repo)
-                        :job-name "build-inferred"}))))
+     (merge (add-project-info project
+                              {:vcs_url url
+                               :vcs_revision vcs-revision
+                               :node node
+                               :actions (inference/infer-actions repo)
+                               :job-name "build-inferred"})
+            commit-details))))
 
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"
@@ -290,7 +292,8 @@
       (build-from-config config project
                          :vcs-revision vcs-revision
                          :job-name job-name)
-      (infer-build-from-url url))))
+      (infer-build-from-url url
+                            :vcs-revision vcs-revision))))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
