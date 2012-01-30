@@ -66,9 +66,10 @@
 (fact "circle is not inferred"
   ;; not a real "test", but currently circle shouldn't be inferred,
   ;; and causes hard to find test failures when it's not.
-  (let [p (project/get-by-url"https://github.com/arohner/CircleCI")]
+  (let [json test/circle-github-json
+        p (project/get-by-url (-> json :repository :url))]
     (-> p :inferred) => falsey
-    (-> (build-from-json test/circle-github-json) (deref) :job-name) => :build))
+    (-> (build-from-json json) (deref) :job-name) => :build))
 
 (fact "build loads the node and slurps the ssh keys"
   ;; The circle.yml contains :private-key, :public-key. Verify they were slurped.
