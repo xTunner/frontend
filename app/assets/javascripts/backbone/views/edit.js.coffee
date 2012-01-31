@@ -4,6 +4,7 @@ App.Views.EditProject = Backbone.View.extend
     "submit form.spec_form": "save_specs"
     "submit form.hook_form": "save_hooks"
     "click #reset": "reset_specs"
+    "click #trigger": "trigger_build"
 
 
   initialize: ->
@@ -63,6 +64,13 @@ App.Views.EditProject = Backbone.View.extend
 
     @save_specs e
     @render()
+
+  trigger_build: (e) ->
+    e.preventDefault()
+    btn = $(e.currentTarget)
+    btn.button 'loading'
+    $.post(@model.build_url())
+    btn.button 'reset'
 
 
   render: ->

@@ -21,14 +21,21 @@
 
 
 .row
-  .span5.indent-slightly
+  .span8.indent-slightly
     - if @is_inferred()
-      %a.btn.primary.large{ href: "#setup" }
-        Override automatic inferrence
-    - else
       %p
         %a.btn.primary.large{ href: "#setup" }
-          Edit your project settings
+          Override automatic inferrence
+    - else
+
       %p
-        %button.btn.primary.large.span6#reset
+        %a.btn.primary.large{ href: "#setup" }
+          Edit project settings
+
+      %p
+        %button.btn.primary.large.span6#reset{ data-loading-text: "Resetting" }
           Delete your commands and revert to inferred
+
+    %p
+      %button.btn.primary.large#trigger{ data-loading-text: "triggering" }
+        Trigger a build

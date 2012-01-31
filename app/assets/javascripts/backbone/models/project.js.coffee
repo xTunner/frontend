@@ -10,6 +10,9 @@ App.Models.Project = Backbone.Model.extend
   github_url: ->
     "https://github.com/#{@get 'project'}"
 
+  build_url: ->
+    @url() + '/build'
+
   is_inferred: ->
     full_spec = @get "setup"
     full_spec += @get "dependencies"
