@@ -95,7 +95,7 @@ describe SimpleMailer do
     end
 
     it "should have the right subject" do
-      mail.subject.should include ": a/b#1 - author: That's right, I wrote some code"
+      mail.subject.should include ": a/b 1 - author: That's right, I wrote some code"
       mail.subject.should
     end
 
