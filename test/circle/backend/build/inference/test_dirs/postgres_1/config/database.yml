@@ -1,0 +1,6 @@
+test:
+  adapter: postgresql
+  database: db
+  reconnect: false
+  username: username
+  password: password
