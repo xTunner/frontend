@@ -1,42 +1,42 @@
-.container
-  .content
-    = render :partial => 'running'
+.container-fluid
+  = render :partial => 'running'
 
-    %table#recent-jobs
-      %thead
+  %table#recent-jobs
+    %thead
+      %tr
+        %th #
+        %th Revision
+        %th Author
+        %th Log
+        %th Started
+        %th Time taken
+        %th Status
+    %tbody
+      - @project.recent_builds(30).each do |build|
         %tr
-          %th #
-          %th Revision
-          %th Author
-          %th Log
-          %th Started
-          %th Time taken
-          %th Status
-      %tbody
-        - @project.recent_builds(30).each do |build|
-          %tr
-            %td
-              = build_link_to build, @project
+          %td
+            = build_link_to build, @project
 
-            %td
-              = revision_link_to build.vcs_url, build.vcs_revision, build.branch
+          %td
+            = revision_link_to build.vcs_url, build.vcs_revision, build.branch
 
-            %td
-              = mail_to build.author_email, build.author_name
+          %td
+            = mail_to build.author_email, build.author_name
 
-            %td
-              - if build.body.to_s != "" # ignore nil and empty
-                = link_to build.subject, "#", { :title => build.body }
-              - else
-                = build.subject
+          %td
+            - if build.body.to_s != "" # ignore nil and empty
+              = link_to build.subject, "#", { :title => build.body }
+            - else
+              = build.subject
 
-            %td
-              = as_commit_time build.start_time
+          %td
+            = as_commit_time build.start_time
 
-            %td
+          %td
+            - if build.status != :killed
               = as_length_of_build build.start_time, build.stop_time
-              - if build.status == :running
-                (still running)
+            - if build.status == :running
+              (still running)
 
-            %td
-              != bootstrap_status build
+          %td
+            != bootstrap_status build

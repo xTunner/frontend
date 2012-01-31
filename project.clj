@@ -31,6 +31,7 @@
 
                  ;; we added new fn, org/repos
                  [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
+
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,6 +55,9 @@
                  ;;[com.cemerick/bandalore "0.0.1"]
                  ;;[com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
 
+                 ;; Hooks
+                 [clipchat/clipchat "1.0.0-SNAPSHOT"]
+
                  ;; Logging
                  [log4j "1.2.16"]
                  [log4j/apache-log4j-extras "1.1"]
@@ -68,6 +72,8 @@
 
                  ;; Misc
                  [swank-clojure "1.3.4"]
+
+                 ;; Hooks
 
                  [commons-codec "1.4"]
                  [org.clojure/core.cache "0.5.0"]
@@ -103,7 +109,7 @@
                  [org.cloudhoist/node-js "0.6.0-251878762734e6ffecdbdfe8e5c705869aa26b0b"]
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
                  [lein-crate "0.1.0"]
-                 [pallet-rvm "0.1-186bdde006ec2e22d5c96e1e0cd33f9e65848b01"]
+                 [pallet-rvm "0.1-46e3991113e82b9d857bce7945b606423ba17699"]
                  [midje "1.3.1"]
                  [cdt "1.2.6.1-SNAPSHOT"]
                  [org.jruby.ext.posix/jnr-posix "1.1.8"]]

@@ -2,22 +2,35 @@ require 'spec_helper'
 
 describe "Projects", :js => true do
   describe "edit page" do
+    let(:user) { User.create(:name => "Test User", :email => "user@test.com", :password => "please") }
+
+    let(:simple_url) { "https://github.com/a/simple" }
+    let(:pws_url) { "https://github.com/a/pws" }
+    let!(:simple_project) { Project.unsafe_create(:vcs_url => simple_url, :users => [user]) }
+    let!(:project_with_specs) { Project.unsafe_create(:vcs_url => pws_url,
+                                                     :users => [user],
+                                                     :setup => "echo do setup",
+                                                     :dependencies => "echo do dependencies",
+                                                     :compile => "echo do compile",
+                                                     :test => "echo do test",
+                                                     # extra is a new field, but no-one put
+                                                     # anything in compile so we're fine.
+                                                     :extra => "echo do extra") }
+
 
     before(:each) do
       host = "circlehost:3001"
       host! host
       Capybara.app_host = "http://" + host
-      @user = login(:user)
+      login
     end
 
     #TECHNICAL_DEBT: this is slow, just log in once per user/project
-    def login(user_symbol)
-      user = Factory.create(user_symbol)
+    def login
       visit '/login'
       fill_in "user_email", :with => user.email
       fill_in "user_password", :with => user.password
       click_button "Sign in"
-      return user
     end
 
     def _fill_in(target, options={})
@@ -48,10 +61,8 @@ describe "Projects", :js => true do
 
 
 
-    def visit_project(project_symbol)
-      @project = FactoryGirl.create project_symbol
-      @user.projects << @project
-      @user.save
+    def visit_project(project)
+      @project = project
 
       visit root_path
       page.should have_link(@project.github_project_name)
@@ -71,6 +82,11 @@ describe "Projects", :js => true do
       expect_fragment "tests"
     end
 
+    def goto_hooks
+      click_link "Hooks"
+      expect_fragment "hooks"
+    end
+
     def goto_settings
       click_link "Test settings"
       expect_fragment "settings"
@@ -78,7 +94,7 @@ describe "Projects", :js => true do
 
 
     it "should have the contents of the project entered already" do
-      visit_project :project_with_specs
+      visit_project project_with_specs
       goto_setup
       find_field("setup").value.should == "echo do setup"
       find_field("dependencies").value.should == "echo do dependencies"
@@ -89,7 +105,7 @@ describe "Projects", :js => true do
     end
 
     it "should keep the contents when switching between sections" do
-      visit_project :project_with_specs
+      visit_project project_with_specs
       goto_setup
       _fill_in "setup", :with => "echo a different command"
 
@@ -99,7 +115,7 @@ describe "Projects", :js => true do
     end
 
     it "should have sane URLs despite clicking around" do
-      visit_project :project_with_specs
+      visit_project project_with_specs
       goto_settings
       goto_tests
       goto_setup
@@ -111,7 +127,7 @@ describe "Projects", :js => true do
     end
 
     it "should be saved when we click save" do
-      visit_project :project_with_specs
+      visit_project project_with_specs
 
       goto_setup
       _fill_in "setup", :with => "echo c"
@@ -123,20 +139,18 @@ describe "Projects", :js => true do
       _fill_in "extra", :with => "echo b"
 
       click_button "Save commands and run your tests"
-      pending
-      # see comment at other wait_for_project call
 
-        # p = Project.wait_for_project @project.vcs_url, :test => "echo a"
-        # p.test.should == "echo a"
-        # p.extra.should == "echo b"
-        # p.setup.should == "echo c"
-        # p.dependencies.should == "echo d"
+      p = wait_for_project :test => "echo a"
+      p.test.should == "echo a"
+      p.extra.should == "echo b"
+      p.setup.should == "echo c"
+      p.dependencies.should == "echo d"
 
-        # expect_fragment "settings"
+      expect_fragment "settings"
     end
 
     it "should not have the same contents on reload" do
-      visit_project :project_with_specs
+      visit_project project_with_specs
 
       goto_setup
       _fill_in "setup", :with => "echo c"
@@ -149,24 +163,22 @@ describe "Projects", :js => true do
     end
 
     it "should clear the settings" do
-      visit_project :project_with_specs
+      visit_project project_with_specs
       goto_settings
       click_button "Delete your commands and revert to inferred"
 
       # You're supposed to be able to put the remaining code in the pending
       # block, but that's actually breaking _other_ tests!
-      pending
+      p = wait_for_project :test => ""
 
-#         p = wait_for_project :test => ""
-
-#         p.test.should == ""
-#         p.extra.should == ""
-#         p.setup.should == ""
-#         p.dependencies.should == ""
+      p.test.should == ""
+      p.extra.should == ""
+      p.setup.should == ""
+      p.dependencies.should == ""
     end
 
     it "should move through the UI properly" do
-      visit_project :project
+      visit_project simple_project
 
       page.should have_content("Your project settings are automatically inferred!")
       click_link "Override automatic inferrence"

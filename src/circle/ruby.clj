@@ -5,6 +5,7 @@
   (:import java.io.StringWriter)
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.except :only (throw-if-not)])
+  (:require [clojure.string :as string])
   (:require fs))
 
 (declare eval ruby get-class get-module send)
@@ -89,13 +90,17 @@
   org.jruby.exceptions.RaiseException [e]
   (.getException e))
 
-;; Exceptions aren't IRubyObjects
-(defmethod ->ruby
-  java.lang.Exception [e]
-  (let [w (StringWriter.)
+(defn capture-exception-data [e]
+  "Returns a string via printStackTrace"
+    (let [w (StringWriter.)
         pw (PrintWriter. w)]
     (.printStackTrace e pw)
     (.toString w)))
+
+;; Exceptions aren't IRubyObjects
+(defmethod ->ruby
+  java.lang.Exception [e]
+  (capture-exception-data e))
 
 (defmethod ->ruby
   clojure.lang.Sequential [v]
@@ -150,15 +155,24 @@
 Note that rspec will run in whatever RAILS_ENV you started in, so you
   probably want to start in RAILS_ENV=test, or rspec will clear your
   DB, or tests will fail because they assume the DB cleaner runs."
-  [& subdirs]
-  (let [subdirs (if (empty? subdirs) [""] subdirs)
+  [& args]
+  (let [options (filter #(= (get % 0) \-) args)
+        subdirs (remove #(= (get % 0) \-) args)
+        subdirs (if (empty? subdirs) [""] subdirs)
         subdirs (map #(fs/join "spec" %) subdirs)
         command (format "
 require 'rubygems'
 require 'rspec/core/rake_task'
 
-RSpec::Core::Runner.run(%s)
-" (vec subdirs))]
+# http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console
+puts 'Reloading factories'
+FactoryGirl.factories.clear
+FactoryGirl.find_definitions
+RSpec.world.reset
+RSpec.world.shared_example_groups.clear
+
+RSpec::Core::Runner.run([\"%s\"])
+" (string/join "\", \"" (concat options subdirs)))]
     (eval command)))
 
 (defn get-kernel
@@ -168,22 +182,35 @@ RSpec::Core::Runner.run(%s)
 
 (defn get-class
   "Returns the class/module with the given name. With one arg, looks for a class in the root namespace. With two args, looks for a class/module defined under another class, like Foo::Bar"
-  ([name]
-     (.getClass (ruby) name))
-  ([parent name]
-     (.getClass parent name)))
+  ([name-str]
+     (.getClass (ruby) (name name-str)))
+  ([parent name-str]
+     (.getClass parent (name name-str))))
 
 (defn send
   "Call a method on a ruby object"
   [obj method & args]
   (throw-if-not obj "Can't call methods on nil")
-  (.callMethod obj (name method) (into-array org.jruby.runtime.builtin.IRubyObject (map ->ruby args))))
+  (try
+    (.callMethod obj (name method) (into-array org.jruby.runtime.builtin.IRubyObject (map ->ruby args)))
+    (catch org.jruby.exceptions.RaiseException e
+      (throw (Exception. (capture-exception-data e))))))
 
 (defn get-module
   ([name]
      (.getModule (ruby) name))
   ([parent module-name]
      (send parent :const_get module-name)))
+
+(defn ->instance
+  "Takes an object with an _id and fetches the ruby model's instance for that variable"
+  [class obj]
+  (let [id (-> obj :_id)
+        rid (->ruby id)
+        class (get-class class)
+        instance (send class :find rid)]
+    (throw-if-not instance)
+    instance))
 
 (defn methods
   "Returns the list of ruby methods on the obj"

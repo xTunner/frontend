@@ -13,7 +13,8 @@
   (:require [circle.util.map :as map])
   (:require circle.backend.nodes.rails)
   (:require [circle.backend.build.inference :as inference])
-  (:require [circle.backend.build.inference.mysql :as mysql]))
+  (:require [circle.backend.build.inference.mysql :as mysql])
+  (:require [circle.backend.build.inference.postgres :as postgres]))
 
 (defn bundler?
   "True if this project is using bundler"
@@ -88,10 +89,16 @@
   [repo]
   (let [yml (->> (fs/join repo "config")
                  (fs/listdir)
-                 (filter #(and (re-find #"database.*yml" %) (re-find #"example" %)))
+                 (filter #(and (re-find #"database.*yml" %) (or (re-find #"default" %) (re-find #"example" %))))
                  (first))]
     (when yml
       (fs/join repo "config" yml))))
+
+(defn get-database-yml
+  [repo]
+  (if (database-yml? repo)
+    (fs/join repo "config/database.yml")
+    (find-database-yml repo)))
 
 (defn need-cp-database-yml? [repo]
   (and (not (database-yml? repo))
@@ -112,7 +119,7 @@
           :type :setup)))
 
 (defn parse-db-yml [repo]
-  (-?> (find-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
+  (-?> (get-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
 
 (defn need-mysql-socket? [repo]
   (let [db-config (parse-db-yml repo)]
@@ -130,17 +137,8 @@
     (when db-info
       (condp = db-type
         "mysql" (mysql/create-user db-info)
+        "postgresql" (postgres/create-role db-info)
         nil))))
-
-(defaction ensure-database-yml []
-  {:name "ensuring database.yml exists and is in the proper location"}
-  (fn [build]
-    (let [repo (build/checkout-dir build)
-          db-yml (fs/join repo "database.yml")
-          example-yml (find-database-yml repo)]
-      (if (and (not (fs/exists? db-yml)) example-yml)
-        (fs/copy example-yml db-yml)
-        (errorf "couldn't find database.yml for project, things probably aren't going to end well")))))
 
 (def ^{:dynamic true} use-bundler? true)
 
@@ -178,6 +176,9 @@
         :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
+
+;;; TODO: only use bundler when there is a Gemfile. If using bundler, do `bundle
+;;; exec $@`, else just do `$@` (aka the command)
 (defn spec
   "Returns the set of actions necessary for this project"
   [repo]

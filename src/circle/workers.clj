@@ -26,7 +26,7 @@
          result#)
        (catch Exception e#
          (airbrake :data {:body (quote ~@body) :future true} :exception e#)
-         (error e# "%s threw" (quote ~@body))
+         (errorf e# "%s threw" (quote ~@body))
          (throw e#)))))
 
 (defn start-worker [f & args]

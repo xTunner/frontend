@@ -51,8 +51,12 @@ module ApplicationHelper
     minutes = (seconds / 60).to_i
     hours = (minutes / 60).to_i
 
-    if hours > 0
+    if hours > 8
+      "#{hours}h"
+    elsif hours > 0
       "#{hours}h #{minutes % 60}m"
+    elsif minutes > 8
+      "#{minutes}m"
     elsif minutes > 0
       "#{minutes}m #{seconds % 60}s"
     else
@@ -65,23 +69,37 @@ module ApplicationHelper
 
     # TECHNICAL_DEBT: github only
     link = link_to(revision[0..8], url + "/commit/" + revision)
-    link += " (#{branch})" if branch
+    if branch
+      branch.sub!("remotes/origin/", "")
+      link += " (#{branch})"
+    end
     link
   end
 
   def bootstrap_status(build, markup=nil)
-    markup ||= build.status
+    markup ||= build.status_as_title
 
     type = case build.status
-           when :fail
+           when :failed
+             :important
+           when :infrastructure_fail
+             :warning
+           when :timedout
+             :important
+           when :no_tests
              :important
            when :killed
              :warning
+           when :fixed
+             :success
            when :success
              :success
            when :running
              :notice
-             end
+           when :starting
+             nil
+           end
+
     "<span class='label #{type}'>#{ markup }"
   end
 
@@ -115,7 +133,7 @@ module ApplicationHelper
     end
 
     # TECHNICAL_DEBT: kill this function - this puts the word build where it shouldnt be.
-    link_to build.build_num.to_s, build_path(:project => build.project, :id => build.build_num)
+    link_to build.build_num.to_s, build_path(:project => project, :id => build.build_num)
   end
 
 

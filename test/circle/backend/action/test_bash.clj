@@ -31,8 +31,7 @@
     (-> @build :actions (first) :name) => "hostname"))
 
 (fact "bash action adds action results"
-  (let [_ (test/ensure-test-project)
-        build (test/minimal-build :actions [(bash/bash "hostname")])]
+  (let [build (test/minimal-build :actions [(bash/bash "hostname")])]
     (let [result (run/run-build build)]
       (-> @build :action-results (count)) => 1
       (-> @build :action-results (first) :exit_code) => 0

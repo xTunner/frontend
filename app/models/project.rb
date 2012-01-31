@@ -24,25 +24,32 @@ class Project
   field :test, :type => String, :default => ""
   field :extra, :type => String, :default => ""
 
+  field :state, :type => String, :default => nil
+  field :state_reason, :type => String, :default => nil
+
+
+  # Notifications
+  field :hipchat_room
+  field :hipchat_api_token
+
 
 
   has_and_belongs_to_many :users
 #  has_many :builds
 
-  attr_accessible :setup, :dependencies, :compile, :test, :extra
+  attr_accessible :setup, :dependencies, :compile, :test, :extra, :hipchat_room, :hipchat_api_token
 
   def to_param
     github_project_name
   end
 
   def self.from_url(url)
-    projects = Project.where(:vcs_url => url)
-    projects.first
+    projects = Project.where(:vcs_url => url).first
   end
 
   def self.from_github_name(name)
     url = Backend.blocking_worker "circle.backend.github-url/canonical-url", name
-    self.from_url(url)
+    self.from_url url
   end
 
   # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the
@@ -76,13 +83,32 @@ class Project
     super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url, :_id])
   end
 
-  def self.wait_for_project(url, options={})
-    start_time = Time.now
-    while true do
-      (Time.now - start_time).should < 1.seconds
-      p = Project.from_url url
-      return p if (p[options.keys[0]] == options.values[0])
-    end
+  # Allows mass-assignment, only for use from testing
+  def self.unsafe_create(attrs)
+    raise if !Rails.env.test?
+
+    p = Project.create!
+    attrs.each { |k, v| p.send("#{k}=", v) }
+    p.save!
+    p
   end
 
+  def absolute_url
+    Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
+    Rails.application.routes.url_helpers.github_project_url self, :only_path => false
+  end
+
+  def status
+    if state == "disabled"
+      if state_reason == "uninferrable"
+        :uninferrable
+      else
+        :disabled
+      end
+    elsif recent_builds.length == 0
+      :inactive
+    else
+      :active
+    end
+  end
 end

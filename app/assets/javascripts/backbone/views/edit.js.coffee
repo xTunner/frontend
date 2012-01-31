@@ -1,8 +1,11 @@
 App.Views.EditProject = Backbone.View.extend
 
   events:
-    "submit form": "save"
-    "click #reset": "reset"
+    "submit form.spec_form": "save_specs"
+    "submit form.hook_form": "save_hooks"
+    "click #reset": "reset_specs"
+    "click #trigger": "trigger_build"
+    "click #trigger_inferred": "trigger_inferred_build"
 
 
   initialize: ->
@@ -19,24 +22,40 @@ App.Views.EditProject = Backbone.View.extend
     @render()
 
 
-  save: (e) ->
-    e.preventDefault()
-
-    btn = $(e.target.commit)
+  save: (event, btn, redirect, keys) ->
+    event.preventDefault()
     btn.button 'loading'
 
-    @model.save @model,
+    # Only push a subset of the model to the server: we don't want to save specs
+    # for hooks and vice-versa, and splitting it up into multiple models is too
+    # hard.
+    keys.push "project"
+    keys.push "_id"
+
+    m = @model.clone()
+    for k of m.attributes
+      m.unset k, {silent: true} if k not in keys
+
+    m.save {},
       success: ->
         btn.button 'reset'
-        window.location = "#settings"
-      failure: ->
-        btn.button 'failure!'
-        alert "Error in saving project. Please try again. If it persists, please contact help."
+        window.location = redirect
+      error: ->
+        btn.button 'reset'
+        alert "Error in saving project. Please try again. If it persists, please contact Circle."
 
+
+  save_specs: (e) ->
+    @save e, $(e.target.save_specs), "#settings",
+     ["setup", "dependencies", "compile", "test", "extra"]
+
+  save_hooks: (e) ->
+    @save e, $(e.target.save_hooks), "#hooks",
+      ["hipchat_room", "hipchat_api_token"]
 
   el: '#el'
 
-  reset: (e) ->
+  reset_specs: (e) ->
     @model.set
       "setup": ""
       "compile": ""
@@ -44,8 +63,18 @@ App.Views.EditProject = Backbone.View.extend
       "extra": ""
       "dependencies": ""
 
-    @save e
+    @save_specs e
     @render()
+
+  trigger_build: (e, payload = {}) ->
+    e.preventDefault()
+    btn = $(e.currentTarget)
+    btn.button 'loading'
+    $.post @model.build_url(), payload, () ->
+      btn.button 'reset'
+
+  trigger_inferred_build: (e) ->
+    @trigger_build e, {inferred: true}
 
 
   render: ->

@@ -1,24 +1,18 @@
 .container-fluid
-  .sidebar.well
-    %table.condensed-table
-      %thead
-        %tr
-          %th
-            Projects
-      %tbody
-        - @projects.each do |p|
-          %tr
-            %td
-              = project_link_to p
+  .sidebar
 
-            %td.build_column
-              - b = p.latest_build
-              - if b
-                != bootstrap_status b, build_link_to(b, p)
+    = render :partial => "sidebar_table",
+             :locals => { :title => "Active", :filter => :active }
 
+    = render :partial => "sidebar_table",
+             :locals => { :title => "Uninferrable", :filter => :uninferrable }
 
-            %td.icons
-              = link_to 'edit', github_project_edit_path(p)
+    = render :partial => "sidebar_table",
+             :locals => { :title => "Inactive", :filter => :inactive }
+
+    = render :partial => "sidebar_table",
+             :locals => { :title => "Disabled", :filter => :disabled }
+
 
   .content
     .row

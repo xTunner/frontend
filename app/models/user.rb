@@ -14,6 +14,17 @@ class User
   field :signup_channel
   field :signup_referer
 
+  field :sent_first_build_email, :default => false
+  field :email_preferences, :type => Hash, :default => {
+    # The three options are to send:
+    # - :author => if you are the :author/committer,
+    # - :branch => if it's in a :branch you follow (everyone follows master),
+    # - :all => for all builds.
+    "on_fail" => ["author", "branch"], # when builds :fail, or if they were just fixed
+    "on_success" => ["author"], # when builds are :successful
+  }
+
+
   # For making the form nicer, we try to prefetch these from github. When
   # they're not available in time, we need a default.
   field :fetched_name, :default => ""
@@ -24,9 +35,8 @@ class User
   validates_presence_of :email
   validates_uniqueness_of :email, :case_sensitive => false
 
-  attr_accessible :name, :contact, :email, :password, :password_confirmation
+  attr_accessible :name, :contact, :email, :password, :password_confirmation, :email_preferences
 
-  field :sent_first_build_email, :default => false
 
   def known_email
     if is_guest?
@@ -71,5 +81,45 @@ class User
   # True if there has been at least one build in every project the user owns
   def build_in_every_project?
     self.projects.all? {|p| p.latest_build}
+  end
+
+  def wants_build_email?(build)
+    # No-one gets email until they get their first email.
+    #return false unless sent_first_build_email # but not until we're actually sending the first email.
+
+    is_author =
+      build.committer_email == email ||
+      build.author_email == email ||
+      build.committer_name == name ||
+      build.author_name == name
+
+    # For now, we just assume everyone follow master
+    follows_this_branch = build.branch == "master"
+
+    prefs = email_preferences
+    prefs["on_success"] ||= []
+    prefs["on_fail"] ||= []
+
+    # TECHNICAL_DEBT: refactor
+    send = false
+    send ||= build.failed && (is_author && prefs["on_fail"].include?("author"))
+    send ||= build.failed && (follows_this_branch && prefs["on_fail"].include?("branch"))
+    send ||= build.failed && (prefs["on_fail"].include?("all"))
+    send ||= !build.failed && (is_author && prefs["on_success"].include?("author"))
+    send ||= !build.failed && (follows_this_branch && prefs["on_success"].include?("branch"))
+    send ||= !build.failed && (prefs["on_success"].include?("all"))
+
+    return send
+  end
+
+  def self.add_bot
+    bot = User.where(:email => "bot@circleci.com").first()
+
+    if not bot
+      bot = User.new(:email => "bot@circleci.com",
+                     :password => "brick amount must thirty")
+    end
+    bot.admin = true
+    bot.save!
   end
 end

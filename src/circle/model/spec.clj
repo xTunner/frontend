@@ -3,4 +3,4 @@
 
 
 (defn get-spec-for-project [project]
-  (select-keys project [:setup :dependencies :compile :test]))
+  (select-keys project [:setup :dependencies :compile :test :extra]))

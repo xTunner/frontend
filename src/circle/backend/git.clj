@@ -149,18 +149,17 @@
   "Returns a map of important commit information"
   [repo commit]
   (let [f #(format-log repo commit %)]
-    (->
-     ;; In the order of the git-log man page
-     {:parents (-> :P f (split #" "))
-      :author_name (f :an)
-      :author_email (f :ae)
-      :author_date (f :at)
-      :committer_name (f :cn)
-      :committer_email (f :ce)
-      :committer_date (f :ct)
-      :subject (f :s)
-      :body (f :b)
-      :branch (name-rev repo commit)})))
+    ;; In the order of the git-log man page
+    {:parents (-> :P f (split #" "))
+     :author_name (f :an)
+     :author_email (f :ae)
+     :author_date (f :at)
+     :committer_name (f :cn)
+     :committer_email (f :ce)
+     :committer_date (f :ct)
+     :subject (f :s)
+     :body (f :b)
+     :branch (name-rev repo commit)}))
 
 (defn latest-remote-commit
   "Returns the most recent on origin/master. Does not fetch."

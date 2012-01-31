@@ -27,8 +27,13 @@ class ProjectsController < ApplicationController
     @project.update_attributes(params)
     @project.save!
 
-    # Automatically trigger another build, since after saving, you'll always want another build to run to test it.
-    #    Backend.build(@project)
+    # Automatically trigger another build, since after saving, you'll always
+    # want another build to run to test it.
+    if params[:setup]
+      Backend.build(@project)
+    elsif params[:hipchat_room]
+      Backend.fire_worker "circle.backend.build.email/send-hipchat-setup-notification", @project.id.to_s
+    end
 
     respond_with @project do |f|
       f.html

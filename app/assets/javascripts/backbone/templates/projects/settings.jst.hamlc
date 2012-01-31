@@ -17,14 +17,30 @@
     - else
       %span.highlight
         You have overridden our inferred settings!
-      You can return to inferred by deleting your commands.
+      We'll infer your setup again if you delete your commands.
 
 
 .row
-  .span5.indent-slightly
+  .span8.indent-slightly
     - if @is_inferred()
-      %a.btn.primary.large{ href: "#setup" }
-        Override automatic inferrence
+      %p
+        %a.btn.primary.large{ href: "#setup" }
+          Override automatic inferrence
     - else
-      %button.btn.primary.large.span6#reset
-        Delete your commands and revert to inferred
+
+      %p
+        %a.btn.primary.large{ href: "#setup" }
+          Edit project settings
+
+      %p
+        %button.btn.primary.large.span6#reset{ data-loading-text: "Resetting" }
+          Delete your commands and revert to inferred
+
+    %p
+      %button.btn.primary.large#trigger{ data-loading-text: "triggering" }
+        Trigger a build
+
+    - if false # for admins to enable manually
+      %p
+        %button.btn.primary.large#trigger_inferred{ data-loading-text: "triggering" }
+          Trigger an inferred build

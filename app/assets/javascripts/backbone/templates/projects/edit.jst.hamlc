@@ -6,10 +6,10 @@
       %ul.tree
         %li
           %a{ href: "#setup" } Test machine
-        %li.last
+        %li
           %a{ href: "#tests" } Test suite
-          -#        %li
-          -#          %a{ href: "#hooks" } Hooks
+        %li.last
+          %a{ href: "#hooks" } Hooks
 
 
   .content

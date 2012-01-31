@@ -55,22 +55,6 @@ module MongoidTest
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-
-    # Allow FactoryGirl to reload properly
-    # http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console/
-    ActionDispatch::Callbacks.after do
-      # TECHNICAL_DEBT: this doesn't work, and slows me down every time I need
-      # to reload a factory and must restart the server
-      # Reload the factories
-      if Rails.env.test?
-        unless FactoryGirl.factories.blank? # first init will load factories, this should only run on subsequent reloads
-          puts "Reloading factories"
-          FactoryGirl.factories.clear
-          FactoryGirl.find_definitions
-        end
-      end
-    end
-
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
 
@@ -90,13 +74,7 @@ module MongoidTest
         Backend.initialize
       end
 
-      bot = User.where(:email => "bot@circleci.com").first()
-
-      if not bot
-        bot = User.new(:email => "bot@circleci.com", :password => "brick amount must thirty")
-      end
-      bot.admin = true
-      bot.save!
+      User.add_bot
     end
   end
 end

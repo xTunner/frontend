@@ -1,0 +1,11 @@
+%p
+  Commit #{@build.vcs_revision} timed out during testing, after 5 minutes without output.
+  %br
+  = render "full_build_report"
+
+= render "last_command"
+
+= render "rest_of_commands"
+
+%p
+  = render "full_build_report"
