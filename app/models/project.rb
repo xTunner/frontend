@@ -44,13 +44,12 @@ class Project
   end
 
   def self.from_url(url)
-    projects = Project.where(:vcs_url => url)
-    projects.first
+    projects = Project.where(:vcs_url => url).first
   end
 
   def self.from_github_name(name)
     url = Backend.blocking_worker "circle.backend.github-url/canonical-url", name
-    self.from_url(url)
+    self.from_url url
   end
 
   # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the
