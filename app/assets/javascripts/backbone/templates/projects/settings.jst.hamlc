@@ -39,3 +39,8 @@
     %p
       %button.btn.primary.large#trigger{ data-loading-text: "triggering" }
         Trigger a build
+
+    - if false # for admins to enable manually
+      %p
+        %button.btn.primary.large#trigger_inferred{ data-loading-text: "triggering" }
+          Trigger an inferred build

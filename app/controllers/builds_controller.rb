@@ -8,7 +8,7 @@ class BuildsController < ApplicationController
     @project = Project.from_github_name params[:project]
     authorize! :manage, @project
 
-    Backend.build(@project)
+    Backend.build(@project, params[:inferred])
 
     render :nothing => true
   end

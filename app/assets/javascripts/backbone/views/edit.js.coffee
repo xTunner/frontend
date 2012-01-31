@@ -5,6 +5,7 @@ App.Views.EditProject = Backbone.View.extend
     "submit form.hook_form": "save_hooks"
     "click #reset": "reset_specs"
     "click #trigger": "trigger_build"
+    "click #trigger_inferred": "trigger_inferred_build"
 
 
   initialize: ->
@@ -65,12 +66,15 @@ App.Views.EditProject = Backbone.View.extend
     @save_specs e
     @render()
 
-  trigger_build: (e) ->
+  trigger_build: (e, payload = {}) ->
     e.preventDefault()
     btn = $(e.currentTarget)
     btn.button 'loading'
-    $.post @model.build_url(), {}, () ->
+    $.post @model.build_url(), payload, () ->
       btn.button 'reset'
+
+  trigger_inferred_build: (e) ->
+    @trigger_build e, {inferred: true}
 
 
   render: ->

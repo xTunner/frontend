@@ -285,10 +285,10 @@
 
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"
-  [url & {:keys [job-name vcs-revision]}]
+  [url & {:keys [job-name vcs-revision infer]}]
   (let [project (project/get-by-url! url)
         config (get-config-for-url url :vcs_revision vcs-revision)]
-    (if (and config project (not (-> project :inferred)))
+    (if (and config project (not infer))
       (build-from-config config project
                          :vcs-revision vcs-revision
                          :job-name job-name)

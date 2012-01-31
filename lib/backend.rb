@@ -10,9 +10,9 @@ class Backend
     b
   end
 
-  def self.build(project)
+  def self.build(project, inferred = false)
     b = Build.start(project.vcs_url)
-    self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, b.id.to_s
+    self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, inferred, b.id.to_s
     b
   end
 
