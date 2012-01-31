@@ -26,7 +26,8 @@
 (defn build-url [build]
   (ruby/send (ruby/->instance :Build build) :absolute_url))
 
-(defn send-hipchat-message [project message & args]
+(defn send-hipchat-message [project message & {:keys [color]
+                                               :or {color :yellow}}]
   (let [token (-> :hipchat_api_token project)
         room (-> :hipchat_room project)]
     (when (and token room)
@@ -35,23 +36,27 @@
        {:room_id room
         :from "Circle"
         :notify 1
-        :message (apply format message args)}))))
+        :color (name color)
+        :message message}))))
 
 (defn send-hipchat-build-notification [build]
   (let [project (build/get-project build)
         message (build-message @build)
-        url (build-url @build)]
-    (send-hipchat-message project "<a href='%s'>%s</a>" url message)))
+        url (build-url @build)
+        message (format "<a href='%s'>%s</a>" url message)
+        success? (-> @build :failed not)
+        color (if success? :green :red)]
+    (send-hipchat-message project message :color color)))
 
 (defn send-hipchat-setup-notification [project-id]
   (ruby/ruby-require :project)
   (let [project (project/get-by-id (ObjectId. project-id))
         url (project-url project)
-        project-name (github-project-name project)]
-    (send-hipchat-message project
-                          "Hi, welcome to Circle! Hipchat notifications are now enabled for <a href=\"%s\">%s</a>"
-                          url
-                          project-name)))
+        project-name (github-project-name project)
+        message (format  "Hi, welcome to Circle! Hipchat notifications are now enabled for <a href=\"%s\">%s</a>"
+                         url
+                         project-name)]
+    (send-hipchat-message project message)))
 
 
 
