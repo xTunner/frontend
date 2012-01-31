@@ -54,6 +54,12 @@ sample["commits"] = [{ "id" => "78f58846a049bb6772dcb298163b52c4657c7d45",
                        "added" => ["filepath.rb"]}]
 dummy_json = JSON.generate(sample)
 
+# make a clone to test deleted branches
+deleted = JSON.parse(dummy_json)
+deleted["after"] = "0000000000000000000000000000000000000000"
+deleted_json = JSON.generate(deleted)
+
+
 java_import "clojure.lang.Var"
 
 def symbolize(s)
@@ -65,21 +71,30 @@ Var.intern(user_ns, symbolize("foo"), dummy_json)
 
 describe GithubController do
 
-  it "The github hook successfully triggers builds" do
+  before(:each) do
     JRClj.new("circle.init").init()
     JRClj.new("circle.backend.build.test-utils").ensure_clean_test_project()
+    @vcs_url = "https://github.com/arohner/circle-dummy-project"
+  end
 
-    vcs_url = "https://github.com/arohner/circle-dummy-project"
-    project = Project.where(:vcs_url => vcs_url).first()
+  it "The github hook successfully triggers builds" do
+    project = Project.from_url @vcs_url
+    project.should_not be_nil
 
-    project.should be_true
-
-    pre_count = Build.where(:vcs_url => vcs_url).count()
+    pre_count = Build.where(:vcs_url => @vcs_url).length
     post :create, :payload => dummy_json
-    sleep 3
+    sleep 1
 
-    post_count = Build.where(:vcs_url => vcs_url).count()
+    post_count = Build.where(:vcs_url => @vcs_url).length
     (post_count > pre_count).should be_true
+  end
+
+  it "shouldn't trigger when branches are deleted" do
+    pre_count = Build.where(:vcs_url => @vcs_url).length
+    post :create, :payload => deleted_json
+    sleep 1
+    post_count = Build.where(:vcs_url => @vcs_url).length
+    post_count.should == pre_count
   end
 
   it "should fail due to invalid json" do
