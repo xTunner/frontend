@@ -69,8 +69,8 @@ App.Views.EditProject = Backbone.View.extend
     e.preventDefault()
     btn = $(e.currentTarget)
     btn.button 'loading'
-    $.post(@model.build_url())
-    btn.button 'reset'
+    $.post @model.build_url(), {}, () ->
+      btn.button 'reset'
 
 
   render: ->
