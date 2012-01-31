@@ -50,7 +50,9 @@
                  [congomongo "0.1.7"]
 
                  ;; Queue
-                 [com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
+                 [congomongo-mq "0.0.0-SNAPSHOT"]
+                 ;;[com.cemerick/bandalore "0.0.1"]
+                 ;;[com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
 
                  ;; Logging
                  [log4j "1.2.16"]
