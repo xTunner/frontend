@@ -47,16 +47,16 @@ class Backend
   end
 
   def self.fire_worker(name, *args)
-    return nil if Backend.mock
+    return self.mocked_fire_worker(name, *args) if self.mock
+
     # TODO: need to coerce args to clj types (it's fine for now
     # because Strings and ints are the same in both)
-
     fn = self._fn name
     Backend.clj.fire_worker(fn, *args)
   end
 
   def self.start_worker(name, *args)
-    return 0 if Backend.mock
+    return self.mocked_start_worker(name, *args) if self.mock
 
     fn = self._fn name
     Backend.clj.start_worker(fn, *args)
@@ -69,19 +69,19 @@ class Backend
   end
 
   def self.worker_done?(id)
-    return true if Backend.mock
+    return self.mocked_worker_done?(id) if self.mock
 
     Backend.clj.worker_done?(id)
   end
 
   def self.wait_for_worker(id)
-    return nil if Backend.mock
+    return self.mocked_wait_for_worker(id) if self.mock
 
     Backend.clj.wait_for_worker(id)
   end
 
   def self.worker_count
-    return 1 if Backend.mock
+    return self.mocked_worker_count if self.mock
 
     Backend.clj.worker_count
   end
@@ -110,6 +110,50 @@ class Backend
 
   class_attribute :mock
   class_attribute :_clj
+
+
+  # Mocked interface (don't use a separate class because the Backend tests rely
+  # on setting mocked to false)
+  class MockedWorker
+    class_attribute :next_id
+    class_attribute :queue
+    attr_accessor :id, :name, :args, :completed, :fired
+
+    def initialize(name, fired, *args)
+      @name = name
+      @args = *args
+      @completed = false
+      @fired = fired
+      @id = MockedWorker.next_id
+      MockedWorker.next_id += 1
+    end
+  end
+  MockedWorker.next_id = 1
+  MockedWorker.queue = []
+
+
+  def self.mocked_fire_worker(name, *args)
+    MockedWorker.queue << MockedWorker.new(name, true, *args)
+  end
+
+  def self.mocked_start_worker(name, *args)
+    MockedWorker.queue << MockedWorker.new(name, false, *args)
+    return MockedWorker.queue.last.id
+  end
+
+  def self.mocked_worker_done?(id)
+    return true
+  end
+
+  def self.mocked_wait_for_worker(id)
+    # not the same as done!
+    MockedWorker.queue[id].completed = true
+    return nil
+  end
+
+  def self.mocked_worker_count
+    return MockedWorker.queue.length
+  end
 end
 
 Backend.mock = true
