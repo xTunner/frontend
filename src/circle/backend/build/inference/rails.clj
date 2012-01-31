@@ -88,10 +88,16 @@
   [repo]
   (let [yml (->> (fs/join repo "config")
                  (fs/listdir)
-                 (filter #(and (re-find #"database.*yml" %) (re-find #"example" %)))
+                 (filter #(and (re-find #"database.*yml" %) (or (re-find #"default" %) (re-find #"example" %))))
                  (first))]
     (when yml
       (fs/join repo "config" yml))))
+
+(defn get-database-yml
+  [repo]
+  (if (database-yml? repo)
+    (fs/join repo "config/database.yml")
+    (find-database-yml repo)))
 
 (defn need-cp-database-yml? [repo]
   (and (not (database-yml? repo))
@@ -112,7 +118,7 @@
           :type :setup)))
 
 (defn parse-db-yml [repo]
-  (-?> (find-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
+  (-?> (get-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
 
 (defn need-mysql-socket? [repo]
   (let [db-config (parse-db-yml repo)]
