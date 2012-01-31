@@ -15,18 +15,26 @@
 
 (fact "bundler action"
   (let [bundler-repo (test-repo "bundler_1")]
-    (map :name (spec bundler-repo)) => ["bundle install"]))
+    (map :name (spec bundler-repo)) => (contains ["bundle install"])))
 
 (fact "rspec? works"
   (let [rspec-repo (test-repo "rspec_1")]
     (rspec? rspec-repo) => true
     (rspec? empty-repo) => false))
 
+(fact "rspec? doesn't trigger with no .rb files"
+  (let [rspec-repo (test-repo "rspec_empty")]
+    (rspec? rspec-repo) => false))
+
+(fact "test-unit? doesn't trigger with no .rb files"
+  (let [repo (test-repo "rake_test_empty")]
+    (test-unit? repo) => false))
+
 (fact "rspec uses bundler when appropriate"
   (let [bundler-repo (test-repo "rspec_1")]
     (->> (spec bundler-repo) (map :name) (into #{})) => (contains #"bundle exec rspec spec"))
   (let [no-bundler-repo (test-repo "no_bundler_1")]
-    (->> (spec no-bundler-repo) (map :name)) => ["rspec spec"]))
+    (->> (spec no-bundler-repo) (map :name)) => (contains "rspec spec")))
 
 (fact "rspec action"
   (let [repo (test-repo "rspec_1")]
@@ -64,4 +72,5 @@
 (fact "copy database.example.yml to database.yml action"
   ;; repo with database.example.yml
   (let [example-repo (test-repo "database_yml_1")]
-    (->> (spec example-repo) (map :name)) => ["copy database.yml" "rake db:create:all --trace"]))
+    (->> (spec example-repo) (map :name)) => (and (contains "copy database.yml")
+                                                  (contains "rake db:create:all --trace"))))
