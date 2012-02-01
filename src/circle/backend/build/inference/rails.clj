@@ -201,7 +201,7 @@
           (mysql/ensure-socket (mysql-socket-path repo)))
         (ensure-db-user repo)
         (when has-db-yml?
-          (rake db:create:all :type :setup))
+          (rake db:create :type :setup))
         (cond
          (data-mapper? repo) (rake db:automigrate :type :setup)
          (schema-rb? repo) (rake db:schema:load :type :setup)
