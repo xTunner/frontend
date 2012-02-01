@@ -19,10 +19,13 @@ describe SimpleMailer do
 
   let!(:project) { p = Project.create; p.vcs_url=vcs_url; p.users=users; p.save!; p }
 
-  let(:out1) { { :type => "out", :time => nil, :message => "a message" } }
-  let(:successful_log) { ActionLog.create(:type => "test", :name => "ls -l", :exit_code => 0, :out => [out1]) }
-  let(:setup_log) { ActionLog.create(:type => "setup", :name => "ls -l", :exit_code => 0, :out => [out1]) }
-  let(:failing_log) { ActionLog.create(:type => "test", :name => "ls -l", :exit_code => 127, :out => []) }
+  let(:out1) { { "type" => "out", "time" => nil, "message" => "a message" } }
+  let(:out2) { { "type" => "out", "time" => nil, "message" => "another message" } }
+  let(:outs) { [out1, out2] }
+
+  let(:successful_log) { ActionLog.create(:type => "test", :name => "true", :exit_code => 0, :out => outs) }
+  let(:setup_log) { ActionLog.create(:type => "setup", :name => "touch setup", :exit_code => 0, :out => outs) }
+  let(:failing_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs) }
 
   let(:std_attrs) do
     {
@@ -37,19 +40,19 @@ describe SimpleMailer do
   end
 
   let(:successful_build) do
-    Build.create(std_attrs.merge(:action_logs => [successful_log], :failed => false))
+    Build.create(std_attrs.merge(:action_logs => [setup_log, successful_log], :failed => false))
   end
 
   let(:failing_build) do
-    Build.create(std_attrs.merge(:action_logs => [failing_log], :failed => true))
+    Build.create(std_attrs.merge(:action_logs => [setup_log, successful_log, failing_log], :failed => true))
   end
 
   let(:infra_build) do
-    Build.create(std_attrs.merge(:action_logs => [failing_log], :failed => true, :infrastructure_fail => true))
+    Build.create(std_attrs.merge(:action_logs => [setup_log, failing_log], :failed => true, :infrastructure_fail => true))
   end
 
   let(:timedout_build) do
-    Build.create(std_attrs.merge(:action_logs => [failing_log], :failed => true, :timedout => true))
+    Build.create(std_attrs.merge(:action_logs => [setup_log, failing_log], :failed => true, :timedout => true))
   end
 
   let(:no_tests_build) do
@@ -117,6 +120,8 @@ describe SimpleMailer do
     end
 
     it "should list the commands" do
+      build.action_logs.length.should > 0
+      build.logs.length.should > 0
       build.logs.each do |l|
         html.should include l.command
         text.should include l.command
@@ -143,6 +148,9 @@ describe SimpleMailer do
                             [/has failed its tests!/,
                              /The rest of your commands were successful:/,
                              /Output:/,
+                             /a message/,
+                             /another message/,
+                             /a messageanother message/, # checks whitespace
                              /Exit code: 127/]) do
       end
     end
@@ -187,9 +195,5 @@ describe SimpleMailer do
 
   it "should send a first email" do
     pending # check the contents
-  end
-
-  it "should check the output doesn't have extra lines between it" do
-    pending
   end
 end
