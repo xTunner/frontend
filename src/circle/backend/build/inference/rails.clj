@@ -129,7 +129,7 @@
 
 (defn need-mysql-socket? [repo]
   (let [db-config (parse-db-yml repo)]
-    (-> db-config :test :adapter (or (= "mysql2") (= "mysql")))))
+    (-> db-config :test :adapter #{"mysql2" "mysql"})))
 
 (defn mysql-socket-path [repo]
   (let [db-config (parse-db-yml repo)]
