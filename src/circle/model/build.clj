@@ -89,8 +89,7 @@
   (or (-> @b :_project_id (project/get-by-id) :name)
       (-> @b :vcs_url (github-url/parse) :project)))
 
-(defn build [{:keys [build_num    ;; int
-                     vcs_url
+(defn build [{:keys [vcs_url
                      vcs_revision ;; if present, the commit that caused the build to be run, or nil
                      notify_emails ;; a seq of email addresses to notify when build is done
                      actions      ;; a seq of actions
@@ -101,7 +100,7 @@
                      ]
               :as args}]
   (let [project (project/get-by-url! vcs_url)
-        build_num (or build_num (project/next-build-num project))]
+        build_num (project/next-build-num project)]
     (ref (merge build-defaults
                 args
                 {:build_num build_num
