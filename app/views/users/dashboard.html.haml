@@ -15,6 +15,19 @@
 
 
   .content
+    - if current_user.sign_in_count < 5
+      .row
+        .alert-message.block-message.success.span8.offset2
+          %strong Welcome to Circle! Push your code to start your builds!
+          %br
+
+          Everything should just work - we're inferring your build
+          configurations and we've added hooks and deploy keys to your repos.
+
+          However, if you have non-standard configurations, edit your
+          projects to describe how to build them.
+
+
     .row
       %h1
         Latest builds
