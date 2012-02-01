@@ -60,40 +60,22 @@
    :schedule {:commit
               {:job :build}}})
 
+(defn parse-spec-actions [spec]
+  (->> spec
+       (#(select-keys % [:setup :dependencies :compile :test :extra]))
+       (map-vals (fn [lines]
+                   (->> lines
+                        (re-seq #".*")
+                        (vec)
+                        (remove empty?)
+                        (map parse-action))))))
+
 (defn spec-commands [spec]
   (->> spec
        ((juxt :setup :dependencies :compile :test :extra))
        (mapcat (fn [line]
                  (str/split (or line "") #"\r\n")))
        (remove empty?)))
-
-(defn get-config-from-db [url]
-  (let [project (project/get-by-url url)]
-    (when-let [spec (spec/get-spec-for-project project)]
-      (when-let [commands (seq (spec-commands spec))]
-        (db-config commands)))))
-
-(defn get-config-from-yml [url]
-  (let [repo (git/default-repo-path url)]
-    (-> repo
-      (fs/join "circle.yml")
-      (load-config))))
-
-(defn get-config-for-url
-  "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
-  [url & {:keys [vcs-revision]}]
-  {:pre [url]}
-  (let [ssh-key (project/ssh-key-for-url url)
-        repo (git/default-repo-path url)
-        git-url (if (github/github? url)
-                  (github/->ssh url)
-                  url)]
-    (git/ensure-repo git-url :ssh-key ssh-key :path repo)
-    (when vcs-revision
-      (git/checkout repo vcs-revision))
-    (or
-     (get-config-from-db url)
-     (get-config-from-yml url))))
 
 (defn validate-action-map [cmd]
   (validate! [(is-map?)
@@ -204,6 +186,51 @@
        (mapcat #(translate-email-recipient github-json %))
        (set)))
 
+(defn infer-project-name [url]
+  (-> url
+      (clj-url.core/parse)
+      :path
+      (str/split #"/")
+      (last)
+      (str/replace #"\.git$" "")))
+
+(defn minimal-project [url]
+  {:name (infer-project-name url)})
+
+(defn minimal-config [url]
+  {})
+
+
+(defn get-config-from-db [url]
+  (let [project (project/get-by-url url)]
+    (when-let [spec (spec/get-spec-for-project project)]
+      (when-let [commands (seq (spec-commands spec))]
+        (db-config commands)))))
+
+(defn get-config-from-yml [url]
+  (let [repo (git/default-repo-path url)]
+    (-> repo
+      (fs/join "circle.yml")
+      (load-config))))
+
+(defn get-config-for-url
+  "Given the canonical git URL for a repo, find and return the config file. Clones the repo if necessary."
+  [url & {:keys [vcs-revision]}]
+  {:pre [url]}
+  (let [ssh-key (project/ssh-key-for-url url)
+        repo (git/default-repo-path url)
+        git-url (if (github/github? url)
+                  (github/->ssh url)
+                  url)]
+    (git/ensure-repo git-url :ssh-key ssh-key :path repo)
+    (when vcs-revision
+      (git/checkout repo vcs-revision))
+    (or
+     (get-config-from-db url)
+     (get-config-from-yml url))))
+
+
+
 (defn add-project-info
   "Adds a bunch of relevant information from the project to the build
   obj. All arguments can be overridden with keyword args. Proto-build
@@ -239,29 +266,6 @@
      (add-project-info project)
      (build/build))))
 
-(defn infer-project-name [url]
-  (-> url
-      (clj-url.core/parse)
-      :path
-      (str/split #"/")
-      (last)
-      (str/replace #"\.git$" "")))
-
-(defn minimal-project [url]
-  {:name (infer-project-name url)})
-
-(defn minimal-config [url]
-  {})
-
-(defn parse-spec-actions [spec]
-  (->> spec
-       (#(select-keys % [:setup :dependencies :compile :test :extra]))
-       (map-vals (fn [lines]
-                   (->> lines
-                        (re-seq #".*")
-                        (vec)
-                        (remove empty?)
-                        (map parse-action))))))
 
 (defn infer-build-from-url
   "Assumes url does not have a circle.yml. Examine the source tree, and return a build"
