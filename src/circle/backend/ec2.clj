@@ -330,7 +330,9 @@
       (cond
        @success true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
-       :else (throwf "failed to SSH into %s" instance-id)))))
+       :else (do
+               (terminate-instances! instance-id)
+               (throwf "failed to SSH into %s" instance-id))))))
 
 (defn start-instances*
   "Starts one or more instances. Returns a seq of instance-ids."
