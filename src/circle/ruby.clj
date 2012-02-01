@@ -5,16 +5,38 @@
   (:import java.io.StringWriter)
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.except :only (throw-if-not)])
+  (:use [arohner.utils :only (inspect)])
   (:require [clojure.string :as string])
   (:require fs))
 
-(declare eval ruby get-class get-module send)
+(declare eval ruby get-class get-module send ->ruby)
 
-(defn new-runtime []
-  (let [config (doto (org.jruby.RubyInstanceConfig.)
+(def ^{:dynamic true} *runtime* nil)
+
+(defmacro with-runtime [r & body]
+  `(binding [*runtime* ~r]
+     ~@body))
+
+(defn hash-get
+  "Get a value out of a ruby hash"
+  [h key]
+  (.fastARef h (->ruby key)))
+
+(defn hash-set
+  "Set a value in a ruby hash"
+  [h key value]
+  (.fastASet h (->ruby key) (->ruby value)))
+
+(defn new-runtime
+  "Creates and returns a new ruby runtime. env is a map of string->string environment variables that will be overwritten"
+  [& {:keys [env]}]
+  (let [whole-env (merge (into {} (System/getenv)) env)
+        config (doto (org.jruby.RubyInstanceConfig.)
+                 (.setEnvironment whole-env)
                  (.setCompatVersion org.jruby.CompatVersion/RUBY1_9)
-                 (.setJRubyHome (format "%s/.rvm/rubies/%s" (System/getenv "HOME") (System/getenv "rvm_ruby_string"))))]
-    (org.jruby.Ruby/newInstance config)))
+                 (.setJRubyHome (format "%s/.rvm/rubies/%s" (System/getenv "HOME") (System/getenv "rvm_ruby_string"))))
+        runtime (org.jruby.Ruby/newInstance config)]
+    runtime))
 
 (defn eval
   ([s]
