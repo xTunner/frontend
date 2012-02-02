@@ -240,4 +240,4 @@ RSpec::Core::Runner.run([\"%s\"])
 (defn methods
   "Returns the list of ruby methods on the obj"
   [obj]
-  (seq (send obj :methods)))
+  (map #(symbol (str (.to_s %))) (seq (send obj :methods))))
