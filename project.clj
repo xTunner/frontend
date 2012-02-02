@@ -51,7 +51,7 @@
                  [congomongo "0.1.7"]
 
                  ;; Queue
-                 [congomongo-mq "0.0.0-SNAPSHOT"]
+                 ;; [congomongo-mq "0.0.0-SNAPSHOT"]
                  ;;[com.cemerick/bandalore "0.0.1"]
                  ;;[com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
 
