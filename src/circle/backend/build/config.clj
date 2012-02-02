@@ -171,8 +171,7 @@
         (println "except" e)
         (error e "error loading keys")))))
 
-(defn load-default-node [config]
-  circle.backend.build.nodes.rails/default-rails-node)
+(def default-node (-> (db-config []) :nodes :www))
 
 (defn load-specific-node
   "Load a named node out of the config file"
@@ -186,7 +185,7 @@
   (let [node-name (-> job :node (keyword))]
     (if node-name
       (load-specific-node config node-name url)
-      (load-default-node config))))
+      default-node)))
 
 (defn translate-email-recipient
   "Translates an email recipient like :committer to an email address"
@@ -272,13 +271,12 @@
         spec (spec/get-spec-for-project project)
         spec-actions (parse-spec-actions spec)
         vcs-revision (or vcs-revision (git/latest-local-commit repo))
-        commit-details (git/commit-details repo vcs-revision)
-        node (inference/node repo)]
+        commit-details (git/commit-details repo vcs-revision)]
     (build/build
      (merge (add-project-info project
                               {:vcs_url url
                                :vcs_revision vcs-revision
-                               :node node
+                               :node default-node
                                :actions (inference/infer-actions repo)
                                :job-name "build-inferred"})
             commit-details))))
