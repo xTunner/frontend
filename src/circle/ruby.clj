@@ -5,16 +5,41 @@
   (:import java.io.StringWriter)
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.except :only (throw-if-not)])
+  (:use [arohner.utils :only (inspect)])
   (:require [clojure.string :as string])
   (:require fs))
 
-(declare eval ruby get-class get-module send)
+(declare eval ruby get-class get-module send ->ruby)
 
-(defn new-runtime []
-  (let [config (doto (org.jruby.RubyInstanceConfig.)
+(def ^{:dynamic true} *runtime* nil)
+
+(defmacro with-runtime [r & body]
+  `(binding [*runtime* ~r]
+     ~@body))
+
+(defn hash-get
+  "Get a value out of a ruby hash"
+  [h key]
+  (.fastARef h (->ruby key)))
+
+(defn hash-set
+  "Set a value in a ruby hash"
+  [h key value]
+  (.fastASet h (->ruby key) (->ruby value)))
+
+(defn new-runtime
+  "Creates and returns a new ruby runtime. env is a map of string->string environment variables that will be overwritten"
+  [& {:keys [env]}]
+  (when (not (System/getenv "rvm_ruby_string"))
+    (println "RVM is not set, aborting.")
+    (System/exit 1))
+  (let [whole-env (merge (into {} (System/getenv)) env)
+        config (doto (org.jruby.RubyInstanceConfig.)
+                 (.setEnvironment whole-env)
                  (.setCompatVersion org.jruby.CompatVersion/RUBY1_9)
-                 (.setJRubyHome (format "%s/.rvm/rubies/%s" (System/getenv "HOME") (System/getenv "rvm_ruby_string"))))]
-    (org.jruby.Ruby/newInstance config)))
+                 (.setJRubyHome (format "%s/.rvm/rubies/%s" (System/getenv "HOME") (System/getenv "rvm_ruby_string"))))
+        runtime (org.jruby.Ruby/newInstance config)]
+    runtime))
 
 (defn eval
   ([s]
@@ -60,8 +85,8 @@
     (swap! runtime (constantly (WeakReference. (new-runtime))))))
 
 (defn ruby []
-  (ensure-runtime)
-  (-> runtime deref (.get)))
+  (or *runtime* (do (ensure-runtime)
+                    (-> runtime deref (.get)))))
 
 ;; Each of these must return an IRubyObject.
 (defmulti ->ruby
@@ -215,4 +240,4 @@ RSpec::Core::Runner.run([\"%s\"])
 (defn methods
   "Returns the list of ruby methods on the obj"
   [obj]
-  (seq (send obj :methods)))
+  (map #(symbol (str (.to_s %))) (seq (send obj :methods))))
