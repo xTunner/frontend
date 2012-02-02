@@ -62,8 +62,6 @@
                          project-name)]
     (send-hipchat-message project message)))
 
-
-
 (defn notify-build-results [build]
   (ruby/require-rails)
   (ruby/ruby-require :build)
