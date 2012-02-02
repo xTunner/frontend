@@ -73,4 +73,4 @@
   ;; repo with database.example.yml
   (let [example-repo (test-repo "database_yml_1")]
     (->> (spec example-repo) (map :name)) => (and (contains "copy database.yml")
-                                                  (contains "rake db:create:all --trace"))))
+                                                  (contains "rake db:create --trace"))))
