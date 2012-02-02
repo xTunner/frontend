@@ -53,7 +53,7 @@ describe "Projects", :js => true do
     def wait_for_project(options={})
       start_time = Time.now
       while true do
-        (Time.now - start_time).should < 1.seconds
+        (Time.now - start_time).should < 2.seconds
         p = Project.from_url @project.vcs_url
         return p if (p[options.keys[0]] == options.values[0])
       end
