@@ -4,6 +4,24 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
 
+require 'sauce'
+require 'sauce/capybara'
+
+Sauce.config do |config|
+  config.username = "circle"
+  config.access_key = "e73d06d7-5ed4-4728-aca6-2ce398bbc163"
+  config.browser = "firefox"
+  config.os = "Windows 2003"
+  config.browser_version = "3.6."
+end
+
+# much higher timeout because EC2 is incredibly slow
+Capybara.default_wait_time = 10
+
+# uncomment this to run tests in sauce labs
+#Capybara.default_driver = :sauce
+
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
