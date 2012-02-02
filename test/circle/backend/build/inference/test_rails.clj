@@ -47,7 +47,7 @@
 (fact "db:create when db.yml action"
   (let [repo (test-repo "database_yml_2")]
     (database-yml? repo) => true
-    (->> (spec repo) (map :name) (into #{}))  => (contains "bundle exec rake db:create:all --trace")))
+    (->> (spec repo) (map :name) (into #{}))  => (contains "bundle exec rake db:create --trace")))
 
 (fact "inference finds database yaml"
   (let [repo (test-repo "database_yml_1")]
