@@ -2,6 +2,4 @@ Failing command:
   <%= @last_log.name %>
 
 Output:
-<% @last_log.out.each do |o| %>
-  <%= o["message"] %>
-<% end %>
+<%= @last_log.output %>

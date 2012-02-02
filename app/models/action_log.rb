@@ -28,4 +28,8 @@ class ActionLog
       :failed
     end
   end
+
+  def output
+    out.map{ |o| o["message"]}.join ""
+  end
 end

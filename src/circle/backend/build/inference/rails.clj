@@ -28,10 +28,11 @@
   [repo]
   (fs/exists? (fs/join repo "Gemfile.lock")))
 
-(defn dir-contains-files? [dir]
-  (-> (fs/listdir dir)
-      (seq)
-      (boolean)))
+(defn dir-contains-files? [dir & regexes]
+  "True if the directory contains files matching any of the regexes"
+  (-> (some #(files-matching dir %) regexes)
+      seq
+      boolean))
 
 (defn database-yml?
   "True if the database.yml is at the exact location config/database.yml"
@@ -39,11 +40,14 @@
   (-> (fs/join repo "config" "database.yml")
       (fs/exists?)))
 
+(defn dir-contains-ruby-files? [dir]
+  (dir-contains-files? dir #"^.*\.rb$"))
+
 (defn rspec?
   "True if this project has rspec tests that need to be run"
   [repo]
   (-> (fs/join repo "spec")
-      (dir-contains-files?)))
+      (dir-contains-ruby-files?)))
 
 (defn migrations? [repo]
   (-> (fs/join repo "db" "migrate")
@@ -51,7 +55,7 @@
 
 (defn test-unit? [repo]
   (-> (fs/join repo "test")
-      (dir-contains-files?)))
+      (dir-contains-ruby-files?)))
 
 (defn schema-rb? [repo]
   (-> (fs/join repo "db" "schema.rb")
@@ -79,7 +83,7 @@
   (using-gem? repo "dm-rails"))
 
 (defn cucumber? [repo]
-  (-> (files-matching (fs/join repo "features") #".*\.feature") (seq) (boolean)))
+  (dir-contains-files? (fs/join repo "features") #".*\.feature$"))
 
 (defn jasmine? [repo]
   (using-gem? repo "jasmine-rails"))
@@ -89,7 +93,9 @@
   [repo]
   (let [yml (->> (fs/join repo "config")
                  (fs/listdir)
-                 (filter #(and (re-find #"database.*yml" %) (or (re-find #"default" %) (re-find #"example" %))))
+                 (filter #(and (re-find #"database.*yml" %)
+                               (or (re-find #"default" %)
+                                   (re-find #"example" %))))
                  (first))]
     (when yml
       (fs/join repo "config" yml))))
@@ -97,7 +103,7 @@
 (defn get-database-yml
   [repo]
   (if (database-yml? repo)
-    (fs/join repo "config/database.yml")
+    (fs/join repo "config" "database.yml")
     (find-database-yml repo)))
 
 (defn need-cp-database-yml? [repo]
@@ -123,7 +129,7 @@
 
 (defn need-mysql-socket? [repo]
   (let [db-config (parse-db-yml repo)]
-    (-> db-config :test :adapter (= "mysql"))))
+    (-> db-config :test :adapter #{"mysql2" "mysql"})))
 
 (defn mysql-socket-path [repo]
   (let [db-config (parse-db-yml repo)]
@@ -195,7 +201,7 @@
           (mysql/ensure-socket (mysql-socket-path repo)))
         (ensure-db-user repo)
         (when has-db-yml?
-          (rake db:create:all :type :setup))
+          (rake db:create :type :setup))
         (cond
          (data-mapper? repo) (rake db:automigrate :type :setup)
          (schema-rb? repo) (rake db:schema:load :type :setup)
