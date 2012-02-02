@@ -13,15 +13,12 @@ nodes:
 jobs:
   build:
     template: build
-    node: www   # name of node to use. unique per-project
     commands:
       - rvm use jruby-1.6.5@circle --default
       - rvm rvmrc trust
       - bundle install
       - lein deps
       - bundle exec rspec spec:
-          environment:
-            DISPLAY: ":99"
       - lein midje:
           environment:
             RAILS_ENV: "test"
