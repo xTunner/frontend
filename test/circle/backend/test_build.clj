@@ -4,8 +4,8 @@
   (:use circle.model.build))
 
 (fact "checkout-dir handles spaces"
-  (let [b (minimal-build :build_num 42)]
-    (checkout-dir b) => "Dummy-Project-42"))
+  (let [b (minimal-build)]
+    (checkout-dir b) => #"Dummy-Project-\d+"))
 
 (fact "ensure-project-id works"
   (let [b (minimal-build)]
