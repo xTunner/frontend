@@ -17,6 +17,7 @@ jobs:
       - rvm use jruby-1.6.5@circle --default
       - rvm rvmrc trust
       - bundle install
+      - sudo bash -c "echo '127.0.0.1       circlehost' >> /etc/hosts"
       - lein deps
       - bundle exec rspec spec:
       - lein midje:
