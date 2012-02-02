@@ -39,15 +39,20 @@
 (fact "template/find works with strings"
   (circle.backend.build.template/find "build") => truthy)
 
-(fact "build-from-config works"
+(fact "build-from-url works for inferred"
   (let [project test/test-project
-        config (get-config-for-url (-> test/test-project :vcs_url))
         vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
-        b (build-from-config config test/test-project
+        b (build-from-url (-> project :vcs_url)
                              :vcs-revision vcs_revision
                              :job-name :build)]
     (ref? b) => true
-    (-> @b :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"
+    (-> @b) => (contains {:vcs_url string?
+                          :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
+                          :node anything
+                          :parents seq?
+                          :build_num number?
+
+                          })
     (validate @b) => nil))
 
 (fact "build-from-json works"
@@ -55,8 +60,8 @@
     (ref? build) => true
     (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
 
-(fact "get-config-from-yml works"
-  (get-config-from-yml "https://github.com/arohner/CircleCI") => map?)
+(fact "build-from-url works for yaml configs"
+  (build-from-url "https://github.com/arohner/CircleCI") => map?)
 
 (fact "parse-spec-actions support different kinds of newline"
   (-> :setup ((parse-spec-actions {:setup "1\n2"}))) => (maps-containing {:name "1"} {:name "2"})
