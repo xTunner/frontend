@@ -90,15 +90,21 @@
           (.getReservations)
           (->> (map bean))))))
 
-(defn instances
-  "Returns a seq of one map per instance. If instance-ids are passed, will only return maps for those instances"
+(defn raw-instances
+  "Returns a seq of one map per instance. If instance-ids are passed,
+  will only return maps for those instances"
   [& instance-ids]
   (->>
    (apply reservations instance-ids)
    (mapcat :instances)
    (map bean)
-   (filter #(not= :terminated (-?> % :state (bean) :name (keyword))))
    (map #(update-in % [:state] bean))))
+
+(defn instances
+  "same as raw-instances, but filters out non-running instances"
+  [& instance-ids]
+  (->> (apply raw-instances instance-ids)
+       (filter #(not= :terminated (-?> % :state :name (keyword))))))
 
 (defn all-instance-ids []
   (map :instanceId (instances)))
@@ -324,7 +330,9 @@
       (cond
        @success true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
-       :else (throwf "failed to SSH into %s" instance-id)))))
+       :else (do
+               (terminate-instances! instance-id)
+               (throwf "failed to SSH into %s" instance-id))))))
 
 (defn start-instances*
   "Starts one or more instances. Returns a seq of instance-ids."

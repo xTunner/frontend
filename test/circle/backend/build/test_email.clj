@@ -11,4 +11,4 @@
 (fact "notify email works"
   (let [build (circle.backend.build.config/build-from-url (-> test/test-project :vcs_url))]
     (build/successful? (run-build build)) => truthy
-    (circle.backend.build.email/notify-build-results* build) => truthy))
+    (circle.backend.build.email/send-email-build-notification build) => truthy))

@@ -12,6 +12,7 @@
   (ruby/ruby-require :simple_mailer)
   (let [build (ruby/->instance :Build @build)
         class (ruby/get-class :SimpleMailer)]
+    (assert build)
     (ruby/send class :post_build_email_hook build)))
 
 (defn build-message [build]

@@ -45,7 +45,9 @@
   (set-level "org.apache.http.wire" Level/OFF)
   (set-level "org.apache.http.headers" Level/OFF)
 
-  (set-level "clj-ssh.ssh" Level/WARN))
+  (set-level "clj-ssh.ssh" Level/WARN)
+
+  (set-level "com.amazonaws" Level/WARN))
 
 (defn add-file-appender [loggername filename]
   (.addAppender (Logger/getLogger loggername)

@@ -71,9 +71,8 @@
 (fact "running an inferred build with zero actions marks the project disabled"
   (let [build (minimal-build :actions [])]
     (dosync
-     (alter build assoc :_project_id (-> test-project :_id))) => anything
      (run-build build) => anything
-     (-> (mongo/fetch-one :projects :where {:_id (-> test-project :_id)}) :state) => "disabled"))
+     (-> (mongo/fetch-one :projects :where {:vcs_url (-> test-project :vcs_url)}) :state) => "disabled")))
 
 (fact "running a disabled build"
   (let [build (minimal-build :actions [])

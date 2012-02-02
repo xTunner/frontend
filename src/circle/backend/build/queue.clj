@@ -1,13 +1,25 @@
 (ns circle.backend.build.queue
-  (:require [circle.queue :as queue])
-  (:require [circle.backend.build]))
+  (:use [clojure.core.incubator :only (-?>)])
+  (:require [circle.queue-mongo :as queue])
+  (:require [clj-time.core :as time])
+  (:use [circle.util.args :only (require-args)])
+  (:require [circle.model.build]))
+
+(def build-queue :builds)
 
 (defn enqueue-build
   "Adds a build to the queue"
-  [url revision]
-  ;; (circle.model.build/insert {:vcs-url url
-  ;;                             :vcs-revision revision
-  ;;                             :queued-at (time/now)})
+  [{:keys [vcs_url vcs_revision]
+    :as args}]
+  (require-args vcs_url vcs_revision)
+  (let [build (circle.model.build/insert! {:vcs_url vcs_url
+                                           :vcs_revision vcs_revision
+                                           :queued-at (-> (time/now) (.toDate))})]
+    (let [resp (queue/enqueue build-queue build)]
+      resp)))
 
-  ;; (circle.backend.build/insert! {:start})
-  )
+(defn run-next-queued-build
+  []
+  (let [resp (queue/dequeue build-queue)]
+    (println resp)
+    (-?> resp (first) :body (read-string))))
