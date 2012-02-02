@@ -82,8 +82,8 @@
     (swap! runtime (constantly (WeakReference. (new-runtime))))))
 
 (defn ruby []
-  (ensure-runtime)
-  (-> runtime deref (.get)))
+  (or *runtime* (do (ensure-runtime)
+                    (-> runtime deref (.get)))))
 
 ;; Each of these must return an IRubyObject.
 (defmulti ->ruby
