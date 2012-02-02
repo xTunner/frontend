@@ -98,8 +98,8 @@
   [username repo-name github_access_token project-id]
   (let [project (mongo/fetch-by-id :projects (mongo/object-id project-id))
         keypair (ssh/generate-keys)]
-    (mongo/update! :projects project (merge project {:ssh_public_key (-> keypair :public-key)
-                                                     :ssh_private_key (-> keypair :private-key)}))
+    (mongo/update! :projects (select-keys project [:_id]) (merge project {:ssh_public_key (-> keypair :public-key)
+                                                                          :ssh_private_key (-> keypair :private-key)}))
                                         ;TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
     (trepos/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
 
