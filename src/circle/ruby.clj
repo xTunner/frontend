@@ -30,6 +30,9 @@
 (defn new-runtime
   "Creates and returns a new ruby runtime. env is a map of string->string environment variables that will be overwritten"
   [& {:keys [env]}]
+  (when (not (System/getenv "rvm_ruby_string"))
+    (println "RVM is not set, aborting.")
+    (System/exit 1))
   (let [whole-env (merge (into {} (System/getenv)) env)
         config (doto (org.jruby.RubyInstanceConfig.)
                  (.setEnvironment whole-env)
