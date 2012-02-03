@@ -1,12 +1,9 @@
 (ns circle.backend.build.inference.test-rails
   (:use midje.sweet)
   (:use circle.backend.build.inference.rails)
+  (:require [circle.backend.build.test-utils :as test])
   (:require fs)
   (:require [circle.backend.git :as git]))
-
-(def repo-prefix "test/circle/backend/build/inference/test_dirs")
-(defn test-repo [name] (fs/join repo-prefix name))
-(def empty-repo (test-repo "empty"))
 
 (fact "bundler?"
   (let [bundler-repo (test-repo "bundler_1")]
