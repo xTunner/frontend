@@ -13,8 +13,8 @@
 
 (fact "format-bash-command handles env"
   (sh/emit-form "lein run" :environment {"CIRCLE_ENV" :production
-                                           "SWANK" true})
-  => "export CIRCLE_ENV=production\nexport SWANK=true\nlein run\n")
+                                         "SWANK" true})
+  => "export SWANK=true\nexport CIRCLE_ENV=production\nlein run\n")
 
 (fact "format-bash-command handles keywords in env"
   (sh/emit-form "lein run" :environment {:CIRCLE_ENV :production
@@ -26,7 +26,7 @@
                   :pwd "/home/test"
                   :environment {"CIRCLE_ENV" :production
                                 "SWANK" true})
-  => "cd /home/test\nexport CIRCLE_ENV=production\nexport SWANK=true\nlein run\n")
+  => "cd /home/test\nexport SWANK=true\nexport CIRCLE_ENV=production\nlein run\n")
 
 (fact "sh works"
   (let [resp (sh/sh (sh/q (hostname)))]
