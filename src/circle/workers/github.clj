@@ -1,5 +1,5 @@
 (ns circle.workers.github
-  (:require [org.danlarkin.json :as json])
+  (:require [cheshire.core :as json])
   (:require [circle.backend.project.circle :as circle])
   (:require [circle.model.build :as build])
   (:require [circle.backend.build.run :as run])
@@ -24,7 +24,7 @@
 
 (defn start-build-from-hook
   [url after ref json-string build-id]
-  (-> json-string json/decode (process-json build-id)))
+  (-> json-string (json/parse-string true) (process-json build-id)))
 
 ;;; TECHNICAL_DEBT: These are on pbiggar's account, we should probably change
 ;;; that at some point.
@@ -65,7 +65,7 @@
   github for an access token."
   (let [response (client/post "https://github.com/login/oauth/access_token"
                               {:form-params (assoc (settings) :code code) :accept :json})
-        json (-> response :body json/decode)
+        json (-> response :body (json/parse-string true))
         access-token (-> json :access_token)
         error? (-> json :error)]
     (when error?
