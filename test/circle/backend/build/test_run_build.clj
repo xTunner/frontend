@@ -11,9 +11,6 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
 
-(circle.db/init)
-(ensure-test-user-and-project)
-
 (defaction successful-action [act-name]
   {:name act-name}
   (fn [build]
