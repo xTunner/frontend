@@ -141,18 +141,3 @@
         p (project/get-by-url (-> json :repository :url))]
     (-> p :inferred) => falsey
     (-> (build-from-json json) (deref) :job-name) => :build))
-
-(tabular
- (fact "build-from-url works"
-   (do
-     (test/ensure-project {:vcs_url ?url})
-     (infer-build-from-url ?url)) => ref?)
- ?url
- "https://github.com/arohner/CircleCI"
- "https://github.com/arohner/circle-dummy-project")
-
-(tabular
- (fact "infer project name works"
-   (infer-project-name ?url) => ?expected)
- ?url ?expected
- "https://github.com/rails/rails.git" "rails")
