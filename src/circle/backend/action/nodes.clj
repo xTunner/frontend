@@ -34,7 +34,7 @@
   {:name "start nodes"}
   (fn [build]
     (ensure-keys build)
-    (let [instance-ids (ec2/start-instances (-> @build :node))
+    (let [instance-ids (ec2/start-instances-retry (-> @build :node))
           group (-> @build :group)]
       (when group
         (nodes/configure instance-ids))

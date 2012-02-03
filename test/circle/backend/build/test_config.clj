@@ -142,11 +142,17 @@
     (-> p :inferred) => falsey
     (-> (build-from-json json) (deref) :job-name) => :build))
 
-(fact "build loads the node and slurps the ssh keys"
-  ;; The circle.yml contains :private-key, :public-key. Verify they were slurped.
-  (let [build (build-from-json test/circle-github-json)]
-    (-> @build :node) => map?
-    (-> @build :node :username) => "ubuntu"
-    (-> @build :node :public-key) => #"^ssh-rsa"
-    (-> @build :node :private-key) => #"BEGIN RSA PRIVATE KEY"
-    (validate @build) => nil))
+(tabular
+ (fact "build-from-url works"
+   (do
+     (test/ensure-project {:vcs_url ?url})
+     (infer-build-from-url ?url)) => ref?)
+ ?url
+ "https://github.com/arohner/CircleCI"
+ "https://github.com/arohner/circle-dummy-project")
+
+(tabular
+ (fact "infer project name works"
+   (infer-project-name ?url) => ?expected)
+ ?url ?expected
+ "https://github.com/rails/rails.git" "rails")

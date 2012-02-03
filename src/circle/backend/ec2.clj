@@ -303,6 +303,7 @@
        (= state :running) true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
        :else (try
+               (errorf "instance %s didn't start within timeout" instance-id)
                (terminate-instances! instance-id)
                (finally
                 (throwf "instance %s didn't start within timeout" instance-id)))))))
@@ -331,6 +332,7 @@
        @success true
        (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
        :else (do
+               (errorf "failed to SSH into %s" instance-id)
                (terminate-instances! instance-id)
                (throwf "failed to SSH into %s" instance-id))))))
 
@@ -381,6 +383,13 @@
                             :hostname (or (self-instance-id) (env/hostname))
                             :timestamp (str (java.util.Date.))})
     instance-ids))
+
+(defn start-instances-retry
+  "EC2 is unreliable, and occasionally gives us broken boxes. Retry
+  until we get a good one."
+  [args]
+  (try-try-again {:sleep nil
+                  :tries 3} start-instances args))
 
 (defn print-instances []
   (->> (instances)

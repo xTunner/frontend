@@ -116,7 +116,8 @@ Options:
 
 (defn remote-exec
   "Node is a map containing the keys required by with-session"
-  [node ^String cmd & {:keys [timeout] :as opts}]
+  [node ^String cmd & {:keys [relative-timeout
+                              absolute-timeout] :as opts}]
   (with-session node
     #(remote-exec-session % cmd (or opts {}))))
 
