@@ -77,6 +77,7 @@
       (dosync
        (alter b assoc :failed true)
        (alter b assoc :infrastructure_fail true))
+      ;; TODO: make this a normal fail
       (email/send-build-error-email b e)
       (throw e))
     (finally
