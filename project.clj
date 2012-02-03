@@ -92,6 +92,7 @@
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
+                 [org.cloudhoist/stevedore "0.7.1-SNAPSHOT"]
                  [org.jclouds/jclouds-core "1.2.1"]
                  [org.jclouds/jclouds-compute "1.2.1"]
                  [org.jclouds/jclouds-blobstore "1.2.1"]
