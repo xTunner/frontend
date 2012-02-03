@@ -5,6 +5,7 @@
   (:use [circle.util.predicates :only (ref?)])
   (:require [clipchat.rooms])
   (:require [circle.model.build :as build])
+  (:require [circle.env :as env])
   (:require [circle.model.project :as project])
   (:import org.bson.types.ObjectId))
 
@@ -30,10 +31,17 @@
 (defn build-url [build]
   (ruby/send (ruby/->instance :Build @build) :absolute_url))
 
+(def test-hipchat-api-token "1366c4127cb0dad8d28e13dbe62645")
+(def test-hipchat-room "Test channel")
+
 (defn send-hipchat-message [project message & {:keys [color]
                                                :or {color :yellow}}]
-  (let [token (-> project :hipchat_api_token)
-        room (-> project :hipchat_room)]
+  (let [token (if (env/production?)
+                (-> project :hipchat_api_token)
+                test-hipchat-api-token)
+        room (if (env/production?)
+               (-> project :hipchat_room)
+               test-hipchat-room)]
     (when (and token room)
       (clipchat.rooms/message
        token
