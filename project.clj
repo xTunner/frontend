@@ -43,7 +43,7 @@
                  [clj-http "0.2.7"]
                  [clj-r53 "1.0.1"]
                  [commons-email "1.1"]
-                 [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
+                 [cheshire "2.1.0"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
 
                  ;; DB
