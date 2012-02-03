@@ -14,6 +14,7 @@
   (:require [circle.backend.git :as git])
   (:require [circle.backend.ssh :as ssh])
   (:use [circle.util.core :only (apply-if)])
+  (:require [clj-time.core :as time])
   (:use midje.sweet)
   (:require [clj-url.core :as url]))
 
@@ -79,7 +80,8 @@
                        (sh/q
                         (git clone ~url ~path --depth 1)))]
     (remote-bash-build build checkout-cmd
-                       :environment cmd-env)))
+                       :environment cmd-env
+                       :absolute-timeout (time/minutes 10))))
 
 (defmethod checkout-impl :default [{:keys [vcs]}]
   (throw (Exception. "don't know how to check out code of type" vcs)))
