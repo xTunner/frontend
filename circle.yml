@@ -18,10 +18,10 @@ jobs:
       - rvm rvmrc trust
       - bundle install
       - lein deps
-      - bundle exec rspec spec:
       - lein midje:
           environment:
             RAILS_ENV: "test"
+      - bundle exec rspec spec
     #  on-success: deploy # another build to trigger if this one is successful
     notify_emails:
       # Recognized keys, :committer, :owner, or email literals.
