@@ -39,24 +39,95 @@
 (fact "template/find works with strings"
   (circle.backend.build.template/find "build") => truthy)
 
-(fact "build-from-config works"
-  (let [project test/test-project
-        config (get-config-for-url (-> test/test-project :vcs_url))
+;; Test inferred-config
+(fact "get-db-config returns falsy for empty project"
+  (let [project (test/test-project)
+        repo (test/test-repo "empty-project")
+        inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)]
+    db-config => nil))
+
+
+;; Test get-db-config
+(fact "get-db-config returns falsy for empty project"
+  (let [project (test/test-project)
+        repo (test/test-repo "empty-project")
+        inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)]
+    db-config => nil))
+
+
+(fact "get-db-config has inferred and speced steps project"
+  (let [project (test/test-project)
+        project (merge project {:test "echo a\necho b"})
+        repo (test/test-repo "database_yml_1")
+        inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)]
+    db-config =not=> nil
+    (-> db-config :actions) => (contains [(contains {:source :inferred :name "copy database.yml" :type :setup})
+                                          (contains {:source :spec :command "echo a" :type :test})]
+                                         :gaps-ok)))
+
+;;; Test build-from-url
+(fact "build-from-url works"
+  (let [project (test/test-project)
         vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
-        b (build-from-config config test/test-project
+        b (build-from-url (-> project :vcs_url)
                              :vcs-revision vcs_revision
                              :job-name :build)]
-    (ref? b) => true
-    (-> @b :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"
+    b => ref?
+    @b => (contains {:vcs_url string?
+                     :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
+                     :node anything
+                     :parents (contains string?)
+                     :subject string?
+                     :committer_date #"\d+"
+                     :build_num pos?
+                     :vcs-private-key string?})
+
+    (-> @b :actions) => () ; no steps inferred
+
     (validate @b) => nil))
+
+(fact "build-from-url :job-name :deploy works"
+  (let [project (test/circle-project)
+        b (build-from-url (-> project :vcs_url)
+                         :job-name :deploy)]
+    @b => (contains {:vcs_url "https://github.com/arohner/CircleCI"
+                     :job-name :deploy})
+    (-> @b :actions) => (contains [(contains {:name "start nodes"
+                                              :type :infrastructure
+                                              :source :template})
+                                   (contains {:name #"nginx"
+                                              :source :spec})]
+                                  :gaps-ok)))
+
+(fact "build-from-url :infer flag works"
+  (let [project (test/circle-project)
+
+        b (build-from-url (-> project :vcs_url)
+                          :infer true)]
+    (-> @b :actions) =not=> (contains {:name #"nginx"})
+    (-> @b :actions) =not=> (contains {:source :spec})
+
+    (-> @b :actions) =contains=> {:name #"bundle install"
+                                  :source :inferred}))
+
+
+
+(fact "build-from-url builds from database"
+  (let [project (test/partially-inferred-project)
+        b (build-from-url (-> project :vcs_url))]
+    (-> @b :actions) =contains=> {:name "echo a" :type :test :source :spec}
+    (-> @b :actions) =not=> (contains {:type :setup :source :inferred})))
 
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-dummy-project-json)]
     (ref? build) => true
     (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
 
-(fact "get-config-from-yml works"
-  (get-config-from-yml "https://github.com/arohner/CircleCI") => map?)
+(fact "build-from-url works for yaml configs"
+  (build-from-url "https://github.com/arohner/CircleCI") => ref?)
 
 (fact "parse-spec-actions support different kinds of newline"
   (-> :setup ((parse-spec-actions {:setup "1\n2"}))) => (maps-containing {:name "1"} {:name "2"})
@@ -79,18 +150,3 @@
     (-> @build :node :public-key) => #"^ssh-rsa"
     (-> @build :node :private-key) => #"BEGIN RSA PRIVATE KEY"
     (validate @build) => nil))
-
-(tabular
- (fact "build-from-url works"
-   (do
-     (test/ensure-project {:vcs_url ?url})
-     (infer-build-from-url ?url)) => ref?)
- ?url
- "https://github.com/arohner/CircleCI"
- "https://github.com/arohner/circle-dummy-project")
-
-(tabular
- (fact "infer project name works"
-   (infer-project-name ?url) => ?expected)
- ?url ?expected
- "https://github.com/rails/rails.git" "rails")

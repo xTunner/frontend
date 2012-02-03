@@ -1,12 +1,9 @@
 (ns circle.backend.build.inference.test-rails
   (:use midje.sweet)
   (:use circle.backend.build.inference.rails)
+  (:require [circle.backend.build.test-utils :as test])
   (:require fs)
   (:require [circle.backend.git :as git]))
-
-(def repo-prefix "test/circle/backend/build/inference/test_dirs")
-(defn test-repo [name] (fs/join repo-prefix name))
-(def empty-repo (test-repo "empty"))
 
 (fact "bundler?"
   (let [bundler-repo (test-repo "bundler_1")]
@@ -47,7 +44,7 @@
 (fact "db:create when db.yml action"
   (let [repo (test-repo "database_yml_2")]
     (database-yml? repo) => true
-    (->> (spec repo) (map :name) (into #{}))  => (contains "bundle exec rake db:create:all --trace")))
+    (->> (spec repo) (map :name) (into #{}))  => (contains "bundle exec rake db:create --trace")))
 
 (fact "inference finds database yaml"
   (let [repo (test-repo "database_yml_1")]
@@ -73,4 +70,4 @@
   ;; repo with database.example.yml
   (let [example-repo (test-repo "database_yml_1")]
     (->> (spec example-repo) (map :name)) => (and (contains "copy database.yml")
-                                                  (contains "rake db:create:all --trace"))))
+                                                  (contains "rake db:create --trace"))))

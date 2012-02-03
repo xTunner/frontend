@@ -21,7 +21,11 @@
                          vcs_url ;; the canonical url for the repo. Must match the URL that github will provide in the post-commit hook
                          aws_credentials
                          ssh_private_key ;; an SSH private key authorized to checkout code
-                         ssh_public_key]
+                         ssh_public_key
+                         test
+                         setup
+                         extra
+                         dependencies]
                   :as args}]
   (validate! project-validation args)
   args)

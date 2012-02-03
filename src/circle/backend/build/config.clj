@@ -65,30 +65,50 @@
 
 (defn parse-spec-actions [spec]
   (->> spec
-       (#(select-keys % [:setup :dependencies :compile :test :extra]))
+       (#(select-keys % [:setup :dependencies :test :extra]))
        (map-vals (fn [lines]
                    (->> lines
                         (re-seq #".*")
                         (vec)
                         (remove empty?)
                         (map parse-action))))))
+(defn set-spec [actions]
+  (map #(action/set-source % :spec) actions))
 
-(defn spec-commands [spec]
-  (->> spec
-       ((juxt :setup :dependencies :compile :test :extra))
-       (mapcat (fn [line]
-                 (str/split (or line "") #"\r\n")))
-       (remove empty?)))
+(defn set-type [actions type]
+  (map #(action/set-type % type) actions))
 
+(defn get-db-config [project inferred]
+  (let [spec (parse-spec-actions project)
+        pre-setup (-> spec :setup) ;; legacy db field names :(
+        pre-setup (-> pre-setup set-spec (set-type :pre-setup))
+
+        ;; Inferred if not in the DB
+        setup (-> spec :dependencies) ;; legacy db field names :(
+        setup (-> setup set-spec (set-type :setup))
+        inferred-setup (->> inferred :actions (filter #(= :setup (:type %))))
+        setup (if (= () setup) inferred-setup setup)
+
+        ;; Inferred if not in the DB
+        test (-> spec :test)
+        test (-> test set-spec (set-type :test))
+        inferred-test (->> inferred :actions (filter #(= :test (:type %))))
+        test (if (= () test) inferred-test test)
+
+        extra (-> spec :extra)
+        extra (-> extra set-spec (set-type :post-test))
+
+        actions (concat pre-setup setup test extra)]
+    (if (= actions [])
+      nil
+      {:job-name :build
+       :actions  (template/apply-template :build actions)})))
 
 (defn validate-job [job]
   (validate! [(require-keys [:template])] job))
 
 (defn parse-actions [commands]
   (doall (map parse-action commands)))
-
-(defn set-spec [actions]
-  (map #(action/set-source % :spec) actions))
 
 (defn load-actions
   "Finds job in config, loads approprate template and parses actions"
@@ -176,12 +196,6 @@
       (git/checkout repo vcs-revision))))
 
 
-(defn get-db-config [project]
-  (when-let [spec (spec/get-spec-for-project project)]
-    (when-let [commands (seq (spec-commands spec))]
-      {:job-name :build
-       :actions (load-actions commands :build)})))
-
 (defn read-yml-config [repo]
   (-> repo
       (fs/join "circle.yml")
@@ -213,9 +227,9 @@
         commit-details (git/commit-details repo vcs-revision)
         project (project/get-by-url! url)
 
-        db-config (get-db-config project)
-        yml-config (get-yml-config repo)
         inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)
+        yml-config (get-yml-config repo :job-name job-name)
 
         proto-build (cond
                      infer inferred-config
