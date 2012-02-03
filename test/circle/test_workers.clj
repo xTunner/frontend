@@ -3,7 +3,6 @@
   (:require circle.airbrake)
   (:use circle.workers))
 
-(def div-by-zero (try (/ 1 0) (catch Exception e e)))
 
 (fact "log-future returns futures"
   ;; A normal future will return a future object here, even if the
@@ -17,10 +16,6 @@
                              (let [e (get m "this Throwable was captured by midje:")]
                                (and (instance? Exception e) (= (class (.getCause e)) java.lang.ArithmeticException)))))
 
-(fact "airbrake works"
-  (against-background
-    (circle.env/production?) => true)
-  (circle.airbrake/airbrake :exception div-by-zero) => (contains {:id integer? :error-id integer? :url string?}))
 
 (fact "log-future calls airbrake on failure"
   ;; the test here is that an expectation that airbrake is called.
