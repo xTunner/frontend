@@ -2,11 +2,7 @@
   (:use [clojure.tools.logging :only (errorf )])
   (:require [circle.airbrake :as airbrake]))
 
-(defmacro straight-jacket
-  "For sections of code that are not allowed to fail. All exceptions
-  will be caught, airbrake will be attempted. If airbrake fails, that
-  exception will be caught, and a message logged. If that fails, just
-  give up and cry about it."
+(defmacro straight-jacket*
   [& body]
   `(try
      (try
@@ -24,3 +20,13 @@
      (catch Exception e#
        (println "3")
        (println "*** Straight Jacket WTF ***"))))
+
+(defmacro straight-jacket
+  "For sections of code that are not allowed to fail. All exceptions
+  will be caught, airbrake will be attempted. If airbrake fails, that
+  exception will be caught, and a message logged. If that fails, just
+  give up and cry about it."
+  [& body]
+  `(if (or (circle.env/development?) (circle.env/test?))
+    (do ~@body)
+    (straight-jacket* ~@body)))
