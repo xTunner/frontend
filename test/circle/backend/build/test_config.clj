@@ -39,6 +39,36 @@
 (fact "template/find works with strings"
   (circle.backend.build.template/find "build") => truthy)
 
+;; Test inferred-config
+(fact "get-db-config returns falsy for empty project"
+  (let [project (test/test-project)
+        repo (test/test-repo "empty-project")
+        inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)]
+    db-config => nil))
+
+
+;; Test get-db-config
+(fact "get-db-config returns falsy for empty project"
+  (let [project (test/test-project)
+        repo (test/test-repo "empty-project")
+        inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)]
+    db-config => nil))
+
+
+(fact "get-db-config has inferred and speced steps project"
+  (let [project (test/test-project)
+        project (merge project {:test "echo a\necho b"})
+        repo (test/test-repo "database_yml_1")
+        inferred-config (infer-config repo)
+        db-config (get-db-config project inferred-config)]
+    db-config =not=> nil
+    (-> db-config :actions) => (contains [(contains {:source :inferred :name "copy database.yml" :type :setup})
+                                          (contains {:source :spec :command "echo a" :type :test})]
+                                         :gaps-ok)))
+
+;;; Test build-from-url
 (fact "build-from-url works"
   (let [project (test/test-project)
         vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
@@ -85,15 +115,11 @@
 
 
 
-
-
 (fact "build-from-url builds from database"
   (let [project (test/partially-inferred-project)
         b (build-from-url (-> project :vcs_url))]
     (-> @b :actions) =contains=> {:name "echo a" :type :test :source :spec}
     (-> @b :actions) =not=> (contains {:type :setup :source :inferred})))
-
-
 
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-dummy-project-json)]
