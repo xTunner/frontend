@@ -98,10 +98,11 @@
         extra (-> spec :extra)
         extra (-> extra set-spec (set-type :post-test))
 
-        actions (concat pre-setup setup test extra)
-        actions (template/apply-template :build actions)]
-    {:job-name :build
-     :actions actions}))
+        actions (concat pre-setup setup test extra)]
+    (if (= actions [])
+      nil
+      {:job-name :build
+       :actions  (template/apply-template :build actions)})))
 
 (defn validate-job [job]
   (validate! [(require-keys [:template])] job))
