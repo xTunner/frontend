@@ -13,7 +13,6 @@
 
 (circle.db/init)
 (ensure-test-user-and-project)
-(ensure-test-build)
 
 (defaction successful-action [act-name]
   {:name act-name}
@@ -42,6 +41,10 @@
       deref
       :actions
       (count)) => 0)
+
+(fact "running an empty test does not generate an infrastructure_fail"
+  (let [build (run-build (minimal-build))]
+    (-> @build :infrastructure_fail) => falsey))
 
 (fact "build of dummy project is successful"
   (-> "https://github.com/arohner/circle-dummy-project" (build-from-url) (run-build) (successful?)) => true)
