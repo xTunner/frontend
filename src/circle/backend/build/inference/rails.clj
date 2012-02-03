@@ -217,6 +217,3 @@
 
 (defmethod inference/infer-actions* :rails [_ repo]
   (spec repo))
-
-(defmethod inference/node* :rails [_]
-  circle.backend.nodes.rails/rails-node)

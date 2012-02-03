@@ -134,9 +134,6 @@
         (println "except" e)
         (error e "error loading keys")))))
 
-(defn load-default-node [config]
-  circle.backend.build.nodes.rails/default-rails-node)
-
 (defn load-specific-node
   "Load a named node out of the config file"
   [config node-name repo]
@@ -149,7 +146,7 @@
   (let [node-name (-> job :node (keyword))]
     (if node-name
       (load-specific-node config node-name repo)
-      (load-default-node config))))
+      rails/default-rails-node)))
 
 (defn infer-project-name [url]
   (-> url
@@ -231,7 +228,7 @@
                          :lb-name (-> project :lb-name)
                          :vcs-private-key (-> project :ssh_private_key)
                          :vcs-public-key (-> project :ssh_public_key)
-                         :node circle.backend.nodes.rails/rails-node}
+                         :node rails/default-rails-node}
                         commit-details
                         proto-build))))
 
