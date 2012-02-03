@@ -7,7 +7,7 @@
   (:require fs))
 
 (fact "clone works"
-  (let [test-url (-> test/test-project :vcs_url)
+  (let [test-url (-> (test/test-project) :vcs_url)
         test-git-url (github/->ssh test-url)
         test-repo-path (default-repo-path test-url)
         ssh-key (project/ssh-key-for-url test-url)]
