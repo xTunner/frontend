@@ -6,7 +6,7 @@
 (fact "straight-jacket catches exceptions"
   (straight-jacket (throw (Exception. "test"))) => nil
   (provided
-    (airbrake/airbrake) => nil
+    (airbrake/airbrake anything anything anything anything) => nil
     (circle.env/env) => :production))
 
 
@@ -29,5 +29,5 @@
 (fact "straight-jacket catches assertions"
   (straight-jacket (assert false)) => nil
   (provided
-    (airbrake/airbrake) => nil
+    (airbrake/airbrake anything anything anything anything) => nil
     (circle.env/env) => :production))
