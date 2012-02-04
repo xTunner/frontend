@@ -15,9 +15,7 @@
   (:use [circle.util.predicates :only (ref?)])
   (:use [circle.util.retry :only (wait-for)]))
 
-(circle.db/init)
-(ensure-test-user-and-project)
-(ensure-test-build)
+(test-ns-setup)
 
 (defaction successful-action [act-name]
   {:name act-name}

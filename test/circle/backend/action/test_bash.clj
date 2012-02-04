@@ -9,7 +9,7 @@
   (:require circle.db)
   (:use [circle.util.except :only (eat)]))
 
-(circle.db/init)
+(test/test-ns-setup)
 
 (fact "remote-bash works"
   (let [resp (bash/remote-bash (test/localhost-ssh-map) "hostname")]

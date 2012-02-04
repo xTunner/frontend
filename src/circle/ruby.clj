@@ -4,6 +4,7 @@
   (:import java.io.PrintWriter)
   (:import java.io.StringWriter)
   (:import java.lang.ref.WeakReference)
+  (:use [circle.util.core :only (defn-once)])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [arohner.utils :only (inspect)])
   (:require [clojure.string :as string])
@@ -28,13 +29,14 @@
   (.fastASet h (->ruby key) (->ruby value)))
 
 (defn new-runtime
-  "Creates and returns a new ruby runtime. env is a map of string->string environment variables that will be overwritten"
-  [& {:keys [env]}]
+  "Creates and returns a new ruby runtime. env is a map of string->string environment variables that will be overwritten. Argv is a seq of strings"
+  [& {:keys [env argv]}]
   (when (not (System/getenv "rvm_ruby_string"))
     (println "RVM is not set, aborting.")
     (System/exit 1))
   (let [whole-env (merge (into {} (System/getenv)) env)
         config (doto (org.jruby.RubyInstanceConfig.)
+                 (.setArgv (into-array String argv))
                  (.setEnvironment whole-env)
                  (.setCompatVersion org.jruby.CompatVersion/RUBY1_9)
                  (.setJRubyHome (format "%s/.rvm/rubies/%s" (System/getenv "HOME") (System/getenv "rvm_ruby_string"))))
@@ -56,6 +58,10 @@
      (ruby-require (ruby) package))
   ([runtime package]
      (eval runtime (format "require '%s'" (clojure.core/name package)))))
+
+(defn ruby-load
+  [s]
+  (eval (format "load '%s'" s)))
 
 (defn add-loadpath [runtime path]
   (eval runtime (format "$LOAD_PATH << '%s/%s'" (System/getProperty "user.dir") path)))
@@ -200,6 +206,25 @@ RSpec::Core::Runner.run([\"%s\"])
 " (string/join "\", \"" (concat options subdirs)))]
     (eval command)))
 
+(defn-once test-ruby
+  (new-runtime :env {"RAILS_ENV" "test"}))
+
+(defn rspec
+  "runs rspec. Useful from clojure repl."
+  [& args]
+  (let [options (filter #(= (get % 0) \-) args)
+        subdirs (remove #(= (get % 0) \-) args)
+        subdirs (if (empty? subdirs) [""] subdirs)
+        subdirs (map #(fs/join "spec" %) subdirs)]
+    (with-runtime (test-ruby)
+      (println "starting")
+      (require-rails)
+      (println "done loading rails")
+      (ruby-require "rubygems")
+      (ruby-require "rspec/core/rake_task")
+      (println "rspec")
+      (-> (get-module "RSpec") (get-module "Core") (get-class "Runner") (send :run ["spec"])))))
+
 (defn get-kernel
   "Returns the Kernel module. Used for 'core' functions like puts"
   []
@@ -241,3 +266,67 @@ RSpec::Core::Runner.run([\"%s\"])
   "Returns the list of ruby methods on the obj"
   [obj]
   (map #(symbol (str (.to_s %))) (seq (send obj :methods))))
+
+(defn mapify [x]
+  (into {} x))
+
+(defn setify [x]
+  (into #{} x))
+
+(defn vecify [x]
+  (into [] x))
+
+(defn bean-loader [x]
+  (-> x
+      (bean)
+      (update-in [:URLs] vecify)
+      (assoc-in [:id] (System/identityHashCode x))
+      (dissoc :JDBCDriverUnloader)
+      (update-in [:parent] (fn [parent]
+                             (when parent
+                               (bean-loader parent))))))
+
+(defn bean-config
+  "returns a fully bean-ified instance config. useful for diffing to determine differences between ruby configs."
+  [instance-config]
+  (-> (bean instance-config)
+      (dissoc :scriptSource :error :input :traceType)
+      (update-in [:loader] bean-loader)
+      (update-in [:classCache] bean)
+      (update-in [:profile] bean)
+      (update-in [:optionGlobals] mapify)
+      (update-in [:environment] mapify)
+      (update-in [:argv] seq)
+      (update-in [:excludedMethods] setify)
+      (update-in [:profilingMode] str)
+      (update-in [:compileMode] str)
+      (update-in [:compatVersion] str)))
+
+(defn rails
+  "Calls the rails script, as if called from the command line. args is
+  argv, a seq of strings that the rails script understands, i.e. [\"console\"] or
+  [\"server\"]. If future is true, execute the command in a future."
+  [& {:keys [argv env future?]}]
+  (let [runtime (new-runtime :env env
+                             :argv argv)
+        body (fn []
+               (with-runtime runtime
+                 (ruby-load "./script/rails")))]
+    (if future?
+      (do
+        (future (body))
+        runtime)
+      (body))))
+
+(defn rails-server
+  "Starts a rails server in another thread. Returns the runtime. Convenience method"
+  [& {:keys [env]}]
+  (rails :argv ["server"] :env env :future? true))
+
+(defn stop-server
+  "Takes the runtime from rails-server"
+  [runtime]
+  (.tearDown runtime))
+
+
+

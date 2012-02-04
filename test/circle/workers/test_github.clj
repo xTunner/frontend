@@ -4,9 +4,9 @@
   (:use midje.sweet)
   (:use circle.workers.github))
 
+(test-ns-setup)
+
 (fact "start-build-from-hook works with dummy project"
-  (ensure-test-user-and-project)
-  (ensure-test-build)
   (let [json circle-dummy-project-json-str
         build (start-build-from-hook nil nil nil json test-build-id)]
     (-> @build :vcs_url) => truthy

@@ -4,9 +4,9 @@
   (:require [circle.backend.action :as action])
   (:require [circle.model.build :as build])
   (:require [circle.backend.build.run :as run])
-  (:use [circle.backend.build.test-utils :only (minimal-build)]))
+  (:use [circle.backend.build.test-utils :only (minimal-build test-ns-setup)]))
 
-(circle.db/init)
+(test-ns-setup)
 
 (action/defaction test-action [act-result]
   {:name "test"}

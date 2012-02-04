@@ -13,6 +13,8 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
 
+(test/test-ns-setup)
+
 (fact "parse-action-map works"
   (against-background
     ;;; Stub checkout dir to be /usr. Later, we will pass "bin" to :pwd, so the ls will run in /usr/bin
