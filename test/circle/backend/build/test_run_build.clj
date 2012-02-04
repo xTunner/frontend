@@ -2,6 +2,8 @@
   (:use midje.sweet)
   (:use [circle.backend.build.test-utils])
   (:use [circle.backend.action :only (defaction action)])
+  (:require [circle.backend.action.nodes :as nodes])
+  (:require [circle.backend.build.config :as config])
   (:use [circle.model.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
   (:require [circle.model.project :as project])
@@ -9,7 +11,9 @@
   (:require circle.system)
   (:require [somnium.congomongo :as mongo])
   (:use [arohner.utils :only (inspect)])
-  (:use [circle.util.predicates :only (ref?)]))
+  (:require [circle.backend.ec2 :as ec2])
+  (:use [circle.util.predicates :only (ref?)])
+  (:use [circle.util.retry :only (wait-for)]))
 
 (circle.db/init)
 (ensure-test-user-and-project)
@@ -82,3 +86,14 @@
     (-> @build :stop_time) => truthy
     (provided
       (circle.backend.build.run/do-build* anything) => anything :times 0)))
+
+;; This is the only test that should start an instnace
+(fact "the customer AMI starts up"
+  (let [build (run-build (minimal-build :actions [(nodes/start-nodes)]
+                                        :node config/default-node))]
+    (-> @build :instance-id (ec2/instance) :state :name) => "running"
+    (-> @build :instance-ids (first)) => string?
+    (nodes/cleanup-nodes build) => anything
+    (wait-for {:sleep 1000 :tries 5}
+              #(not= (-> @build :instance-ids (first) (ec2/instance) :state :name) "running")) => anything
+    (-> @build :instance-ids (first) (ec2/instance) :state :name) =not=> "running"))
