@@ -7,20 +7,20 @@
 
 (defmacro straight-jacket*
   [& body]
-  `(try+
+  `(try
      (try+
-       (try+
-         (do
-           ~@body)
-         (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
-           (println "1")
-           (airbrake/airbrake :exception e#
-                              :data {:cmd (str (quote ~body))})))
+      (try+
+       (do
+         ~@body)
        (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
-         (.printStackTrace e#)
-         (println "2")
-         (errorf e# "straight-jacket")))
-     (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
+         (println "1")
+         (airbrake/airbrake :exception e#
+                            :data {:cmd (str (quote ~body))})))
+      (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
+        (.printStackTrace e#)
+        (println "2")
+        (errorf e# "straight-jacket")))
+     (catch Exception e#
        (println "3")
        (println "*** Straight Jacket WTF ***"))))
 
