@@ -182,9 +182,6 @@
         :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
-
-;;; TODO: only use bundler when there is a Gemfile. If using bundler, do `bundle
-;;; exec $@`, else just do `$@` (aka the command)
 (defn spec
   "Returns the set of actions necessary for this project"
   [repo]
