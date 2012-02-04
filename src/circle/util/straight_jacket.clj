@@ -1,23 +1,26 @@
 (ns circle.util.straight-jacket
   (:use [clojure.tools.logging :only (errorf )])
+  (:use [slingshot.slingshot])
   (:require [circle.airbrake :as airbrake]))
+
+
 
 (defmacro straight-jacket*
   [& body]
-  `(try
-     (try
-       (try
+  `(try+
+     (try+
+       (try+
          (do
            ~@body)
-         (catch Exception e#
+         (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
            (println "1")
            (airbrake/airbrake :exception e#
                               :data {:cmd (str (quote ~body))})))
-       (catch Exception e#
+       (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
          (.printStackTrace e#)
          (println "2")
          (errorf e# "straight-jacket")))
-     (catch Exception e#
+     (catch (or (instance? Exception ~'%) (instance? AssertionError ~'%)) e#
        (println "3")
        (println "*** Straight Jacket WTF ***"))))
 
