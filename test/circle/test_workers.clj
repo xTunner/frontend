@@ -14,13 +14,13 @@
   @(log-future (apply + [1 1])) => 2
   @(log-future (/ 1 0)) => (fn [m]
                              (let [e (get m "this Throwable was captured by midje:")]
-                               (and (instance? Exception e) (= (class (.getCause e)) java.lang.ArithmeticException)))))
+                               (and (instance? Exception e) (= (class (.getCause e)) java.lang.ArithmeticException))))
+  (provided
+    (circle.env/env) => :production))
 
 
 (fact "log-future calls airbrake on failure"
   ;; the test here is that an expectation that airbrake is called.
-  (against-background
-    (circle.env/production?) => true)
   @(log-future (/ 1 0)) => (fn [m]
                              (let [e (get m "this Throwable was captured by midje:")]
                                (and (instance? Exception e) (= (class (.getCause e)) java.lang.ArithmeticException))))
