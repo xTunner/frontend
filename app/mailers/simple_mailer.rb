@@ -31,7 +31,7 @@ class SimpleMailer < ActionMailer::Base
     subject = @build.as_email_subject
     cc = []
     cc << "engineering@circleci.com" if status == :infrastructure_fail
-    bcc = ["paul@circleci.com"]
+    bcc = ["founders@circleci.com"]
 
     to = users.find_all { |u| u.wants_build_email?(@build) }.map {|u| u.email }
     return if to == [] && cc == []
@@ -40,6 +40,11 @@ class SimpleMailer < ActionMailer::Base
     if Rails.env.production? && !@project.visible
       to = ["founders@circleci.com"]
     end
+
+    if status == :infrastructure_fail
+      to = ["founders@circleci.com"]
+    end
+
 
     mail(:to => to, :cc => cc, :bcc => bcc,
          :subject => subject,

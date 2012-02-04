@@ -1,11 +1,12 @@
-%p
-  Failing command:
-  %br
-  &nbsp;
-  &nbsp;
-  #{@last_log.name}
+- if @last_log
+  %p
+    Failing command:
+    %br
+    &nbsp;
+    &nbsp;
+    #{@last_log.name}
 
-%p
-  Output:
-  %pre
-    = @last_log.output
+  %p
+    Output:
+    %pre
+      = @last_log.output

@@ -1,10 +1,10 @@
 (ns circle.backend.build.inference.test-postgres
   (:use midje.sweet)
-  (:use circle.backend.build.inference.rails)
-  (:use circle.backend.build.inference.test-rails)
+  (:require [circle.backend.build.inference.rails :as rails])
+  (:require [circle.backend.build.test-utils :as test])
   (:require fs)
   (:require [circle.backend.git :as git]))
 
 (fact "postgres-role"
-  (let [postgres-repo (test-repo "postgres_1")]
-    (-> (ensure-db-user postgres-repo) :command) => (contains #"psql -c")))
+  (let [postgres-repo (test/test-repo "postgres_1")]
+    (-> (rails/ensure-db-user postgres-repo) :command) => (contains #"psql -c")))

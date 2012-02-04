@@ -1,5 +1,7 @@
-Failing command:
-  <%= @last_log.name %>
+<%- if @last_log > 0 %>
+  Failing command:
+    <%= @last_log.name %>
 
-Output:
-<%= @last_log.output %>
+  Output:
+  <%= @last_log.output %>
+<% end %>

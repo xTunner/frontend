@@ -5,26 +5,33 @@
   (:require [clojure.string :as str])
   (:use [clojure.contrib.except :only (throw-if-not)]))
 
-(def env (or (keyword (System/getenv "RAILS_ENV")) :development))
+(def env-var nil)
+
+(defn env []
+  (or
+   env-var
+   (keyword (System/getenv "RAILS_ENV"))
+   (keyword (System/getenv "RACK_ENV"))
+   :development))
 
 (defn production? []
-  (= env :production))
+  (= (env) :production))
 (defn staging? []
-  (= env :staging))
+  (= (env) :staging))
 (defn test? []
-  (= env :test))
+  (= (env) :test))
 (defn development? []
-  (= env :development))
+  (= (env) :development))
 
 (defn validate-env []
-  (throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)]))) "Unexpected environment: %s" (str env)))
+  (throw-if-not (= 1 (count (filter true? [(production?) (staging?) (test?) (development?)]))) "Unexpected environment: %s" (str (env))))
 
 (validate-env)
 
 (defn set-env
   "Takes a string, a rails environment setting"
   [rails-env]
-  (alter-var-root (var env) (constantly (keyword rails-env)))
+  (alter-var-root (var env-var) (constantly (keyword rails-env)))
   (validate-env))
 
 (when (or (production?) (staging?))

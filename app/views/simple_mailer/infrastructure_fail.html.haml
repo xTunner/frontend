@@ -3,9 +3,14 @@
   %br
   = render "full_build_report"
 
-= render "last_command"
+  - if @last_log
+    = render "last_command"
 
-= render "rest_of_commands"
+    = render "rest_of_commands"
+  - else
+    %p
+      No commands were run.
+
 
 %p
   = render "full_build_report"
