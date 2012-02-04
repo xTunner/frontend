@@ -11,7 +11,7 @@
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.git :as git])
   (:require [circle.backend.build.template :as template])
-  (:require [circle.backend.build.nodes.rails :as rails])
+  (:require [circle.backend.nodes.rails :as rails])
   (:use [clojure.tools.logging :only (infof error)])
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.util.model-validation :only (validate!)])
@@ -166,7 +166,7 @@
   (let [node-name (-> job :node (keyword))]
     (if node-name
       (load-specific-node config node-name repo)
-      rails/default-rails-node)))
+      rails/rails-node)))
 
 (defn infer-project-name [url]
   (-> url
@@ -242,7 +242,7 @@
                          :lb-name (-> project :lb-name)
                          :vcs-private-key (-> project :ssh_private_key)
                          :vcs-public-key (-> project :ssh_public_key)
-                         :node rails/default-rails-node}
+                         :node rails/rails-node}
                         commit-details
                         proto-build))))
 
