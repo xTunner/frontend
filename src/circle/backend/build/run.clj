@@ -1,5 +1,5 @@
 (ns circle.backend.build.run
-  (:require [circle.backend.build.email :as email])
+  (:require [circle.backend.build.notify :as notify])
   (:require [circle.model.build :as build])
   (:use [arohner.utils :only (inspect fold)])
   (:require [circle.env :as env])
@@ -68,7 +68,7 @@
       (when (should-run-build? b)
         (do-build* b))
       (finished b)
-      (email/notify-build-results b))
+      (notify/notify-build-results b))
     b
     (catch Exception e
       (println "run-build: except:" b e)
@@ -78,11 +78,10 @@
        (alter b assoc :failed true)
        (alter b assoc :infrastructure_fail true))
       ;; TODO: make this a normal fail
-      (email/send-build-error-email b e)
+      (notify/send-build-error-email b e)
       (throw e))
     (finally
      (finished b)
      (log-result b)
-
      (when (and (-> @b :failed) cleanup-on-failure)
        (cleanup-nodes b)))))

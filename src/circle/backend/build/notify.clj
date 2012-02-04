@@ -1,4 +1,4 @@
-(ns circle.backend.build.email ; TODO: rename to notify: both file and NS
+(ns circle.backend.build.notify
   (:require [circle.ruby :as ruby])
   (:use [clojure.tools.logging :only (info)])
   (:use [circle.util.straight-jacket])
