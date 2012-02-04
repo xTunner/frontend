@@ -1,11 +1,12 @@
 (ns circle.util.test-straight-jacket
   (:use midje.sweet)
-  (:use circle.util.straight-jacket))
-
+  (:use circle.util.straight-jacket)
+  (:require [circle.airbrake :as airbrake]))
 
 (fact "straight-jacket catches exceptions"
   (straight-jacket (throw (Exception. "test"))) => nil
   (provided
+    (airbrake/airbrake) => nil
     (circle.env/env) => :production))
 
 
@@ -21,9 +22,12 @@
     (circle.env/env) => :development))
 
 
-(fact "code still works in a straigth-jacket"
+(fact "code still works in a straight-jacket"
   (straight-jacket (+ 4 5)) => 9)
 
 
 (fact "straight-jacket catches assertions"
-  (straight-jacket (assert false)) => nil)
+  (straight-jacket (assert false)) => nil
+  (provided
+    (airbrake/airbrake) => nil
+    (circle.env/env) => :production))
