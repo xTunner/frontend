@@ -8,6 +8,7 @@
   (:use [circle.backend.build.run :only (run-build)])
   (:require [circle.model.project :as project])
   (:use [circle.backend.build.config :only (build-from-url)])
+  (:require [circle.backend.nodes.rails :as rails])
   (:require circle.system)
   (:require [somnium.congomongo :as mongo])
   (:use [arohner.utils :only (inspect)])
@@ -90,7 +91,7 @@
 ;; This is the only test that should start an instnace
 (fact "the customer AMI starts up"
   (let [build (run-build (minimal-build :actions [(nodes/start-nodes)]
-                                        :node config/default-node))]
+                                        :node rails/rails-node))]
     (-> @build :instance-id (ec2/instance) :state :name) => "running"
     (-> @build :instance-ids (first)) => string?
     (nodes/cleanup-nodes build) => anything
