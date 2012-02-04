@@ -3,7 +3,6 @@
   (:use [circle.backend.build.test-utils])
   (:use [circle.backend.action :only (defaction action)])
   (:require [circle.backend.action.nodes :as nodes])
-  (:require [circle.backend.build.config :as config])
   (:use [circle.model.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
   (:require [circle.model.project :as project])
