@@ -45,3 +45,12 @@
 .output > span.out {
    background-color: #ddffdd;
 }
+
+dd.key {
+   float: left;
+   width: 100px;
+}
+
+dt.value {
+   float: clear;
+}

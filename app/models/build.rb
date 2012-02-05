@@ -158,7 +158,7 @@ class Build
     if branch.nil?
       "unknown"
     else
-      branch
+      branch.gsub(/remotes\/origin\//, "")
     end
   end
 

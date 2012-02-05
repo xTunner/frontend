@@ -1,6 +1,56 @@
 .container-fluid
-  On github:
-  = revision_link_to @build.vcs_url, @build.vcs_revision
+  .row
+    %dl.offset1
+
+      %dd.key
+        Build
+      %dt.value
+        = @build.build_num
+
+      %dd.key
+        Status
+      %dt.value
+        != bootstrap_status @build
+
+      %dd.key
+        Revision
+      %dt.value
+        = revision_link_to @build
+
+      %dd.key
+        Author
+      %dt.value
+        = mail_to(@build["committer_email"], @build["committer_name"])
+
+      %dd.key
+        Message
+      %dt.value
+        = @build["subject"]
+        - if @build["body"].to_s != ""
+          %p
+            = @build["body"]
+
+      %dd.key
+        Started at
+      %dt.value
+        = @build["start_time"]
+
+      %dd.key
+        Finished at
+      %dt.value
+        = @build["stop_time"]
+
+
+
+
+
+
+
+
+
+
+
+
   - @logs.each do |l|
     -# wrapper allows the header and detail be siblings, for the JS
     .wrapper
@@ -10,7 +60,7 @@
           = l.name
         %span.time
           = surround '(', ')' do
-            = as_length_of_build(l.start_time, l[:end_time])
+            = as_length_of_build(l.start_time, l[:end_time] || @build.stop_time)
 
       .detail{ :class => action_log_style(l) }
         - if l["out"]

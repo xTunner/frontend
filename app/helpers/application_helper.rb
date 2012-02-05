@@ -64,15 +64,16 @@ module ApplicationHelper
     end
   end
 
-  def revision_link_to(url, revision, branch=nil)
+  def revision_link_to(build)
+    url = build.vcs_url
+    revision = build.vcs_revision
     return if url.nil? or revision.nil?
+    branch = build.branch_in_words
 
     # TECHNICAL_DEBT: github only
     link = link_to(revision[0..8], url + "/commit/" + revision)
-    if branch
-      branch.sub!("remotes/origin/", "")
-      link += " (#{branch})"
-    end
+    link += " (#{branch})" if branch
+
     link
   end
 

@@ -18,7 +18,7 @@
             = build_link_to build, @project
 
           %td
-            = revision_link_to build.vcs_url, build.vcs_revision, build.branch
+            = revision_link_to build
 
           %td
             = mail_to build.author_email, build.author_name
