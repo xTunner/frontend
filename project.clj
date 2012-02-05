@@ -9,8 +9,8 @@
 
 (defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
-  :dependencies [[org.clojure/clojure "1.2.1"]
-                 [org.clojure/clojure-contrib "1.2.0"]
+  :dependencies [[org.clojure/clojure "1.3.0"]
+                 [org.clojure/clojure-contrib "1.3-compat"]
 
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; TECHNICAL_DEBT
@@ -91,6 +91,7 @@
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
+                 [org.cloudhoist/stevedore "0.7.1-SNAPSHOT"]
                  [org.jclouds/jclouds-core "1.2.1"]
                  [org.jclouds/jclouds-compute "1.2.1"]
                  [org.jclouds/jclouds-blobstore "1.2.1"]
