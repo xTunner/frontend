@@ -1,5 +1,5 @@
 (ns circle.ruby
-  (:refer-clojure :exclude [eval send methods])
+  (:refer-clojure :exclude [eval send methods hash-set])
   (:import org.jruby.RubySymbol)
   (:import java.io.PrintWriter)
   (:import java.io.StringWriter)
