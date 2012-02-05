@@ -20,8 +20,13 @@ describe ApplicationHelper do
   end
 
   describe "revision_link_to" do
+    let(:build) { Build.unsafe_create(:vcs_url => "https://github.com/arohner/CircleCI", :vcs_revision => "b833cd06910ee92b6f9327261bcf4bd8f97200a8") }
     it "should work for a simple url" do
-      revision_link_to("https://github.com/arohner/CircleCI", "b833cd06910ee92b6f9327261bcf4bd8f97200a8").should == '<a href="https://github.com/arohner/CircleCI/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8">b833cd069</a>'
+      revision_link_to(build).should == '<a href="https://github.com/arohner/CircleCI/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8">b833cd069</a>'
+    end
+    it "should include a branch" do
+      build.branch = "test"
+      revision_link_to(build).should == '<a href="https://github.com/arohner/CircleCI/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8">b833cd069</a> (test)'
     end
   end
 

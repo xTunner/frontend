@@ -163,15 +163,33 @@ class Build
     end
   end
 
+  def shortened_subject(max_length=50)
+    if subject.nil?
+      ""
+    elsif subject.length < max_length
+      subject
+    else
+      subject[0..max_length] + '...'
+    end
+  end
+
+
   def as_email_subject
     p = the_project
-    "#{status_as_title}: #{project.github_project_name} #{build_num}" +
-      " - " +
-      "#{committer_handle}: #{subject[0..50]}"
+    "#{status_as_title}: #{project.github_project_name} ##{build_num} by #{committer_handle}: #{shortened_subject 35}"
   end
+
+  def as_html_instant_message
+    "#{status_as_title}: <a href='#{absolute_url}'>#{project.github_project_name} ##{build_num}</a>:" +
+      "<br> - branch: #{branch_in_words}" +
+      "<br> - author: #{committer_email}" +
+      "<br> - log: #{shortened_subject 150}"
+  end
+
 
   def absolute_url
     Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
     Rails.application.routes.url_helpers.build_url self.project, self.build_num, :only_path => false
   end
+
 end

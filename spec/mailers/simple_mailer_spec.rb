@@ -32,6 +32,7 @@ describe SimpleMailer do
       :vcs_url => vcs_url,
       :start_time => Time.now - 10.minutes,
       :stop_time => Time.now,
+      :branch => "remotes/origin/my_branch",
       :vcs_revision => vcs_revision,
       :subject => "That's right, I wrote some code",
       :committer_email => author.email,
@@ -98,7 +99,7 @@ describe SimpleMailer do
     end
 
     it "should have the right subject" do
-      mail.subject.should include ": a/b 1 - author: That's right, I wrote some code"
+      mail.subject.should include ": a/b #1 by author: That's right, I wrote some code"
       mail.subject.should
     end
 

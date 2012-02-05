@@ -18,18 +18,15 @@
     (assert class)
     (ruby/send class :post_build_email_hook build)))
 
-(defn build-message [build]
+(defn im-subject [build]
   {:pre [(ref? build)]}
-  (ruby/send (ruby/->instance :Build @build) :as_email_subject))
+  (ruby/send (ruby/->instance :Build @build) :as_html_instant_message))
 
 (defn github-project-name [project]
   (ruby/send (ruby/->instance :Project project) :github_project_name))
 
 (defn project-url [project]
   (ruby/send (ruby/->instance :Project project) :absolute_url))
-
-(defn build-url [build]
-  (ruby/send (ruby/->instance :Build @build) :absolute_url))
 
 (def test-hipchat-api-token "1366c4127cb0dad8d28e13dbe62645")
 (def test-hipchat-room "Test channel")
@@ -53,9 +50,7 @@
 
 (defn send-hipchat-build-notification [build]
   (let [project (build/get-project build)
-        message (build-message build)
-        url (build-url build)
-        message (format "<a href='%s'>%s</a>" url message)
+        message (im-subject build)
         success? (-> @build :failed not)
         color (if success? :green :red)]
     (send-hipchat-message project message :color color)))
