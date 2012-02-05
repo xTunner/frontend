@@ -1,11 +1,11 @@
 (def jvm-opts (concat ["-Djava.net.preferIPv4Stack=true"
                        "-XX:MaxPermSize=256m"
                        "-XX:+UseConcMarkSweepGC"
+                       "-Xmx1024m"
                        "-XX:+CMSClassUnloadingEnabled"]
                       (when (not (or (= (System/getenv "USER") "pbiggar")
                                      (= (System/getenv "CIRCLE_DEBUG") "false")))
                         ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"])))
-
 
 (defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
@@ -88,7 +88,6 @@
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
-                 [com.cemerick/pomegranate "0.0.2"]
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]

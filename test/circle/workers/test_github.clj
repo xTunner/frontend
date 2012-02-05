@@ -6,8 +6,9 @@
   (:use midje.sweet)
   (:use circle.workers.github))
 
+(test-ns-setup)
+
 (fact "start-build-from-hook works with dummy project"
-  (ensure-test-user-and-project)
   (let [json circle-dummy-project-json-str
         id (object-id)
         _   (mongo/insert! :builds {:_id id})

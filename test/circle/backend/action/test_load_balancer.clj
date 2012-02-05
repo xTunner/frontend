@@ -7,6 +7,8 @@
   (:use [circle.model.build :only (successful?)])
   (:use circle.backend.build.test-utils))
 
+(test-ns-setup)
+
 (defaction successful-action [act-name]
   {:name act-name}
   (fn [build]

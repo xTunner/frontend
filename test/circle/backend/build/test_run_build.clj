@@ -15,6 +15,8 @@
   (:use [circle.util.predicates :only (ref?)])
   (:use [circle.util.retry :only (wait-for)]))
 
+(test-ns-setup)
+
 (defaction successful-action [act-name]
   {:name act-name}
   (fn [build]
@@ -76,11 +78,11 @@
   (let [build (minimal-build :actions [])]
     (dosync
      (run-build build) => anything
-     (-> (mongo/fetch-one :projects :where {:vcs_url (-> (test-project) :vcs_url)}) :state) => "disabled")))
+     (-> (mongo/fetch-one :projects :where {:vcs_url (-> test-project :vcs_url)}) :state) => "disabled")))
 
 (fact "running a disabled build"
   (let [build (minimal-build :actions [])
-        _ (project/set-uninferrable (test-project))]
+        _ (project/set-uninferrable (ensure-project test-project))]
     (run-build build) => anything
     (-> @build :error_message) => string?
     (-> @build :stop_time) => truthy

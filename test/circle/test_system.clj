@@ -4,8 +4,10 @@
   (:use [circle.backend.action :only (action)])
   (:use [circle.backend.build.run :only (run-build)])
   (:use [circle.model.build :only (successful?)])
-  (:use [circle.backend.build.test-utils :only (minimal-build)])
+  (:use [circle.backend.build.test-utils :only (minimal-build test-ns-setup)])
   (:use circle.system))
+
+(test-ns-setup)
 
 (fact "graceful shutdown calls ec2/terminate when there are no more builds"
   (against-background

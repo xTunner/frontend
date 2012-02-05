@@ -6,6 +6,8 @@
   (:require [circle.backend.github-url :as github])
   (:require fs))
 
+(test/test-ns-setup)
+
 (fact "clone works"
   (let [test-url (-> (test/test-project) :vcs_url)
         test-git-url (github/->ssh test-url)

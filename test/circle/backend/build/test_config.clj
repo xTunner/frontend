@@ -13,6 +13,8 @@
   (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
 
+(test/test-ns-setup)
+
 (fact "parse-action-map works"
   (against-background
     ;;; Stub checkout dir to be /usr. Later, we will pass "bin" to :pwd, so the ls will run in /usr/bin
@@ -41,7 +43,7 @@
 
 ;; Test inferred-config
 (fact "get-db-config returns falsy for empty project"
-  (let [project (test/test-project)
+  (let [project test/test-project
         repo (test/test-repo "empty-project")
         inferred-config (infer-config repo)
         db-config (get-db-config project inferred-config)]
@@ -50,7 +52,7 @@
 
 ;; Test get-db-config
 (fact "get-db-config returns falsy for empty project"
-  (let [project (test/test-project)
+  (let [project test/test-project
         repo (test/test-repo "empty-project")
         inferred-config (infer-config repo)
         db-config (get-db-config project inferred-config)]
@@ -58,7 +60,7 @@
 
 
 (fact "get-db-config has inferred and speced steps project"
-  (let [project (test/test-project)
+  (let [project test/test-project
         project (merge project {:test "echo a\necho b"})
         repo (test/test-repo "database_yml_1")
         inferred-config (infer-config repo)
@@ -70,11 +72,11 @@
 
 ;;; Test build-from-url
 (fact "build-from-url works"
-  (let [project (test/test-project)
+  (let [project test/test-project
         vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
         b (build-from-url (-> project :vcs_url)
-                             :vcs-revision vcs_revision
-                             :job-name :build)]
+                          :vcs-revision vcs_revision
+                          :job-name :build)]
     b => ref?
     @b => (contains {:vcs_url string?
                      :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
@@ -90,9 +92,9 @@
     (validate @b) => nil))
 
 (fact "build-from-url :job-name :deploy works"
-  (let [project (test/circle-project)
+  (let [project test/circle-project
         b (build-from-url (-> project :vcs_url)
-                         :job-name :deploy)]
+                          :job-name :deploy)]
     @b => (contains {:vcs_url "https://github.com/arohner/CircleCI"
                      :job-name :deploy})
     (-> @b :actions) => (contains [(contains {:name "start nodes"
@@ -103,8 +105,7 @@
                                   :gaps-ok)))
 
 (fact "build-from-url :infer flag works"
-  (let [project (test/circle-project)
-
+  (let [project test/circle-project
         b (build-from-url (-> project :vcs_url)
                           :infer true)]
     (-> @b :actions) =not=> (contains {:name #"nginx"})
@@ -113,10 +114,8 @@
     (-> @b :actions) =contains=> {:name #"bundle install"
                                   :source :inferred}))
 
-
-
 (fact "build-from-url builds from database"
-  (let [project (test/partially-inferred-project)
+  (let [project test/partially-inferred-project
         b (build-from-url (-> project :vcs_url))]
     (-> @b :actions) =contains=> {:name "echo a" :type :test :source :spec}
     (-> @b :actions) =not=> (contains {:type :setup :source :inferred})))
