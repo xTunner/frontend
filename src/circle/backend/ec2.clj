@@ -110,7 +110,7 @@
   (map :instanceId (instances)))
 
 (defn instance [instance-id]
-  (first (instances instance-id)))
+  (first (raw-instances instance-id)))
 
 (defn get-availability-zone [instance-id]
   (-> instance-id
