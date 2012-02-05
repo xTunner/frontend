@@ -1,6 +1,7 @@
 ## The canonical Build model lives in the clojure code. This definition exists to make Rail's querying easier
 class Build
   include Mongoid::Document
+  include Base
 
   # Raw fields
   field :vcs_url

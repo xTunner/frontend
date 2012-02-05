@@ -4,6 +4,7 @@ class Project
   include Mongoid::Document
   include Mongoid::Timestamps
   include Mongoid::Versioning
+  include Base
 
   field :vcs_url
   field :ssh_private_key
@@ -81,16 +82,6 @@ class Project
 
   def as_json(options={})
     super options.merge(:only => Project.accessible_attributes.to_a + [:vcs_url, :_id])
-  end
-
-  # Allows mass-assignment, only for use from testing
-  def self.unsafe_create(attrs)
-    raise if !Rails.env.test?
-
-    p = Project.create!
-    attrs.each { |k, v| p.send("#{k}=", v) }
-    p.save!
-    p
   end
 
   def absolute_url
