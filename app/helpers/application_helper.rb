@@ -68,11 +68,10 @@ module ApplicationHelper
     url = build.vcs_url
     revision = build.vcs_revision
     return if url.nil? or revision.nil?
-    branch = build.branch_in_words
 
     # TECHNICAL_DEBT: github only
     link = link_to(revision[0..8], url + "/commit/" + revision)
-    link += " (#{branch})" if branch
+    link += " (#{build.branch_in_words})" if build.branch
 
     link
   end
