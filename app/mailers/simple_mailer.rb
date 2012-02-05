@@ -70,13 +70,6 @@ class SimpleMailer < ActionMailer::Base
     user.save!
   end
 
-  def build_error_email(build_id, error)
-    @build = Build.find(build_id)
-    @error = error.to_s
-    mail(:to => "founders@circleci.com",
-         :subject => "#{Rails.env}: build exception").deliver
-  end
-
   def test(address="founders@circleci.com")
     mail(:to => address,
          :subject => "#{Rails.env}: test email").deliver

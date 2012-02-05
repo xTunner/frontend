@@ -1,4 +1,4 @@
-(ns circle.backend.build.email ; TODO: rename to notify: both file and NS
+(ns circle.backend.build.notify
   (:require [circle.ruby :as ruby])
   (:use [clojure.tools.logging :only (info)])
   (:use [circle.util.straight-jacket])
@@ -76,9 +76,3 @@
   (ruby/ruby-require :project)
   (straight-jacket (send-email-build-notification build))
   (straight-jacket (send-hipchat-build-notification build)))
-
-(defn send-build-error-email [build error]
-  (straight-jacket
-   (ruby/require-rails)
-   (ruby/ruby-require :simple_mailer)
-   (ruby/send (ruby/get-class :SimpleMailer) :build_error_email (-> @build :_id) error)))

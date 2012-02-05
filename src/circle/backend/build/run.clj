@@ -1,9 +1,10 @@
 (ns circle.backend.build.run
-  (:require [circle.backend.build.email :as email])
+  (:require [circle.backend.build.notify :as notify])
   (:require [circle.model.build :as build])
   (:use [arohner.utils :only (inspect fold)])
   (:require [circle.env :as env])
   (:require [clj-time.core :as time])
+  (:use circle.util.straight-jacket)
   (:use [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
   (:require [circle.model.project :as project])
@@ -29,7 +30,6 @@
 
 (defn start [b id]
   (dosync
-   (throw-if (-> @b :start_time) "refusing to run started build")
    (build/add-to-db b id)
    (alter in-progress conj b)))
 
@@ -66,9 +66,7 @@
     (start b id)
     (build/with-build-log-ns b
       (when (should-run-build? b)
-        (do-build* b))
-      (finished b)
-      (email/notify-build-results b))
+        (do-build* b)))
     b
     (catch Exception e
       (println "run-build: except:" b e)
@@ -77,12 +75,15 @@
       (dosync
        (alter b assoc :failed true)
        (alter b assoc :infrastructure_fail true))
-      ;; TODO: make this a normal fail
-      (email/send-build-error-email b e)
       (throw e))
     (finally
      (finished b)
-     (log-result b)
 
+      ;; Send build notifications, but don't let it fuck up anbything else.
+     (straight-jacket
+      (when (should-run-build? b)
+        (notify/notify-build-results b)))
+
+     (log-result b)
      (when (and (-> @b :failed) cleanup-on-failure)
        (cleanup-nodes b)))))
