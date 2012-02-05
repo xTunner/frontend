@@ -29,12 +29,6 @@
   [repo]
   (fs/exists? (fs/join repo "Gemfile.lock")))
 
-(defn dir-contains-files? [dir & regexes]
-  "True if the directory contains files matching any of the regexes"
-  (-> (some #(files-matching dir %) regexes)
-      seq
-      boolean))
-
 (defn database-yml?
   "True if the database.yml is at the exact location config/database.yml"
   [repo]

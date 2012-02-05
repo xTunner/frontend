@@ -27,6 +27,12 @@
        (all-files)
        (filter #(re-find re %))))
 
+(defn dir-contains-files? [dir & regexes]
+  "True if the directory contains files matching any of the regexes"
+  (-> (some #(files-matching dir %) regexes)
+      seq
+      boolean))
+
 (defn re-file?
   "True if the contents of the file match the regex"
   [file re]
