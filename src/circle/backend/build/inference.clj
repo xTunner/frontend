@@ -1,14 +1,23 @@
 (ns circle.backend.build.inference
   "fns for creating a build from a source tree"
+  (:use circle.util.fs)
   (:require [circle.backend.build.template :as template])
   (:require [circle.backend.action :as action])
   (:use [arohner.utils :only (inspect)]))
 
+(defn dir-contains-php-files?
+  "Determines whether or not the repo has any php files."
+  [dir]
+  (dir-contains-files? dir #"^.*\.php"))
+
+;;FIXME Assume Rails if not php.
 (defn infer-repo-type
   "Attempts to figure out what kind of project this repo is. Returns a
   keyword, such as :rails, or nil"
   [repo]
-  :rails) ;;FIXME, always returns rails right now
+  (cond
+    (dir-contains-php-files? repo) :php
+    :else :rails))
 
 
 (defmulti infer-actions* (fn [type repo-path]
