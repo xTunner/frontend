@@ -76,9 +76,3 @@
   (ruby/ruby-require :project)
   (straight-jacket (send-email-build-notification build))
   (straight-jacket (send-hipchat-build-notification build)))
-
-(defn send-build-error-email [build error]
-  (straight-jacket
-   (ruby/require-rails)
-   (ruby/ruby-require :simple_mailer)
-   (ruby/send (ruby/get-class :SimpleMailer) :build_error_email (-> @build :_id) error)))
