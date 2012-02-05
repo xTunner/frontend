@@ -120,8 +120,11 @@ describe SimpleMailer do
     end
 
     it "should list the commands" do
-      build.action_logs.length.should > 0
-      build.logs.length.should > 0
+      unless build.infrastructure_fail
+        build.logs.length.should > 0
+      end
+
+      build.action_logs.length.should == build.logs.length
       build.logs.each do |l|
         html.should include l.command
         text.should include l.command
