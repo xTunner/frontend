@@ -107,6 +107,8 @@ class Build
   end
 
   def link_to_github(absolute=false)
+    return "" if vcs_revision.nil? or vcs_url.nil?
+
     short_code = vcs_revision[0..8]
     github_url = vcs_url + "/commit/" + vcs_revision
 
