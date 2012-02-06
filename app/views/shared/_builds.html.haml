@@ -1,0 +1,33 @@
+%table
+  %thead
+    %tr
+      %th Build
+      %th Revision
+      %th Author
+      %th Log
+      %th Started at
+      %th Length
+      %th Status
+
+  %tbody
+
+    - @builds.each do |build|
+      %tr
+        %td
+          = build_link_to build, mention_project
+        %td
+          = revision_link_to build
+        %td
+          = build.author_name || build.author_email
+        %td
+          = log_link_to(build.subject, build.body, 50)
+        %td
+          = as_commit_time build.start_time
+        %td
+          = as_length_of_build build.start_time, build.stop_time
+        %td
+          = bootstrap_status(build)
+
+- if pagination
+  .row
+    = paginate @builds
