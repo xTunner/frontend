@@ -1,51 +1,55 @@
 .container-fluid
   .row
-    %dl.offset1
 
-      %dd.key
-        Build
-      %dt.value
-        = @build.build_num
+    %dl.offset1.span6
 
-      %dd.key
-        Status
-      %dt.value
-        = bootstrap_status @build
-
-      %dd.key
+      %dt.key
         Revision
-      %dt.value
+      %dd.value
         = revision_link_to @build
 
-      %dd.key
+      %dt.key
+        Build
+      %dd.value
+        = @build.build_num
+
+
+      %dt.key
         Author
-      %dt.value
+      %dd.value
         = mail_to(@build["committer_email"], @build["committer_name"])
 
-      %dd.key
-        Message
-      %dt.value
+
+    %dl.offset1
+
+      %dt.key
+        Status
+      %dd.value
+        = bootstrap_status @build
+
+
+
+      %dt.key
+        Started at
+      %dd.value
+        = @build["start_time"]
+
+
+      %dt.key
+        Finished at
+      %dd.value
+        = @build["stop_time"]
+
+  .row
+    %dl.offset1
+
+      %dt.key
+        Log
+      %dd.value
         = @build["subject"]
         - if @build["body"].to_s != ""
           %p
             = @build["body"]
-
-      %dd.key
-        Started at
-      %dt.value
-        = @build["start_time"]
-
-      %dd.key
-        Finished at
-      %dt.value
-        = @build["stop_time"]
-
-
-
-
-
-
-
 
 
 

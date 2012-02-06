@@ -1,3 +1,7 @@
+/*
+ *= require 'shared/builds'
+ */
+
 .action_header {
    background-repeat: no-repeat;
    padding: 6px 0px 6px 40px;
@@ -46,11 +50,12 @@
    background-color: #ddffdd;
 }
 
-dd.key {
-   float: left;
+
+dt.key {
    width: 100px;
+   float: left;
 }
 
-dt.value {
-   float: clear;
+dd.value {
+   display: block;
 }
