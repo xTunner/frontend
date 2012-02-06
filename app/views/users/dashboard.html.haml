@@ -29,35 +29,9 @@
 
 
     .row
-      %h1
-        Latest builds
+      %h2
+        Latest builds for your projects
 
-      %table#projects
-        %thead
-          %tr
-            %th Build
-            %th Revision
-            %th Author
-            %th Log
-            %th Started
-            %th Length
-            %th Status
-        %tbody
-          - @recent_builds.each do |build|
-            %tr
-              %td
-                = build_link_to build, true
-              %td
-                = revision_link_to build
-              %td
-                = build.author_name || build.author_email
-              %td
-                = log_link_to(build.subject, build.body, 50)
-              %td
-                = as_commit_time build.start_time
-              %td
-                = as_length_of_build build.start_time, build.stop_time
-                - if build.status == :running
-                  (still running)
-              %td
-                = bootstrap_status build, nil, build_url(build.project, build.build_num)
+        - @builds = @recent_builds
+        = render :partial => 'shared/builds',
+                 :locals => { :mention_project => true, :pagination => false }

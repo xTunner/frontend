@@ -23,6 +23,8 @@
           = log_link_to(build.subject, build.body, 50)
         %td
           = as_commit_time build.start_time
+          - if build.status == :running
+            (still running)
         %td
           = as_length_of_build build.start_time, build.stop_time
         %td
