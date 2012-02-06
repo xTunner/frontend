@@ -207,10 +207,10 @@ RSpec::Core::Runner.run([\"%s\"])
 
 (defn get-class
   "Returns the class/module with the given name. With one arg, looks for a class in the root namespace. With two args, looks for a class/module defined under another class, like Foo::Bar"
-  ([name-str]
-     (.getClass (ruby) (name name-str)))
-  ([parent name-str]
-     (.getClass parent (name name-str))))
+  ([class-name]
+     (.getClass (ruby) (name class-name)))
+  ([parent class-name]
+     (.getClass parent (name class-name))))
 
 (defn send
   "Call a method on a ruby object"
@@ -222,14 +222,15 @@ RSpec::Core::Runner.run([\"%s\"])
       (throw (Exception. (capture-exception-data e))))))
 
 (defn get-module
-  ([name]
-     (.getModule (ruby) name))
+  ([module-name]
+     (.getModule (ruby) (name module-name)))
   ([parent module-name]
-     (send parent :const_get module-name)))
+     (send parent :const_get (name module-name))))
 
 (defn ->instance
   "Takes an object with an _id and fetches the ruby model's instance for that variable"
   [class obj]
+  {:pre [obj]}
   (let [id (-> obj :_id)
         rid (->ruby id)
         class (get-class class)
