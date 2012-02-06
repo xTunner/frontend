@@ -89,10 +89,10 @@
     (provided
       (circle.backend.build.run/do-build* anything) => anything :times 0)))
 
-;; This is the only test that should start an instnace
+;; This is the only test that should start an instance
 (fact "the customer AMI starts up"
   (let [build (run-build (minimal-build :actions [(nodes/start-nodes)]
-                                        :node rails/rails-node))]
+                                        :node (assoc rails/rails-node :instance-type "t1.micro")))]
     (-> @build :instance-id (ec2/instance) :state :name) => "running"
     (-> @build :instance-ids (first)) => string?
     (nodes/cleanup-nodes build) => anything

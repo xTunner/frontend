@@ -13,6 +13,7 @@
   (:require [circle.env :as env])
   (:require [circle.backend.ssh])
   (:require [circle.backend.load-balancer :as lb])
+  (:use [circle.util.retry :only (wait-for)])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonClientException
            com.amazonaws.AmazonServiceException
@@ -286,27 +287,17 @@
   [instance-id & {:keys [timeout sleep-interval]
                   :or {timeout 30
                        sleep-interval 10}}]
-    (infof "block-until-running: waiting for instance %s to start" instance-id)
-  (loop [timeout timeout]
-    (let [inst (try
-                 (instance instance-id)
-                 (catch com.amazonaws.AmazonServiceException e
-                   ;; this is an eventual consistency 'race'. Sometimes AWS
-                   ;; reports the instance is not there right after it's
-                   ;; started.
-                   (when (not= "InvalidInstanceID.NotFound" (.getErrorCode e))
-                     (throw e))))
-          state (-?> inst :state :name (keyword))
-          ip (-> inst :publicIpAddress)]
-      (infof "block-until-running: %s %s" instance-id state)
-      (cond
-       (= state :running) true
-       (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
-       :else (try
-               (errorf "instance %s didn't start within timeout" instance-id)
-               (terminate-instances! instance-id)
-               (finally
-                (throwf "instance %s didn't start within timeout" instance-id)))))))
+  (infof "block-until-running: waiting for instance %s to start" instance-id)
+  (try
+    (wait-for
+     {:sleep 15000
+      :tries 4
+      :error-hook (fn [e] (infof "block-until-running: caught %s" (.getMessage e)))
+      :success-fn (fn [inst] (= :running (-?> inst :state :name (keyword))))}
+     #(instance instance-id))
+    (catch Exception e
+      (errorf "instance %s didn't start within timeout" instance-id)
+      (terminate-instances! instance-id))))
 
 (defn block-until-ready
   "Block until we can successfully SSH into the box."
@@ -316,25 +307,18 @@
   (require-args instance-id username public-key private-key)
   (block-until-running instance-id)
   (infof "waiting for instance %s to be ready for SSH" instance-id)
-  (let [success (atom false)
-        sleep-interval 5]
-    (loop [timeout timeout]
-      (try
-        (let [node {:ip-addr (public-ip instance-id) :username username :public-key public-key :private-key private-key}
-              resp (circle.backend.ssh/remote-exec node "echo 'hello'")]
-          (when (= 0 (-> resp :exit))
-            (swap! success (constantly true))))
-        (catch java.net.ConnectException e
-          (infof "block-until-ready: caught %s" (.getMessage e)))
-        (catch com.jcraft.jsch.JSchException e
-          (infof "block-until-ready: caught %s" (.getMessage e))))
-      (cond
-       @success true
-       (pos? timeout) (do (Thread/sleep (* sleep-interval 1000)) (recur (- timeout sleep-interval)))
-       :else (do
-               (errorf "failed to SSH into %s" instance-id)
-               (terminate-instances! instance-id)
-               (throwf "failed to SSH into %s" instance-id))))))
+  (try
+    (try-try-again
+     {:sleep 15000
+      :tries 4
+      :catch [java.net.ConnectException com.jcraft.jsch.JSchException java.lang.RuntimeException]
+      :error-hook (fn [e] (infof "block-until-ready: caught %s" (.getMessage e)))}
+     (fn []
+       (let [node {:ip-addr (public-ip instance-id) :username username :public-key public-key :private-key private-key}]
+         (circle.backend.ssh/remote-exec node "echo 'hello'"))))
+    (catch Exception e
+      (errorf "failed to SSH into %s" instance-id)
+      (terminate-instances! instance-id))))
 
 (defn start-instances*
   "Starts one or more instances. Returns a seq of instance-ids."
@@ -357,8 +341,8 @@
                         (.withPlacement (Placement. availability-zone))
                         (.withInstanceType instance-type)
                         (.withKeyName keypair-name)
-                        (.withMinCount min-count)
-                        (.withMaxCount max-count)
+                        (.withMinCount (Integer. min-count))
+                        (.withMaxCount (Integer. max-count))
                         (.withSecurityGroups security-groups)))
         (.getReservation)
         (.getInstances)
