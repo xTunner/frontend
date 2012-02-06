@@ -71,28 +71,35 @@ Var.intern(user_ns, symbolize("foo"), dummy_json)
 
 describe GithubController do
 
-  before(:each) do
-    JRClj.new("circle.init").init()
-    @vcs_url = "https://github.com/arohner/circle-dummy-project"
-  end
+  let(:vcs_url) { "https://github.com/arohner/circle-dummy-project" }
+  let(:project) { Project.create! :vcs_url => vcs_url }
+
 
   it "The github hook successfully triggers builds" do
-    project = Project.from_url @vcs_url
-    project.should_not be_nil
 
-    pre_count = Build.where(:vcs_url => @vcs_url).length
+    p = Project.from_url project.vcs_url
+    p.should_not be_nil
+
+    pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => dummy_json
-    sleep 1
 
-    post_count = Build.where(:vcs_url => @vcs_url).length
+    post_count = Build.where(:vcs_url => vcs_url).length
     (post_count > pre_count).should be_true
   end
 
+  it "should save where" do
+    post :create, :payload => dummy_json
+    build = Build.where(:vcs_url => vcs_url).first
+    build.should_not == nil
+    build.why.should == "github"
+    build.user.should == nil
+  end
+
   it "shouldn't trigger when branches are deleted" do
-    pre_count = Build.where(:vcs_url => @vcs_url).length
+    pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => deleted_json
     sleep 1
-    post_count = Build.where(:vcs_url => @vcs_url).length
+    post_count = Build.where(:vcs_url => vcs_url).length
     post_count.should == pre_count
   end
 

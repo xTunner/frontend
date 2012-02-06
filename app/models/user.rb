@@ -30,6 +30,9 @@ class User
   field :fetched_name, :default => ""
   field :fetched_email, :default => ""
 
+  # builds that this user has started
+  has_many :builds
+
   has_and_belongs_to_many :projects
 
   validates_presence_of :email

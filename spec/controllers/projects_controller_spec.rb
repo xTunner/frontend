@@ -21,8 +21,29 @@ describe ProjectsController do
     get 'show', :project => project.github_project_name
   end
 
-
   it "should work for weird characters in the project url" do
     github_project_path(FactoryGirl.create(:project_with_weird_characters))
+  end
+
+  describe "json tests" do
+    let!(:project) { Project.unsafe_create :vcs_url => "https://github.com/a/b", :users => [subject.current_user] }
+    before(:each) do
+      request.env["HTTP_ACCEPT"] = "application/json"
+    end
+
+    after(:each) do
+      response.should be_success
+    end
+
+    it "should start a build when the page is edited" do
+      put :update, { :project => "a/b", "setup" => "" }.as_json
+      project.latest_build.why.should == "edit"
+    end
+
+    it "should start a hipchat notification worker" do
+      old = Backend.worker_count
+      put :update, { :project => "a/b", "hipchat_room" => "test" }
+      Backend.worker_count.should == old + 1
+    end
   end
 end

@@ -30,7 +30,7 @@ class ProjectsController < ApplicationController
     # Automatically trigger another build, since after saving, you'll always
     # want another build to run to test it.
     if params[:setup]
-      Backend.build(@project)
+      Backend.build(@project, "edit", current_user)
     elsif params[:hipchat_room]
       Backend.fire_worker "circle.backend.build.notify/send-hipchat-setup-notification", @project.id.to_s
     end

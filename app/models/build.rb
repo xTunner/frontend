@@ -1,5 +1,5 @@
 ## The canonical Build model lives in the clojure code. This definition exists
-## to make Rail's querying easier
+## to make Rails querying easier
 class Build
   include Mongoid::Document
   include Base
@@ -12,7 +12,12 @@ class Build
   field :stop_time, :type => Time, :default => nil # can be empty
   field :infrastructure_fail, :type => Boolean, :default => false
   field :timedout, :type => Boolean, :default => false
+  field :why, :type => String, :default => nil
+
   has_many :action_logs, :inverse_of => :thebuild
+
+  # who started the build, can be null
+  belongs_to :user
 #  belongs_to :project
 
 
@@ -38,13 +43,12 @@ class Build
     Project.where(:vcs_url => vcs_url).first
   end
 
-  def self.start(url)
-    Build.create! :start_time => Time.now, :vcs_url => url
+  def self.start(url, why, who=nil)
+    Build.create! :start_time => Time.now, :vcs_url => url, :why => why, :user => who
   end
 
   def committer_handle
     return nil if committer_email.nil?
-
     committer_email.split("@")[0]
   end
 

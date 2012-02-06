@@ -5,13 +5,13 @@ class Backend
 
   # TODO: refactor this until it's transparent
   def self.github_hook(url, after, ref, json)
-    b = Build.start(url)
+    b = Build.start(url, "github")
     self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json, b.id.to_s
     b
   end
 
-  def self.build(project, inferred = false)
-    b = Build.start(project.vcs_url)
+  def self.build(project, why, who, inferred = false)
+    b = Build.start(project.vcs_url, why, who)
     self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, inferred, b.id.to_s
     b
   end
