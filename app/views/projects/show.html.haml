@@ -1,42 +1,7 @@
 .container-fluid
   = render :partial => 'running'
 
-  %table#recent-jobs
-    %thead
-      %tr
-        %th #
-        %th Revision
-        %th Author
-        %th Log
-        %th Started
-        %th Length
-        %th Status
-    %tbody
-      - @project.recent_builds(30).each do |build|
-        %tr
-          %td
-            = build_link_to build
 
-          %td
-            = build.link_to_github
-
-          %td
-            = build.author_name || build.author_email
-
-          %td
-            - if build.body.to_s != "" # ignore nil and empty
-              = link_to build.subject, "#", { :title => build.body }
-            - else
-              = build.subject
-
-          %td
-            = as_commit_time build.start_time
-
-          %td
-            - if build.status != :killed
-              = as_length_of_build build.start_time, build.stop_time
-            - if build.status == :running
-              (still running)
-
-          %td
-            != bootstrap_status build
+  - @builds = @project.recent_builds(30)
+  = render :partial => 'shared/builds',
+                       :locals => { :mention_project => false, :pagination => false }

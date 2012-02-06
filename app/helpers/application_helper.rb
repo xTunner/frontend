@@ -158,12 +158,12 @@ module ApplicationHelper
     link_to text, build.as_url
   end
 
-  def log_link_to(subject, body, limit=80)
-    return "" if subject.nil?
+  def log_link_to(build, limit=80)
+    body = build.body
 
-    message = if subject.length > limit then subject.slice(0,limit) + "..." else subject end
+    message = build.shortened_subject limit
     if body and body.length > 0
-      link_to message, "#", { :title => subject + "\n" + body }
+      link_to message, "#", { :title => body }
     else
       message
     end
