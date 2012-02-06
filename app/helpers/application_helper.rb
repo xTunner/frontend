@@ -147,7 +147,7 @@ module ApplicationHelper
   end
 
   def build_absolute_link_to(build, options={})
-    project = build.the_project
+    project = build.project
     begin
       text = options[:text] || build.build_num.to_s
       anchor = github_project_path(project) + "/" + build.build_num.to_s

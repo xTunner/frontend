@@ -32,14 +32,10 @@ class Build
   field :author_date, :type => Time, :default => nil
 
 
-  def the_project
+  def project
     # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't
     # have access to the build model directly
     Project.where(:vcs_url => vcs_url).first
-  end
-
-  def project
-    the_project
   end
 
   def self.start(url)
