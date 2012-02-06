@@ -60,4 +60,4 @@
                 - if build.status == :running
                   (still running)
               %td
-                != bootstrap_status build
+                = bootstrap_status build, nil, build_url(build.project, build.build_num)

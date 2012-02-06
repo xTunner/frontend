@@ -203,7 +203,16 @@ class Build
   end
 
   def absolute_url
-    Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
-    Rails.application.routes.url_helpers.build_url project, build_num, :only_path => false
+    as_url(:only_path => false)
+  end
+
+  def as_url(options={})
+    unless options[:only_path]
+      Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
+    end
+
+    unless build_num.nil? or project.nil?
+      Rails.application.routes.url_helpers.build_url project, build_num, options
+    end
   end
 end

@@ -69,8 +69,17 @@ module ApplicationHelper
     build.link_to_github
   end
 
-  def bootstrap_status(build, markup=nil)
+  def bootstrap_build_num(build)
+    return if build.nil? or build.build_num.nil?
+    bootstrap_status build, build.build_num, build.as_url
+  end
+
+  def bootstrap_status(build, markup=nil, url=nil)
+    unless markup or url
+      url = build.as_url
+    end
     markup ||= build.status_as_title
+
 
     type = case build.status
            when :failed
@@ -93,7 +102,10 @@ module ApplicationHelper
              nil
            end
 
-    "<span class='label #{type}'>#{ markup }"
+    if url
+      markup = link_to markup, url
+    end
+    "<span class='build_status label #{type}'>#{ markup }".html_safe
   end
 
   def as_action_timestamp(time)
@@ -131,7 +143,7 @@ module ApplicationHelper
     else
       name = build.build_num.to_s
     end
-    link_to name, build_path(:project => project, :id => build.build_num)
+    link_to name, build.as_url
   end
 
   def build_absolute_link_to(build, options={})
@@ -143,7 +155,7 @@ module ApplicationHelper
       return "" # new projects may have no builds available yet
     end
 
-    link_to text, build_url(:project => project, :id => build.build_num.to_s)
+    link_to text, build.as_url
   end
 
   def log_link_to(subject, body, limit=80)
