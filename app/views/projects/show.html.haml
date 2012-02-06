@@ -9,19 +9,19 @@
         %th Author
         %th Log
         %th Started
-        %th Time taken
+        %th Length
         %th Status
     %tbody
       - @project.recent_builds(30).each do |build|
         %tr
           %td
-            = build_link_to build, @project
+            = build_link_to build
 
           %td
             = build.link_to_github
 
           %td
-            = mail_to build.author_email, build.author_name
+            = build.author_name || build.author_email
 
           %td
             - if build.body.to_s != "" # ignore nil and empty

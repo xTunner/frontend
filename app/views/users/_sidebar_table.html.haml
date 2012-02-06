@@ -14,7 +14,7 @@
           %td.build_column
             - b = p.latest_build
             - if b
-              != bootstrap_status b, build_link_to(b, p)
+              != bootstrap_status b, build_link_to(b)
 
           %td.icons
             = link_to 'edit', github_project_edit_path(p)

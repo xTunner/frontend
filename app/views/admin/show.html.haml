@@ -11,7 +11,7 @@
             = link_to p.users.count, "#", :title => p.users.map { |u| u.known_email }.join("|")
             = link_to 'e', github_project_edit_path(p)
             = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
-            = build_link_to p.latest_build, p
+            = build_link_to p.latest_build
             - if p.visible
               V
             - else
@@ -23,32 +23,29 @@
     %table
       %thead
         %tr
-          %th
-            Project
-          %th
-            \#
-          %th
-            Revision
-          %th
-            Started at
-          %th
-            Running time
-          %th
-            Status
+          %th Build
+          %th Revision
+          %th Author
+          %th Log
+          %th Started at
+          %th Length
+          %th Status
 
       %tbody
-        - @builds.each do |b|
-          %tr{ :class => b.status }
+        - @builds.each do |build|
+          %tr
             %td
-              = project_link_to b.project
+              = build_link_to build, true
             %td
-              = build_link_to b, b.project
+              = revision_link_to build
             %td
-              = revision_link_to b
+              = build.author_name || build.author_email
             %td
-              = as_commit_time b.start_time
+              = log_link_to(build.subject, build.body, 50)
             %td
-              = as_length_of_build b.start_time, b.stop_time
+              = as_commit_time build.start_time
             %td
-              != bootstrap_status(b)
+              = as_length_of_build build.start_time, build.stop_time
+            %td
+              != bootstrap_status(build)
     = paginate @builds

@@ -35,44 +35,29 @@
       %table#projects
         %thead
           %tr
-            %th Project
-            %th #
+            %th Build
             %th Revision
             %th Author
             %th Log
             %th Started
-            %th Time taken
-            %th Last Status
-            %th Edit
+            %th Length
+            %th Status
         %tbody
           - @recent_builds.each do |build|
-            - project = build.project
             %tr
               %td
-                = link_to(project.github_project_name, github_project_path(project))
-
-              %td
-                = build_link_to build
-
+                = build_link_to build, true
               %td
                 = revision_link_to build
-
               %td
-                = mail_to build.author_email, build.author_name
-
+                = build.author_name || build.author_email
               %td
                 = log_link_to(build.subject, build.body, 50)
-
               %td
                 = as_commit_time build.start_time
-
               %td
                 = as_length_of_build build.start_time, build.stop_time
                 - if build.status == :running
                   (still running)
-
               %td
                 != bootstrap_status build
-
-              %td
-                = link_to "edit", github_project_edit_path(project)

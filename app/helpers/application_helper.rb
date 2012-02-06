@@ -115,10 +115,10 @@ module ApplicationHelper
 
 
   # TECHNICAL_DEBT: these shouldn't even exist, never mind being two separate functions.
-  def build_link_to(build, project=nil)
+  def build_link_to(build, include_project=false)
     return if build.nil? || build.build_num.nil?
 
-    project = project || build.the_project
+    project = build.project
     begin
       link = github_project_path(project) + "/" + build.build_num.to_s
     rescue
@@ -126,9 +126,13 @@ module ApplicationHelper
     end
 
     # TECHNICAL_DEBT: kill this function - this puts the word build where it shouldnt be.
-    link_to build.build_num.to_s, build_path(:project => project, :id => build.build_num)
+    if include_project
+      name = "#{project.github_project_name} ##{build.build_num}"
+    else
+      name = build.build_num.to_s
+    end
+    link_to name, build_path(:project => project, :id => build.build_num)
   end
-
 
   def build_absolute_link_to(build, options={})
     project = build.the_project
@@ -146,12 +150,10 @@ module ApplicationHelper
     return "" if subject.nil?
 
     message = if subject.length > limit then subject.slice(0,limit) + "..." else subject end
-    if body
-      popup = subject + "\n" + body
+    if body and body.length > 0
+      link_to message, "#", { :title => subject + "\n" + body }
     else
-      popup = nil
+      message
     end
-
-    link_to message, "#", { :title => popup }
   end
 end
