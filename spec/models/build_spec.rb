@@ -42,8 +42,9 @@ describe Build do
     build.as_html_instant_message.should == "Failed: <a href='http://circlehost:3000/gh/arohner/circle-dummy-project/5'>arohner/circle-dummy-project #5</a>:" +
       "<br> - latest revision: " +
       "<a href='https://github.com/arohner/circle-dummy-project/commit/abcdef01234566789'>" +
+      "<img src='http://circlehost:3000/assets/octocat-tiny.png'>" +
       "abcdef012" +
-      "<img src='http://circlehost:3000/assets/octocat-tiny.png'></a> " +
+      "</a> " +
       "(mybranch)" +
       "<br> - author: user@test.com" +
       "<br> - log: I fixed a thingy in the whatsit"
