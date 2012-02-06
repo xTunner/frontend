@@ -10,7 +10,7 @@
 (defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :dependencies [[org.clojure/clojure "1.3.0"]
-                 [org.clojure/clojure-contrib "1.3-compat"]
+                 [org.clojure/clojure-contrib "1.3-b7125d79301cbc1ce44b24c5b29e57685202041a"]
 
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; TECHNICAL_DEBT
@@ -65,7 +65,7 @@
                  [org.slf4j/slf4j-log4j12 "1.6.2"]
                  [org.clojure/tools.logging "0.2.3"]
                  [org.log4mongo/log4mongo-java "0.7.0"]
-                 [clj-airbrake "0.1.4"]
+                 [clj-airbrake "0.1.5-3d5b4bd54f1dc4d287845265417528f287c6d7f1"]
                  [clj-growl "0.2.1"]
 
                  [vmfest "0.2.3"]
