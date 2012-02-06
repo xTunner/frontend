@@ -39,8 +39,7 @@
    (alter in-progress disj b)
    (alter b assoc :stop_time (-> (time/now) .toDate)))
   (let [project (build/get-project b)]
-    (when (and (-> @b :actions (count) (zero?))
-               (-> project :inferred)) ;; TODO
+    (when (and (-> @b :actions (count) (zero?)))
       (project/set-uninferrable project)))
   (build/update-mongo b))
 

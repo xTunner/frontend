@@ -1,16 +1,17 @@
 (def jvm-opts (concat ["-Djava.net.preferIPv4Stack=true"
                        "-XX:MaxPermSize=256m"
                        "-XX:+UseConcMarkSweepGC"
+                       "-Xss512k"
+                       "-Xmx1024m"
                        "-XX:+CMSClassUnloadingEnabled"]
                       (when (not (or (= (System/getenv "USER") "pbiggar")
                                      (= (System/getenv "CIRCLE_DEBUG") "false")))
                         ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8030"])))
 
-
 (defproject circle "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
-  :dependencies [[org.clojure/clojure "1.2.1"]
-                 [org.clojure/clojure-contrib "1.2.0"]
+  :dependencies [[org.clojure/clojure "1.3.0"]
+                 [org.clojure/clojure-contrib "1.3-b7125d79301cbc1ce44b24c5b29e57685202041a"]
 
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; TECHNICAL_DEBT
@@ -65,7 +66,7 @@
                  [org.slf4j/slf4j-log4j12 "1.6.2"]
                  [org.clojure/tools.logging "0.2.3"]
                  [org.log4mongo/log4mongo-java "0.7.0"]
-                 [clj-airbrake "0.1.4"]
+                 [clj-airbrake "0.1.5-3d5b4bd54f1dc4d287845265417528f287c6d7f1"]
                  [clj-growl "0.2.1"]
 
                  [vmfest "0.2.3"]
@@ -88,10 +89,10 @@
                  [doric "0.5.0"]
                  [robert/bruce "0.7.1"]
                  [com.jcraft/jsch  "0.1.45"] ; try to fix "Packet corrupt" errors.
-                 [com.cemerick/pomegranate "0.0.2"]
 
                  ;; Pallet/jClouds
                  [org.cloudhoist/pallet "0.6.5"]
+                 [org.cloudhoist/stevedore "0.7.1-SNAPSHOT"]
                  [org.jclouds/jclouds-core "1.2.1"]
                  [org.jclouds/jclouds-compute "1.2.1"]
                  [org.jclouds/jclouds-blobstore "1.2.1"]
@@ -121,8 +122,8 @@
   ;; can't set lib/dev path
   :omit-default-repositories true
   :dev-dependencies [[lein-test-out "0.1.1"]
-                     [midje "1.3.1"]
-                     [lein-midje "1.0.4"]
+                     [midje "1.3.1" :exclusions [org.clojure/clojure]]
+                     [lein-midje "1.0.7"]
                      [clojure-source "1.2.1"]
                      [org.jruby/jruby "1.6.5.1"]]
 

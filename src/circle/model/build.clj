@@ -140,7 +140,7 @@
 
 (defn get-project [build]
   {:post [%]}
-  (project/get-by-id (-> @build :_project_id)))
+  (project/get-by-url (-> @build :vcs_url)))
 
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 

@@ -3,7 +3,6 @@
   (:use [circle.backend.build.test-utils])
   (:use [circle.backend.action :only (defaction action)])
   (:require [circle.backend.action.nodes :as nodes])
-  (:require [circle.backend.build.config :as config])
   (:use [circle.model.build :only (build successful?)])
   (:use [circle.backend.build.run :only (run-build)])
   (:require [circle.model.project :as project])
@@ -15,6 +14,8 @@
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.util.predicates :only (ref?)])
   (:use [circle.util.retry :only (wait-for)]))
+
+(test-ns-setup)
 
 (defaction successful-action [act-name]
   {:name act-name}
@@ -77,21 +78,21 @@
   (let [build (minimal-build :actions [])]
     (dosync
      (run-build build) => anything
-     (-> (mongo/fetch-one :projects :where {:vcs_url (-> (test-project) :vcs_url)}) :state) => "disabled")))
+     (-> (mongo/fetch-one :projects :where {:vcs_url (-> test-project :vcs_url)}) :state) => "disabled")))
 
 (fact "running a disabled build"
   (let [build (minimal-build :actions [])
-        _ (project/set-uninferrable (test-project))]
+        _ (project/set-uninferrable (ensure-project test-project))]
     (run-build build) => anything
     (-> @build :error_message) => string?
     (-> @build :stop_time) => truthy
     (provided
       (circle.backend.build.run/do-build* anything) => anything :times 0)))
 
-;; This is the only test that should start an instnace
+;; This is the only test that should start an instance
 (fact "the customer AMI starts up"
   (let [build (run-build (minimal-build :actions [(nodes/start-nodes)]
-                                        :node rails/rails-node))]
+                                        :node (assoc rails/rails-node :instance-type "t1.micro")))]
     (-> @build :instance-id (ec2/instance) :state :name) => "running"
     (-> @build :instance-ids (first)) => string?
     (nodes/cleanup-nodes build) => anything

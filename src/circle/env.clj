@@ -5,7 +5,7 @@
   (:require [clojure.string :as str])
   (:use [clojure.contrib.except :only (throw-if-not)]))
 
-(def env-var nil)
+(def ^:dynamic env-var nil)
 
 (defn env []
   (or

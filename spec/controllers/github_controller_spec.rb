@@ -73,7 +73,6 @@ describe GithubController do
 
   before(:each) do
     JRClj.new("circle.init").init()
-    JRClj.new("circle.backend.build.test-utils").ensure_clean_test_project()
     @vcs_url = "https://github.com/arohner/circle-dummy-project"
   end
 

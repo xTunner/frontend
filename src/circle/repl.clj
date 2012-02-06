@@ -11,6 +11,7 @@
     (use '[circle.backend.ec2 :only (print-instances)])
     (require '[circle.backend.ec2 :as ec2])
     (require '[somnium.congomongo :as mongo])
+    (require '[circle.ruby :as r])
     (require '[circle.tasks]))
   (println "repl/init done"))
 

@@ -18,7 +18,6 @@ if RUBY_PLATFORM == 'java'
   Dir["#{root_dir}/lib/dev/*.jar"].each do |jar|
     require jar
   end
-
 else
   raise if (Rails.env == "production" or Rails.env == "staging")
 end
