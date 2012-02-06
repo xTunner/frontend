@@ -121,8 +121,8 @@
   ;; can't set lib/dev path
   :omit-default-repositories true
   :dev-dependencies [[lein-test-out "0.1.1"]
-                     [midje "1.3.1"]
-                     [lein-midje "1.0.4"]
+                     [midje "1.3.1" :exclusions [org.clojure/clojure]]
+                     [lein-midje "1.0.7"]
                      [clojure-source "1.2.1"]
                      [org.jruby/jruby "1.6.5.1"]]
 
