@@ -117,7 +117,7 @@ class Build
 
     img = "<img src='#{path}'>".html_safe
 
-    link = "<a href='#{github_url}'>#{short_code}#{img}</a>"
+    link = "<a href='#{github_url}'>#{img}#{short_code}</a>"
     link += " (#{branch_in_words})" if branch
     link.html_safe
   end
