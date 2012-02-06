@@ -15,11 +15,11 @@
         - rescue ActionView::MissingTemplate
 
         %ul.nav.secondary-nav
-          - if Rails.env.development?
+          - if current_user.admin?
             %ul.nav
               %li.development
                 %a
-                  DEVELOPMENT
+                  = Rails.env
           %li.dropdown
             = link_to current_user.email, '#', :class => "dropdown-toggle"
             %ul.dropdown-menu
