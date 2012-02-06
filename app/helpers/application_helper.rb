@@ -65,15 +65,8 @@ module ApplicationHelper
   end
 
   def revision_link_to(build)
-    url = build.vcs_url
-    revision = build.vcs_revision
-    return if url.nil? or revision.nil?
-
-    # TECHNICAL_DEBT: github only
-    link = link_to(revision[0..8], url + "/commit/" + revision)
-    link += " (#{build.branch_in_words})" if build.branch
-
-    link
+    return if build.vcs_url.nil? or build.vcs_revision.nil?
+    build.link_to_github
   end
 
   def bootstrap_status(build, markup=nil)

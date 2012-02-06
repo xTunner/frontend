@@ -41,23 +41,30 @@ describe SimpleMailer do
   end
 
   let(:successful_build) do
-    Build.create(std_attrs.merge(:action_logs => [setup_log, successful_log], :failed => false))
+    Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, successful_log],
+                                        :failed => false))
   end
 
   let(:failing_build) do
-    Build.create(std_attrs.merge(:action_logs => [setup_log, successful_log, failing_log], :failed => true))
+    Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, successful_log, failing_log],
+                                        :failed => true))
   end
 
   let(:infra_build) do
-    Build.create(std_attrs.merge(:action_logs => [], :failed => true, :infrastructure_fail => true))
+    Build.unsafe_create(std_attrs.merge(:action_logs => [],
+                                        :failed => true,
+                                        :infrastructure_fail => true))
   end
 
   let(:timedout_build) do
-    Build.create(std_attrs.merge(:action_logs => [setup_log, failing_log], :failed => true, :timedout => true))
+    Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, failing_log],
+                                        :failed => true,
+                                        :timedout => true))
   end
 
   let(:no_tests_build) do
-    Build.create(std_attrs.merge(:action_logs => [setup_log], :failed => false))
+    Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log],
+                                        :failed => false))
   end
 
   #  let(:fixed_build) { Build.create(:vcs_url => vcs_url, :parent_build => [failing_build]

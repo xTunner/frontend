@@ -7,6 +7,7 @@ describe Build do
   let(:build) { Build.unsafe_create(:vcs_url => vcs_url,
                                     :committer_email => "user@test.com",
                                     :branch => "remotes/origin/mybranch",
+                                    :vcs_revision => "abcdef01234566789",
                                     :failed => true,
                                     :build_num => 5,
                                     :subject => "I fixed a thingy in the whatsit",
@@ -39,7 +40,11 @@ describe Build do
 
   it "should have the right instant message format" do
     build.as_html_instant_message.should == "Failed: <a href='http://circlehost:3000/gh/arohner/circle-dummy-project/5'>arohner/circle-dummy-project #5</a>:" +
-      "<br> - branch: mybranch" +
+      "<br> - latest revision: " +
+      "<a href='https://github.com/arohner/circle-dummy-project/commit/abcdef01234566789'>" +
+      "abcdef012" +
+      "<img src='http://circlehost:3000/assets/octocat-tiny.png'></a> " +
+      "(mybranch)" +
       "<br> - author: user@test.com" +
       "<br> - log: I fixed a thingy in the whatsit"
   end

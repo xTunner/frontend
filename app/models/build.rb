@@ -1,4 +1,5 @@
-## The canonical Build model lives in the clojure code. This definition exists to make Rail's querying easier
+## The canonical Build model lives in the clojure code. This definition exists
+## to make Rail's querying easier
 class Build
   include Mongoid::Document
   include Base
@@ -105,6 +106,22 @@ class Build
     end
   end
 
+  def link_to_github(absolute=false)
+    short_code = vcs_revision[0..8]
+    github_url = vcs_url + "/commit/" + vcs_revision
+
+    path = ActionController::Base.helpers.image_path("octocat-tiny.png")
+    if absolute
+      path = "http://" + ActionMailer::Base.default_url_options[:host] + path
+    end
+
+    img = "<img src='#{path}'>".html_safe
+
+    link = "<a href='#{github_url}'>#{short_code}#{img}</a>"
+    link += " (#{branch_in_words})" if branch
+    link.html_safe
+  end
+
   def status_in_words
     case status
     when :failed
@@ -173,23 +190,20 @@ class Build
     end
   end
 
-
   def as_email_subject
-    p = the_project
-    "#{status_as_title}: #{project.github_project_name} ##{build_num} by #{committer_handle}: #{shortened_subject 35}"
+    "#{status_as_title}: #{project.github_project_name} ##{build_num}" +
+      " by #{committer_handle}: #{shortened_subject 35}"
   end
 
   def as_html_instant_message
     "#{status_as_title}: <a href='#{absolute_url}'>#{project.github_project_name} ##{build_num}</a>:" +
-      "<br> - branch: #{branch_in_words}" +
+      "<br> - latest revision: " + link_to_github(true) +
       "<br> - author: #{committer_email}" +
       "<br> - log: #{shortened_subject 150}"
   end
 
-
   def absolute_url
     Rails.application.routes.default_url_options = ActionMailer::Base.default_url_options
-    Rails.application.routes.url_helpers.build_url self.project, self.build_num, :only_path => false
+    Rails.application.routes.url_helpers.build_url project, build_num, :only_path => false
   end
-
 end
