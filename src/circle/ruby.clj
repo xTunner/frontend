@@ -180,32 +180,6 @@
 
 (def sample-objectid-string "4ee6911fe4b05e6a4d3605fe")
 
-(defn rspec
-  "runs rspec. Useful from clojure repl.
-
-Note that rspec will run in whatever RAILS_ENV you started in, so you
-  probably want to start in RAILS_ENV=test, or rspec will clear your
-  DB, or tests will fail because they assume the DB cleaner runs."
-  [& args]
-  (let [options (filter #(= (get % 0) \-) args)
-        subdirs (remove #(= (get % 0) \-) args)
-        subdirs (if (empty? subdirs) [""] subdirs)
-        subdirs (map #(fs/join "spec" %) subdirs)
-        command (format "
-require 'rubygems'
-require 'rspec/core/rake_task'
-
-# http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console
-puts 'Reloading factories'
-FactoryGirl.factories.clear
-FactoryGirl.find_definitions
-RSpec.world.reset
-RSpec.world.shared_example_groups.clear
-
-RSpec::Core::Runner.run([\"%s\"])
-" (string/join "\", \"" (concat options subdirs)))]
-    (eval command)))
-
 (defn-once test-ruby
   (new-runtime :env {"RAILS_ENV" "test"}))
 
@@ -217,13 +191,24 @@ RSpec::Core::Runner.run([\"%s\"])
         subdirs (if (empty? subdirs) [""] subdirs)
         subdirs (map #(fs/join "spec" %) subdirs)]
     (with-runtime (test-ruby)
+
       (println "starting")
       (require-rails)
+
       (println "done loading rails")
       (ruby-require "rubygems")
       (ruby-require "rspec/core/rake_task")
+
+      (println "clearing")
+      ;;  http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console
+      (-> (get-module :FactoryGirl) (send :factories) (send :clear))
+      (-> (get-module :FactoryGirl) (send :find_definitions) (send :clear))
+      (-> (get-module :RSpec) (send :world) (send :reset))
+      (-> (get-module :RSpec) (send :world) (send :shared_example_groups) (send :clear))
+
       (println "rspec")
-      (-> (get-module "RSpec") (get-module "Core") (get-class "Runner") (send :run ["spec"])))))
+      (-> (get-module "RSpec") (get-module "Core") (get-class "Runner") (send :run (concat options subdirs))))))
+
 
 (defn get-kernel
   "Returns the Kernel module. Used for 'core' functions like puts"
@@ -328,6 +313,3 @@ RSpec::Core::Runner.run([\"%s\"])
   "Takes the runtime from rails-server"
   [runtime]
   (.tearDown runtime))
-
-
-
