@@ -15,6 +15,11 @@
                 (when id
                   (infof "calling self-terminate on %s" id)
                   (ec2/terminate-instances! id)))))]
+    (infof "adding graceful shutdown watcher")
     (add-watch run/in-progress :shutdown (fn [key in-progress old-state new-state]
                                            (shutdown)))
     (shutdown)))
+
+(defn stop-shutdown []
+  (infof "removing graceful shutdown watcher")
+  (remove-watch run/in-progress :shutdown))

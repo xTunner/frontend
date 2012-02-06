@@ -18,4 +18,5 @@
         fut (future (run-build build))]
     (graceful-shutdown) => anything
     @fut => anything
-    (successful? build) => true))
+    (successful? build) => true
+    (stop-shutdown) => anything))
