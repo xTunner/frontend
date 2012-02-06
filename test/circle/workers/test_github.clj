@@ -20,4 +20,5 @@
 
 (fact "authorization-url works"
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
-  "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scope=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos")
+  "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&scope=repo&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fhooks%2Frepos"
+  (provided (circle.env/env) => :test))
