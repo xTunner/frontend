@@ -1,6 +1,7 @@
 (def jvm-opts (concat ["-Djava.net.preferIPv4Stack=true"
                        "-XX:MaxPermSize=256m"
                        "-XX:+UseConcMarkSweepGC"
+                       "-Xss512k"
                        "-Xmx1024m"
                        "-XX:+CMSClassUnloadingEnabled"]
                       (when (not (or (= (System/getenv "USER") "pbiggar")
