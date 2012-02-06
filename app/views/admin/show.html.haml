@@ -2,22 +2,28 @@
   .sidebar
     %table.condensed-table.well
       %tbody
-        - @projects.each do |p|
+        - @users.each do |u|
           %tr
             %td
-              = project_link_to p
+              = u.email
+              %table
+                %tbody
+                  - u.projects.each do |p|
 
-            %td.build_column
-              - build = p.latest_build
-              - if build
-                = bootstrap_build_num build
+                    %tr
+                      %td
+                        = project_link_to p
 
-            %td.icons
-              = link_to p.users.count, "#", :title => p.users.map { |u| u.known_email }.join("|")
-              = link_to 'e', github_project_edit_path(p)
-              = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
-              - if p.visible
-                V
+                      %td.build_column
+                        - build = p.latest_build
+                        - if build
+                          = bootstrap_build_num build
+
+                      %td.icons
+                        = link_to 'e', github_project_edit_path(p)
+                        = link_to 't', url_for([p, Build.new]), { :remote => true, :method => :post }
+                        - if p.visible
+                          V
 
   .content
     .row
