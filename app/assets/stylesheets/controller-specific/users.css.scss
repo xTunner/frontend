@@ -1,17 +1,13 @@
+/*
+ *= require shared/builds
+ */
+
 ul.contact > li {
   list-style-type: none;
 }
 
 ul.contact {
   padding-top: 10px;
-}
-
-td.build_column a {
-   color: white;
-}
-
-td.build_column {
-   text-align: right;
 }
 
 .content {
