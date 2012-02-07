@@ -36,11 +36,6 @@ class SimpleMailer < ActionMailer::Base
     to = users.find_all { |u| u.wants_build_email?(@build) }.map {|u| u.email }
     return if to == [] && cc == []
 
-    # TODO: stop doing this "visible" hack
-    if Rails.env.production? && !@project.visible
-      to = ["founders@circleci.com"]
-    end
-
     if status == :infrastructure_fail
       to = ["founders@circleci.com"]
     end
