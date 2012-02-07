@@ -27,6 +27,7 @@ gem 'switch_user'
 gem 'pusher'
 gem 'kaminari'
 gem 'rails-backbone'
+gem 'newrelic_rpm'
 
 # In test, no mail gets sent anyway, but let's not mess with the email addresses
 gem 'mail_safe', :groups => [ :development, :staging ]
