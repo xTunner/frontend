@@ -2,6 +2,7 @@
   "Like rake tasks, for the repl"
   (:require [circle.backend.build.run :as run])
   (:require [circle.util.mongo :as mongo])
+  (:require [clojure.pprint :as pprint])
   (:require [circle.backend.build.config :as config]))
 
 (defn one-click-deploy [& args]
@@ -11,4 +12,9 @@
                :job-name
                :deploy)]
     (mongo/ensure-object-id-ref :builds build)
-    (apply run/run-build build args)))
+    (let [result (apply run/run-build build args)]
+      (pprint/pprint result)
+      (println
+       (if (-> @result :failed)
+         "Failed"
+         "Success")))))
