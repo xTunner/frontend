@@ -71,15 +71,3 @@
           %pre.output
             = preserve do
               !~ action_log_output(l.out)
-
-          -#%table
-            %tbody
-              - l["out"].each do |o|
-                - if o["message"] != ""
-                  %tr
-                    %td
-                      = as_action_timestamp(o["time"])
-                    %td
-                      %div{ :class => o['type'] == "out" ? "alert-message block-message success" : "alert-message block-message error" }
-                    %pre
-                      !~ action_log_output([ o["message"] ] )
