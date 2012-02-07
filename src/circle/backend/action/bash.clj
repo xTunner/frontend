@@ -13,8 +13,8 @@
   (:require [circle.backend.action :as action])
   (:require [clj-time.core :as time]))
 
-(defn emit-command [body environment pwd]
-  (sh/emit-form body
+(defn emit-bash [command environment pwd]
+  (sh/emit-form command
                 :environment environment
                 :pwd pwd))
 
@@ -22,11 +22,11 @@
   "Execute bash code on the remote server.
 
    ssh-map is a map containing the keys :username, :public-key, :private-key :ip-addr. All keys are required."
-  [ssh-map body & {:keys [environment
+  [ssh-map command & {:keys [environment
                           pwd]
                    :as opts}]
-  (let [cmd (emit-command body environment pwd)
-        _ (build-log "running (%s %s %s): %s" body pwd environment cmd)
+  (let [cmd (emit-bash command environment pwd)
+        _ (build-log "running (%s %s %s): %s" command pwd environment cmd)
         result (apply-map ssh/remote-exec ssh-map cmd opts)]
     (build-log "%s returned" (-> result :exit)) ;; only log exit, rest should be handled by ssh
     result))
@@ -45,40 +45,46 @@
     build))
 
 (defn remote-bash-build
-  [build body & {:as opts}]
+  [build command & {:as opts}]
   (ensure-ip-addr build)
-  (apply-map remote-bash (-> @build :node) body opts))
+  (apply-map remote-bash (-> @build :node) command opts))
 
-(defn action-name [body]
-  (if (coll? body)
-    (->> body
+(defn action-name [command]
+  (if (coll? command)
+    (->> command
          (map #(str/join " " %))
          (str/join "; "))
-    (str body)))
+    (str command)))
 
 (defn bash
-  "Returns a new action that executes bash on the host. Body is a
+  "Returns a new action that executes bash on the host. Command is a
   string. If pwd is not specified, defaults to the root of the build's
   checkout dir"
-  [body & {:keys [name abort-on-nonzero environment pwd type relative-timeout absolute-timeout]
+  [command & {:keys [name abort-on-nonzero environment pwd type relative-timeout absolute-timeout]
            :or {abort-on-nonzero true}
            :as opts}]
-  (let [name (or name (action-name body))
-        command (emit-command body environment pwd)]
+  (let [name (or name (action-name command))
+        bash-command (emit-bash command environment pwd)
+        relative-timeout (or relative-timeout (time/minutes 20))
+        absolute-timeout (or absolute-timeout (time/hours 1))]
     (action/action :name name
-                   :command command
                    :type type
+                   :command (str command)
+                   :bash-command bash-command
+                   :environment environment
+                   :pwd pwd
+                   :abort-on-nonzero abort-on-nonzero
+                   :relative-timeout (period-to-s relative-timeout)
+                   :absolute-timeout (period-to-s absolute-timeout)
                    :act-fn (fn [build]
                              (try+
                               (let [pwd (fs/join (checkout-dir build) pwd)
-                                    relative-timeout (or relative-timeout (time/minutes 5))
-                                    absolute-timeout (or absolute-timeout (time/hours 1))
                                     opts (merge opts {:pwd pwd
                                                       :relative-timeout relative-timeout
                                                       :absolute-timeout absolute-timeout})
-                                    result (apply-map remote-bash-build build body opts)]
+                                    result (apply-map remote-bash-build build command opts)]
                                 (when (and (not= 0 (-> result :exit)) abort-on-nonzero)
-                                   (action/abort! build (str body " returned exit code " (-> result :exit))))
+                                   (action/abort! build (str command " returned exit code " (-> result :exit))))
                                  ;; only add exit code, :out and :err are handled by hooking ssh/handle-out and ssh/handle-err in action.clj
                                  (action/add-action-result (select-keys result [:exit])))
                               (catch [:type :circle.backend.ssh/ssh-timeout] {:keys [timeout-type timeout]}

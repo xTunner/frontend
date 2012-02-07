@@ -105,8 +105,10 @@
 (defn action-results
   "creates a new action results"
   [build act]
-  (ref {:name (:name act)
-        :_build-ref (-> @build :_id)}))
+  (-> act
+      (dissoc :act-fn)
+      (assoc :_build-ref (-> @build :_id))
+      ref))
 
 (defn add-action-result
   "Adds information about the action's result
