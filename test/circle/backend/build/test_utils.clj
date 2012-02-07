@@ -270,5 +270,6 @@ schedule:
   []
   `(background (before :facts (ensure-test-db))
                (around :facts (ruby/with-runtime (ruby/test-ruby)
+                                ;;(redis/with-redis ) this isn't enough, we need to switch redis and resque at the same time.
                                 (mongo/with-mongo (test-db-connection)
                                   ?form)))))

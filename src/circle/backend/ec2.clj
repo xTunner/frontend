@@ -35,6 +35,8 @@
 ;; http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html?r=1890
 (def aws-metadata-url "http://169.254.169.254/latest/meta-data/")
 
+(def instance-limit 100) ;; instance limit for our account. As of 2012/02/06, there is no API to determine your instance limit.
+
 (defn self-metadata
   "Returns metadata about the current instance. attr is a string/keyword"
   [attr]

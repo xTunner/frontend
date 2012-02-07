@@ -12,6 +12,7 @@
   (:require [circle.backend.build.config :as config])
   (:require [circle.model.project :as project])
   (:use [circle.logging :only (add-file-appender)])
+  (:use [circle.backend.build.resources :only (with-resource-lock)])
   (:use [circle.util.except :only (throw-if throw-if-not)])
   (:use [circle.util.seq :only (find-first index-of)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))

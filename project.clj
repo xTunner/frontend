@@ -52,9 +52,12 @@
                  [congomongo "0.1.7"]
 
                  ;; Queue
-                 ;; [congomongo-mq "0.0.0-SNAPSHOT"]
+                 ;;[congomongo-mq "0.0.0-SNAPSHOT"]
                  ;;[com.cemerick/bandalore "0.0.1"]
                  ;;[com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
+                 [clj-redis "0.0.13-SNAPSHOT"]
+                 [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
+                 [resque-clojure "0.2.1"]
 
                  ;; Hooks
                  [clipchat/clipchat "1.0.0-SNAPSHOT"]
@@ -112,7 +115,7 @@
                  [vmfest "0.2.3-a03a0006b5ac05018323fc6f4ccde0bdbdb45d9d"]
                  [lein-crate "0.1.0"]
                  [pallet-rvm "0.1-46e3991113e82b9d857bce7945b606423ba17699"]
-                 [midje "1.3.1"]
+                 ;;[midje "1.3.2-SNAPSHOT"]
                  [cdt "1.2.6.1-SNAPSHOT"]
                  [org.jruby.ext.posix/jnr-posix "1.1.8"]]
 
