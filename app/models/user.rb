@@ -49,6 +49,10 @@ class User
     end
   end
 
+  def self.non_guests
+    User.where(:email => /@/).all
+  end
+
   # TECHNICAL_DEBT: After manually updating the DB, remove the sign_up_date. We
   # don't have this field for all our users, so set it to around the time we
   # added a bunch. We can manually update them later.

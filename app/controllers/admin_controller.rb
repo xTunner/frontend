@@ -3,8 +3,8 @@ class AdminController < ApplicationController
   authorize_resource :class => false
 
   def show
-    @projects = Project.order_by([[:vcs_url, :asc]])
     @builds = Build.order_by([[:start_time, :desc]]).page params[:page]
+    @users = User.non_guests
   end
 
 end
