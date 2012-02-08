@@ -19,8 +19,9 @@ The backend is run in the same process as the frontend. This all works so long a
   $ bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer) # dont use your package manager.
   $ rvm install jruby
   $ rvm gemset create circle
-  $ bundle install
+  $ gem install bundler --pre
   $ cd CircleCI
+  $ bundle install
     This should activate rvm, and rvm should print a message to that effect)
 
 
