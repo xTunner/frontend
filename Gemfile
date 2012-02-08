@@ -28,6 +28,7 @@ gem 'pusher'
 gem 'kaminari'
 gem 'rails-backbone'
 gem 'newrelic_rpm'
+gem 'momentjs-rails'
 
 # In test, no mail gets sent anyway, but let's not mess with the email addresses
 gem 'mail_safe', :groups => [ :development, :staging ]
