@@ -5,22 +5,40 @@
   (:require [circle.env :as env])
   (:require [clj-time.core :as time])
   (:use circle.util.straight-jacket)
-  (:use [circle.backend.action :as action])
+  (:use [circle.globals :only (*current-build-url* *current-build-number*)])
+  (:require [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
+  (:require [circle.backend.build.config :as config])
   (:require [circle.model.project :as project])
   (:use [circle.logging :only (add-file-appender)])
   (:use [circle.util.except :only (throw-if throw-if-not)])
+  (:use [circle.util.seq :only (find-first index-of)])
   (:use [clojure.tools.logging :only (with-logs error infof errorf)]))
 
 (def in-progress (ref #{}))
 
+(defn finish-action [b act]
+  (dosync
+   ;; TODO - make this cleaner somehow, remove the need for index-of
+   (let [act-index (index-of (-> @b :actions) act)]
+     (throw-if-not (integer? act-index) "couldn't find action")
+     (alter b update-in [:actions act-index] assoc :finished true))))
+
+(defn run-action [b act]
+  (build/build-log "running %s" (-> act :name))
+  (action/run-action b act)
+  (finish-action b act)
+  (build/update-mongo b))
+
+(defn next-act
+  "Returns the next action to run"
+  [b]
+  (find-first #(not (:finished %)) (-> @b :actions)))
+
 (defn do-build* [b]
-  (doseq [act (-> @b :actions)]
-    (when (-> @b :continue?)
-      (let [current-act-results-count (count (-> @b :action-results))]
-        (build/build-log "running %s" (-> act :name))
-        (action/run-action b act)
-        (build/update-mongo b))))
+  (while (and (-> @b :continue?)
+              (next-act b))
+    (run-action b (next-act b)))
   b)
 
 (defn log-result [b]
@@ -28,9 +46,10 @@
     (infof "Build %s successful" (build/build-name b))
     (errorf "Build %s failed" (build/build-name b))))
 
-(defn start [b id]
+(defn start [b]
+  (throw-if-not (-> @b :_id) "build must have an id")
+  (infof "starting build: %s, %s" (build/build-name b) (-> @b :_id))
   (dosync
-   (build/add-to-db b id)
    (alter in-progress conj b)))
 
 (defn finished [b]
@@ -58,31 +77,42 @@
      false)
     true))
 
-(defn run-build [b & {:keys [cleanup-on-failure id]
-                          :or {cleanup-on-failure true}}]
-  (infof "starting build: %s, %s" (build/build-name b) id)
-  (try
-    (start b id)
-    (build/with-build-log-ns b
-      (when (should-run-build? b)
-        (do-build* b)))
-    b
-    (catch Exception e
-      (println "run-build: except:" b e)
-      (error e (format "caught exception on %s" (build/build-name b)))
-      (println "assoc'ing failed=true")
-      (dosync
-       (alter b assoc :failed true)
-       (alter b assoc :infrastructure_fail true))
-      (throw e))
-    (finally
-     (finished b)
 
-      ;; Send build notifications, but don't let it fuck up anbything else.
-     (straight-jacket
-      (when (should-run-build? b)
-        (notify/notify-build-results b)))
+(defn run-build [b & {:keys [cleanup-on-failure]
+                      :or {cleanup-on-failure true}}]
+  (binding [*current-build-url* (-> @b :build_url)
+            *current-build-number* (-> @b :build_num)]
+    (straight-jacket
+     (try
+       (start b)
+       (build/with-build-log-ns b
+         (when (should-run-build? b)
+           (do-build* b)))
+       b
+       (catch Exception e
+         (println "run-build: except:" b e)
+         (error e (format "caught exception on %s" (build/build-name b)))
+         (dosync
+          (alter b assoc :failed true)
+          (alter b assoc :infrastructure_fail true))
+         (throw e))
+       (finally
+        (finished b)
 
-     (log-result b)
-     (when (and (-> @b :failed) cleanup-on-failure)
-       (cleanup-nodes b)))))
+        ;; Send build notifications, but don't let it fuck up anything else.
+        (straight-jacket
+         (when (should-run-build? b)
+           (notify/notify-build-results b)))
+
+        (log-result b)
+        (when (and (-> @b :failed) cleanup-on-failure)
+          (cleanup-nodes b)))))))
+
+(defn configure
+  "Makes sure the build has run it's configure step (if it has one). Mainly a convenience for testing."
+  [build]
+  (let [first-act (-> @build :actions (first))]
+    (if (and (= config/config-action-name (-> first-act :name))
+             (not (-> first-act :finished)))
+      (run-action build first-act)))
+  build)

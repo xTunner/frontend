@@ -10,13 +10,10 @@
 
 (fact "start-build-from-hook works with dummy project"
   (let [json circle-dummy-project-json-str
-        id (object-id)
-        _   (mongo/insert! :builds {:_id id})
-        build (start-build-from-hook nil nil nil json (str id))]
+        build (start-build-from-hook nil nil nil json)]
     (-> @build :vcs_url) => truthy
     (-> build (build/successful?)) => true
-    (-> @build :build_num) => integer?
-    (-> @build :_id) => id))
+    (-> @build :build_num) => integer?))
 
 (fact "authorization-url works"
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>

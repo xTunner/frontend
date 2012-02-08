@@ -147,10 +147,8 @@
 (defn set-type [action type]
   (assoc action :type type))
 
-
-
 (defn run-action [build act]
-  (throw-if-not (map? act) "action must be a ref")
+  (throw-if-not (map? act) "action must be a map")
   (binding [*current-action* act
             *current-action-results* (action-results build act)]
     (dosync

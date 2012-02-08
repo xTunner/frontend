@@ -10,6 +10,7 @@
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.backend.action :only (defaction action)])
   (:use circle.util.fs)
+  (:use [circle.util.core :only (re)])
   (:require [circle.util.map :as map])
   (:require circle.backend.nodes.rails)
   (:require [circle.backend.build.inference :as inference])
@@ -60,11 +61,6 @@
 (defn schema-rb? [repo]
   (-> (fs/join repo "db" "schema.rb")
       (fs/exists?)))
-
-(defn re
-  "Creates a regex from a string"
-  [s]
-  (java.util.regex.Pattern/compile s))
 
 (defn using-gem? [repo name]
   (re-file? (fs/join repo "Gemfile.lock") (re (format " %s " name))))

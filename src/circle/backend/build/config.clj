@@ -18,10 +18,12 @@
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
   (:use [circle.util.except :only (assert! throw-if-not throwf)])
+  (:use [circle.util.map :only (rename-keys map-vals)])
+  (:use [circle.util.seq :only (vec-concat)])
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.build.inference :as inference])
   (:require circle.backend.build.inference.rails)
-  (:use [circle.util.map :only (rename-keys map-vals)])
+
   (:require [clj-yaml.core :as yaml])
   (:import java.io.StringReader)
   (:use [arohner.utils :only (inspect)])
@@ -218,37 +220,51 @@
   {:actions (inference/infer-actions repo)
    :job-name "build-inferred"})
 
+(def config-action-name "config")  ;; this is a def because other code depends on it.
+
+;; defines a build action that does inference/configuring stuff. This should typically be the first action in a build.
+(action/defaction configure-build
+  []
+  {:name config-action-name}
+  (fn [build]
+    (let [{url :vcs_url vcs-revision :vcs_revision} @build
+          _ (ensure-checkout url :vcs-revision vcs-revision)
+          repo (git/default-repo-path url)
+          vcs-revision (or vcs-revision (git/latest-local-commit repo))
+          commit-details (git/commit-details repo vcs-revision)
+          project (project/get-by-url! url)
+          {:keys [infer job-name]} @build
+
+          inferred-config (infer-config repo)
+          db-config (get-db-config project inferred-config)
+          yml-config (get-yml-config repo :job-name job-name)
+
+          proto-build (cond
+                       infer inferred-config
+                       yml-config yml-config
+                       db-config db-config
+                       :default inferred-config)
+          actions (-> proto-build :actions)
+          proto-build (dissoc proto-build :actions)]
+      (dosync
+       (alter build merge proto-build)
+       (alter build update-in [:actions] vec-concat actions)))))
+
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"
-  [url & {:keys [job-name vcs-revision infer]}]
-  (ensure-checkout url :vcs-revision vcs-revision)
-  (let [repo (git/default-repo-path url)
-        vcs-revision (or vcs-revision (git/latest-local-commit repo))
-        commit-details (git/commit-details repo vcs-revision)
-        project (project/get-by-url! url)
+  [url & {:keys [job-name vcs-revision infer who why]}]
 
-        inferred-config (infer-config repo)
-        db-config (get-db-config project inferred-config)
-        yml-config (get-yml-config repo :job-name job-name)
-
-        proto-build (cond
-                     infer inferred-config
-                     yml-config yml-config
-                     db-config db-config
-                     :default inferred-config)]
-
-    (build/build (merge {:vcs_revision vcs-revision
-                         :vcs_url url
-                         :lb-name (-> project :lb-name)
-                         :vcs-private-key (-> project :ssh_private_key)
-                         :vcs-public-key (-> project :ssh_public_key)
-                         :node rails/rails-node}
-                        commit-details
-                        proto-build))))
+  (build/build {:vcs_revision vcs-revision
+                :vcs_url url
+                :job-name job-name
+                :infer infer
+                :why why
+                :user_id who
+                :actions [(configure-build)]}))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"
   [github-json]
   (let [url (-> github-json :repository :url)
         vcs-revision (-> github-json :after)]
-    (build-from-url url :vcs-revision vcs-revision)))
+    (build-from-url url :vcs-revision vcs-revision :why "github")))

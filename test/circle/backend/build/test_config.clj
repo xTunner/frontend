@@ -80,21 +80,17 @@
     b => ref?
     @b => (contains {:vcs_url string?
                      :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
-                     :node anything
-                     :parents (contains string?)
-                     :subject string?
-                     :committer_date #"\d+"
-                     :build_num pos?
-                     :vcs-private-key string?})
+                     :build_num pos?})
 
-    (-> @b :actions) => () ; no steps inferred
+    (-> @b :actions (count)) => 1 ; one step, the config/inference step.
 
     (validate @b) => nil))
 
 (fact "build-from-url :job-name :deploy works"
   (let [project test/circle-project
         b (build-from-url (-> project :vcs_url)
-                          :job-name :deploy)]
+                          :job-name :deploy)
+        _ (run/configure b)]
     @b => (contains {:vcs_url "https://github.com/arohner/CircleCI"
                      :job-name :deploy})
     (-> @b :actions) => (contains [(contains {:name "start nodes"
@@ -139,4 +135,4 @@
   (let [json test/circle-github-json
         p (project/get-by-url (-> json :repository :url))]
     (-> p :inferred) => falsey
-    (-> (build-from-json json) (deref) :job-name) => :build))
+    (-> (build-from-json json) (run/configure) (deref) :job-name) => :build))

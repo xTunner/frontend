@@ -31,7 +31,7 @@
    :author_date "1323636643"
    :committer_name "Allen Rohner"
    :body ""
-   :branch "remotes/origin/pairing"
+   :branch "remotes/origin/nginx_ssl~68"
    :committer_email "arohner@gmail.com"})
 
 (fact "committer-email works"

@@ -72,3 +72,8 @@
        (delay (do ~@body)))
      (defn ~name []
        @name-delay#)))
+
+(defn re
+  "Creates a regex from a string"
+  [s]
+  (java.util.regex.Pattern/compile s))
