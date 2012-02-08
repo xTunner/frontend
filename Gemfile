@@ -68,7 +68,6 @@ group :test do
   gem 'turn', :require => false  # Pretty printed test output
   gem 'flexmock'
   gem 'rspec-html-matchers'
-  gem 'jasmine'
 end
 
 
@@ -76,7 +75,12 @@ group :development do
   gem 'rake'
   gem 'hpricot'
   gem 'ruby_parser'
+
+end
+
+group :development, :test do
   gem 'jasmine'
+  gem 'jasmine-headless-webkit'
 end
 
 
