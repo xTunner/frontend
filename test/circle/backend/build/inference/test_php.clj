@@ -8,8 +8,13 @@
 
 (fact "The default test command is `phpunit test/` from the repo directory"
       (let [repo (test/test-repo "simple_php")
-            inferred-test-actions (filter #(= (:type %) :test)
-                                          (inference/infer-actions* :php repo))
-            action-names (->> inferred-test-actions (map :name) (into #{}))]
-        action-names => (contains "PHPUnit")))
+            inferred-test-actions (inference/infer-actions* :php repo)]
+        inferred-test-actions => (contains #(= "Run PHPUnit" (:name %)))))
+
+(fact "When phpunit is vendorized, the vendored phpunit command is used"
+      (let [repo (test/test-repo "vendorized_phpunit")
+           inferred-actions (inference/infer-actions* :php repo)]
+        inferred-actions
+        => (contains #(re-find #".*/vendorized_phpunit/phpunit/phpunit"
+                              (:bash-command %)))))
 

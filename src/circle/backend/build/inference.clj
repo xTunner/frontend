@@ -8,7 +8,7 @@
 (defn dir-contains-php-files?
   "Determines whether or not the repo has any php files."
   [dir]
-  (dir-contains-files? dir #"^.*\.php"))
+  (dir-contains-files? dir #"^.*\.php$"))
 
 ;;FIXME Assume Rails if not php.
 (defn infer-repo-type
