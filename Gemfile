@@ -18,8 +18,6 @@ gem "bson_ext", "~> 1.4"
 gem "mongoid", "~> 2.4"
 gem "devise", ">= 1.4.9"
 
-gem "simple_form" # TODO: pretty sure we dont use this
-gem "rest-client" # TODO: unlikely that we use this
 gem 'airbrake'
 gem 'cancan'
 gem 'mongoid_session_store'
@@ -29,6 +27,15 @@ gem 'kaminari'
 gem 'rails-backbone'
 gem 'newrelic_rpm'
 gem 'momentjs-rails'
+
+gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
+gem 'twitter_bootstrap_form_for'
+
+gem 'haml-rails'
+gem "trinidad"
+gem "trinidad_logging_extension"
+
+
 
 # In test, no mail gets sent anyway, but let's not mess with the email addresses
 gem 'mail_safe', :groups => [ :development, :staging ]
@@ -46,8 +53,7 @@ group :assets do
   # for deciding the correct option.
 end
 
-gem 'twitter-bootstrap-rails', :git => "git://github.com/seyhunak/twitter-bootstrap-rails.git", :branch => "static"
-gem 'twitter_bootstrap_form_for'
+
 
 group :test do
   gem "rspec-rails", ">= 2.7.0"
@@ -62,18 +68,18 @@ group :test do
   gem 'turn', :require => false  # Pretty printed test output
   gem 'flexmock'
   gem 'rspec-html-matchers'
+  gem 'jasmine'
 end
+
 
 group :development do
   gem 'rake'
   gem 'hpricot'
   gem 'ruby_parser'
+  gem 'jasmine'
 end
 
-gem 'haml-rails'
 
-gem "trinidad"
-gem "trinidad_logging_extension"
 
 # Deploy with Capistrano
 # gem 'capistrano'
