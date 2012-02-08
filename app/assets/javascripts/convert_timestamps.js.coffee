@@ -1,11 +1,23 @@
 pretty_wording = (date) ->
   now = moment(Date.now())
-  relative = now.diff date, "days"
+  days = now.diff date, "days"
+  hours = now.diff date, "hours"
+  minutes = now.diff date, "minutes"
 
-  if relative < 3
+  if minutes < 30
     date.fromNow()
+  else if hours < 5
+    date.fromNow() + date.format "(HH:mm)"
+  else if hours < 24
+    date.format "h:mm a"
+  else if days < 6
+    date.format "ddd \\at HH:mm"
+  else if days < 365
+    date.format "MMM Do (HH:mm)"
   else
-    date.calendar()
+    date.format "MMM Do, YY"
+
+
 
 
 update_timestamps = () ->
