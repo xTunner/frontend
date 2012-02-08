@@ -11,6 +11,7 @@
   (:require [circle.model.project :as project])
   (:use [circle.util.model-validation-helpers :only (is-ref? require-keys)])
   (:use [circle.util.predicates :only (ref?)])
+  (:use [circle.util.mongo :only (object-id)])
   (:require [somnium.congomongo :as mongo])
   (:require [circle.util.mongo :as c-mongo])
   (:require [circle.sh :as sh])
@@ -27,13 +28,13 @@
   [(require-keys [:username])])
 
 (def build-validations
-  [(require-keys [:_project_id
+  [(require-keys [:_id
+                  :_project_id
                   :build_num
                   :vcs_url
-                  :vcs_revision
-                  :node])
-   (fn [build]
-     (v/validate node-validation (-> build :node)))
+                  :vcs_revision])
+   ;; (fn [build]
+   ;;   (v/validate node-validation (-> build :node)))
    (fn [b]
      (when (and (= :deploy (:type b)) (not (-> b :vcs_revision)))
        "version-control revision is required for deploys"))
@@ -64,48 +65,39 @@
 (defn update-mongo
   "Given a build ref, update the mongo row with the current values of b."
   [b]
-  (c-mongo/ensure-object-id-ref build-coll b)
-  (assert (-> @b :_id))
+  (throw-if-not (-> @b :_id) "build must have id")
   (mongo/update! build-coll
                  {:_id (-> @b :_id)}
                  (apply dissoc @b build-dissoc-keys)))
 
-(defn sync-with-db [b id]
-  "Fetch the build from the db using id and merge it with b"
-  (dosync
-   (let [old (mongo/fetch-by-id build-coll (mongo/object-id id))]
-     (alter b merge old)
-     (update-mongo b))))
-
-(defn add-to-db [b id]
-  "If id is null, add build to database, else sync contents with existing db object"
-  (if id
-    (sync-with-db b id)
-    (insert! @b)))
+(defn build
+  "Creates and returns the build ref, updates/inserts the DB if necessary"
+  [{:keys [_id
+           vcs_url
+           vcs_revision ;; if present, the commit that caused the build to be run, or nil
+           actions      ;; a seq of actions
+           node         ;; Map containing keys required by ec2/start-instance
+           lb-name      ;; name of the load-balancer to use
+           continue?    ;; if true, continue running the build. Failed actions will set this to false
+           ]
+    :as args}]
+  (println "build:" args)
+  (let [project (project/get-by-url! vcs_url)
+        build_num (project/next-build-num project)
+        build-id (or _id (object-id))
+        build (ref
+               (merge build-defaults
+                      args
+                      {:_id build-id
+                       :build_num build_num
+                       :_project_id (-> project :_id)})
+               :validator validate!)]
+    (update-mongo build)
+    build))
 
 (defn project-name [b]
-  {:pre [(-> @b :_project_id)]
-   :post [(seq %)]}
-  (or (-> @b :_project_id (project/get-by-id) :name)
-      (-> @b :vcs_url (github-url/parse) :project)))
-
-(defn build [{:keys [vcs_url
-                     vcs_revision ;; if present, the commit that caused the build to be run, or nil
-                     notify_emails ;; a seq of email addresses to notify when build is done
-                     actions      ;; a seq of actions
-                     action-results
-                     node         ;; Map containing keys required by ec2/start-instance
-                     lb-name      ;; name of the load-balancer to use
-                     continue?    ;; if true, continue running the build. Failed actions will set this to false
-                     ]
-              :as args}]
-  (let [project (project/get-by-url! vcs_url)
-        build_num (project/next-build-num project)]
-    (ref (merge build-defaults
-                args
-                {:build_num build_num
-                 :_project_id (-> project :_id)})
-         :validator validate!)))
+  {:post [(seq %)]}
+  (-> @b :vcs_url (github-url/parse) :project))
 
 (defn extend-group-with-revision
   "update the build, setting the pallet group-name to extends the

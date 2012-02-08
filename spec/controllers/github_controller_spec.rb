@@ -52,6 +52,7 @@ sample["commits"] = [{ "id" => "78f58846a049bb6772dcb298163b52c4657c7d45",
                        "message" => "okay i give in",
                        "timestamp" => "2008-02-15T14 =>57 =>17-08 =>00",
                        "added" => ["filepath.rb"]}]
+sample["after"] = "78f58846a049bb6772dcb298163b52c4657c7d45"
 dummy_json = JSON.generate(sample)
 
 # make a clone to test deleted branches
@@ -74,6 +75,10 @@ describe GithubController do
   let(:vcs_url) { "https://github.com/arohner/circle-dummy-project" }
   let(:project) { Project.create! :vcs_url => vcs_url }
 
+
+  before :each do
+    Backend.blocking_worker "circle.backend.build.test-utils/ensure-test-db"
+  end
 
   it "The github hook successfully triggers builds" do
 

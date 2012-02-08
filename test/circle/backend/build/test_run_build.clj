@@ -4,7 +4,7 @@
   (:use [circle.backend.action :only (defaction action)])
   (:require [circle.backend.action.nodes :as nodes])
   (:use [circle.model.build :only (build successful?)])
-  (:use [circle.backend.build.run :only (run-build)])
+  (:use [circle.backend.build.run :only (run-build configure)])
   (:require [circle.model.project :as project])
   (:use [circle.backend.build.config :only (build-from-url)])
   (:require [circle.backend.nodes.rails :as rails])
@@ -41,9 +41,10 @@
   ;;; This should be using the empty template, which does not start nodes
   (-> "https://github.com/arohner/circle-dummy-project"
       (build-from-url)
+      (configure)
       deref
       :actions
-      (count)) => 0)
+      (count)) => 1)
 
 (fact "running an empty test does not generate an infrastructure_fail"
   (let [build (run-build (minimal-build))]
@@ -64,7 +65,7 @@
 (fact "builds using the provided objectid"
   (let [id (org.bson.types.ObjectId.)
         _ (mongo/insert! :builds {:_id id})
-        build (run-build (successful-build) :id (str id))
+        build (run-build (minimal-build :_id id))
         build-db (mongo/fetch-one :builds :where {:_id id})]
     build-db => truthy
     (-> build-db :stop_time) => truthy))

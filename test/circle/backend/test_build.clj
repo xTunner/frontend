@@ -7,7 +7,7 @@
 
 (fact "checkout-dir handles spaces"
   (let [b (minimal-build)]
-    (checkout-dir b) => #"Dummy-Project-\d+"))
+    (checkout-dir b) => #"circle-dummy-project-\d+"))
 
 (fact "ensure-project-id works"
   (let [b (minimal-build)]
