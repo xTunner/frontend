@@ -6,14 +6,18 @@
   (:require [circle.backend.git :as git])
   (:require fs))
 
-(fact "Inferred actions for a php repo include installing phpunit"
+(fact "Inferred setup actions for a php repo include initializing pear and installing phpunit"
       (let [repo (test/test-repo "simple_php")
-            inferred-actions (inference/infer-actions* :php repo)
-            action-names (->> inferred-actions (map :name) (into #{}))]
+            inferred-setup-actions (filter #(= (:type %) :setup)
+                                           (inference/infer-actions* :php repo))
+            action-names (->> inferred-setup-actions (map :name) (into #{}))]
         action-names => (contains "pear initialization")
         action-names => (contains "install phpunit")))
 
-(future-fact "The default test command is `phpunit test/` from the repo directory")
-
-(future-fact "phpunit tests are executed as a :test action")
+(fact "The default test command is `phpunit test/` from the repo directory"
+      (let [repo (test/test-repo "simple_php")
+            inferred-test-actions (filter #(= (:type %) :test)
+                                          (inference/infer-actions* :php repo))
+            action-names (->> inferred-test-actions (map :name) (into #{}))]
+        action-names => (contains "PHPUnit")))
 

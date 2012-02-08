@@ -12,7 +12,6 @@
 
 (defn initialize-pear
   []
-  ;; TODO: I think this might do better elsewhere, but I'm not sure.
   "Intialize pear on the server."
   (bash (sh/q (pear config-set auto_discover 1))
         :name "pear initialization"
@@ -41,5 +40,5 @@
        (when (not (path-contains-phpunit?))
          (install-phpunit repo))
        (phpunit (fs/join repo "test"))]
-      (filter #(true)))))
+      (filter identity))))
 
