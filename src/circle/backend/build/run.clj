@@ -5,6 +5,7 @@
   (:require [circle.env :as env])
   (:require [clj-time.core :as time])
   (:use circle.util.straight-jacket)
+  (:use [circle.globals :only (*current-build-url* *current-build-number*)])
   (:require [circle.backend.action :as action])
   (:use [circle.backend.action.nodes :only (cleanup-nodes)])
   (:require [circle.backend.build.config :as config])
@@ -76,33 +77,36 @@
      false)
     true))
 
+
 (defn run-build [b & {:keys [cleanup-on-failure]
                       :or {cleanup-on-failure true}}]
-  (try
-    (start b)
-    (build/with-build-log-ns b
-      (when (should-run-build? b)
-        (do-build* b)))
-    b
-    (catch Exception e
-      (println "run-build: except:" b e)
-      (error e (format "caught exception on %s" (build/build-name b)))
-      (println "assoc'ing failed=true")
-      (dosync
-       (alter b assoc :failed true)
-       (alter b assoc :infrastructure_fail true))
-      (throw e))
-    (finally
-     (finished b)
+  (binding [*current-build-url* (-> @b :build_url)
+            *current-build-number* (-> @b :build_num)]
+    (straight-jacket
+     (try
+       (start b)
+       (build/with-build-log-ns b
+         (when (should-run-build? b)
+           (do-build* b)))
+       b
+       (catch Exception e
+         (println "run-build: except:" b e)
+         (error e (format "caught exception on %s" (build/build-name b)))
+         (dosync
+          (alter b assoc :failed true)
+          (alter b assoc :infrastructure_fail true))
+         (throw e))
+       (finally
+        (finished b)
 
-      ;; Send build notifications, but don't let it fuck up anbything else.
-     (straight-jacket
-      (when (should-run-build? b)
-        (notify/notify-build-results b)))
+        ;; Send build notifications, but don't let it fuck up anything else.
+        (straight-jacket
+         (when (should-run-build? b)
+           (notify/notify-build-results b)))
 
-     (log-result b)
-     (when (and (-> @b :failed) cleanup-on-failure)
-       (cleanup-nodes b)))))
+        (log-result b)
+        (when (and (-> @b :failed) cleanup-on-failure)
+          (cleanup-nodes b)))))))
 
 (defn configure
   "Makes sure the build has run it's configure step (if it has one). Mainly a convenience for testing."
