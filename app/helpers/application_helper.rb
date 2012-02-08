@@ -12,32 +12,7 @@ module ApplicationHelper
   def as_commit_time(commit_time)
     return if commit_time.nil?
 
-    now = Time.now
-    relative = (now - commit_time).to_i
-    timetoday = commit_time.strftime('%l:%M%p').downcase.strip
-    day = commit_time.strftime("%A").strip
-    date = "#{commit_time.strftime("%b").strip} #{commit_time.strftime("%e").strip}"
-
-    # TODO: This could be nicer around midnight, but not important.
-    if now.day == commit_time.day
-      case relative
-      when 0..59 then "#{relative.to_s} seconds ago"
-      when 60..3599 then "#{(relative/60).to_i} minutes ago"
-      when 1.hours..2.hours then "an hour ago (#{timetoday})"
-      when 2.hours..5.hours then "#{(relative/3600).to_i} hours ago (#{timetoday})"
-      else "#{timetoday}"
-      end
-    elsif now.day == commit_time.day+1
-      "Yesterday at #{timetoday}"
-    elsif commit_time > 1.week.ago
-      "#{day} at #{timetoday}"
-    elsif 2.weeks.ago < commit_time && commit_time < 1.week.ago
-      "Last #{day} (#{date}) at #{timetoday}"
-    elsif now.year == commit_time.year
-      "#{date} at #{timetoday}"
-    else
-      "#{date}, #{commit_time.year}"
-    end
+    return "<span class='utc_time'>#{(commit_time.to_f * 1000).to_i}</span>".html_safe
   end
 
   def as_length_of_build(start, stop)
