@@ -1,6 +1,6 @@
 # don't just load files willy-nilly or else we get errors from document.onready.
 src_files:
-  - convert_timestamps.js.coffee
+  - application.js # for convert_timestamps
 
 helpers:
   - helpers/**/*.js
