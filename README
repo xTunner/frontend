@@ -102,3 +102,43 @@ You can start up an AMI from the repl using:
                          :username "ubuntu"
                          :public-key (slurp "www.id_rsa.pub")
                          :private-key (slurp "www.id_rsa")}
+
+
+Software versions:
+
+  Postgres:
+    Heroku uses 9.0.4 - http://devcenter.heroku.com/articles/heroku-postgresql
+    EY uses 9.1.1 (supports 8.4.2)
+
+  Redis:
+    RedisToGo uses Redis 2.4.2 - according to Stuart
+    Latest stable is 2.4.7 - http://redis.io/download
+    2.6 expected in 2013 - http://redis.io/download
+    Resque requires 0.9
+
+  Mongo
+    MongoHQ uses Mongodb 2.0.2 (says the last customer email they sent)
+
+    Mongoid versions:
+      Mongoid 2.0.0 requires MongoDB 1.6.0
+      Mongoid 2.1.0 requires MongoDB 1.8.0
+      Mongoid 2.3.0 requires MongoDB 2.0.0
+
+  NodeJS
+    EY uses 0.6.8
+    0.6 brought NPM
+
+  MySQL:
+    EY uses 5.1.55, supports 5.5.13 (beta) and 5.0.51
+
+  Memcached:
+
+  Sphinx:
+    ThinkingSphinx (rails gem) doesn't say anything about the sphinx version
+
+  Riak:
+
+
+
+References:
+  http://docs.engineyard.com/cloud-tech-stack.html
