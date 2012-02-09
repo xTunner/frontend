@@ -2,7 +2,7 @@ describe "pretty_wording", ->
 
   beforeEach ->
     # party like it's Wednesday 21th December, 2011
-    sinon.stub(Date, "now").returns new Date(2011, 12, 21, 19, 28, 32))
+    sinon.stub(Date, "now").returns(new Date(2011, 12, 21, 19, 28, 32))
 
   it "should return known values", ->
     f = pretty_wording
