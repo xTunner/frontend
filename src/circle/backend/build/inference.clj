@@ -25,8 +25,15 @@
 (defmulti infer-actions* (fn [type repo-path]
                            type))
 
+(defmethod infer-actions* :rails [_ repo]
+  (circle.backend.build.inference.rails/spec repo))
+
+(defmethod infer-actions* :php [_ repo]
+  (circle.backend.build.inference.php/spec repo))
+
 (defn set-inferred [actions]
   (map #(action/set-source % :inferred) actions))
+
 
 (defn infer-actions
   "Dispatches on repo type returned from (infer-repo-type). Returns a

@@ -13,7 +13,6 @@
   (:use [circle.util.core :only (re)])
   (:require [circle.util.map :as map])
   (:require circle.backend.nodes.rails)
-  (:require [circle.backend.build.inference :as inference])
   (:require [circle.backend.build.inference.mysql :as mysql])
   (:require [circle.backend.build.inference.postgres :as postgres]))
 
@@ -205,6 +204,3 @@
         (when (test-unit? repo)
           (rake test :type :test))]
        (filter identity)))))
-
-(defmethod inference/infer-actions* :rails [_ repo]
-  (spec repo))
