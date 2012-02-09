@@ -66,6 +66,11 @@
     (spec repo)
     (->> (spec repo) (map :name) (into #{})) => (contains #"rake db:automigrate")))
 
+(fact "jasmine triggers"
+  (let [repo (test/test-repo "jasmine")]
+    (jasmine? repo) => true
+    (->> (spec repo) (map :name)) => (contains "bundle exec rake jasmine:ci --trace")))
+
 (fact "copy database.example.yml to database.yml action"
   ;; repo with database.example.yml
   (let [example-repo (test/test-repo "database_yml_1")]

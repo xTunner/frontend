@@ -76,7 +76,7 @@
   (dir-contains-files? (fs/join repo "features") #".*\.feature$"))
 
 (defn jasmine? [repo]
-  (using-gem? repo "jasmine-rails"))
+  (using-gem? repo "jasmine"))
 
 (defn find-database-yml
   "Look in repo/config/ for a file named database.example.yml or similar, and return the path, or nil"
@@ -199,6 +199,8 @@
           (rspec-test repo))
         (when (cucumber? repo)
           (rake cucumber :type :test))
+        (when (jasmine? repo)
+          (rake jasmine:ci :type :test))
         (when (test-unit? repo)
           (rake test :type :test))]
        (filter identity)))))
