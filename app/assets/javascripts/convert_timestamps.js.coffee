@@ -27,7 +27,3 @@ update_timestamps = () ->
     utc = moment(parseInt(utc))
     $(this).text pretty_wording(utc)
     $(this).attr "title", utc.toDate()
-
-
-$(document).ready ->
-  update_timestamps()
