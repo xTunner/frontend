@@ -9,6 +9,9 @@
 (def inference-fns {:rails (var circle.backend.build.inference.rails/spec)
                     :php (var circle.backend.build.inference.php/spec)})
 
+(defmethod infer-actions* :clojure [_ repo]
+  (circle.backend.build.inference.clojure/spec repo))
+
 (defn set-inferred [actions]
   (map #(action/set-source % :inferred) actions))
 
