@@ -3,6 +3,8 @@
   (:use circle.util.fs)
   (:require [circle.backend.build.template :as template])
   (:require [circle.backend.action :as action])
+  (:require circle.backend.build.inference.rails
+            circle.backend.build.inference.php)
   (:use [arohner.utils :only (inspect)]))
 
 (defn dir-contains-php-files?
