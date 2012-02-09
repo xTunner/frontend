@@ -1,12 +1,13 @@
+# don't just load files willy-nilly or else we get errors from document.onready.
 src_files:
-  - '**/*.js'
-  - '**/*.js.coffee'
+  - convert_timestamps.js.coffee
 
 helpers:
   - helpers/**/*.js
 
 spec_files:
   - '**/*[sS]pec.*'
+  - '*[sS]pec.*'
 
 src_dir:
   - app/assets/javascripts
