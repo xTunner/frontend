@@ -79,8 +79,8 @@ group :development do
 end
 
 group :development, :test do
-  gem 'jasmine'
   gem 'jasmine-headless-webkit'
+  gem 'jasmine-spec-extras' # sinon, jquery, etc
 end
 
 
