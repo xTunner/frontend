@@ -83,7 +83,8 @@
   [build message]
   (dosync
    (abort! build message)
-   (alter build assoc :timedout true)))
+   (alter build assoc :timedout true)
+   (record assoc :timedout true)))
 
 (defn add-start-time
   []
