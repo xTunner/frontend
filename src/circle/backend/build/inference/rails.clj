@@ -115,7 +115,10 @@
           :type :setup)))
 
 (defn parse-db-yml [repo]
-  (-?> (get-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
+  (try
+    (-?> (get-database-yml repo) (slurp) (clj-yaml.core/parse-string))
+    (catch org.yaml.snakeyaml.scanner.ScannerException e
+      (errorf "failed to parse %s" (get-database-yml repo)))))
 
 (defn need-mysql-socket? [repo]
   (let [db-config (parse-db-yml repo)]
