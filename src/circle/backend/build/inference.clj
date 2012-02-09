@@ -4,13 +4,12 @@
   (:require [circle.backend.build.template :as template])
   (:require [circle.backend.action :as action])
   (:require circle.backend.build.inference.rails
-            circle.backend.build.inference.php))
+            circle.backend.build.inference.php
+            circle.backend.build.inference.clojure))
 
 (def inference-fns {:rails (var circle.backend.build.inference.rails/spec)
+                    :clojure (var circle.backend.build.inference.clojure/spec)
                     :php (var circle.backend.build.inference.php/spec)})
-
-(defmethod infer-actions* :clojure [_ repo]
-  (circle.backend.build.inference.clojure/spec repo))
 
 (defn set-inferred [actions]
   (map #(action/set-source % :inferred) actions))
