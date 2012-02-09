@@ -191,7 +191,7 @@ describe SimpleMailer do
       it_should_behave_like("an email",
                             :timedout_build,
                             [/^Timed out:/],
-                            [/timed out during testing, after 5 minutes without output./]) do
+                            [/timed out during testing, after 20 minutes without output./]) do
       end
     end
 
