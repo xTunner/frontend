@@ -1,9 +1,5 @@
-# Using 1.3, but sod() is a function from 1.4. When momentjs-rails updates, we can switch.
-@sod = (date) ->
-  date.clone().hours(0).minutes(0).seconds(0).milliseconds(0)
-
 @yesterday = () ->
-  sod(moment(Date.now()).subtract("days", 1))
+  moment(Date.now()).subtract("days", 1).sod()
 
 @pretty_wording = (date) ->
   date = moment(date)
@@ -16,7 +12,7 @@
 
   if seconds < 45
     "#{seconds} seconds ago"
-  else if sod(date).diff(yesterday()) == 0
+  else if date.clone().sod().diff(yesterday()) == 0
     "Yesterday at " + date.format "h:mma"
   else if minutes < 30
     date.from now # use instead of fromNow because fromNow isn't properly mocked by sinon
