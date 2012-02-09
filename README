@@ -92,13 +92,5 @@ We currently use a single AMI for all nodes. To build a new one:
  - Edit the source to use this image: set the :ami value in rails-node in
    circle/backend/nodes/rails.clj to the new AMI name.
 
-You can start up an AMI from the repl using:
-
- - (ec2/start-instances {:ami "ami-06ad526f" ;; clean ubuntu 11.10
-                         :availability-zone "us-east-1a"
-                         :instance-type "m1.small"
-                         :keypair-name "www"
-                         :security-groups ["www"]
-                         :username "ubuntu"
-                         :public-key (slurp "www.id_rsa.pub")
-                         :private-key (slurp "www.id_rsa")}
+You can start up a standard customer AMI from the repl using:
+ - (ec2/start-instances (-> circle.backend.nodes.rails/rails-node :circle-node-spec))
