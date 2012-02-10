@@ -94,7 +94,7 @@ Options:
   (try-try-again
    {:sleep 1000
     :tries 30
-    :catch [com.jcraft.jsch.JSchException]
+    :catch [com.jcraft.jsch.JSchException java.lang.RuntimeException]
     :error-hook (fn [e] (errorf "caught %s" e))}
    #(let [s (session session-args)]
       (ssh/connect s)

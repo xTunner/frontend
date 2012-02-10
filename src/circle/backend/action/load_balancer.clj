@@ -5,8 +5,11 @@
   (:use [clojure.tools.logging :only (infof)])
   (:use [circle.backend.action :only (defaction abort!)])
   (:use [circle.util.except :only (throw-if-not)])
+  (:require [clj-time.core :as time])
+  (:use [circle.util.time :only (to-millis)])
   (:use [circle.model.build :only (build-log)])
-  (:use [robert.bruce :only (try-try-again)])
+  ;;(:use [robert.bruce :only (try-try-again)])
+  (:use [circle.util.retry :only (wait-for)])
   (:use [circle.api.client.system :only (graceful-shutdown)])
   (:require [circle.backend.load-balancer :as lb])
   (:require [circle.backend.ec2 :as ec2])
@@ -17,6 +20,7 @@
   (fn [build]
     (try
       (let [lb-name (-> @build :lb-name)
+            _ (throw-if-not lb-name "build LB name must not be null. Is it in your DB?")
             instance-ids (-> @build :instance-ids)
             _ (doseq [i instance-ids
                       :let [az (ec2/get-availability-zone i)]]
@@ -32,7 +36,7 @@
 (defn lb-healthy-retries
   "Number of times to retry when waiting for the LB to become healthy. Defn so it can be rebound w/ midje"
   []
-  (* 3 12))
+  10)
 
 (defaction wait-for-healthy []
   {:name "wait for nodes LB healthy"}
@@ -40,10 +44,10 @@
     (let [instance-ids (-> @build :instance-ids)
           lb-name (-> @build :lb-name)]
       (try
-        (try-try-again
-         {:sleep 5000
+        (wait-for
+         {:sleep (to-millis (time/minutes 1))
           :tries (lb-healthy-retries)}
-         #(throw-if-not (lb/healthy? lb-name instance-ids) "instances not healthy"))
+         #(lb/healthy? lb-name instance-ids))
         (build-log "instances %s all healthy in load balancer %s" instance-ids lb-name)
         (catch Exception e
           (abort! build (format "load balancer didn't report healthy for %s" instance-ids)))))))

@@ -59,7 +59,7 @@
      (try-try-again
       {:sleep 1000
        :tries 30
-       :catch [AmazonClientException]
+       :catch [AmazonClientException java.lang.RuntimeException]
        :error-hook (fn [e#]
                      (errorf "caught %s %s" (class e#) e#)
                      ;; We don't want to catch (many) ServiceExceptions, because they can often be programming errors.
@@ -297,7 +297,8 @@
      #(instance instance-id))
     (catch Exception e
       (errorf "instance %s didn't start within timeout" instance-id)
-      (terminate-instances! instance-id))))
+      (terminate-instances! instance-id)
+      (throw e))))
 
 (defn block-until-ready
   "Block until we can successfully SSH into the box."
@@ -318,7 +319,8 @@
          (circle.backend.ssh/remote-exec node "echo 'hello'"))))
     (catch Exception e
       (errorf "failed to SSH into %s" instance-id)
-      (terminate-instances! instance-id))))
+      (terminate-instances! instance-id)
+      (throw e))))
 
 (defn start-instances*
   "Starts one or more instances. Returns a seq of instance-ids."

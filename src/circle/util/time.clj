@@ -10,3 +10,8 @@
   "Takes a joda period, returns a human readable string"
   [period]
   (.print (org.joda.time.format.PeriodFormat/getDefault) period))
+
+(defn to-millis
+  "Takes a joda period, returns a number of millis. Assumes the period starts from now."
+  [period]
+  (.toDurationMillis (time/interval (time/now) (time/plus (time/now) period))))

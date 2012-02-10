@@ -23,10 +23,8 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.build.inference :as inference])
   (:require circle.backend.build.inference.rails)
-
   (:require [clj-yaml.core :as yaml])
   (:import java.io.StringReader)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (eat)]))
 
 (defn validate-config
@@ -233,6 +231,7 @@
           vcs-revision (or vcs-revision (git/latest-local-commit repo))
           commit-details (git/commit-details repo vcs-revision)
           project (project/get-by-url! url)
+          lb-name (-> project :lb-name)
           {:keys [infer job-name]} @build
 
           inferred-config (infer-config repo)
@@ -244,11 +243,17 @@
                        yml-config yml-config
                        db-config db-config
                        :default inferred-config)
+          node (or (-> proto-build :node) rails/rails-node)
           actions (-> proto-build :actions)
           proto-build (dissoc proto-build :actions)]
+
       (dosync
        (alter build merge proto-build)
-       (alter build update-in [:actions] vec-concat actions)))))
+       (alter build assoc :node node)
+       (alter build assoc :lb-name lb-name)
+       (alter build assoc :vcs_revision vcs-revision)
+       (alter build update-in [:actions] vec-concat actions))
+      build)))
 
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"

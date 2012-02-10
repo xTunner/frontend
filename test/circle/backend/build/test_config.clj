@@ -10,7 +10,6 @@
   (:require [circle.model.spec :as spec])
   (:require [circle.backend.build.inference :as inference])
   (:require circle.init)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
 
 (test/test-ns-setup)
@@ -136,3 +135,19 @@
         p (project/get-by-url (-> json :repository :url))]
     (-> p :inferred) => falsey
     (-> (build-from-json json) (run/configure) (deref) :job-name) => :build))
+
+(fact "circle deploys have :lb-name"
+  (-> (circle.backend.build.config/build-from-url "https://github.com/arohner/CircleCI" :job-name :deploy)
+      (run/configure)
+      (deref)
+      :lb-name) => truthy)
+
+(fact "builds w/ yaml have a :node"
+  (let [build (-> (circle.backend.build.config/build-from-url "https://github.com/arohner/circle-dummy-project")
+                  (run/configure))]
+    (-> @build :node :ami) => truthy))
+
+(fact "inferred builds have a :node"
+  (let [build (-> (circle.backend.build.config/build-from-url "https://github.com/arohner/circle-empty-repo")
+                  (run/configure))]
+    (-> @build :node :ami) => truthy))
