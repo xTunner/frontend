@@ -217,4 +217,13 @@ class Build
       Rails.application.routes.url_helpers.build_url project, build_num, options
     end
   end
+
+  def why_in_words
+    case why
+    when "github"
+      "a push to github"
+    when "trigger"
+      "#{user.name} at the website"
+    end
+  end
 end
