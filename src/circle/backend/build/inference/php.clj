@@ -20,7 +20,7 @@
 ;; TODO: extend this to check for a vendorized php unit and use it if present.
 (defn spec
   "Run phpunit on the test directory."
-  [_ repo]
+  [repo]
   (->>
     [(phpunit repo (fs/join repo "test"))]
     (filter identity)))
