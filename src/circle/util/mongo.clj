@@ -1,7 +1,6 @@
 (ns circle.util.mongo
   "Fns for working with mongo"
-  (:import org.bson.types.ObjectId)
-  (:use [arohner.utils :only (inspect)]))
+  (:import org.bson.types.ObjectId))
 
 (defn object-id
   "Generate a new object id, return it."

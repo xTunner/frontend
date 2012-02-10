@@ -6,8 +6,7 @@
   (:require [circle.api.client.system :as system])
   (:require [circle.backend.ec2 :as ec2])
   (:use [clojure.tools.logging :only (infof errorf)])
-  (:use [circle.util.except :only (throw-if)])
-  (:use [arohner.utils :only (inspect)]))
+  (:use [circle.util.except :only (throw-if)]))
 
 ;; See docs/migration-design.txt in the source tree
 (defonce migrations (ref []))

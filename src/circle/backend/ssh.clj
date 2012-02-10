@@ -5,7 +5,6 @@
   (:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.args :only (require-args)])
   (:use [circle.util.except :only (throwf)])
-  (:use [arohner.utils :only (inspect)])
   (:use [slingshot.slingshot :only (throw+)])
   (:use [circle.util.core :only (apply-map)]))
 

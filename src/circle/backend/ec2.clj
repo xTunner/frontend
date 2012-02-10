@@ -8,7 +8,6 @@
   (:use [clojure.tools.logging :only (infof error errorf)])
   (:use [robert.bruce :only (try-try-again)])
   (:use [clojure.core.incubator :only (-?>)])
-  (:use [arohner.utils :only (inspect)])
   (:use [doric.core :only (table)])
   (:require [circle.env :as env])
   (:require [circle.backend.ssh])

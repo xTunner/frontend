@@ -2,7 +2,6 @@
   "Main definition of the Build object. "
   (:require [clojure.string :as str])
   (:require fs)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
   (:require [clj-time.core :as time])

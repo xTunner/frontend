@@ -3,7 +3,6 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.util.fs :as cfs])
   (:require fs)
-  (:use [arohner.utils :only (inspect)])
   (:require [clojure.string :as str])
   (:use [circle.util.seq :only (find-first)]))
 

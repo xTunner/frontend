@@ -6,7 +6,6 @@
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.core :only (defn-once)])
   (:use [circle.util.except :only (throw-if-not)])
-  (:use [arohner.utils :only (inspect)])
   (:require [clojure.string :as string])
   (:require fs))
 

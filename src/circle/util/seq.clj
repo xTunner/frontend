@@ -1,6 +1,5 @@
 (ns circle.util.seq
-  "fns that work on seqs"
-  (:use [arohner.utils :only (inspect)]))
+  "fns that work on seqs")
 
 (defn find-first
   "Returns the first item that passes predicate f"

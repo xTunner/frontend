@@ -4,8 +4,7 @@
   (:require [circle.backend.build.template :as template])
   (:require [circle.backend.action :as action])
   (:require circle.backend.build.inference.rails
-            circle.backend.build.inference.php)
-  (:use [arohner.utils :only (inspect)]))
+            circle.backend.build.inference.php))
 
 (defn dir-contains-php-files?
   "Determines whether or not the repo has any php files."

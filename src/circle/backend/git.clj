@@ -4,7 +4,6 @@
   (:require [clojure.string :as str])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [clojure.tools.logging :only (infof)])
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.args :only (require-args)])
   (:use [clojure.string :only (split)])
   (:require [circle.backend.github-url :as github])
