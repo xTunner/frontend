@@ -26,9 +26,11 @@
 
 (defn run-action [b act]
   (build/build-log "running %s" (-> act :name))
-  (action/run-action b act)
-  (finish-action b act)
-  (build/update-mongo b))
+  (try
+    (action/run-action b act)
+    (finally
+     (finish-action b act)
+     (build/update-mongo b))))
 
 (defn next-act
   "Returns the next action to run"

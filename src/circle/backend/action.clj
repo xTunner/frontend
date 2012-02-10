@@ -155,12 +155,16 @@
     (dosync
      (create-mongo-obj)
      (add-start-time))
-    (let [result ((-> act :act-fn) build)]
-      (dosync
-       (add-end-time)
-       (validate-action-result! @*current-action-results*)
-       (alter build update-in [:action-results] conj @*current-action-results*))
-      result)))
+    (try
+      ((-> act :act-fn) build)
+      (catch Exception e
+        (record assoc :infrastructure_fail true)
+        (throw e))
+      (finally
+       (dosync
+        (add-end-time)
+        (validate-action-result! @*current-action-results*)
+        (alter build update-in [:action-results] conj @*current-action-results*))))))
 
 (defmacro defaction [name defn-args action-map f]
   (throw-if-not (vector? defn-args) "defn args must be a vector")
