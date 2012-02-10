@@ -56,7 +56,7 @@ class Build
     if action_logs.length > 0
       action_logs
     else
-      ActionLog.where("_build-ref" => id).all
+      ActionLog.where("_build-ref" => id).sort_by { |b| b.start_time }
     end
   end
 
