@@ -7,6 +7,7 @@ class ActionLog
   field :start_time, :type => Time
   field :end_time, :type => Time, :default => nil
   field :timedout, :type => Boolean, :default => nil
+  field :infrastructure_fail, :type => Boolean, :default => nil
 
   field :name, :type => String
 
