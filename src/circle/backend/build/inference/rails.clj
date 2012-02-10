@@ -5,7 +5,6 @@
   (:require [clj-yaml.core])
   (:require [circle.sh :as sh])
   (:require fs)
-  (:use [arohner.utils :only (inspect)])
   (:use [clojure.tools.logging :only (errorf)])
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.backend.action :only (defaction action)])
@@ -42,6 +41,10 @@
   [repo]
   (-> (fs/join repo "spec")
       (dir-contains-ruby-files?)))
+
+(defn rvm? [repo]
+  (-> (fs/join repo ".rvmrc")
+      (fs/exists?)))
 
 (defn migrations? [repo]
   (-> (fs/join repo "db" "migrate")
@@ -165,6 +168,12 @@
          :environment {:RAILS_ENV :test}
          :type ~type))
 
+(defmacro rvm
+  "Returns an action to run rvm"
+  [& args]
+  `(bash (sh/q (~'rvm ~@args))
+         :type :setup))
+
 (defn cucumber-test
   []
   (rake cucumber :type :test))
@@ -183,7 +192,9 @@
         has-db-yml? (or (database-yml? repo) (find-database-yml repo))]
     (binding [use-bundler? (bundler? repo)]
       (->>
-       [(when use-bundler?
+       [(if (rvm? repo)
+          (rvm rvmrc trust ~repo)
+          (rvm use "1.9.2" --default))
           (bundle-install))
         (when (need-cp-database-yml? repo)
           (cp-database-yml repo))
