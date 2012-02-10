@@ -65,6 +65,10 @@
         %span.time
           = surround '(', ')' do
             = as_length_of_build(l.start_time, l[:end_time] || @build.stop_time)
+          - if l.status == :timedout
+            %b
+              (TIMED OUT)
+
 
       .detail{ :class => action_log_style(l) }
         - if l["out"]

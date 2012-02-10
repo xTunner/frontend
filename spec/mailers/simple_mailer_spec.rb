@@ -23,9 +23,11 @@ describe SimpleMailer do
   let(:out2) { { "type" => "out", "time" => nil, "message" => "another message" } }
   let(:outs) { [out1, out2] }
 
-  let(:successful_log) { ActionLog.create(:type => "test", :name => "true", :exit_code => 0, :out => outs) }
-  let(:setup_log) { ActionLog.create(:type => "setup", :name => "touch setup", :exit_code => 0, :out => outs) }
-  let(:failing_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs) }
+  let(:successful_log) { ActionLog.create(:type => "test", :name => "true", :exit_code => 0, :out => outs, :end_time => Time.now) }
+  let(:setup_log) { ActionLog.create(:type => "setup", :name => "touch setup", :exit_code => 0, :out => outs, :end_time => Time.now) }
+  let(:failing_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs, :end_time => Time.now) }
+  let(:infra_log) { ActionLog.create(:type => "test", :name => "false", :out => [], :infrastructure_fail => true, :end_time => Time.now) }
+  let(:timedout_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs, :timedout => true, :end_time => Time.now) }
 
   let(:std_attrs) do
     {

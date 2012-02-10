@@ -6,23 +6,29 @@ class ActionLog
   field :exit_code, :type => Integer, :default => nil
   field :start_time, :type => Time
   field :end_time, :type => Time, :default => nil
+  field :timedout, :type => Boolean, :default => nil
 
   field :name, :type => String
-  field :type, :type => String, :default => "test" # The default here is to support all the tests that happened earlier in life.
+
+  # TECHNICAL_DEBT: we need to migrate old types and sources
+  field :type, :type => String, :default => "test"
   field :source, :type => String, :default => nil # inferred, yaml or spec
 
 
   # can't call this build, that's a reserved work in Mongoid
+  # TECHNICAL_DEBT: this needs a migration to be populated
   belongs_to :thebuild, :class_name => "Build"
 
   def success?
-    exit_code == 0 || exit_code == nil
+    status == :success
   end
 
   def status
     if end_time == nil
       :running
-    elsif success?
+    elsif timedout
+      :timedout
+    elsif exit_code == 0 || exit_code == nil
       :success
     else
       :failed
@@ -30,6 +36,7 @@ class ActionLog
   end
 
   def output
+    return "" if out.nil?
     out.map{ |o| o["message"]}.join ""
   end
 end
