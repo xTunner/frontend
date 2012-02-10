@@ -57,10 +57,9 @@
                                  :act-fn (fn [build] (throw (Exception.))))])]
     (try
       (run-build build)
-      (catch Exception e)
-      (finally
-       (-> @build :infrastructure_fail) => true
-       (-> @build :action-results last :infrastructure_fail) => true))))
+      (catch Exception e))
+    (-> @build :infrastructure_fail) => true
+    (-> @build :action-results last :infrastructure_fail) => true))
 
 (fact "build of dummy project is successful"
   (-> "https://github.com/arohner/circle-dummy-project" (build-from-url) (run-build) (successful?)) => true)
