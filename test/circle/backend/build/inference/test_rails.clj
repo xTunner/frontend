@@ -86,4 +86,4 @@
   (->> (spec (test/test-repo "rvmrc")) (map :name)) => (contains (format "rvm rvmrc trust %s" (test/test-repo "rvmrc"))))
 
 (fact "rvm use --default when no .rvmrc present"
-  (->> (spec test/empty-repo) (map :name)) => (contains #"rvm use .* --default"))
+  (->> (spec (test/test-repo "rspec_1")) (map :name)) => (contains #"rvm use .* --default"))
