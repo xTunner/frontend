@@ -184,6 +184,15 @@
         :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
+(defn sed-gem [gem-name]
+  (let [sed-str (format "/gem [\\'\\\"]%s[\\'\"]/ d" gem-name)]
+    (sh/q (sed -i ~(format "\"%s\"" sed-str) Gemfile))))
+
+(defn blacklist []
+  (bash (sh/q (doseq [g ~circle.backend.build.inference.gems-map/blacklisted-gems]
+                ~(sed-gem "$g")))
+        :name "blacklist problematic gems"))
+
 (defn spec
   "Returns the set of actions necessary for this project"
   [repo]
@@ -195,6 +204,9 @@
        [(if (rvm? repo)
           (rvm rvmrc trust ~repo)
           (rvm use "1.9.2" --default))
+        (when use-bundler?
+          (blacklist))
+        (when use-bundler?
           (bundle-install))
         (when (need-cp-database-yml? repo)
           (cp-database-yml repo))

@@ -5,3 +5,7 @@
   {"memcached" #{"libmemcached-dev" "libsasl2-dev"}
    "cdamian-geoip_city" #{"libgeoip-dev"}
    "capybara-webkit" #{"libqtwebkit-dev"}})
+
+(def blacklisted-gems
+  ;; gems that should be removed from the user's gemfile when running
+  #{"rb-fsevent" "growl_notify" "autotest-fsevent"})
