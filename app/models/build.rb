@@ -201,7 +201,12 @@ class Build
     "#{status_as_title}: <a href='#{absolute_url}'>#{project.github_project_name} ##{build_num}</a>:" +
       "<br> - latest revision: " + link_to_github(true) +
       "<br> - author: #{committer_email}" +
-      "<br> - log: #{shortened_subject 150}"
+      "<br> - log: #{shortened_subject 150}" +
+      (if why == "trigger" then
+         "<br> - triggered by #{user.name} from the Circle web UI"
+       else
+         ""
+       end)
   end
 
   def absolute_url

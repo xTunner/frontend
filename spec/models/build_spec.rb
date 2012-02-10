@@ -12,7 +12,7 @@ describe Build do
                                     :build_num => 5,
                                     :subject => "I fixed a thingy in the whatsit",
                                     )}
-  let!(:user) { User.create(:email => "user@test.com") }
+  let!(:user) { User.create(:email => "user@test.com", :name => "Test user") }
 
 
   it "should support committer_handle" do
@@ -54,6 +54,18 @@ describe Build do
       "(mybranch)" +
       "<br> - author: user@test.com" +
       "<br> - log: I fixed a thingy in the whatsit"
+    # Note that this also tests that there is no "triggered by" at the bottom
+  end
+
+  it "shouldn't mention the github trigger" do
+    build.why = "github"
+    build.as_html_instant_message.should_not =~ /Circle web UI/
+  end
+
+  it "should mention who started a build in an IM" do
+    build.why = "trigger"
+    build.user = user
+    build.as_html_instant_message.should =~ /<br> - triggered by Test user from the Circle web UI/
   end
 
   it "should have the right email subject format" do
