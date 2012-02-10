@@ -23,10 +23,8 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [circle.backend.build.inference :as inference])
   (:require circle.backend.build.inference.rails)
-
   (:require [clj-yaml.core :as yaml])
   (:import java.io.StringReader)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (eat)]))
 
 (defn validate-config

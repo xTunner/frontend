@@ -10,7 +10,6 @@
   (:require [circle.model.spec :as spec])
   (:require [circle.backend.build.inference :as inference])
   (:require circle.init)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.predicates :only (ref?)]))
 
 (test/test-ns-setup)
