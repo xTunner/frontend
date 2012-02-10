@@ -5,7 +5,6 @@
   (:require [clj-yaml.core])
   (:require [circle.sh :as sh])
   (:require fs)
-  (:use [arohner.utils :only (inspect)])
   (:use [clojure.tools.logging :only (errorf)])
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.backend.action :only (defaction action)])
@@ -13,8 +12,8 @@
   (:use [circle.util.core :only (re)])
   (:require [circle.util.map :as map])
   (:require circle.backend.nodes.rails)
-  (:require [circle.backend.build.inference :as inference])
   (:require [circle.backend.build.inference.mysql :as mysql])
+  (:use [circle.backend.build.inference.gems-map :only (blacklisted-gems)])
   (:require [circle.backend.build.inference.postgres :as postgres]))
 
 (defn bundler?
@@ -43,6 +42,10 @@
   [repo]
   (-> (fs/join repo "spec")
       (dir-contains-ruby-files?)))
+
+(defn rvm? [repo]
+  (-> (fs/join repo ".rvmrc")
+      (fs/exists?)))
 
 (defn migrations? [repo]
   (-> (fs/join repo "db" "migrate")
@@ -115,7 +118,10 @@
           :type :setup)))
 
 (defn parse-db-yml [repo]
-  (-?> (get-database-yml repo) (slurp) (clj-yaml.core/parse-string)))
+  (try
+    (-?> (get-database-yml repo) (slurp) (clj-yaml.core/parse-string))
+    (catch org.yaml.snakeyaml.scanner.ScannerException e
+      (errorf "failed to parse %s" (get-database-yml repo)))))
 
 (defn need-mysql-socket? [repo]
   (let [db-config (parse-db-yml repo)]
@@ -163,6 +169,12 @@
          :environment {:RAILS_ENV :test}
          :type ~type))
 
+(defmacro rvm
+  "Returns an action to run rvm"
+  [& args]
+  `(bash (sh/q (~'rvm ~@args))
+         :type :setup))
+
 (defn cucumber-test
   []
   (rake cucumber :type :test))
@@ -173,6 +185,15 @@
         :environment {:RAILS_GROUP :test}
         :name "bundle install"))
 
+(defn sed-gem [gem-name]
+  (let [sed-str (format "/gem [\\'\\\"]%s[\\'\"]/ d" gem-name)]
+    (sh/q (sed -i ~(format "\"%s\"" sed-str) Gemfile))))
+
+(defn blacklist []
+  (bash (sh/q (doseq [g ~blacklisted-gems]
+                ~(sed-gem "$g")))
+        :name "blacklist problematic gems"))
+
 (defn spec
   "Returns the set of actions necessary for this project"
   [repo]
@@ -181,7 +202,13 @@
         has-db-yml? (or (database-yml? repo) (find-database-yml repo))]
     (binding [use-bundler? (bundler? repo)]
       (->>
-       [(when use-bundler?
+       [(when (dir-contains-ruby-files? repo)
+          (if (rvm? repo)
+            (rvm rvmrc trust ~repo)
+            (rvm use "1.9.2" --default)))
+        (when use-bundler?
+          (blacklist))
+        (when use-bundler?
           (bundle-install))
         (when (need-cp-database-yml? repo)
           (cp-database-yml repo))
@@ -204,6 +231,3 @@
         (when (test-unit? repo)
           (rake test :type :test))]
        (filter identity)))))
-
-(defmethod inference/infer-actions* :rails [_ repo]
-  (spec repo))

@@ -14,6 +14,10 @@
   (let [repo (test/test-repo "bundler_1")]
     (map :name (spec repo)) => (contains ["bundle install"])))
 
+(fact "blacklist when Gemfile present"
+  (let [repo (test/test-repo "bundler_1")]
+    (map :name (spec repo)) => (contains ["blacklist problematic gems"])))
+
 (fact "rspec? works"
   (let [repo (test/test-repo "rspec_1")]
     (rspec? repo) => true
@@ -76,3 +80,10 @@
   (let [example-repo (test/test-repo "database_yml_1")]
     (->> (spec example-repo) (map :name)) => (and (contains "copy database.yml")
                                                   (contains "rake db:create --trace"))))
+
+(fact "rvm trust is called when the repo contains a .rvmrc"
+  (->> (spec test/empty-repo) (map :name)) =deny=> (contains "rvm rvmrc trust")
+  (->> (spec (test/test-repo "rvmrc")) (map :name)) => (contains (format "rvm rvmrc trust %s" (test/test-repo "rvmrc"))))
+
+(fact "rvm use --default when no .rvmrc present"
+  (->> (spec test/empty-repo) (map :name)) => (contains #"rvm use .* --default"))

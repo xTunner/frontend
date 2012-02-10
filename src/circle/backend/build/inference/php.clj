@@ -3,8 +3,7 @@
   (:use [circle.backend.action.bash :only (bash)])
   (:use [circle.backend.action :only (defaction action)])
   (:require fs)
-  (:require [circle.sh :as sh])
-  (:require [circle.backend.build.inference :as inference]))
+  (:require [circle.sh :as sh]))
 
 (defn phpunit
   "Generate an action to run phpunit tests on a given directory. First checks
@@ -19,9 +18,13 @@
             :type :test)))
 
 ;; TODO: extend this to check for a vendorized php unit and use it if present.
-(defmethod inference/infer-actions* :php [_ repo]
+(defn spec
   "Run phpunit on the test directory."
+  [repo]
   (->>
     [(phpunit repo (fs/join repo "test"))]
     (filter identity)))
+
+
+
 

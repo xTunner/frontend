@@ -386,7 +386,7 @@
 (defn image-wait-for-ready [image-name]
   (try-try-again
    {:sleep 15000
-    :tries (* 4 10)}
+    :tries (* 4 15)}
    #(throw-if-not (= :available (image-state image-name)) "AMI did not become available in timeout window")))
 
 (defn create-image

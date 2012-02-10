@@ -11,8 +11,7 @@
   ;;; defn, solely so this file doesn't need to be reloaded when reloading action fns.
   {:build {:prefix [start-nodes
                     tag/tag-revision
-                    checkout
-                    rvm/rvm-use]
+                    checkout]
            :suffix [stop-nodes]}
 
    :deploy {:prefix [start-nodes

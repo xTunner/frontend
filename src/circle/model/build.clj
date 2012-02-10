@@ -81,7 +81,6 @@
            continue?    ;; if true, continue running the build. Failed actions will set this to false
            ]
     :as args}]
-  (println "build:" args)
   (let [project (project/get-by-url! vcs_url)
         build_num (project/next-build-num project)
         build-id (or _id (object-id))
