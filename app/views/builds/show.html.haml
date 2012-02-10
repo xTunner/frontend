@@ -32,13 +32,13 @@
       %dt.key
         Started at
       %dd.value
-        = @build["start_time"]
+        = as_commit_time @build["start_time"]
 
 
       %dt.key
-        Finished at
+        Length
       %dd.value
-        = @build["stop_time"]
+        = as_length_of_build @build["start_time"], @build["stop_time"]
 
   .row
     %dl.offset1

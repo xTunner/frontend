@@ -13,3 +13,4 @@ repos
 *.log
 *.log.gz
 /trinidad.pid
+/.jhw-cache/

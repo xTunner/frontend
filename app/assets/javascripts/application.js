@@ -14,3 +14,5 @@
 //= require backbone
 //= require backbone.modelbinding
 //= require hamlcoffee
+//= require moment
+//= require convert_timestamps

@@ -22,6 +22,7 @@ jobs:
       - lein midje:
           environment:
             RAILS_ENV: "test"
+      - bundle exec rake jasmine:ci
       - bundle exec rspec spec
     #  on-success: deploy # another build to trigger if this one is successful
     notify_emails:
