@@ -13,6 +13,7 @@
   (:require [circle.util.map :as map])
   (:require circle.backend.nodes.rails)
   (:require [circle.backend.build.inference.mysql :as mysql])
+  (:use [circle.backend.build.inference.gems-map :only (blacklisted-gems)])
   (:require [circle.backend.build.inference.postgres :as postgres]))
 
 (defn bundler?
@@ -189,7 +190,7 @@
     (sh/q (sed -i ~(format "\"%s\"" sed-str) Gemfile))))
 
 (defn blacklist []
-  (bash (sh/q (doseq [g ~circle.backend.build.inference.gems-map/blacklisted-gems]
+  (bash (sh/q (doseq [g ~blacklisted-gems]
                 ~(sed-gem "$g")))
         :name "blacklist problematic gems"))
 
