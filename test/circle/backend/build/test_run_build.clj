@@ -108,6 +108,6 @@
     (-> @build :instance-id (ec2/instance) :state :name) => "running"
     (-> @build :instance-ids (first)) => string?
     (nodes/cleanup-nodes build) => anything
-    (wait-for {:sleep 1000 :tries 5}
+    (wait-for {:sleep 1000 :tries 60}
               #(not= (-> @build :instance-ids (first) (ec2/instance) :state :name) "running")) => anything
     (-> @build :instance-ids (first) (ec2/instance) :state :name) =not=> "running"))

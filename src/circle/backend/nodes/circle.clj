@@ -23,8 +23,7 @@
             [circle.sh :as sh]
             [circle.backend.ssh :as ssh]
             [circle.backend.nodes :as nodes]
-            [circle.backend.pallet :as circle-pallet])
-  (:use [arohner.utils :only (inspect)]))
+            [circle.backend.pallet :as circle-pallet]))
 
 ;; this is our "memoized" circle box
 (def circle-group
