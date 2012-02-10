@@ -48,11 +48,13 @@ Options:
                           (when-let [s (slurp-fn stdout-stream)]
                             (.append stdout s)
                             (reset-timeout)
-                            (handle-out s))
+                            (when (seq s)
+                              (handle-out s)))
                           (when-let [s (slurp-fn stderr-stream)]
                             (.append stderr s)
                             (reset-timeout)
-                            (handle-error s))))]
+                            (when (seq s)
+                              (handle-error s)))))]
     (while (= -1 (-> shell (.getExitStatus)))
       (when (and end-time (time/after? (time/now) end-time))
         (throw+ {:type ::ssh-timeout
