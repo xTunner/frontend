@@ -223,7 +223,7 @@ class Build
     when "github"
       "a push to github"
     when "trigger"
-      "#{user.name} at the website"
+      "#{user.name} on CircleCI.com"
     end
   end
 end

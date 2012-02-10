@@ -47,6 +47,13 @@ describe SimpleMailer do
                                         :failed => false))
   end
 
+  let(:started_by_UI) do
+    Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, successful_log],
+                                        :why => "trigger",
+                                        :user => lover,
+                                        :failed => false))
+  end
+
   let(:failing_build) do
     Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, successful_log, failing_log],
                                         :failed => true))
@@ -181,7 +188,7 @@ describe SimpleMailer do
       it_should_behave_like("an email",
                             :infra_build,
                             [/^Circle bug:/],
-                            [/There was a bug in Circle's infrastructure that led to a problem testing commit/,
+                            [/There was a bug in Circle\'s infrastructure that led to a problem testing commit/,
                              /We have been notified and will fix the problem as soon as possible./]) do
         it "should CC us" do
           mail.cc.should == ["engineering@circleci.com"]
@@ -196,6 +203,16 @@ describe SimpleMailer do
                             [/timed out during testing, after 20 minutes without output./]) do
       end
     end
+
+    describe "builds started from the UI" do
+      it "should only be sent to the person who started it" do
+        SimpleMailer.post_build_email_hook(started_by_UI);
+        mail = ActionMailer::Base.deliveries[0]
+        mail.to.should == [lover.email]
+        mail.cc.should == []
+      end
+    end
+
 
     it "should send a 'fixed' email to the author" do
       pending

@@ -40,6 +40,11 @@ class SimpleMailer < ActionMailer::Base
       to = ["founders@circleci.com"]
     end
 
+    # Just send to the user if it was triggered
+    if @build.why == "trigger"
+      to = [@build.user]
+    end
+
 
     mail(:to => to, :cc => cc, :bcc => bcc,
          :subject => subject,
