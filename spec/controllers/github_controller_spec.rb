@@ -73,20 +73,25 @@ Var.intern(user_ns, symbolize("foo"), dummy_json)
 describe GithubController do
 
   let(:vcs_url) { "https://github.com/arohner/circle-dummy-project" }
-  let(:project) { Project.create! :vcs_url => vcs_url }
 
 
   before :each do
+    Backend.mock = false
     Backend.blocking_worker "circle.backend.build.test-utils/ensure-test-db"
+  end
+
+  after :all do
+    Backend.mock = true
   end
 
   it "The github hook successfully triggers builds" do
 
-    p = Project.from_url project.vcs_url
+    p = Project.from_url vcs_url
     p.should_not be_nil
 
     pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => dummy_json
+    sleep 1
 
     post_count = Build.where(:vcs_url => vcs_url).length
     (post_count > pre_count).should be_true
@@ -94,6 +99,7 @@ describe GithubController do
 
   it "should save where" do
     post :create, :payload => dummy_json
+    sleep 1
     build = Build.where(:vcs_url => vcs_url).first
     build.should_not == nil
     build.why.should == "github"
