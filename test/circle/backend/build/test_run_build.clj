@@ -48,7 +48,18 @@
 
 (fact "running an empty test does not generate an infrastructure_fail"
   (let [build (run-build (minimal-build))]
-    (-> @build :infrastructure_fail) => falsey))
+    (-> @build :infrastructure_fail) => nil
+    (-> @build :action_results last :infrastructure_fail) => nil))
+
+(fact "throwing an exception generates an infrastructure_fail"
+  (let [build (minimal-build
+               :actions [(action :name "fail"
+                                 :act-fn (fn [build] (throw (Exception.))))])]
+    (try
+      (run-build build)
+      (catch Exception e))
+    (-> @build :infrastructure_fail) => true
+    (-> @build :action-results last :infrastructure_fail) => true))
 
 (fact "build of dummy project is successful"
   (-> "https://github.com/arohner/circle-dummy-project" (build-from-url) (run-build) (successful?)) => true)
@@ -97,6 +108,6 @@
     (-> @build :instance-id (ec2/instance) :state :name) => "running"
     (-> @build :instance-ids (first)) => string?
     (nodes/cleanup-nodes build) => anything
-    (wait-for {:sleep 1000 :tries 5}
+    (wait-for {:sleep 1000 :tries 60}
               #(not= (-> @build :instance-ids (first) (ec2/instance) :state :name) "running")) => anything
     (-> @build :instance-ids (first) (ec2/instance) :state :name) =not=> "running"))

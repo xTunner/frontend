@@ -19,6 +19,17 @@ class BuildsController < ApplicationController
 
     @build = @project.build_numbered params[:id]
     @logs = @build.logs
+
+    # TECHNICAL_DEBT: we don't store timedout on old actions
+    if @logs.length > 0
+      l = @logs.last
+
+      if @build.timedout || @build.infrastructure_fail
+        l.timedout = true if @build.timedout
+        l.infrastructure_fail = true if @build.infrastructure_fail
+        l.save!
+      end
+    end
   end
 
 end

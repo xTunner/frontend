@@ -56,7 +56,7 @@ class Build
     if action_logs.length > 0
       action_logs
     else
-      ActionLog.where("_build-ref" => id).all
+      ActionLog.where("_build-ref" => id).sort_by { |b| b.start_time }
     end
   end
 
@@ -201,7 +201,12 @@ class Build
     "#{status_as_title}: <a href='#{absolute_url}'>#{project.github_project_name} ##{build_num}</a>:" +
       "<br> - latest revision: " + link_to_github(true) +
       "<br> - author: #{committer_email}" +
-      "<br> - log: #{shortened_subject 150}"
+      "<br> - log: #{shortened_subject 150}" +
+      (if why == "trigger" then
+         "<br> - triggered by #{user.name} from the Circle web UI"
+       else
+         ""
+       end)
   end
 
   def absolute_url
@@ -215,6 +220,15 @@ class Build
 
     unless build_num.nil? or project.nil?
       Rails.application.routes.url_helpers.build_url project, build_num, options
+    end
+  end
+
+  def why_in_words
+    case why
+    when "github"
+      "a push to github"
+    when "trigger"
+      "#{user.name} on CircleCI.com"
     end
   end
 end

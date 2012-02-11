@@ -67,7 +67,7 @@
            :or {column :out}}]
   (record (fn [action-result]
             (update-in action-result [:out] conj-vec {:type column
-                                                      :time (time/ju-now)
+                                                      :time (time/java-now)
                                                       :message data}))))
 
 (defn abort!
@@ -83,15 +83,16 @@
   [build message]
   (dosync
    (abort! build message)
-   (alter build assoc :timedout true)))
+   (alter build assoc :timedout true)
+   (record assoc :timedout true)))
 
 (defn add-start-time
   []
-  (record assoc :start_time (time/ju-now)))
+  (record assoc :start_time (time/java-now)))
 
 (defn add-end-time
   []
-  (record assoc :end_time (time/ju-now)))
+  (record assoc :end_time (time/java-now)))
 
 (defn add-exit-code
   [exit-code]
@@ -154,12 +155,16 @@
     (dosync
      (create-mongo-obj)
      (add-start-time))
-    (let [result ((-> act :act-fn) build)]
-      (dosync
-       (add-end-time)
-       (validate-action-result! @*current-action-results*)
-       (alter build update-in [:action-results] conj @*current-action-results*))
-      result)))
+    (try
+      ((-> act :act-fn) build)
+      (catch Exception e
+        (record assoc :infrastructure_fail true)
+        (throw e))
+      (finally
+       (dosync
+        (add-end-time)
+        (validate-action-result! @*current-action-results*)
+        (alter build update-in [:action-results] conj @*current-action-results*))))))
 
 (defmacro defaction [name defn-args action-map f]
   (throw-if-not (vector? defn-args) "defn args must be a vector")

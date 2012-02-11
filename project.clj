@@ -109,6 +109,7 @@
                  [org.cloudhoist/java "0.5.1"]
                  [org.cloudhoist/node-js "0.6.0-251878762734e6ffecdbdfe8e5c705869aa26b0b"]
                  [org.cloudhoist/nginx "f48febc9e5e43148719a11c3aeca4e6b668993e"]
+                 [vmfest "0.2.3-a03a0006b5ac05018323fc6f4ccde0bdbdb45d9d"]
                  [lein-crate "0.1.0"]
                  [pallet-rvm "0.1-46e3991113e82b9d857bce7945b606423ba17699"]
                  [midje "1.3.1"]

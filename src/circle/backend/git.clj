@@ -4,7 +4,6 @@
   (:require [clojure.string :as str])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [clojure.tools.logging :only (infof)])
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.args :only (require-args)])
   (:use [clojure.string :only (split)])
   (:require [circle.backend.github-url :as github])
@@ -103,7 +102,7 @@
 (defn pull
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
-  (infof "git pull %s" repo)
+  (infof "git fetch %s" repo)
   (git-fn* (sh/q
             (git pull))
            :ssh-key ssh-key
@@ -117,7 +116,7 @@
   (let [path (or path (default-repo-path url))]
     (if (repo-exists? path)
       (when update
-        (checkout path "master") ;; you have to be on a branch to pull
+        (checkout path "master") ;; have to be on a branch to pull
         (pull path :ssh-key ssh-key))
       (clone url :path path :ssh-key ssh-key))))
 

@@ -4,7 +4,6 @@
   (:require [circle.model.build :as build])
   (:require [circle.sh :as sh])
   (:require fs)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.backend.action :only (defaction abort!)])
   (:use [circle.backend.action.bash :only (remote-bash-build)])
   (:use [circle.backend.action.user :only (home-dir)])

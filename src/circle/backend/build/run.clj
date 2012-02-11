@@ -1,9 +1,10 @@
 (ns circle.backend.build.run
   (:require [circle.backend.build.notify :as notify])
   (:require [circle.model.build :as build])
-  (:use [arohner.utils :only (inspect fold)])
+  (:use [arohner.utils :only (fold)])
   (:require [circle.env :as env])
   (:require [clj-time.core :as time])
+  (:use [circle.util.time :only (java-now)])
   (:use circle.util.straight-jacket)
   (:use [circle.globals :only (*current-build-url* *current-build-number*)])
   (:require [circle.backend.action :as action])
@@ -26,9 +27,11 @@
 
 (defn run-action [b act]
   (build/build-log "running %s" (-> act :name))
-  (action/run-action b act)
-  (finish-action b act)
-  (build/update-mongo b))
+  (try
+    (action/run-action b act)
+    (finally
+     (finish-action b act)
+     (build/update-mongo b))))
 
 (defn next-act
   "Returns the next action to run"
@@ -50,7 +53,9 @@
   (throw-if-not (-> @b :_id) "build must have an id")
   (infof "starting build: %s, %s" (build/build-name b) (-> @b :_id))
   (dosync
-   (alter in-progress conj b)))
+   (alter b assoc :start_time (java-now))
+   (alter in-progress conj b))
+  (build/update-mongo b))
 
 (defn finished [b]
   (dosync
@@ -80,7 +85,7 @@
 
 (defn run-build [b & {:keys [cleanup-on-failure]
                       :or {cleanup-on-failure true}}]
-  (binding [*current-build-url* (-> @b :build_url)
+  (binding [*current-build-url* (-> @b :vcs_url)
             *current-build-number* (-> @b :build_num)]
     (straight-jacket
      (try

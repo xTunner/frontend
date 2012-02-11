@@ -23,9 +23,11 @@ describe SimpleMailer do
   let(:out2) { { "type" => "out", "time" => nil, "message" => "another message" } }
   let(:outs) { [out1, out2] }
 
-  let(:successful_log) { ActionLog.create(:type => "test", :name => "true", :exit_code => 0, :out => outs) }
-  let(:setup_log) { ActionLog.create(:type => "setup", :name => "touch setup", :exit_code => 0, :out => outs) }
-  let(:failing_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs) }
+  let(:successful_log) { ActionLog.create(:type => "test", :name => "true", :exit_code => 0, :out => outs, :end_time => Time.now) }
+  let(:setup_log) { ActionLog.create(:type => "setup", :name => "touch setup", :exit_code => 0, :out => outs, :end_time => Time.now) }
+  let(:failing_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs, :end_time => Time.now) }
+  let(:infra_log) { ActionLog.create(:type => "test", :name => "false", :out => [], :infrastructure_fail => true, :end_time => Time.now) }
+  let(:timedout_log) { ActionLog.create(:type => "test", :name => "false", :exit_code => 127, :out => outs, :timedout => true, :end_time => Time.now) }
 
   let(:std_attrs) do
     {
@@ -42,6 +44,13 @@ describe SimpleMailer do
 
   let(:successful_build) do
     Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, successful_log],
+                                        :failed => false))
+  end
+
+  let(:started_by_UI) do
+    Build.unsafe_create(std_attrs.merge(:action_logs => [setup_log, successful_log],
+                                        :why => "trigger",
+                                        :user => lover,
                                         :failed => false))
   end
 
@@ -179,7 +188,7 @@ describe SimpleMailer do
       it_should_behave_like("an email",
                             :infra_build,
                             [/^Circle bug:/],
-                            [/There was a bug in Circle's infrastructure that led to a problem testing commit/,
+                            [/There was a bug in Circle\'s infrastructure that led to a problem testing commit/,
                              /We have been notified and will fix the problem as soon as possible./]) do
         it "should CC us" do
           mail.cc.should == ["engineering@circleci.com"]
@@ -191,9 +200,19 @@ describe SimpleMailer do
       it_should_behave_like("an email",
                             :timedout_build,
                             [/^Timed out:/],
-                            [/timed out during testing, after 5 minutes without output./]) do
+                            [/timed out during testing, after 20 minutes without output./]) do
       end
     end
+
+    describe "builds started from the UI" do
+      it "should only be sent to the person who started it" do
+        SimpleMailer.post_build_email_hook(started_by_UI);
+        mail = ActionMailer::Base.deliveries[0]
+        mail.to.should == [lover.email]
+        mail.cc.should == []
+      end
+    end
+
 
     it "should send a 'fixed' email to the author" do
       pending

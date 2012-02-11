@@ -3,7 +3,8 @@
   (:use circle.util.fs)
   (:require [circle.backend.build.template :as template])
   (:require [circle.backend.action :as action])
-  (:use [arohner.utils :only (inspect)]))
+  (:require circle.backend.build.inference.rails
+            circle.backend.build.inference.php))
 
 (defn dir-contains-php-files?
   "Determines whether or not the repo has any php files."
@@ -23,8 +24,15 @@
 (defmulti infer-actions* (fn [type repo-path]
                            type))
 
+(defmethod infer-actions* :rails [_ repo]
+  (circle.backend.build.inference.rails/spec repo))
+
+(defmethod infer-actions* :php [_ repo]
+  (circle.backend.build.inference.php/spec repo))
+
 (defn set-inferred [actions]
   (map #(action/set-source % :inferred) actions))
+
 
 (defn infer-actions
   "Dispatches on repo type returned from (infer-repo-type). Returns a

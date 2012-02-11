@@ -46,7 +46,8 @@
                                                        :absolute-timeout (time/hours 1))]
                                   :node (test/localhost-ssh-map))
         result (run/run-build build)]
-    (build/successful? build) => true))
+    (build/successful? build) => true
+    (-> @build :action-results last :timedout) => nil))
 
 (fact "relative timeout kills builds"
   ;; create a build with a long running action, and a short
@@ -59,6 +60,7 @@
                                   :node (test/localhost-ssh-map))
         result (run/run-build build)]
     (build/successful? build) => false
+    (-> @build :action-results last :timedout) => true
     (-> @build :timedout) => true
     (< (time/in-secs (time/interval start-time (time/now))) 30) => true))
 

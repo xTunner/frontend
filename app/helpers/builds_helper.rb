@@ -1,6 +1,10 @@
 module BuildsHelper
   def action_header_style(log)
     css = log.status.to_s
+    if css == "timedout"
+      css = "failed"
+    end
+
     if log.success?
       css += " minimize"
     end
@@ -16,7 +20,7 @@ module BuildsHelper
 
 
   def action_log_output(logs)
-    return "" if logs.length == 0
+    return "" if logs.nil? || logs.length == 0
 
     buf = ""
 

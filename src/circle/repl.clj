@@ -9,6 +9,7 @@
     (use '[clojure.contrib.repl-utils :exclude (apropos source)])
     (use '[circle.util.repl])
     (use '[circle.backend.ec2 :only (print-instances)])
+    (use '[circle.util.ns :only (destroy-ns)])
     (require '[circle.backend.ec2 :as ec2])
     (require '[somnium.congomongo :as mongo])
     (require '[circle.ruby :as r])

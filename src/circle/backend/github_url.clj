@@ -2,8 +2,7 @@
   (:use midje.sweet)
   (:require [clj-url.core :as url])
   (:use [circle.util.core :only (apply-if)])
-  (:require [clojure.string :as str])
-  (:use [arohner.utils :only (inspect)]))
+  (:require [clojure.string :as str]))
 
 ;; functions for converting between the various github urls
 ;;

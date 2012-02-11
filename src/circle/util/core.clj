@@ -1,5 +1,4 @@
 (ns circle.util.core
-  (:use [arohner.utils :only (inspect)])
   (:import java.security.MessageDigest))
 
 (defn printfln [& args]

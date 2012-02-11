@@ -24,7 +24,6 @@
 
 (defn start-build-from-hook
   [url after ref json-string]
-  (println "start-build-from-hook" url after ref json-string)
   (-> json-string (json/parse-string true) (process-json)))
 
 ;;; TECHNICAL_DEBT: These are on pbiggar's account, we should probably change

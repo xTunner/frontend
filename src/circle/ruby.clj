@@ -6,7 +6,6 @@
   (:import java.lang.ref.WeakReference)
   (:use [circle.util.core :only (defn-once)])
   (:use [circle.util.except :only (throw-if-not)])
-  (:use [arohner.utils :only (inspect)])
   (:require [clojure.string :as string])
   (:require fs))
 
@@ -31,9 +30,7 @@
 (defn new-runtime
   "Creates and returns a new ruby runtime. env is a map of string->string environment variables that will be overwritten. Argv is a seq of strings"
   [& {:keys [env argv]}]
-  (when (not (System/getenv "rvm_ruby_string"))
-    (println "RVM is not set, aborting.")
-    (System/exit 1))
+  (throw-if-not (System/getenv "rvm_ruby_string") "RVM is not set")
   (let [whole-env (merge (into {} (System/getenv)) env)
         config (doto (org.jruby.RubyInstanceConfig.)
                  (.setArgv (into-array String argv))

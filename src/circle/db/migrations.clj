@@ -29,6 +29,17 @@
                (let [spec (mongo/fetch-one :specs :where {:project_id (:_id p)})]
                  (apply-if spec merge p (select-keys spec [:dependencies :setup :compile :test :inferred])))))
 
+(def-migration "add start_times to builds, calculated from stop_time and action_logs"
+  :num 3
+  :coll :builds
+  :query {:start_time {:$exists false}}
+  :transform (fn [b]
+               (let [build_id (-> b :_id)
+                     log (mongo/fetch-one :action_logs :where {:_build-ref build_id} :sort {:start_time 1})
+                     start-time (-> log :start_time)]
+                 (merge b {:start_time start-time}))))
+
+
 ;; (def-migration "old builds w/ git commit info")
 
 "action tags; inferred, infrastructure, spec, test, setup"

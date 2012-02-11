@@ -8,6 +8,7 @@
       %dd.value
         = revision_link_to @build
 
+
       %dt.key
         Build
       %dd.value
@@ -20,13 +21,15 @@
         = mail_to(@build["committer_email"], @build["committer_name"])
 
 
-    %dl.offset1
+
+
+
+    %dl.offset1.span6
 
       %dt.key
         Status
       %dd.value
         = bootstrap_status @build
-
 
 
       %dt.key
@@ -39,6 +42,16 @@
         Length
       %dd.value
         = as_length_of_build @build["start_time"], @build["stop_time"]
+
+
+
+    %dl.offset1
+
+      %dt.key
+        Started by
+      %dd.value
+        = @build.why_in_words
+
 
   .row
     %dl.offset1
@@ -65,6 +78,10 @@
         %span.time
           = surround '(', ')' do
             = as_length_of_build(l.start_time, l[:end_time] || @build.stop_time)
+          - if l.status == :timedout
+            %b
+              (TIMED OUT)
+
 
       .detail{ :class => action_log_style(l) }
         - if l["out"]

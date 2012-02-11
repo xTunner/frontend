@@ -5,7 +5,6 @@
   (:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.args :only (require-args)])
   (:use [circle.util.except :only (throwf)])
-  (:use [arohner.utils :only (inspect)])
   (:use [slingshot.slingshot :only (throw+)])
   (:use [circle.util.core :only (apply-map)]))
 
@@ -48,11 +47,13 @@ Options:
                           (when-let [s (slurp-fn stdout-stream)]
                             (.append stdout s)
                             (reset-timeout)
-                            (handle-out s))
+                            (when (seq s)
+                              (handle-out s)))
                           (when-let [s (slurp-fn stderr-stream)]
                             (.append stderr s)
                             (reset-timeout)
-                            (handle-error s))))]
+                            (when (seq s)
+                              (handle-error s)))))]
     (while (= -1 (-> shell (.getExitStatus)))
       (when (and end-time (time/after? (time/now) end-time))
         (throw+ {:type ::ssh-timeout
@@ -92,7 +93,7 @@ Options:
   (try-try-again
    {:sleep 1000
     :tries 30
-    :catch [com.jcraft.jsch.JSchException]
+    :catch [com.jcraft.jsch.JSchException java.lang.RuntimeException]
     :error-hook (fn [e] (errorf "caught %s" e))}
    #(let [s (session session-args)]
       (ssh/connect s)

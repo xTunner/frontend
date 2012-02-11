@@ -2,7 +2,6 @@
   "fns for running code locally, and compiling stevedore to bash"
   (:import java.io.OutputStreamWriter)
   (:require pallet.stevedore)
-  (:use [arohner.utils :only (inspect)])
   (:require [clojure.java.shell :as sh])
   (:use [circle.util.coerce :only (to-name)])
   (:use [circle.util.core :only (apply-if)]))

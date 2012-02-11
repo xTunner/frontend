@@ -2,7 +2,6 @@
   "Main definition of the Build object. "
   (:require [clojure.string :as str])
   (:require fs)
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)]
         [circle.util.args :only (require-args)])
   (:require [clj-time.core :as time])
@@ -81,7 +80,6 @@
            continue?    ;; if true, continue running the build. Failed actions will set this to false
            ]
     :as args}]
-  (println "build:" args)
   (let [project (project/get-by-url! vcs_url)
         build_num (project/next-build-num project)
         build-id (or _id (object-id))
