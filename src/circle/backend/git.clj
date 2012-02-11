@@ -99,12 +99,12 @@
             (git checkout ~revision))
            :repo repo))
 
-(defn fetch
+(defn pull
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
   (infof "git fetch %s" repo)
   (git-fn* (sh/q
-            (git fetch))
+            (git pull))
            :ssh-key ssh-key
            :repo repo))
 
@@ -116,7 +116,8 @@
   (let [path (or path (default-repo-path url))]
     (if (repo-exists? path)
       (when update
-        (fetch path :ssh-key ssh-key))
+        (checkout "master") ;; have to be on a branch to pull
+        (pull path :ssh-key ssh-key))
       (clone url :path path :ssh-key ssh-key))))
 
 (defn format-log
