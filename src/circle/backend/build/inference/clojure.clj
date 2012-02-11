@@ -40,8 +40,15 @@
         :type :setup
         :name "lein deps"))
 
-(defn lein-midje [])
-(defn lein-test [])
+(defn lein-test []
+  (bash (sh/q (lein test))
+        :type :test
+        :name "lein test"))
+
+(defn lein-midje []
+  (bash (sh/q (lein midje))
+        :type :test
+        :name "lein midje"))
 
 ;; "Infered Clojure actions.
 (defmethod inference/infer-actions* :clojure

@@ -14,6 +14,14 @@
 
 (future-fact "`lein native` is  run as a :setup command when there are native dependencies.")
 
-(future-fact "When Midje is a dependency, `lein midje` is the :test command.")
+(fact "When Midje is a dependency, `lein midje` is the :test command."
+     (let [repo (test/test-repo "midje_project")
+                inferred-actions (inference/infer-actions* :clojure repo)]
+       inferred-actions => (contains #(and (= "lein midje" (:name %))
+                                           (= :test (:type %))))))
 
-(future-fact "When Midje is not a dependency, `lein test` is the :test command.")
+(fact "When Midje is not a dependency, `lein test` is the :test command."
+     (let [repo (test/test-repo "leiningen_project")
+                inferred-actions (inference/infer-actions* :clojure repo)]
+       inferred-actions => (contains #(and (= "lein test" (:name %))
+                                           (= :test (:type %))))))
