@@ -29,6 +29,12 @@
                 (assert (nil? (get row new-col)))
                 new-col)) row))
 
+;; TECHNICAL_DEBT: needs to/from-db-translate
+(defn set [coll id & {:as args}]
+  (mongo/fetch-and-modify coll {:_id id} {:$set args}))
+
+
+
 ;; fetch-by-id and fetch-one are implemented in terms of fetch, so we only need to hook this.
 
 (defn-once init

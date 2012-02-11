@@ -10,6 +10,7 @@
   (:require [clj-http.client :as client])
   (:require [circle.env :as env])
   (:require [somnium.congomongo :as mongo])
+  (:require [circle.mongo :as c-mongo])
   (:require [tentacles.repos :as trepos])
   (:require [tentacles.users :as tusers])
   (:require [tentacles.orgs :as torgs])
@@ -75,11 +76,9 @@
         error? (-> json :error)]
     (when error?
       (throw error?))
-    (let [user (mongo/fetch-by-id :users (mongo/object-id userid))
-          updated (merge user {:github_access_token access-token})]
-      (assert user)
-      (mongo/update! :users user updated)
-      true)))
+    (c-mongo/set :users userid :github_access_token access-token)
+    true))
+
 
 (defn authorization-url [redirect]
   "The URL that we send a user to, to allow them authorize us for oauth. Redirect is where the should be redirected afterwards"
@@ -94,18 +93,19 @@
         token (:github_access_token user)
         json (tentacles.users/me {:oauth_token token})
         email (-> json :email)
-        name (-> json :name)
-        new-user (merge user {:fetched_name name :fetched_email email})]
-    (mongo/update! :users user new-user)))
+        name (-> json :name)]
+    (c-mongo/set :users userid :fetched_name name :fetched_email email)))
+
 
 (defn add-deploy-key
   "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
   [username repo-name github_access_token project-id]
-  (let [project (mongo/fetch-by-id :projects (mongo/object-id project-id))
-        keypair (ssh/generate-keys)]
-    (mongo/update! :projects (select-keys project [:_id]) (merge project {:ssh_public_key (-> keypair :public-key)
-                                                                          :ssh_private_key (-> keypair :private-key)}))
-                                        ;TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
+  (let [keypair (ssh/generate-keys)]
+    (c-mongo/set :projects
+                 project-id
+                 :ssh_public_key (-> keypair :public-key)
+                 :ssh_private_key (-> keypair :private-key))
+    ;; TECHNICAL_DEBT make sure this throws exceptions. 0.1.1-64e42ffb78a740de3a955b6b66cc6d86905609a5 does not
     (trepos/create-key username repo-name "Circle continuous integration" (-> keypair :public-key) {:oauth_token github_access_token})))
 
 (def circle-hook-url "www.circleci.com/hooks/github")
