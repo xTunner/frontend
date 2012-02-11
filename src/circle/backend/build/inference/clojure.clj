@@ -1,7 +1,6 @@
 (ns circle.backend.build.inference.clojure
   (:require [circle.sh :as sh])
   (:require fs)
-  (:require [circle.backend.build.inference :as inference])
   (:use [circle.backend.action.bash :only (bash)])
   (:use circle.util.fs))
 
@@ -51,9 +50,9 @@
         :name "lein midje"))
 
 ;; "Infered Clojure actions.
-(defmethod inference/infer-actions* :clojure
-  [_ repo]
-  ;; If there's no project.clj, we can't infer shit.
+(defn spec
+  [repo]
+  ;; If there's no project.clj, we can't infer anything.
   (when-let [project-clj (project-clj-file repo)]
     (filter identity
             [(lein-deps)
