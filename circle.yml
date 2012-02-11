@@ -41,7 +41,7 @@ jobs:
       - rvm rvmrc trust
       - bundle install
       - lein deps
-      - rake assets:precompile
+      - rake assets:precompile --trace
       - rake production:server:
           environment:
             CIRCLE_SWANK: "true"
