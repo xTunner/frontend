@@ -9,5 +9,7 @@
   why - a short string, such as 'edit', or 'trigger'
   who - a string, the id of the user that triggered the build"
   [url infer why who]
+
+  ;; Run even when the build is disabled.
   (let [build (config/build-from-url url :infer infer :who who :why why)]
     (run/run-build build)))
