@@ -2,7 +2,7 @@
   (:use [clojure.core.incubator :only (-?>)])
   (:require [clojure.string :as str])
   (:require [circle.model.build :as build])
-  (:require [clj-yaml.core])
+  (:require clj-yaml.core)
   (:require [circle.sh :as sh])
   (:require fs)
   (:use [clojure.tools.logging :only (errorf)])

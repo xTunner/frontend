@@ -67,7 +67,7 @@
            :or {column :out}}]
   (record (fn [action-result]
             (update-in action-result [:out] conj-vec {:type column
-                                                      :time (time/ju-now)
+                                                      :time (time/java-now)
                                                       :message data}))))
 
 (defn abort!
@@ -88,11 +88,11 @@
 
 (defn add-start-time
   []
-  (record assoc :start_time (time/ju-now)))
+  (record assoc :start_time (time/java-now)))
 
 (defn add-end-time
   []
-  (record assoc :end_time (time/ju-now)))
+  (record assoc :end_time (time/java-now)))
 
 (defn add-exit-code
   [exit-code]
