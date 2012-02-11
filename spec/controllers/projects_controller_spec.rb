@@ -36,8 +36,12 @@ describe ProjectsController do
     end
 
     it "should start a build when the page is edited" do
+      Backend.mock = false
       put :update, { :project => "a/b", "setup" => "" }.as_json
+      sleep 0.1
       project.latest_build.why.should == "edit"
+
+      Backend.mock = true
     end
 
     it "should start a hipchat notification worker" do
