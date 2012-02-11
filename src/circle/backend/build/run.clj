@@ -85,7 +85,7 @@
 
 (defn run-build [b & {:keys [cleanup-on-failure]
                       :or {cleanup-on-failure true}}]
-  (binding [*current-build-url* (-> @b :build_url)
+  (binding [*current-build-url* (-> @b :vcs_url)
             *current-build-number* (-> @b :build_num)]
     (straight-jacket
      (try

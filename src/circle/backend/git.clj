@@ -116,7 +116,7 @@
   (let [path (or path (default-repo-path url))]
     (if (repo-exists? path)
       (when update
-        (checkout "master") ;; have to be on a branch to pull
+        (checkout path "master") ;; have to be on a branch to pull
         (pull path :ssh-key ssh-key))
       (clone url :path path :ssh-key ssh-key))))
 
