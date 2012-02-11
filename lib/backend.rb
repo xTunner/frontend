@@ -4,11 +4,11 @@ require 'jruby'
 class Backend
 
   # TODO: refactor this until it's transparent
-  def self.github_hook(url, after, ref, json)
-    self.fire_worker "circle.workers.github/start-build-from-hook", url, after, ref, json
+  def self.github_hook(json)
+    self.fire_worker "circle.workers.github/start-build-from-hook", json
   end
 
-  def self.build(project, why, who, inferred = false)
+  def self.build(project, why, who, inferred=false)
     self.fire_worker "circle.workers.website/run-build-from-jruby", project.vcs_url, inferred, why, who.id.to_s
   end
 

@@ -17,16 +17,18 @@
 
 (defn process-json [github-json]
   (infof "build-hook: %s" github-json)
-  (let [build (config/build-from-json github-json)
-        project (build/get-project build)]
-    (if (project/enabled? project)
-      (do
-        (infof "process-json: running build: %s" @build)
-        (run/run-build build))
-      (infof "process-json: not running disabled build: %s" @build))))
+  (println github-json)
+  (when-not (= (-> github-json :after) "0000000000000000000000000000000000000000")
+    (let [build (config/build-from-json github-json)
+          project (build/get-project build)]
+      (if (project/enabled? project)
+        (do
+          (println "process-json: running build: %s" @build)
+          (run/run-build build))
+        (println "process-json: not running build: %s" @build)))))
 
 (defn start-build-from-hook
-  [url after ref json-string]
+  [json-string]
   (-> json-string (json/parse-string true) (process-json)))
 
 ;;; TECHNICAL_DEBT: These are on pbiggar's account, we should probably change

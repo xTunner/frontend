@@ -60,7 +60,6 @@ deleted = JSON.parse(dummy_json)
 deleted["after"] = "0000000000000000000000000000000000000000"
 deleted_json = JSON.generate(deleted)
 
-
 java_import "clojure.lang.Var"
 
 def symbolize(s)
@@ -74,7 +73,6 @@ describe GithubController do
 
   let(:vcs_url) { "https://github.com/arohner/circle-dummy-project" }
 
-
   before :each do
     Backend.mock = false
     Backend.blocking_worker "circle.backend.build.test-utils/ensure-test-db"
@@ -85,21 +83,24 @@ describe GithubController do
   end
 
   it "The github hook successfully triggers builds" do
-
     p = Project.from_url vcs_url
     p.should_not be_nil
 
     pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => dummy_json
-    sleep 1
+
+    # if this sleep isn't long enough, the build will finish after the
+    # next test has started, causing the build_counts to be off and the
+    # builds to fail.
+    sleep 3
 
     post_count = Build.where(:vcs_url => vcs_url).length
-    (post_count > pre_count).should be_true
+    post_count.should == pre_count + 1
   end
 
   it "should save where" do
     post :create, :payload => dummy_json
-    sleep 1
+    sleep 3
     build = Build.where(:vcs_url => vcs_url).first
     build.should_not == nil
     build.why.should == "github"
@@ -109,20 +110,8 @@ describe GithubController do
   it "shouldn't trigger when branches are deleted" do
     pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => deleted_json
-    sleep 1
+    sleep 3
     post_count = Build.where(:vcs_url => vcs_url).length
     post_count.should == pre_count
-  end
-
-  it "should fail due to invalid json" do
-    lambda {
-      post :create, :payload => "invalid json"
-    }.should raise_error
-  end
-
-  it "should fail due to empty json" do
-    lambda {
-      post :create, :payload => JSON.generate({})
-    }.should raise_error
   end
 end
