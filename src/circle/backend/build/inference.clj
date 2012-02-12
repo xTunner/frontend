@@ -24,22 +24,29 @@
 (defmulti infer-actions* (fn [type repo-path]
                            type))
 
-(defmethod infer-actions* :rails [_ repo]
-  (circle.backend.build.inference.rails/spec repo))
-
-(defmethod infer-actions* :php [_ repo]
-  (circle.backend.build.inference.php/spec repo))
+(def inference-fns {:rails circle.backend.build.inference.rails/spec
+                    :php circle.backend.build.inference.php/spec})
 
 (defn set-inferred [actions]
   (map #(action/set-source % :inferred) actions))
 
+(def action-order [:pre-setup :setup :post-setup :pre-test :test :post-test])
+
+(defn merge-actions [specs]
+  (->> specs
+       (group-by :type)
+       ((apply juxt action-order))
+       (apply concat)))
 
 (defn infer-actions
   "Dispatches on repo type returned from (infer-repo-type). Returns a
  seq of build actions."
   [repo]
-  (let [repo-type (infer-repo-type repo)
-        actions (set-inferred (infer-actions* repo-type repo))]
+  (let [actions (->> inference-fns
+                     (vals)
+                     (mapcat #(% repo))
+                     (merge-actions)
+                     (set-inferred))]
     ;; if we do an inference, and come up with nothing useful, don't
     ;; add the template, because that would start nodes. Just return []
     (if (seq actions)
