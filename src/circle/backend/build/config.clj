@@ -260,6 +260,7 @@
 
       (dosync
        (alter build merge proto-build)
+       (alter build merge commit-details)
        (alter build assoc :node node)
        (alter build assoc :lb-name lb-name)
        (alter build assoc :vcs_revision vcs-revision)
