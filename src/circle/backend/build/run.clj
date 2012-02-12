@@ -67,22 +67,6 @@
       (project/set-uninferrable project)))
   (build/update-mongo b))
 
-(defn should-run-build-message
-  "Returns a user-visible string describing why the build isn't being run, or nil when there are no errors"
-  [b]
-  (let [project (build/get-project b)]
-    (cond
-     (not (project/enabled? project)) (format "Project %s is not enabled, skipping" (-> project :vcs_url))
-     :else nil)))
-
-(defn should-run-build? [b]
-  (if-let [msg (should-run-build-message b)]
-    (dosync
-     (alter b assoc :error_message msg)
-     false)
-    true))
-
-
 (defn run-build [b & {:keys [cleanup-on-failure]
                       :or {cleanup-on-failure true}}]
   (binding [*current-build-url* (-> @b :vcs_url)
@@ -91,8 +75,7 @@
      (try
        (start b)
        (build/with-build-log-ns b
-         (when (should-run-build? b)
-           (do-build* b)))
+         (do-build* b))
        b
        (catch Exception e
          (println "run-build: except:" b e)
@@ -106,8 +89,7 @@
 
         ;; Send build notifications, but don't let it fuck up anything else.
         (straight-jacket
-         (when (should-run-build? b)
-           (notify/notify-build-results b)))
+         (notify/notify-build-results b))
 
         (log-result b)
         (when (and (-> @b :failed) cleanup-on-failure)

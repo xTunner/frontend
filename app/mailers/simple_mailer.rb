@@ -42,7 +42,7 @@ class SimpleMailer < ActionMailer::Base
 
     # Just send to the user if it was triggered
     if @build.why == "trigger"
-      to = [@build.user]
+      to = [@build.user.email]
     end
 
 
