@@ -252,6 +252,8 @@
        (alter build assoc :node node)
        (alter build assoc :lb-name lb-name)
        (alter build assoc :vcs_revision vcs-revision)
+       (alter build assoc :vcs-private-key (-> project :ssh_private_key))
+       (alter build assoc :vcs-public-key (-> project :ssh_public_key))
        (alter build update-in [:actions] vec-concat actions))
       build)))
 
