@@ -10,7 +10,7 @@
 
 (fact "start-build-from-hook works with dummy project"
   (let [json circle-dummy-project-json-str
-        build (start-build-from-hook nil nil nil json)]
+        build (start-build-from-hook json)]
     (-> @build :vcs_url) => truthy
     (-> build (build/successful?)) => true
     (-> @build :build_num) => integer?))
@@ -18,7 +18,7 @@
 (fact "builds started from the hook have a start time"
   ;; this test added because of production failure, 2012/02/10
   (let [json circle-dummy-project-json-str
-        build (start-build-from-hook nil nil nil json)
+        build (start-build-from-hook json)
         build-row (mongo/fetch-one :builds :where {:_id (-> @build :_id)})]
     (-> @build :start_time) => truthy
     build-row => truthy
