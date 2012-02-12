@@ -1,5 +1,4 @@
 (ns circle.util.retry
-  (:use [arohner.utils :only (inspect)])
   (:use [circle.util.except :only (throw-if-not)])
   (:use [robert.bruce :only (try-try-again)]))
 
@@ -29,5 +28,6 @@
               (let [result (apply f args)]
                 (if success
                   (throw-if-not (success result) "(success) did not return truthy in time")
-                  (throw-if-not result "f did not return truthy in time"))))]
+                  (throw-if-not result "f did not return truthy in time"))
+                result))]
       (try-try-again options f))))
