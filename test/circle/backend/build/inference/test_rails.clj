@@ -46,19 +46,11 @@
     (->> (spec repo) (map :type) (into #{})) => (contains :test)))
 
 (fact "db:create when db.yml action"
-  (let [repo (test/test-repo "database_yml_2")]
+  (let [repo (test/test-repo "database_yml_2")
+        action-names (->> (spec repo) (map :name))]
     (database-yml? repo) => true
-    (->> (spec repo) (map :name) (into #{}))  => (contains "bundle exec rake db:create --trace")))
-
-(fact "inference finds database yaml"
-  (let [repo (test/test-repo "database_yml_1")]
-    (database-yml? repo) => false
-    (find-database-yml repo) => (fs/join repo "config/database.example.yml")))
-
-(fact "inference finds database yaml using 'default' instead of 'example'"
-  (let [repo (test/test-repo "database_yml_3")]
-    (database-yml? repo) => false
-    (find-database-yml repo) => (fs/join repo "config/database.yml.default")))
+    action-names => (contains "bundle exec rake db:create --trace")
+    action-names  =deny=> (contains "Generate database.yml")))
 
 (fact "data-mapper? works"
   (let [repo (test/test-repo "dm_rails_1")]
@@ -75,11 +67,11 @@
     (jasmine? repo) => true
     (->> (spec repo) (map :name)) => (contains "bundle exec rake jasmine:ci --trace")))
 
-(fact "copy database.example.yml to database.yml action"
+(fact "Generate database.yml when not present"
   ;; repo with database.example.yml
   (let [example-repo (test/test-repo "database_yml_1")]
-    (->> (spec example-repo) (map :name)) => (and (contains "copy database.yml")
-                                                  (contains "rake db:create --trace"))))
+    (->> (spec example-repo) (map :name)) => (contains [(contains "Generate database.yml")
+                                                        (contains "rake db:create --trace")] :gaps-ok)))
 
 (fact "rvm trust is called when the repo contains a .rvmrc"
   (->> (spec test/empty-repo) (map :name)) =deny=> (contains "rvm rvmrc trust")

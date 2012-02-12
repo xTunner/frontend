@@ -11,9 +11,11 @@
   (:use circle.util.fs)
   (:use [circle.util.core :only (re)])
   (:require [circle.util.map :as map])
+  (:use [circle.util.seq :only (find-first)])
   (:require circle.backend.nodes.rails)
   (:require [circle.backend.build.inference.mysql :as mysql])
-  (:use [circle.backend.build.inference.gems-map :only (blacklisted-gems)])
+  (:use [circle.backend.build.inference.gems-map])
+  (:import (org.yaml.snakeyaml Yaml DumperOptions))
   (:require [circle.backend.build.inference.postgres :as postgres]))
 
 (defn bundler?
@@ -81,40 +83,41 @@
 (defn jasmine? [repo]
   (using-gem? repo "jasmine"))
 
-(defn find-database-yml
-  "Look in repo/config/ for a file named database.example.yml or similar, and return the path, or nil"
-  [repo]
-  (let [yml (->> (fs/join repo "config")
-                 (fs/listdir)
-                 (filter #(and (re-find #"database.*yml" %)
-                               (or (re-find #"default" %)
-                                   (re-find #"example" %))))
-                 (first))]
-    (when yml
-      (fs/join repo "config" yml))))
-
 (defn get-database-yml
   [repo]
-  (if (database-yml? repo)
-    (fs/join repo "config" "database.yml")
-    (find-database-yml repo)))
+  (when (database-yml? repo)
+    (fs/join repo "config" "database.yml")))
 
-(defn need-cp-database-yml? [repo]
-  (and (not (database-yml? repo))
-       (find-database-yml repo)))
+(defn first-db-yml-gem [repo]
+  (find-first #(using-gem? repo %) database-yml-gems))
 
-(defn cp-database-yml
-  "Return an action to cp the database.yml to the right spot"
+(defn using-db-yml-gem?
   [repo]
-  ;; find-database-yml returns the path relative to the current tree,
-  ;; but for a build action it needs to be relative to the checkout
-  ;; path
-  (let [db-yml-path (->> (find-database-yml repo)
-                         (fs/split)
-                         (drop 3) ;; drop repos/username/projectname from front of path
-                         (apply fs/join))]
-    (bash (sh/q (cp ~db-yml-path "config/database.yml"))
-          :name "copy database.yml"
+  (boolean (seq (first-db-yml-gem repo))))
+
+(defn need-database-yml? [repo]
+  (and (not (database-yml? repo))
+       (using-db-yml-gem? repo)))
+
+(defn generate-database-yml-str [repo]
+  (let [options (doto (DumperOptions.)
+                  (.setIndent 2)
+                  (.setDefaultFlowStyle org.yaml.snakeyaml.DumperOptions$FlowStyle/BLOCK)
+                  (.setPrettyFlow true))
+        yaml (org.yaml.snakeyaml.Yaml. options)
+        adapter (gem-adapter-map (first-db-yml-gem repo))]
+    (->> {:test
+          {:adapter adapter
+           :database "circle_test"
+           :username "circle"
+           :password nil}}
+         ((var clj-yaml.core/stringify))
+         (.dump yaml))))
+
+(defn generate-database-yml [repo]
+  (let [db-yml-str (generate-database-yml-str repo)]
+    (bash (sh/q (echo ~db-yml-str > config/database.yml))
+          :name "Generate database.yml"
           :type :setup)))
 
 (defn parse-db-yml [repo]
@@ -192,14 +195,14 @@
 (defn blacklist []
   (bash (sh/q (doseq [g ~blacklisted-gems]
                 ~(sed-gem "$g")))
-        :name "blacklist problematic gems"))
+        :name "blacklist problematic gems"
+        :type :setup))
 
 (defn spec
   "Returns the set of actions necessary for this project"
   [repo]
   (let [use-bundler? (bundler? repo)
-        found-db-yml (find-database-yml repo)
-        has-db-yml? (or (database-yml? repo) (find-database-yml repo))]
+        has-db-yml? (or (database-yml? repo) (need-database-yml? repo))]
     (binding [use-bundler? (bundler? repo)]
       (->>
        [(when (dir-contains-ruby-files? repo)
@@ -210,8 +213,8 @@
           (blacklist))
         (when use-bundler?
           (bundle-install))
-        (when (need-cp-database-yml? repo)
-          (cp-database-yml repo))
+        (when (need-database-yml? repo)
+          (generate-database-yml repo))
         (when (need-mysql-socket? repo)
           (mysql/ensure-socket (mysql-socket-path repo)))
         (ensure-db-user repo)
