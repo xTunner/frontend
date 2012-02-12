@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe ProjectsController do
   login_user # don't forget you can use current_user
+  uses_workers
+
 
   it "should render using pretty 'gh' links" do
     project = FactoryGirl.create :project
@@ -26,7 +28,7 @@ describe ProjectsController do
   end
 
   describe "json tests" do
-    let!(:project) { Project.unsafe_create :vcs_url => "https://github.com/a/b", :users => [subject.current_user] }
+    let!(:project) { Project.unsafe_create :vcs_url => "https://github.com/arohner/circle-dummy-project", :users => [subject.current_user] }
     before(:each) do
       request.env["HTTP_ACCEPT"] = "application/json"
     end
@@ -36,13 +38,20 @@ describe ProjectsController do
     end
 
     it "should start a build when the page is edited" do
-      put :update, { :project => "a/b", "setup" => "" }.as_json
+      Backend.mock = false
+
+      put :update, { :project => "arohner/circle-dummy-project", "setup" => "" }.as_json
+      Backend.wait_for_all_workers
+
       project.latest_build.why.should == "edit"
+      project.latest_build.user.should == subject.current_user
+
+      Backend.mock = true
     end
 
     it "should start a hipchat notification worker" do
       old = Backend.worker_count
-      put :update, { :project => "a/b", "hipchat_room" => "test" }
+      put :update, { :project => "arohner/circle-dummy-project", "hipchat_room" => "test" }
       Backend.worker_count.should == old + 1
     end
   end

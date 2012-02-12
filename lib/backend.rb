@@ -82,6 +82,13 @@ class Backend
     Backend.clj.worker_count
   end
 
+  def self.wait_for_all_workers
+    return if self.mock
+
+    Backend.clj.wait_for_all_workers
+  end
+
+
   def self.initialize
     if Backend._clj.nil?
       init_ns = JRClj.new("circle.init")

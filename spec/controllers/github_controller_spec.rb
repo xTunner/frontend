@@ -88,11 +88,7 @@ describe GithubController do
 
     pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => dummy_json
-
-    # if this sleep isn't long enough, the build will finish after the
-    # next test has started, causing the build_counts to be off and the
-    # builds to fail.
-    sleep 3
+    Backend.wait_for_all_workers
 
     post_count = Build.where(:vcs_url => vcs_url).length
     post_count.should == pre_count + 1
@@ -100,7 +96,8 @@ describe GithubController do
 
   it "should save where" do
     post :create, :payload => dummy_json
-    sleep 3
+    Backend.wait_for_all_workers
+
     build = Build.where(:vcs_url => vcs_url).first
     build.should_not == nil
     build.why.should == "github"
@@ -110,7 +107,8 @@ describe GithubController do
   it "shouldn't trigger when branches are deleted" do
     pre_count = Build.where(:vcs_url => vcs_url).length
     post :create, :payload => deleted_json
-    sleep 3
+    Backend.wait_for_all_workers
+
     post_count = Build.where(:vcs_url => vcs_url).length
     post_count.should == pre_count
   end

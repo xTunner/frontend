@@ -241,7 +241,7 @@
           repo (git/default-repo-path url)
           vcs-revision (or vcs-revision (git/latest-local-commit repo))
           commit-details (git/commit-details repo vcs-revision)
-          project (project/get-by-url! url)
+          project (project/get-by-id (-> @build :project_id))
           lb-name (-> project :lb-name)
           {:keys [infer job-name]} @build
 

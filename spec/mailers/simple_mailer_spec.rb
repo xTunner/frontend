@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe SimpleMailer do
 
-  let(:vcs_url) { "https://github.com/a/b" }
+  let(:vcs_url) { "https://github.com/arohner/circle-dummy-project" }
   let(:vcs_revision) { "abcdef0123456789" }
 
   let(:author) { User.create(:name => "Bob", :email => "author@test.com") } # default emails prefs
@@ -17,7 +17,7 @@ describe SimpleMailer do
   let(:hater) { User.create(:name => "Bob", :email => "hater@test.com", :email_preferences => {}) }
   let(:users) { [author, hater, lover] }
 
-  let!(:project) { p = Project.create; p.vcs_url=vcs_url; p.users=users; p.save!; p }
+  let!(:project) { Project.unsafe_create(:vcs_url => vcs_url, :users => users) }
 
   let(:out1) { { "type" => "out", "time" => nil, "message" => "a message" } }
   let(:out2) { { "type" => "out", "time" => nil, "message" => "another message" } }
@@ -38,7 +38,8 @@ describe SimpleMailer do
       :vcs_revision => vcs_revision,
       :subject => "That's right, I wrote some code",
       :committer_email => author.email,
-      :build_num => 1
+      :build_num => 1,
+      :project => project
     }
   end
 
@@ -115,7 +116,7 @@ describe SimpleMailer do
     end
 
     it "should have the right subject" do
-      mail.subject.should include ": a/b #1 by author: That's right, I wrote some code"
+      mail.subject.should include ": arohner/circle-dummy-project #1 by author: That's right, I wrote some code"
       mail.subject.should
     end
 
