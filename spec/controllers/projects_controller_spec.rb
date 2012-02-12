@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe ProjectsController do
   login_user # don't forget you can use current_user
+  uses_workers
+
 
   it "should render using pretty 'gh' links" do
     project = FactoryGirl.create :project
@@ -37,9 +39,12 @@ describe ProjectsController do
 
     it "should start a build when the page is edited" do
       Backend.mock = false
+
       put :update, { :project => "a/b", "setup" => "" }.as_json
-      sleep 0.1
+      Backend.wait_for_all_workers
+
       project.latest_build.why.should == "edit"
+      project.latest_build.user.should == subject.current_user
 
       Backend.mock = true
     end

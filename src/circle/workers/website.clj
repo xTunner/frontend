@@ -11,5 +11,5 @@
   [url infer why who]
 
   ;; Run even when the build is disabled.
-  (let [build (config/build-from-url url :infer infer :who who :why why)]
+  (let [build (config/build-from-url url :infer infer :why why :who who)]
     (run/run-build build)))

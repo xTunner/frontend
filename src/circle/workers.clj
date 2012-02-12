@@ -35,17 +35,23 @@
              (call-clojure-from-ruby f args))]
     (dosync
      (let [next-id (count @worker-store)]
-       (infof "starting worker id %s for %s" next-id f)
+       (infof "starting worker id %s for (%s %s)" next-id f args)
        (alter worker-store assoc next-id fut)
        next-id))))
 
 (defn fire-worker [f & args]
   "Start a worker, but don't wait for a response"
-  (log-future (apply f args))
+  (infof "firing worker: (%s %s)" f args)
+  (if env/test?
+    (do
+      (apply start-worker f args)  ; when testing, allow waiting for these to finish
+      nil)
+    (log-future (apply f args)))
   nil)
 
 (defn blocking-worker [f & args]
   "Start a worker and block until it returns"
+  (infof "blocking worker: (%s %s)" f args)
   (call-clojure-from-ruby f args))
 
 (defn worker-done? [id]
@@ -71,3 +77,10 @@
 (defn worker-count []
   (dosync
    (count @worker-store)))
+
+(defn wait-for-all-workers []
+  "Block until all workers are finished. Returns a list of the return values"
+  (dosync
+   (let [ks (keys @worker-store)]
+     (infof "waiting for %s" ks)
+     (doall (map wait-for-worker ks)))))

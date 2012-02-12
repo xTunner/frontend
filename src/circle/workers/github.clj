@@ -18,7 +18,6 @@
 
 (defn process-json [github-json]
   (infof "build-hook: %s" github-json)
-  (println github-json)
   (when-not (= (-> github-json :after) "0000000000000000000000000000000000000000")
     (let [build (config/build-from-json github-json)
           project (build/get-project build)]
