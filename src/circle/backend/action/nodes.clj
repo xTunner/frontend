@@ -31,7 +31,8 @@
      (alter b assoc :node node))))
 
 (defaction start-nodes []
-  {:name "start nodes"}
+  {:name "start nodes"
+   :type :infrastructure}
   (fn [build]
     (ensure-keys build)
     (let [instance-ids (ec2/start-instances-retry (-> @build :node))
@@ -53,7 +54,8 @@
       (ec2/delete-keypair (-> @build :node :keypair-name)))))
 
 (defaction stop-nodes []
-  {:name "stop nodes"}
+  {:name "stop nodes"
+   :type :infrastructure}
   (fn [build]
     (cleanup-nodes build)))
 

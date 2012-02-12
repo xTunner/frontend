@@ -89,7 +89,8 @@
   (fs/join (home-dir b) (build/checkout-dir b)))
 
 (defaction checkout []
-  {:name "checkout"}
+  {:name "checkout"
+   :type :infrastructure}
   (fn [build]
     (let [dir (checkout-dir build)
           result (-> (checkout-impl {:build build

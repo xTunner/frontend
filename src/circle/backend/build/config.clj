@@ -228,12 +228,13 @@
   {:actions (inference/infer-actions repo)
    :job-name "build-inferred"})
 
-(def config-action-name "config")  ;; this is a def because other code depends on it.
+(def config-action-name "configure the build")  ;; this is a def because other code depends on it.
 
 ;; defines a build action that does inference/configuring stuff. This should typically be the first action in a build.
 (action/defaction configure-build
   []
-  {:name config-action-name}
+  {:name config-action-name
+   :type :infrastructure}
   (fn [build]
     (let [{url :vcs_url vcs-revision :vcs_revision} @build
           _ (ensure-checkout url :vcs-revision vcs-revision)

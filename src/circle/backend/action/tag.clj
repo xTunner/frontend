@@ -6,7 +6,8 @@
   (:require [circle.backend.ec2 :as ec2]))
 
 (defaction tag-revision []
-  {:name "tag revision"}
+  {:name "tag revision"
+   :type :infrastructure}
   (fn [build]
     (throw-if-not (-> @build :vcs_revision) "build must contain vcs revision")
     (ec2/add-tags (-> @build :instance-ids)
