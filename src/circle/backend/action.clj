@@ -176,4 +176,5 @@
        (throw-if-not (fn? f#) "f must be a fn")
        (action
         :name act-name#
-        :act-fn f#))))
+        :act-fn f#
+        :type (-> act-map# :type)))))
