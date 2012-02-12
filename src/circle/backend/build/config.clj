@@ -272,6 +272,7 @@
   "Given a project url and a build name, return a build. Helper method for repl"
   [url & {:keys [job-name vcs-revision infer who why]}]
   (let [project (project/get-by-url url)]
+    (throw-if-not (-> project :_id) "project id is required")
     (build/build {:vcs_revision vcs-revision
                   :project_id (-> project :_id)
                   :vcs_url url
