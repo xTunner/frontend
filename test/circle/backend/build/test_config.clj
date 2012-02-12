@@ -69,16 +69,17 @@
                                           (contains {:source :spec :command "echo a" :type :test})]
                                          :gaps-ok)))
 
-;;; Test build-from-url
 (fact "build-from-url works"
   (let [project test/test-project
         vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
         b (build-from-url (-> project :vcs_url)
                           :vcs-revision vcs_revision
                           :job-name :build)]
+    (run/configure b) => anything
     b => ref?
     @b => (contains {:vcs_url string?
                      :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
+                     :vcs-private-key string?
                      :build_num pos?})
 
     (-> @b :actions (count)) => 1 ; one step, the config/inference step.
