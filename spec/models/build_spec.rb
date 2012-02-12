@@ -11,22 +11,13 @@ describe Build do
                                     :failed => true,
                                     :build_num => 5,
                                     :subject => "I fixed a thingy in the whatsit",
+                                    :project => project
                                     )}
   let!(:user) { User.create(:email => "user@test.com", :name => "Test user") }
 
 
   it "should support committer_handle" do
     build.committer_handle.should == "user"
-  end
-
-  it "should support starting" do
-    b = Build.start(build.vcs_url, "github-hook")
-    b.start_time.should > 1.second.ago
-  end
-
-  it "should support starting with a user" do
-    b = Build.start(build.vcs_url, "trigger", user)
-    b.start_time.should > 1.second.ago
   end
 
   it "should have an unknwon branch" do

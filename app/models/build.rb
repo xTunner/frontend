@@ -18,7 +18,7 @@ class Build
 
   # who started the build, can be null
   belongs_to :user
-#  belongs_to :project
+  belongs_to :project
 
 
   # Refined fields (opposite of 'raw")
@@ -35,17 +35,6 @@ class Build
   field :author_email, :type => String, :default => nil
   field :author_name, :type => String, :default => nil
   field :author_date, :type => Time, :default => nil
-
-
-  def project
-    # TECHNICAL_DEBT: the clojure and ruby models are not synced, so we don't
-    # have access to the build model directly
-    Project.where(:vcs_url => vcs_url).first
-  end
-
-  def self.start(url, why, who=nil)
-    Build.create! :start_time => Time.now, :vcs_url => url, :why => why, :user => who
-  end
 
   def committer_handle
     return nil if committer_email.nil?

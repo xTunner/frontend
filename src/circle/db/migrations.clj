@@ -2,6 +2,7 @@
   (:require [clojure.set :as set])
   (:use circle.db.migration-lib)
   (:require [somnium.congomongo :as mongo])
+  (:use [clojure.set :only (rename-keys)])
   (:use [circle.util.core :only (apply-if)]))
 
 (clear-migrations)
@@ -40,6 +41,12 @@
                  (merge b {:start_time start-time}))))
 
 
+(def-migration "rename _project_id to project_id"
+  :num 4
+  :coll :builds
+  :query {:_project_id {:$exists true}}
+  :transform (fn [b]
+               (rename-keys b {:_project_id :project_id})))
 ;; (def-migration "old builds w/ git commit info")
 
 "action tags; inferred, infrastructure, spec, test, setup"

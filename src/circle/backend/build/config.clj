@@ -271,14 +271,15 @@
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"
   [url & {:keys [job-name vcs-revision infer who why]}]
-
-  (build/build {:vcs_revision vcs-revision
-                :vcs_url url
-                :job-name job-name
-                :infer infer
-                :why why
-                :user_id who
-                :actions [(configure-build)]}))
+  (let [project (project/get-by-url url)]
+    (build/build {:vcs_revision vcs-revision
+                  :project_id (-> project :_id)
+                  :vcs_url url
+                  :job-name job-name
+                  :infer infer
+                  :why why
+                  :user_id who
+                  :actions [(configure-build)]})))
 
 (defn build-from-json
   "Given a parsed github commit hook json, return a build that needs to be run, or nil"

@@ -67,7 +67,7 @@
 (fact "builds insert into the DB"
   (let [build (run-build (successful-build))]
     (successful? build) => truthy
-    (-> @build :_project_id) => truthy
+    (-> @build :project_id) => truthy
     (-> @build :build_num) => integer?
     (-> @build :build_num) => pos?
     (let [builds (mongo/fetch :builds :where {:_id (-> @build :_id)})]

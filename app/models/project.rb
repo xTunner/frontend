@@ -33,10 +33,8 @@ class Project
   field :hipchat_room
   field :hipchat_api_token
 
-
-
   has_and_belongs_to_many :users
-#  has_many :builds
+  has_many :builds
 
   attr_accessible :setup, :dependencies, :compile, :test, :extra, :hipchat_room, :hipchat_api_token
 
@@ -56,7 +54,7 @@ class Project
   # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the
   # clojure side. That would kill basically all the code that follows!
   def recent_builds(limit=10)
-    Build.where(:vcs_url => vcs_url).order_by([[:start_time, :desc]]).limit(limit)
+    builds.order_by([[:start_time, :desc]]).limit(limit)
   end
 
   def latest_build
@@ -64,7 +62,7 @@ class Project
   end
 
   def build_numbered(num) # bad things happen if we call this "build"
-    Build.where(:vcs_url => vcs_url, :build_num => num).first
+    builds.where(:build_num => num).first
   end
 
   def github_project_name

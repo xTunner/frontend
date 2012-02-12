@@ -28,7 +28,7 @@
 
 (def build-validations
   [(require-keys [:_id
-                  :_project_id
+                  :project_id
                   :build_num
                   :vcs_url
                   :vcs_revision])
@@ -88,7 +88,7 @@
                       args
                       {:_id build-id
                        :build_num build_num
-                       :_project_id (-> project :_id)})
+                       :project_id (-> project :_id)})
                :validator validate!)]
     (update-mongo build)
     build))
@@ -130,7 +130,7 @@
 
 (defn get-project [build]
   {:post [%]}
-  (project/get-by-url (-> @build :vcs_url)))
+  (project/get-by-id (-> @build :project_id)))
 
 (def ^:dynamic *log-ns* nil) ;; contains the name of the logger for the current build
 

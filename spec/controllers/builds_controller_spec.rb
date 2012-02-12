@@ -8,6 +8,7 @@ describe BuildsController do
   it "should trigger a build with a known user" do
     post :create, :project => "a/b"
     b = Build.first
+    b.project.should == project
     b.vcs_url.should == project.vcs_url
     b.user.should == subject.current_user
     b.why.should == "trigger"
