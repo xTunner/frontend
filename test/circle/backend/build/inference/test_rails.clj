@@ -12,11 +12,11 @@
 
 (fact "bundler action"
   (let [repo (test/test-repo "bundler_1")]
-    (map :name (spec repo)) => (contains ["bundle install"])))
+    (->> (spec repo) (map :name)) => (contains ["bundle install"])))
 
 (fact "blacklist when Gemfile present"
   (let [repo (test/test-repo "bundler_1")]
-    (map :name (spec repo)) => (contains ["blacklist problematic gems"])))
+    (->> (spec repo) (map :name)) => (contains ["blacklist problematic gems"])))
 
 (fact "rspec? works"
   (let [repo (test/test-repo "rspec_1")]

@@ -30,9 +30,9 @@
 
 (defn action
   "defines an action."
-  [& {:keys [name act-fn]
+  [& {:keys [name act-fn type source]
       :as args}]
-  (require-args name act-fn)
+  (require-args name act-fn type)
   args)
 
 (defn successful? [action-result]

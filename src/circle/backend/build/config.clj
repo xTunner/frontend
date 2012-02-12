@@ -17,7 +17,7 @@
   (:use [circle.util.model-validation :only (validate!)])
   (:use [circle.util.model-validation-helpers :only (is-map? require-predicate require-keys allow-keys)])
   (:use [circle.util.core :only (apply-if)])
-  (:use [circle.util.except :only (assert! throw-if-not throwf)])
+  (:use [circle.util.except :only (assert! throw-if-not throw-if throwf)])
   (:use [circle.util.map :only (rename-keys map-vals)])
   (:use [circle.util.seq :only (vec-concat)])
   (:use [clojure.core.incubator :only (-?>)])
@@ -84,6 +84,10 @@
         pre-setup (-> pre-setup set-spec (set-type :pre-setup))
 
         ;; Inferred if not in the DB
+
+        actions-no-source (->> inferred :actions (remove :source) (seq))
+        actions-no-type (->> inferred :actions (remove :type) (seq))
+
         setup (-> spec :dependencies) ;; legacy db field names :(
         setup (-> setup set-spec (set-type :setup))
         inferred-setup (->> inferred :actions (filter #(= :setup (:type %))))
@@ -99,6 +103,12 @@
         extra (-> extra set-spec (set-type :post-test))
 
         actions (concat pre-setup setup test extra)]
+
+    (throw-if actions-no-source "actions must have source: %s"
+              (str/join "," (map :name actions-no-source)))
+    (throw-if actions-no-type "actions must have type: %s"
+              (str/join "," (map :name actions-no-type)))
+
     (if (= actions [])
       nil
       {:job-name :build
