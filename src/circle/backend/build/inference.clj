@@ -6,8 +6,8 @@
   (:require circle.backend.build.inference.rails
             circle.backend.build.inference.php))
 
-(def inference-fns {:rails circle.backend.build.inference.rails/spec
-                    :php circle.backend.build.inference.php/spec})
+(def inference-fns {:rails (var circle.backend.build.inference.rails/spec)
+                    :php (var circle.backend.build.inference.php/spec)})
 
 (defn set-inferred [actions]
   (map #(action/set-source % :inferred) actions))
