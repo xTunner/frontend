@@ -2,6 +2,7 @@
   (:require [robert.hooke :as hook])
   (:require [clojure.string :as str])
   (:require [somnium.congomongo :as mongo])
+  (:require [circle.util.mongo :as mongo2])
   (:use [circle.util.core :only (defn-once)])
   (:use [circle.util.map :only (map-keys)]))
 
@@ -30,8 +31,9 @@
                 new-col)) row))
 
 ;; TECHNICAL_DEBT: needs to/from-db-translate
-(defn set [coll id & {:as args}]
-  (mongo/fetch-and-modify coll {:_id id} {:$set args}))
+(defn set-fields [coll id & {:as args}]
+  (let [id (if (mongo2/object-id? id) id (mongo/object-id id))]
+    (mongo/fetch-and-modify coll {:_id id} {:$set args})))
 
 
 

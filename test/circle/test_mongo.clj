@@ -15,7 +15,7 @@
 
     ;; set and check expected values
 
-    (let [result (c-mongo/set :some_coll (-> old :_id) :a "x" :e "f")
+    (let [result (c-mongo/set-fields :some_coll (-> old :_id) :a "x" :e "f")
           count (mongo/fetch-count :some_coll)
           new (mongo/fetch-one :some_coll)]
       result => old

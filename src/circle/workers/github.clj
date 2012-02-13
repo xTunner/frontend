@@ -72,8 +72,8 @@
         access-token (-> json :access_token)
         error? (-> json :error)]
     (when error?
-      (throw error?))
-    (c-mongo/set :users userid :github_access_token access-token)
+      (throw (Exception. error?)))
+    (c-mongo/set-fields :users userid :github_access_token access-token)
     true))
 
 
@@ -91,14 +91,14 @@
         json (tentacles.users/me {:oauth_token token})
         email (-> json :email)
         name (-> json :name)]
-    (c-mongo/set :users userid :fetched_name name :fetched_email email)))
+    (c-mongo/set-fields :users userid :fetched_name name :fetched_email email)))
 
 
 (defn add-deploy-key
   "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
   [username repo-name github_access_token project-id]
   (let [keypair (ssh/generate-keys)]
-    (c-mongo/set :projects
+    (c-mongo/set-fields :projects
                  project-id
                  :ssh_public_key (-> keypair :public-key)
                  :ssh_private_key (-> keypair :private-key))
