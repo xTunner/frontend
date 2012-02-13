@@ -116,7 +116,7 @@
 
 (defn generate-database-yml [repo]
   (let [db-yml-str (generate-database-yml-str repo)]
-    (bash (sh/q (echo ~db-yml-str > config/database.yml))
+    (bash (sh/q (echo ~(format "'%s'" db-yml-str) > config/database.yml))
           :name "Generate database.yml"
           :type :setup)))
 
