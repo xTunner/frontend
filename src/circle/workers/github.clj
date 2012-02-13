@@ -22,10 +22,8 @@
     (let [build (config/build-from-json github-json)
           project (build/get-project build)]
       (if (project/enabled? project)
-        (do
-          (println "process-json: running build: %s" @build)
-          (run/run-build build))
-        (println "process-json: not running build: %s" @build)))))
+        (run/run-build build)
+        (infof "process-json: not running build: %s" @build)))))
 
 (defn start-build-from-hook
   [json-string]
