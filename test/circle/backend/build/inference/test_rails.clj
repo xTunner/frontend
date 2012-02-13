@@ -79,3 +79,6 @@
 
 (fact "rvm use --default when no .rvmrc present"
   (->> (spec (test/test-repo "rspec_1")) (map :name)) => (contains #"rvm use .* --default"))
+
+(fact "migrate? returns true when there are files in db/migrate"
+  (->> (spec (test/test-repo "rails_migrations")) (map :name)) => (contains #"rake db:migrate"))
