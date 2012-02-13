@@ -12,3 +12,10 @@
          (mapcat ns-publics)
          (vals)
          (filter matches?))))
+
+(defmacro inspect
+  "prints the expression '<name> is <value>', and returns the value"
+  [value]
+  `(let [result# ~value]
+     (println '~value "is" (with-out-str (clojure.pprint/pprint result#)))
+     result#))
