@@ -189,7 +189,7 @@
         :name "bundle install"))
 
 (defn sed-gem [gem-name]
-  (let [sed-str (format "/gem [\\'\\\"]%s[\\'\"]/ d" gem-name)]
+  (let [sed-str (format "/gem [\\'\\\"]%s[\\'\\\"]/ d" gem-name)]
     (sh/q (sed -i ~(format "\"%s\"" sed-str) Gemfile))))
 
 (defn blacklist []
