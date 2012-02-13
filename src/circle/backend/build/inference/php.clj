@@ -5,6 +5,11 @@
   (:require fs)
   (:require [circle.sh :as sh]))
 
+(defn dir-contains-php-files?
+  "Determines whether or not the repo has any php files."
+  [dir]
+  (dir-contains-files? dir #"^.*\.php$"))
+
 (defn phpunit
   "Generate an action to run phpunit tests on a given directory. First checks
   the repo for a vendorized phpunit, otherwise assumes phpunit will be in $PATH"

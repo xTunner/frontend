@@ -6,24 +6,6 @@
   (:require circle.backend.build.inference.rails
             circle.backend.build.inference.php))
 
-(defn dir-contains-php-files?
-  "Determines whether or not the repo has any php files."
-  [dir]
-  (dir-contains-files? dir #"^.*\.php$"))
-
-;;FIXME Assume Rails if not php.
-(defn infer-repo-type
-  "Attempts to figure out what kind of project this repo is. Returns a
-  keyword, such as :rails, or nil"
-  [repo]
-  (cond
-    (dir-contains-php-files? repo) :php
-    :else :rails))
-
-
-(defmulti infer-actions* (fn [type repo-path]
-                           type))
-
 (def inference-fns {:rails circle.backend.build.inference.rails/spec
                     :php circle.backend.build.inference.php/spec})
 
