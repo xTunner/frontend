@@ -27,7 +27,8 @@
   "Run phpunit on the test directory."
   [repo]
   (->>
-    [(phpunit repo (fs/join repo "test"))]
+   [(when (dir-contains-php-files? repo)
+      (phpunit repo (fs/join repo "test")))]
     (filter identity)))
 
 
