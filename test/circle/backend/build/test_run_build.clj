@@ -10,7 +10,6 @@
   (:require [circle.backend.nodes.rails :as rails])
   (:require circle.system)
   (:require [somnium.congomongo :as mongo])
-  (:use [arohner.utils :only (inspect)])
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.util.predicates :only (ref?)])
   (:use [circle.util.retry :only (wait-for)]))
@@ -91,15 +90,6 @@
     (dosync
      (run-build build) => anything
      (-> (mongo/fetch-one :projects :where {:vcs_url (-> test-project :vcs_url)}) :state) => "disabled")))
-
-(fact "running a disabled build"
-  (let [build (minimal-build :actions [])
-        _ (project/set-uninferrable (ensure-project test-project))]
-    (run-build build) => anything
-    (-> @build :error_message) => string?
-    (-> @build :stop_time) => truthy
-    (provided
-      (circle.backend.build.run/do-build* anything) => anything :times 0)))
 
 ;; This is the only test that should start an instance
 (fact "the customer AMI starts up"

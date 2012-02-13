@@ -1,6 +1,8 @@
 (ns circle.workers.test-github
   (:use circle.backend.build.test-utils)
   (:require [circle.model.build :as build])
+  (:require [circle.model.project :as project])
+  (:require [circle.backend.build.run :as run])
   (:use [circle.util.mongo])
   (:require [somnium.congomongo :as mongo])
   (:use midje.sweet)
@@ -23,6 +25,12 @@
     (-> @build :start_time) => truthy
     build-row => truthy
     (-> build-row :start_time) => truthy))
+
+(fact "disabled projects don't run when called through the hook"
+  (project/set-uninferrable (project/get-by-url (-> test-project :vcs_url))) => anything
+  (start-build-from-hook circle-dummy-project-json-str) => anything
+  (provided
+    (run/run-build anything) => anything :times 0))
 
 (fact "authorization-url works"
   (-> "http://localhost:3000/hooks/repos" authorization-url) =>
