@@ -65,7 +65,7 @@
         inferred-config (infer-config repo)
         db-config (get-db-config project inferred-config)]
     db-config =not=> nil
-    (-> db-config :actions) => (contains [(contains {:source :inferred :name "copy database.yml" :type :setup})
+    (-> db-config :actions) => (contains [(contains {:source :inferred :name "Generate database.yml" :type :setup})
                                           (contains {:source :spec :command "echo a" :type :test})]
                                          :gaps-ok)))
 
