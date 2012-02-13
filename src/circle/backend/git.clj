@@ -102,7 +102,7 @@
 (defn pull
   "Git pull an existing repo"
   [repo & {:keys [ssh-key]}]
-  (infof "git fetch %s" repo)
+  (infof "git pull %s" repo)
   (git-fn* (sh/q
             (git pull))
            :ssh-key ssh-key
