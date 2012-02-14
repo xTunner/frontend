@@ -205,10 +205,9 @@
         has-db-yml? (or (database-yml? repo) (need-database-yml? repo))]
     (binding [use-bundler? (bundler? repo)]
       (->>
-       [(when (dir-contains-ruby-files? repo)
-          (if (rvm? repo)
-            (rvm rvmrc trust ~repo)
-            (rvm use "1.9.2" --default)))
+       [(when (and (dir-contains-ruby-files? repo)
+                   (rvm? repo))
+          (rvm rvmrc trust ~repo))
         (when use-bundler?
           (blacklist))
         (when use-bundler?
