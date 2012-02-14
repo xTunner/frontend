@@ -129,4 +129,9 @@ class User
     bot.admin = true
     bot.save!
   end
+
+  # finds the project that the user belongs to with the most builds, and returns it. Displayed on Intercom
+  def most_active_project
+    projects.sort_by { |p| p.next_build_seq.to_i }.last.github_project_name
+  end
 end

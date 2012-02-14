@@ -28,6 +28,7 @@ class Project
   field :state, :type => String, :default => nil
   field :state_reason, :type => String, :default => nil
 
+  field :next_build_seq
 
   # Notifications
   field :hipchat_room

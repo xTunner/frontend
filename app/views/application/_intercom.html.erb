@@ -9,6 +9,9 @@
     },
     user_hash: '<%= Digest::SHA1.hexdigest('oex053nf' + current_user.email) %>',
     created_at: <%= current_user.signup_at.to_i %>,
+    custom_data: {
+      'most_active_project': '<%= current_user.most_active_project %>',
+    },
   };
   (function() {
     function async_load() {
