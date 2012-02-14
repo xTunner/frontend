@@ -95,7 +95,7 @@ We currently use a single AMI for all customer nodes. To build a new one:
    circle/backend/nodes/rails.clj to the new AMI name.
 
 You can start up a standard customer AMI from the repl using:
- - (ec2/start-instances (-> circle.backend.nodes.rails/rails-node :circle-node-spec))
+ - (circle.backend.nodes/start-instance)
 
 
 Software versions:
