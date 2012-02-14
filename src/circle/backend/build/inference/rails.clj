@@ -91,13 +91,12 @@
 (defn first-db-yml-gem [repo]
   (find-first #(using-gem? repo %) database-yml-gems))
 
-(defn using-db-yml-gem?
-  [repo]
-  (boolean (seq (first-db-yml-gem repo))))
+(defn db-yml-adapter [repo]
+  (find-first #(using-gem? repo %) gem-adapter-map))
 
 (defn need-database-yml? [repo]
   (and (not (database-yml? repo))
-       (using-db-yml-gem? repo)))
+       (first-db-yml-gem repo)))
 
 (defn generate-database-yml-str [repo]
   (let [options (doto (DumperOptions.)
@@ -216,7 +215,7 @@
         (when (need-mysql-socket? repo)
           (mysql/ensure-socket (mysql-socket-path repo)))
         (ensure-db-user repo)
-        (when has-db-yml?
+        (when (first-db-yml-gem repo)
           (rake db:create :type :setup))
         (cond
          (data-mapper? repo) (rake db:automigrate :type :setup)
