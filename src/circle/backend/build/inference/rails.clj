@@ -109,8 +109,7 @@
     (->> {:test
           {:adapter adapter
            :database "circle_test"
-           :username "circle"
-           :password nil}}
+           :username "ubuntu"}}
          ((var clj-yaml.core/stringify))
          (.dump yaml))))
 
