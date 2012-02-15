@@ -205,7 +205,7 @@
       (->>
        [(when (and (dir-contains-ruby-files? repo)
                    (rvm? repo))
-          (rvm rvmrc trust ~repo))
+          (rvm rvmrc trust))
         (when use-bundler?
           (blacklist))
         (when use-bundler?
