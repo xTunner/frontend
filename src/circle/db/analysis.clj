@@ -41,15 +41,10 @@
                       (seq)
                       (boolean))))))
 
-;; (defn num-pure-inferred-projects
-;;   "Returns a list of projects purely inferred, and several builds"
-;;   []
-;;   (let [
-;;         project-ids (->> (mongo/fetch :projects)
-;;                           (map :_id)
-;;                           (into #{}))
-;;         pure-inferred (set/difference project-ids spec-project-ids)]
-;;     (println (count pure-inferred) (first pure-inferred))
-;;     (->> pure-inferred
-;;          (map #(mongo/fetch-one :projects :where {:_id %}))
-;;          (map :vcs_url))))
+(defn intercom-names-owning-project
+  "Returns the list of names that have access to the project w/ vcs-url"
+  [url]
+  (->> (mongo/fetch-one :projects :where {:vcs_url url})
+       :user_ids
+       (map #(mongo/fetch-one :users :where {:_id %}))
+       (map :fetched_name)))
