@@ -228,6 +228,12 @@
   {:actions (inference/infer-actions repo)
    :job-name "build-inferred"})
 
+(defn get-master
+  "Returns the master's ec2 instance-id or hostname"
+  []
+  (or (ec2/self-instance-id)
+      (circle.env/hostname)))
+
 (def config-action-name "configure the build")  ;; this is a def because other code depends on it.
 
 ;; defines a build action that does inference/configuring stuff. This should typically be the first action in a build.
@@ -256,6 +262,8 @@
                        :default inferred-config)
           node (or (-> proto-build :node) rails/rails-node)
           actions (-> proto-build :actions)
+          master (get-master)
+
           proto-build (dissoc proto-build :actions)]
 
       (dosync
@@ -263,6 +271,7 @@
        (alter build merge commit-details)
        (alter build assoc :node node)
        (alter build assoc :lb-name lb-name)
+       (alter build assoc :master master)
        (alter build assoc :vcs_revision vcs-revision)
        (alter build assoc :vcs-private-key (-> project :ssh_private_key))
        (alter build assoc :vcs-public-key (-> project :ssh_public_key))
