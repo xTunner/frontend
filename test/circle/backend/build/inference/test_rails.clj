@@ -75,7 +75,7 @@
 
 (fact "rvm trust is called when the repo contains a .rvmrc"
   (->> (spec test/empty-repo) (map :name)) =deny=> (contains "rvm rvmrc trust")
-  (->> (spec (test/test-repo "rvmrc")) (map :name)) => (contains (format "rvm rvmrc trust")))
+  (->> (spec (test/test-repo "rvmrc")) (map :name)) => (contains "rvm rvmrc trust"))
 
 (fact "migrate? returns true when there are files in db/migrate"
   (->> (spec (test/test-repo "rails_migrations")) (map :name)) => (contains #"rake db:migrate"))
