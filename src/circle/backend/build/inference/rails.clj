@@ -106,7 +106,6 @@
                   (.setPrettyFlow true))
         yaml (org.yaml.snakeyaml.Yaml. options)
         adapter (db-yml-adapter repo)]
-    (throw-if-not adapter "Error generating database.yml. Could not find appropriate Gem")
     (->> {:test
           {:adapter adapter
            :database "circle_test"
