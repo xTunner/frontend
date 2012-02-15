@@ -60,7 +60,7 @@
        :tries 30
        :catch [AmazonClientException java.lang.RuntimeException]
        :error-hook (fn [e#]
-                     (errorf "with-ec2-client: caught %s %s" (class e#) e#)
+                     (errorf e# "with-ec2-client: caught %s" e#)
                      ;; We don't want to catch (many) ServiceExceptions, because they can often be programming errors.
                      (if (= (class e#) com.amazonaws.AmazonServiceException)
                        false
