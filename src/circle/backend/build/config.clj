@@ -92,7 +92,6 @@
         setup (-> setup set-spec (set-type :setup))
         inferred-setup (->> inferred :actions (filter #(= :setup (:type %))))
         setup (if (= () setup) inferred-setup setup)
-
         ;; Inferred if not in the DB
         test (-> spec :test)
         test (-> test set-spec (set-type :test))
@@ -245,7 +244,7 @@
     (let [{url :vcs_url vcs-revision :vcs_revision} @build
           _ (ensure-checkout url :vcs-revision vcs-revision)
           repo (git/default-repo-path url)
-          vcs-revision (or vcs-revision (git/latest-local-commit repo))
+          vcs-revision (or vcs-revision (git/latest-commit-current-branch repo))
           commit-details (git/commit-details repo vcs-revision)
           project (project/get-by-id (-> @build :project_id))
           lb-name (-> project :lb-name)

@@ -138,10 +138,15 @@
    :out
    (str/trim)))
 
-(defn latest-local-commit
-  "Returns the most recent commit id, on the current branch."
+(defn latest-commit
+  "Returns the most recent commit id, anywhere in the repo"
   [repo]
   {:post [(do (infof "latest commit for %s is %s" repo %) true)]}
+  (format-log repo "--all" :H))
+
+(defn latest-commit-current-branch
+  "Returns the SHA of the latest commit on the current branch"
+  [repo]
   (format-log repo :HEAD :H))
 
 (defn commit-details
