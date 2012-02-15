@@ -12,17 +12,25 @@
   (:require [circle.env :as env])
   (:require [circle.backend.ssh])
   (:require [circle.backend.load-balancer :as lb])
+  (:use [circle.util.time :only (to-millis)])
+  (:require [clj-time.core :as time])
   (:use [circle.util.retry :only (wait-for)])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
            com.amazonaws.AmazonClientException
            com.amazonaws.AmazonServiceException
-           (com.amazonaws.services.ec2.model CreateImageRequest
+           (com.amazonaws.services.ec2.model AttachVolumeRequest
+                                             CreateImageRequest
+                                             CreateVolumeRequest
                                              DeleteKeyPairRequest
                                              DeleteSecurityGroupRequest
                                              DescribeImagesRequest
                                              DescribeInstancesRequest
                                              DescribeInstancesResult
                                              DescribeKeyPairsRequest
+                                             DescribeTagsRequest
+                                             DescribeVolumesRequest
+                                             DetachVolumeRequest
+                                             Filter
                                              ImportKeyPairRequest
                                              Tag
                                              CreateTagsRequest
@@ -92,6 +100,12 @@
           (.getReservations)
           (->> (map bean))))))
 
+(defn tagmap
+  "Given an inst returned by instances, return the tags as a single map"
+  [inst]
+  (into {} (for [t (map bean (-> inst :tags))]
+             [(keyword (:key t)) (:value t)])))
+
 (defn raw-instances
   "Returns a seq of one map per instance. If instance-ids are passed,
   will only return maps for those instances"
@@ -100,7 +114,8 @@
    (apply reservations instance-ids)
    (mapcat :instances)
    (map bean)
-   (map #(update-in % [:state] bean))))
+   (map #(update-in % [:state] bean))
+   (map #(assoc % :tags (tagmap %)))))
 
 (defn instances
   "same as raw-instances, but filters out non-running instances"
@@ -140,12 +155,6 @@
         kill-instances (remove #(contains? safe-instances %) instance-ids)]
     (when (seq kill-instances)
       (apply terminate-instances! kill-instances))))
-
-(defn tagmap
-  "Given an inst returned by instances, return the tags as a single map"
-  [inst]
-  (into {} (for [t (map bean (-> inst :tags))]
-             [(keyword (:key t)) (:value t)])))
 
 (defn my-instance?
   "Given an instance returned by (instances) or (instance), return true if this username and hostname started the instance"
@@ -278,9 +287,12 @@
 
 (defn describe-tags
   "returns all tags on all instances"
-  ([]
+  ([& {:keys [instance-id]}]
      (with-ec2-client client
-       (let [result (.describeTags client)]
+       (let [request (DescribeTagsRequest.)
+             _ (when instance-id
+                 (.withFilters request [(Filter. "resource-id" [instance-id])]))
+             result (.describeTags client request)]
          (map bean (.getTags result))))))
 
 (defn block-until-running
@@ -422,3 +434,37 @@
                     (.setInstanceId instance-id)
                     (.setInstanceInitiatedShutdownBehavior (name value)))]
       (.modifyInstanceAttribute client request))))
+
+(defn create-volume
+  "Create a new EBS volume. zone is required. One of snapshot-id or size is required"
+  [& {:keys [snapshot-id availability-zone size]}]
+  (with-ec2-client client
+    (let [request (CreateVolumeRequest.)]
+      (.setAvailabilityZone request availability-zone)
+      (when size
+        (.setSize request (Integer. size)))
+      (when snapshot-id
+        (.setSnapshotId request snapshot-id))
+      (-> (.createVolume client request)
+          (.getVolume)
+          (bean)))))
+
+(defn describe-volumes [volume-ids]
+  (with-ec2-client client
+    (-> client
+        (.describeVolumes (DescribeVolumesRequest. volume-ids)))))
+
+(defn attach-volume
+  "Attach a volume to an instance"
+  ;; Currently (2012/02/15) AWS lies to you. You're required to
+  ;; specify a device as /dev/sdb1, but then it appears as /dev/xvdb1
+  [volume-id instance-id device]
+  (with-ec2-client client
+    (-> client
+        (.attachVolume (AttachVolumeRequest. volume-id instance-id device)))))
+
+(defn detach-volume [volume-id instance-id]
+  (with-ec2-client client
+    (-> client
+        (.detachVolume (doto (DetachVolumeRequest. volume-id)
+                         (.setInstanceId instance-id))))))

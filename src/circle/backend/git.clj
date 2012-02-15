@@ -81,7 +81,7 @@
 
     (infof "git clone %s %s" url path)
     ;; all of the other git commands run in the repo working
-    ;; directory, i.e. repos/CircleCI. mkdir our clone destination and
+    ;; directory, i.e. repos/arohner/CircleCI. mkdir our clone destination and
     ;; cd to it, for symmetry. This also simplifies the
     ;; with-repo-lock.
     (fs/mkdirs path)
