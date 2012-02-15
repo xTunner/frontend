@@ -10,6 +10,7 @@
   (:use [circle.backend.action :only (defaction action)])
   (:use circle.util.fs)
   (:use [circle.util.core :only (re)])
+  (:use [circle.util.except :only (throw-if-not)])
   (:require [circle.util.map :as map])
   (:use [circle.util.seq :only (find-first)])
   (:require circle.backend.nodes.rails)
@@ -92,7 +93,7 @@
   (find-first #(using-gem? repo %) database-yml-gems))
 
 (defn db-yml-adapter [repo]
-  (find-first #(using-gem? repo %) gem-adapter-map))
+  (gem-adapter-map (find-first #(using-gem? repo %) (keys gem-adapter-map))))
 
 (defn need-database-yml? [repo]
   (and (not (database-yml? repo))
@@ -104,7 +105,8 @@
                   (.setDefaultFlowStyle org.yaml.snakeyaml.DumperOptions$FlowStyle/BLOCK)
                   (.setPrettyFlow true))
         yaml (org.yaml.snakeyaml.Yaml. options)
-        adapter (gem-adapter-map (first-db-yml-gem repo))]
+        adapter (db-yml-adapter repo)]
+    (throw-if-not adapter "Error generating database.yml. Could not find appropriate Gem")
     (->> {:test
           {:adapter adapter
            :database "circle_test"

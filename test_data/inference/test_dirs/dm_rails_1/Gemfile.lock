@@ -8,3 +8,4 @@ GEM
       dm-active_model (~> 1.1.0)
       dm-core (~> 1.1.0)
       railties (~> 3.0.4)
+      mysql (1.0)
