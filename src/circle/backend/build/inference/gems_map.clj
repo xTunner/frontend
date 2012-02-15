@@ -23,4 +23,5 @@
    "sqlite3" "sqlite3"
    "mysql" "mysql"
    "mysql2" "mysql2"
-   "do_mysql" "mysql"})
+   "do_mysql" "mysql"
+   "jberkel-mysql-ruby" "mysql"})
