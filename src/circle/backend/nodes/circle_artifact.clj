@@ -24,8 +24,8 @@
                       :keypair-name "www"
                       :security-groups ["artifacts-server"]
                       :username "ubuntu"
-                      :public-key (slurp "www.id_rsa.pub")
-                      :private-key (slurp "www.id_rsa")}))
+                      :public-key (slurp "secret/www.id_rsa.pub")
+                      :private-key (slurp "secret/www.id_rsa")}))
 
 (defn update-dns
   "Updates the DNS record for artifacts.circle.com to point at the given instance id"

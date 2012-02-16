@@ -36,8 +36,8 @@
                       :keypair-name "www"
                       :security-groups ["www" "allow-DB"]
                       :username "ubuntu"
-                      :public-key (slurp "www.id_rsa.pub")
-                      :private-key (slurp "www.id_rsa")}))
+                      :public-key (slurp "secret/www.id_rsa.pub")
+                      :private-key (slurp "secret/www.id_rsa")}))
 
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
@@ -108,8 +108,8 @@
                                                     :path true)
                               (ssh-key/install-key username
                                                    "id_rsa"
-                                                   (slurp "www.id_rsa")
-                                                   (slurp "www.id_rsa.pub"))
+                                                   (slurp "secret/www.id_rsa")
+                                                   (slurp "secret/www.id_rsa.pub"))
                               (lein/lein)
                               (remote-file/remote-file (str home "/.ssh/config") :content "Host github.com\n\tStrictHostKeyChecking no\n"
                                                        :owner username
