@@ -95,7 +95,7 @@
 
 
 (defn add-deploy-key
-  "Given a username/repo pair, like 'arohner/CircleCI', generate and install a deploy key"
+  "Given a username/repo pair, like 'circleci/circle', generate and install a deploy key"
   [username repo-name github_access_token project-id]
   (let [keypair (ssh/generate-keys)]
     (c-mongo/set-fields :projects

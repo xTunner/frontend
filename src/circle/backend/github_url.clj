@@ -10,9 +10,9 @@
 ;;
 ;; top-level, the http url you visit in a browser, like https://github.com/arohner/circleci
 ;;
-;; ssh-url, the url used for ssh, like git@github.com:arohner/CircleCI.git
+;; ssh-url, the url used for ssh, like git@github.com:circleci/circle.git
 ;;
-;; https-url: used for git over http, https://arohner@github.com/arohner/CircleCI.git
+;; https-url: used for git over http, https://arohner@github.com/circleci/circle.git
 
 (defn github?
   "True if this URL belongs to github.com"
@@ -32,15 +32,15 @@
  (fact "url-type works"
    (url-type ?url) => ?expected)
  ?url ?expected
- "https://github.com/arohner/CircleCI.git" :top
- "https://github.com/arohner/CircleCI" :top
- "git@github.com:arohner/CircleCI.git" :ssh
- "https://arohner@github.com/arohner/CircleCI.git" :http)
+ "https://github.com/circleci/circle.git" :top
+ "https://github.com/circleci/circle" :top
+ "git@github.com:circleci/circle.git" :ssh
+ "https://arohner@github.com/circleci/circle.git" :http)
 
 (defn ->ssh
   "Given a github http url, return the ssh version.
 
-  https://github.com/arohner/CircleCI.git -> git@github.com:arohner/CircleCI.git"
+  https://github.com/circleci/circle.git -> git@github.com:circleci/circle.git"
   [url]
   (letfn [(replace-leading-slash [s]
             (str/replace s #"^/" ""))]
@@ -55,9 +55,9 @@
  (fact "->ssh works"
    (->ssh ?url) => ?expected)
  ?url ?expected
- "https://github.com/arohner/CircleCI" "git@github.com:arohner/CircleCI.git"
- "git@github.com:arohner/CircleCI.git" "git@github.com:arohner/CircleCI.git"
- "https://arohner@github.com/arohner/CircleCI.git" "git@github.com:arohner/CircleCI.git")
+ "https://github.com/circleci/circle" "git@github.com:circleci/circle.git"
+ "git@github.com:circleci/circle.git" "git@github.com:circleci/circle.git"
+ "https://arohner@github.com/circleci/circle.git" "git@github.com:circleci/circle.git")
 
 (defn ->top [url]
   (letfn [(strip-git [s]
@@ -73,9 +73,9 @@
  (fact "->top works"
    (->top ?url) => ?expected)
  ?url ?expected
- "https://github.com/arohner/CircleCI" "https://github.com/arohner/CircleCI"
- "git@github.com:arohner/CircleCI.git" "https://github.com/arohner/CircleCI"
- "https://arohner@github.com/arohner/CircleCI.git" "https://github.com/arohner/CircleCI")
+ "https://github.com/circleci/circle" "https://github.com/circleci/circle"
+ "git@github.com:circleci/circle.git" "https://github.com/circleci/circle"
+ "https://arohner@github.com/circleci/circle.git" "https://github.com/circleci/circle")
 
 (defn canonical-url
   ([username_and_password] (format "https://github.com/%s" username_and_password))

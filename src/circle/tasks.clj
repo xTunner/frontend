@@ -8,7 +8,7 @@
 (defn one-click-deploy [& args]
   "Deploy immediately"
   (let [build (config/build-from-url
-               "https://github.com/arohner/CircleCI"
+               "https://github.com/circleci/circle"
                :job-name
                :deploy)]
     (mongo/ensure-object-id-ref :builds build)
