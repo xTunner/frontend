@@ -49,8 +49,8 @@
                       :keypair-name "www"
                       :security-groups ["www" "allow-DB"]
                       :username "ubuntu"
-                      :public-key (slurp "www.id_rsa.pub")
-                      :private-key (slurp "www.id_rsa")}
+                      :public-key (slurp "secret/www.id_rsa.pub")
+                      :private-key (slurp "secret/www.id_rsa")}
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (fn [session]
