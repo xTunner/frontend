@@ -334,7 +334,7 @@
                              :mode "600"
                              :path true)
        (ssh-key/authorize-key username
-                              (slurp "secret/www.id_rsa.pub"))
+                              (eat (slurp "secret/www.id_rsa.pub")))
        (remote-file/remote-file (str home "/.ssh/config") :content "Host github.com\n\tStrictHostKeyChecking no\n"
                                 :owner username
                                 :group username
@@ -352,8 +352,8 @@
                       :keypair-name "www"
                       :security-groups ["www"]
                       :username "ubuntu"
-                      :public-key (slurp "secret/www.id_rsa.pub")
-                      :private-key (slurp "secret/www.id_rsa")}
+                      :public-key (eat (slurp "secret/www.id_rsa.pub"))
+                      :private-key (eat (slurp "secret/www.id_rsa"))}
    :extends [postgres-group redis-group mongo-group ruby-group riak-group mysql-group clojure-group]
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
