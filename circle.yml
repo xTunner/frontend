@@ -14,8 +14,6 @@ jobs:
   build:
     template: build
     commands:
-      - git submodule init
-      - git submodule update
       - rvm use jruby-1.6.5@circle --default
       - rvm rvmrc trust
       - bundle install
@@ -46,7 +44,7 @@ jobs:
       - bundle install
       - lein deps
       - rake assets:precompile --trace
-      - rake production:server:
+      - source secret/production.env && rake production:server:
           environment:
             CIRCLE_SWANK: "true"
       - sudo /etc/init.d/nginx start
