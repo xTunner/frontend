@@ -24,7 +24,7 @@
 (def known-commit "4ae57e3c6b6425465b7dd1d7ca2bb512777a927b")
 
 (fact "commit-details works"
-  (commit-details "repos/arohner/CircleCI" known-commit) =>
+  (commit-details "repos/circleci/circle" known-commit) =>
   {:subject "Create a guest user when adding repos, allow the guest user to set username & password at the end of the wizard"
    :committer_date "1323636643"
    :author_name "Allen Rohner"

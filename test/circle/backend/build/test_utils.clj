@@ -111,9 +111,9 @@ schedule:
    :pusher {:email "arohner@gmail.com", :name "arohner"},
    :ref "refs/heads/master",
    :forced false,
-   :compare "https://github.com/arohner/CircleCI/compare/7ef45f9...9538736",
+   :compare "https://github.com/circleci/circle/compare/7ef45f9...9538736",
    :created false,
-   :commits [{:message "Rename", :distinct true, :id "0d35a143ced7878d7140a8a1667c8e9f12efb76d", :url "https://github.com/arohner/CircleCI/commit/0d35a143ced7878d7140a8a1667c8e9f12efb76d", :timestamp "2011-11-16T12:44:52-08:00", :author {:email "arohner@gmail.com", :username "arohner", :name "Allen Rohner"}, :removed ["circleci.yml"], :modified [], :added ["circle.yml"]}],
+   :commits [{:message "Rename", :distinct true, :id "0d35a143ced7878d7140a8a1667c8e9f12efb76d", :url "https://github.com/circleci/circle/commit/0d35a143ced7878d7140a8a1667c8e9f12efb76d", :timestamp "2011-11-16T12:44:52-08:00", :author {:email "arohner@gmail.com", :username "arohner", :name "Allen Rohner"}, :removed ["circleci.yml"], :modified [], :added ["circle.yml"]}],
    :repository
    {:has_issues true,
     :fork false,
@@ -127,7 +127,7 @@ schedule:
     :created_at "2011/09/06 15:51:21 -0700",
     :private true,
     :homepage "",
-    :url "https://github.com/arohner/CircleCI",
+    :url "https://github.com/circleci/circle",
     :has_downloads true,
     :open_issues 0,
     :forks 0,
@@ -151,7 +151,7 @@ schedule:
 (def circle-project
   (project/project
     :name "CircleCI",
-    :vcs_url "https://github.com/arohner/CircleCI",
+    :vcs_url "https://github.com/circleci/circle",
     :vcs_type "git",
     :lb-name "www"
     :ssh_private_key ""))
@@ -189,7 +189,7 @@ schedule:
    :scheme :http,
    :query-params {},
    :session {},
-   :form-params {"payload" "{\"pusher\":{\"name\":\"none\"},\"repository\":{\"name\":\"CircleCI\",\"created_at\":\"2011/09/06 15:51:21 -0700\",\"size\":1420,\"has_wiki\":true,\"watchers\":2,\"private\":true,\"language\":\"Clojure\",\"url\":\"https://github.com/arohner/CircleCI\",\"fork\":false,\"pushed_at\":\"2011/11/18 09:12:29 -0800\",\"has_downloads\":true,\"open_issues\":0,\"homepage\":\"\",\"has_issues\":true,\"description\":\"\",\"forks\":0,\"owner\":{\"name\":\"arohner\",\"email\":\"arohner@gmail.com\"}},\"forced\":false,\"after\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"deleted\":false,\"ref\":\"refs/heads/master\",\"commits\":[{\"added\":[\"backend/src/circle/util/coerce.clj\"],\"modified\":[],\"removed\":[],\"author\":{\"name\":\"Allen Rohner\",\"username\":\"arohner\",\"email\":\"arohner@gmail.com\"},\"timestamp\":\"2011-11-18T09:12:23-08:00\",\"url\":\"https://github.com/arohner/CircleCI/commit/587ae3917fc8e6a9f62e49a276d5572863540410\",\"id\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"distinct\":true,\"message\":\"Add missing file\"}],\"before\":\"a885fe29a55a44c8b25e833b1dedf28e9cf3a1a4\",\"compare\":\"https://github.com/arohner/CircleCI/compare/a885fe2...587ae39\",\"created\":false}"},
+   :form-params {"payload" "{\"pusher\":{\"name\":\"none\"},\"repository\":{\"name\":\"CircleCI\",\"created_at\":\"2011/09/06 15:51:21 -0700\",\"size\":1420,\"has_wiki\":true,\"watchers\":2,\"private\":true,\"language\":\"Clojure\",\"url\":\"https://github.com/circleci/circle\",\"fork\":false,\"pushed_at\":\"2011/11/18 09:12:29 -0800\",\"has_downloads\":true,\"open_issues\":0,\"homepage\":\"\",\"has_issues\":true,\"description\":\"\",\"forks\":0,\"owner\":{\"name\":\"arohner\",\"email\":\"arohner@gmail.com\"}},\"forced\":false,\"after\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"deleted\":false,\"ref\":\"refs/heads/master\",\"commits\":[{\"added\":[\"backend/src/circle/util/coerce.clj\"],\"modified\":[],\"removed\":[],\"author\":{\"name\":\"Allen Rohner\",\"username\":\"arohner\",\"email\":\"arohner@gmail.com\"},\"timestamp\":\"2011-11-18T09:12:23-08:00\",\"url\":\"https://github.com/circleci/circle/commit/587ae3917fc8e6a9f62e49a276d5572863540410\",\"id\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"distinct\":true,\"message\":\"Add missing file\"}],\"before\":\"a885fe29a55a44c8b25e833b1dedf28e9cf3a1a4\",\"compare\":\"https://github.com/circleci/circle/compare/a885fe2...587ae39\",\"created\":false}"},
    :multipart-params {},
    :request-method :post,
    :query-string nil,
@@ -197,7 +197,7 @@ schedule:
    :cookies {},
    :uri "/github-commit",
    :server-name "www.circleci.com",
-   :params {:payload "{\"pusher\":{\"name\":\"none\"},\"repository\":{\"name\":\"CircleCI\",\"created_at\":\"2011/09/06 15:51:21 -0700\",\"size\":1420,\"has_wiki\":true,\"watchers\":2,\"private\":true,\"language\":\"Clojure\",\"url\":\"https://github.com/arohner/CircleCI\",\"fork\":false,\"pushed_at\":\"2011/11/18 09:12:29 -0800\",\"has_downloads\":true,\"open_issues\":0,\"homepage\":\"\",\"has_issues\":true,\"description\":\"\",\"forks\":0,\"owner\":{\"name\":\"arohner\",\"email\":\"arohner@gmail.com\"}},\"forced\":false,\"after\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"deleted\":false,\"ref\":\"refs/heads/master\",\"commits\":[{\"added\":[\"backend/src/circle/util/coerce.clj\"],\"modified\":[],\"removed\":[],\"author\":{\"name\":\"Allen Rohner\",\"username\":\"arohner\",\"email\":\"arohner@gmail.com\"},\"timestamp\":\"2011-11-18T09:12:23-08:00\",\"url\":\"https://github.com/arohner/CircleCI/commit/587ae3917fc8e6a9f62e49a276d5572863540410\",\"id\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"distinct\":true,\"message\":\"Add missing file\"}],\"before\":\"a885fe29a55a44c8b25e833b1dedf28e9cf3a1a4\",\"compare\":\"https://github.com/arohner/CircleCI/compare/a885fe2...587ae39\",\"created\":false}"},
+   :params {:payload "{\"pusher\":{\"name\":\"none\"},\"repository\":{\"name\":\"CircleCI\",\"created_at\":\"2011/09/06 15:51:21 -0700\",\"size\":1420,\"has_wiki\":true,\"watchers\":2,\"private\":true,\"language\":\"Clojure\",\"url\":\"https://github.com/circleci/circle\",\"fork\":false,\"pushed_at\":\"2011/11/18 09:12:29 -0800\",\"has_downloads\":true,\"open_issues\":0,\"homepage\":\"\",\"has_issues\":true,\"description\":\"\",\"forks\":0,\"owner\":{\"name\":\"arohner\",\"email\":\"arohner@gmail.com\"}},\"forced\":false,\"after\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"deleted\":false,\"ref\":\"refs/heads/master\",\"commits\":[{\"added\":[\"backend/src/circle/util/coerce.clj\"],\"modified\":[],\"removed\":[],\"author\":{\"name\":\"Allen Rohner\",\"username\":\"arohner\",\"email\":\"arohner@gmail.com\"},\"timestamp\":\"2011-11-18T09:12:23-08:00\",\"url\":\"https://github.com/circleci/circle/commit/587ae3917fc8e6a9f62e49a276d5572863540410\",\"id\":\"587ae3917fc8e6a9f62e49a276d5572863540410\",\"distinct\":true,\"message\":\"Add missing file\"}],\"before\":\"a885fe29a55a44c8b25e833b1dedf28e9cf3a1a4\",\"compare\":\"https://github.com/circleci/circle/compare/a885fe2...587ae39\",\"created\":false}"},
    :headers {"x-real-ip" "10.248.202.174", "x-github-event" "push", "accept" "*/*", "host" "www.circleci.com", "x-forwarded-proto" "http", "x-forwarded-for" "207.97.227.253, 10.112.43.159, 10.248.202.174", "content-type" "application/x-www-form-urlencoded", "content-length" "1620", "connection" "close", "x-forwarded-port" "80"},
    :content-length 1620,
    :server-port 80,

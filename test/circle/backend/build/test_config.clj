@@ -91,7 +91,7 @@
         b (build-from-url (-> project :vcs_url)
                           :job-name :deploy)
         _ (run/configure b)]
-    @b => (contains {:vcs_url "https://github.com/arohner/CircleCI"
+    @b => (contains {:vcs_url "https://github.com/circleci/circle"
                      :job-name :deploy})
     (-> @b :actions) => (contains [(contains {:name "start nodes"
                                               :type :infrastructure
@@ -122,7 +122,7 @@
     (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
 
 (fact "build-from-url works for yaml configs"
-  (build-from-url "https://github.com/arohner/CircleCI") => ref?)
+  (build-from-url "https://github.com/circleci/circle") => ref?)
 
 (fact "parse-spec-actions support different kinds of newline"
   (-> :setup ((parse-spec-actions {:setup "1\n2"}))) => (maps-containing {:name "1"} {:name "2"})
@@ -138,7 +138,7 @@
     (-> (build-from-json json) (run/configure) (deref) :job-name) => :build))
 
 (fact "circle deploys have :lb-name"
-  (-> (circle.backend.build.config/build-from-url "https://github.com/arohner/CircleCI" :job-name :deploy)
+  (-> (circle.backend.build.config/build-from-url "https://github.com/circleci/circle" :job-name :deploy)
       (run/configure)
       (deref)
       :lb-name) => truthy)
