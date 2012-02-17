@@ -14,7 +14,7 @@
    [pallet.thread-expr :as thread-expr])
   (:require circle.dns)
   (:require [circle.backend.ec2 :as ec2])
-  (:use [circle.uril.except :only (ec2)]))
+  (:use [circle.util.except :only (eat)]))
 
 (def circle-artifact-group
   (pallet.core/group-spec
