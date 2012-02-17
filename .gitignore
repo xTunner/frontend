@@ -3,7 +3,6 @@ db/*.sqlite3
 log/
 tmp/
 .sass-cache/
-.rvmrc
 classes/*.jar
 jars/*.jar
 lib/dev/*.jar
