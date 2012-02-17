@@ -57,7 +57,6 @@
         db-config (get-db-config project inferred-config)]
     db-config => nil))
 
-
 (fact "get-db-config has inferred and speced steps project"
   (let [project test/test-project
         project (merge project {:test "echo a\necho b"})

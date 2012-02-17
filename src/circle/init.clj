@@ -9,7 +9,6 @@
   (:require circle.logging)
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
-  (:require circle.backend.build.resources)
   (:require fs))
 
 (defn-once init
@@ -21,7 +20,6 @@
     (circle.db/init)
     (circle.redis/init)
     (circle.resque/init)
-    (circle.backend.build.resources/init)
 
     (println (java.util.Date.))
     true

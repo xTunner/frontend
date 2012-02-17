@@ -10,7 +10,7 @@
   (:require [circle.model.project :as project])
   (:use [circle.util.model-validation-helpers :only (is-ref? require-keys)])
   (:use [circle.util.predicates :only (ref?)])
-  (:use [circle.util.mongo :only (object-id)])
+  (:use [circle.util.mongo :only (object-id coerce-object-id)])
   (:require [somnium.congomongo :as mongo])
   (:require [circle.util.mongo :as c-mongo])
   (:require [circle.sh :as sh])
@@ -56,7 +56,7 @@
 
 (def build-dissoc-keys
   ;; Keys on build that shouldn't go into mongo, for whatever reason
-  [:actions :action-results])
+  [:action-results])
 
 (defn insert! [row]
   (mongo/insert! :builds (apply dissoc row build-dissoc-keys)))
@@ -65,9 +65,13 @@
   "Given a build ref, update the mongo row with the current values of b."
   [b]
   (throw-if-not (-> @b :_id) "build must have id")
-  (mongo/update! build-coll
-                 {:_id (-> @b :_id)}
-                 (apply dissoc @b build-dissoc-keys)))
+  (let [b (-> @b
+              (dissoc :action-results)
+              (update-in [:actions] (fn [actions]
+                                      (map #(dissoc % :act-fn) actions))))]
+    (mongo/update! build-coll
+                   {:_id (-> b :_id)}
+                   b)))
 
 (defn build
   "Creates and returns the build ref, updates/inserts the DB if necessary"
@@ -77,11 +81,10 @@
            actions      ;; a seq of actions
            node         ;; Map containing keys required by ec2/start-instance
            lb-name      ;; name of the load-balancer to use
-           continue?    ;; if true, continue running the build. Failed actions will set this to false
-           ]
+           build_num]
     :as args}]
   (let [project (project/get-by-url! vcs_url)
-        build_num (project/next-build-num project)
+        build_num (or build_num (project/next-build-num project))
         build-id (or _id (object-id))
         build (ref
                (merge build-defaults
@@ -92,6 +95,11 @@
                :validator validate!)]
     (update-mongo build)
     build))
+
+(defn fetch-build
+  "Return the build ref for this id"
+  [id]
+  (build (mongo/fetch-one :builds :where {:_id (coerce-object-id id)})))
 
 (defn project-name [b]
   {:post [(seq %)]}

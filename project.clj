@@ -52,12 +52,8 @@
                  [congomongo "0.1.7"]
 
                  ;; Queue
-                 ;;[congomongo-mq "0.0.0-SNAPSHOT"]
-                 ;;[com.cemerick/bandalore "0.0.1"]
-                 ;;[com.github.drsnyder/beanstalk "1.0.0-SNAPSHOT"]
-                 [clj-redis "0.0.13-SNAPSHOT"]
                  [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
-                 [resque-clojure "0.2.1"]
+                 [resque-clojure "0.2.2"]
 
                  ;; Hooks
                  [clipchat/clipchat "1.0.0-SNAPSHOT"]
