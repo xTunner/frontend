@@ -13,7 +13,8 @@
    [pallet.crate.ssh-key :as ssh-key]
    [pallet.thread-expr :as thread-expr])
   (:require circle.dns)
-  (:require [circle.backend.ec2 :as ec2]))
+  (:require [circle.backend.ec2 :as ec2])
+  (:use [circle.uril.except :only (ec2)]))
 
 (def circle-artifact-group
   (pallet.core/group-spec
@@ -24,8 +25,8 @@
                       :keypair-name "www"
                       :security-groups ["artifacts-server"]
                       :username "ubuntu"
-                      :public-key (slurp "secret/www.id_rsa.pub")
-                      :private-key (slurp "secret/www.id_rsa")}))
+                      :public-key (eat (slurp "secret/www.id_rsa.pub"))
+                      :private-key (eat (slurp "secret/www.id_rsa"))}))
 
 (defn update-dns
   "Updates the DNS record for artifacts.circle.com to point at the given instance id"

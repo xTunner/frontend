@@ -23,7 +23,8 @@
             [circle.sh :as sh]
             [circle.backend.ssh :as ssh]
             [circle.backend.nodes :as nodes]
-            [circle.backend.pallet :as circle-pallet]))
+            [circle.backend.pallet :as circle-pallet])
+  (:use [circle.util.except :only (eat)]))
 
 ;; this is our "memoized" circle box
 (def circle-group
@@ -36,8 +37,8 @@
                       :keypair-name "www"
                       :security-groups ["www" "allow-DB"]
                       :username "ubuntu"
-                      :public-key (slurp "secret/www.id_rsa.pub")
-                      :private-key (slurp "secret/www.id_rsa")}))
+                      :public-key (eat (slurp "secret/www.id_rsa.pub"))
+                      :private-key (eat (slurp "secret/www.id_rsa"))}))
 
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
@@ -49,8 +50,8 @@
                       :keypair-name "www"
                       :security-groups ["www" "allow-DB"]
                       :username "ubuntu"
-                      :public-key (slurp "secret/www.id_rsa.pub")
-                      :private-key (slurp "secret/www.id_rsa")}
+                      :public-key (eat (slurp "secret/www.id_rsa.pub"))
+                      :private-key (eat (slurp "secret/www.id_rsa"))}
    :phases {:bootstrap (pallet.phase/phase-fn
                         (automated-admin-user/automated-admin-user))
             :configure (fn [session]
