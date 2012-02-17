@@ -4,18 +4,25 @@
   (:require circle.swank)
   (:require circle.db)
   (:require circle.repl)
+  (:require circle.resque)
   (:require circle.logging)
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
+  (:use [clojure.tools.logging :only (error)])
   (:require fs))
 
 (defn-once init
   (try
     (println "circle.init/init")
     (circle.logging/init)
-    (circle.db/init)
-    (circle.swank/init)
+    (try
+      (circle.swank/init)
+      (catch Exception e
+        (error e "error starting swank")))
     (circle.repl/init)
+    (circle.db/init)
+    (circle.resque/init)
+
     (println (java.util.Date.))
     true
     (catch Exception e

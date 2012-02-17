@@ -1,16 +1,29 @@
 (ns circle.util.mongo
   "Fns for working with mongo"
+  (:require [somnium.congomongo :as mongo])
+  (:use [circle.util.except :only (throw-if-not)])
   (:import org.bson.types.ObjectId))
 
 (defn object-id
   "Generate a new object id, return it."
-  []
-  (ObjectId.))
+  [& [id]]
+  (if id
+    (do
+      (throw-if-not (string? id) "id must be a string")
+      (ObjectId. id))
+    (ObjectId.)))
 
 (defn object-id?
   "True if o is an object-id"
   [o]
   (instance? org.bson.types.ObjectId o))
+
+(defn coerce-object-id
+  "Casts id from a string to an ObjectId if necessary"
+  [id]
+  (if (object-id? id)
+    id
+    (object-id id)))
 
 (defn has-object-id?
   "True if map m has a mongo id"

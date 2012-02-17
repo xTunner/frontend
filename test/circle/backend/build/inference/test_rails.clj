@@ -79,3 +79,7 @@
 
 (fact "migrate? returns true when there are files in db/migrate"
   (->> (spec (test/test-repo "rails_migrations")) (map :name)) => (contains #"rake db:migrate"))
+
+(fact "generate-db-yml contains an adapter"
+  (generate-database-yml-str (test/test-repo "database_yml_1")) => (contains "adapter: postgresql")
+  (generate-database-yml-str (test/test-repo "dm_rails_1")) => (contains "adapter: mysql"))

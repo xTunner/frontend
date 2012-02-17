@@ -242,40 +242,41 @@
    :type :infrastructure}
   (fn [build]
     (let [{url :vcs_url vcs-revision :vcs_revision} @build
-          _ (ensure-checkout url :vcs-revision vcs-revision)
-          repo (git/default-repo-path url)
-          vcs-revision (or vcs-revision (git/latest-commit-current-branch repo))
-          commit-details (git/commit-details repo vcs-revision)
-          project (project/get-by-id (-> @build :project_id))
-          lb-name (-> project :lb-name)
-          {:keys [infer job-name]} @build
+          repo (git/default-repo-path url)]
+      (git/with-repo-lock repo
+        (ensure-checkout url :vcs-revision vcs-revision)
+        (let [vcs-revision (or vcs-revision (git/latest-commit-current-branch repo))
+              commit-details (git/commit-details repo vcs-revision)
+              project (project/get-by-id (-> @build :project_id))
+              lb-name (-> project :lb-name)
+              {:keys [infer job-name]} @build
 
-          inferred-config (infer-config repo)
-          db-config (get-db-config project inferred-config)
-          yml-config (get-yml-config repo :job-name job-name)
+              inferred-config (infer-config repo)
+              db-config (get-db-config project inferred-config)
+              yml-config (get-yml-config repo :job-name job-name)
 
-          proto-build (cond
-                       infer inferred-config
-                       yml-config yml-config
-                       db-config db-config
-                       :default inferred-config)
-          node (or (-> proto-build :node) rails/rails-node)
-          actions (-> proto-build :actions)
-          master (get-master)
+              proto-build (cond
+                           infer inferred-config
+                           yml-config yml-config
+                           db-config db-config
+                           :default inferred-config)
+              node (or (-> proto-build :node) rails/rails-node)
+              actions (-> proto-build :actions)
+              master (get-master)
 
-          proto-build (dissoc proto-build :actions)]
+              proto-build (dissoc proto-build :actions)]
 
-      (dosync
-       (alter build merge proto-build)
-       (alter build merge commit-details)
-       (alter build assoc :node node)
-       (alter build assoc :lb-name lb-name)
-       (alter build assoc :master master)
-       (alter build assoc :vcs_revision vcs-revision)
-       (alter build assoc :vcs-private-key (-> project :ssh_private_key))
-       (alter build assoc :vcs-public-key (-> project :ssh_public_key))
-       (alter build update-in [:actions] vec-concat actions))
-      build)))
+          (dosync
+           (alter build merge proto-build)
+           (alter build merge commit-details)
+           (alter build assoc :node node)
+           (alter build assoc :lb-name lb-name)
+           (alter build assoc :master master)
+           (alter build assoc :vcs_revision vcs-revision)
+           (alter build assoc :vcs-private-key (-> project :ssh_private_key))
+           (alter build assoc :vcs-public-key (-> project :ssh_public_key))
+           (alter build update-in [:actions] vec-concat actions))
+          build)))))
 
 (defn build-from-url
   "Given a project url and a build name, return a build. Helper method for repl"

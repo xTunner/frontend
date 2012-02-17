@@ -280,6 +280,7 @@
                          "libqtwebkit-dev"
                          "x11-utils"
                          "x11-apps"
+                         "zookeeper"
 
                          "expect-dev"
                          "lftp"

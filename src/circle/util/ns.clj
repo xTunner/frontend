@@ -5,7 +5,9 @@
   "TODO"
   [ns]
   (doseq [sym (keys (ns-refers ns))]
-    (ns-unmap ns sym)))
+    (ns-unmap ns sym))
+  (doseq [a (keys (ns-aliases ns))]
+    (ns-unalias ns a)))
 
 (defmacro with-ns
   "Evaluates body in another namespace.  ns is either a namespace

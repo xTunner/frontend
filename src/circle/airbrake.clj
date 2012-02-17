@@ -32,3 +32,10 @@ Args:
     (airbrake/notify api-key (env/env) (fs/cwd) exception (merge {:url "http://fakeurl.com"
                                                                   :params (merge data {:build-url *current-build-url*
                                                                                        :build-num *current-build-number*})}))))
+
+(defmacro with-airbrake [& body]
+  `(try
+     ~@body
+     (catch Throwable t#
+       (airbrake :exception t# :data {:cmd (str (quote ~body))})
+       (throw t#))))

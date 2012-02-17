@@ -3,8 +3,6 @@
   (:use [slingshot.slingshot])
   (:require [circle.airbrake :as airbrake]))
 
-
-
 (defmacro straight-jacket*
   [& body]
   `(try
