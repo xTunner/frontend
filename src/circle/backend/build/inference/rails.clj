@@ -211,7 +211,7 @@
           (blacklist))
         (when use-bundler?
           (bundle-install))
-        (when (need-database-yml? repo)
+        (when (and (need-database-yml? repo) (db-yml-adapter repo))
           (generate-database-yml repo))
         (when (need-mysql-socket? repo)
           (mysql/ensure-socket (mysql-socket-path repo)))
