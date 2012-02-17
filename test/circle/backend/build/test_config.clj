@@ -86,12 +86,13 @@
 
     (validate @b) => nil))
 
+
 (fact "build-from-url :job-name :deploy works"
-  (let [project test/circle-project
+  (let [project test/yml-project
         b (build-from-url (-> project :vcs_url)
                           :job-name :deploy)
         _ (run/configure b)]
-    @b => (contains {:vcs_url "https://github.com/circleci/circle"
+    @b => (contains {:vcs_url "https://github.com/circleci/test-yml"
                      :job-name :deploy})
     (-> @b :actions) => (contains [(contains {:name "start nodes"
                                               :type :infrastructure
@@ -101,7 +102,7 @@
                                   :gaps-ok)))
 
 (fact "build-from-url :infer flag works"
-  (let [project test/circle-project
+  (let [project test/yml-project
         b (build-from-url (-> project :vcs_url)
                           :infer true)]
     (-> @b :actions) =not=> (contains {:name #"nginx"})

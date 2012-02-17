@@ -3,9 +3,9 @@ require 'spec_helper'
 describe ApplicationHelper do
 
   describe "revision_link_to" do
-    let(:build) { Build.unsafe_create(:vcs_url => "https://github.com/arohner/CircleCI", :vcs_revision => "b833cd06910ee92b6f9327261bcf4bd8f97200a8") }
+    let(:build) { Build.unsafe_create(:vcs_url => "https://github.com/circleci/circle", :vcs_revision => "b833cd06910ee92b6f9327261bcf4bd8f97200a8") }
     it "should work for a simple url" do
-      revision_link_to(build).should == "<a href='https://github.com/arohner/CircleCI/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8'>" +
+      revision_link_to(build).should == "<a href='https://github.com/circleci/circle/commit/b833cd06910ee92b6f9327261bcf4bd8f97200a8'>" +
         "<img src='/assets/octocat-tiny.png'>" +
         "b833cd069" +
         "</a>"
