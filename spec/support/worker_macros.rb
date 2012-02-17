@@ -21,7 +21,7 @@ module WorkerMacros
   def use_clojure_factories
     before :each do
       # Blocking workers skip the mock check
-      Backend.blocking_worker "circle.backend.build.test-utils/ensure-test-db"
+      Backend.blocking_worker "circle.test-utils/ensure-test-db"
     end
   end
 end
