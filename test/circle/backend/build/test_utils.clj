@@ -254,7 +254,8 @@ schedule:
 
 (defn clear-test-db []
   (mongo/with-mongo (test-db-connection)
-    (mongo/drop-database! :mongoid_test_test)))
+    (doseq [c (filter #(not= "system.indexes" %) (mongo/collections))]
+      (mongo/drop-coll! c))))
 
 (defn ensure-test-db []
   (clear-test-db)
