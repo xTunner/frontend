@@ -26,16 +26,16 @@
 
 (fact "commit-details works"
   (commit-details "." known-commit) =>
-  {:subject "Use the test-yml repo, commits from it, and the correct url."
-   :committer_date "1329447089"
-   :author_name "Paul Biggar"
-   :parents ["4b0389fa94e50cb4b112fd2daec99cf3e6f526e8"]
-   :author_email "paul.biggar@gmail.com"
-   :author_date "1329447089"
-   :committer_name "Paul Biggar"
-   :body ""
-   :branch #"master~\d+"
-   :committer_email "paul.biggar@gmail.com"})
+  (contains {:subject "Use the test-yml repo, commits from it, and the correct url."
+             :committer_date "1329447089"
+             :author_name "Paul Biggar"
+             :parents ["4b0389fa94e50cb4b112fd2daec99cf3e6f526e8"]
+             :author_email "paul.biggar@gmail.com"
+             :author_date "1329447089"
+             :committer_name "Paul Biggar"
+             :body ""
+             :branch #"remotes/origin/(HEAD|master)~\d+"
+             :committer_email "paul.biggar@gmail.com"}))
 
 (fact "committer-email works"
   (committer-email "." known-commit) => "paul.biggar@gmail.com")
