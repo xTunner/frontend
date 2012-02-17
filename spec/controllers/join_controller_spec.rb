@@ -7,6 +7,7 @@ describe JoinController do
   end
 
   describe "log in" do
+    use_clojure_factories
     login_user
     it "sign_up_at should be very very recent" do
       subject.current_user.sign_in_count.should == 0

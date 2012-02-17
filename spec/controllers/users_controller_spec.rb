@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe UsersController do
+  use_clojure_factories
   login_user
   render_views
   let(:page) { Capybara::Node::Simple.new(@response.body) }
@@ -9,14 +10,6 @@ describe UsersController do
   it "should have a current_user" do
     subject.current_user.should_not be_nil
   end
-
-  describe "routes", :type => :routing do
-    it "should render the right action" do
-      pending "I dont know how to test this one properly"
-      {:get => "/"}.should route_to(:controller => 'users', :action => "dashboard")
-    end
-  end
-
 
   it "should render and have text" do
     get :dashboard
