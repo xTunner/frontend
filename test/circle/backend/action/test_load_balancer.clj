@@ -5,7 +5,7 @@
   (:use midje.sweet)
   (:use [circle.backend.build.run :only (run-build)])
   (:use [circle.model.build :only (successful?)])
-  (:use circle.backend.build.test-utils))
+  (:use circle.test-utils))
 
 (test-ns-setup)
 

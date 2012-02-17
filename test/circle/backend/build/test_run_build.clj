@@ -1,6 +1,6 @@
 (ns circle.backend.build.test-run-build
   (:use midje.sweet)
-  (:use [circle.backend.build.test-utils])
+  (:use [circle.test-utils])
   (:use [circle.backend.action :only (defaction action)])
   (:require [circle.backend.action.nodes :as nodes])
   (:use [circle.model.build :only (build successful?)])

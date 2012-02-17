@@ -1,7 +1,7 @@
 (ns circle.backend.build.inference.test-postgres
   (:use midje.sweet)
   (:require [circle.backend.build.inference.rails :as rails])
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require fs)
   (:require [circle.backend.git :as git]))
 

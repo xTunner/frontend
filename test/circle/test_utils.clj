@@ -1,4 +1,4 @@
-(ns circle.backend.build.test-utils
+(ns circle.test-utils
   (:require [circle.env :as env])
   (:require [somnium.congomongo :as mongo])
   (:require [circle.model.build :as build])
@@ -52,7 +52,8 @@
 
 (def circle-config
   (->
-   "nodes:
+   "
+nodes:
   www:
     type: node
     ami: ami-a5c70ecc
@@ -175,7 +176,15 @@ schedule:
    :ssh_public_key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCI41xErx6O8WKo6Z3upop9XKhI/gi93Za0vo/LKBc0Wo6b/bEIwh37HcRp8ijaNF/D+4wj7OxyBIi70SdARE8JqxOKZwNZx+NrN/ojdNfA7Ggv7JyZSOOGXK+mfzcuCshD4yIqWQmj5zcPjsLwz6AYVk3YCAD4LQFJ0usveK56Ew== \n"))
 
 (def test-user
-  {:email "user@test.com"})
+  {:email "user@test.com"
+   :name "Test User"
+   :password "please"})
+
+(def admin-user
+  {:email "admin@test.com"
+   :name "Admin User"
+   :password "please"
+   :admin true})
 
 (defn ensure-test-user []
   (ensure-user test-user))

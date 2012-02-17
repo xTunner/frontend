@@ -5,7 +5,7 @@
   (:require [clj-time.core :as time])
   (:require [circle.db.migration-lib :as migration-lib])
   (:require [circle.logging])
-  (:use [circle.backend.build.test-utils])
+  (:use [circle.test-utils])
   (:require [clj-time.core :as time]))
 
 (test-ns-setup)

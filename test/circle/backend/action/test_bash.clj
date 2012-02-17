@@ -4,7 +4,7 @@
   (:require [circle.sh :as sh])
   (:require [circle.model.build :as build])
   (:require [circle.backend.build.run :as run])
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require [clj-time.core :as time])
   (:require circle.db)
   (:use [circle.util.except :only (eat)]))

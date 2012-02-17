@@ -1,6 +1,6 @@
 (ns circle.backend.test-build
   (:use midje.sweet)
-  (:use [circle.backend.build.test-utils :only (minimal-build test-ns-setup)])
+  (:use [circle.test-utils :only (minimal-build test-ns-setup)])
   (:use circle.model.build))
 
 (test-ns-setup)

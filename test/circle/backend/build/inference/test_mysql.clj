@@ -1,6 +1,6 @@
 (ns circle.backend.build.inference.test-mysql
   (:use midje.sweet)
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require [circle.backend.build.inference.rails :as rails])
   (:require fs)
   (:require [circle.backend.git :as git]))
