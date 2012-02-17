@@ -21,23 +21,24 @@
     (repo-exists? test-repo-path) => true
     (fs/exists? (fs/join test-repo-path "README.md")) => true))
 
-(def known-commit "4ae57e3c6b6425465b7dd1d7ca2bb512777a927b")
+;; This is from circleci/circle
+(def known-commit "ab2e274b5a3493b49b1f136432e74fe80c320477")
 
 (fact "commit-details works"
-  (commit-details "repos/circleci/circle" known-commit) =>
-  {:subject "Create a guest user when adding repos, allow the guest user to set username & password at the end of the wizard"
-   :committer_date "1323636643"
-   :author_name "Allen Rohner"
-   :parents ["1d3e617ac3abd287d63393d1ee03f13e4801b7c4"]
-   :author_email "arohner@gmail.com"
-   :author_date "1323636643"
-   :committer_name "Allen Rohner"
+  (commit-details "." known-commit) =>
+  {:subject "Use the test-yml repo, commits from it, and the correct url."
+   :committer_date "1329447089"
+   :author_name "Paul Biggar"
+   :parents ["4b0389fa94e50cb4b112fd2daec99cf3e6f526e8"]
+   :author_email "paul.biggar@gmail.com"
+   :author_date "1329447089"
+   :committer_name "Paul Biggar"
    :body ""
-   :branch "remotes/origin/nginx_ssl~68"
-   :committer_email "arohner@gmail.com"})
+   :branch #"master~\d+"
+   :committer_email "paul.biggar@gmail.com"})
 
 (fact "committer-email works"
-  (committer-email "." known-commit) => "arohner@gmail.com")
+  (committer-email "." known-commit) => "paul.biggar@gmail.com")
 
 (defn test-ensure-repo [url]
   (let [git-url (github/->ssh url)
