@@ -186,12 +186,9 @@ schedule:
    :password "please"
    :admin true})
 
-(defn ensure-test-user []
-  (ensure-user test-user))
-
 (defn ensure-test-user-and-project []
   (ensure-project test-project)
-  (ensure-test-user)
+  (ensure-user test-user)
   (ensure-user-is-project-member test-user test-project))
 
 (def circle-request
@@ -271,6 +268,8 @@ schedule:
 (defn ensure-test-db []
   (clear-test-db)
   (mongo/with-mongo (test-db-connection)
+    (ensure-user test-user)
+    (ensure-user admin-user)
     (ensure-project test-project)
     (ensure-project yml-project)
     (ensure-project partially-inferred-project)
