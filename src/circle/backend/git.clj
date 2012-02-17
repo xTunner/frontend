@@ -36,7 +36,7 @@
 (defn repo-exists? [path]
   (let [git-dir (fs/join path ".git")]
     (->
-     (sh/shq [(stat ~path)])
+     (sh/shq [(stat ~git-dir)])
      (:exit)
      (= 0))))
 
