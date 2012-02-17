@@ -136,10 +136,12 @@ class Backend
 
 
   def self.mocked_fire_worker(name, *args)
+    puts "Mock fire_worker #{name}"
     MockedWorker.queue << MockedWorker.new(name, true, *args)
   end
 
   def self.mocked_start_worker(name, *args)
+    puts "Mock start_worker #{name}"
     MockedWorker.queue << MockedWorker.new(name, false, *args)
     return MockedWorker.queue.last.id
   end
