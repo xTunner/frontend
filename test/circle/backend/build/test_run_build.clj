@@ -53,7 +53,7 @@
 (fact "throwing an exception generates an infrastructure_fail"
   (let [build (minimal-build
                :actions [(action :name "fail"
-                                 :act-fn (fn [build] (throw (Exception.))))])]
+                                 :act-fn (fn [build] (throw (Exception. "testing: expected exception"))))])]
     (try
       (run-build build)
       (catch Exception e))
