@@ -23,7 +23,7 @@
           project (build/get-project build)]
       (if (project/enabled? project)
         (run/run-build build)
-        (infof "process-json: not running build: %s" @build)))))
+        (infof "process-json: project not enabled, not running build: %s" (-> project :vcs_url))))))
 
 (defn start-build-from-hook
   [json-string]
