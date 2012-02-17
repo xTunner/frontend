@@ -60,27 +60,12 @@ deleted = JSON.parse(dummy_json)
 deleted["after"] = "0000000000000000000000000000000000000000"
 deleted_json = JSON.generate(deleted)
 
-java_import "clojure.lang.Var"
-
-def symbolize(s)
-  RT.var("clojure.core", "symbol").invoke(s)
-end
-
-user_ns = RT.var("clojure.core", "find-ns").invoke(symbolize("user"))
-Var.intern(user_ns, symbolize("foo"), dummy_json)
-
 describe GithubController do
+  use_workers
+  use_clojure_factories
+  disable_mocking
 
   let(:vcs_url) { "https://github.com/arohner/circle-dummy-project" }
-
-  before :each do
-    Backend.mock = false
-    Backend.blocking_worker "circle.backend.build.test-utils/ensure-test-db"
-  end
-
-  after :all do
-    Backend.mock = true
-  end
 
   it "The github hook successfully triggers builds" do
     p = Project.from_url vcs_url
