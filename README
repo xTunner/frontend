@@ -61,13 +61,13 @@ The backend is run in the same process as the frontend. This all works so long a
 Set the lb-name flag in your DB:
 
     $ mongo circle
-    > p = db.projects.find({vcs_url: "https://github.com/arohner/CircleCI"})[0]
+    > p = db.projects.find({vcs_url: "https://github.com/circleci/cricle"})[0]
     > p["lb-name"] = "www"
     > db.projects.save(p)
 
 From any REPL, run the command:
 
-    > (def b (circle.backend.build.config/build-from-url "https://github.com/arohner/CircleCI" :job-name :deploy))
+    > (def b (circle.backend.build.config/build-from-url "https://github.com/circleci/circle" :job-name :deploy))
     > (clojure.pprint/pprint b)  ;; inspect the build
     > (circle.backend.build.run/run-build b) ;; actually deploy
 
