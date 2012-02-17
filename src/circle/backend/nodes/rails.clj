@@ -1,5 +1,6 @@
 (ns circle.backend.nodes.rails
   (:require [clojure.java.classpath :as cp])
+  (:use [circle.util.except :only (eat)])
   (:require pallet.core
             pallet.phase
             [pallet.action.directory :as directory]
