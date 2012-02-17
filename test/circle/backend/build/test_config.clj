@@ -71,14 +71,14 @@
 
 (fact "build-from-url works"
   (let [project test/test-project
-        vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
+        vcs_revision "4f679c95a755108a35adc6663c8e54035ce1c66d"
         b (build-from-url (-> project :vcs_url)
                           :vcs-revision vcs_revision
                           :job-name :build)]
     (run/configure b) => anything
     b => ref?
     @b => (contains {:vcs_url string?
-                     :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
+                     :vcs_revision "4f679c95a755108a35adc6663c8e54035ce1c66d"
                      :vcs-private-key string?
                      :build_num pos?})
 
@@ -120,10 +120,10 @@
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-dummy-project-json)]
     (ref? build) => true
-    (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
+    (-> @build :vcs_revision) => "4f679c95a755108a35adc6663c8e54035ce1c66d"))
 
 (fact "build-from-url works for yaml configs"
-  (build-from-url "https://github.com/circleci/circle") => ref?)
+  (build-from-url "https://github.com/circleci/test-yml") => ref?)
 
 (fact "parse-spec-actions support different kinds of newline"
   (-> :setup ((parse-spec-actions {:setup "1\n2"}))) => (maps-containing {:name "1"} {:name "2"})
@@ -139,7 +139,7 @@
     (-> (build-from-json json) (run/configure) (deref) :job-name) => :build))
 
 (fact "circle deploys have :lb-name"
-  (-> (circle.backend.build.config/build-from-url "https://github.com/circleci/circle" :job-name :deploy)
+  (-> (circle.backend.build.config/build-from-url "https://github.com/circleci/test-yml" :job-name :deploy)
       (run/configure)
       (deref)
       :lb-name) => truthy)
