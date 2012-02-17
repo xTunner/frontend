@@ -52,7 +52,6 @@
                  [congomongo "0.1.7"]
 
                  ;; Queue
-                 [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
                  [resque-clojure "0.2.2"]
 
                  ;; Hooks

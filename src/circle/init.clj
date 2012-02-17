@@ -4,7 +4,6 @@
   (:require circle.swank)
   (:require circle.db)
   (:require circle.repl)
-  (:require circle.redis)
   (:require circle.resque)
   (:require circle.logging)
   (:require circle.backend.build.run)
@@ -22,7 +21,6 @@
         (error e "error starting swank")))
     (circle.repl/init)
     (circle.db/init)
-    (circle.redis/init)
     (circle.resque/init)
 
     (println (java.util.Date.))
