@@ -71,14 +71,14 @@
 
 (fact "build-from-url works"
   (let [project test/test-project
-        vcs_revision "4f679c95a755108a35adc6663c8e54035ce1c66d"
+        vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
         b (build-from-url (-> project :vcs_url)
                           :vcs-revision vcs_revision
                           :job-name :build)]
     (run/configure b) => anything
     b => ref?
     @b => (contains {:vcs_url string?
-                     :vcs_revision "4f679c95a755108a35adc6663c8e54035ce1c66d"
+                     :vcs_revision "78f58846a049bb6772dcb298163b52c4657c7d45"
                      :vcs-private-key string?
                      :build_num pos?})
 
@@ -120,7 +120,7 @@
 (fact "build-from-json works"
   (let [build (build-from-json test/circle-dummy-project-json)]
     (ref? build) => true
-    (-> @build :vcs_revision) => "4f679c95a755108a35adc6663c8e54035ce1c66d"))
+    (-> @build :vcs_revision) => "78f58846a049bb6772dcb298163b52c4657c7d45"))
 
 (fact "build-from-url works for yaml configs"
   (build-from-url "https://github.com/circleci/test-yml") => ref?)
