@@ -3,8 +3,11 @@
   (:use circle.backend.build.run)
   (:use circle.backend.build.test-utils)
   (:require [circle.model.build :as build])
+  (:use [circle.backend.build.test-utils])
   (:use midje.sweet)
   (:use [circle.util.retry :only (wait-for)]))
+
+(test-ns-setup)
 
 (fact "queuing builds works"
   (let [builds (take 10 (repeatedly #(minimal-build)))]
