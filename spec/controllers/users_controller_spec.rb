@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe UsersController do
-  use_clojure_factories
   login_user
+  use_clojure_factories
   render_views
   let(:page) { Capybara::Node::Simple.new(@response.body) }
 

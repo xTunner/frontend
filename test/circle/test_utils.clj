@@ -26,13 +26,23 @@
 (defn ensure-project [p]
   (when-not (env/production?)
     (throw-if-not (-> p :vcs_url) "vcs_url is required")
-    (mongo/destroy! :projects (select-keys p [:vcs_url]))
-    (project/insert! p)))
+    (let [old p
+          new (mongo/fetch-and-modify :projects
+                                      {:vcs_url (-> p :vcs_url)}
+                                      {:$set p}
+                                      :return-new? true :upsert? true)]
+      new)))
 
-(defn ensure-user [u]
+;; Rails does some magic around users, so don't destroy the DB document that
+;; Rails created
+(defn ensure-user [user]
   (when-not (env/production?)
-      (mongo/destroy! :users (select-keys u [:email]))
-      (mongo/insert! :users u)))
+    (let [old user
+          new (mongo/fetch-and-modify :users
+                                      {:email (-> user :email)}
+                                      {:$set user}
+                                      :return-new? true :upsert? true)]
+      new)))
 
 (defn ensure-user-is-project-member [u p]
   (when-not (env/production?)
@@ -183,13 +193,8 @@ schedule:
 (def admin-user
   {:email "admin@test.com"
    :name "Admin User"
-   :password "please"
+   :password "sudo"
    :admin true})
-
-(defn ensure-test-user-and-project []
-  (ensure-project test-project)
-  (ensure-user test-user)
-  (ensure-user-is-project-member test-user test-project))
 
 (def circle-request
   {:remote-addr "127.0.0.1",
@@ -266,20 +271,17 @@ schedule:
       (mongo/drop-coll! c))))
 
 (defn ensure-test-db []
-  (clear-test-db)
   (mongo/with-mongo (test-db-connection)
-    (ensure-user test-user)
     (ensure-user admin-user)
-    (ensure-project test-project)
     (ensure-project yml-project)
     (ensure-project partially-inferred-project)
-    (ensure-test-user-and-project)))
+    (ensure-user-is-project-member test-user test-project)))
 
 (defmacro test-ns-setup
   "Defines a midje (background) such that the test DB is cleared
   between runs, and all clojure DB connections go through the test DB"
   []
-  `(background (before :facts (ensure-test-db))
+  `(background (before :facts (clear-test-db) (ensure-test-db))
                (around :facts (ruby/with-runtime (ruby/test-ruby)
                                 ;;(redis/with-redis ) this isn't enough, we need to switch redis and resque at the same time.
                                 (mongo/with-mongo (test-db-connection)

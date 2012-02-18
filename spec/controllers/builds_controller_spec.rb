@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe BuildsController do
+  login_user
   use_clojure_factories
-  login_user # don't forget you can use current_user
   use_workers
   disable_mocking
 

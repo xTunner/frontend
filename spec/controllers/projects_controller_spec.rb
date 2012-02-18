@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe ProjectsController do
-  use_clojure_factories
   login_user
+  use_clojure_factories
   use_workers
 
   it "should render using pretty 'gh' links" do
