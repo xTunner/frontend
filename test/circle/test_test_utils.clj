@@ -1,5 +1,5 @@
 (ns circle.backend.build.test-test-utils
-  (:use circle.backend.build.test-utils)
+  (:use circle.test-utils)
   (:use midje.sweet))
 
 (fact "localhost-ssh-map always returns a private key"

@@ -1,5 +1,5 @@
 (ns circle.workers.test-github
-  (:use circle.backend.build.test-utils)
+  (:use circle.test-utils)
   (:require [circle.model.build :as build])
   (:require [circle.model.project :as project])
   (:require [circle.backend.build.run :as run])

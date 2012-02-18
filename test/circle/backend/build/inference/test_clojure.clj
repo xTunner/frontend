@@ -1,7 +1,7 @@
 (ns circle.backend.build.inference.test-clojure
   (:use midje.sweet)
   (:use circle.backend.build.inference.clojure)
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require fs)
   (:require [circle.backend.git :as git]))
 

@@ -1,7 +1,7 @@
 (ns circle.backend.build.test-inference
   (:use midje.sweet)
   (:use circle.backend.build.inference)
-  (:require [circle.backend.build.test-utils :as test]))
+  (:require [circle.test-utils :as test]))
 
 (fact "inferred actions have source :inferred"
   (let [example-repo (test/test-repo "database_yml_1")

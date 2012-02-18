@@ -1,7 +1,7 @@
 (ns circle.backend.build.inference.test-php
   (:use midje.sweet)
   (:use circle.backend.build.inference.php)
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require [circle.backend.git :as git])
   (:require fs))
 

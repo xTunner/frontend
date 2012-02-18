@@ -5,7 +5,7 @@
   (:use [circle.model.build :only (checkout-dir valid? validate successful?)])
   (:use [circle.backend.action.bash :only (bash remote-bash-build)])
   (:require [circle.backend.build.run :as run])
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require [circle.model.project :as project])
   (:require [circle.model.spec :as spec])
   (:require [circle.backend.build.inference :as inference])

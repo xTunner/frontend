@@ -1,7 +1,7 @@
 (ns circle.backend.build.test-notify
   (:use midje.sweet)
-  (:require [circle.backend.build.test-utils :as test])
-  (:use [circle.backend.build.test-utils :only (minimal-build test-ns-setup)])
+  (:require [circle.test-utils :as test])
+  (:use [circle.test-utils :only (minimal-build test-ns-setup)])
   (:require [circle.backend.build.notify :as notify])
   (:use [circle.backend.action :only (defaction)])
   (:require [circle.model.build :as build])

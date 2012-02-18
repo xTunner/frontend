@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use circle.backend.git)
   (:require [circle.model.project :as project])
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:require [circle.backend.github-url :as github])
   (:require [circle.backend.build.config :as config])
   (:require fs))

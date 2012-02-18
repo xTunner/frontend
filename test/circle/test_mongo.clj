@@ -2,7 +2,7 @@
   (:use [midje.sweet])
   (:require [somnium.congomongo :as mongo])
   (:require [circle.mongo :as c-mongo])
-  (:require [circle.backend.build.test-utils :as test]))
+  (:require [circle.test-utils :as test]))
 
 (test/test-ns-setup)
 

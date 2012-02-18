@@ -1,6 +1,6 @@
 (ns circle.model.test-project
   (:use circle.model.project)
-  (:require [circle.backend.build.test-utils :as test])
+  (:require [circle.test-utils :as test])
   (:use midje.sweet))
 
 (test/test-ns-setup)
