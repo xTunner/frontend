@@ -63,7 +63,10 @@ jobs:
       - bundle install
       - lein deps
       - rake assets:precompile
-      - rake staging:server
+      - source secret/production.env && rake staging:server:
+          environment:
+            CIRCLE_SWANK: "true"
+
       - sudo /etc/init.d/nginx start
 
 schedule:
