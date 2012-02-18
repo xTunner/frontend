@@ -69,7 +69,7 @@ module MongoidTest
     config.after_initialize do
       # Initialize the backend early, before the server is being used to satisfy user requests, so that
       # users never suffer the >1m startup times.
-      if RUBY_PLATFORM == 'java'
+      if RUBY_PLATFORM == 'java' && !ARGV[0].include?("assets:precompile")
         Backend.initialize
       end
 
