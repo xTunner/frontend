@@ -227,12 +227,4 @@ describe SimpleMailer do
   it "should send a first email" do
     pending # check the contents
   end
-
-  it "should send real mail" do
-    old = SimpleMailer.delivery_method
-    SimpleMailer.delivery_method = :smtp
-    # the test here is that build_email doesn't throw, and that a mail is actually delivered
-    SimpleMailer.post_build_email_hook(successful_build)
-    SimpleMailer.delivery_method = old
-  end
 end
