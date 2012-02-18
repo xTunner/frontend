@@ -1,6 +1,9 @@
 (ns circle.util.core
   (:import java.security.MessageDigest))
 
+(defn atom-set! [a v]
+  (swap! a (constantly v)))
+
 (defn printfln [& args]
   (apply printf args)
   (newline))
