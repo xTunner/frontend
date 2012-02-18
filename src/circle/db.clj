@@ -9,11 +9,10 @@
 
 (def production-db ; mongodb://<user>:<password>@staff.mongohq.com:10078/large1
   {:db (System/getenv "MONGOHQ_DATABASE")
-   :host (System/getenv "MONGOHQ_PASSWORD")
+   :host (System/getenv "MONGOHQ_HOST")
    :port (Integer/parseInt (or (System/getenv "MONGOHQ_PORT") "0"))
    :username (System/getenv "MONGOHQ_USERNAME")
-   :password (System/getenv "MONGOHQ_PASSWORD")
-   })
+   :password (System/getenv "MONGOHQ_PASSWORD")})
 
 (def staging-db ; mongodb://<user>:<password>@staff.mongohq.com:10017/staging
   {:db :staging
