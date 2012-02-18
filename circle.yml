@@ -5,9 +5,10 @@ nodes:
     username: ubuntu
 
     ## following only necessary for deployment
-    availability-zone: "us-east-1a" # customers *could* specify this, probably shouldn't care.
-    public-key: "secret/www.id_rsa.pub"
-    private-key: "secret/www.id_rsa"
+    availability-zone: "us-east-1a"
+    # forgive me. TODO: fix this after fixing #196
+    public-key: "../../../secret/www.id_rsa.pub"
+    private-key: "../../../secret/www.id_rsa"
     security-groups: ["www"]
 
 jobs:
