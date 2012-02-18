@@ -100,6 +100,11 @@
 (defn fetch-run-build [id]
   (run-build (build/fetch-build id)))
 
+(defn run-url [url & {:keys [cleanup-on-failure]}]
+  (-> url
+      (config/build-from-url)
+      (run-build :cleanup-on-failure cleanup-on-failure)))
+
 (defn configure
   "Makes sure the build has run it's configure step (if it has one). Mainly a convenience for testing."
   [build]

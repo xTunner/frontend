@@ -1,7 +1,7 @@
 ActionMailer::Base.smtp_settings = {
   :address => "smtp.mailgun.org",
-  :user_name => "postmaster@circleci.com",
-  :password => ENV["MAILGUN_SMTP_PASSWORD"],
+  :user_name => (ENV["MAILGUN_SMTP_USERNAME"] || "postmaster@circle-test.mailgun.org"),
+  :password => (ENV["MAILGUN_SMTP_PASSWORD"] || "2zmlyqerofs9"),
   :port => 587,
   :domain => "circleci.com",
   :authentication => :plain,
