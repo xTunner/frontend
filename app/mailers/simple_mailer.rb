@@ -7,6 +7,13 @@ class SimpleMailer < ActionMailer::Base
   # Notifications via emails:
   # We send notifications based on a user's preferences, and based on the status
   # of the previous build.
+
+  class << self
+    attr_accessor :delivery_method
+
+    @delivery_method = MongoidTest::Application.config.action_mailer.delivery_method
+  end
+
   def post_build_email_hook(build)
     # common to all emails
     @build = build
@@ -45,10 +52,10 @@ class SimpleMailer < ActionMailer::Base
       to = [@build.user.email]
     end
 
-
     mail(:to => to, :cc => cc, :bcc => bcc,
          :subject => subject,
-         :template_name => status.to_s).deliver
+         :template_name => status.to_s,
+         :delivery_method => self.class.delivery_method).deliver
   end
 
 
