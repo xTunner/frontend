@@ -5,7 +5,7 @@ module Base
 
   module ClassMethods
     def unsafe_create(attrs={})
-      raise if !Rails.env.test?
+      raise unless Rails.env.test?
 
       p = self.create!
       attrs.each { |k, v| p.send("#{k}=", v) }
