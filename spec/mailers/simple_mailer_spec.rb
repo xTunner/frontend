@@ -83,7 +83,7 @@ describe SimpleMailer do
 
     let(:build) { send(build_sym) }
     let!(:mails) do
-      SimpleMailer.post_build_email_hook(build);
+      SimpleMailer.post_build_email_hook(build)
       ActionMailer::Base.deliveries
     end
 
