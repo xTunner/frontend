@@ -129,3 +129,9 @@
         (exec-script/exec-checked-script
          (str (quote ~cmds))
          ("sudo" "-H" "-u" (unquote (-> ~session :user :username)) "bash" "-e" "-c" (unquote (format "'%s'" cmds#)))))))
+
+(defn append-file [session remote-path str & {:keys [eof-marker]
+                                              :or {eof-marker "EOF"}}]
+  (let [cat-str (format "<<%s\n%s\n%s\n" eof-marker str eof-marker)]
+    (exec-script/exec-script session
+     ("(" cat ~cat-str ")" >> ~remote-path))))

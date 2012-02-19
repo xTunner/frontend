@@ -65,23 +65,26 @@
   (alter-var-root (var clj-ssh.ssh/session) (constantly old-ssh-session))
   (alter-var-root (var clj-ssh.ssh/connect) (constantly old-ssh-connect)))
 
-(defn configure
-  "Runs pallet configure on a seq of ec2 instances"
-  [instance-ids group-spec]
+(defn configure [ip-addrs group-spec]
   (set-custom-ssh!)
   (pallet.core/lift group-spec
                     :phase :configure
-                    :compute (pallet-compute-service group-spec (map ec2/public-ip instance-ids))))
+                    :compute (pallet-compute-service group-spec ip-addrs)))
+
+(defn configure-ec2
+  "Runs pallet configure on a seq of ec2 instances"
+  [instance-ids group-spec]
+  (configure (map ec2/public-ip instance-ids) group-spec))
 
 (defn start-and-configure [group-spec]
   (let [instance-ids (ec2/start-instances (-> group-spec :circle-node-spec))]
-    (configure instance-ids group-spec)))
+    (configure-ec2 instance-ids group-spec)))
 
 (defn memoize-group-spec
   "Starts an instance, pallet configures it, creates a new image."
   [group-spec image-name]
   (let [instance-ids (ec2/start-instances (-> group-spec :circle-node-spec))]
-    (configure instance-ids group-spec)
+    (configure-ec2 instance-ids group-spec)
     (ec2/create-image (first instance-ids) image-name)
     (apply ec2/terminate-instances! instance-ids)))
 

@@ -24,6 +24,7 @@
             [circle.backend.ssh :as ssh]
             [circle.backend.nodes :as nodes]
             [circle.backend.pallet :as circle-pallet])
+  (:require [circle.backend.nodes.rails :as rails])
   (:use [circle.util.except :only (eat)]))
 
 ;; this is our "memoized" circle box
@@ -44,9 +45,9 @@
 (def circle-raw-group
   (pallet.core/group-spec
    "circle"
-   :circle-node-spec {:ami "ami-06ad526f" ;; clean ubuntu 11.10
+   :circle-node-spec {:ami "ami-6fa27506" ;; clean ubuntu 11.10, amd64
                       :availability-zone "us-east-1a"
-                      :instance-type "m1.small"
+                      :instance-type "m1.large"
                       :keypair-name "www"
                       :security-groups ["www" "allow-DB"]
                       :username "ubuntu"
@@ -66,8 +67,8 @@
                                                      ;; another mirror for
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
-                                                                :scopes ["main" "natty-updates" "universe" "multiverse"]}) ;; TODO the natty is specific to 11.04, change later.
-                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb"])
+                                                                :scopes ["main" "updates" "universe" "multiverse"]})
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb" ])
 
                              (remote-file/remote-file "/etc/rc.local" :local-file "pallet/rc.local" :mode "755" :no-versioning true)
                              (remote-file/remote-file "/home/ubuntu/.bashrc" :local-file "pallet/bashrc" :mode "644" :no-versioning true)
@@ -111,12 +112,11 @@
                                                    "id_rsa"
                                                    (slurp "secret/www.id_rsa")
                                                    (slurp "secret/www.id_rsa.pub"))
-                              (lein/lein)
                               (remote-file/remote-file (str home "/.ssh/config") :content "Host github.com\n\tStrictHostKeyChecking no\n"
                                                        :owner username
                                                        :group username
                                                        :mode "600")
                               (directory/directory (str home "/.pallet/")
                                                    :create :action
-                                                   :path true)
-                              (remote-file/remote-file (str home "/.pallet/config.clj") :local-file "src/circle/pallet_config.clj" :no-versioning true))))}))
+                                                   :path true))))
+            :extends [rails/clojure-group]}))
