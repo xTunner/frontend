@@ -53,7 +53,7 @@
   "Initializes the mongodb connection"
   [& [db]]
   (let [db (or db (default-db))]
-    (infof "Connecting to: %s" db)
+    (infof "Connecting to: %s" (dissoc db :password))
     (def mongodb (connect db))
     (mongo/set-connection! mongodb)))
 
