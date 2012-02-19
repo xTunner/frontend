@@ -11,3 +11,8 @@
          (map :source)
          (into #{})
          (#(contains? % :inferred)))  => true))
+
+;; our own tests are broken if this doesn't pass
+(fact "inference runs lein deps before db:create"
+  (let [actions (infer-actions ".")]
+    (map :name actions) => (contains [(contains "lein deps") (contains "rake db:create")] :gaps-ok)))

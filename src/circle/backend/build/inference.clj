@@ -7,8 +7,8 @@
             circle.backend.build.inference.php
             circle.backend.build.inference.clojure))
 
-(def inference-fns {:rails (var circle.backend.build.inference.rails/spec)
-                    :clojure (var circle.backend.build.inference.clojure/spec)
+(def inference-fns {:clojure (var circle.backend.build.inference.clojure/spec)
+                    :rails (var circle.backend.build.inference.rails/spec)
                     :php (var circle.backend.build.inference.php/spec)})
 
 (defn set-inferred [actions]
