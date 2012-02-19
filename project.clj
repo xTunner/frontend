@@ -110,7 +110,14 @@
                  [vmfest "0.2.3-a03a0006b5ac05018323fc6f4ccde0bdbdb45d9d"]
                  [lein-crate "0.1.0"]
                  [pallet-rvm "0.1-46e3991113e82b9d857bce7945b606423ba17699"]
-                 ;;[midje "1.3.2-SNAPSHOT"]
+
+                 ;; DO NOT REMOVE. I know it looks like we have midje
+                 ;; down below, but we need it in both places. In
+                 ;; production, trinidad doesn't load the dev
+                 ;; dependencies (/lib/dev), and trinidad is a
+                 ;; passive-aggressive bitch if any exceptions are
+                 ;; thrown at startup.
+                 [midje "1.3.1"]
                  [cdt "1.2.6.1-SNAPSHOT"]
                  [org.jruby.ext.posix/jnr-posix "1.1.8"]]
 
