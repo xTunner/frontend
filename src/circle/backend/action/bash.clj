@@ -66,7 +66,7 @@
   (let [name (or name (action-name command))
         bash-command (emit-bash command environment pwd)
         relative-timeout (or relative-timeout (time/minutes 20))
-        absolute-timeout (or absolute-timeout (time/hours 1))]
+        absolute-timeout (or absolute-timeout (time/hours 2))]
     (action/action :name name
                    :type type
                    :command (str command)
