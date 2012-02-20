@@ -11,6 +11,7 @@ class User
   field :name
   field :contact, :type => Boolean
   field :admin, :type => Boolean, :default => false
+  field :bot, :type => Boolean, :default => false
   field :github_access_token
   field :signup_channel
   field :signup_referer
@@ -127,7 +128,11 @@ class User
       bot = User.new(:email => "bot@circleci.com",
                      :password => "brick amount must thirty")
     end
-    bot.admin = true
+    bot.bot = true
+    # we originally used bot.admin for this, but that's insecure. However, we
+    # can't remove the admin setting until we deploy, or the old boxes won't
+    # be able to gracefully shut down.
+    # bot.admin = false
     bot.save!
   end
 
