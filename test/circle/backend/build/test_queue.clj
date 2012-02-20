@@ -1,9 +1,8 @@
 (ns circle.backend.build.test-queue
   (:use circle.backend.build.queue)
   (:use circle.backend.build.run)
-  (:use circle.backend.build.test-utils)
   (:require [circle.model.build :as build])
-  (:use [circle.backend.build.test-utils])
+  (:use [circle.test-utils])
   (:use midje.sweet)
   (:use [circle.util.retry :only (wait-for)]))
 
