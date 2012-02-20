@@ -10,7 +10,15 @@
            :test {:host "carp.redistogo.com"
                   :port 9334
                   :username "circle"
-                  :password "6c67063efb4a63915cf499d4cbc7d12e"}})
+                  :password "6c67063efb4a63915cf499d4cbc7d12e"}
+           :staging {:host "barracuda.redistogo.com"
+                     :port 9553
+                     :username "circle"
+                     :password "9244c6279038eb6ead961a71320ea873"}
+           :production {:host (System/getenv "REDIS_HOST")
+                        :port (System/getenv "REDIS_PORT")
+                        :username (System/getenv "REDIS_USERNAME")
+                        :password (System/getenv "REDIS_PASSWORD")}})
 
 (defn-once init
   (resque/configure (merge (get uris (circle.env/env))
