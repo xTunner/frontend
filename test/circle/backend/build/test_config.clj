@@ -129,14 +129,6 @@
   (-> :setup ((parse-spec-actions {:setup "1\r\n2"}))) => (maps-containing {:name "1"} {:name "2"}))
 
 
-(fact "circle is not inferred"
-  ;; not a real "test", but currently circle shouldn't be inferred,
-  ;; and causes hard to find test failures when it's not.
-  (let [json test/circle-github-json
-        p (project/get-by-url (-> json :repository :url))]
-    (-> p :inferred) => falsey
-    (-> (build-from-json json) (run/configure) (deref) :job-name) => :build))
-
 (fact "circle deploys have :lb-name"
   (-> (circle.backend.build.config/build-from-url "https://github.com/circleci/test-yml" :job-name :deploy)
       (run/configure)
