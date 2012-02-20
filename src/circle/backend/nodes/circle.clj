@@ -54,7 +54,7 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "updates" "universe" "multiverse"]})
-                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb" ])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "firefox" "xvfb" "emacs"])
 
                              (remote-file/remote-file "/etc/rc.local" :local-file "pallet/rc.local" :mode "755" :no-versioning true)
                              (remote-file/remote-file "/home/ubuntu/.bashrc" :local-file "pallet/bashrc" :mode "644" :no-versioning true)
