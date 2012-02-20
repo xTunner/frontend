@@ -12,7 +12,8 @@
             [pallet.compute.node-list :as node-list]
             [clj-ssh.ssh :as ssh]
             [circle.backend.ec2 :as ec2]
-            [circle.backend.nodes.rails :as rails])
+            [circle.backend.nodes.rails :as rails]
+            [circle.backend.build.config])
   (:use [pallet.configure :only (defpallet)]
         [circle.util.core :only (apply-map)]))
 
@@ -95,6 +96,13 @@
                               {:instance-type "m1.small"
                                :ami (-> circle.backend.nodes.rails/rails-node :ami)})))
 
+(defn start-circle-instance []
+  (ec2/start-instances (merge (-> (circle.backend.build.config/read-yml-config ".")
+                                  :nodes
+                                  :www
+                                  (update-in [:public-key] slurp)
+                                  (update-in [:private-key] slurp))
+                              {:keypair-name "www"})))
 
 ;; TODO: vmfest could probably do this better
 (defn setup-vagrant []
