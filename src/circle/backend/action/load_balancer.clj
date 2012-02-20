@@ -18,8 +18,8 @@
   {:name "add to load balancer"}
   (fn [build]
     (try
-      (let [lb-name (-> @build :lb-name)
-            _ (throw-if-not lb-name "build LB name must not be null. Is it in your DB?")
+      (let [lb-name (-> @build :node :lb-name)
+            _ (throw-if-not lb-name "build LB name must not be null. Is it in your DB/yml?")
             instance-ids (-> @build :instance-ids)
             _ (doseq [i instance-ids
                       :let [az (ec2/get-availability-zone i)]]
