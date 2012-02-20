@@ -1,6 +1,7 @@
 class User
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Base
 
   # Include default devise modules. Others available are: :token_authenticatable, :encryptable,
   # :confirmable, :lockable, :timeoutable, :recoverable,
@@ -132,6 +133,8 @@ class User
 
   # finds the project that the user belongs to with the most builds, and returns it. Displayed on Intercom
   def most_active_project
-    projects.sort_by { |p| p.next_build_seq.to_i }.last.github_project_name
+    if projects.length > 0
+      projects.sort_by { |p| p.next_build_seq.to_i }.last.github_project_name
+    end
   end
 end

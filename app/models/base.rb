@@ -7,7 +7,7 @@ module Base
     def unsafe_create(attrs={})
       raise unless Rails.env.test?
 
-      p = self.create!
+      p = self.create! attrs
       attrs.each { |k, v| p.send("#{k}=", v) }
       p.save!
       p

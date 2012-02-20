@@ -1,10 +1,18 @@
 describe "Users" do
+  let(:user) { User.unsafe_create(name: "Test user",
+                                  email: "user@test.com",
+                                  password: "please") }
+
+  let(:github_user) { User.unsafe_create(name: "Circle dummy user",
+                                         email: "builds@circleci.com",
+                                         password: "engine process vast trace") }
+
+
+
 
   describe "login" do
 
     it "should get the user page when it logs in" do
-      user = Factory(:user)
-
       visit root_path
       click_link "Login"
 
@@ -25,7 +33,6 @@ describe "Users" do
       host! host
       Capybara.app_host = "http://" + host
       # deliberately don't add to the DB - it's about to be created in the sign up form.
-      @user = Factory.build(:github_user)
     end
 
     it "selenium works", :js => true do
@@ -48,7 +55,7 @@ describe "Users" do
       # won't stop on github.
       if URI.parse(current_url).host == "github.com"
           fill_in "login", :with => "circle-test"
-          fill_in "password", :with => @user.password
+          fill_in "password", :with => github_user.password
           click_button "Log in"
       end
 
@@ -67,15 +74,15 @@ describe "Users" do
 
       URI.parse(current_url).path.should == join_path
       page.should have_content("We've got your code - we'd better get you an account")
-      find_field('user_name').value.should == @user.name
+      find_field('user_name').value.should == github_user.name
       find_field('user_email').value.should == ""
-      fill_in "user_email", :with => @user.email
-      fill_in "user_password", :with => @user.password
+      fill_in "user_email", :with => github_user.email
+      fill_in "user_password", :with => github_user.password
       click_button "Sign up"
 
       URI.parse(current_url).path.should == root_path
       page.should_not have_content("guest")
-      page.should have_content(@user.email)
+      page.should have_content(github_user.email)
       page.should have_content "Latest builds"
       page.should have_content("circle-dummy-project")
       page.should have_content("edit")
