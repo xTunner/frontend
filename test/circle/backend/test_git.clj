@@ -34,7 +34,8 @@
              :author_date "1329447089"
              :committer_name "Paul Biggar"
              :body ""
-             :branch #"remotes/origin/(HEAD|master)~\d+"
+             ;:branch #"remotes/origin/(HEAD|master)~\d+" # this data isn't
+             ;reliable, use the data from github's pushlog instead.
              :committer_email "paul.biggar@gmail.com"}))
 
 (fact "committer-email works"
