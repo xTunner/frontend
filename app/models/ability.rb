@@ -18,7 +18,7 @@ class Ability
 
     can :manage, :all if user.admin?
 
-    can :manage, System if user.admin?
+    can :manage, System if user.bot?
 
     # can do |action, subject_class, subject|
     #   puts action

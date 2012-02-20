@@ -1,6 +1,5 @@
 (ns circle.backend.build.queue
   (:use [clojure.core.incubator :only (-?>)])
-  (:require [redis.core :as redis])
   (:require [resque-clojure.core :as resque])
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.util.except :only (throwf)])

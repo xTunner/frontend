@@ -47,9 +47,12 @@ class Project
     projects = Project.where(:vcs_url => url).first
   end
 
+  def self.canonical_url(name)
+    "https://github.com/#{name}"
+  end
+
   def self.from_github_name(name)
-    url = Backend.blocking_worker "circle.backend.github-url/canonical-url", name
-    self.from_url url
+    self.from_url self.canonical_url(name)
   end
 
   # TECHNICAL_DEBT: projects should have a list of builds, but it doesnt on the

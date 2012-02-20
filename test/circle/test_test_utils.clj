@@ -1,4 +1,4 @@
-(ns circle.backend.build.test-test-utils
+(ns circle.test-test-utils
   (:use circle.test-utils)
   (:use midje.sweet))
 

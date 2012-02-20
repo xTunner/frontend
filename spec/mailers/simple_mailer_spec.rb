@@ -83,7 +83,7 @@ describe SimpleMailer do
 
     let(:build) { send(build_sym) }
     let!(:mails) do
-      SimpleMailer.post_build_email_hook(build);
+      SimpleMailer.post_build_email_hook(build)
       ActionMailer::Base.deliveries
     end
 
@@ -226,5 +226,28 @@ describe SimpleMailer do
 
   it "should send a first email" do
     pending # check the contents
+  end
+
+
+  describe "real mail" do
+    before :each do
+      ActionMailer::Base.delivery_method = :smtp
+    end
+
+    after :each do
+      ActionMailer::Base.delivery_method = :test
+    end
+
+    it "should work through mailgun" do
+      token = "[TEST_TOKEN #{Time.now.to_f.to_s}]"
+
+      SimpleMailer.test(:subject => "#{token}: Test that we can send real mail, and that it delivers")
+
+      # check the logs, it should contain that token
+      json = RestClient.get "https://api:key-1jtca38b84yhf576s-teo2e5a06n1bl7@api.mailgun.net/v2/circle-test.mailgun.org/log", :params => { :limit => 20 }
+      mails = JSON.parse(json)["items"]
+
+      mails.any? { |item| item["message"].include? token }.should == true
+    end
   end
 end

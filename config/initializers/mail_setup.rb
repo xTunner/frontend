@@ -8,6 +8,11 @@ ActionMailer::Base.smtp_settings = {
   :enable_starttls_auto => true,
 }
 
+if Rails.env.test?
+  ActionMailer::Base.smtp_settings[:domain] = "circle-test.mailgun.org"
+end
+
+
 ## Google Apps Settings, for backup if necessary.
 
 # ActionMailer::Base.smtp_settings = {

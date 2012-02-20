@@ -1,6 +1,7 @@
 class User
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Base
 
   # Include default devise modules. Others available are: :token_authenticatable, :encryptable,
   # :confirmable, :lockable, :timeoutable, :recoverable,
@@ -10,6 +11,7 @@ class User
   field :name
   field :contact, :type => Boolean
   field :admin, :type => Boolean, :default => false
+  field :bot, :type => Boolean, :default => false
   field :github_access_token
   field :signup_channel
   field :signup_referer
@@ -126,12 +128,18 @@ class User
       bot = User.new(:email => "bot@circleci.com",
                      :password => "brick amount must thirty")
     end
-    bot.admin = true
+    bot.bot = true
+    # we originally used bot.admin for this, but that's insecure. However, we
+    # can't remove the admin setting until we deploy, or the old boxes won't
+    # be able to gracefully shut down.
+    # bot.admin = false
     bot.save!
   end
 
   # finds the project that the user belongs to with the most builds, and returns it. Displayed on Intercom
   def most_active_project
-    projects.sort_by { |p| p.next_build_seq.to_i }.last.github_project_name
+    if projects.length > 0
+      projects.sort_by { |p| p.next_build_seq.to_i }.last.github_project_name
+    end
   end
 end
