@@ -5,9 +5,7 @@ describe "Users" do
 
   let(:github_user) { User.unsafe_create(name: "Circle dummy user",
                                          email: "builds@circleci.com",
-                                         password: "engine process vast trace") }
-
-
+                                         password: "enough national flies folks") }
 
 
   describe "login" do
