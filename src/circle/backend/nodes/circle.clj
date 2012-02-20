@@ -27,20 +27,6 @@
   (:require [circle.backend.nodes.rails :as rails])
   (:use [circle.util.except :only (eat)]))
 
-;; this is our "memoized" circle box
-(def circle-group
-  (pallet.core/group-spec
-   "circle"
-   :circle-node-spec {:ami "ami-3bb46152"
-                      :name "www"
-                      :availability-zone "us-east-1a"
-                      :instance-type "m1.small"
-                      :keypair-name "www"
-                      :security-groups ["www" "allow-DB"]
-                      :username "ubuntu"
-                      :public-key (eat (slurp "secret/www.id_rsa.pub"))
-                      :private-key (eat (slurp "secret/www.id_rsa"))}))
-
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
   (pallet.core/group-spec
