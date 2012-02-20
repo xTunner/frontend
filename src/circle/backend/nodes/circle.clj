@@ -70,8 +70,8 @@
                              (rvm/rvm)
                              (circle-pallet/user-code
                               (source "~/.bashrc") ;; make sure RVM is loaded
-                              (rvm install jruby)
-                              (rvm use jruby)
+                              (rvm install jruby-1.6.5)
+                              (rvm use jruby-1.6.5)
                               (rvm gemset create circle)
                               (rvm gemset use circle)
                               (gem install bundler)
