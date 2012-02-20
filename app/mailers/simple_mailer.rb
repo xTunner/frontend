@@ -70,8 +70,10 @@ class SimpleMailer < ActionMailer::Base
     user.save!
   end
 
-  def test(address="founders@circleci.com")
+  def test(args={})
+    address = args[:address] || "blackhole@circleci.com"
+    subject = args[:subject] || "#{Rails.env}: test email"
     mail(:to => address,
-         :subject => "#{Rails.env}: test email").deliver
+         :subject => subject).deliver
   end
 end
