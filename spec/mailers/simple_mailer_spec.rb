@@ -230,11 +230,11 @@ describe SimpleMailer do
 
 
   describe "real mail" do
-    before :all do
+    before :each do
       ActionMailer::Base.delivery_method = :smtp
     end
 
-    after :all do
+    after :each do
       ActionMailer::Base.delivery_method = :test
     end
 
