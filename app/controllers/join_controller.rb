@@ -64,9 +64,7 @@ class JoinController < ApplicationController
 
     # Add all projects the user has access to.
     projects.each do |user_repo_pair|
-      username, projectname = user_repo_pair.split "/"
-      gh_url = Backend.blocking_worker "circle.backend.github-url/canonical-url", username, projectname
-
+      gh_url = Project.canonical_url user_repo_pair
       project = Project.where(:vcs_url => gh_url).first
 
       allowed_urls = session[:allowed_urls] || []
@@ -83,6 +81,7 @@ class JoinController < ApplicationController
       project.users << current_or_guest_user
       project.save!
 
+      username, projectname = user_repo_pair.split "/"
       Github.add_deploy_key current_or_guest_user, project, username, projectname
       Github.add_commit_hook username, projectname, current_or_guest_user
     end
