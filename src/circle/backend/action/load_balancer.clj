@@ -1,6 +1,5 @@
 (ns circle.backend.action.load-balancer
   (:import com.amazonaws.AmazonClientException)
-  (:require [circle.backend.nodes :as nodes])
   (:require [clj-http.client :as http])
   (:use [clojure.tools.logging :only (infof)])
   (:use [circle.backend.action :only (defaction abort!)])
