@@ -198,8 +198,6 @@
 
       (println "clearing")
       ;;  http://blog.thefrontiergroup.com.au/2011/03/reloading-factory-girl-factories-in-the-rails-3-console
-      (-> (get-module :FactoryGirl) (send :factories) (send :clear))
-      (-> (get-module :FactoryGirl) (send :find_definitions) (send :clear))
       (-> (get-module :RSpec) (send :world) (send :reset))
       (-> (get-module :RSpec) (send :world) (send :shared_example_groups) (send :clear))
 
