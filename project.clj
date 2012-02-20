@@ -33,13 +33,15 @@
                  ;; we added new fn, org/repos
                  [tentacles "0.1.3-461a6920fe3b3e7add0ef3b7fed6cba10bf3d114"]
 
+                 [ring "1.0.2"] ;; clj-airbrake currently depends on 0.3.6, noir requires 1.0.x. need to Submit patch to clj-airbrake.
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                  ;;; Dependencies
                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
                  ;; Web
-                 [noir "1.2.1"] ;; this is necessary because of the posterous template in src/circle/web/views/posterous
+                 [noir "1.2.2"] ;; this is necessary because of the posterous template in src/circle/web/views/posterous
+
                  [clj-url "1.0.3"]
                  [clj-http "0.2.7"]
                  [clj-r53 "1.0.1"]
