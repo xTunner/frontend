@@ -100,9 +100,9 @@
 (defn fetch-run-build [id]
   (run-build (build/fetch-build id)))
 
-(defn run-url [url & {:keys [cleanup-on-failure]}]
+(defn run-url [url & {:keys [cleanup-on-failure job-name]}]
   (-> url
-      (config/build-from-url)
+      (config/build-from-url :job-name job-name)
       (run-build :cleanup-on-failure cleanup-on-failure)))
 
 (defn configure
