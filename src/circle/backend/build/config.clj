@@ -206,9 +206,13 @@
 
 
 (defn read-yml-config [repo]
-  (-> repo
-      (fs/join "secret/circle.yml")
-      (load-config)))
+  (or
+   (-> repo
+       (fs/join "secret/circle.yml")
+       (load-config))
+   (-> repo
+       (fs/join "circle.yml")
+       (load-config))))
 
 (defn get-yml-config [repo & {:keys [job-name]}]
   (when-let [config (read-yml-config repo)]
