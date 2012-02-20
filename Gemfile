@@ -9,10 +9,6 @@ platforms :jruby do
   gem 'activerecord-jdbcsqlite3-adapter'
 end
 
-platforms :ruby do
-  gem 'sqlite3'
-end
-
 gem 'jquery-rails'
 gem "bson_ext", "~> 1.4"
 gem "mongoid", "~> 2.4"
