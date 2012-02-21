@@ -6,6 +6,8 @@
   (:require circle.repl)
   (:require circle.resque)
   (:require circle.logging)
+  (:require circle.api.server)
+
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
   (:use [clojure.tools.logging :only (error)])
