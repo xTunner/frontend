@@ -1,6 +1,7 @@
 (ns circle.db
   (:require [circle.env :as env])
   (:require [somnium.congomongo :as mongo])
+  (:require [monger.core :as monger])
   (:use [circle.util.core :only (defn-once)])
   (:use [circle.util.except :only (throwf)])
   (:require [circle.db.migration-lib])
@@ -40,7 +41,7 @@
    (env/development?) development-db
    :else (throwf "no environment set")))
 
-(defn connect [db]
+(defn congo-connect [db]
   (let [{:keys [db host port username password]} db
         conn (mongo/make-connection db :host host :port port)]
     (mongo/with-mongo conn
@@ -53,25 +54,49 @@
   "Initializes the mongodb connection"
   [& [db]]
   (let [db (or db (default-db))]
-    (infof "Connecting to: %s" (dissoc db :password))
-    (def mongodb (connect db))
-    (mongo/set-connection! mongodb)))
+    (infof "Connecting with congomongo: %s" (dissoc db :password))
+    (def congodb (congo-connect db))
+    (mongo/set-connection! congodb)))
+
+(defn monger-connect [db]
+  (let [{:keys [db host port username password]} db
+        db-name (name db)
+        conn (monger/connect { :host host :port port})
+        db-itself (monger.core/get-db conn db-name)]
+    (monger.core/set-db! db-itself)
+    (monger.core/with-db db-itself
+      (when (and username password)
+        (monger.core/authenticate db-name username (.toCharArray password))))
+    ; WriteConcern is SAFE by default
+    db-itself))
+
+(defn start-monger [& [db]]
+  "Initialize monger's mongodb connection"
+  (let [db (or db (default-db))]
+    (infof "Connecting with monger: %s" (dissoc db :password))
+    (def mongerdb (monger-connect db))
+    (monger.core/connect! db)))
 
 (defn indices []
   (mongo/add-index! :users [:email] :unique true)
   (mongo/add-index! :projects [:vcs_url] :unique true))
 
 (defn init []
-  (when (not (bound? (var mongodb)))
+  (when (not (bound? (var congodb)))
     (start-mongo)
     (indices)
+    (start-monger)
     (println "db/init done")))
 
 (defmacro with-production-db
   "Execute some code while connected to the production DB"
   [& body]
-  `(mongo/with-mongo (connect production-db)
-     ~@body))
+  `(mongo/with-mongo (congo-connect production-db)
+     (monger.core/with-db (monger-connect production-db)
+       ~@body)))
 
-(defn-once test-db-connection
-  (connect test-db))
+(defn-once test-congo-connection
+  (congo-connect test-db))
+
+(defn-once test-monger-connection
+  (monger-connect test-db))

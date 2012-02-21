@@ -7,7 +7,7 @@
   (:require circle.init)
   (:require [clj-yaml.core :as yaml])
   (:use [circle.util.except :only (eat throw-if-not)])
-  (:use [circle.db :only (test-db-connection)])
+  (:use [circle.db :only (test-congo-connection)])
   (:require [circle.ruby :as ruby])
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.ssh :as ssh])
@@ -266,12 +266,12 @@ schedule:
                          :subject "dummy commit message"}))))
 
 (defn clear-test-db []
-  (mongo/with-mongo (test-db-connection)
+  (mongo/with-mongo (test-congo-connection)
     (doseq [c (filter #(not= "system.indexes" %) (mongo/collections))]
       (mongo/drop-coll! c))))
 
 (defn ensure-test-db []
-  (mongo/with-mongo (test-db-connection)
+  (mongo/with-mongo (test-congo-connection)
     (ensure-user admin-user)
     (ensure-project yml-project)
     (ensure-project partially-inferred-project)
@@ -284,5 +284,5 @@ schedule:
   `(background (before :facts (do (clear-test-db) (ensure-test-db)))
                (around :facts (ruby/with-runtime (ruby/test-ruby)
                                 ;;(redis/with-redis ) this isn't enough, we need to switch redis and resque at the same time.
-                                (mongo/with-mongo (test-db-connection)
+                                (mongo/with-mongo (test-congo-connection)
                                   ?form)))))
