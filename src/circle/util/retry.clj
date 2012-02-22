@@ -94,11 +94,10 @@
   [& args]
   (let [{:keys [options f] :as parsed-args} (parse-args args)
         {:keys [success timeout tries sleep]
-         :or {sleep (time/secs 1)
-              tries 10}} options
-        tries (if (and sleep timeout (not tries))
+         :or {sleep (time/secs 1)}} options
+        tries (if (and sleep timeout (not (-> options :tries)))
                 :unlimited
-                tries)
+                (or (-> options :tries) 10))
         _ (when sleep
             (throw-if-not (period? sleep) "sleep must be a period"))
         end-time (when timeout
