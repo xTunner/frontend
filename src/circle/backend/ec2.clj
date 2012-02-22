@@ -302,7 +302,6 @@
                   :or {timeout (time/secs 30)
                        sleep-interval (time/secs 10)}}]
   (infof "block-until-running: waiting for instance %s to start" instance-id)
-  (infof "block-until-running: sleep-interval: %s %s" sleep-interval timeout)
   (try
     (wait-for
      {:sleep sleep-interval
