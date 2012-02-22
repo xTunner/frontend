@@ -1,7 +1,7 @@
 (ns circle.backend.action.load-balancer
   (:import com.amazonaws.AmazonClientException)
   (:require [clj-http.client :as http])
-  (:use [clojure.tools.logging :only (infof)])
+  (:use [clojure.tools.logging :only (infof errorf)])
   (:use [circle.backend.action :only (defaction abort!)])
   (:use [circle.util.except :only (throw-if-not)])
   (:require [clj-time.core :as time])
@@ -52,6 +52,7 @@
          #(lb/healthy? lb-name instance-ids))
         (build-log "instances %s all healthy in load balancer %s" instance-ids lb-name)
         (catch Exception e
+          (errorf e "wait-for-healthy: caught e" (.getClass e))
           (abort! build (format "load balancer didn't report healthy for %s" instance-ids)))))))
 
 (defn get-old-revisions
