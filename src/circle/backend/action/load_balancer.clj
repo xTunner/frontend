@@ -13,11 +13,14 @@
   (:require [circle.backend.ec2 :as ec2])
   (:require [clojure.string :as str]))
 
+(defn get-lb-name [build]
+  (-> @build :node :lb-name))
+
 (defaction add-instances []
   {:name "add to load balancer"}
   (fn [build]
     (try
-      (let [lb-name (-> @build :node :lb-name)
+      (let [lb-name (get-lb-name build)
             _ (throw-if-not lb-name "build LB name must not be null. Is it in your DB/yml?")
             instance-ids (-> @build :instance-ids)
             _ (doseq [i instance-ids
@@ -44,7 +47,7 @@
   {:name "wait for nodes LB healthy"}
   (fn [build]
     (let [instance-ids (-> @build :instance-ids)
-          lb-name (-> @build :lb-name)]
+          lb-name (get-lb-name build)]
       (try
         (wait-for
          {:sleep (lb-healthy-sleep)
@@ -71,7 +74,7 @@
   {:name "remove old revisions"}
   (fn [build]
     (try
-      (let [lb-name (-> @build :lb-name)
+      (let [lb-name (get-lb-name build)
             old-instances (get-old-revisions lb-name
                                              (-> @build :vcs_revision))
             terminated-instances (lb/terminated-instances lb-name)]
