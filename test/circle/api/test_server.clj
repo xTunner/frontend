@@ -1,6 +1,6 @@
 (ns circle.api.test-server
   (:require [circle.api.server :as server])
-  (:require [monger.collection :as monger])
+  ;; (:require [monger.collection :as monger])
   (:require [clj-http.client :as client])
   (:require [clj-json.core :as json]) ; deliberately use a different json lib to
                                       ; the server

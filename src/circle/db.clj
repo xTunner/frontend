@@ -85,7 +85,7 @@
   (when (not (bound? (var congodb)))
     (start-mongo)
     (indices)
-    (start-monger)
+    ;; (start-monger)
     (println "db/init done")))
 
 (defmacro with-production-db
