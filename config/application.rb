@@ -69,10 +69,15 @@ module MongoidTest
     config.assets.version = '1.0'
 
     config.after_initialize do
+
       # Initialize the backend early, before the server is being used to satisfy user requests, so that
       # users never suffer the >1m startup times.
-      if RUBY_PLATFORM == 'java' && !(ARGV && ARGV[0] && ARGV[0].include?("assets:precompile"))
-        Backend.initialize
+      if RUBY_PLATFORM == 'java'
+        if ENV["CIRCLE_SWANK"] ||
+            ($0.split('/').last == "rake" &&
+             ARGV && ["production:server", "staging:server"].include?(ARGV[0]))
+          Backend.initialize
+        end
       end
 
       User.add_bot

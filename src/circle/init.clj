@@ -25,6 +25,7 @@
     (circle.db/init)
     (circle.api.server/init)
     (circle.resque/init)
+    (circle.api.server/init)
 
     (println (java.util.Date.))
     true

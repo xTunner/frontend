@@ -1,7 +1,10 @@
 (ns circle.api.server
   (:use noir.core)
+  (:require [noir.response :as response])
   (:require [noir.server :as server])
+
   (:use [clojure.tools.logging :only (infof)])
+  (:require [cheshire.core :as cheshire])
   (:use [circle.util.core :only (defn-once)]))
 
 (defn logging [handler]
@@ -19,6 +22,8 @@
   (server/stop server))
 
 (defpage "/api/v1/hello" []
-  "Welcome to Noir!")
+  (response/json {:message "hello"}))
 
-
+(defpage "/whoami" []
+  ; get the user from the cookie, return the users details
+  )
