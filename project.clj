@@ -48,6 +48,7 @@
                  [commons-email "1.1"]
                  [cheshire "2.1.0"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
+                 [clj-oauth "1.3.1-SNAPSHOT"]
 
                  ;; DB
                  [c3p0 "0.9.1.2"]
