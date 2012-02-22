@@ -12,6 +12,7 @@
   (:require [circle.backend.ec2 :as ec2])
   (:require [circle.backend.ssh :as ssh])
   (:require [circle.sh :as sh])
+  (:use [circle.util.except :only (throwf)])
   (:use [midje.sweet])
   (:import java.io.StringReader))
 
@@ -286,3 +287,27 @@ schedule:
                                 ;;(redis/with-redis ) this isn't enough, we need to switch redis and resque at the same time.
                                 (mongo/with-mongo (test-db-connection)
                                   ?form)))))
+
+(defn stateful-fn*
+  "Takes a seq of no argument fns. Returns a new fn that calls each fn in turn."
+  [fns]
+  (let [state (atom fns)]
+    (fn []
+      (if (not (zero? (count @state)))
+        (let [f (first @state)]
+          (try
+            (apply f [])
+            (finally
+             (swap! state rest))))
+        (throwf "no more values")))))
+
+(defmacro thunk-args
+  "Takes a seq of unevaluated exprs. Returns a seq of no argument fns, that call each of the exprs in turn"
+  [exprs]
+  (into [] (map (fn [v]
+                  `(fn []
+                     ~v)) exprs)))
+
+(defmacro stateful-fn
+  [& args]
+  `(stateful-fn* (thunk-args ~args)))
