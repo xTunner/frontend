@@ -59,7 +59,6 @@ group :test do
   gem "database_cleaner", ">= 0.6.7"
   gem "mongoid-rspec", ">= 1.4.4"
   gem "launchy", ">= 2.0.5"
-  gem "minitest"
   gem 'turn', :require => false  # Pretty printed test output
   gem 'flexmock'
   gem 'rspec-html-matchers'
