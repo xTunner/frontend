@@ -5,7 +5,6 @@
   (:use [circle.backend.action :only (defaction abort!)])
   (:use [circle.util.except :only (throw-if-not)])
   (:require [clj-time.core :as time])
-  (:use [circle.util.time :only (to-millis)])
   (:use [circle.model.build :only (build-log)])
   ;;(:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.retry :only (wait-for)])
@@ -32,10 +31,14 @@
          :continue false
          :err (.getMessage e)}))))
 
-(defn lb-healthy-retries
+(defn lb-healthy-timeout
   "Number of times to retry when waiting for the LB to become healthy. Defn so it can be rebound w/ midje"
   []
-  10)
+  (time/minutes 10))
+
+(defn lb-healthy-sleep
+  []
+  (time/secs 30))
 
 (defaction wait-for-healthy []
   {:name "wait for nodes LB healthy"}
@@ -44,8 +47,8 @@
           lb-name (-> @build :lb-name)]
       (try
         (wait-for
-         {:sleep (to-millis (time/minutes 1))
-          :tries (lb-healthy-retries)}
+         {:sleep (lb-healthy-sleep)
+          :timeout (lb-healthy-timeout)}
          #(lb/healthy? lb-name instance-ids))
         (build-log "instances %s all healthy in load balancer %s" instance-ids lb-name)
         (catch Exception e

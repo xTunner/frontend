@@ -2,9 +2,9 @@
   (:require [clj-ssh.ssh :as ssh])
   (:use [clojure.tools.logging :only (errorf)])
   (:require [clj-time.core :as time])
-  (:use [robert.bruce :only (try-try-again)])
   (:use [circle.util.args :only (require-args)])
   (:use [circle.util.except :only (throwf)])
+  (:use [circle.util.retry :only (wait-for)])
   (:use [slingshot.slingshot :only (throw+)])
   (:use [circle.util.core :only (apply-map)]))
 
@@ -90,10 +90,10 @@ Options:
 (defn retry-connect
   "Connect to the server, retrying on failure. Returns an ssh session"
   [session-args]
-  (try-try-again
-   {:sleep 1000
-    :tries 30
-    :catch [com.jcraft.jsch.JSchException java.lang.RuntimeException]
+  (wait-for
+   {:sleep (time/secs 1)
+    :timeout (time/secs 30)
+    :catch [com.jcraft.jsch.JSchException]
     :error-hook (fn [e] (errorf "caught %s" e))}
    #(let [s (session session-args)]
       (ssh/connect s)

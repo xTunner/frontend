@@ -12,7 +12,6 @@
   (:require [circle.env :as env])
   (:require [circle.backend.ssh])
   (:require [circle.backend.load-balancer :as lb])
-  (:use [circle.util.time :only (to-millis)])
   (:require [clj-time.core :as time])
   (:use [circle.util.retry :only (wait-for)])
   (:import com.amazonaws.services.ec2.AmazonEC2Client
@@ -65,10 +64,11 @@
 (defmacro with-ec2-client
   [client & body]
   `(let [~client (AmazonEC2Client. aws-credentials)]
-     (try-try-again
-      {:sleep 1000
-       :tries 30
-       :catch [AmazonClientException java.lang.RuntimeException]
+     (wait-for
+      {:sleep (time/secs 1)
+       :timeout (time/secs 30)
+       :catch [AmazonClientException]
+       :success-fn :no-throw
        :error-hook (fn [e#]
                      (errorf e# "with-ec2-client: caught %s" e#)
                      ;; We don't want to catch (many) ServiceExceptions, because they can often be programming errors.
@@ -298,15 +298,16 @@
 (defn block-until-running
   "Blocks until AWS claims the instance is running"
   [instance-id & {:keys [timeout sleep-interval]
-                  :or {timeout 30
-                       sleep-interval 10}}]
+                  :or {timeout (time/secs 30)
+                       sleep-interval (time/secs 10)}}]
   (infof "block-until-running: waiting for instance %s to start" instance-id)
+  (infof "block-until-running: sleep-interval: %s %s" sleep-interval timeout)
   (try
     (wait-for
-     {:sleep 15000
-      :tries 4
-      :error-hook (fn [e] (infof "block-until-running: caught %s" (.getMessage e)))
-      :success-fn (fn [inst] (= :running (-?> inst :state :name (keyword))))}
+     {:sleep sleep-interval
+      :timeout timeout
+      :error-hook (fn [e] (infof "block-until-running: caught %s %s" (class e) (.getMessage e)))
+      :success-fn (fn [inst] (inspect (= :running (-?> inst :state :name (keyword)))))}
      #(instance instance-id))
     (catch Exception e
       (errorf "instance %s didn't start within timeout" instance-id)
@@ -322,10 +323,10 @@
   (block-until-running instance-id)
   (infof "waiting for instance %s to be ready for SSH" instance-id)
   (try
-    (try-try-again
-     {:sleep 15000
-      :tries 4
-      :catch [java.net.ConnectException com.jcraft.jsch.JSchException java.lang.RuntimeException]
+    (wait-for
+     {:sleep (time/secs 10)
+      :timeout (time/secs 90)
+      :catch [java.net.ConnectException com.jcraft.jsch.JSchException]
       :error-hook (fn [e] (infof "block-until-ready: caught %s" (.getMessage e)))}
      (fn []
        (let [node {:ip-addr (public-ip instance-id) :username username :public-key public-key :private-key private-key}]
@@ -387,8 +388,11 @@
   "EC2 is unreliable, and occasionally gives us broken boxes. Retry
   until we get a good one."
   [args]
-  (try-try-again {:sleep nil
-                  :tries 3} start-instances args))
+  (wait-for
+   {:sleep nil
+    :tries 3
+    :catch [Exception]}
+   #(start-instances args)))
 
 (defn print-instances []
   (->> (instances)
@@ -399,10 +403,10 @@
        (println)))
 
 (defn image-wait-for-ready [image-name]
-  (try-try-again
-   {:sleep 15000
-    :tries (* 4 15)}
-   #(throw-if-not (= :available (image-state image-name)) "AMI did not become available in timeout window")))
+  (wait-for
+   {:sleep (time/secs 15)
+    :timeout (time/minutes 15)}
+   #(= :available (image-state image-name))))
 
 (defn create-image
   "Create an AMI from a running instance. Returns the new AMI-id. Blocks until the image is available."
