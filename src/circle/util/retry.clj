@@ -81,6 +81,7 @@
  - sleep: how long to sleep between retries, as a joda period. Defaults to 1s.
  - tries: how many times to retry before throwing. Defaults to 10
  - timeout: a joda period. Stop retrying when period has elapsed, regardless of how many tries are left.
+ - catch: a seq of exception classes to catch and retry on. If not specified, no exceptions are caught.
 
  - success-fn: a fn of one argument, the return value of f. Stop
    retrying if success-fn returns truthy. If not specified, wait-for

@@ -12,7 +12,8 @@
   (:require [somnium.congomongo :as mongo])
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.util.predicates :only (ref?)])
-  (:use [circle.util.retry :only (wait-for)]))
+  (:use [circle.util.retry :only (wait-for)])
+  (:require [clj-time.core :as time]))
 
 (test-ns-setup)
 
@@ -98,6 +99,7 @@
     (-> @build :instance-id (ec2/instance) :state :name) => "running"
     (-> @build :instance-ids (first)) => string?
     (nodes/cleanup-nodes build) => anything
-    (wait-for {:sleep 1000 :tries 60}
+    (wait-for {:sleep (time/secs 1)
+               :timeout (time/secs 60)}
               #(not= (-> @build :instance-ids (first) (ec2/instance) :state :name) "running")) => anything
     (-> @build :instance-ids (first) (ec2/instance) :state :name) =not=> "running"))
