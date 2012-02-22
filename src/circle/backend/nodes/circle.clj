@@ -27,20 +27,6 @@
   (:require [circle.backend.nodes.rails :as rails])
   (:use [circle.util.except :only (eat)]))
 
-;; this is our "memoized" circle box
-(def circle-group
-  (pallet.core/group-spec
-   "circle"
-   :circle-node-spec {:ami "ami-3bb46152"
-                      :name "www"
-                      :availability-zone "us-east-1a"
-                      :instance-type "m1.small"
-                      :keypair-name "www"
-                      :security-groups ["www" "allow-DB"]
-                      :username "ubuntu"
-                      :public-key (eat (slurp "secret/www.id_rsa.pub"))
-                      :private-key (eat (slurp "secret/www.id_rsa"))}))
-
 ;; The configuration to build the circle box from scratch
 (def circle-raw-group
   (pallet.core/group-spec
@@ -68,7 +54,7 @@
                                                      ;; reliability
                                                      :aptitude {:url "http://us.archive.ubuntu.com/ubuntu/"
                                                                 :scopes ["main" "updates" "universe" "multiverse"]})
-                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "libsqlite3-dev" "nodejs" "firefox" "xvfb" ])
+                             (package/packages :aptitude ["nginx" "htop" "mongodb" "rubygems" "firefox" "xvfb" "emacs"])
 
                              (remote-file/remote-file "/etc/rc.local" :local-file "pallet/rc.local" :mode "755" :no-versioning true)
                              (remote-file/remote-file "/home/ubuntu/.bashrc" :local-file "pallet/bashrc" :mode "644" :no-versioning true)
@@ -84,8 +70,8 @@
                              (rvm/rvm)
                              (circle-pallet/user-code
                               (source "~/.bashrc") ;; make sure RVM is loaded
-                              (rvm install jruby)
-                              (rvm use jruby)
+                              (rvm install jruby-1.6.5)
+                              (rvm use jruby-1.6.5)
                               (rvm gemset create circle)
                               (rvm gemset use circle)
                               (gem install bundler)

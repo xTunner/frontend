@@ -1,14 +1,13 @@
+join_path = "/join"
+dynamic_path = "/join/dynamic"
 poller = () ->
-  $.getJSON("<%= Rails.application.routes.url_helpers.join_dynamic_path %>",
+  $.getJSON(dynamic_path,
     (data, textStatus) ->
       if data["ready"]
         adjust_page(data["step"], data["body"], data["explanation"])
       if data["keep_polling"]
         setTimeout(poller, 200)
   )
-
-<%# Include a helper for the header styles below %>
-<% environment.context_class.instance_eval { include JoinHelper } %>
 
 adjust_page = (step, body, explanation) ->
   for i in [1,2,3]
@@ -21,16 +20,16 @@ adjust_page = (step, body, explanation) ->
         node = $("#explanation#{i} > .contents")
         node.empty()
         node.append(explanation)
-      $("#header#{i}").removeClass("<%= inactive_header_style %>")
-      $("#header#{i}").addClass("<%= active_header_style %>")
+      $("#header#{i}").removeClass("info")
+      $("#header#{i}").addClass("success")
       $("#body#{i}").removeClass("hidden")
       $("#explanation#{i}").removeClass("hidden")
     else
-      $("#header#{i}").removeClass("<%= active_header_style %>")
-      $("#header#{i}").addClass("<%= inactive_header_style %>")
+      $("#header#{i}").removeClass("success")
+      $("#header#{i}").addClass("info")
       $("#body#{i}").addClass("hidden")
       $("#explanation#{i}").addClass("hidden")
 
 $(document).ready ->
   setTimeout(poller, 200)
-  history.replaceState(null, null, "<%= Rails.application.routes.url_helpers.join_path %>")
+  history.replaceState(null, null, join_path)

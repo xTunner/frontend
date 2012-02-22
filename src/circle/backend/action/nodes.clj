@@ -1,5 +1,4 @@
 (ns circle.backend.action.nodes
-  (:require [circle.backend.nodes :as nodes])
   (:require [circle.backend.ec2 :as ec2])
   (:use [circle.util.core :only (sha1)])
   (:use [circle.backend.action :only (defaction add-action-result)])
@@ -35,10 +34,7 @@
    :type :infrastructure}
   (fn [build]
     (ensure-keys build)
-    (let [instance-ids (ec2/start-instances-retry (-> @build :node))
-          group (-> @build :group)]
-      (when group
-        (nodes/configure instance-ids))
+    (let [instance-ids (ec2/start-instances-retry (-> @build :node))]
       (dosync
        (alter build assoc :instance-ids instance-ids)))))
 

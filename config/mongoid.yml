@@ -12,7 +12,7 @@ test:
 production:
   host: <%= ENV['MONGOHQ_HOST'] %>
   port: <%= ENV['MONGOHQ_PORT'] %>
-  username: <%= ENV['MONGOHQ_PASSWORD'] %>
+  username: <%= ENV['MONGOHQ_USERNAME'] %>
   password: <%= ENV['MONGOHQ_PASSWORD'] %>
   database: <%= ENV['MONGOHQ_DATABASE'] %>
   # slaves:

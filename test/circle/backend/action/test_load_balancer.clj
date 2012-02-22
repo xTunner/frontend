@@ -1,9 +1,10 @@
 (ns circle.backend.action.test-load-balancer
   (:require [circle.backend.action.load-balancer :as lb-action])
   (:require [circle.backend.load-balancer :as lb])
-  (:use [circle.backend.action :only (defaction)])
+  (:use [circle.backend.action :only (defaction abort!)])
   (:use midje.sweet)
   (:use [circle.backend.build.run :only (run-build)])
+  (:require [clj-time.core :as time])
   (:use [circle.model.build :only (successful?)])
   (:use circle.test-utils))
 
@@ -15,9 +16,6 @@
     nil))
 
 (fact "load balancer calls abort when shit breaks"
-  (against-background
-    (lb/healthy? anything anything) => false
-    (lb-action/lb-healthy-retries) => 2)
   (let [lb-name "lb-bogus"
         instance-ids ["i-bogus"]
         build (minimal-build
@@ -27,7 +25,11 @@
                          (lb-action/wait-for-healthy)
                          (successful-action "2")])]
 
-    (run-build build :cleanup-on-failure false)
-    (successful? build) => falsey))
+    (run-build build :cleanup-on-failure false) => build
+    (provided
+      (lb/healthy? anything anything) => false
+      (abort! build anything) => anything :times 1
+      (lb-action/lb-healthy-sleep) => (time/millis 1)
+      (lb-action/lb-healthy-timeout) => (time/millis 30))))
 
 

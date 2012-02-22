@@ -7,7 +7,6 @@
   (:require circle.resque)
   (:require circle.logging)
   (:require circle.api.server)
-
   (:require circle.backend.build.run)
   (:require circle.backend.build.config)
   (:use [clojure.tools.logging :only (error)])
@@ -23,6 +22,7 @@
         (error e "error starting swank")))
     (circle.repl/init)
     (circle.db/init)
+    (circle.api.server/init)
     (circle.resque/init)
     (circle.api.server/init)
 
