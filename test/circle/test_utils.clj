@@ -284,9 +284,9 @@ schedule:
   []
   `(background (before :facts (do (clear-test-db) (ensure-test-db)))
                (around :facts (ruby/with-runtime (ruby/test-ruby)
-                                ;;(redis/with-redis ) this isn't enough, we need to switch redis and resque at the same time.
-                                (mongo/with-mongo (test-db-connection)
-                                  ?form)))))
+                                (circle.resque/with-test-resque
+                                  (mongo/with-mongo (test-db-connection)
+                                    ?form))))))
 
 (defn stateful-fn*
   "Takes a seq of no argument fns. Returns a new fn that calls each fn in turn."

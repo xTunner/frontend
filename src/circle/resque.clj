@@ -1,7 +1,8 @@
 (ns circle.resque
   (:require [circle.env])
   (:use [circle.util.core :only (defn-once)])
-  (:require [resque-clojure.core :as resque]))
+  (:require [resque-clojure.core :as resque])
+  (:require [resque-clojure.redis :as redis]))
 
 (def uris {:development {:host "barracuda.redistogo.com"
                          :port 9477
@@ -24,3 +25,24 @@
   (resque/configure (merge (get uris (circle.env/env))
                            {:max-workers 10}))
   (resque/start ["builds"]))
+
+(defn print-queue [queue-name]
+  (redis/lrange (resque-clojure.resque/-full-queue-name queue-name) 0 -1))
+
+(defn print-workers []
+  (resque-clojure.redis/smembers "resque:workers"))
+
+(defmacro with-resque [conn-map & body]
+  `(do
+     (let [old-conn-map# @resque-clojure.redis/config]
+       (try
+         (redis/configure ~conn-map)
+         (redis/init-pool)
+         ~@body
+         (finally
+          (redis/configure old-conn-map#)
+          (redis/init-pool))))))
+
+(defmacro with-test-resque [& body]
+  `(with-resque (-> uris :test)
+     ~@body))
