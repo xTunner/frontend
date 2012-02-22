@@ -1,4 +1,5 @@
 (ns circle.init
+  (:require circle.evil)
   (:require circle.env) ;; env needs to be loaded before any circle source files containing tests
   (:use [circle.util.core :only (defn-once)])
   (:require circle.swank)
