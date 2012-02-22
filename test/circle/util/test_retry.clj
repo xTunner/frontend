@@ -119,3 +119,10 @@
                          nil)) => nil
   (provided
     (foo) => anything :times 2))
+
+(fact "tries not used when sleep and timeout are specified"
+  (wait-for {:sleep (time/millis 1)
+             :timeout (time/millis 500)}
+            foo) => (throws Exception)
+  (provided
+    (foo) => false :times #(> % 100)))

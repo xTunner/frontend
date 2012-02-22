@@ -308,7 +308,7 @@
      {:sleep sleep-interval
       :timeout timeout
       :error-hook (fn [e] (infof "block-until-running: caught %s %s" (class e) (.getMessage e)))
-      :success-fn (fn [inst] (inspect (= :running (-?> inst :state :name (keyword)))))}
+      :success-fn (fn [inst] (= :running (-?> inst :state :name (keyword))))}
      #(instance instance-id))
     (catch Exception e
       (errorf "instance %s didn't start within timeout" instance-id)
