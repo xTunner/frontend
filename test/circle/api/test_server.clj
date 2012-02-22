@@ -1,6 +1,6 @@
 (ns circle.api.test-server
   (:require [circle.api.server :as server])
-  (:require [monger.collection :as monger])
+  ;; (:require [monger.collection :as monger])
   (:require [clj-http.client :as client])
   (:require [clj-json.core :as json]) ; deliberately use a different json lib to
                                       ; the server
@@ -19,10 +19,10 @@
     (-> resp :headers (get "content-type")) => #"application/json"
     (-> resp :body (json/parse-string true)) => {:message "hello"}))
 
-(fact "invalid mime type returns error"
+(future-fact "invalid mime type returns error"
   false => true)
 
-(fact "invalid user returns error"
+(future-fact "invalid user returns error"
   false => true)
 
 (defn user-login [user]
@@ -34,7 +34,7 @@
 (defn decode-cookie [cookie]
   cookie)
 
-(fact "valid user gets response"
+(future-fact "valid user gets response"
   (let [user (monger/find-one-as-map :users {:email "user@test.com"})
         decoded (decode-cookie "BAh7BiIQX2NzcmZfdG9rZW5JIjFTMjlIMStZRGJTZ1FBL3RaNHBwUVR0NWhZ\nUGpQSnJ1aFkzNnQ1RXdjcjV3PQY6BkVG\n")]
     (println decoded)
