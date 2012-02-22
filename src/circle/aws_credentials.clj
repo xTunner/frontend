@@ -1,6 +1,5 @@
 (ns circle.aws-credentials
-  (:import com.amazonaws.auth.BasicAWSCredentials)
-  (:use [org.jclouds.compute2 :only (compute-service)]))
+  (:import com.amazonaws.auth.BasicAWSCredentials))
 
 (def AWS-access-credentials {:user (or
                                     (System/getenv "AWS_USERNAME")
@@ -12,5 +11,3 @@
 
 (def aws-credentials (BasicAWSCredentials. (-> AWS-access-credentials :user)
                                            (-> AWS-access-credentials :password)))
-
-(def jclouds-compute (delay (compute-service "aws-ec2" (-> AWS-access-credentials :user) (-> AWS-access-credentials :password))))
