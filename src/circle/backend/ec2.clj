@@ -141,6 +141,7 @@
 (defn terminate-instances!
   [& instance-ids]
   (when (seq instance-ids)
+    (infof "terminating %s" (str/join ", " instance-ids))
     (with-ec2-client client
       (-> client
           (.terminateInstances (TerminateInstancesRequest. instance-ids))
