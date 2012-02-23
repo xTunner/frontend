@@ -24,7 +24,6 @@
         (error e "error starting swank")))
     (circle.repl/init)
     (circle.db/init)
-    (circle.api.server/init)
     (circle.resque/init)
     (circle.http.server/init)
 
