@@ -1,0 +1,80 @@
+<!doctype html>
+  %html{:dir => "ltr", :lang => "en-US"}
+    %head
+      %meta{:charset => "UTF-8"}/
+      %meta{:content => "IE=edge,chrome=1", "http-equiv" => "X-UA-Compatible"}
+        %meta{:content => "width=device-width, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;", :name => "viewport"}/
+        %title Page not found | CircleCiCircleCi
+        %link{:href => "http://aaron.im/go/cc/wp-content/themes/starkers/img/favicon.ico", :rel => "shortcut icon"}
+          %link{:href => "http://aaron.im/go/cc/wp-content/themes/starkers/img/apple-touch-icon.png", :rel => "apple-touch-icon"}
+            %link{:href => "http://aaron.im/go/cc/xmlrpc.php", :rel => "pingback"}/
+            %link{:href => "http://gmpg.org/xfn/11", :rel => "profile"}/
+            %link{:href => "http://aaron.im/go/cc/wp-content/themes/starkers/css/master.css?v=2", :rel => "stylesheet", :type => "text/css"}
+              %link{:href => "http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600", :rel => "stylesheet", :type => "text/css"}
+                %script{:src => "http://aaron.im/go/cc/wp-content/themes/starkers/js/modernizr-2.0.6.min.js"}
+                %link{:href => "http://aaron.im/go/cc/feed/", :rel => "alternate", :title => "CircleCi » Feed", :type => "application/rss+xml"}/
+                %link{:href => "http://aaron.im/go/cc/comments/feed/", :rel => "alternate", :title => "CircleCi » Comments Feed", :type => "application/rss+xml"}/
+                %link{:href => "http://aaron.im/go/cc/xmlrpc.php?rsd", :rel => "EditURI", :title => "RSD", :type => "application/rsd+xml"}/
+                %link{:href => "http://aaron.im/go/cc/wp-includes/wlwmanifest.xml", :rel => "wlwmanifest", :type => "application/wlwmanifest+xml"}/
+                %meta{:content => "WordPress 3.3.1", :name => "generator"}/
+    %body.error404
+      #head_wrapper
+        %header#header.container.clearfix
+          %h1.headlogo
+            %a{:href => "http://aaron.im/go/cc/", :title => "CircleCi"}
+
+          %nav
+            %ul
+              %li
+                %a{:href => "http://aaron.im/go/cc/"} Home
+              %li
+                %a{:href => "http://aaron.im/go/cc/about/"} About
+              %li
+                %a{:href => "http://aaron.im/go/cc/blog/"} Blog
+              %li
+                %a{:href => "http://aaron.im/go/cc/contact/"} Contact
+              %li
+                %a{:href => "http://aaron.im/go/cc/login/"} Login
+
+
+      %h1 Not Found
+      %p Apologies, but the page you requested could not be found. Perhaps searching will help.
+      %form#searchform{:action => "http://aaron.im/go/cc/", :method => "get", :role => "search"}
+        %div
+          %label.screen-reader-text{:for => "s"} Search for:
+          %input#s{:name => "s", :type => "text", :value => ""}/
+          %input#searchsubmit{:type => "submit", :value => "Search"}/
+      :javascript
+        // focus on search field after it has loaded
+        document.getElementById('s') && document.getElementById('s').focus();
+      #footer_wrapper
+        .container
+          %section#footer.clearfix
+            %footer#copyright
+              \© 2012 CircleCi.com
+            / /copyright
+            %footer#links
+              %nav
+                %ul.clearfix
+                  %li
+                    %a{:href => "http://aaron.im/go/cc/"} Home
+                  %li
+                    %a{:href => "http://aaron.im/go/cc/support/"} Support
+                  %li
+                    %a{:href => "http://aaron.im/go/cc/terms/"} Terms
+                  %li
+                    %a{:href => "http://aaron.im/go/cc/privacy/"} Privacy
+                  %li
+                    %a{:href => "http://aaron.im/go/cc/contact/"} Contact
+                  %li
+                    %a.ficon.tw{:href => "http://twitter.com/circleci"} Twitter
+                  %li
+                    %a.ficon.fb{:href => "#"} Facebook
+                  %li
+                    %a.ficon.gp{:href => "#"} Google Plus
+
+
+
+      %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
+      :javascript
+        window.jQuery || document.write('<\/script>')
