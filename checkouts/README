@@ -1,0 +1,1 @@
+If you're working on an external git repo (say, one of our dependencies), you can keep it (or a symlink to it) in this directory, and lein will magically do the right thing. Ask arohner for details.
