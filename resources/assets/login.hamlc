@@ -1,0 +1,45 @@
+!!!
+%html
+  %head
+    %title
+      Login - Circle
+    %link{rel: "stylesheet", type: "text/css", href: "/css/master.css"}
+    %link{href: "http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600", rel: "stylesheet", type: "text/css" }
+
+    %script{src: "/js/modernizr-2.0.6.min.js" }
+
+    %body#login_wrapper
+      #login
+        %header#login-header
+          %h1
+            %a{href: "/"}
+              Circle
+
+      #login_body
+        %section
+          #login-messages
+            %ul
+              // %li.alert.alert-error You need to give us your email address and password to log in.
+              // %li.alert.alert-success Well done! You successfully read this important alert message.
+              // %li.alert.alert-info This alert needs your attention, but it's not super important.
+
+          %form
+            %label Email
+            %input{placeholder: "email@example.com", type: "text"}
+            %label
+              Password
+              %small
+                %a{href: "#"}Forgot your password?
+            %input{type: "password"}
+            %input.submit{type: "submit", value: "submit"}
+
+        %footer#login-footer.clearfix
+          %nav
+            %ul
+              %li
+                %a{href: "/"}
+                  Home
+                %a{href: "/support"}
+                  Support
+          %p
+            &copy; 2012 Circle Internet Services

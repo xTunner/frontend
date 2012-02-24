@@ -4,10 +4,13 @@
   (:use [clojure.tools.logging :only (infof)])
 
   (:use noir.core)
+  (:require [dieter.core :as dieter])
   (:use [hiccup.core :only (html)])
   (:require [noir.response :as response])
   (:require [noir.server :as server])
+
   (:require [circle.workers.github :as github]))
+
 
 (defn logging [handler]
   (fn [request]
@@ -22,9 +25,20 @@
     8081
     8080))
 
+(def dieter-options
+  (if (circle.env/development?)
+    {:compress false
+     :asset-root "resources"
+     :cache-root "resources/asset-cache"
+     :cache-mode :development}
+    {:compress true
+     :asset-root "resources"
+     :cache-root "resources/asset-cache"
+     :cache-mode :production}))
 
 (defn start []
   (server/add-middleware (var logging))
+  (server/add-middleware dieter/asset-pipeline dieter-options)
   (def server (server/start (port))))
 
 (defn stop []
@@ -39,18 +53,14 @@
   (start))
 
 
-(defn thepage []
-  (clojure.string/escape (slurp "resources/public/login.hamlc") {\' "\\'" \newline "\\n" \return "\\r"}))
-
 (defpage "/" []
   (html
    [:html
     [:head
-     [:script {:src "hamlcoffee.min.js"}]
      [:script {:src "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}]
-     [:script "var github_url='" (github/authorization-url "/") "';"]
-     [:script "var hamlc = require('haml-coffee');
-               tmpl = hamlc.compile('" (thepage) "');
-               html = tmpl({});
-               alert(html);
-               $(window.document).html(html);"]]]))
+     [:script {:src (dieter/link-to-asset "login.hamlc" dieter-options)}]
+     [:script "var github_url='" (github/authorization-url "/") "';"]]
+
+    [:body
+     [:div {:id "all"}]
+     [:script "$(window.document).ready(function() { $('#all').html(HAML['login']({}));});"]]]))
