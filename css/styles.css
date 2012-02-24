@@ -2,7 +2,7 @@ body {
 	background: #efefef;
 }
 
-h1, h2, h3, h4, h5, h6 { 
+h1, h2, h3, h4, h5, h6 {
 	font-family: "Myriad", sans-serif;
 }
 
@@ -53,13 +53,13 @@ h1, h2 {
 }
 
 /* logo animation */
-@-webkit-keyframes wiggle { 
+@-webkit-keyframes wiggle {
     0% { -webkit-transform: rotate3d(0,0,0,0deg) }
     25% { -webkit-transform: rotate3d(0,0,0,5deg) }
     75% { -webkit-transform: rotate3d(0,0,0,-5deg) }
     100% { -webkit-transform: rotate3d(0,0,0,0deg) }
 }
-@-moz-keyframes wiggle { 
+@-moz-keyframes wiggle {
     0% { -moz-transform: rotate(0deg) }
     25% { -moz-transform: rotate(5deg) }
     75% { -moz-transform: rotate(-5deg) }
@@ -425,7 +425,7 @@ input:focus.signup {
 #links .gp { background-position: 0 -52px; }
 
 /* Login Wrapper */
-#login_wrapper {
+#login-wrapper {
 	background-color: #0b5aaf;
 	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(11, 90, 175)), to(rgb(8, 55, 107)));
 	background-image: -webkit-linear-gradient(top, rgb(11, 90, 175), rgb(8, 55, 107));
@@ -737,11 +737,11 @@ ul.xoxo h3 {
 	margin: 0 0 5px 0;
 }
 
-.alignright { 
+.alignright {
 	float: right;
-	margin: 0 0 10px 10px;	
+	margin: 0 0 10px 10px;
 }
-.alighleft { 
+.alighleft {
 	float: left;
-	margin: 0 10px 10px 0;	
+	margin: 0 10px 10px 0;
 }
