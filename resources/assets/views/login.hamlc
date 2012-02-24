@@ -1,28 +1,28 @@
-%body#login-wrapper{class: "page page-id-14 page-template-default"}
+%body#login-wrapper
   #login
     %header#login-header
       %h1
         %a{href: "/"}
           Circle
 
-  #login-body
-    %section
-      #login-messages
-        %ul
-          // %li.alert.alert-error You need to give us your email address and password to log in.
-          // %li.alert.alert-success Well done! You successfully read this important alert message.
-          // %li.alert.alert-info This alert needs your attention, but it's not super important.
+    #login-body
+      %section
+        #login-messages
+          %ul
+            // %li.alert.alert-error You need to give us your email address and password to log in.
+            // %li.alert.alert-success Well done! You successfully read this important alert message.
+            // %li.alert.alert-info This alert needs your attention, but it's not super important.
 
-      %form
-        %label Email
-        %input{placeholder: "email@example.com", type: "text"}
-        %label
-          Password
-          %small
-            %a{href: "#"}
-              Forgot your password?
-        %input{type: "password"}
-        %input.submit{type: "submit", value: "Login"}
+        %form
+          %label Email
+          %input{placeholder: "email@example.com", type: "text"}
+          %label
+            Password
+            %small
+              %a{href: "#"}
+                Forgot your password?
+          %input{type: "password"}
+          %input.submit{type: "submit", value: "Login"}
 
     %footer.clearfix#login-footer
       %nav
@@ -30,6 +30,7 @@
           %li
             %a{href: "/"}
               Home
+          %li
             %a{href: "/support"}
               Support
       %p

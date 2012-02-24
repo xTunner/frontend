@@ -67,7 +67,7 @@
 
      [:script {:src (asset "js/modernizr-2.0.6.min.js")}]
      [:script {:src (asset "views/login.hamlc")}]
-     [:script {:src (asset "js/jquery.placeholder.js")}]]
+     [:script {:src (asset "js/jquery.placeholder.js")}]
+     [:script "$(window.document).ready(function() { $('body').html(HAML['login']({})); $('body').attr('id', 'login-wrapper');});"]]
 
-    [:body
-     [:script "$(window.document).ready(function() { $('body').html(HAML['login']({}));});"]]]))
+    [:body]]))
