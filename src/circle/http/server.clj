@@ -58,7 +58,7 @@
    [:html
     [:head
      [:script {:src "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}]
-     [:script {:src (dieter/link-to-asset "login.hamlc" dieter-options)}]
+     [:script {:src (dieter/link-to-asset "views/login.hamlc" dieter-options)}]
      [:script "var github_url='" (github/authorization-url "/") "';"]]
 
     [:body
