@@ -1,9 +1,0 @@
-pom.xml
-/lib/
-/classes/
-.lein-deps-sum
-circle.log
-scratch
-TAGS
-.cake
-repos

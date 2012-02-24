@@ -1,9 +1,0 @@
-test:
-  adapter: mysql2
-  encoding: utf8
-  database: db
-  reconnect: false
-  username: username
-  password: password
-  socket: /tmp/mysql.sock
-  pool: 5

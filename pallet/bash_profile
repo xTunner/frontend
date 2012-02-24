@@ -1,3 +1,0 @@
-[[ -s /home/ubuntu/.rvm/scripts/rvm ]] && . /home/ubuntu/.rvm/scripts/rvm # Load RVM function
-
-export DISPLAY=:99
