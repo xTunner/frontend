@@ -36,6 +36,9 @@
      :cache-root "resources/asset-cache"
      :cache-mode :production}))
 
+(defn asset [file]
+  (dieter/link-to-asset file dieter-options))
+
 (defn start []
   (server/add-middleware (var logging))
   (server/add-middleware dieter/asset-pipeline dieter-options)
@@ -58,9 +61,13 @@
    [:html
     [:head
      [:script {:src "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}]
-     [:script {:src (dieter/link-to-asset "views/login.hamlc" dieter-options)}]
-     [:script "var github_url='" (github/authorization-url "/") "';"]]
+
+     [:link {:rel "stylesheet" :type "text/css" :href (asset "css/master.css")}]
+     [:link {:href "http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" :rel "stylesheet" :type "text/css" }]
+
+     [:script {:src (asset "js/modernizr-2.0.6.min.js")}]
+     [:script {:src (asset "views/login.hamlc")}]
+     [:script {:src (asset "js/jquery.placeholder.js")}]]
 
     [:body
-     [:div {:id "all"}]
-     [:script "$(window.document).ready(function() { $('#all').html(HAML['login']({}));});"]]]))
+     [:script "$(window.document).ready(function() { $('body').html(HAML['login']({}));});"]]]))
