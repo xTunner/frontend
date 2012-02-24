@@ -49,6 +49,7 @@
                  [cheshire "2.1.0"]
                  [com.amazonaws/aws-java-sdk "1.2.7"]
                  [clj-oauth "1.3.1-SNAPSHOT"]
+                 [dieter "0.1.1-7a336dad0f6fd0ee74539266ec93fa9bce7bf35c"]
 
                  ;; DB
                  [c3p0 "0.9.1.2"]
