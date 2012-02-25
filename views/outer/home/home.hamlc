@@ -1,0 +1,28 @@
+#head_wrapper
+  %header
+    %h1#circle
+      Circle
+      -# = link_to "Circle", root_path, :title => "Go to the Circle homepage"
+    %nav
+      %ul
+        %li
+          -# = link_to "Home", root_path, :title => "Go to the Circle homepage"
+        %li
+          -# = link_to "About", root_path, :title => "Learn more about Circle"
+        %li
+          -# = link_to "Blog", root_path, :title => "Get a behind the scenes look at Circle"
+        %li
+          -# = link_to "Contact", root_path, :title => "Get in contact with Circle"
+        %li
+          -# = link_to "Login", new_user_session_url, :title => "Log in to Circle" # aka login
+
+#billboard_wrapper
+  .billboard{:role => "main"}
+
+#features_wrapper
+
+#power_wrapper
+
+#signup_wrapper
+
+#footer_wrapper
