@@ -1,0 +1,64 @@
+// Header --------------------------------------------------------------------
+
+// Logo
+#head_wrapper {
+  height: 88px;
+  background-color: white;
+  @include background-image(linear-gradient(top, #FFF, #EEE));
+  border-top: 5px solid #105AAF;
+
+  // No gradients fallback
+  .no-cssgradients & { background: image-url("home/header-bg-repeat.png") repeat-x; }
+}
+
+header {
+  @include container;
+  /*@include susy-grid-background;*/
+}
+
+#circle {
+  @include alpha;
+  @include columns(3);
+  margin: 20px 0;
+
+  a {
+    @extend .ir;
+    width: 182px;
+    height: 48px;
+    margin: 0;
+    background: image-url("home/sprites.png") no-repeat -433px -448px;
+
+    &:hover {
+      @include animate(wiggle, 0.3s);
+    }
+  }
+}
+
+// Navigation
+nav {
+  @include prefix(3);
+  @include columns(6);
+  @include omega;
+  margin-top: 33px;
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: inline;
+    margin: 0 0 0 2.5em; /* 40px */
+    text-align: right;
+  }
+
+  a {
+    color: #105AAF;
+    font-family: "Myriad Semi", sans-serif;
+    text-decoration: none;
+    @include font-calc(18,22);
+
+    &:visited { color: #105AAF; }
+    &:hover, &:active { color: #023066; }
+  }
+}
