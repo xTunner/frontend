@@ -4,22 +4,29 @@
 @import "_shared/animations/wiggle";
 @import "_shared/fonts/myriad";
 
-// Layout Grid ---------------------------------------------------------------
-// $total-cols             : 12;
-// $col-width              : 4em;
-// $gutter-width           : 1em;
-// $side-gutter-width      : $gutter-width;
-// $show-grid-backgrounds  : true;
+// Variables -----------------------------------------------------------------
+// Links
+@link:        #105AAF;
+@linkHover:   #023066;
+
+// Grays
+@black:                 #000;
+@grayDarker:            #222;
+@grayDark:              #333;
+@gray:                  #555;
+@grayLight:             #999;
+@grayLighter:           #eee;
+@white:                 #fff;
+
 
 // Typographic Grid ----------------------------------------------------------
 body {
-  // font: 16px/1.625em sans-serif;
+  font: 16px/1.625em sans-serif;
 }
 
 h1 {
   .font-calc(86, 104);
   .vert-calc(1, 2, 86);
-  font-family: 'Myriad';
 }
 
 h2 {
