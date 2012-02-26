@@ -1,0 +1,217 @@
+// Font sizing pixel-to-em --------------------------------------------------
+// Calculates ems given a pixel value with optional values for
+// line-height and context for nested selectors.
+// If line height is not set, it will inherit the parent's.
+// Otherwise a new unitless line-height will be computed.
+//
+// @font-size: font-size in px (req)
+// @line-height: line-height in px
+// @context: font-size in px of current context.
+//
+// http://meyerweb.com/eric/thoughts/2006/02/08/unitless-line-heights/
+
+.font-calc (@font-size, @line-height: 0, @context: 16) when (@line-height = 0) {
+  font-size: 0em + @font-size / @context;
+}
+
+.font-calc (@font-size, @line-height: 0, @context: 16) when not (@line-height = 0) {
+  font-size: 0em + @font-size / @context;
+  line-height: 0em + @line-height/@font-size;
+}
+
+// Vertical spacing pixel-to-em ---------------------------------------------
+// Used for applying vertical spacing amongst elements while
+// conforming to the typographic grid (1.5em/26px).
+//
+// @top, @bottom: Rows to append or prepend to element (req)
+// @font-size: font-size in px of current context.
+
+.vert-calc (@top, @bottom, @font-size: 16) {
+  margin-top: 0em + @top*26/@font-size;
+  margin-bottom: 0em + @bottom*26/@font-size;
+}
+
+// Image replacement --------------------------------------------------------
+// Add the .ir @extend to any element you are applying
+// image replacement to. For more information:
+//
+// http://html5boilerplate.com/docs/css/#ir-
+
+.ir {
+  display: block;
+  border: 0;
+  text-indent: -999em;
+  overflow: hidden;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  text-align: left;
+  direction: ltr;
+
+  .ie7 & { line-height: 0; }
+
+  br { display: none; }
+}
+
+// Hide element -------------------------------------------------------------
+// Add the .hidden @extend to any elements that you want to
+// hide from all presentations, including screen readers.
+
+.hidden {
+  display: none !important;
+  visibility: hidden;
+}
+
+// Clearfix -----------------------------------------------------------------
+// Adding the .clearfix @extend to an element will ensure that it
+// always fully contains its floated children.
+//
+// http://nicolasgallagher.com/micro-clearfix-hack/
+
+.clearfix:before,
+.clearfix:after {
+    content:"";
+    display:table;
+}
+
+.clearfix:after {
+    clear:both;
+}
+
+.clearfix {
+    zoom:1;
+}
+
+// Animations ---------------------------------------------------------------
+// Provides a method for adding premade animations to any element.
+// Effects partials in _shared/animations/ have to be imported into
+// the stylesheet that invokes the mixin.
+//
+// @name: Name of the custom keyframe animation
+// @duration: Duration of effect in seconds
+// @function: Timing function. ease, ease-in-out, linear, cubic-bezier, etc
+// @delay: Delay before animation is triggered, in seconds
+// @mode: Animation fill mode. none, forwards, backwards, both, etc
+//
+// Example, wiggle animation
+//
+// ├── _shared
+// │   └── animations
+// │      └── wiggle.less
+// └── home.less
+//
+// @import "_shared/animations/wiggle";
+// .animate (wiggle, 0.3x, ease-in-out);
+
+.animate (@name: wiggle, @duration: 1s, @function: ease,@delay: 0.2s, @mode: both) {
+  -webkit-animation: @name @duration @delay @function @mode;
+  -moz-animation: @name @duration @delay @function @mode;
+  -ms-animation: @name @duration @delay @function @mode;
+  -o-animation: @name @duration @delay @function @mode;
+  animation: @name @duration @delay @function @mode;
+}
+
+// Simple @font-face --------------------------------------------------------
+// DRY @font-face. Meant to be invoked by font import
+// file (font-name.less). Font files should be saved in
+// font-name/ at the same level as the import.
+//
+// @family: font-family name. ie, something friendly
+// @path: Name of the folder the font files are in
+// @file: The common font filename without extensions
+// @weight: The font weight for proper anti-aliasing
+// @style: The font's style (ie, italic)
+//
+// Example, Myriad Pro:
+//
+// └── fonts
+//     ├── myriad
+//     │   ├── myriadpro-normal-webfont.eot
+//     │   ├── myriadpro-normal-webfont.svg
+//     │   ├── myriadpro-normal-webfont.ttf
+//     │   ├── myriadpro-normal-webfont.woff
+//     └── myriad.less
+//
+// @import "_shared/fonts/myriad";
+// p { font-family: 'Myriad'; }
+
+.font-face (@family, @path, @file, @weight: 400, @style: normal) {
+    font-family: '@{family}';
+    src: url('_shared/fonts/@{path}/@{file}.eot');
+    src: url('_shared/fonts/@{path}/@{file}.eot?#iefix') format('embedded-opentype'),
+         url('_shared/fonts/@{path}/@{file}.woff') format('woff'),
+         url('_shared/fonts/@{path}/@{file}.ttf') format('truetype'),
+         url('_shared/fonts/@{path}/@{file}.svg#@{family}') format('svg');
+    font-weight: @weight;
+    font-style: @style;
+}
+
+// Gradients ----------------------------------------------------------------
+// Based on Twitter Bootstrap's helper mixins for gradients
+//
+// Horizontal gradient
+// #gradient > .horizontal (#555, #333)
+//
+// Vertical gradient
+// #gradient > .vertical (#555, #333)
+//
+// Directional gradient
+// #gradient > .directional(#555, #333, 45deg)
+//
+// Reset MS gradients
+// #gradient > .reset-filter()
+//
+// http://twitter.github.com/bootstrap/less.html#mixins
+#gradient {
+  .horizontal(@startColor: #555, @endColor: #333) {
+    background-color: @endColor;
+    background-image: -moz-linear-gradient(left, @startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(left, @startColor, @endColor); // IE10
+    background-image: -webkit-gradient(linear, 0 0, 100% 0, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+    background-image: -webkit-linear-gradient(left, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(left, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(left, @startColor, @endColor); // Le standard
+    background-repeat: repeat-x;
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",@startColor,@endColor)); // IE9 and down
+  }
+  .vertical(@startColor: #555, @endColor: #333) {
+    background-color: mix(@startColor, @endColor, 60%);
+    background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(top, @startColor, @endColor); // IE10
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+    background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(top, @startColor, @endColor); // The standard
+    background-repeat: repeat-x;
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down
+  }
+  .directional(@startColor: #555, @endColor: #333, @deg: 45deg) {
+    background-color: @endColor;
+    background-repeat: repeat-x;
+    background-image: -moz-linear-gradient(@deg, @startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(@deg, @startColor, @endColor); // IE10
+    background-image: -webkit-linear-gradient(@deg, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(@deg, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(@deg, @startColor, @endColor); // The standard
+  }
+
+  // Reset filters for IE
+  .reset-filter() {
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(enabled = false)"));
+  }
+}
+
+// Sizing shortcuts ---------------------------------------------------------
+.size(@height: 5px, @width: 5px) {
+  width: @width;
+  height: @height;
+}
+
+.square(@size: 5px) {
+  .size(@size, @size);
+}
+
+// Opacity ------------------------------------------------------------------
+.opacity(@opacity: 100) {
+  opacity: @opacity / 100;
+   filter: e(%("alpha(opacity=%d)", @opacity));
+}
