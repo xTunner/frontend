@@ -102,7 +102,7 @@
 // @import "_shared/animations/wiggle";
 // .animate (wiggle, 0.3x, ease-in-out);
 
-.animate(@name: wiggle, @duration: 1s, @function: ease,@delay: 0.2s, @mode: both) {
+.animate (@name: wiggle, @duration: 1s, @function: ease,@delay: 0.2s, @mode: both) {
   -webkit-animation: @name @duration @delay @function @mode;
   -moz-animation: @name @duration @delay @function @mode;
   -ms-animation: @name @duration @delay @function @mode;
@@ -114,6 +114,12 @@
 // DRY @font-face. Meant to be invoked by font import
 // file (font-name.less). Font files should be saved in
 // font-name/ at the same level as the import.
+//
+// @family: font-family name. ie, something friendly
+// @path: Name of the folder the font files are in
+// @file: The common font filename without extensions
+// @weight: The font weight for proper anti-aliasing
+// @style: The font's style (ie, italic)
 //
 // Example, Myriad Pro:
 //
@@ -134,7 +140,78 @@
     src: url('_shared/fonts/@{path}/@{file}.eot?#iefix') format('embedded-opentype'),
          url('_shared/fonts/@{path}/@{file}.woff') format('woff'),
          url('_shared/fonts/@{path}/@{file}.ttf') format('truetype'),
-         url('_shared/fonts/@{path}/@{file}.svg#MyriadProBold') format('svg');
+         url('_shared/fonts/@{path}/@{file}.svg#@{family}') format('svg');
     font-weight: @weight;
     font-style: @style;
+}
+
+// Gradients ----------------------------------------------------------------
+// Based on Twitter Bootstrap's helper mixins for gradients
+//
+// Horizontal gradient
+// #gradient > .horizontal (#555, #333)
+//
+// Vertical gradient
+// #gradient > .vertical (#555, #333)
+//
+// Directional gradient
+// #gradient > .directional(#555, #333, 45deg)
+//
+// Reset MS gradients
+// #gradient > .reset-filter()
+//
+// http://twitter.github.com/bootstrap/less.html#mixins
+#gradient {
+  .horizontal(@startColor: #555, @endColor: #333) {
+    background-color: @endColor;
+    background-image: -moz-linear-gradient(left, @startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(left, @startColor, @endColor); // IE10
+    background-image: -webkit-gradient(linear, 0 0, 100% 0, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+    background-image: -webkit-linear-gradient(left, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(left, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(left, @startColor, @endColor); // Le standard
+    background-repeat: repeat-x;
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",@startColor,@endColor)); // IE9 and down
+  }
+  .vertical(@startColor: #555, @endColor: #333) {
+    background-color: mix(@startColor, @endColor, 60%);
+    background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(top, @startColor, @endColor); // IE10
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+    background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(top, @startColor, @endColor); // The standard
+    background-repeat: repeat-x;
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down
+  }
+  .directional(@startColor: #555, @endColor: #333, @deg: 45deg) {
+    background-color: @endColor;
+    background-repeat: repeat-x;
+    background-image: -moz-linear-gradient(@deg, @startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(@deg, @startColor, @endColor); // IE10
+    background-image: -webkit-linear-gradient(@deg, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(@deg, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(@deg, @startColor, @endColor); // The standard
+  }
+
+  // Reset filters for IE
+  .reset-filter() {
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(enabled = false)"));
+  }
+}
+
+// Sizing shortcuts ---------------------------------------------------------
+.size(@height: 5px, @width: 5px) {
+  width: @width;
+  height: @height;
+}
+
+.square(@size: 5px) {
+  .size(@size, @size);
+}
+
+// Opacity ------------------------------------------------------------------
+.opacity(@opacity: 100) {
+  opacity: @opacity / 100;
+   filter: e(%("alpha(opacity=%d)", @opacity));
 }
