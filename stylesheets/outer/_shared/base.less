@@ -1,0 +1,41 @@
+// Imports -------------------------------------------------------------------
+@import "_shared/normalize";
+@import "_shared/mixins";
+@import "_shared/animations/wiggle";
+@import "_shared/fonts/myriad";
+
+// Layout Grid ---------------------------------------------------------------
+// $total-cols             : 12;
+// $col-width              : 4em;
+// $gutter-width           : 1em;
+// $side-gutter-width      : $gutter-width;
+// $show-grid-backgrounds  : true;
+
+// Typographic Grid ----------------------------------------------------------
+body {
+  // font: 16px/1.625em sans-serif;
+}
+
+h1 {
+  .font-calc(86, 104);
+  .vert-calc(1, 2, 86);
+  font-family: 'Myriad';
+}
+
+h2 {
+  .font-calc(49, 52);
+  .vert-calc(2, 2, 49);
+}
+
+h3 {
+  .font-calc(28, 52);
+  .vert-calc(1, 0, 28);
+}
+
+p {
+  .vert-calc(2, 2);
+}
+
+small, aside {
+  .font-calc(9, 14);
+}
