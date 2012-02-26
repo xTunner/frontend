@@ -1,13 +1,12 @@
 // Imports -------------------------------------------------------------------
 @import "_shared/normalize";
 @import "_shared/mixins";
-@import "_shared/animations/wiggle";
-@import "_shared/fonts/myriad";
+@import "_shared/grid";
 
 // Variables -----------------------------------------------------------------
 // Links
-@link:        #105AAF;
-@linkHover:   #023066;
+@link:               #105AAF;
+@linkHover:          #023066;
 
 // Grays
 @black:                 #000;
@@ -18,6 +17,16 @@
 @grayLighter:           #eee;
 @white:                 #fff;
 
+// Layout Grid ---------------------------------------------------------------
+@columns: 12;
+@column-width: 60;
+@gutter-width: 20;
+
+.container {
+  .clearfix;
+  width: 960px;
+  margin: 0 auto;
+}
 
 // Typographic Grid ----------------------------------------------------------
 body {
