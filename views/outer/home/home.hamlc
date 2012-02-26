@@ -1,20 +1,25 @@
 #head_wrapper
   %header
     %h1#circle
-      Circle
-      -# = link_to "Circle", root_path, :title => "Go to the Circle homepage"
+      %a{ href: '#', title: 'Go to the Circle homepage' }
+        Circle
     %nav
       %ul
         %li
-          -# = link_to "Home", root_path, :title => "Go to the Circle homepage"
+          %a{ href: '#', title: 'Go to the Circle homepage' }
+            Home
         %li
-          -# = link_to "About", root_path, :title => "Learn more about Circle"
+          %a{ href: '#', title: 'Learn more about Circle' }
+            About
         %li
-          -# = link_to "Blog", root_path, :title => "Get a behind the scenes look at Circle"
+          %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
+            Blog
         %li
-          -# = link_to "Contact", root_path, :title => "Get in contact with Circle"
+          %a{ href: '#', title: 'Get in contact with Circle' }
+            Contact
         %li
-          -# = link_to "Login", new_user_session_url, :title => "Log in to Circle" # aka login
+          %a{ href: '#', title: 'Log in to Circle' }
+            Login
 
 #billboard_wrapper
   .billboard{:role => "main"}
