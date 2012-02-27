@@ -28,8 +28,11 @@
 
     %p Sign up for the beta. We'll email you when we're ready.
 
-    %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
-    %button{ class: 'button green', type: 'submit' }
+    %form
+      %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
+      %button{ class: 'button green', type: 'submit' } Notify Me
+
+    .screenshot CircleCi Screenshot
 
 #features
   %header
