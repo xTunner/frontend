@@ -22,7 +22,15 @@
             Login
 
 #billboard_wrapper
-  .billboard{:role => "main"}
+  %article.billboard{ role: "main" }
+    .teaser
+      %h2 Continuous Integration made easy
+      %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
+
+      %p Sign up for the beta. We'll email you when we're ready.
+
+      %input{ class: "signup", type: "text", placeholder: "Your email address&hellip;" }
+      %button{ class: "button green", type: "submit" }
 
 #features_wrapper
 
