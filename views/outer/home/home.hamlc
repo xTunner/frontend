@@ -21,7 +21,7 @@
           %a{ href: '#', title: 'Log in to Circle' }
             Login
 
-#billboard
+#teaser
   %section{ role: 'main' }
     %h2 Continuous Integration made easy
     %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
