@@ -42,8 +42,6 @@
   %section
     -# Authorize Us
     %figure
-      %img{ src: '#', alt: 'Authorize us on Github' }
-
       %figcaption
         %h2 Authorize us
         %h3 Incredibly lightning fast tests
@@ -57,8 +55,6 @@
 
     -# ?????
     %figure
-      %img{ src: '#', alt: 'Authorize us on Github' }
-
       %figcaption
         %h2 ?????
         %h3 Minimal configuration all in one place
@@ -71,8 +67,6 @@
 
     -# Profit
     %figure
-      %img{ src: '#', alt: 'Authorize us on Github' }
-
       %figcaption
         %h2 Profit
         %h3 Continuous deployment
