@@ -1,0 +1,14 @@
+.container-fluid
+  .sidebar
+    -# TECHNICAL_DEBT: use namespaces for these
+    = HAML['sidebar_table']({ title: "Active", filter: "active" })
+    = HAML['sidebar_table']({ title: "Uninferrable", filter: "uninferrable" })
+    = HAML['sidebar_table']({ title: "Inactive", filter: "inactive" })
+    = HAML['sidebar_table']({ title: "Disabled", filter: "disabled" })
+
+  -#.content
+    -# TODO: Welcome to circle message
+    .row
+      %h2
+        Latest builds for your projects
+        - HAML['shared/builds'](true, false)
