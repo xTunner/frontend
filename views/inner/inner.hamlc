@@ -1,1 +1,4 @@
-%body
+%tbody{data-bind: "foreach: projects"}
+  %tr
+    %td{data-bind: "text: vcs_url()"}
+      x
