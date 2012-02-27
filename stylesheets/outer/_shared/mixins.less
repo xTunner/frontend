@@ -1,36 +1,3 @@
-// Font sizing pixel-to-em --------------------------------------------------
-// Calculates ems given a pixel value with optional values for
-// line-height and context for nested selectors.
-// If line height is not set, it will inherit the parent's.
-// Otherwise a new unitless line-height will be computed.
-//
-// @font-size: font-size in px (req)
-// @line-height: line-height in px
-// @context: font-size in px of current context.
-//
-// http://meyerweb.com/eric/thoughts/2006/02/08/unitless-line-heights/
-
-.font-calc (@font-size, @line-height: 0, @context: 16) when (@line-height = 0) {
-  font-size: 0em + @font-size / @context;
-}
-
-.font-calc (@font-size, @line-height: 0, @context: 16) when not (@line-height = 0) {
-  font-size: 0em + @font-size / @context;
-  line-height: 0em + @line-height/@font-size;
-}
-
-// Vertical spacing pixel-to-em ---------------------------------------------
-// Used for applying vertical spacing amongst elements while
-// conforming to the typographic grid (1.5em/26px).
-//
-// @top, @bottom: Rows to append or prepend to element (req)
-// @font-size: font-size in px of current context.
-
-.vert-calc (@top, @bottom, @font-size: 16) {
-  margin-top: 0em + @top*26/@font-size;
-  margin-bottom: 0em + @bottom*26/@font-size;
-}
-
 // Image replacement --------------------------------------------------------
 // Add the .ir @extend to any element you are applying
 // image replacement to. For more information:
