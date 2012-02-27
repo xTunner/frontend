@@ -96,5 +96,10 @@
     %p * Github access allows us set up your code and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
 
 #signup_wrapper
+  %section
+    %p <span>Sign up for the beta.</span> We'll email you when we're ready.
+
+    %input{ class: "signup", type: "text", placeholder: "Your email address&hellip;" }
+    %button{ class: "button green", type: "submit" } Notify me
 
 #footer_wrapper
