@@ -1,8 +1,11 @@
 // Teaser ------------------------------------------------------------------
+
+// Full width wrapper
 #teaser {
   .box-shadow( inset 0 8px 25px -6px rgba(0,0,0,.5) );
   #gradient > .vertical(rgb(11, 90, 175), rgb(8, 55, 107));
 
+  // Content container
   & > section {
     .container;
     position: relative;
@@ -12,6 +15,7 @@
     text-shadow: 0 1px 1px rgba(0,0,0,.75);
   }
 
+  // Teaser screenshot
   .screenshot {
     .ir;
     z-index: 1;
@@ -23,12 +27,14 @@
     background: url("@{imgPath}/teaser_ss.png") no-repeat;
   }
 
+  // Teaser text layout
   h2, h3, p, form {
     .column(5.5);
     .pull(6.5);
     margin-left: 0;
   }
 
+  // Teaser typography
   h2 {
     font-size: 35px;
   }
@@ -45,33 +51,21 @@
     line-height: 20px;
   }
 
+  // z-index > screenshot's, prevent clickability occlusion
   button {
     position: relative;
     z-index: 5;
   }
 
+  // Input
   input {
     width: 258px;
     outline: none;
     padding:8px 4px;
     border: 1px solid #000000;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -o-border-radius: 3px;
-    border-radius: 3px;
-    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5);
-    -moz-box-shadow: 0 1px 0 rgba(255,255,255,.5);
-    -ms-box-shadow: 0 1px 0 rgba(255,255,255,.5);
-    -o-box-shadow: 0 1px 0 rgba(255,255,255,.5);
-    box-shadow: 0 1px 0 rgba(255,255,255,.5);
-    background-color: #ffffff;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 255, 255)), to(rgb(201, 201, 201)));
-    background-image: -webkit-linear-gradient(top, rgb(255, 255, 255), rgb(201, 201, 201));
-    background-image: -moz-linear-gradient(top, rgb(255, 255, 255), rgb(201, 201, 201));
-    background-image: -o-linear-gradient(top, rgb(255, 255, 255), rgb(201, 201, 201));
-    background-image: -ms-linear-gradient(top, rgb(255, 255, 255), rgb(201, 201, 201));
-    background-image: linear-gradient(top, rgb(255, 255, 255), rgb(201, 201, 201));
+    .border-radius(3px);
+    .box-shadow(0 1px 0 rgba(255,255,255,.5));
+    #gradient > .vertical(rgb(255,255,255), rgb(201, 201, 201));
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffffff', EndColorStr='#c9c9c9');
   }
 }
