@@ -1,0 +1,18 @@
+%table.condensed-table.well
+  %thead
+    %tr
+      %th
+        #{title} Projects
+  -#%tbody
+    - projects.each do |p|
+      %tr
+        %td
+          = project_link_to p
+
+        %td.build_column
+          - b = p.latest_build
+          - if b
+            = bootstrap_build_num b
+
+        %td.icons
+          = link_to 'edit', github_project_edit_path(p)
