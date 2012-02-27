@@ -30,7 +30,7 @@
 
 // Typography ---------------------------------------------------------------
 body {
-  font: 16px/1.625em sans-serif;
+  font: 15px/1.231 sans-serif;
 }
 
 body, button, input, select, textarea {
@@ -46,25 +46,53 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Myriad", sans-serif;
 }
 
-h1 {
-  .font-calc(86, 104);
-  .vert-calc(1, 2, 86);
+input:-moz-placeholder {
+    color: #848484;
 }
 
-h2 {
-  .font-calc(49, 52);
-  .vert-calc(2, 2, 49);
+// Buttons ------------------------------------------------------------------
+button, input, select, textarea {
+  font-family: "Myriad", sans-serif;
+  font-weight: normal;
+  font-size: 18px;
+  margin: 0;
+  vertical-align: baseline;
+  *vertical-align: middle;
 }
 
-h3 {
-  .font-calc(28, 52);
-  .vert-calc(1, 0, 28);
+button,
+.button {
+  font-family: "Myriad", sans-serif;
+  padding:8px 14px;
+  border: 1px solid #367203;
+  .border-radius(3px);
 }
 
-p {
-  .vert-calc(2, 2);
+// Green
+a.green,
+button.green,
+input[type="submit"].green {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+  .box-shadow(~"inset 0 1px 0 rgba(255,255,255,.5), 0 2px 2px rgba(0,0,0,.25)");
+  #gradient > .vertical(rgb(116, 176, 0), rgb(69, 147, 0, 1));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#74b000', EndColorStr='#459300');
 }
 
-small, aside {
-  .font-calc(9, 14);
+// Green:Hover
+a.green:hover,
+button.green:hover,
+input[type="submit"].green:hover {
+  border: 1px solid #2b5b02;
+  #gradient > .vertical(rgb(93, 141, 0), rgb(55, 118, 0));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#5d8d00', EndColorStr='#377600');
+}
+
+// Green:Active
+a.green:active,
+button.green:active,
+input[type="submit"].green:active {
+  .box-shadow(inset 0 1px 2px rgba(0,0,0,.95));
+  position: relative;
+  top: 1px;
 }
