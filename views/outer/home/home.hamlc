@@ -22,83 +22,78 @@
             Login
 
 #billboard_wrapper
-  %article.billboard{ role: "main" }
-    .teaser
-      %h2 Continuous Integration made easy
-      %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
+  %section.teaser{ role: "main" }
+    %h2 Continuous Integration made easy
+    %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
 
-      %p Sign up for the beta. We'll email you when we're ready.
+    %p Sign up for the beta. We'll email you when we're ready.
 
-      %input{ class: "signup", type: "text", placeholder: "Your email address&hellip;" }
-      %button{ class: "button green", type: "submit" }
+    %input{ class: "signup", type: "text", placeholder: "Your email address&hellip;" }
+    %button{ class: "button green", type: "submit" }
 
 #features_wrapper
-  %div
-    %header#our-features
-      %h2 Our Features
-      %p Continuously test and deploy your app in seconds.
+  %header
+    %h2 Our Features
+    %p Continuously test and deploy your app in seconds.
 
-    %section
-      -# Authorize Us
-      %figure
-        %img{ src: "#", alt: "Authorize us on Github" }
+  %section
+    -# Authorize Us
+    %figure
+      %img{ src: "#", alt: "Authorize us on Github" }
 
-        %figcaption
-          %h2 Authorize us
-          %h3 Incredibly lightning fast tests
-          %p Click one button and we'll automatically set up your projects' tests
+      %figcaption
+        %h2 Authorize us
+        %h3 Incredibly lightning fast tests
+        %p Click one button and we'll automatically set up your projects' tests
 
-          %ul
-            %li No fiddling with ssh keys
-            %li No setting up your databases
-            %li No trial and error with dependencies
-            %li No need to configure
-
-      -# ?????
-      %figure
-        %img{ src: "#", alt: "Authorize us on Github" }
-
-        %figcaption
-          %h2 ?????
-          %h3 Minimal configuration all in one place
-          %p Our magical gnomes set up everything for you, supporting
-
-          %ul
-            %li Platform: Ruby, Python, PHP, Java, NodeJS, Java, Clojure, Erlang, and even C and C++
-            %li Databases: MySQL, Postgres, Redis, Riak, Mongo, CouchDB, Sphinx, Memcache, Casandra
-            %li Static analysis, linting, code coverage, and automatic test generation!
-
-      -# Profit
-      %figure
-        %img{ src: "#", alt: "Authorize us on Github" }
-
-        %figcaption
-          %h2 Profit
-          %h3 Continuous deployment
-          %p Click one button and we'll automatically set up your projects' tests
-
-          %ul
-            %li Per user notifications - be notified instantly when things break, by email, Hipchat, IRC and Campfire notifications
-            %li Tracking of failures and fixes
-            %li Robust API to integrate with your workflow
-            %li Add Continuous Deployment
-
-#power_wrapper
-  %div
-    %section
-
-      %header
-        %h2 All this power from one little button
-
-        %a{ href: "", title: "Authorize us on Github" }
-
-      %div
         %ul
           %li No fiddling with ssh keys
-          %li 30 day free trial
-          %li No credit card required
+          %li No setting up your databases
+          %li No trial and error with dependencies
+          %li No need to configure
 
-        %p * Github access allows us set up your code and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
+    -# ?????
+    %figure
+      %img{ src: "#", alt: "Authorize us on Github" }
+
+      %figcaption
+        %h2 ?????
+        %h3 Minimal configuration all in one place
+        %p Our magical gnomes set up everything for you, supporting
+
+        %ul
+          %li Platform: Ruby, Python, PHP, Java, NodeJS, Java, Clojure, Erlang, and even C and C++
+          %li Databases: MySQL, Postgres, Redis, Riak, Mongo, CouchDB, Sphinx, Memcache, Casandra
+          %li Static analysis, linting, code coverage, and automatic test generation!
+
+    -# Profit
+    %figure
+      %img{ src: "#", alt: "Authorize us on Github" }
+
+      %figcaption
+        %h2 Profit
+        %h3 Continuous deployment
+        %p Click one button and we'll automatically set up your projects' tests
+
+        %ul
+          %li Per user notifications - be notified instantly when things break, by email, Hipchat, IRC and Campfire notifications
+          %li Tracking of failures and fixes
+          %li Robust API to integrate with your workflow
+          %li Add Continuous Deployment
+
+#power_wrapper
+  %section
+    %header
+      %h2 All this power from one little button
+
+      %a{ href: "", title: "Authorize us on Github" }
+
+    %ul
+      %li No fiddling with ssh keys
+      %li 30 day free trial
+      %li No credit card required
+
+    %p * Github access allows us set up your code and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
 
 #signup_wrapper
 
