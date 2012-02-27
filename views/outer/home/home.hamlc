@@ -22,14 +22,14 @@
             Login
 
 #billboard_wrapper
-  %section.teaser{ role: "main" }
+  %section.teaser{ role: 'main' }
     %h2 Continuous Integration made easy
     %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
 
     %p Sign up for the beta. We'll email you when we're ready.
 
-    %input{ class: "signup", type: "text", placeholder: "Your email address&hellip;" }
-    %button{ class: "button green", type: "submit" }
+    %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
+    %button{ class: 'button green', type: 'submit' }
 
 #features_wrapper
   %header
@@ -39,7 +39,7 @@
   %section
     -# Authorize Us
     %figure
-      %img{ src: "#", alt: "Authorize us on Github" }
+      %img{ src: '#', alt: 'Authorize us on Github' }
 
       %figcaption
         %h2 Authorize us
@@ -54,7 +54,7 @@
 
     -# ?????
     %figure
-      %img{ src: "#", alt: "Authorize us on Github" }
+      %img{ src: '#', alt: 'Authorize us on Github' }
 
       %figcaption
         %h2 ?????
@@ -68,7 +68,7 @@
 
     -# Profit
     %figure
-      %img{ src: "#", alt: "Authorize us on Github" }
+      %img{ src: '#', alt: 'Authorize us on Github' }
 
       %figcaption
         %h2 Profit
@@ -86,7 +86,7 @@
     %header
       %h2 All this power from one little button
 
-      %a{ href: "", title: "Authorize us on Github" }
+      %a{ href: '#', title: 'Authorize us on Github' }
 
     %ul
       %li No fiddling with ssh keys
@@ -99,7 +99,7 @@
   %section
     %p <span>Sign up for the beta.</span> We'll email you when we're ready.
 
-    %input{ class: "signup", type: "text", placeholder: "Your email address&hellip;" }
-    %button{ class: "button green", type: "submit" } Notify me
+    %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
+    %button{ class: 'button green', type: 'submit' } Notify me
 
 #footer_wrapper
