@@ -1,6 +1,6 @@
 // Header --------------------------------------------------------------------
 
-// Logo
+// Full width wrapper
 #head_wrapper {
   height: 88px;
   #gradient > .vertical(#FFF, #EEE);
@@ -8,55 +8,57 @@
 
   // No gradients fallback
   .no-cssgradients & { background: image-url("home/header-bg-repeat.png") repeat-x; }
-}
 
-header {
-  .container;
-}
+  // Content container
+  header {
+    .container;
+  }
 
-#circle {
-  .column(3);
-  margin: 20px 0;
+  // Logo
+  #circle {
+    .column(3);
+    margin: 20px 0;
 
-  a {
-    .ir;
-    width: 182px;
-    height: 48px;
-    margin: 0;
-    background: url("@{imgPath}/sprites.png") no-repeat -433px -448px;
+    a {
+      .ir;
+      width: 182px;
+      height: 48px;
+      margin: 0;
+      background: url("@{imgPath}/sprites.png") no-repeat -433px -448px;
 
-    &:hover {
-      .animate(wiggle, 0.3s);
+      &:hover {
+        .animate(wiggle, 0.3s);
+      }
     }
-  }
-}
+  } // /Logo
 
-// Navigation
-nav {
-  .column(6);
-  .push(3);
-  margin-top: 33px;
-  float: right;
+  // Navigation
+  nav {
+    .column(6);
+    .push(3);
+    margin-top: 33px;
+    float: right;
 
-  ul {
-    margin: 0;
-    padding: 0;
-  }
+    ul {
+      margin: 0;
+      padding: 0;
+    }
 
-  li {
-    display: inline;
-    margin: 0 0 0 2.5em; /* 40px */
-    text-align: right;
-  }
+    li {
+      display: inline;
+      margin: 0 0 0 2.5em; /* 40px */
+      text-align: right;
+    }
 
-  a {
-    color: #105AAF;
-    font-family: "Myriad", sans-serif;
-    font-weight: 600;
-    text-decoration: none;
-    .font-calc(16,20);
+    a {
+      color: #105AAF;
+      font-family: "Myriad", sans-serif;
+      font-weight: 600;
+      text-decoration: none;
+      .font-calc(16,20);
 
-    &:visited { color: #105AAF; }
-    &:hover, &:active { color: #023066; }
-  }
+      &:visited { color: #105AAF; }
+      &:hover, &:active { color: #023066; }
+    }
+  } // /Navigation
 }
