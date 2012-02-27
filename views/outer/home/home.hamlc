@@ -33,6 +33,55 @@
       %button{ class: "button green", type: "submit" }
 
 #features_wrapper
+  %div
+    %header#our-features
+      %h2 Our Features
+      %p Continuously test and deploy your app in seconds.
+
+    %section
+      -# Authorize Us
+      %figure
+        %img{ src: "#", alt: "Authorize us on Github" }
+
+        %figcaption
+          %h2 Authorize us
+          %h3 Incredibly lightning fast tests
+          %p Click one button and we'll automatically set up your projects' tests
+
+          %ul
+            %li No fiddling with ssh keys
+            %li No setting up your databases
+            %li No trial and error with dependencies
+            %li No need to configure
+
+      -# ?????
+      %figure
+        %img{ src: "#", alt: "Authorize us on Github" }
+
+        %figcaption
+          %h2 ?????
+          %h3 Minimal configuration all in one place
+          %p Our magical gnomes set up everything for you, supporting
+
+          %ul
+            %li Platform: Ruby, Python, PHP, Java, NodeJS, Java, Clojure, Erlang, and even C and C++
+            %li Databases: MySQL, Postgres, Redis, Riak, Mongo, CouchDB, Sphinx, Memcache, Casandra
+            %li Static analysis, linting, code coverage, and automatic test generation!
+
+      -# Profit
+      %figure
+        %img{ src: "#", alt: "Authorize us on Github" }
+
+        %figcaption
+          %h2 Profit
+          %h3 Continuous deployment
+          %p Click one button and we'll automatically set up your projects' tests
+
+          %ul
+            %li Per user notifications - be notified instantly when things break, by email, Hipchat, IRC and Campfire notifications
+            %li Tracking of failures and fixes
+            %li Robust API to integrate with your workflow
+            %li Add Continuous Deployment
 
 #power_wrapper
 
