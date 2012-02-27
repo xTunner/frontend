@@ -1,4 +1,4 @@
-#head_wrapper
+#head
   %header
     %h1#circle
       %a{ href: '#', title: 'Go to the Circle homepage' }
@@ -21,8 +21,8 @@
           %a{ href: '#', title: 'Log in to Circle' }
             Login
 
-#billboard_wrapper
-  %section.teaser{ role: 'main' }
+#billboard
+  %section{ role: 'main' }
     %h2 Continuous Integration made easy
     %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
 
@@ -31,7 +31,7 @@
     %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
     %button{ class: 'button green', type: 'submit' }
 
-#features_wrapper
+#features
   %header
     %h2 Our Features
     %p Continuously test and deploy your app in seconds.
@@ -81,7 +81,7 @@
           %li Robust API to integrate with your workflow
           %li Add Continuous Deployment
 
-#power_wrapper
+#power
   %section
     %header
       %h2 All this power from one little button
@@ -95,14 +95,14 @@
 
     %p * Github access allows us set up your code and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
 
-#signup_wrapper
+#signup
   %section
     %p <span>Sign up for the beta.</span> We'll email you when we're ready.
 
     %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
     %button{ class: 'button green', type: 'submit' } Notify me
 
-#footer_wrapper
+#footer
   %footer
     %span &copy; 2012 CircleCi.com
 
