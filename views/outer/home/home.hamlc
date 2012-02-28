@@ -41,7 +41,7 @@
 
   %section
     -# Authorize Us
-    %figure
+    %figure.tour
       %figcaption
         %h2 Authorize us
         %h3 Incredibly lightning fast tests
@@ -53,8 +53,10 @@
           %li No trial and error with dependencies
           %li No need to configure
 
+      .authorize_us
+
     -# ?????
-    %figure
+    %figure.tour
       %figcaption
         %h2 ?????
         %h3 Minimal configuration all in one place
@@ -65,8 +67,10 @@
           %li Databases: MySQL, Postgres, Redis, Riak, Mongo, CouchDB, Sphinx, Memcache, Casandra
           %li Static analysis, linting, code coverage, and automatic test generation!
 
+      .magic
+
     -# Profit
-    %figure
+    %figure.tour
       %figcaption
         %h2 Profit
         %h3 Continuous deployment
@@ -77,6 +81,8 @@
           %li Tracking of failures and fixes
           %li Robust API to integrate with your workflow
           %li Add Continuous Deployment
+
+      .profit
 
 #power
   %section

@@ -1,0 +1,76 @@
+// Teaser ------------------------------------------------------------------
+
+// Full width wrapper
+#features {
+  position: relative;
+  z-index: 1;
+  background-color: #efefef;
+  background-repeat: repeat-x;
+  background-position: top left;
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), #efefef;
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), -webkit-gradient(linear, left top, left bottom, from(rgb(239, 239, 239)), to(rgb(192, 201, 212)));
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), -webkit-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), -moz-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), -o-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), -ms-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/feature-bg-repeat.png"), linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#efefef', EndColorStr='#c0c9d4');
+
+  // Header
+  & > header {
+    .container;
+    padding: 70px 0 50px 0;
+    text-shadow: 0 1px 0 rgba(255,255,255,1);
+    text-align: center;
+    .box-shadow(0 35px 30px -30px rgba(0,0,0,0.1));
+
+    h2 {
+      font-size: 60px;
+      margin: 0;
+    }
+
+    p { margin: 0 }
+  } // /Header
+
+  & > section {
+    .container;
+  }
+}
+
+// Sections
+.tour {
+  padding: 40px 0;
+  text-shadow: 0 1px 0 rgba(255,255,255,1);
+  background: url("@{imgPath}/cc-tour-divider.gif") bottom repeat-x;
+  .clearfix;
+
+  // Tour images
+
+  // Tour text
+  figcaption {
+    .column(6.6);
+    .pull(4.4);
+
+    h2 {
+      font-size: 45px;
+      margin: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 25px;
+      font-family: "Myriad Semi", sans-serif;
+      font-weight: normal;
+    }
+
+    ul {
+      list-style-image: url("@{imgPath}/bullets.png");
+    }
+
+    li {
+      margin: 0 0 15px 0;
+      font-size: 13px;
+    }
+
+  } // /Tour text
+} // /Tour
