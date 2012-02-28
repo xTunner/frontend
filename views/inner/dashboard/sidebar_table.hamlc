@@ -7,18 +7,18 @@
 
   %tbody{data-bind: "foreach: projects_with_status('#{@filter}')"}
     %tr
-      %td{data-bind: "text: status"}
+      %td{data-bind: "text: link_to()"}
 
-  -#%tbody
-    - projects.each do |p|
-      %tr
-        %td
-          = project_link_to p
+      %td.build_column{data-bind: "text: latest_build()"}
 
-        %td.build_column
-          - b = p.latest_build
-          - if b
-            = bootstrap_build_num b
+      %td.icons{data-bind: "text: edit_link()"}
 
-        %td.icons
-          = link_to 'edit', github_project_edit_path(p)
+
+-#    = project_link_to p
+
+-#    %td.build_column
+-#      - b = p.latest_build
+-#        - if b
+-#          = bootstrap_build_num b
+
+-#      = link_to 'edit', github_project_edit_path(p)
