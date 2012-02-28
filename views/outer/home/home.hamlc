@@ -41,7 +41,7 @@
 
   %section
     -# Authorize Us
-    %figure.tour
+    %figure.tour.authorize
       %figcaption
         %h2 Authorize us
         %h3 Incredibly lightning fast tests
@@ -53,10 +53,10 @@
           %li No trial and error with dependencies
           %li No need to configure
 
-      .authorize_us
+      %div
 
     -# ?????
-    %figure.tour
+    %figure.tour.magic
       %figcaption
         %h2 ?????
         %h3 Minimal configuration all in one place
@@ -67,10 +67,10 @@
           %li Databases: MySQL, Postgres, Redis, Riak, Mongo, CouchDB, Sphinx, Memcache, Casandra
           %li Static analysis, linting, code coverage, and automatic test generation!
 
-      .magic
+      %div
 
     -# Profit
-    %figure.tour
+    %figure.tour.profit
       %figcaption
         %h2 Profit
         %h3 Continuous deployment
@@ -82,14 +82,14 @@
           %li Robust API to integrate with your workflow
           %li Add Continuous Deployment
 
-      .profit
+      %div
 
 #power
   %section
     %header
       %h2 All this power from one little button
 
-      %a{ href: '#', title: 'Authorize us on Github' }
+      %a{ href: '#', title: 'Authorize us on Github' } Authorize us on Github
 
     %ul
       %li No fiddling with ssh keys

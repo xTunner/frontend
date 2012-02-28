@@ -42,6 +42,9 @@
   padding: 40px 0;
   text-shadow: 0 1px 0 rgba(255,255,255,1);
   background: url("@{imgPath}/cc-tour-divider.gif") bottom repeat-x;
+
+  &.profit { background: none; }
+
   position: relative;
   .clearfix;
 
@@ -57,9 +60,9 @@
     right: 0;
   }
 
-  & .authorize_us { background-position: 0 -480px; }
-  & .magic        { background-position: 0 0; }
-  & .profit       { background-position: 0 -240px; }
+  &.magic div     { background-position: 0 0;      }
+  &.profit div    { background-position: 0 -240px; }
+  &.authorize div { background-position: 0 -480px; }
 
   // Tour text
   figcaption {
