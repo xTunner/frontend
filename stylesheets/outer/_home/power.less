@@ -33,13 +33,16 @@
   }
 
   li {
-    display: inline;
+    display: inline-block;
+    *display: inline;
     padding-left: 36px;
     margin-right: 42px;
     font-family: "Myriad", sans-serif;
     font-weight: 600;
     font-size: 24px;
-    background: url("@{imgPath}/sprites.png") no-repeat -412px -828px;
+    line-height: 36px;
+    background: url("@{imgPath}/sprites.png") no-repeat -412px -824px;
+    zoom: 1;
   }
 
   p {
