@@ -2,7 +2,13 @@
   %thead
     %tr
       %th
-        #{title} Projects
+        = @title
+        Projects
+
+  %tbody{data-bind: "foreach: projects_with_status('#{@filter}')"}
+    %tr
+      %td{data-bind: "text: status"}
+
   -#%tbody
     - projects.each do |p|
       %tr
