@@ -8,13 +8,13 @@
         %li
           %a{ href: '#', title: 'Go to the Circle homepage' }
             Home
-        %li
+        -#%li
           %a{ href: '#', title: 'Learn more about Circle' }
             About
-        %li
+        -#%li
           %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
             Blog
-        %li
+        -#%li
           %a{ href: '#', title: 'Get in contact with Circle' }
             Contact
         %li
@@ -36,22 +36,22 @@
 
 #features
   %header
-    %h2 Our Features
-    %p Continuously test and deploy your app in seconds.
+    %h2 Features
+    %p Making testing this easy took work
 
   %section
     -# Authorize Us
     %figure.tour.authorize
       %figcaption
         %h2 Authorize us
-        %h3 Incredibly lightning fast tests
+
         %p Click one button and we'll automatically set up your projects' tests
 
         %ul
           %li No fiddling with ssh keys
           %li No setting up your databases
           %li No trial and error with dependencies
-          %li No need to configure
+          %li No need to configure your tests (95% of the time)
 
       %div
 
@@ -59,13 +59,13 @@
     %figure.tour.magic
       %figcaption
         %h2 ?????
-        %h3 Minimal configuration all in one place
-        %p Our magical gnomes set up everything for you, supporting
+
+        %p We automatically set up everything for you, supporting
 
         %ul
-          %li Platform: Ruby, Python, PHP, Java, NodeJS, Java, Clojure, Erlang, and even C and C++
-          %li Databases: MySQL, Postgres, Redis, Riak, Mongo, CouchDB, Sphinx, Memcache, Casandra
-          %li Static analysis, linting, code coverage, and automatic test generation!
+          %li Platforms: Ruby, Javascript, Java, Python, PHP; Clojure, Groovy, Erlang; even C, C++ and Go
+          %li Databases: MySQL, Postgres, Redis, Riak, Mongo, Couch, Sphinx, Memcache, Cassandra
+          %li Static analysis, linting, code coverage, and even automatic test generation!
 
       %div
 
@@ -73,14 +73,14 @@
     %figure.tour.profit
       %figcaption
         %h2 Profit
-        %h3 Continuous deployment
-        %p Click one button and we'll automatically set up your projects' tests
+
+        %p Instantly increase your developers' productivity
 
         %ul
           %li Per user notifications - be notified instantly when things break, by email, Hipchat, IRC and Campfire notifications
           %li Tracking of failures and fixes
           %li Robust API to integrate with your workflow
-          %li Add Continuous Deployment
+          %li Continuous Deployment
 
       %div
 
@@ -114,24 +114,22 @@
         %li
           %a{ href: '#', title: 'Go to the Circle homepage' }
             Home
-        %li
+        -#%li
           %a{ href: '#', title: 'Find support for your issues' }
             Support
-        %li
-          %a{ href: '#', title: 'Terms & Conditions' }
-            Terms
-        %li
+
+        -#%li
           %a{ href: '#', title: 'Learn more about our Privacy Policy' }
             Privacy
-        %li
+        -#%li
           %a{ href: '#', title: 'Get in contact with Circle' }
             Contact
         %li
           %a{ class: 'ficon tw', href: 'http://twitter.com/circleci' }
             Twitter
-        %li
+        -#%li
           %a{ class: 'ficon fb', href: '#' }
             Facebook
-        %li
+        -#%li
           %a{ class: 'ficon gp', href: '#' }
             Google Plus
