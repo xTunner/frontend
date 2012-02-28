@@ -9,28 +9,25 @@ class Build extends Base
     @url = @komp =>
       "#{@project().project_path}/#{@build_num}"
 
-    @style = @komp => switch @status
+    @style = @komp => 'label ' + switch @status
       when "failed"
-        "Failed"
-      when "no_tests"
-        "No tests"
-      when "fixed"
-        "Fixed"
-      when "success"
-        "Success"
-      when "killed"
-        "Killed"
-      when "running"
-        "Running"
-      when "starting"
-        "Starting"
+        "important"
       when "infrastructure_fail"
-        "Circle bug"
+        "warning"
       when "timedout"
-        "Timed out"
-      else
-        throw "invalid option"
-
+        "important"
+      when "no_tests"
+        "important"
+      when "killed"
+        "warning"
+      when "fixed"
+        "success"
+      when "success"
+        "success"
+      when "running"
+        "notice"
+      when "starting"
+        ""
 
 
 class Project extends Base
