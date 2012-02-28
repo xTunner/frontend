@@ -1,23 +1,20 @@
-class Project
+class Base
+  komp: (args...) =>
+    ko.computed args...
+
+class Project extends Base
   constructor: (vcs_url, status) ->
     @vcs_url = vcs_url
     @status = status
-    @project_name = @komputed () => @vcs_url.substring(19)
-    @project_path = @komputed () => '/gh/' + @project_name()
-    @edit_link = @komputed () => @project_path() + '/edit'
-
-  # the @ causes very awkward code if used directly
-  komputed: (callback) =>
-    ko.computed(callback, @)
-
-   latest_build: () =>
-    @komputed () => "z"
+    @project_name = @komp => @vcs_url.substring(19)
+    @project_path = @komp => '/gh/' + @project_name()
+    @edit_link = @komp => @project_path() + '/edit'
+    @latest_build = @komp => "z"
 
 
+class DashboardViewModel extends Base
 
-class DashboardViewModel
-
-  constructor: () ->
+  constructor: ->
     @projects = ko.observableArray()
 
     $.getJSON '/api/v1/projects', (data) =>
@@ -26,9 +23,9 @@ class DashboardViewModel
 
 
   projects_with_status: (filter) =>
-    ko.computed(
-      () => (p for p in @projects() when p.status == filter)
-      this)
+    @komp =>
+      p for p in @projects() when p.status == filter
+
 
 
   addProject: (vcs_url, status) =>
