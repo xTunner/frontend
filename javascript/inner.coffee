@@ -45,6 +45,20 @@ class Build extends Base
     else
       @build_num
 
+  github_url: =>
+    "#{@vcs_url}/commit/#{@vcs_revision}"
+
+  github_revision: =>
+    @vcs_revision.substring 0, 8
+
+  author: =>
+    @committer_name or @committer_email
+
+
+
+
+
+
 
 
 

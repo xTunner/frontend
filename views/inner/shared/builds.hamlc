@@ -14,13 +14,19 @@
       %td
         %a{data-bind: "attr: { href: url() }, text: description(#{@mention_project})"}
 
+      %td.github_url
+        %a{data-bind: "attr: { href: github_url() }, text: github_revision()"}
 
-    -#       = build_link_to build, mention_project
-    -#     %td
-    -#       = build.link_to_github
-    -#     %td
-    -#       = build.author_name || build.author_email
-    -#     %td
+      %td{data-bind: "text: author()"}
+
+
+      %td
+        %span{data-bind: "if: body"}
+          %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
+        %span{data-bind: "ifnot: body"}
+          %span{data-bind: "text: subject"}
+
+
     -#       = log_link_to build
     -#     %td
     -#       = as_commit_time build.start_time
