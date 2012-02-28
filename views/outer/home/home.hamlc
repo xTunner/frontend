@@ -51,7 +51,7 @@
           %li No fiddling with ssh keys
           %li No setting up your databases
           %li No trial and error with dependencies
-          %li No need to configure your tests (95% of the time)
+          %li No need to configure your testsGG
 
       %div
 
