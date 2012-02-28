@@ -1,0 +1,58 @@
+// Footer ------------------------------------------------------------------
+
+// Full width wrapper
+#footer {
+  .box-shadow(inset 0 8px 10px -5px rgba(0,0,0,.5));
+  background-color: #e6e6e6;
+  #gradient > .vertical(rgb(230, 230, 230), rgb(255, 255, 255));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#e6e6e6', EndColorStr='#ffffff');
+
+  footer {
+    .container;
+    padding: 30px 0;
+    font-size: 12px;
+
+    // Copyright
+    & > span {
+      .column(2);
+      color: #a4a4a4;
+    }
+  }
+
+  // Menu
+  nav {  }
+
+  ul {
+  margin: 0;
+  float: right;
+  }
+
+  li {
+    float: left;
+    display: inline;
+    margin: 0 0 0 15px;
+  }
+
+  // Social media icons
+  .ficon {
+    .ir;
+    background: url("@{imgPath}/sprites.png") no-repeat;
+    display: inline-block;
+    position: relative;
+    top: -5px;
+    width: 25px;
+    height: 25px;
+    opacity: 0.5;
+  }
+
+  .ficon:hover {
+    opacity: 1;
+  }
+
+  // Twitter
+  .tw { background-position: -414px -725px; }
+  // Facebook
+  .fb { background-position: -414px -751px; }
+  // Google+
+  .gp { background-position: -414px -777px; }
+}
