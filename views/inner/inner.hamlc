@@ -6,9 +6,9 @@
     = HAML['sidebar_table']({ title: "Inactive", filter: "inactive" })
     = HAML['sidebar_table']({ title: "Disabled", filter: "disabled" })
 
-  -#.content
+  .content
     -# TODO: Welcome to circle message
     .row
       %h2
         Latest builds for your projects
-        - HAML['shared/builds'](true, false)
+      = window.HAML['builds']({mention_project: true, pagination: false})
