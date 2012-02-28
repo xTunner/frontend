@@ -50,6 +50,27 @@ input:-moz-placeholder {
     color: #848484;
 }
 
+a, a:visited {
+  color: @link;
+  text-decoration: none;
+}
+
+a:hover, a:focus { color: @linkHover; }
+
+input {
+  width: 258px;
+  outline: none;
+  padding:8px 4px;
+  border: 1px solid #000000;
+  .border-radius(3px);
+  .box-shadow(0 1px 0 rgba(255,255,255,.5));
+  #gradient > .vertical(rgb(255,255,255), rgb(201, 201, 201));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffffff', EndColorStr='#c9c9c9');
+}
+
+::-moz-selection { background: @link; color: #fff; text-shadow: none; }
+::selection { background: @link; color: #fff; text-shadow: none; }
+
 // Buttons ------------------------------------------------------------------
 button, input, select, textarea {
   font-family: "Myriad", sans-serif;
