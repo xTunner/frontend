@@ -42,14 +42,28 @@
   padding: 40px 0;
   text-shadow: 0 1px 0 rgba(255,255,255,1);
   background: url("@{imgPath}/cc-tour-divider.gif") bottom repeat-x;
+  position: relative;
   .clearfix;
 
   // Tour images
+  & > div {
+    background-image: url("@{imgPath}/sprites.png");
+    background-repeat: no-repeat;
+    .box-shadow(inset 0px 0px 15px 0 rgba(0,0,0,.5));
+    border: 1px solid #989898;
+    .border-radius(4px);
+    .size(240px, 440px);
+    position: absolute;
+    right: 0;
+  }
+
+  & > .authorize_us { background-position: 0 -480px; }
+  & > .magic        { background-position: 0 0; }
+  & > .profit       { background-position: 0 -240px; }
 
   // Tour text
   figcaption {
-    .column(6.6);
-    .pull(4.4);
+    .column(6.4);
 
     h2 {
       font-size: 45px;
@@ -63,13 +77,34 @@
       font-weight: normal;
     }
 
-    ul {
-      list-style-image: url("@{imgPath}/bullets.png");
-    }
-
     li {
       margin: 0 0 15px 0;
       font-size: 13px;
+    }
+
+    // Use a sprite for good browsers
+    .generatedcontent & ul {
+      padding-left: 20px;
+
+      li {
+        list-style: none;
+        padding-left: 15px;
+        position: relative;
+      }
+
+      li:before {
+        content: '';
+        display: block;
+        background: url("@{imgPath}/sprites.png") no-repeat -424px -807px;
+        .size(13px, 14px);
+        position: absolute;
+        left: -5px;
+      }
+    }
+
+    // Load bullet.png for crap browsers
+    .no-generatedcontent ul {
+      list-style-image: url("@{imgPath}/bullets.png");
     }
 
   } // /Tour text
