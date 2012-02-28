@@ -7,11 +7,16 @@
 
   %tbody{data-bind: "foreach: projects_with_status('#{@filter}')"}
     %tr
-      %td{data-bind: "text: link_to()"}
+      %td
+        %a{data-bind: "attr: { href: project_path() }, text: project_name()"}
+
+
 
       %td.build_column{data-bind: "text: latest_build()"}
 
-      %td.icons{data-bind: "text: edit_link()"}
+      %td.icons
+        %a{data-bind: "attr: { href: edit_link() } "}
+          edit
 
 
 -#    = project_link_to p

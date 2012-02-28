@@ -2,18 +2,15 @@ class Project
   constructor: (vcs_url, status) ->
     @vcs_url = vcs_url
     @status = status
+    @project_name = @komputed () => @vcs_url.substring(19)
+    @project_path = @komputed () => '/gh/' + @project_name()
+    @edit_link = @komputed () => @project_path() + '/edit'
 
   # the @ causes very awkward code if used directly
   komputed: (callback) =>
     ko.computed(callback, @)
 
-  link_to: () =>
-    @komputed () => "x"
-
-  edit_link: () =>
-    @komputed () => "y"
-
-  latest_build: () =>
+   latest_build: () =>
     @komputed () => "z"
 
 
@@ -25,7 +22,7 @@ class DashboardViewModel
 
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
-        @addProject(d.vcs_url, d.status)
+        @addProject(d.vcs_url, d.status, d.project_url)
 
 
   projects_with_status: (filter) =>
