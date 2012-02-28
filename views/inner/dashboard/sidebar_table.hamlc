@@ -8,22 +8,12 @@
   %tbody{data-bind: "foreach: projects_with_status('#{@filter}')"}
     %tr
       %td
-        %a{data-bind: "attr: { href: project_path() }, text: project_name()"}
+        %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
-
-
-      %td.build_column{data-bind: "text: latest_build()"}
+      %td.build_column{data-bind: "with: latest_build()"}
+        %span{data-bind: "attr: { class: style() }"}
+          %a{data-bind: "attr: { href: url() }, text: status_title"}
 
       %td.icons
-        %a{data-bind: "attr: { href: edit_link() } "}
+        %a{data-bind: "attr: { href: edit_link }"}
           edit
-
-
--#    = project_link_to p
-
--#    %td.build_column
--#      - b = p.latest_build
--#        - if b
--#          = bootstrap_build_num b
-
--#      = link_to 'edit', github_project_edit_path(p)

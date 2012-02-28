@@ -2,14 +2,59 @@ class Base
   komp: (args...) =>
     ko.computed args...
 
+
+class Build extends Base
+  constructor: (@build_num, @status, @status_title) ->
+    @project = ko.observable({})
+    @url = @komp =>
+      "#{@project().project_path}/#{@build_num}"
+
+    @style = @komp => switch @status
+      when "failed"
+        "Failed"
+      when "no_tests"
+        "No tests"
+      when "fixed"
+        "Fixed"
+      when "success"
+        "Success"
+      when "killed"
+        "Killed"
+      when "running"
+        "Running"
+      when "starting"
+        "Starting"
+      when "infrastructure_fail"
+        "Circle bug"
+      when "timedout"
+        "Timed out"
+      else
+        throw "invalid option"
+
+
+
 class Project extends Base
-  constructor: (vcs_url, status) ->
+  constructor: (vcs_url, status, latest_build) ->
     @vcs_url = vcs_url
     @status = status
-    @project_name = @komp => @vcs_url.substring(19)
-    @project_path = @komp => '/gh/' + @project_name()
-    @edit_link = @komp => @project_path() + '/edit'
-    @latest_build = @komp => "z"
+    @latest_build = ko.observable(latest_build)
+    @project_name = @vcs_url.substring(19)
+    @project_path = "/gh/#{@project_name}"
+    @edit_link = "#{@project_path}/edit"
+
+
+
+Build::fromJSON = (json) ->
+  new Build(json.build_num, json.status, json.status_title)
+
+
+Project::fromJSON = (json) ->
+  build = Build::fromJSON json.latest_build
+  p = new Project(json.vcs_url, json.status, build)
+  build.project p
+  p
+
+
 
 
 class DashboardViewModel extends Base
@@ -19,17 +64,16 @@ class DashboardViewModel extends Base
 
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
-        @addProject(d.vcs_url, d.status, d.project_url)
+        @add_json_project(Project::fromJSON d)
 
 
-  projects_with_status: (filter) =>
-    @komp =>
-      p for p in @projects() when p.status == filter
+  projects_with_status: (filter) => @komp =>
+    p for p in @projects() when p.status == filter
 
 
+  add_json_project: (project) =>
+    @projects.push project
 
-  addProject: (vcs_url, status) =>
-    @projects.push(new Project(vcs_url, status))
 
 
 
