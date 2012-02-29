@@ -1,7 +1,11 @@
 class Base
 
+  constructor: (json) ->
+    for k,v of json
+      @[k] = ko.observable(v)
+
   project_name: =>
-    @vcs_url.substring(19)
+    @vcs_url().substring(19)
 
   project_path: =>
     "/gh/#{@project_name()}"
@@ -11,13 +15,13 @@ class Base
 
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends Base
-  constructor: (@vcs_url, @vcs_revision, @build_num, @status, @status_title, \
-                @committer_name, @committer_email, @subject, @body) ->
+  constructor: (json) ->
+    super(json)
 
     @url = @komp =>
-      "#{@project_path()}/#{@build_num}"
+      "#{@project_path()}/#{@build_num()}"
 
-    @style = @komp => 'label ' + switch @status
+    @style = @komp => 'label ' + switch @status()
       when "failed"
         "important"
       when "infrastructure_fail"
@@ -41,49 +45,35 @@ class Build extends Base
     return unless @build_num?
 
     if include_project
-      "#{@project_name()} ##{@build_num}"
+      "#{@project_name()} ##{@build_num()}"
     else
-      @build_num
+      @build_num()
 
   github_url: =>
-    "#{@vcs_url}/commit/#{@vcs_revision}"
+    "#{@vcs_url()}/commit/#{@vcs_revision()}"
 
   github_revision: =>
-    @vcs_revision.substring 0, 8
+    @vcs_revision().substring 0, 8
 
   author: =>
-    @committer_name or @committer_email
-
-
-
-
-
+    @committer_name() or @committer_email()
 
 
 
 
 class Project extends Base
-  constructor: (vcs_url, status, latest_build) ->
-    @vcs_url = vcs_url
-    @status = status
-    @latest_build = ko.observable(latest_build)
+  constructor: (json) ->
+    super(json)
     @edit_link = "#{@project_path()}/edit"
-
-
-
-
-
-Build::fromJSON = (json) ->
-  new Build json.vcs_url, json.vcs_revision, json.build_num, json.status, json.status_title, json.committer_name, json.committer_email, json.subject, json.body
-
-
-
-
-Project::fromJSON = (json) ->
-  build = Build::fromJSON json.latest_build
-  p = new Project(json.vcs_url, json.status, build)
-  p
-
+    @status = @komp =>
+      if @uninferrable()
+        "uninferrable"
+      else if @disabled()
+        "disabled"
+      else if @next_build_seq?
+        "active"
+      else
+        "inactive"
 
 
 
@@ -95,15 +85,15 @@ class DashboardViewModel extends Base
 
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
-        @projects.push(Project::fromJSON d)
+        @projects.push(new Project d)
 
     $.getJSON '/api/v1/recent-builds', (data) =>
       for d in data
-        @recent_builds.push(Build::fromJSON d)
+        @recent_builds.push(new Build d)
 
 
   projects_with_status: (filter) => @komp =>
-    p for p in @projects() when p.status == filter
+    p for p in @projects() when p.status() == filter
 
 
 
