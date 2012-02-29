@@ -127,6 +127,9 @@
         %li
           %a{ class: 'ficon tw', href: 'http://twitter.com/circleci' }
             Twitter
+        %li
+          %a{ class: 'ficon em', href: 'mailto:questions@circleci.com' }
+            Twitter
         -#%li
           %a{ class: 'ficon fb', href: '#' }
             Facebook
