@@ -26,8 +26,8 @@
 
   // Menu
   ul {
-  margin: 0;
-  float: right;
+    margin: 0;
+    float: right;
   }
 
   li {
@@ -44,12 +44,13 @@
     position: relative;
     top: -5px;
     .square(25px, 25px);
-    opacity: 0.5;
-    .transition(all 350ms ease-out)
+    .opacity(50);
+    .transition(all 350ms ease-out);
+    *display: block;
   }
 
   .ficon:hover {
-    opacity: 1;
+    .opacity(100);
   }
 
   // Twitter
