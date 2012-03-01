@@ -25,7 +25,17 @@
     .ir;
     margin: 30px auto 0;
     background: url("@{imgPath}/sprites.png") no-repeat 0 -725px;
-    .size(140px, 412px);
+    .size(135px, 412px);
+
+    &:hover {
+      background-position: 0 -862px;
+    }
+
+    &:active {
+      position: relative;
+      right: 1px;
+      bottom: 1px;
+    }
   }
 
   ul {
