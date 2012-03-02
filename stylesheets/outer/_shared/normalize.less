@@ -502,18 +502,11 @@ textarea:focus {
   box-shadow: 0 0 5px rgba(128,191,255,1);
 }
 
-::-webkit-input-placeholder  {
-  color:#848484;
-}
-
-input:-moz-placeholder {
-  color:#848484;
-}
-
-input:-ms-input-placeholder {
-  color: #848484;
-  text-shadow: none;
-}
+/* Placeholder text color */
+::-webkit-input-placeholder  { color:#848484; }
+input:-moz-placeholder { color:#848484; }
+input:-ms-input-placeholder { color: #848484; text-shadow: none; }
+input.placeholder { color: #848484; }
 
 /*
  * 1. Define line-height as normal to match FF3/4 (set using !important in the UA stylesheet)
