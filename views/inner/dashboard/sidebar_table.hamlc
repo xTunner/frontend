@@ -10,9 +10,9 @@
       %td
         %a{data-bind: "attr: { href: project_path() }, text: project_name()"}
 
-      %td.build_column{data-bind: "with: latest_build()"}
-        %span{data-bind: "attr: { class: style() }"}
-          %a{data-bind: "attr: { href: url() }, text: status_title"}
+      -#%td.build_column{data-bind: "with: latest_build()"}
+        -#%span{data-bind: "attr: { class: style() }"}
+          -#%a{data-bind: "attr: { href: url() }, text: status_title"}
 
       %td.icons
         %a{data-bind: "attr: { href: edit_link }"}
