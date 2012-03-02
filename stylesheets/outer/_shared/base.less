@@ -13,7 +13,7 @@
 @grayDarker:            #222;
 @grayDark:              #333;
 @gray:                  #555;
-@grayLight:             #999;
+@grayLight:             #ccc;
 @grayLighter:           #eee;
 @white:                 #fff;
 
@@ -29,91 +29,18 @@
 }
 
 // Typography ---------------------------------------------------------------
-body {
-  font: 15px/1.231 sans-serif;
-}
-
-body, button, input, select, textarea {
-  font-family: "Open Sans", sans-serif;
-  color: #222;
-}
-
-h1, h2 {
-  letter-spacing: -1px;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Myriad", sans-serif;
-}
-
-input:-moz-placeholder {
-    color: #848484;
-}
-
-a, a:visited {
-  color: @link;
-  text-decoration: none;
-}
-
-a:hover, a:focus { color: @linkHover; }
-
-input {
-  width: 258px;
-  outline: none;
-  padding:8px 4px;
+input[type=text].signup {
+  width: 270px;
   border: 1px solid #000000;
-  .border-radius(3px);
   .box-shadow(0 1px 0 rgba(255,255,255,.5));
+  background-color: #ffffff;
   #gradient > .vertical(rgb(255,255,255), rgb(201, 201, 201));
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffffff', EndColorStr='#c9c9c9');
+
+  &:focus {
+    background: @white;
+  }
 }
 
 ::-moz-selection { background: @link; color: #fff; text-shadow: none; }
 ::selection { background: @link; color: #fff; text-shadow: none; }
-
-// Buttons ------------------------------------------------------------------
-button, input, select, textarea {
-  font-family: "Myriad", sans-serif;
-  font-weight: normal;
-  font-size: 18px;
-  margin: 0;
-  vertical-align: baseline;
-  *vertical-align: middle;
-}
-
-button,
-.button {
-  font-family: "Myriad", sans-serif;
-  padding:8px 14px;
-  border: 1px solid #367203;
-  .border-radius(3px);
-}
-
-// Green
-a.green,
-button.green,
-input[type="submit"].green {
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,.5);
-  .box-shadow(~"inset 0 1px 0 rgba(255,255,255,.5), 0 2px 2px rgba(0,0,0,.25)");
-  #gradient > .vertical(rgb(116, 176, 0), rgb(69, 147, 0, 1));
-  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#74b000', EndColorStr='#459300');
-}
-
-// Green:Hover
-a.green:hover,
-button.green:hover,
-input[type="submit"].green:hover {
-  border: 1px solid #2b5b02;
-  #gradient > .vertical(rgb(93, 141, 0), rgb(55, 118, 0));
-  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#5d8d00', EndColorStr='#377600');
-}
-
-// Green:Active
-a.green:active,
-button.green:active,
-input[type="submit"].green:active {
-  .box-shadow(inset 0 1px 2px rgba(0,0,0,.95));
-  position: relative;
-  top: 1px;
-}
