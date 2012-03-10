@@ -18,8 +18,12 @@
           %a{ href: '#', title: 'Get in contact with Circle' }
             Contact
         %li
-          %a{ href: @githubAuthURL, title: 'Log in to Circle' }
-            Login
+          - if @showJoinLink
+            %a{ href: @githubAuthURL, title: 'Join to Circle' }
+              Join
+          - else
+            %a{ href: @githubAuthURL, title: 'Log in to Circle' }
+              Login
 
 #teaser
   %section{ role: 'main' }
