@@ -59,23 +59,10 @@ class Build extends Base
     @committer_name() or @committer_email()
 
 
-
-
 class Project extends Base
   constructor: (json) ->
     super(json)
     @edit_link = "#{@project_path()}/edit"
-    @status = @komp =>
-      if @uninferrable()
-        "uninferrable"
-      else if @disabled()
-        "disabled"
-      else if @next_build_seq?
-        "active"
-      else
-        "inactive"
-
-
 
 class DashboardViewModel extends Base
 
