@@ -19,24 +19,31 @@
 
       %td{data-bind: "text: author()"}
 
-
       %td
         %span{data-bind: "if: body"}
           %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
         %span{data-bind: "ifnot: body"}
           %span{data-bind: "text: subject"}
 
+      %td
+        %span{data-bind: "text: start_time"}
 
-    -#       = log_link_to build
-    -#     %td
-    -#       = as_commit_time build.start_time
-    -#     %td
-    -#       - if build.status != :killed
-    -#         = as_length_of_build build.start_time, build.stop_time
-    -#       - if build.status == :running
-    -#         (still running)
-    -#     %td
-    -#       = bootstrap_status build
+      %td
+        %span{data-bind: "text: Circle.time.pretty_duration_short(build_time_millis())"}
+      %td
+        %span{data-bind: "text: status"}
+
+%div{data-bind: "text: ko.toJSON(dashboardViewModel)"}
+
+-#       = log_link_to build
+-#     %td
+-#       = as_commit_time build.start_time
+-#     %td
+-#
+-#       - if build.status == :running
+-#         (still running)
+-#     %td
+-#       = bootstrap_status build
 
 -#- if @pagination
 -#  = paginate @builds
