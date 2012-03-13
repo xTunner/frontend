@@ -40,6 +40,14 @@ class Build extends Base
         "notice"
       when "starting"
         ""
+    @status_words = @komp => switch @status()
+      when "infrastructure_fail"
+        "infrastructure fail"
+      when "timedout"
+        "timed out"
+      else
+        @status
+
 
   description: (include_project) =>
     return unless @build_num?

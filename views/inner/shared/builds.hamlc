@@ -31,9 +31,7 @@
       %td
         %span{data-bind: "text: Circle.time.pretty_duration_short(build_time_millis())"}
       %td
-        %span{data-bind: "text: status"}
-
-%div{data-bind: "text: ko.toJSON(dashboardViewModel)"}
+        %span{data-bind: "text: status_words()"}
 
 -#       = log_link_to build
 -#     %td
