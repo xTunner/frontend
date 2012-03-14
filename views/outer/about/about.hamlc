@@ -1,0 +1,26 @@
+#head
+  %header
+    %h1#circle
+      %a{ href: '#', title: 'Go to the Circle homepage' }
+        Circle
+    %nav
+      %ul
+        %li
+          %a{ href: '#', title: 'Go to the Circle homepage' }
+            Home
+        %li
+          %a{ href: '#', title: 'Learn more about Circle' }
+            About
+        -#%li
+          %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
+            Blog
+        -#%li
+          %a{ href: '#', title: 'Get in contact with Circle' }
+            Contact
+        %li
+          - if @showJoinLink
+            %a{ href: @githubAuthURL, title: 'Join to Circle' }
+              Join
+          - else
+            %a{ href: @githubAuthURL, title: 'Log in to Circle' }
+              Login
