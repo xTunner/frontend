@@ -97,3 +97,12 @@ class DashboardViewModel extends Base
 
 window.dashboardViewModel = new DashboardViewModel()
 ko.applyBindings window.dashboardViewModel
+
+Sammy('.container-fluid', () ->
+  @get('/', =>)
+
+  @get('/gh/:username/:project', (cx) ->
+    alert(cx.params.username)
+    alert(cx.params.project)
+  )
+).run('/')
