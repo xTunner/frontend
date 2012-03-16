@@ -91,18 +91,19 @@ class DashboardViewModel extends Base
     p for p in @projects() when p.status() == filter
 
 
+relativeLocation = () ->
+  a = document.createElement("a")
+  a.href = window.location
+  a.pathname
 
+$(document).ready () ->
+  Sammy('body', () ->
 
+    @get('/', (cx) =>
+      $('body').html(HAML['dashboard']({}))
+      ko.applyBindings(new DashboardViewModel()))
 
+    @get('/gh/:username/:project', (cx) ->
+      $('body').html(HAML['dashboard']({})))
 
-window.dashboardViewModel = new DashboardViewModel()
-ko.applyBindings window.dashboardViewModel
-
-Sammy('.container-fluid', () ->
-  @get('/', =>)
-
-  @get('/gh/:username/:project', (cx) ->
-    alert(cx.params.username)
-    alert(cx.params.project)
-  )
-).run('/')
+  ).run(relativeLocation())
