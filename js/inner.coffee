@@ -107,14 +107,14 @@ relativeLocation = () ->
   a.pathname
 
 $(document).ready () ->
-  Sammy('body', () ->
+  Sammy('#app', () ->
 
     @get('/', (cx) =>
-      $('body').html(HAML['dashboard']({}))
+      $('#main').html(HAML['dashboard']({}))
       ko.applyBindings(new DashboardViewModel()))
 
     @get('/gh/:username/:project', (cx) ->
-      $('body').html(HAML['dashboard']({})))
+      $('#main').html(HAML['project']({})))
 
     @get('/logout', (cx) ->
       # TODO: add CSRF protection
