@@ -72,6 +72,12 @@ class Project extends Base
     super(json)
     @edit_link = "#{@project_path()}/edit"
 
+
+class User extends Base
+  constructor: (json) ->
+    super json
+
+
 class DashboardViewModel extends Base
 
   constructor: ->
@@ -85,6 +91,9 @@ class DashboardViewModel extends Base
     $.getJSON '/api/v1/recent-builds', (data) =>
       for d in data
         @recent_builds.push(new Build d)
+
+    $.getJSON '/api/v1/me', (data) =>
+      @current_user(new User data)
 
 
   projects_with_status: (filter) => @komp =>

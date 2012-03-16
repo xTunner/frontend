@@ -1,3 +1,5 @@
+= HAML['_topbar']({})
+
 .container-fluid
   .sidebar
     -# TECHNICAL_DEBT: use namespaces for these
@@ -11,4 +13,4 @@
     .row
       %h2
         Latest builds for your projects
-      = window.HAML['builds']({mention_project: true, pagination: false})
+      = HAML['builds']({mention_project: true, pagination: false})
