@@ -83,6 +83,7 @@ class DashboardViewModel extends Base
   constructor: ->
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
+    @current_user = ko.observable()
 
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
