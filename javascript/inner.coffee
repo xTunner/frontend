@@ -116,4 +116,10 @@ $(document).ready () ->
     @get('/gh/:username/:project', (cx) ->
       $('body').html(HAML['dashboard']({})))
 
+    @get('/logout', (cx) ->
+      # TODO: add CSRF protection
+      $.post('/logout', () =>
+        window.location = "/")
+      )
+
   ).run(relativeLocation())

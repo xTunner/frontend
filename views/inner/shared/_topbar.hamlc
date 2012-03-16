@@ -15,9 +15,12 @@
             %a.dropdown-toggle{data-bind: "text: email"}
 
             %ul.dropdown-menu
-              %li.divider
               %li
-                %a{href: "/admin"}
-                  Admin
--#              %li
--#                = link_to('Logout', destroy_user_session_path, :method => :delete)
+                %a#logout-link{href: '/logout'}
+                  Logout
+
+              %div{data-bind: "if: admin"}
+                %li.divider
+                %li
+                  %a{href: "/admin"}
+                    Admin
