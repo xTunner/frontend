@@ -1,1 +1,10 @@
-asd
+= HAML['_topbar']({})
+
+.container-fluid
+
+  - @builds = @project.recent_builds(30)
+  = HAML['builds']({builds: "recent_builds", mention_project: false, pagination: false})
+
+-# .running-jobs
+-#   = javascript_include_tag "https://d3dy5gmtp8yhk7.cloudfront.net/1.11/pusher.min.js"
+-#   = javascript_include_tag "live.js"

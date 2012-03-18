@@ -78,9 +78,9 @@ class User extends Base
     super json
 
 
-class DashboardViewModel extends Base
+class CircleViewModel extends Base
 
-  constructor: ->
+  loadRoot: =>
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
     @current_user = ko.observable()
@@ -96,6 +96,18 @@ class DashboardViewModel extends Base
     $.getJSON '/api/v1/me', (data) =>
       @current_user(new User data)
 
+    $('#main').html(HAML['dashboard']({}))
+
+  loadProject: (username, project) =>
+    projectName = "#{username}/#{project}"
+    @builds = ko.observableArray()
+    $.getJSON "/api/v1/project/#{projectName}", (data) =>
+      for d in data.recentBuilds
+        @builds.push(new Build d)
+
+    $('#main').html(HAML['project']({}))
+
+
 
   projects_with_status: (filter) => @komp =>
     p for p in @projects() when p.status() == filter
@@ -106,20 +118,24 @@ relativeLocation = () ->
   a.href = window.location
   a.pathname
 
+VM = new CircleViewModel()
+
 $(document).ready () ->
   Sammy('#app', () ->
 
     @get('/', (cx) =>
-      $('#main').html(HAML['dashboard']({}))
-      ko.applyBindings(new DashboardViewModel()))
+      VM.loadRoot()
+    )
 
     @get('/gh/:username/:project', (cx) ->
-      $('#main').html(HAML['project']({})))
+      VM.loadProject cx.params.username, cx.params.project
+    )
 
     @get('/logout', (cx) ->
       # TODO: add CSRF protection
       $.post('/logout', () =>
-        window.location = "/")
+        window.location = "/"
       )
-
+    )
   ).run(relativeLocation())
+  ko.applyBindings(VM)
