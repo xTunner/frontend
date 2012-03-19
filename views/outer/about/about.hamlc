@@ -56,6 +56,9 @@
             %a.url{ href: "https://github.com/#{user.github}" }
               Github Profile
 
+            %a.url{ href: "mailto:#{user.email}" }
+              Email Address
+
           %figcaption
             %h1.fn= user.name
             %h2.title= user.role
