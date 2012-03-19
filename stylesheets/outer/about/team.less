@@ -52,6 +52,11 @@
     float: left;
     background: url("@{imgPath}/about/sprite.png") no-repeat -22px -25px;
     height: 215px;
+    .transition(200ms all ease-in);
+
+    &:hover {
+      .rotate(-2deg);
+    }
   }
 
   // Social Media Icons
@@ -96,6 +101,11 @@
     .visual {
       float: right;
       background-position: 0 -25px;
+
+      // Subtle animation on hover
+      &:hover {
+        .rotate(2deg);
+      }
     }
 
     // Align social icons
