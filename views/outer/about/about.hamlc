@@ -61,12 +61,12 @@
             - if user.photo?
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
-            .social
-              %a.email{ href: "mailto:#{user.email}" }
-                Email Address
+          .social
+            %a.email{ href: "mailto:#{user.email}" }
+              Email Address
 
-              %a.url{ href: "https://github.com/#{user.github}" }
-                Github Profile
+            %a.url{ href: "https://github.com/#{user.github}" }
+              Github Profile
 
     %h1 Contact Us
     %p We'd love to hear from you.
