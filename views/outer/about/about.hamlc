@@ -31,7 +31,6 @@
 #content
   %section
     %h1 Our Story
-    %br
 
     %p In 2011, Paul & Allen got frustrated with the state of testing and decided to solve the problem.
     %p Circle was born to make sure every developer has state of the art testing without a dev tools department.
@@ -48,6 +47,12 @@
 
       - if user.visible
         %figure.vcard
+
+          %figcaption
+            %h4.fn= user.name
+            %h5.title= user.role
+            %p.note&= user.bio
+
           .visual
             -# If photo has not been defined for user, use .visual bg image
             - if user.photo?
@@ -58,8 +63,3 @@
 
             %a.url{ href: "mailto:#{user.email}" }
               Email Address
-
-          %figcaption
-            %h4.fn= user.name
-            %h5.title= user.role
-            %p.note&= user.bio
