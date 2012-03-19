@@ -79,21 +79,22 @@ class User extends Base
 
 
 class CircleViewModel extends Base
-
-  loadAlways: =>
+  constructor: ->
     @current_user = ko.observable()
     $.getJSON '/api/v1/me', (data) =>
       @current_user(new User data)
 
-  loadRoot: =>
-    @loadAlways()
+    @builds = ko.observableArray()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
 
+  loadRoot: =>
+    @projects.removeAll()
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
         @projects.push(new Project d)
 
+    @recent_builds.removeAll()
     $.getJSON '/api/v1/recent-builds', (data) =>
       for d in data
         @recent_builds.push(new Build d)
@@ -101,11 +102,10 @@ class CircleViewModel extends Base
     $('#main').html(HAML['dashboard']({}))
 
   loadProject: (username, project) =>
-    @loadAlways()
+    @builds.removeAll()
     projectName = "#{username}/#{project}"
-    @builds = ko.observableArray()
     $.getJSON "/api/v1/project/#{projectName}", (data) =>
-      for d in data.recentBuilds
+      for d in data
         @builds.push(new Build d)
 
     $('#main').html(HAML['project']({}))
