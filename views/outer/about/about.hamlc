@@ -43,6 +43,7 @@
     -# Object is declared in _team.coffee
     -# http://html5doctor.com/microformats/#hcard
     - for member of window.team
+
       - user = window.team[member]
 
       - if user.visible
@@ -58,8 +59,9 @@
             - if user.photo?
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
+            %a.email{ href: "mailto:#{user.email}" }
+              Email Address
+
             %a.url{ href: "https://github.com/#{user.github}" }
               Github Profile
 
-            %a.url{ href: "mailto:#{user.email}" }
-              Email Address
