@@ -24,3 +24,20 @@
           - else
             %a{ href: @githubAuthURL, title: 'Log in to Circle' }
               Login
+
+#title
+  %h1 About Us
+
+#content
+  %section
+    %h1 Our Story
+    %br
+
+    %p In 2011, Paul & Allen got frustrated with the state of testing and decided to solve the problem.
+    %p Circle was born to make sure every developer has state of the art testing without a dev tools department.
+
+    %h1 Meet the Circle CI team
+    %p Donec purus risus, pharetra in condimentum dapibus ante
+    %br
+
+
