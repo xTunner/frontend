@@ -49,9 +49,9 @@
       - if team.visible
         %figure.vcard
           .visual
-            -# If photo has not been defined for user, use generic avatar pic
-            - photo = team.photo ? "generic.png"
-            %img{ src: "img/outer/about/#{photo}" }
+            -# If photo has not been defined for user, use .visual bg image
+            - if team.photo?
+              %img{ src: "img/outer/about/#{team.photo}" }
 
           %figcaption
             %h1.fn= team.name
