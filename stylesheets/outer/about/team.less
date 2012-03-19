@@ -5,7 +5,9 @@
 
   figcaption {
     .column(9);
-    background: url("@{imgPath}/about/team_bg.png");
+    background-image: url("@{imgPath}/about/sprite.png");
+    background-repeat: no-repeat;
+    background-position: 0 -265px;
     height: 216px;
     float: right;
 
@@ -45,5 +47,31 @@
   .visual {
     .column(3);
     float: left;
+    background: url("@{imgPath}/about/sprite.png") no-repeat -22px -25px;
+    height: 215px;
+    position: relative;
+  }
+
+  // Social Media Icons
+  .social {
+    position: absolute;
+    right: -12px;
+    top: 30px;
+
+    // Sprites with hover states
+    a {
+      .ir;
+      margin-bottom: 5px;
+      background-image: url("@{imgPath}/about/sprite.png");
+      background-repeat: no-repeat;
+      .square(27px);
+    }
+
+    // Individual sprite positions
+    .email    { background-position: -281px -170px;
+      &:hover { background-position: -315px -170px; }}
+
+    .url      { background-position: -282px -202px;
+      &:hover { background-position: -316px -202px; }}
   }
 }
