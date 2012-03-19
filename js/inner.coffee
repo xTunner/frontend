@@ -80,10 +80,15 @@ class User extends Base
 
 class CircleViewModel extends Base
 
+  loadAlways: =>
+    @current_user = ko.observable()
+    $.getJSON '/api/v1/me', (data) =>
+      @current_user(new User data)
+
   loadRoot: =>
+    @loadAlways()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
-    @current_user = ko.observable()
 
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
@@ -93,12 +98,10 @@ class CircleViewModel extends Base
       for d in data
         @recent_builds.push(new Build d)
 
-    $.getJSON '/api/v1/me', (data) =>
-      @current_user(new User data)
-
     $('#main').html(HAML['dashboard']({}))
 
   loadProject: (username, project) =>
+    @loadAlways()
     projectName = "#{username}/#{project}"
     @builds = ko.observableArray()
     $.getJSON "/api/v1/project/#{projectName}", (data) =>
