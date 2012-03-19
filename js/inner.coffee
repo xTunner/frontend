@@ -99,7 +99,8 @@ class CircleViewModel extends Base
       for d in data
         @recent_builds.push(new Build d)
 
-    $('#main').html(HAML['dashboard']({}))
+    display "dashboard", {}
+
 
   loadProject: (username, project) =>
     @builds.removeAll()
@@ -108,7 +109,7 @@ class CircleViewModel extends Base
       for d in data
         @builds.push(new Build d)
 
-    $('#main').html(HAML['project']({}))
+    display "project", {}
 
 
 
@@ -121,7 +122,13 @@ relativeLocation = () ->
   a.href = window.location
   a.pathname
 
+display = (template, args) ->
+  $('#main').html(HAML[template](args))
+  ko.applyBindings(VM)
+
+
 VM = new CircleViewModel()
+
 
 $(document).ready () ->
   Sammy('#app', () ->
@@ -141,4 +148,3 @@ $(document).ready () ->
       )
     )
   ).run(relativeLocation())
-  ko.applyBindings(VM)
