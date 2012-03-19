@@ -40,4 +40,15 @@
     %p Donec purus risus, pharetra in condimentum dapibus ante
     %br
 
+    -# Iterate over team members and print their information as hCard
+    -# Object is declared in _team.coffee
+    -# http://html5doctor.com/microformats/#hcard
+    - for member of window.team
+      - team = window.team[member]
 
+      - if team.visible
+        %figure.vcard
+          %figcaption
+            %h1.fn= team.name
+            %h2.title= team.role
+            %p.note&= team.bio
