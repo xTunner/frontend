@@ -53,6 +53,9 @@
             - if user.photo?
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
+            %a.url{ href: "https://github.com/#{user.github}" }
+              Github Profile
+
           %figcaption
             %h1.fn= user.name
             %h2.title= user.role
