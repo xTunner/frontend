@@ -44,16 +44,16 @@
     -# Object is declared in _team.coffee
     -# http://html5doctor.com/microformats/#hcard
     - for member of window.team
-      - team = window.team[member]
+      - user = window.team[member]
 
-      - if team.visible
+      - if user.visible
         %figure.vcard
           .visual
             -# If photo has not been defined for user, use .visual bg image
-            - if team.photo?
-              %img{ src: "img/outer/about/#{team.photo}" }
+            - if user.photo?
+              %img.photo{ src: "img/outer/about/#{user.photo}" }
 
           %figcaption
-            %h1.fn= team.name
-            %h2.title= team.role
-            %p.note&= team.bio
+            %h1.fn= user.name
+            %h2.title= user.role
+            %p.note&= user.bio
