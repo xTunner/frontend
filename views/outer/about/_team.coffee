@@ -18,7 +18,7 @@ root.team =
     visible: true
 
   steven:
-    name: "Steven! Ragnarök"
+    name: "Steven"
     role: "Developer"
     github: "nuclearsandwich"
     email: "steven@circleci.com"
