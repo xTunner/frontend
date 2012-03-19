@@ -60,6 +60,6 @@
               Email Address
 
           %figcaption
-            %h1.fn= user.name
-            %h2.title= user.role
+            %h4.fn= user.name
+            %h5.title= user.role
             %p.note&= user.bio
