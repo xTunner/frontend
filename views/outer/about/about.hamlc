@@ -50,8 +50,10 @@
         %figure.vcard
 
           %figcaption
-            %h4.fn= user.name
-            %h5.title= user.role
+            %div
+              %h4.fn= user.name
+              %h5.title= user.role
+
             %p.note&= user.bio
 
           .visual

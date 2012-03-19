@@ -1,6 +1,22 @@
 // Team Members ----------------------------------------------------------------
 
 .vcard {
+  .container;
+
+  figcaption {
+    .column(9);
+    background: url("@{imgPath}/about/team_bg.png");
+    height: 216px;
+    float: right;
+
+    // Name & Title
+    & > div {
+      margin-top: 25px;
+    }
+
+    .note, & > div { margin-left: 50px; }
+  }
+
   .fn,
   .title {
     font-family: "Open Sans", sans-serif;
@@ -19,7 +35,15 @@
     font-weight: 200;
   }
 
+  // Bio
   .note {
-    color: @grayDarker;
+    color: @grayDark;
+    line-height: 24px;
+  }
+
+  // Thumbnail
+  .visual {
+    .column(3);
+    float: left;
   }
 }
