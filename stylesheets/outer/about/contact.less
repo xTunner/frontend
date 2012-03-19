@@ -7,4 +7,35 @@
     background: red;
     .column(7);
   }
+
+  // Contact items list
+  aside {
+    .column(5);
+    font-size: 24px;
+    font-weight: 300;
+
+    p {
+      margin: 0;
+      color: @grayDark;
+    }
+
+    ul { padding-left: 0; }
+
+    li {
+      background-image: url("@{imgPath}/about/sprite.png");
+      background-repeat: no-repeat;
+      color: @link;
+      font-size: 18px;
+      list-style: none;
+      margin: 15px 0;
+      margin-left: 10px;
+      padding-left: 40px;
+    }
+
+    // Icons
+    .email      { background-position: -680px -102px; }
+    .twitter    { background-position: -679px -138px; }
+    .telephone  { background-position: -680px -178px; }
+    .address    { background-position: -679px -221px; }
+  }
 }

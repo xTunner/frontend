@@ -68,30 +68,43 @@
             %a.url{ href: "https://github.com/#{user.github}" }
               Github Profile
 
+  .contact
     %h1 Contact Us
     %p We'd love to hear from you.
     %hr
 
-    %form.contact
+    %form{ action: '', method='post' }
+
+      // Name
+      %label{ for: 'name'} Name:
+      %input{ type: 'text', name: 'name', id: 'name', placeholder: 'Your Name', tabindex: '1' }
+
+      // Email
+      %label{ for: 'email'} Email Address:
+      %input{ type: 'text', name: 'email', id: 'email', placeholder: 'Your Email Address', tabindex: '2' }
+
+      // Name
+      %label{ for: 'message'} Message:
+      %input{ type: 'textarea', name: 'message', id: 'message', tabindex: '3' }
+
 
     %aside.info
       %p Don't like forms? You can contact us in the various ways below:
 
       %ul
-        %li
-          %a.email{ href: 'mailto:contact@circleci.com' }
+        %li.email
+          %a{ href: 'mailto:contact@circleci.com' }
             contact@circleci.com
 
-        %li
-          %a.twitter{ href='http://twitter.com/circleci' }
+        %li.twitter
+          %a{ href='http://twitter.com/circleci' }
             @circleci
 
-        %li
-          %a.telephone
-            (555) 555 - 5555
+        %li.telephone
+          (555) 555 - 5555
 
-        %li
-          %a.address{ href='http://g.co/maps/p29yr', target: '_blank' }
+        %li.address
+          %a{ href='http://g.co/maps/p29yr', target: '_blank' }
             149 9th Street<br>San Francisco CA 94103
 
 #footer
