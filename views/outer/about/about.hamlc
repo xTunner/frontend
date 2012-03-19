@@ -47,7 +47,7 @@
       - user = window.team[member]
 
       - if user.visible
-        %figure.vcard
+        %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
 
           %figcaption
             %div

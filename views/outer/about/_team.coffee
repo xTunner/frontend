@@ -1,7 +1,7 @@
 root = exports ? this
 
 root.team =
-  paul:
+  0:
     name: "Paul Bigger"
     role: "Founder"
     github: "pbiggar"
@@ -9,7 +9,7 @@ root.team =
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros non dui sollicitudin mattis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean elementum mi tincidunt orci rhoncus tempus. Cras tincidunt feugiat purus a venenatis.  Morbi sollicitudin turpis sapien, sed consequat justo. Sed semper sagittis ornare. Etiam et est tortor, at tristique sem. Maecenas a quam magna."
     visible: true
 
-  allen:
+  1:
     name: "Allen Rohner"
     role: "Founder"
     github: "arohner"
@@ -17,7 +17,7 @@ root.team =
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros non dui sollicitudin mattis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean elementum mi tincidunt orci rhoncus tempus. Cras tincidunt feugiat purus a venenatis.  Morbi sollicitudin turpis sapien, sed consequat justo. Sed semper sagittis ornare. Etiam et est tortor, at tristique sem. Maecenas a quam magna."
     visible: true
 
-  steven:
+  2:
     name: "Steven"
     role: "Developer"
     github: "nuclearsandwich"
@@ -25,7 +25,7 @@ root.team =
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros non dui sollicitudin mattis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean elementum mi tincidunt orci rhoncus tempus. Cras tincidunt feugiat purus a venenatis.  Morbi sollicitudin turpis sapien, sed consequat justo. Sed semper sagittis ornare. Etiam et est tortor, at tristique sem. Maecenas a quam magna."
     visible: true
 
-  carlos:
+  3:
     name: "Carlos Antonio"
     role: "Designer"
     github: "nuclearsandwich"
