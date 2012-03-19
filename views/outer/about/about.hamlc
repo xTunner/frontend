@@ -48,6 +48,9 @@
 
       - if team.visible
         %figure.vcard
+          .visual
+            %img{ src: "img/outer/about/#{team.photo}" }
+
           %figcaption
             %h1.fn= team.name
             %h2.title= team.role
