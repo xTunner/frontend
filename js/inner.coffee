@@ -2,10 +2,16 @@ class Base
 
   constructor: (json, defaults = {}) ->
     for k,v of defaults
-      @[k] = ko.observable(v)
+      @[k] = @observable(v)
 
     for k,v of json
-      @[k] = ko.observable(v)
+      @[k] = @observable(v)
+
+  observable: (obj) ->
+    if $.isArray obj
+      ko.observableArray obj
+    else
+      ko.observable obj
 
   project_name: =>
     @vcs_url().substring(19)
@@ -17,8 +23,15 @@ class Base
     ko.computed args...
 
 
+
+class LogOutput extends Base
+  constructor: (json) ->
+    super json
+
+
 class ActionLog extends Base
   constructor: (json) ->
+    json.out = (new LogOutput(j) for j in json.out) if json.out
     super json,
       timedout: null
       exit_code: 0
@@ -46,10 +59,11 @@ class ActionLog extends Base
       result
 
     @action_log_style = @komp =>
-      minimize: => @success
+      minimize: => @status == "success"
 
     @duration = @komp () =>
       Circle.time.pretty_duration_short(@run_time_millis())
+
 
 
 
@@ -57,12 +71,13 @@ class ActionLog extends Base
 class Build extends Base
   constructor: (json) ->
     # make the actionlogs observable
-    json.action_logs = ko.observableArray( (new ActionLog(j) for j in json.action_logs) )
+    json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
     super json,
       committer_email: null,
       committer_name: null,
       body: null,
       subject: null
+      user: null
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num()}"
