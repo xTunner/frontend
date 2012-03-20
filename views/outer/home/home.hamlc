@@ -25,6 +25,10 @@
             %a{ href: @githubAuthURL, title: 'Log in to Circle' }
               Login
 
+-if @flash
+  #flash
+    = @flash
+
 #teaser
   %section{ role: 'main' }
     %h2 Continuous Integration made easy
