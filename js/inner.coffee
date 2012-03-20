@@ -16,9 +16,48 @@ class Base
   komp: (args...) =>
     ko.computed args...
 
+
+class ActionLog extends Base
+  constructor: (json) ->
+    super json,
+      timedout: null
+      exit_code: 0
+      out: null
+
+    @status = @komp =>
+      if @end_time() == null
+        "running"
+      else if @timedout()
+        "timedout"
+      else if @exit_code() == 0
+        "success"
+      else
+        "failed"
+
+    @action_header_style = @komp =>
+      css = @status()
+      css = "failed" if css == "timedout"
+
+      result =
+        minimize: => @success,
+        contents: => @out
+
+      result[log.status] = true
+      result
+
+    @action_log_style = @komp =>
+      minimize: => @success
+
+    @duration = @komp () =>
+      Circle.time.pretty_duration_short(@run_time_millis())
+
+
+
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends Base
   constructor: (json) ->
+    # make the actionlogs observable
+    json.action_logs = ko.observableArray( (new ActionLog(j) for j in json.action_logs) )
     super json,
       committer_email: null,
       committer_name: null,
@@ -72,8 +111,6 @@ class Build extends Base
             "#{@user()} on CircleCI.com"
           else
             "CircleCI.com"
-
-
 
   description: (include_project) =>
     return unless @build_num?
