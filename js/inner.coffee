@@ -21,25 +21,28 @@ class Build extends Base
     @url = @komp =>
       "#{@project_path()}/#{@build_num()}"
 
-    @style = @komp => 'label ' + switch @status()
-      when "failed"
-        "important"
-      when "infrastructure_fail"
-        "warning"
-      when "timedout"
-        "important"
-      when "no_tests"
-        "important"
-      when "killed"
-        "warning"
-      when "fixed"
-        "success"
-      when "success"
-        "success"
-      when "running"
-        "notice"
-      when "starting"
-        ""
+    @style = @komp =>
+      klass = switch @status()
+        when "failed"
+          "important"
+        when "infrastructure_fail"
+          "warning"
+        when "timedout"
+          "important"
+        when "no_tests"
+          "important"
+        when "killed"
+          "warning"
+        when "fixed"
+          "success"
+        when "success"
+          "success"
+        when "running"
+          "notice"
+        when "starting"
+          ""
+      return {label: true, klass: true}
+
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "infrastructure fail"
@@ -47,6 +50,10 @@ class Build extends Base
         "timed out"
       else
         @status
+
+    @committer_mailto = @komp =>
+      "mailto:#{@committer_email()}"
+
 
 
   description: (include_project) =>
@@ -79,34 +86,43 @@ class User extends Base
 
 
 class CircleViewModel extends Base
+  constructor: ->
+    @current_user = ko.observable()
+    $.getJSON '/api/v1/me', (data) =>
+      @current_user(new User data)
 
-  loadRoot: =>
+    @build = ko.observable()
+    @builds = ko.observableArray()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
-    @current_user = ko.observable()
 
+  loadRoot: =>
+    @projects.removeAll()
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
         @projects.push(new Project d)
 
+    @recent_builds.removeAll()
     $.getJSON '/api/v1/recent-builds', (data) =>
       for d in data
         @recent_builds.push(new Build d)
 
-    $.getJSON '/api/v1/me', (data) =>
-      @current_user(new User data)
+    display "dashboard", {}
 
-    $('#main').html(HAML['dashboard']({}))
 
   loadProject: (username, project) =>
-    projectName = "#{username}/#{project}"
-    @builds = ko.observableArray()
-    $.getJSON "/api/v1/project/#{projectName}", (data) =>
-      for d in data.recentBuilds
+    @builds.removeAll()
+    $.getJSON "/api/v1/project/#{username}/#{project}", (data) =>
+      for d in data
         @builds.push(new Build d)
+    display "project", {}
 
-    $('#main').html(HAML['project']({}))
 
+  loadBuild: (username, project, build_num) =>
+    @build = ko.observable()
+    $.getJSON "/api/v1/project/#{username}/#{project}/#{build_num}", (data) =>
+      @build(new Build data)
+    display "build", {}
 
 
   projects_with_status: (filter) => @komp =>
@@ -118,13 +134,23 @@ relativeLocation = () ->
   a.href = window.location
   a.pathname
 
+display = (template, args) ->
+  $('#main').html(HAML[template](args))
+  ko.applyBindings(VM)
+
+
 VM = new CircleViewModel()
+
 
 $(document).ready () ->
   Sammy('#app', () ->
 
     @get('/', (cx) =>
       VM.loadRoot()
+    )
+
+    @get('/gh/:username/:project/:build_num', (cx) ->
+      VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num
     )
 
     @get('/gh/:username/:project', (cx) ->
@@ -138,4 +164,3 @@ $(document).ready () ->
       )
     )
   ).run(relativeLocation())
-  ko.applyBindings(VM)
