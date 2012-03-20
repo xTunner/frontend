@@ -1,6 +1,6 @@
 [
   "./home/home.hamlc"
-  "../../javascript/vendor/modernizr/modernizr.custom.77590.js"
-  "../../javascript/polyfills/jquery.placeholder.js"
-  "../../javascript/outer.coffee"
+  "../../js/vendor/modernizr/modernizr.custom.77590.js"
+  "../../js/polyfills/jquery.placeholder.js"
+  "../../js/outer.coffee"
  ]
