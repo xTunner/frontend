@@ -1,6 +1,0 @@
-[
-  "./home.hamlc"
-  "./js/libs/modernizr-2.5.3.js"
-  "./js/polyfills/jquery.placeholder.js"
-  "./js/outer.coffee"
- ]
