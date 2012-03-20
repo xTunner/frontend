@@ -1,6 +1,9 @@
 class Base
 
-  constructor: (json) ->
+  constructor: (json, defaults = {}) ->
+    for k,v of defaults
+      @[k] = ko.observable(v)
+
     for k,v of json
       @[k] = ko.observable(v)
 
@@ -16,7 +19,11 @@ class Base
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends Base
   constructor: (json) ->
-    super(json)
+    super json,
+      committer_email: null,
+      committer_name: null,
+      body: null,
+      subject: null
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num()}"
