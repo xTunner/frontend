@@ -54,9 +54,7 @@
     height: 215px;
     .transition(200ms all ease-in);
 
-    &:hover {
-      .rotate(-2deg);
-    }
+    &:hover { .rotate(-2deg); }
   }
 
   // Social Media Icons
@@ -64,6 +62,8 @@
     position: absolute;
     left: 215px;
     top: 30px;
+
+    &:hover + .visual { .rotate(-2deg); }
 
     // Sprites with hover states
     a {
@@ -113,6 +113,8 @@
       position: absolute;
       left: 717px;
       top: 30px;
+
+      &:hover + .visual { .rotate(2deg); }
     }
   }
 }
