@@ -1,0 +1,122 @@
+// Team Members ----------------------------------------------------------------
+
+.vcard {
+  .container;
+  margin-top: 10px;
+  margin-bottom: 50px;
+  position: relative;
+
+  figcaption {
+    .column(9);
+    background-image: url("@{imgPath}/about/sprite.png");
+    background-repeat: no-repeat;
+    background-position: 0 -265px;
+    height: 216px;
+    float: right;
+
+    // Name & Title
+    & > div {
+      margin-top: 25px;
+    }
+
+    .note, & > div { margin-left: 50px; }
+  }
+
+  .fn,
+  .title {
+    font-family: "Open Sans", sans-serif;
+    font-weight: normal;
+    display: inline;
+    color: @grayDark;
+    font-size: 22px;
+  }
+
+  .fn:after {
+    content: ',  ';
+  }
+
+  .title {
+    color: @gray;
+    font-weight: 300;
+  }
+
+  // Bio
+  .note {
+    color: @grayDark;
+    line-height: 24px;
+  }
+
+  // Thumbnail
+  .visual {
+    .column(3);
+    float: left;
+    background: url("@{imgPath}/about/sprite.png") no-repeat -22px -25px;
+    height: 215px;
+    .transition(250ms all ease-in);
+    z-index: 1;
+
+    &:hover { .rotate(-2deg); }
+  }
+
+  // Social Media Icons
+  .social {
+    position: absolute;
+    left: 215px;
+    top: 30px;
+    z-index: 100;
+
+    &:hover + .visual { .rotate(-2deg); }
+
+    // Sprites with hover states
+    a {
+      .ir;
+      margin-bottom: 5px;
+      background-image: url("@{imgPath}/about/sprite.png");
+      background-repeat: no-repeat;
+      .square(27px);
+    }
+
+    // Individual sprite positions
+    .email    { background-position: -281px -170px;
+      &:hover { background-position: -315px -170px; }}
+
+    .url      { background-position: -282px -202px;
+      &:hover { background-position: -316px -202px; }}
+  }
+
+  // Reverse profile
+  &.right {
+
+    // Alternate shadow
+    figcaption {
+      background-position: -15px -482px;
+      float: left;
+
+      // Reverse margins
+      .note, & > div {
+        margin-left: 0;
+        margin-right: 50px;
+      }
+    }
+
+    // Align image
+    .visual {
+      float: right;
+      background-position: 0 -25px;
+
+      // Subtle animation on hover
+      &:hover {
+        .rotate(2deg);
+      }
+    }
+
+    // Align social icons
+    .social {
+      position: absolute;
+      left: 717px;
+      top: 30px;
+
+      &:hover + .visual { .rotate(2deg); }
+    }
+  }
+}

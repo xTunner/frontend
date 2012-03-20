@@ -1,0 +1,141 @@
+#head
+  %header
+    %h1#circle
+      %a{ href: '#', title: 'Go to the Circle homepage' }
+        Circle
+    %nav
+      %ul
+        %li
+          %a{ href: '#', title: 'Go to the Circle homepage' }
+            Home
+        %li
+          %a{ href: '#', title: 'Learn more about Circle' }
+            About
+        -#%li
+          %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
+            Blog
+        -#%li
+          %a{ href: '#', title: 'Get in contact with Circle' }
+            Contact
+        %li
+          - if @showJoinLink
+            %a{ href: @githubAuthURL, title: 'Join to Circle' }
+              Join
+          - else
+            %a{ href: @githubAuthURL, title: 'Log in to Circle' }
+              Login
+
+#title
+  %h1 About Us
+
+#content
+  %section
+
+    .story
+      %p In 2011, Paul & Allen got frustrated with the state of testing and decided to solve the problem.
+      %p Circle was born to make sure every developer has state of the art testing without a dev tools department.
+
+    %h1 Meet the Circle CI team
+    %p Donec purus risus, pharetra in condimentum dapibus ante
+    %hr
+
+    -# Iterate over team members and print their information as hCard
+    -# Object is declared in _team.coffee
+    -# http://html5doctor.com/microformats/#hcard
+    - for member of window.team
+
+      - user = window.team[member]
+
+      - if user.visible
+        %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
+
+          %figcaption
+            %div
+              %h4.fn= user.name
+              %h5.title= user.role
+
+            %p.note&= user.bio
+
+          .social
+            %a.email{ href: "mailto:#{user.email}" }
+              Email Address
+
+            %a.url{ href: "https://github.com/#{user.github}" }
+              Github Profile
+
+          .visual
+            -# If photo has not been defined for user, use .visual bg image
+            - if user.photo?
+              %img.photo{ src: "img/outer/about/#{user.photo}" }
+
+  .contact
+    %h1 Contact Us
+    %p We'd love to hear from you.
+    %hr
+
+    %form{ action: '', method='post' }
+
+      // Name
+      %label{ for: 'name'} Name:
+      %input{ type: 'text', name: 'name', id: 'name', placeholder: 'Your Name', tabindex: '1' }
+
+      // Email
+      %label{ for: 'email'} Email Address:
+      %input{ type: 'text', name: 'email', id: 'email', placeholder: 'Your Email Address', tabindex: '2' }
+
+      // Message
+      %label{ for: 'message'} Message:
+      %textarea{ name: 'message', id: 'message', tabindex: '3' }
+
+      %button{ class: 'button green', type: 'submit' } Send
+
+    %aside.info
+      %p Don't like forms? You can contact us in the various ways below:
+
+      %ul
+        %li.email
+          %a{ href: 'mailto:contact@circleci.com' }
+            contact@circleci.com
+
+        %li.twitter
+          %a{ href='http://twitter.com/circleci' }
+            @circleci
+
+        %li.telephone
+          (555) 555 - 5555
+
+        %li.address
+          %a{ href='http://g.co/maps/p29yr', target: '_blank' }
+            149 9th Street<br>San Francisco CA 94103
+
+#footer
+  %footer
+    %span &copy; 2012 CircleCi.com
+
+    %nav
+      %ul
+        %li
+          %a{ href: '#', title: 'Go to the Circle homepage' }
+            Home
+        -#%li
+          %a{ href: '#', title: 'Find support for your issues' }
+            Support
+
+        -#%li
+          %a{ href: '#', title: 'Learn more about our Privacy Policy' }
+            Privacy
+        -#%li
+          %a{ href: '#', title: 'Get in contact with Circle' }
+            Contact
+        %li
+          %a{ class: 'ficon tw', href: 'http://twitter.com/circleci' }
+            Twitter
+        %li
+          %a{ class: 'ficon em', href: 'mailto:questions@circleci.com' }
+            Twitter
+        -#%li
+          %a{ class: 'ficon fb', href: '#' }
+            Facebook
+        -#%li
+          %a{ class: 'ficon gp', href: '#' }
+            Google Plus

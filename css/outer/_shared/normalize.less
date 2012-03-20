@@ -83,7 +83,7 @@ body, button, input, select, textarea {
    Links
    ========================================================================== */
 
-a, a:visited {
+a {
   color: @link;
   text-decoration: none;
 }
@@ -498,8 +498,9 @@ textarea {
 
 input:focus,
 textarea:focus {
-  border: 1px solid #80BFFF;
-  box-shadow: 0 0 5px rgba(128,191,255,1);
+  border: 1px solid rgba(15, 81, 143, 0.4) !important;
+  box-shadow: 0 0 5px #80bfff;
+  background: @white;
 }
 
 /* Placeholder text color */

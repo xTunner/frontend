@@ -1,0 +1,74 @@
+// Contact --------------------------------------------------------------------
+
+.contact {
+  .container;
+  padding-bottom: 100px;
+
+  // Contact form
+  form {
+    .column(7);
+  }
+
+  // Element defaults
+  label, input, textarea { display: block; }
+
+  input, textarea {
+    font-family: "Open Sans", sans-serif;
+    color: #222;
+    border-color: #CCC;
+    background: #FAFAFA !important;
+    outline: none;
+  }
+
+  label {
+    font-weight: 300;
+    padding-bottom: 10px;
+  }
+
+  input {
+    margin-bottom:  20px;
+    width: 290px;
+  }
+
+  textarea {
+    .size(150px,425px);
+    font-size: 14px;
+  }
+
+  button {
+    margin-top: 20px;
+    position: relative;
+    left: 360px;
+  }
+
+  // Contact items list
+  aside {
+    .column(5);
+    font-size: 24px;
+    font-weight: 300;
+
+    p {
+      margin: 0;
+      font-size: 26px;
+      color: @grayDark;
+    }
+
+    ul { padding-left: 15px; }
+
+    // Icons
+    li {
+      background-image: url("@{imgPath}/about/sprite.png");
+      background-repeat: no-repeat;
+      color: @link;
+      font-size: 18px;
+      list-style: none;
+      margin: 15px 0;
+      padding-left: 40px;
+    }
+
+    .email      { background-position: -680px -102px; }
+    .twitter    { background-position: -679px -138px; }
+    .telephone  { background-position: -680px -178px; }
+    .address    { background-position: -679px -221px; }
+  }
+}
