@@ -1,5 +1,5 @@
-.container-fluid
-  .row{data-bind: "with: build"}
+.container-fluid{data-bind: "with: build"}
+  .row
 
     %dl.offset1.span6
 
@@ -24,36 +24,31 @@
         Status
       %dd.value{data-bind: "text: status(), css: style()"}
 
-  -#     %dt.key
-  -#       Started at
-  -#     %dd.value
-  -#       = as_commit_time @build["start_time"]
+      %dt.key
+        Started at
+      %dd.value{data-bind: "text: start_time"}
 
-  -#     %dt.key
-  -#       Length
-  -#     %dd.value
-  -#       = as_length_of_build @build["start_time"], @build["stop_time"]
+      %dt.key
+        Length
+      %dd.value{data-bind: "text: Circle.time.pretty_duration_short(build_time_millis())"}
 
 
-  -#   %dl.offset1
+    %dl.offset1
 
-  -#     %dt.key
-  -#       Started by
-  -#     %dd.value
-  -#       = @build.why_in_words
+      %dt.key
+        Started by
+      %dd.value{data-bind: "text: why_in_words()"}
 
 
-  -# .row
-  -#   %dl.offset1
+  .row
+    %dl.offset1
 
-  -#     %dt.key
-  -#       Log
-  -#     %dd.value
-  -#       = @build["subject"]
-  -#       - if @build["body"].to_s != ""
-  -#         %p
-  -#           = @build["body"]
-
+      %dt.key
+        Log
+      %dd.value{data-bind: "if: body"}
+        %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
+      %dd.value{data-bind: "ifnot: body"}
+        %span{data-bind: "text: subject"}
 
   -# - @logs.each do |l|
   -#   -# wrapper allows the header and detail be siblings, for the JS

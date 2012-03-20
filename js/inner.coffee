@@ -48,11 +48,23 @@ class Build extends Base
         "infrastructure fail"
       when "timedout"
         "timed out"
+      when "no_tests"
+        "no tests"
       else
         @status
 
     @committer_mailto = @komp =>
       "mailto:#{@committer_email()}"
+
+    @why_in_words = @komp =>
+      switch @why()
+        when "github"
+          "GitHub push"
+        when "trigger"
+          if @user()
+            "#{@user()} on CircleCI.com"
+          else
+            "CircleCI.com"
 
 
 
