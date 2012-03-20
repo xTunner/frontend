@@ -21,25 +21,28 @@ class Build extends Base
     @url = @komp =>
       "#{@project_path()}/#{@build_num()}"
 
-    @style = @komp => 'label ' + switch @status()
-      when "failed"
-        "important"
-      when "infrastructure_fail"
-        "warning"
-      when "timedout"
-        "important"
-      when "no_tests"
-        "important"
-      when "killed"
-        "warning"
-      when "fixed"
-        "success"
-      when "success"
-        "success"
-      when "running"
-        "notice"
-      when "starting"
-        ""
+    @style = @komp =>
+      klass = switch @status()
+        when "failed"
+          "important"
+        when "infrastructure_fail"
+          "warning"
+        when "timedout"
+          "important"
+        when "no_tests"
+          "important"
+        when "killed"
+          "warning"
+        when "fixed"
+          "success"
+        when "success"
+          "success"
+        when "running"
+          "notice"
+        when "starting"
+          ""
+      return {label: true, klass: true}
+
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "infrastructure fail"
@@ -47,6 +50,10 @@ class Build extends Base
         "timed out"
       else
         @status
+
+    @committer_mailto = @komp =>
+      "mailto:#{@committer_email()}"
+
 
 
   description: (include_project) =>
@@ -84,6 +91,7 @@ class CircleViewModel extends Base
     $.getJSON '/api/v1/me', (data) =>
       @current_user(new User data)
 
+    @build = ko.observable()
     @builds = ko.observableArray()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
@@ -104,13 +112,17 @@ class CircleViewModel extends Base
 
   loadProject: (username, project) =>
     @builds.removeAll()
-    projectName = "#{username}/#{project}"
-    $.getJSON "/api/v1/project/#{projectName}", (data) =>
+    $.getJSON "/api/v1/project/#{username}/#{project}", (data) =>
       for d in data
         @builds.push(new Build d)
-
     display "project", {}
 
+
+  loadBuild: (username, project, build_num) =>
+    @build = ko.observable()
+    $.getJSON "/api/v1/project/#{username}/#{project}/#{build_num}", (data) =>
+      @build(new Build data)
+    display "build", {}
 
 
   projects_with_status: (filter) => @komp =>
@@ -135,6 +147,10 @@ $(document).ready () ->
 
     @get('/', (cx) =>
       VM.loadRoot()
+    )
+
+    @get('/gh/:username/:project/:build_num', (cx) ->
+      VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num
     )
 
     @get('/gh/:username/:project', (cx) ->
