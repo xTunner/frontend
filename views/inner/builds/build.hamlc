@@ -50,7 +50,9 @@
       %dd.value{data-bind: "ifnot: body"}
         %span{data-bind: "text: subject"}
 
-  -# - @logs.each do |l|
+  %div{data-bind: "foreach: action_logs"}
+    Test
+
   -#   -# wrapper allows the header and detail be siblings, for the JS
   -#   .wrapper
   -#     .action_header{ :class => action_header_style(l) }
