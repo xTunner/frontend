@@ -2,11 +2,42 @@
 
 .contact {
   .container;
+  padding-bottom: 100px;
 
+  // Contact form
   form {
-    background: red;
     .column(7);
   }
+
+  label, input, textarea { display: block; }
+
+  input, textarea {
+    font-family: "Open Sans", sans-serif;
+    color: #222;
+    border-color: #CCC;
+    background: #FAFAFA !important;
+    outline: none;
+  }
+
+  label {
+    font-weight: 300;
+    padding-bottom: 10px;
+  }
+
+  input {
+    margin-bottom:  20px;
+    width: 290px;
+  }
+
+  textarea {
+    .size(150px,425px);
+    font-size: 14px;
+  }
+
+  ::-webkit-input-placeholder  { color:#848484; }
+  input:-moz-placeholder { color:#848484; }
+  input:-ms-input-placeholder { color: #848484; text-shadow: none; }
+  input.placeholder { color: #848484; }
 
   // Contact items list
   aside {
@@ -16,6 +47,7 @@
 
     p {
       margin: 0;
+      font-size: 26px;
       color: @grayDark;
     }
 
