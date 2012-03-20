@@ -1,0 +1,26 @@
+.topbar-wrapper
+  .topbar{"data-dropdown": "dropdown"}
+    .topbar-inner
+      .container-fluid
+        %h3
+          %a.brand{href: "/"}
+            Circle
+
+        %ul.nav.secondary-nav{data-bind: "with: current_user"}
+          %ul.nav{data-bind: "if: admin"}
+            %li.development
+              %a{data-bind: "text: environment"}
+
+          %li.dropdown
+            %a.dropdown-toggle{data-bind: "text: email"}
+
+            %ul.dropdown-menu
+              %li
+                %a#logout-link{href: '/logout'}
+                  Logout
+
+              %div{data-bind: "if: admin"}
+                %li.divider
+                %li
+                  %a{href: "/admin"}
+                    Admin

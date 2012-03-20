@@ -1,0 +1,61 @@
+// Power ------------------------------------------------------------------
+
+// Full width wrapper
+#power {
+  background-color: #3a3a3a;
+  #gradient > .vertical(rgb(58, 58, 58), rgb(36, 36, 36));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#3a3a3a', EndColorStr='#242424');
+  text-align: center;
+
+  & > section {
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0,0,0,.75);
+    padding: 40px 0;
+  }
+
+  h2 {
+    font-size: 45px;
+    margin: 0;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0,0,0,.75);
+  }
+
+  // Authorize button big
+  h2 + a {
+    .ir;
+    margin: 30px auto 0;
+    background: url("@{imgPath}/sprites.png") no-repeat 0 -725px;
+    .size(135px, 412px);
+
+    &:hover {
+      background-position: 0 -862px;
+    }
+
+    &:active {
+      position: relative;
+      right: 1px;
+      bottom: 1px;
+    }
+  }
+
+  ul {
+    margin: 40px auto 50px;
+  }
+
+  li {
+    display: inline-block;
+    *display: inline;
+    padding-left: 36px;
+    margin-right: 42px;
+    font-family: "Myriad", sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 36px;
+    background: url("@{imgPath}/sprites.png") no-repeat -411px -958px;
+    zoom: 1;
+  }
+
+  p {
+    .container;
+  }
+} // /Power

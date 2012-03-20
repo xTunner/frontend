@@ -9,7 +9,7 @@
       %th Length
       %th Status
 
-  %tbody{data-bind: "foreach: recent_builds"}
+  %tbody{data-bind: "foreach: #{@builds}"}
     %tr
       %td
         %a{data-bind: "attr: { href: url() }, text: description(#{@mention_project})"}
