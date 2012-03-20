@@ -126,6 +126,12 @@ class Build extends Base
             "#{@user()} on CircleCI.com"
           else
             "CircleCI.com"
+        else
+          if @job_name() == "deploy"
+            "deploy"
+          else
+            "unknown"
+
 
   description: (include_project) =>
     return unless @build_num?
