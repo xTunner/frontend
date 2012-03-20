@@ -22,6 +22,7 @@ class ActionLog extends Base
     super json,
       timedout: null
       exit_code: 0
+      out: null
 
     @status = @komp =>
       if @end_time() == null
@@ -43,6 +44,9 @@ class ActionLog extends Base
 
       result[log.status] = true
       result
+
+    @action_log_style = @komp =>
+      minimize: => @success
 
     @duration = @komp () =>
       Circle.time.pretty_duration_short(@run_time_millis())

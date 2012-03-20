@@ -64,9 +64,6 @@
 
           %span{data-bind: "if: timedout"}
             %b{data-biond: "text: '(TIMED OUT)'"}
-
-  -#     .detail{ :class => action_log_style(l) }
-  -#       - if l["out"]
-  -#         %pre.output
-  -#           = preserve do
-  -#             !~ action_log_output(l.out)
+        .detail{data-bind: "if: out(), css: action_log_style()"}
+          %pre.output{data-bind: "foreach: out()"}
+            %span{data-bind: "css: { out: true, err: false }, text: message"}
