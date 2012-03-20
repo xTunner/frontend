@@ -32,8 +32,8 @@
 
     %p Sign up for the beta. We'll email you when we're ready.
 
-    %form
-      %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;' }
+    %form{action: "/notify", method: "post"}
+      %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;', name: 'signup' }
       %button{ class: 'button green', type: 'submit' } Notify Me
 
     .screenshot CircleCi Screenshot
