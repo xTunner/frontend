@@ -9,6 +9,7 @@
     .column(7);
   }
 
+  // Element defaults
   label, input, textarea { display: block; }
 
   input, textarea {
@@ -34,10 +35,11 @@
     font-size: 14px;
   }
 
-  ::-webkit-input-placeholder  { color:#848484; }
-  input:-moz-placeholder { color:#848484; }
-  input:-ms-input-placeholder { color: #848484; text-shadow: none; }
-  input.placeholder { color: #848484; }
+  button {
+    margin-top: 20px;
+    position: relative;
+    left: 360px;
+  }
 
   // Contact items list
   aside {
@@ -53,6 +55,7 @@
 
     ul { padding-left: 15px; }
 
+    // Icons
     li {
       background-image: url("@{imgPath}/about/sprite.png");
       background-repeat: no-repeat;
@@ -63,7 +66,6 @@
       padding-left: 40px;
     }
 
-    // Icons
     .email      { background-position: -680px -102px; }
     .twitter    { background-position: -679px -138px; }
     .telephone  { background-position: -680px -178px; }

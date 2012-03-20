@@ -87,6 +87,7 @@
       %label{ for: 'message'} Message:
       %textarea{ name: 'message', id: 'message', tabindex: '3' }
 
+      %button{ class: 'button green', type: 'submit' } Send
 
     %aside.info
       %p Don't like forms? You can contact us in the various ways below:
