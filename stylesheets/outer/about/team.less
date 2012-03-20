@@ -52,7 +52,8 @@
     float: left;
     background: url("@{imgPath}/about/sprite.png") no-repeat -22px -25px;
     height: 215px;
-    .transition(200ms all ease-in);
+    .transition(250ms all ease-in);
+    z-index: 1;
 
     &:hover { .rotate(-2deg); }
   }
@@ -62,6 +63,7 @@
     position: absolute;
     left: 215px;
     top: 30px;
+    z-index: 100;
 
     &:hover + .visual { .rotate(-2deg); }
 
