@@ -36,15 +36,8 @@
       %td
         %span{data-bind: "text: status_words(), css: style()"}
 
--#       = log_link_to build
--#     %td
--#       = as_commit_time build.start_time
--#     %td
--#
 -#       - if build.status == :running
 -#         (still running)
--#     %td
--#       = bootstrap_status build
 
 -#- if @pagination
 -#  = paginate @builds
