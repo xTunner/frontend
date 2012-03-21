@@ -15,6 +15,7 @@
         %a{data-bind: "attr: { href: url() }, text: description(#{@mention_project})"}
 
       %td.github_url
+        %img{src: "/img/octocat-tiny.png"}
         %a{data-bind: "attr: { href: github_url() }, text: github_revision()"}
 
       %td{data-bind: "text: author()"}
