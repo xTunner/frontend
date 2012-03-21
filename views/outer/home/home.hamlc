@@ -1,3 +1,7 @@
+-if @flash
+  #flash
+    = @flash
+
 #head
   %header
     %h1#circle
@@ -24,10 +28,6 @@
           - else
             %a{ href: @githubAuthURL, title: 'Log in to Circle' }
               Login
-
--if @flash
-  #flash
-    = @flash
 
 #teaser
   %section{ role: 'main' }
