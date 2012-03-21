@@ -57,11 +57,9 @@
             %p.note&= user.bio
 
           .social
-            %a.email{ href: "mailto:#{user.email}" }
-              Email Address
+            %a.email{ href: "mailto:#{user.email}" } Email Address
 
-            %a.url{ href: "https://github.com/#{user.github}" }
-              Github Profile
+            %a.url{ href: "https://github.com/#{user.github}" } Github Profile
 
           .visual
             -# If photo has not been defined for user, use .visual bg image
@@ -94,15 +92,12 @@
 
       %ul
         %li.email
-          %a{ href: 'mailto:contact@circleci.com' }
-            contact@circleci.com
+          %a{ href: 'mailto:contact@circleci.com' } contact@circleci.com
 
         %li.twitter
-          %a{ href='http://twitter.com/circleci' }
-            @circleci
+          %a{ href='http://twitter.com/circleci' } @circleci
 
-        %li.telephone
-          (555) 555 - 5555
+        %li.telephone (555) 555 - 5555
 
         %li.address
           %a{ href='http://g.co/maps/p29yr', target: '_blank' }
