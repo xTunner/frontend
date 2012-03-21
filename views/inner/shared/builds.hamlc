@@ -17,6 +17,7 @@
       %td.github_url
         %img{src: "/img/octocat-tiny.png"}
         %a{data-bind: "attr: { href: github_url() }, text: github_revision()"}
+        %span{data-bind: "text: branch_in_words()"}
 
       %td{data-bind: "text: author()"}
 

@@ -132,8 +132,17 @@ class Build extends Base
           else
             "unknown"
 
-     @pretty_start_time = @komp =>
+    @pretty_start_time = @komp =>
       Circle.time.as_time_since(@start_time())
+
+    @branch_in_words = @komp =>
+      if @branch()
+        b = @branch()
+        b = b.replace(/^remotes\/origin\//, "")
+        "(#{b})"
+      else
+        "(unknown)"
+
 
 
   description: (include_project) =>
