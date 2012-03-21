@@ -1,56 +1,57 @@
 = HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num})})
 
 .container-fluid{data-bind: "with: build"}
-  .row
+  .row.build-table
 
     %dl.offset1.span6
 
-      %dt.key
+      %dt
         Revision
-      %dd.value{data-bind: "attr: { href: github_url() }, text: description(true)"}
+      %dd{data-bind: "attr: { href: github_url() }, text: description(true)"}
 
-      %dt.key
+      %dt
         Build
-      %dd.value{data-bind: "text: build_num"}
+      %dd{data-bind: "text: build_num"}
 
 
-      %dt.key
+      %dt
         Author
-      %dd.value
+      %dd
         %a{data-bind: "text: author()"}
 
 
     %dl.offset1.span6
 
-      %dt.key
+      %dt
         Status
-      %dd.value{data-bind: "text: status(), css: style()"}
+      %dd{data-bind: "text: status(), css: style()"}
 
-      %dt.key
+      %dt
         Started at
-      %dd.value{data-bind: "text: pretty_start_time()"}
+      %dd{data-bind: "text: pretty_start_time()"}
 
-      %dt.key
+      %dt
         Length
-      %dd.value{data-bind: "text: Circle.time.as_duration(build_time_millis())"}
+      %dd{data-bind: "text: duration()"}
 
 
     %dl.offset1
 
-      %dt.key
+      %dt
         Started by
-      %dd.value{data-bind: "text: why_in_words()"}
+      %dd{data-bind: "text: why_in_words()"}
 
 
   .row
     %dl.offset1
 
-      %dt.key
+      %dt
         Log
-      %dd.value{data-bind: "if: body"}
-        %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
-      %dd.value{data-bind: "ifnot: body"}
-        %span{data-bind: "text: subject"}
+      %dd
+        %span{data-bind: "if: body"}
+          %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
+        %span{data-bind: "ifnot: body"}
+          %span{data-bind: "text: subject"}
 
   %div{data-bind: "foreach: action_logs()"}
 
