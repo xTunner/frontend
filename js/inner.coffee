@@ -54,9 +54,10 @@ class ActionLog extends Base
       else
         "failed"
 
-    @success = @komp => (@status == "success")
+    @success = @komp => (@status() == "success")
 
-    @minimize(@success)
+    # Expand failing actions
+    @minimize(@success())
 
 
     @action_header_style = @komp =>
@@ -64,7 +65,7 @@ class ActionLog extends Base
       css = "failed" if css == "timedout"
 
       result =
-        minimize: @success()
+        minimize: @minimize()
         contents: @out()
 
       result[css] = true
