@@ -157,7 +157,7 @@ class Build extends Base
     "#{@vcs_url()}/commit/#{@vcs_revision()}"
 
   github_revision: =>
-    @vcs_revision().substring 0, 8
+    @vcs_revision().substring 0, 9
 
   author: =>
     @committer_name() or @committer_email()
