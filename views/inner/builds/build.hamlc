@@ -24,8 +24,8 @@
 
       %dt
         Status
-      %dd
-        %span{data-bind: "text: status_words(), css: style()"}
+      %dd.build_status
+        %a{data-bind: "text: status_words(), css: style(), attr: { href: url() }"}
 
       %dt
         Started at

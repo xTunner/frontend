@@ -33,8 +33,8 @@
 
       %td
         %span{data-bind: "text: duration()"}
-      %td
-        %span{data-bind: "text: status_words(), css: style()"}
+      %td.build_statusG
+        %a{data-bind: "attr: { href: url() }, text: status_words(), css: style()"}
 
 -#       - if build.status == :running
 -#         (still running)
