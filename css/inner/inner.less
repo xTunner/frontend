@@ -36,3 +36,45 @@ td.build_column {
       display: block;
    }
 }
+
+.build-output  {
+   .command {
+      font-weight: bold;
+      font-size: 18px;
+   }
+
+   .action_header {
+      background-repeat: no-repeat;
+      padding: 6px 0px 6px 40px;
+      margin: 5px 0px 5px 10px;
+   }
+
+   .action_header.success {
+      &.contents { background-image: url("/img/green_minus.png"); }
+      &.contents.minimize { background-image: url("/img/green_plus.png"); }
+      background-color: #57A957;
+   }
+
+   .action_header.failed {
+      &.contents { background-image: url("/img/red_minus.png"); }
+      &.contents.minimize { background-image: url("/img/red_plus.png"); }
+      background-color: #EE5F5B;
+   }
+
+
+   .time {
+      font-size: 14px;
+   }
+
+   .output > span.err {
+      background-color: #ffdddd;
+   }
+
+   .output > span.out {
+      background-color: #ddffdd;
+   }
+
+
+
+
+}

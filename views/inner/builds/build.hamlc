@@ -56,7 +56,7 @@
   %div{data-bind: "foreach: action_logs()"}
 
     -# wrapper allows the header and detail be siblings, for the JS
-    .wrapper
+    .wrapper.build-output
       .action_header{data-bind: "css: action_header_style()"}
         %span.command
           \$
