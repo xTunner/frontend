@@ -97,7 +97,7 @@
         %li.twitter
           %a{ href='http://twitter.com/circleci' } @circleci
 
-        %li.telephone (555) 555 - 5555
+        %li.telephone (415) 341 - 2432
 
         %li.address
           %a{ href='http://g.co/maps/p29yr', target: '_blank' }
