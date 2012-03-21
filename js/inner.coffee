@@ -219,7 +219,7 @@ class CircleViewModel extends Base
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new Build data)
-    display "build", {project: project_name}
+    display "build", {project: project_name, build_num: build_num}
 
 
   projects_with_status: (filter) => @komp =>

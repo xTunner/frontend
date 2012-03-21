@@ -1,3 +1,5 @@
+= HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num})})
+
 .container-fluid{data-bind: "with: build"}
   .row
 
