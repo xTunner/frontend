@@ -35,7 +35,7 @@
     %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
 
     - if @showJoinLink
-      %a{ href: '#', title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
+      %a{ href: @githubAuthURL, title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
 
     - else
       %p Sign up for the beta. We'll email you when we're ready.
@@ -102,7 +102,7 @@
       %h2 All this power from one little button
 
     - if @showJoinLink
-      %a{ href: '#' title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
+      %a{ href: @githubAuthURL, title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
 
     - else
       %a{ title: 'Authorize us on Github' class: 'authGithub disabled' } Authorize us on Github
