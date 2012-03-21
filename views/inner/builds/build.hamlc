@@ -24,7 +24,8 @@
 
       %dt
         Status
-      %dd{data-bind: "text: status(), css: style()"}
+      %dd
+        %span{data-bind: "text: status_words(), css: style()"}
 
       %dt
         Started at
