@@ -15,7 +15,7 @@
     text-shadow: 0 1px 1px rgba(0,0,0,.75);
   }
 
-  // Teaser screenshot
+  // Screenshot
   .screenshot {
     .ir;
     z-index: 1;
@@ -27,14 +27,22 @@
     background: url("@{imgPath}/home/teaser_ss.png") no-repeat;
   }
 
-  // Teaser text layout
+  // Authorize button
+  .authGithub {
+    position: relative;
+    top: 18px;
+
+    &:active { top: 17px; }
+  }
+
+  // Text layout
   h2, h3, p, form {
     .column(5.5);
     .pull(6.5);
     margin-left: 0;
   }
 
-  // Teaser typography
+  // Typography
   h2 {
     font-size: 35px;
   }
