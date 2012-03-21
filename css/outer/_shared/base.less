@@ -56,6 +56,9 @@ input[type=text].signup {
     position: relative;
     bottom: 1px;
   }
+
+  &.disabled:active { bottom: 0; }
+  &.disabled:hover { background-position: 0 -725px; }
 }
 
 ::-moz-selection { background: @link; color: #fff; text-shadow: none; }
