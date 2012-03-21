@@ -58,7 +58,7 @@
 
     -# wrapper allows the header and detail be siblings, for the JS
     .wrapper.build-output
-      .action_header{data-bind: "css: action_header_style()"}
+      .action_header{data-bind: "css: action_header_style(), click: toggle_minimize"}
         %span.command
           \$
           %span{data-bind: "text: name"}
@@ -68,6 +68,6 @@
 
           %span{data-bind: "if: timedout"}
             %b{data-bind: "text: '(TIMED OUT)'"}
-        .detail{data-bind: "if: out(), css: action_log_style()"}
-          %pre.output{data-bind: "foreach: out()"}
-            %span{data-bind: "css: output_style(), text: message"}
+      .detail{data-bind: "if: out(), css: action_log_style(), visible: minimize"}
+        %pre.output{data-bind: "foreach: out()"}
+          %span{data-bind: "css: output_style(), text: message"}

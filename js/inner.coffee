@@ -42,6 +42,7 @@ class ActionLog extends Base
       timedout: null
       exit_code: 0
       out: null
+      minimize: true
 
     @status = @komp =>
       if @end_time() == null
@@ -53,22 +54,32 @@ class ActionLog extends Base
       else
         "failed"
 
+    @success = @komp => (@status == "success")
+
+    @minimize(@success)
+
+
     @action_header_style = @komp =>
       css = @status()
       css = "failed" if css == "timedout"
 
       result =
-        minimize: => @success,
-        contents: => @out
+        minimize: @success()
+        contents: @out()
 
       result[css] = true
       result
 
     @action_log_style = @komp =>
-      minimize: @status == "success"
+      minimize: @minimize()
 
     @duration = @komp () =>
       Circle.time.as_duration(@run_time_millis())
+
+  toggle_minimize: =>
+    @minimize(!@minimize())
+
+
 
 
 
