@@ -6,13 +6,15 @@
           %a.brand{href: "/"}
             Circle
 
+        = (@crumbs or "")
+
         %ul.nav.secondary-nav{data-bind: "with: current_user"}
           %ul.nav{data-bind: "if: admin"}
             %li.development
               %a{data-bind: "text: environment"}
 
           %li.dropdown
-            %a.dropdown-toggle{data-bind: "text: email"}
+            %a.dropdown-toggle{data-bind: "text: login"}
 
             %ul.dropdown-menu
               %li
@@ -24,3 +26,6 @@
                 %li
                   %a{href: "/admin"}
                     Admin
+
+-# This is used to create the 25px space under the navigation bar. I know.
+%ul

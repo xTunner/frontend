@@ -28,6 +28,12 @@ class LogOutput extends Base
   constructor: (json) ->
     super json
 
+    @output_style = @komp =>
+      out: @type() == "out"
+      err: @type() == "err"
+
+
+
 
 class ActionLog extends Base
   constructor: (json) ->
@@ -55,14 +61,14 @@ class ActionLog extends Base
         minimize: => @success,
         contents: => @out
 
-      result[log.status] = true
+      result[css] = true
       result
 
     @action_log_style = @komp =>
-      minimize: => @status == "success"
+      minimize: @status == "success"
 
     @duration = @komp () =>
-      Circle.time.pretty_duration_short(@run_time_millis())
+      Circle.time.as_duration(@run_time_millis())
 
 
 
@@ -102,11 +108,14 @@ class Build extends Base
           "notice"
         when "starting"
           ""
-      return {label: true, klass: true}
+      result = {label: true, build_status: true}
+      result[klass] = true
+      return result
+
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
-        "infrastructure fail"
+        "circle bug"
       when "timedout"
         "timed out"
       when "no_tests"
@@ -132,6 +141,21 @@ class Build extends Base
           else
             "unknown"
 
+    @pretty_start_time = @komp =>
+      Circle.time.as_time_since(@start_time())
+
+    @duration = @komp () =>
+      Circle.time.as_duration(@build_time_millis())
+
+    @branch_in_words = @komp =>
+      if @branch()
+        b = @branch()
+        b = b.replace(/^remotes\/origin\//, "")
+        "(#{b})"
+      else
+        "(unknown)"
+
+
 
   description: (include_project) =>
     return unless @build_num?
@@ -145,7 +169,7 @@ class Build extends Base
     "#{@vcs_url()}/commit/#{@vcs_revision()}"
 
   github_revision: =>
-    @vcs_revision().substring 0, 8
+    @vcs_revision().substring 0, 9
 
   author: =>
     @committer_name() or @committer_email()
@@ -189,17 +213,19 @@ class CircleViewModel extends Base
 
   loadProject: (username, project) =>
     @builds.removeAll()
-    $.getJSON "/api/v1/project/#{username}/#{project}", (data) =>
+    project_name = "#{username}/#{project}"
+    $.getJSON "/api/v1/project/#{project_name}", (data) =>
       for d in data
         @builds.push(new Build d)
-    display "project", {}
+    display "project", {project: project_name}
 
 
   loadBuild: (username, project, build_num) =>
     @build = ko.observable()
-    $.getJSON "/api/v1/project/#{username}/#{project}/#{build_num}", (data) =>
+    project_name = "#{username}/#{project}"
+    $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new Build data)
-    display "build", {}
+    display "build", {project: project_name, build_num: build_num}
 
 
   projects_with_status: (filter) => @komp =>

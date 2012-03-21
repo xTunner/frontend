@@ -15,33 +15,29 @@
         %a{data-bind: "attr: { href: url() }, text: description(#{@mention_project})"}
 
       %td.github_url
-        %a{data-bind: "attr: { href: github_url() }, text: github_revision()"}
+        %a{data-bind: "attr: { href: github_url() }"}
+          %img{src: "/img/octocat-tiny.png"}
+          %span{data-bind: "text: github_revision()"}
+        %span{data-bind: "text: branch_in_words()"}
 
       %td{data-bind: "text: author()"}
 
-      %td
+      %td{style: "max-width: 45em;"}
         %span{data-bind: "if: body"}
           %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
         %span{data-bind: "ifnot: body"}
           %span{data-bind: "text: subject"}
 
       %td
-        %span{data-bind: "text: start_time"}
+        %span{data-bind: "text: pretty_start_time()"}
 
       %td
-        %span{data-bind: "text: Circle.time.pretty_duration_short(build_time_millis())"}
-      %td
-        %span{data-bind: "text: status_words()"}
+        %span{data-bind: "text: duration()"}
+      %td.build_status
+        %a{data-bind: "attr: { href: url() }, text: status_words(), css: style()"}
 
--#       = log_link_to build
--#     %td
--#       = as_commit_time build.start_time
--#     %td
--#
 -#       - if build.status == :running
 -#         (still running)
--#     %td
--#       = bootstrap_status build
 
 -#- if @pagination
 -#  = paginate @builds

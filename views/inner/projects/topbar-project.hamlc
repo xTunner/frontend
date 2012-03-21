@@ -1,0 +1,7 @@
+%ul.nav
+  %li.active
+    %a{href: "/gh/#{@project}"}
+      = @project
+  %li
+    %a{href: "/gh/#{@project}/edit"}
+      Edit

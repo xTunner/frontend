@@ -1,11 +1,69 @@
-span.build_status a {
-   color: white;
+body {
+   /* Move the content so the Bootstrap topbar doesn't sit over it*/
+   padding-top: 40px;
 }
 
-td.build_column {
-   text-align: right;
+.development {
+  /* For developers, highlight the environment */
+  background-color: red;
+}
 
-   a {
-      color: white;
+.build_status {
+   a { color: white; }
+   a:hover { color: white; }
+}
+
+.content {
+   padding-left: 60px;
+}
+
+
+
+.build-table {
+   dt {
+      width: 100px;
+      float: left;
+   }
+
+   dd {
+      display: block;
+   }
+}
+
+.build-output  {
+   .command {
+      font-weight: bold;
+      font-size: 18px;
+   }
+
+   .action_header {
+      background-repeat: no-repeat;
+      padding: 6px 0px 6px 40px;
+      margin: 5px 0px 5px 10px;
+   }
+
+   .action_header.success {
+      &.contents { background-image: url("/img/green_minus.png"); }
+      &.contents.minimize { background-image: url("/img/green_plus.png"); }
+      background-color: #57A957;
+   }
+
+   .action_header.failed {
+      &.contents { background-image: url("/img/red_minus.png"); }
+      &.contents.minimize { background-image: url("/img/red_plus.png"); }
+      background-color: #EE5F5B;
+   }
+
+
+   .time {
+      font-size: 14px;
+   }
+
+   .output > span.err {
+      background-color: #ffdddd;
+   }
+
+   .output > span.out {
+      background-color: #ddffdd;
    }
 }
