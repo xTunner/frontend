@@ -26,11 +26,11 @@
 
       %dt.key
         Started at
-      %dd.value{data-bind: "text: start_time"}
+      %dd.value{data-bind: "text: pretty_start_time()"}
 
       %dt.key
         Length
-      %dd.value{data-bind: "text: Circle.time.pretty_duration_short(build_time_millis())"}
+      %dd.value{data-bind: "text: Circle.time.as_duration(build_time_millis())"}
 
 
     %dl.offset1

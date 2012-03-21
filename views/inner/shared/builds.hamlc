@@ -32,7 +32,7 @@
         %span{data-bind: "text: pretty_start_time()"}
 
       %td
-        %span{data-bind: "text: Circle.time.as_duration(build_time_millis())"}
+        %span{data-bind: "text: duration()"}
       %td
         %span{data-bind: "text: status_words(), css: style()"}
 

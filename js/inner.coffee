@@ -55,14 +55,14 @@ class ActionLog extends Base
         minimize: => @success,
         contents: => @out
 
-      result[log.status] = true
+      result[css] = true
       result
 
     @action_log_style = @komp =>
       minimize: => @status == "success"
 
     @duration = @komp () =>
-      Circle.time.pretty_duration_short(@run_time_millis())
+      Circle.time.as_duration(@run_time_millis())
 
 
 
