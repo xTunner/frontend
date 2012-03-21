@@ -204,17 +204,19 @@ class CircleViewModel extends Base
 
   loadProject: (username, project) =>
     @builds.removeAll()
-    $.getJSON "/api/v1/project/#{username}/#{project}", (data) =>
+    project_name = "#{username}/#{project}"
+    $.getJSON "/api/v1/project/#{project_name}", (data) =>
       for d in data
         @builds.push(new Build d)
-    display "project", {}
+    display "project", {project: project_name}
 
 
   loadBuild: (username, project, build_num) =>
     @build = ko.observable()
-    $.getJSON "/api/v1/project/#{username}/#{project}/#{build_num}", (data) =>
+    project_name = "#{username}/#{project}"
+    $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new Build data)
-    display "build", {}
+    display "build", {project: project_name}
 
 
   projects_with_status: (filter) => @komp =>

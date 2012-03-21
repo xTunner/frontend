@@ -1,4 +1,4 @@
-= HAML['_topbar']({})
+= HAML['_topbar']({crumbs: HAML['topbar_project']({project: @project})})
 
 .container-fluid
 
