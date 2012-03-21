@@ -28,6 +28,12 @@ class LogOutput extends Base
   constructor: (json) ->
     super json
 
+    @output_style = @komp =>
+      out: @type() == "out"
+      err: @type() == "err"
+
+
+
 
 class ActionLog extends Base
   constructor: (json) ->
@@ -59,7 +65,7 @@ class ActionLog extends Base
       result
 
     @action_log_style = @komp =>
-      minimize: => @status == "success"
+      minimize: @status == "success"
 
     @duration = @komp () =>
       Circle.time.as_duration(@run_time_millis())

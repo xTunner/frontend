@@ -69,4 +69,4 @@
             %b{data-bind: "text: '(TIMED OUT)'"}
         .detail{data-bind: "if: out(), css: action_log_style()"}
           %pre.output{data-bind: "foreach: out()"}
-            %span{data-bind: "css: { out: true, err: false }, text: message"}
+            %span{data-bind: "css: output_style(), text: message"}
