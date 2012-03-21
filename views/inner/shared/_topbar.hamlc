@@ -12,7 +12,7 @@
               %a{data-bind: "text: environment"}
 
           %li.dropdown
-            %a.dropdown-toggle{data-bind: "text: email"}
+            %a.dropdown-toggle{data-bind: "text: login"}
 
             %ul.dropdown-menu
               %li
