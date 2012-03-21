@@ -34,11 +34,15 @@
     %h2 Continuous Integration made easy
     %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
 
-    %p Sign up for the beta. We'll email you when we're ready.
+    - if @showJoinLink
+      %a{ href: '#', title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
 
-    %form{action: "/notify", method: "post"}
-      %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;', name: 'signup' }
-      %button{ class: 'button green', type: 'submit' } Notify Me
+    - else
+      %p Sign up for the beta. We'll email you when we're ready.
+
+      %form{action: "/notify", method: "post"}
+        %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;', name: 'signup' }
+        %button{ class: 'button green', type: 'submit' } Notify Me
 
     .screenshot CircleCi Screenshot
 
@@ -97,7 +101,11 @@
     %header
       %h2 All this power from one little button
 
-      %a{ href: '#', title: 'Authorize us on Github' } Authorize us on Github
+    - if @showJoinLink
+      %a{ href: '#' title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
+
+    - else
+      %a{ title: 'Authorize us on Github' class: 'authGithub disabled' } Authorize us on Github
 
     %ul
       %li No fiddling with ssh keys
