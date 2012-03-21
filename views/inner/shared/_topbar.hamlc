@@ -24,3 +24,6 @@
                 %li
                   %a{href: "/admin"}
                     Admin
+
+-# This is used to create the 25px space under the navigation bar. I know.
+%ul
