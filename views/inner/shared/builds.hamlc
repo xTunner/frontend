@@ -15,13 +15,14 @@
         %a{data-bind: "attr: { href: url() }, text: description(#{@mention_project})"}
 
       %td.github_url
-        %img{src: "/img/octocat-tiny.png"}
-        %a{data-bind: "attr: { href: github_url() }, text: github_revision()"}
+        %a{data-bind: "attr: { href: github_url() }"}
+          %img{src: "/img/octocat-tiny.png"}
+          %span{data-bind: "text: github_revision()"}
         %span{data-bind: "text: branch_in_words()"}
 
       %td{data-bind: "text: author()"}
 
-      %td
+      %td{style: "max-width: 45em;"}
         %span{data-bind: "if: body"}
           %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
         %span{data-bind: "ifnot: body"}
