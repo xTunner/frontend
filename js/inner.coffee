@@ -102,11 +102,14 @@ class Build extends Base
           "notice"
         when "starting"
           ""
-      return {label: true, klass: true}
+      result = {label: true, build_status: true}
+      result[klass] = true
+      return result
+
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
-        "infrastructure fail"
+        "circle bug"
       when "timedout"
         "timed out"
       when "no_tests"

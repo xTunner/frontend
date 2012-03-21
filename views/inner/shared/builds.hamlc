@@ -33,7 +33,7 @@
       %td
         %span{data-bind: "text: Circle.time.as_duration(build_time_millis())"}
       %td
-        %span{data-bind: "text: status_words()"}
+        %span{data-bind: "text: status_words(), css: style()"}
 
 -#       = log_link_to build
 -#     %td
