@@ -28,7 +28,7 @@
   margin: 0 auto;
 }
 
-// Typography ---------------------------------------------------------------
+// Etc -----------------------------------------------------------------
 input[type=text].signup {
   width: 270px;
   border: 1px solid #000000;
@@ -39,6 +39,22 @@ input[type=text].signup {
 
   &:focus {
     background: @white;
+  }
+}
+
+// Authorize button big
+.authGithub {
+  .ir;
+  background: url("@{imgPath}/home/sprites.png") no-repeat 0 -725px;
+  .size(135px, 412px);
+
+  &:hover {
+    background-position: 0 -862px;
+  }
+
+  &:active {
+    position: relative;
+    bottom: 1px;
   }
 }
 
