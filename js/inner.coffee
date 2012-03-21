@@ -138,6 +138,9 @@ class Build extends Base
     @pretty_start_time = @komp =>
       Circle.time.as_time_since(@start_time())
 
+    @duration = @komp () =>
+      Circle.time.as_duration(@build_time_millis())
+
     @branch_in_words = @komp =>
       if @branch()
         b = @branch()

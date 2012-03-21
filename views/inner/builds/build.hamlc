@@ -63,7 +63,7 @@
             %span{data-bind: "text: duration()"}
 
           %span{data-bind: "if: timedout"}
-            %b{data-biond: "text: '(TIMED OUT)'"}
+            %b{data-bind: "text: '(TIMED OUT)'"}
         .detail{data-bind: "if: out(), css: action_log_style()"}
           %pre.output{data-bind: "foreach: out()"}
             %span{data-bind: "css: { out: true, err: false }, text: message"}
