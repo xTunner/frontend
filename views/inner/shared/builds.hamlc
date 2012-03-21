@@ -27,10 +27,10 @@
           %span{data-bind: "text: subject"}
 
       %td
-        %span{data-bind: "text: start_time"}
+        %span{data-bind: "text: pretty_start_time()"}
 
       %td
-        %span{data-bind: "text: Circle.time.pretty_duration_short(build_time_millis())"}
+        %span{data-bind: "text: Circle.time.as_duration(build_time_millis())"}
       %td
         %span{data-bind: "text: status_words()"}
 

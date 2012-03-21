@@ -132,6 +132,9 @@ class Build extends Base
           else
             "unknown"
 
+     @pretty_start_time = @komp =>
+      Circle.time.as_time_since(@start_time())
+
 
   description: (include_project) =>
     return unless @build_num?
