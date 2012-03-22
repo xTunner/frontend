@@ -52,51 +52,23 @@
     %h2 Features
     %p Making testing this easy took work
 
-  %section
-    -# Authorize Us
-    %figure.tour.authorize
-      %figcaption
-        %h2 Sign up
+  -# Iterate over features and print to template
+  - for key of @features
 
-        %p Just click one button and we'll do the rest:
+    - feature = @features[key]
 
-        %ul
-          %li No fiddling with ssh keys
-          %li No setting up databases
-          %li No trial and error with dependencies
-          %li No need to configure your projects
+    %section
+      %figure.tour{ class: "#{feature.class}" }
+        %figcaption
+          %h2= feature.headline
 
-      %div
+          %p= feature.tagline
 
-    -# ?????
-    %figure.tour.magic
-      %figcaption
-        %h2 Set up
+          %ul
+            - for bullet in feature.bullets
+              %li= bullet
 
-        %p We automatically set up everything for you, supporting:
-
-        %ul
-          %li Ruby, Javascipt, Python, PHP, Java, Clojure, Groovy, Erlang; even Go.
-          %li Postgres, Mongo, Redis, MySQL, Memcache, Riak, Couch, Sphinx and Cassandra
-          %li Coming soon: static analysis, linting, code coverage, and automatic test generation(!)
-
-      %div
-
-    -# Profit
-    %figure.tour.profit
-      %figcaption
-        %h2 Profit
-
-        %p Immediately increase your developers' productivity:
-
-        %ul
-          %li Lightning fast tests
-          %li Instant notificiations when tests fail (by email and IM)
-          %li Easily pinpoint the source of the test failures
-          %li Track the health of your projects
-          %li Continuous Deployment
-
-      %div
+        %div
 
 #power
   %section
