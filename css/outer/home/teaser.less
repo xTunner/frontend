@@ -27,14 +27,6 @@
     background: url("@{imgPath}/home/teaser_ss.png") no-repeat;
   }
 
-  // Authorize button
-  .authGithub {
-    position: relative;
-    top: 25px;
-
-    &:active { top: 24px; }
-  }
-
   // Text layout
   h2, h3, p, form {
     .column(5.5);
@@ -44,20 +36,34 @@
 
   // Typography
   h2 {
-    font-size: 35px;
+    font-size: 36px;
     margin-top: 88px;
   }
 
   h3 {
     margin-top: 1em;
-    font: 600 16px/24px "Open Sans", sans-serif;
-    line-height: 24px;
+    font: 400 20px/30px "Open Sans", sans-serif;
   }
 
   p {
     margin-top: 1em;
     margin-bottom: 1em;
     line-height: 20px;
+  }
+
+  // Authorize button big
+  .authGithub {
+    .ir;
+    background: url("@{imgPath}/home/sprites.png") no-repeat -16px -862px;
+    .size(84px,311px);
+    position: relative;
+    top: 31px;
+    left: 20px;
+
+    &:active {
+      background-position: -16px -977px;
+      top: 34px;
+    }
   }
 
   // z-index > screenshot's, prevent clickability occlusion
