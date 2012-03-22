@@ -31,8 +31,8 @@
 
 #teaser
   %section{ role: 'main' }
-    %h2 Continuous Integration made easy
-    %h3 With the click of one button we automatically test all of your projects. We handle hosting, setting up the environment and databases, tracking and aggregating tests and error, and notifications.
+    %h2 Continuous Integration &nbsp; for Web Apps
+    %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on yourt part.
 
     - if @showJoinLink
       %a{ href: @githubAuthURL, title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
@@ -55,13 +55,13 @@
     -# Authorize Us
     %figure.tour.authorize
       %figcaption
-        %h2 Authorize us
+        %h2 Easy configuration
 
-        %p Click one button and we'll automatically set up your projects' tests
+        %p Just click one button and we'll do the rest.
 
         %ul
           %li No fiddling with ssh keys
-          %li No setting up your databases
+          %li No setting up databases
           %li No trial and error with dependencies
           %li No need to configure your tests
 
@@ -75,9 +75,9 @@
         %p We automatically set up everything for you, supporting
 
         %ul
-          %li Platforms: Ruby, Javascript, Java, Python, PHP; Clojure, Groovy, Erlang; even C, C++ and Go
+          %li Platforms: Ruby, NodeJS, client-side JS, Java, Python, PHP, Clojure, Groovy, Erlang; even Go.
           %li Databases: MySQL, Postgres, Redis, Riak, Mongo, Couch, Sphinx, Memcache, Cassandra
-          %li Static analysis, linting, code coverage, and even automatic test generation!
+          %li Coming soon: static analysis, linting, code coverage, and even automatic test generation!
 
       %div
 
@@ -86,12 +86,13 @@
       %figcaption
         %h2 Profit
 
-        %p Instantly increase your developers' productivity
+        %p Immediately increase your developers' productivity
 
         %ul
-          %li Per user notifications - be notified instantly when things break, by email, Hipchat, IRC and Campfire notifications
-          %li Tracking of failures and fixes
-          %li Robust API to integrate with your workflow
+          %li Lightning fast tests
+          %li Instant notificiations when tests fail (by email and IM)
+          %li Easily pinpoint the source of the test failures
+          %li Track the health of your projects
           %li Continuous Deployment
 
       %div
