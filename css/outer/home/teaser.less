@@ -2,15 +2,15 @@
 
 // Full width wrapper
 #teaser {
-  .box-shadow( inset 0 8px 25px -6px rgba(0,0,0,.5) );
-  #gradient > .vertical(rgb(11, 90, 175), rgb(8, 55, 107));
+  background: url("@{imgPath}/home/teaser_bg_pattern.png");
+  // .box-shadow( inset 0 8px 25px -6px rgba(0,0,0,.5) );
+  // #gradient > .vertical(rgb(11, 90, 175), rgb(8, 55, 107));
 
   // Content container
   & > section {
     .container;
     position: relative;
-    padding-top: 88px;
-    padding-bottom: 116px;
+    height: 518px;
     color: white;
     text-shadow: 0 1px 1px rgba(0,0,0,.75);
   }
@@ -45,6 +45,7 @@
   // Typography
   h2 {
     font-size: 35px;
+    margin-top: 88px;
   }
 
   h3 {
