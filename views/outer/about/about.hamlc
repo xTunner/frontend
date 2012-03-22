@@ -42,9 +42,9 @@
     -# Iterate over team members and print their information as hCard
     -# Object is declared in _team.coffee
     -# http://html5doctor.com/microformats/#hcard
-    - for member of renderContext.team
+    - for member of @team
 
-      - user = renderContext.team[member]
+      - user = @team[member]
 
       - if user.visible
         %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
