@@ -55,9 +55,9 @@
     -# Authorize Us
     %figure.tour.authorize
       %figcaption
-        %h2 Easy configuration
+        %h2 Sign up
 
-        %p Just click one button and we'll do the rest.
+        %p Just click one button and we'll do the rest:
 
         %ul
           %li No fiddling with ssh keys
@@ -72,12 +72,12 @@
       %figcaption
         %h2 ?????
 
-        %p We automatically set up everything for you, supporting
+        %p We automatically set up everything for you, supporting:
 
         %ul
-          %li Platforms: Ruby, NodeJS, client-side JS, Java, Python, PHP, Clojure, Groovy, Erlang; even Go.
-          %li Databases: MySQL, Postgres, Redis, Riak, Mongo, Couch, Sphinx, Memcache, Cassandra
-          %li Coming soon: static analysis, linting, code coverage, and even automatic test generation!
+          %li Ruby, Javascipt, Python, PHP, Java, Clojure, Groovy, Erlang; even Go.
+          %li Postgres, Mongo, Redis, MySQL, Memcache, Riak, Couch, Sphinx and Cassandra
+          %li Coming soon: static analysis, linting, code coverage, and automatic test generation(!)
 
       %div
 
@@ -86,7 +86,7 @@
       %figcaption
         %h2 Profit
 
-        %p Immediately increase your developers' productivity
+        %p Immediately increase your developers' productivity:
 
         %ul
           %li Lightning fast tests
@@ -113,7 +113,7 @@
       %li 15 day free trial
       %li No credit card required
 
-    %p * Github access allows us set up your code and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
+    %p Signing up with Github allows Circle to access your code so that we and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
 
 - unless @showJoinLink
   #signup
