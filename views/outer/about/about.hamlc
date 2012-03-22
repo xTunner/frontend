@@ -40,7 +40,6 @@
     %hr
 
     -# Iterate over team members and print their information as hCard
-    -# Object is declared in _team.coffee
     -# http://html5doctor.com/microformats/#hcard
     - for member of @team
 
