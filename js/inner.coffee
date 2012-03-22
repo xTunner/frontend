@@ -96,6 +96,11 @@ class Build extends Base
       body: null,
       subject: null
       user: null
+      branch: null
+      start_time: null
+      why: null
+
+
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num()}"
@@ -154,10 +159,12 @@ class Build extends Base
             "unknown"
 
     @pretty_start_time = @komp =>
-      Circle.time.as_time_since(@start_time())
+      if @start_time()
+        Circle.time.as_time_since(@start_time())
 
     @duration = @komp () =>
-      Circle.time.as_duration(@build_time_millis())
+      if @start_time()
+        Circle.time.as_duration(@build_time_millis())
 
     @branch_in_words = @komp =>
       if @branch()
@@ -166,7 +173,6 @@ class Build extends Base
         "(#{b})"
       else
         "(unknown)"
-
 
 
   description: (include_project) =>
@@ -187,8 +193,10 @@ class Build extends Base
     @committer_name() or @committer_email()
 
 
+
 class Project extends Base
   constructor: (json) ->
+    json.latest_build = (new Build(json.latest_build)) if json.latest_build
     super(json)
     @edit_link = "#{@project_path()}/edit"
 
