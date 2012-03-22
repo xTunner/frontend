@@ -5,12 +5,12 @@
 #head
   %header
     %h1#circle
-      %a{ href: '#', title: 'Go to the Circle homepage' }
+      %a{ href: '/', title: 'Go to the Circle homepage' }
         Circle
     %nav
       %ul
         %li
-          %a{ href: '#', title: 'Go to the Circle homepage' }
+          %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
         -#%li
           %a{ href: '#', title: 'Learn more about Circle' }
@@ -131,7 +131,7 @@
     %nav
       %ul
         %li
-          %a{ href: '#', title: 'Go to the Circle homepage' }
+          %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
         -#%li
           %a{ href: '#', title: 'Find support for your issues' }
