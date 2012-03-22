@@ -43,4 +43,18 @@
   p {
     .container;
   }
+
+  // Authorize button big
+  .authGithub {
+    .ir;
+    background: url("@{imgPath}/home/sprites.png") no-repeat 0 -725px;
+    .size(135px, 412px);
+
+    &:active {
+      position: relative;
+      bottom: 1px;
+    }
+
+    &.disabled:active { bottom: 0; }
+  }
 } // /Power
