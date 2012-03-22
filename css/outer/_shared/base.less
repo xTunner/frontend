@@ -31,34 +31,9 @@
 // Etc -----------------------------------------------------------------
 input[type=text].signup {
   width: 270px;
-  border: 1px solid #000000;
-  .box-shadow(0 1px 0 rgba(255,255,255,.5));
+  border: 1px solid #152942;
+  .box-shadow(~"0 1px 0 rgba(255,255,255,.25), 0 2px 5px rgba(0, 0, 0, 0.25) inset");
   background-color: #ffffff;
-  #gradient > .vertical(rgb(255,255,255), rgb(201, 201, 201));
-  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffffff', EndColorStr='#c9c9c9');
-
-  &:focus {
-    background: @white;
-  }
-}
-
-// Authorize button big
-.authGithub {
-  .ir;
-  background: url("@{imgPath}/home/sprites.png") no-repeat 0 -725px;
-  .size(135px, 412px);
-
-  &:hover {
-    background-position: 0 -862px;
-  }
-
-  &:active {
-    position: relative;
-    bottom: 1px;
-  }
-
-  &.disabled:active { bottom: 0; }
-  &.disabled:hover { background-position: 0 -725px; }
 }
 
 ::-moz-selection { background: @link; color: #fff; text-shadow: none; }

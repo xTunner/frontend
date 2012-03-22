@@ -2,17 +2,17 @@
 
 // Full width wrapper
 #teaser {
-  .box-shadow( inset 0 8px 25px -6px rgba(0,0,0,.5) );
-  #gradient > .vertical(rgb(11, 90, 175), rgb(8, 55, 107));
+  background: url("@{imgPath}/home/teaser_bg_pattern.png");
+  // .box-shadow( inset 0 8px 25px -6px rgba(0,0,0,.5) );
+  // #gradient > .vertical(rgb(11, 90, 175), rgb(8, 55, 107));
 
   // Content container
   & > section {
     .container;
     position: relative;
-    padding-top: 88px;
-    padding-bottom: 116px;
+    height: 518px;
     color: white;
-    text-shadow: 0 1px 1px rgba(0,0,0,.75);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55);
   }
 
   // Screenshot
@@ -27,14 +27,6 @@
     background: url("@{imgPath}/home/teaser_ss.png") no-repeat;
   }
 
-  // Authorize button
-  .authGithub {
-    position: relative;
-    top: 25px;
-
-    &:active { top: 24px; }
-  }
-
   // Text layout
   h2, h3, p, form {
     .column(5.5);
@@ -44,19 +36,34 @@
 
   // Typography
   h2 {
-    font-size: 35px;
+    font-size: 36px;
+    margin-top: 88px;
   }
 
   h3 {
     margin-top: 1em;
-    font: 600 16px/24px "Open Sans", sans-serif;
-    line-height: 24px;
+    font: 400 20px/30px "Open Sans", sans-serif;
   }
 
   p {
     margin-top: 1em;
     margin-bottom: 1em;
     line-height: 20px;
+  }
+
+  // Authorize button big
+  .authGithub {
+    .ir;
+    background: url("@{imgPath}/home/sprites.png") no-repeat -16px -862px;
+    .size(84px,311px);
+    position: relative;
+    top: 31px;
+    left: 20px;
+
+    &:active {
+      background-position: -16px -977px;
+      top: 34px;
+    }
   }
 
   // z-index > screenshot's, prevent clickability occlusion
