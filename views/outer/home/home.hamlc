@@ -63,14 +63,14 @@
           %li No fiddling with ssh keys
           %li No setting up databases
           %li No trial and error with dependencies
-          %li No need to configure your tests
+          %li No need to configure your projects
 
       %div
 
     -# ?????
     %figure.tour.magic
       %figcaption
-        %h2 ?????
+        %h2 Set up
 
         %p We automatically set up everything for you, supporting:
 
