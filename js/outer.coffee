@@ -5,21 +5,22 @@ $(window).load ->
 
 # Sammy
 (($) ->
-  circle = $.sammy("#main", ->
+  circle = $.sammy("body", ->
 
-    @element_selector = "body"
+    # Navigation
+    @get "/", (context) -> loader "home"
+    @get "#/about", (context) -> loader "about"
 
-    # Home
-    @get "/", (context) ->
-      $.getScript "assets/views/outer/home/home.hamlc", ->
-        $('body').html HAML['home'](renderContext)
-        $('body').attr 'id': 'home'
+    # Render helper
+    render = (page) ->
+      $("body").attr("id",page).html HAML[page](renderContext)
 
-    # About
-    @get "#/about", (context) ->
-      $.getScript "assets/views/outer/about/about.hamlc", ->
-        $('body').html HAML['about'](renderContext)
-        $('body').attr 'id': 'about'
+    # Load helper
+    loader = (page) ->
+      if @HAML? and @HAML[page]?
+        render page
+      else
+        $.getScript "assets/views/outer/#{page}/#{page}.hamlc", -> render page
   )
 
   # Run the application
