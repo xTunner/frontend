@@ -54,6 +54,18 @@ body {
       background-color: #EE5F5B;
    }
 
+   .action_header.timedout {
+      &.contents { background-image: url("/img/red_minus.png"); }
+      &.contents.minimize { background-image: url("/img/red_plus.png"); }
+      background-color: #EE5F5B;
+   }
+
+   .action_header.running {
+      &.contents { background-image: url("/img/green_minus.png"); }
+      &.contents.minimize { background-image: url("/img/green_plus.png"); }
+      background-color: #E0C91B;
+   }
+
 
    .time {
       font-size: 14px;
