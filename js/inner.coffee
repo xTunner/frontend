@@ -62,7 +62,6 @@ class ActionLog extends Base
 
     @action_header_style = @komp =>
       css = @status()
-      css = "failed" if css == "timedout"
 
       result =
         minimize: @minimize()
