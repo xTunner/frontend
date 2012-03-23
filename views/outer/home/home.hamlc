@@ -1,35 +1,3 @@
--if @flash
-  -# - @flashAnimation()
-  #flash
-    = @flash
-
-#head
-  %header
-    %h1#circle
-      %a{ href: '/', title: 'Go to the Circle homepage' }
-        Circle
-    %nav
-      %ul
-        %li
-          %a{ href: '/', title: 'Go to the Circle homepage' }
-            Home
-        -#%li
-          %a{ href: '#', title: 'Learn more about Circle' }
-            About
-        -#%li
-          %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
-            Blog
-        -#%li
-          %a{ href: '#', title: 'Get in contact with Circle' }
-            Contact
-        %li
-          - if @showJoinLink
-            %a{ id: 'join' href: @githubAuthURL, title: 'Join to Circle' }
-              Join
-          - else
-            %a{ href: @githubAuthURL, title: 'Log in to Circle' }
-              Login
-
 #teaser
   %section{ role: 'main' }
     %h2 Continuous Integration &nbsp; for Web Apps
@@ -96,36 +64,3 @@
       %form{action: "/notify", method: "post"}
         %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;', name: 'signup'}
         %button{ class: 'button green', type: 'submit' } Notify me
-
-
-#footer
-  %footer
-    %span &copy; 2012 CircleCi.com
-
-    %nav
-      %ul
-        %li
-          %a{ href: '/', title: 'Go to the Circle homepage' }
-            Home
-        -#%li
-          %a{ href: '#', title: 'Find support for your issues' }
-            Support
-
-        -#%li
-          %a{ href: '#', title: 'Learn more about our Privacy Policy' }
-            Privacy
-        -#%li
-          %a{ href: '#', title: 'Get in contact with Circle' }
-            Contact
-        %li
-          %a{ class: 'ficon tw', href: 'http://twitter.com/circleci' }
-            Twitter
-        %li
-          %a{ class: 'ficon em', href: 'mailto:questions@circleci.com' }
-            Twitter
-        -#%li
-          %a{ class: 'ficon fb', href: '#' }
-            Facebook
-        -#%li
-          %a{ class: 'ficon gp', href: '#' }
-            Google Plus
