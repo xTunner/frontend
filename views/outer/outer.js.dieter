@@ -1,6 +1,7 @@
 [
+  "../../js/vendor/sammy-0.7.1.js"
   "./home/home.hamlc"
-  "../../js/vendor/modernizr/modernizr-2.5.3.js"
-  "../../js/vendor/polyfills/jquery.placeholder.js"
+  "../../js/vendor/modernizr-2.5.3.js"
+  "../../js/vendor/jquery.placeholder.js"
   "../../js/outer.coffee"
  ]
