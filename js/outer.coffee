@@ -13,7 +13,9 @@ $(window).load ->
 
       render: ->
         document.title = "Circle - " + @title
-        $("body").attr("id",@name).html HAML[@name](renderContext)
+        $("body").attr("id",@name).html HAML['header'](renderContext)
+        $("body").append HAML[@name](renderContext)
+        $("body").append HAML['footer'](renderContext)
 
       load: ->
         if HAML? and HAML[@name]?
