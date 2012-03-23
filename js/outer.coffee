@@ -19,11 +19,8 @@ $(window).load ->
 
       load: (show) ->
         self = this
-        if show?
-          $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", ->
-            self.render()
-        else
-          $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc"
+        $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", ->
+          self.render() if show?
 
       display: ->
         if HAML? and HAML[@name]?
