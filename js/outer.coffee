@@ -7,20 +7,29 @@ $(window).load ->
 (($) ->
   circle = $.sammy("body", ->
 
+    # Page
+    class Page
+      constructor: (@name, @title) ->
+
+      render: ->
+        document.title = "Circle - " + @title
+        $("body").attr("id",@name).html HAML[@name](renderContext)
+
+      load: ->
+        if HAML? and HAML[@name]?
+          @render()
+        else
+          self = this
+          $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", -> self.render()
+
+    # Pages
+    home = new Page("home", "Continuous Integration made easy")
+    about = new Page("about", "About Us")
+
     # Navigation
-    @get "/", (context) -> loader "home"
-    @get "#/about", (context) -> loader "about"
+    @get "/", (context) -> home.load()
+    @get "#/about", (context) -> about.load()
 
-    # Render helper
-    render = (page) ->
-      $("body").attr("id",page).html HAML[page](renderContext)
-
-    # Load helper
-    loader = (page) ->
-      if @HAML? and @HAML[page]?
-        render page
-      else
-        $.getScript "assets/views/outer/#{page}/#{page}.hamlc", -> render page
   )
 
   # Run the application
