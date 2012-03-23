@@ -191,6 +191,11 @@ class Build extends Base
   author: =>
     @committer_name() or @committer_email()
 
+  retry_build: () =>
+    [_, username, project_name] = @vcs_url().match(/https:\/\/github.com\/([^\/]+)\/([^\/]+)/)
+    $.post("/api/v1/project/#{username}/#{project_name}/#{@build_num()}/retry")
+
+
 
 
 class Project extends Base

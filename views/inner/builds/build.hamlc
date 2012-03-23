@@ -43,6 +43,9 @@
         Started by
       %dd{data-bind: "text: why_in_words()"}
 
+      %dt.offset6
+        %button.btn.btn-mini.primary{data-bind: "click: retry_build"}
+          Retry
 
   .row
     %dl.offset1
