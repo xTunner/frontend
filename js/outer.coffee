@@ -17,7 +17,7 @@ $(window).load ->
         $("body").append HAML[@name](renderContext)
         $("body").append HAML['footer'](renderContext)
 
-      load: ->
+      display: ->
         if HAML? and HAML[@name]?
           @render()
         else
@@ -29,12 +29,11 @@ $(window).load ->
     about = new Page("about", "About Us")
 
     # Navigation
-    @get "/", (context) -> home.load()
-    @get "#/about", (context) -> about.load()
+    @get "/", (context) -> home.display()
+    @get "#/about", (context) -> about.display()
 
   )
 
   # Run the application
-  $ ->
-    circle.run "#/"
+  $ -> circle.run "#/"
 ) jQuery
