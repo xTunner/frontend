@@ -17,12 +17,20 @@ $(window).load ->
         $("body").append HAML[@name](renderContext)
         $("body").append HAML['footer'](renderContext)
 
+      load: (show) ->
+        self = this
+        if show?
+          $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", ->
+            self.render()
+        else
+          $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc"
+
       display: ->
         if HAML? and HAML[@name]?
           @render()
         else
-          self = this
-          $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", -> self.render()
+          @load(true)
+
 
     # Pages
     home = new Page("home", "Continuous Integration made easy")
@@ -36,4 +44,5 @@ $(window).load ->
 
   # Run the application
   $ -> circle.run "#/"
+
 ) jQuery
