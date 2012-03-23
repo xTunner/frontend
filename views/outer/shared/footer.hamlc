@@ -5,12 +5,11 @@
     %nav
       %ul
         %li
-          %a{ href: '#', title: 'Go to the Circle homepage' }
+          %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
         -#%li
           %a{ href: '#', title: 'Find support for your issues' }
             Support
-
         -#%li
           %a{ href: '#', title: 'Learn more about our Privacy Policy' }
             Privacy
