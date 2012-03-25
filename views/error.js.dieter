@@ -1,0 +1,8 @@
+[
+ "./404.hamlc"
+ "./500.hamlc"
+  "./outer/shared/header.hamlc"
+  "./outer/shared/footer.hamlc"
+  "../js/vendor/modernizr-2.5.3.js"
+  "../../js/error.coffee"
+ ]
