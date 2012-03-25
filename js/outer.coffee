@@ -35,11 +35,11 @@ $(window).load ->
 
     # Navigation
     @get "/", (context) -> home.display()
-    @get "#/about", (context) -> about.display()
+    @get "/about", (context) -> about.display()
 
   )
 
   # Run the application
-  $ -> circle.run "#/"
+  $ -> circle.run "/"
 
 ) jQuery
