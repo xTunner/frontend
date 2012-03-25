@@ -13,7 +13,7 @@
         %li
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
-        %li
+        -#%li
           %a{ href: '#/about', title: 'Learn more about Circle' }
             About
         -#%li
