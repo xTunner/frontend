@@ -1,0 +1,39 @@
+// Path Management -----------------------------------------------------------
+@imgPath: "../../../img/outer";
+
+// Libs ----------------------------------------------------------------------
+@import "_shared/base";
+
+// Blocks ------------------------------------------------------------------
+@import "_blocks/header";
+@import "_blocks/title";
+@import "_blocks/footer";
+
+#content { position: relative; }
+
+#content > section {
+  .container;
+
+  h1 {
+    font-size: 92px;
+    margin: 100px auto 0;
+
+    & + p {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  .story::before {
+    content: '';
+    display: block;
+    position: absolute;
+    background: #FAFAFA;
+    background: rgba(0, 0, 0, 0.02);
+    height: 225px;
+    width: 100%;
+    top: 75px;
+    left: 0;
+    border: 1px solid #E6E6E6;
+  }
+}
