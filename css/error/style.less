@@ -11,13 +11,24 @@
 
 #content { position: relative; }
 
-#content > section {
-  .container;
-  padding-bottom: 75px;
+#content {
+    background: #F2F2F2;
+    background: rgba(0, 0, 0, 0.02);
+    height: 225px;
+    width: 100%;
+    top: 75px;
+    border: 1px solid #E6E6E6;
+
+  & > section {
+    .container;
+    padding-bottom: 75px;
+  }
+
+  .story { margin-top: 28px; }
 
   h1 {
     font-size: 92px;
-    margin: 100px auto 0;
+    margin: 0 auto 0;
     color: #444;
     text-align: center;
     text-shadow: 0 1px 1px white;
@@ -32,18 +43,5 @@
       text-align: center;
       text-shadow: 0 1px 1px white;
     }
-  }
-
-  .story::before {
-    content: '';
-    display: block;
-    position: absolute;
-    background: #FAFAFA;
-    background: rgba(0, 0, 0, 0.02);
-    height: 225px;
-    width: 100%;
-    top: 75px;
-    left: 0;
-    border: 1px solid #E6E6E6;
   }
 }
