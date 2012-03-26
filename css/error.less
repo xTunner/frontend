@@ -9,11 +9,19 @@
 @import "shared/blocks/title";
 @import "shared/blocks/footer";
 
-#content { position: relative; }
+// Sticky footer setup
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
+#wrap { height: 100%; }
+
+// Message box
 #content {
     background: #F2F2F2;
     background: rgba(0, 0, 0, 0.02);
+    position: relative;
     height: 225px;
     width: 100%;
     top: 75px;
@@ -44,4 +52,12 @@
       text-shadow: 0 1px 1px white;
     }
   }
+}
+
+// Sticky Footer
+#footer {
+  margin-top: -75px;
+  height: 75px;
+  clear: both;
+  position: relative;
 }
