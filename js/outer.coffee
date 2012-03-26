@@ -11,6 +11,7 @@
         $("body").attr("id",@name).html HAML['header'](renderContext)
         $("body").append HAML[@name](renderContext)
         $("body").append HAML['footer'](renderContext)
+        @polyfill() if @polyfill?
 
       load: (show) ->
         self = this
@@ -23,23 +24,23 @@
         else
           @load(true)
 
-
     # Pages
     home = new Page("home", "Continuous Integration made easy")
     about = new Page("about", "About Us")
 
     # Navigation
     @get "/", (context) -> home.display()
-    @get "/#about", (context) -> about.display()
+    @get "/about", (context) -> about.display()
 
-  )
+    # Polyfill Detection
+    home.polyfill = ->
+      if !Modernizr.input.placeholder
+        $("input, textarea").placeholder()
+    )
+
+
 
   # Run the application
   $ -> circle.run "/"
 
 ) jQuery
-
-
-# Placeholder Polyfill
-$(window).load ->
-  $("input, textarea").placeholder()
