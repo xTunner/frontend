@@ -10,8 +10,8 @@
         -#%li
           %a{ href: '#', title: 'Find support for your issues' }
             Support
-        -#%li
-          %a{ href: '#', title: 'Learn more about our Privacy Policy' }
+        %li
+          %a{ href: '#/privacy', title: 'Learn more about our Privacy Policy' }
             Privacy
         -#%li
           %a{ href: '#', title: 'Get in contact with Circle' }
