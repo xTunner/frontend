@@ -3,6 +3,124 @@
 
 #content
   %section
+    %h1 Privacy and Security
+
+    %h2 Code security
+    %p
+      If Circle ever leaked your code, through our own error or through the error of one of our partners, we would very likely be out of business the next day.
+      So the security of your code base is not just important to us, it is essential to the survival of our company.
+
+      Circle's founders and employees are well versed in full-stack security.
+      Paul worked on Mozilla's Javascript engine, where every bug is a potential security bug; and wasa principal engineer at Lookout, the premiere Android security company.
+      Previously he did his PhD in static analysis, which kept him well versed in the latest information and security vulnerabilities.
+      Allen's was a lead developer at CrossRoads, where he provided security audits for their full-stack SAN solution.
+      His experience include work on Storage Area Networks, Linux kernel drivers and medical imaging software, all of which have an extremely security-oriented focus.
+
+    %h2 Circle's GitHub authorization
+    %p
+      To run your tests, we need to check out your code from Github.
+      When you sign up for Circle, you tell Github that you are authorizing us to check out your private repositories.
+      You may revoke this permission at any time through your
+      %a{href: "https://github.com/settings/applications" GitHub application settings page,
+      and by removing Circle's
+      %i deploy keys
+      and
+      %i from your repositories
+      .
+
+    %p
+      Note that Github's permissions model is "all or nothing" - Circle gets access to all of a user's repos or none of them.
+      We have asked Github to provide finer-grained permissions, but they have indicated it will not be completed in the short term.
+      Please
+      %a{href: "https://github.com/contact"} contact GitHub
+      if this issue is important to you.
+
+      We are currently adding the ability to disable tests on individual projects.
+
+
+  %h3 We never read your code!
+  %p
+    The only time we ever read your code is when we obtain explicit permission to do so, in response to a support request.
+    Only the founders have the ability to check out your code, though high-level employees will in the future.
+    Contractors will never be given access to customer code.
+
+    Note that this is a change from our early policies - when we believed that customers wanted our help in setting up their CI with Circle.
+    Early feedback, however, was unanimous: never ever read customer code.
+    So that is our rule!
+
+    However, we do write code that reads your code, typically to provide data over what features and services to provide next.
+    For example, in determining whether to support NodeJS, we ran scripts to tell us how many of our current customers had
+    %i packages.json
+    in their repositories
+
+
+  %h5 Cancelling your account
+  %p
+    If you need your account cancelled and your data deleted, please contact us at security@circleci.com.
+    We will be adding this ability via our web interface and API soon.
+
+
+  %h3 Our technical security model
+  %p
+    When we run your tests, we run them in an LXC sandbox
+    (this is the same technology both Heroku and DotCloud use, so we are in good company).
+    As such, although you have root access to your sandbox, you are unable access another customer's code, and they are unable to access yours.
+    We never ever run customer code in any context which is not sandboxed.
+
+
+  %h2 Partners with access to your source code.
+  %p
+    Circle is built on Amazon EC2, and we check out your code onto Amazon's EC2 machines.
+    If the EC2 service becomes vulnerable, your source code may also become vulnerable to accidental disclosure.
+    %a{href: "http://aws.amazon.com/security/"} Amazon's Security Center
+    discusses their security in great detail.
+
+  %h2 Other partners
+
+  %p
+    A number of partners, who we choose not to enumerate for security reasons, have access to small amounts of our customer data.
+    We constantly audit the data that is provided to them to ensure that this could not be used to gain access to your account or your code.
+
+
+  %h2 Privacy
+  %p
+    We disclose customer information to a number of Software-as-a-service providers, in order to use their services:
+    %ul
+      %li
+        %a{href: "https://mailgun.net"} Mailgun
+        hosts our outgoing email, and so has a list of our customers' email addresses, and temporarily handles the output of test logs.
+        Note that it does not store test logs; see
+        %a{href: "http://mailgun.net/public/privacy"} Mailgun's privacy policy
+        for more details.
+        You may disable emails in your
+        %a{href: "https://circleci.com/preferences"} Circle preferenences
+        to avoid this information being sent over email.
+
+      %li
+        %a{href: "https://mail.google.com"} Google Apps
+        is our incoming mail host.
+        Any information you send us by email is therefore accessible to Google.
+        See
+        %a{href: "http://support.google.com/a/bin/answer.py?hl=en&answer=60762"}
+          Google's privacy policy
+        for a detailed discussion of how they may access this.
+
+      %li
+        %a{href: "https://intercom.io"} Intercom
+        provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
+        Intercom uses this information in order to provide their service, but does not share it otherwise.
+        See
+        %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
+        for more detail.
+
+      %li
+        Circle uses Google Analytics to provide us with information about how people use our site.
+        %a{href: "http://www.google.com/intl/en/analytics/privacyoverview.html"}
+          Google Analytics' privacy policy
+        discusses how they use this information.
+
+#content
+  %section
 
     -# .story
     -#   %p Your privacy is important to Circle. We want you to be aware of how we collect, use, disclose, transfer, and store your information. Take a moment to familiarize yourself with our privacy practices.
@@ -40,7 +158,7 @@
 
       %h3 Cookies
 
-      %p Nam egestas velit eu diam consectetur mattis. Sed a orci felis. Aenean ut enim magna. Quisque mollis sagittis lacus eget rhoncus. Vestibulum imperdiet sodales magna, quis adipiscing justo congue in. Pellentesque elementum, massa eu euismod iaculis, turpis ligula ullamcorper diam, ut semper velit arcu et mauris. Aliquam ullamcorper, tellus non rutrum convallis, elit tellus congue quam, ut rhoncus ante tortor quis erat. Praesent euismod commodo purus. Integer mattis sagittis cursus. Suspendisse a eros lorem. Nullam at orci eu ipsum dignissim dapibus. 
+      %p Nam egestas velit eu diam consectetur mattis. Sed a orci felis. Aenean ut enim magna. Quisque mollis sagittis lacus eget rhoncus. Vestibulum imperdiet sodales magna, quis adipiscing justo congue in. Pellentesque elementum, massa eu euismod iaculis, turpis ligula ullamcorper diam, ut semper velit arcu et mauris. Aliquam ullamcorper, tellus non rutrum convallis, elit tellus congue quam, ut rhoncus ante tortor quis erat. Praesent euismod commodo purus. Integer mattis sagittis cursus. Suspendisse a eros lorem. Nullam at orci eu ipsum dignissim dapibus.
 
       %h3 Privacy Policy Changes
 
