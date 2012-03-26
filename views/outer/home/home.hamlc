@@ -47,7 +47,7 @@
       %a{ href: @githubAuthURL, title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
 
     - else
-      %a{ title: 'Authorize us on Github' class: 'authGithub disabled' } Authorize us on Github
+      %a{ class: 'authGithub disabled' } Authorize us on Github
 
     %ul
       %li No fiddling with ssh keys
