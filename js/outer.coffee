@@ -1,9 +1,4 @@
-# Placeholder Polyfill
-# https://github.com/mathiasbynens/jquery-placeholder
-$(window).load ->
-  $("input, textarea").placeholder()
-
-# Sammy
+# Navigation
 (($) ->
   circle = $.sammy("body", ->
 
@@ -43,3 +38,8 @@ $(window).load ->
   $ -> circle.run "/"
 
 ) jQuery
+
+
+# Placeholder Polyfill
+$(window).load ->
+  $("input, textarea").placeholder()
