@@ -8,6 +8,7 @@
 
       render: ->
         document.title = "Circle - " + @title
+        $('html, body').animate({ scrollTop: 0 }, 0);
         $("body").attr("id",@name).html HAML['header'](renderContext)
         $("body").append HAML[@name](renderContext)
         $("body").append HAML['footer'](renderContext)
