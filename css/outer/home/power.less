@@ -48,7 +48,7 @@
   // Authorize button big
   .authGithub {
     .ir;
-    background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat 0 -725px;
+    background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat 0 0;
     .size(135px, 412px);
 
     &:active {
@@ -56,7 +56,10 @@
       bottom: 1px;
     }
 
-    &.disabled { cursor: not-allowed; }
+    &.disabled {
+      background-position: 0 -435px;
+      cursor: not-allowed;
+    }
 
     &.disabled:active { bottom: 0; }
   }
