@@ -35,7 +35,7 @@ $(window).load ->
 
     # Navigation
     @get "/", (context) -> home.display()
-    @get "/about", (context) -> about.display()
+    @get "/#about", (context) -> about.display()
 
   )
 

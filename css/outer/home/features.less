@@ -7,13 +7,13 @@
   background-color: #efefef;
   background-repeat: repeat-x;
   background-position: top left;
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), #efefef;
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), -webkit-gradient(linear, left top, left bottom, from(rgb(239, 239, 239)), to(rgb(192, 201, 212)));
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), -webkit-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), -moz-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), -o-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), -ms-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/home/feature-bg-repeat.png"), linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), #efefef;
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -webkit-gradient(linear, left top, left bottom, from(rgb(239, 239, 239)), to(rgb(192, 201, 212)));
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -webkit-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -moz-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -o-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -ms-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
+  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#efefef', EndColorStr='#c0c9d4');
 
   // Header
@@ -41,7 +41,7 @@
 .tour {
   padding: 40px 0;
   text-shadow: 0 1px 0 rgba(255,255,255,1);
-  background: url("@{imgPath}/home/cc-tour-divider.gif") bottom repeat-x;
+  background: url("@{imgPath}/outer/home/cc-tour-divider.gif") bottom repeat-x;
 
   &.profit { background: none; }
 
@@ -50,7 +50,7 @@
 
   // Tour images
   & > div {
-    background-image: url("@{imgPath}/home/home_sprite.png");
+    background-image: url("@{imgPath}/outer/home/home_sprite.png");
     background-repeat: no-repeat;
     .box-shadow(inset 0px 0px 15px 0 rgba(0,0,0,.5));
     border: 1px solid #989898;
@@ -98,7 +98,7 @@
       li:before {
         content: '';
         display: block;
-        background: url("@{imgPath}/home/home_sprite.png") no-repeat -424px -729px;
+        background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat -424px -729px;
         .size(13px, 14px);
         position: absolute;
         left: -5px;
@@ -107,7 +107,7 @@
 
     // Load bullet.png for crap browsers
     .no-generatedcontent ul {
-      list-style-image: url("@{imgPath}/home/bullets.png");
+      list-style-image: url("@{imgPath}/outer/home/bullets.png");
     }
 
   } // /Tour text
