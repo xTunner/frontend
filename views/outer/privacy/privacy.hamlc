@@ -1,0 +1,55 @@
+#title
+  %h1 Privacy Policy
+
+#content
+  %section
+
+    -# .story
+    -#   %p Your privacy is important to Circle. We want you to be aware of how we collect, use, disclose, transfer, and store your information. Take a moment to familiarize yourself with our privacy practices.
+
+    %h1 Privacy Policy
+    %p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    %hr
+
+    %p
+      %a{ href: "#changelog" } Last modified: March 26, 2012
+
+      %p Duis ut orci non turpis posuere gravida eu ut lorem. Cras at nibh sed est lobortis ultricies. Nullam dui erat, fringilla molestie vulputate nec, suscipit at odio. Praesent orci orci, mattis et porta id, feugiat vitae velit. Proin laoreet suscipit diam, eget volutpat dolor placerat in. Nullam sed est turpis, eget semper lectus. Duis sed nulla ut diam dictum laoreet. Vivamus scelerisque facilisis posuere. Aliquam facilisis, nibh nec blandit vestibulum, ligula sem ultrices magna, sed posuere nisl ante non felis. Nunc a mauris lacus, vitae tincidunt turpis.
+
+      %p Aliquam rhoncus adipiscing tempus. Maecenas ut suscipit leo. Mauris, bibendum ut mattis vel, dapibus sed magna.
+
+      %h3 Website Visitors
+
+      %p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et libero sit amet mauris consectetur porta vitae vel libero. Sed congue facilisis consequat. Ut at laoreet urna. Nulla hendrerit, dolor facilisis elementum molestie, risus dui posuere lectus, et aliquet lorem erat ac erat.
+
+      %p Etiam sed consequat magna. Morbi odio leo, congue ut ultricies sit amet, dictum eu urna. Donec molestie metus vitae nisl egestas ultricies. Quisque mi metus, aliquam at porttitor et, sodales at velit. Aliquam nec malesuada massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi placerat rutrum diam in vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+
+      %h3 Gathering of Personally-Identifying Information
+
+      %p Integer a nisl vel nisl dictum viverra non ut diam. Vestibulum mollis odio eu urna consequat vel malesuada sem scelerisque. Curabitur tristique magna nec leo condimentum et iaculis justo luctus. Morbi tincidunt sodales tempus. Duis nec quam magna. Suspendisse potenti. In leo orci, sollicitudin eu rutrum in, vehicula gravida sapien. Vivamus ante lectus, rhoncus non placerat nec, auctor ac mi. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse libero nisi, bibendum nec rutrum sed, sollicitudin vel ligula. In hac habitasse platea dictumst. Vestibulum vehicula ipsum sed metus placerat ac gravida tellus aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque commodo turpis vitae mauris viverra adipiscing. Suspendisse potenti. Donec est ligula, tincidunt non tristique non, tincidunt id ligula.
+
+      %h3 Aggregated Statistics
+
+      %p Phasellus posuere magna vitae elit venenatis sodales. Fusce eu est ut turpis cursus vulputate. Nulla accumsan aliquet consectetur. In non est vulputate est rutrum pellentesque. Nullam rhoncus dui vel lectus venenatis sollicitudin. Aenean congue sem ac dolor varius non viverra lorem semper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas varius blandit purus quis ultricies. Donec vitae facilisis nisi. Etiam ornare est eget risus facilisis lacinia.
+
+      %h3 Protection of Personally-Identifying Information
+
+      %p Suspendisse auctor augue ut urna dictum tempor. Nulla facilisi. Quisque eleifend ultrices tellus, a iaculis orci ultricies ut. Vivamus eu purus a neque facilisis fermentum et non elit. Phasellus aliquam feugiat ipsum eu dapibus. Donec posuere posuere felis, eu faucibus dolor consequat eu. Vestibulum commodo pretium ligula, nec pellentesque leo fringilla id. Quisque tincidunt libero sit amet velit egestas eget accumsan quam porttitor. Fusce vel lorem purus, consequat accumsan felis. In a lacus id tellus adipiscing fermentum et sed risus. Cras rhoncus eleifend quam eu lacinia.
+
+      %p Etiam eu tellus quis sem suscipit hendrerit a ac mauris. Nulla facilisi. In pretium rutrum dui, ut blandit odio pretium non. Suspendisse id mi sem. Donec vel risus eu magna iaculis aliquet id vel metus. Phasellus elementum rhoncus sagittis. Vestibulum vitae faucibus ipsum. Duis in sem nec dui interdum laoreet. Proin nec vulputate tellus. Sed a neque id mi pharetra mollis. Integer ac nisl nec neque tincidunt gravida in a velit. Proin ut ante odio. Maecenas volutpat pharetra posuere. Curabitur sit amet bibendum est. Vestibulum ut posuere neque. Praesent eleifend varius tortor at mollis.
+
+      %h3 Cookies
+
+      %p Nam egestas velit eu diam consectetur mattis. Sed a orci felis. Aenean ut enim magna. Quisque mollis sagittis lacus eget rhoncus. Vestibulum imperdiet sodales magna, quis adipiscing justo congue in. Pellentesque elementum, massa eu euismod iaculis, turpis ligula ullamcorper diam, ut semper velit arcu et mauris. Aliquam ullamcorper, tellus non rutrum convallis, elit tellus congue quam, ut rhoncus ante tortor quis erat. Praesent euismod commodo purus. Integer mattis sagittis cursus. Suspendisse a eros lorem. Nullam at orci eu ipsum dignissim dapibus. 
+
+      %h3 Privacy Policy Changes
+
+      %p Proin adipiscing magna vel turpis posuere sollicitudin. Integer et diam at velit tincidunt tincidunt. Pellentesque quis augue turpis, fermentum tempor mi. Proin ac nisi quis dolor ullamcorper facilisis convallis quis magna. Proin feugiat fermentum magna, in dictum leo eleifend quis. Mauris vulputate auctor est, in posuere metus facilisis vel. Mauris imperdiet ligula ac dui commodo ac lacinia augue pretium. Mauris vehicula egestas laoreet. Maecenas pharetra turpis cursus massa venenatis pretium.
+
+      #changelog
+        %h3 Change log:
+
+        %ul
+          %li <b>March 19, 2012:</b> Nam cursus quam id erat ultrices sollicitudin quis sed tellus.
+          %li <b>March 17, 2012:</b> Mauris sagittis neque malesuada leo scelerisque auctor dictum massa hendrerit.
+          %li <b>March 10, 2012:</b> Vivamus eleifend est at nulla elementum malesuada

@@ -27,10 +27,12 @@
     # Pages
     home = new Page("home", "Continuous Integration made easy")
     about = new Page("about", "About Us")
+    privacy = new Page("privacy", "Privacy Policy")
 
     # Navigation
     @get "/", (context) -> home.display()
     @get "/about", (context) -> about.display()
+    @get "/privacy", (context) -> privacy.display()
 
     # Polyfill Detection
     home.polyfill = ->
