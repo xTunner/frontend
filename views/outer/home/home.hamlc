@@ -52,7 +52,7 @@
     %ul
       %li No fiddling with ssh keys
       %li 15 day free trial
-      -# %li No credit card required
+      %li No credit card required
 
     %p Signing up with Github allows Circle to access your code so that we and run your tests. We'll also add post-commit hooks and ssh keys to make things simple. No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
 
