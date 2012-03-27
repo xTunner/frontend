@@ -1,0 +1,6 @@
+= HAML['_topbar']({crumbs: HAML['topbar_project']({project: @project})})
+
+.container-fluid
+
+  %p
+    We temporarily disabled the edit page during a site upgrade. It should be back tomorrow. Sorry for the inconvenience.

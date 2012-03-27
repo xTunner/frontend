@@ -253,6 +253,11 @@ class CircleViewModel extends Base
     display "build", {project: project_name, build_num: build_num}
 
 
+  loadEditPage: (username, project) =>
+    project_name = "#{username}/#{project}"
+    display "edit", {project: project_name}
+
+
   projects_with_status: (filter) => @komp =>
     p for p in @projects() when p.status() == filter
 
@@ -275,6 +280,10 @@ $(document).ready () ->
 
     @get('/', (cx) =>
       VM.loadRoot()
+    )
+
+    @get('/gh/:username/:project/edit', (cx) ->
+      VM.loadEditPage cx.params.username, cx.params.project
     )
 
     @get('/gh/:username/:project/:build_num', (cx) ->
