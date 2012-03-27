@@ -1,173 +1,181 @@
 #title
-  %h1 Privacy Policy
+  %h1 Privacy and Security
 
 #content
   %section
-    %h1 Privacy and Security
+    %h1 Security policy
 
-    %h2 Code security
+    %p If we lose your code, we're out of business
+    %hr
+
     %p
-      If Circle ever leaked your code, through our own error or through the error of one of our partners, we would very likely be out of business the next day.
+      %a{ href: "#changelog" } Last modified: March 26, 2012
+
+
+    %h3 Code security
+    %p
+      If Circle ever disclosed your code to an attacker, whether through our own error or through the error of one of our partners, we would very likely be out of business.
       So the security of your code base is not just important to us, it is essential to the survival of our company.
 
+
+    %h3 We never read your code!
+    %p
+      The only time we ever read your code is when we obtain explicit permission to do so, in response to a support request.
+      Otherwise, no human reads your code.
+
+    %p
+      However, we do write code that reads your code, typically to provide data over what features and services to provide next.
+      For example, in determining whether to support node.js, we ran scripts to tell us how many of our current customers had
+      %i packages.json
+      in their repositories.
+
+    %p
+      Currently, only the founders have the ability to check out your code, though senior employees will in the future.
+      To reiterate, we would only do so in response to a suppor request, with explicit permission.
+      Contractors will never be given access to customer code.
+
+    %p
+      Note that this is a change from our early policies - when we believed that customers wanted our help in setting up their CI with Circle.
+      Early feedback, however, was unanimous: never ever read customer code.
+      So that is our rule!
+
+
+    %h3 Our security model
+    %p
+      When we run your tests, we run them in an LXC sandbox (this is the same technology both Heroku and DotCloud use, so we are in good company).
+      As such, although you have root access to your sandbox, you are unable access another customer's code, and they are unable to access yours.
+      We never ever run any customer code in any context which is not sandboxed, or which allows access to other customer code.
+
+    %p
+      Each sandbox is firewalled, and it is not possible to access a sandbox from another sandbox, or from the internet at large.
+
+    %p
       Circle's founders and employees are well versed in full-stack security.
       Paul worked on Mozilla's Javascript engine, where every bug is a potential security bug; and wasa principal engineer at Lookout, the premiere Android security company.
       Previously he did his PhD in static analysis, which kept him well versed in the latest information and security vulnerabilities.
       Allen's was a lead developer at CrossRoads, where he provided security audits for their full-stack SAN solution.
       His experience include work on Storage Area Networks, Linux kernel drivers and medical imaging software, all of which have an extremely security-oriented focus.
 
-    %h2 Circle's GitHub authorization
+    %p
+      We know what we're doing, and constantly question and audit our sensitive code, and solicit outside feedback about our security.
+
+
+    %h3 GitHub authorization
     %p
       To run your tests, we need to check out your code from Github.
       When you sign up for Circle, you tell Github that you are authorizing us to check out your private repositories.
       You may revoke this permission at any time through your
-      %a{href: "https://github.com/settings/applications" GitHub application settings page,
-      and by removing Circle's
-      %i deploy keys
-      and
-      %i from your repositories
-      .
+      %a{href: "https://github.com/settings/applications"}
+        GitHub application settings page
+      and by removing Circle's <i>Deploy Keys</i> and <i>Service Hooks</i> from your repositories' <i>Admin</i> pages.
 
     %p
       Note that Github's permissions model is "all or nothing" - Circle gets access to all of a user's repos or none of them.
       We have asked Github to provide finer-grained permissions, but they have indicated it will not be completed in the short term.
       Please
       %a{href: "https://github.com/contact"} contact GitHub
-      if this issue is important to you.
+      if this is important to you.
 
+    %p
       We are currently adding the ability to disable tests on individual projects.
 
 
-  %h3 We never read your code!
-  %p
-    The only time we ever read your code is when we obtain explicit permission to do so, in response to a support request.
-    Only the founders have the ability to check out your code, though high-level employees will in the future.
-    Contractors will never be given access to customer code.
+    %h3 Cancelling your account
+    %p
+      We do not currently have a button to delete your account, but we will be adding one soon.
+      If you need your account cancelled and your data deleted, please contact us at
+      = succeed '.', ->
+        %a{href: "mailto:security@circleci.com"} security@circleci.com
 
-    Note that this is a change from our early policies - when we believed that customers wanted our help in setting up their CI with Circle.
-    Early feedback, however, was unanimous: never ever read customer code.
-    So that is our rule!
-
-    However, we do write code that reads your code, typically to provide data over what features and services to provide next.
-    For example, in determining whether to support NodeJS, we ran scripts to tell us how many of our current customers had
-    %i packages.json
-    in their repositories
+      To remove Circle's access to your GitHub account, you can remove it via your
+      = succeed '.', ->
+        %a{href: "https://github.com/settings/applications"} GitHub application settings page
+      You should also remove Circle's <i>Deploy Keys</i> and <i>Service Hooks</i> from your repositories' <i>Admin</i> pages.
 
 
-  %h5 Cancelling your account
-  %p
-    If you need your account cancelled and your data deleted, please contact us at security@circleci.com.
-    We will be adding this ability via our web interface and API soon.
+    %h3 Partners with access to your source code.
+    %p
+      Circle is built on Amazon EC2, and we check out your code onto Amazon's EC2 machines.
+      If the EC2 service becomes vulnerable, your source code may also become vulnerable to accidental disclosure.
+      %a{href: "http://aws.amazon.com/security/"} Amazon's Security Center
+      discusses their security in great detail.
+
+    %h3 Other partners
+    %p
+      A number of partners, who we choose not to enumerate for security reasons, have access to small amounts of our customer data.
+      We constantly audit the data that is provided to them to ensure that this could not be used to gain access to your account or your code.
 
 
-  %h3 Our technical security model
-  %p
-    When we run your tests, we run them in an LXC sandbox
-    (this is the same technology both Heroku and DotCloud use, so we are in good company).
-    As such, although you have root access to your sandbox, you are unable access another customer's code, and they are unable to access yours.
-    We never ever run customer code in any context which is not sandboxed.
+    %h3 Feedback
+    %p
+      We take security incredibly seriously.
+      If you have any suggestions for how we could improve our security, or improve this policy, please contact us at
+      = succeed '.', ->
+        %a{href: "mailto:security@circleci.com"} security@circleci.com
+      We will act immediately to deal with the issue.
 
 
-  %h2 Partners with access to your source code.
-  %p
-    Circle is built on Amazon EC2, and we check out your code onto Amazon's EC2 machines.
-    If the EC2 service becomes vulnerable, your source code may also become vulnerable to accidental disclosure.
-    %a{href: "http://aws.amazon.com/security/"} Amazon's Security Center
-    discusses their security in great detail.
-
-  %h2 Other partners
-
-  %p
-    A number of partners, who we choose not to enumerate for security reasons, have access to small amounts of our customer data.
-    We constantly audit the data that is provided to them to ensure that this could not be used to gain access to your account or your code.
+      #changelog
+        %h3 Change log:
+        %ul
+          %li
+            %b March 26, 2012:
+            Initial version
 
 
-  %h2 Privacy
-  %p
-    We disclose customer information to a number of Software-as-a-service providers, in order to use their services:
-    %ul
-      %li
-        %a{href: "https://mailgun.net"} Mailgun
-        hosts our outgoing email, and so has a list of our customers' email addresses, and temporarily handles the output of test logs.
-        Note that it does not store test logs; see
-        %a{href: "http://mailgun.net/public/privacy"} Mailgun's privacy policy
-        for more details.
-        You may disable emails in your
-        %a{href: "https://circleci.com/preferences"} Circle preferenences
-        to avoid this information being sent over email.
 
-      %li
-        %a{href: "https://mail.google.com"} Google Apps
-        is our incoming mail host.
-        Any information you send us by email is therefore accessible to Google.
-        See
-        %a{href: "http://support.google.com/a/bin/answer.py?hl=en&answer=60762"}
-          Google's privacy policy
-        for a detailed discussion of how they may access this.
-
-      %li
-        %a{href: "https://intercom.io"} Intercom
-        provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
-        Intercom uses this information in order to provide their service, but does not share it otherwise.
-        See
-        %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
-        for more detail.
-
-      %li
-        Circle uses Google Analytics to provide us with information about how people use our site.
-        %a{href: "http://www.google.com/intl/en/analytics/privacyoverview.html"}
-          Google Analytics' privacy policy
-        discusses how they use this information.
-
-#content
   %section
-
-    -# .story
-    -#   %p Your privacy is important to Circle. We want you to be aware of how we collect, use, disclose, transfer, and store your information. Take a moment to familiarize yourself with our privacy practices.
-
-    %h1 Privacy Policy
-    %p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    %h1 Privacy policy
+    %p
+      We will never sell your private information
     %hr
 
     %p
       %a{ href: "#changelog" } Last modified: March 26, 2012
 
-      %p Duis ut orci non turpis posuere gravida eu ut lorem. Cras at nibh sed est lobortis ultricies. Nullam dui erat, fringilla molestie vulputate nec, suscipit at odio. Praesent orci orci, mattis et porta id, feugiat vitae velit. Proin laoreet suscipit diam, eget volutpat dolor placerat in. Nullam sed est turpis, eget semper lectus. Duis sed nulla ut diam dictum laoreet. Vivamus scelerisque facilisis posuere. Aliquam facilisis, nibh nec blandit vestibulum, ligula sem ultrices magna, sed posuere nisl ante non felis. Nunc a mauris lacus, vitae tincidunt turpis.
+    %h2 Private data
+    %p
+      We will never sell your private information.
+      We don't provide your private information to people who may sell it.
+      However, we do disclose customer information to a number of SAAS providers, in order to use their services:
+      %ul
+        %li
+          %a{href: "https://mailgun.net"} Mailgun
+          hosts our outgoing email, and so has a list of our customers' email addresses, and temporarily handles the output of test logs.
+          Note that it does not store test logs; see
+          %a{href: "http://mailgun.net/public/privacy"} Mailgun's privacy policy
+          for more details.
+          You may disable emails in your
+          %a{href: "https://circleci.com/preferences"} Circle preferences
+          to avoid this information being sent over email.
 
-      %p Aliquam rhoncus adipiscing tempus. Maecenas ut suscipit leo. Mauris, bibendum ut mattis vel, dapibus sed magna.
+        %li
+          %a{href: "http://www.google.com/apps/intl/en/business/index.html"} Google Apps
+          is our incoming mail host.
+          Any information you send us by email is therefore accessible to Google.
+          See
+          %a{href: "http://support.google.com/a/bin/answer.py?hl=en&answer=60762"} Google's privacy policy
+          for a detailed discussion of how they may access this.
 
-      %h3 Website Visitors
+        %li
+          %a{href: "https://intercom.io"} Intercom
+          provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
+          Intercom uses this information in order to provide their service, but does not share it otherwise.
+          See
+          %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
+          for more detail.
 
-      %p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et libero sit amet mauris consectetur porta vitae vel libero. Sed congue facilisis consequat. Ut at laoreet urna. Nulla hendrerit, dolor facilisis elementum molestie, risus dui posuere lectus, et aliquet lorem erat ac erat.
+        %li
+          Circle uses
+          %a{href: "http://www.google.com/analytics/"} Google Analytics
+          to provide us with information about how people use our site.
+          %a{href: "http://www.google.com/intl/en/analytics/privacyoverview.html"} Google Analytics' privacy policy
+          discusses how they use this information.
 
-      %p Etiam sed consequat magna. Morbi odio leo, congue ut ultricies sit amet, dictum eu urna. Donec molestie metus vitae nisl egestas ultricies. Quisque mi metus, aliquam at porttitor et, sodales at velit. Aliquam nec malesuada massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi placerat rutrum diam in vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-
-      %h3 Gathering of Personally-Identifying Information
-
-      %p Integer a nisl vel nisl dictum viverra non ut diam. Vestibulum mollis odio eu urna consequat vel malesuada sem scelerisque. Curabitur tristique magna nec leo condimentum et iaculis justo luctus. Morbi tincidunt sodales tempus. Duis nec quam magna. Suspendisse potenti. In leo orci, sollicitudin eu rutrum in, vehicula gravida sapien. Vivamus ante lectus, rhoncus non placerat nec, auctor ac mi. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse libero nisi, bibendum nec rutrum sed, sollicitudin vel ligula. In hac habitasse platea dictumst. Vestibulum vehicula ipsum sed metus placerat ac gravida tellus aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque commodo turpis vitae mauris viverra adipiscing. Suspendisse potenti. Donec est ligula, tincidunt non tristique non, tincidunt id ligula.
-
-      %h3 Aggregated Statistics
-
-      %p Phasellus posuere magna vitae elit venenatis sodales. Fusce eu est ut turpis cursus vulputate. Nulla accumsan aliquet consectetur. In non est vulputate est rutrum pellentesque. Nullam rhoncus dui vel lectus venenatis sollicitudin. Aenean congue sem ac dolor varius non viverra lorem semper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas varius blandit purus quis ultricies. Donec vitae facilisis nisi. Etiam ornare est eget risus facilisis lacinia.
-
-      %h3 Protection of Personally-Identifying Information
-
-      %p Suspendisse auctor augue ut urna dictum tempor. Nulla facilisi. Quisque eleifend ultrices tellus, a iaculis orci ultricies ut. Vivamus eu purus a neque facilisis fermentum et non elit. Phasellus aliquam feugiat ipsum eu dapibus. Donec posuere posuere felis, eu faucibus dolor consequat eu. Vestibulum commodo pretium ligula, nec pellentesque leo fringilla id. Quisque tincidunt libero sit amet velit egestas eget accumsan quam porttitor. Fusce vel lorem purus, consequat accumsan felis. In a lacus id tellus adipiscing fermentum et sed risus. Cras rhoncus eleifend quam eu lacinia.
-
-      %p Etiam eu tellus quis sem suscipit hendrerit a ac mauris. Nulla facilisi. In pretium rutrum dui, ut blandit odio pretium non. Suspendisse id mi sem. Donec vel risus eu magna iaculis aliquet id vel metus. Phasellus elementum rhoncus sagittis. Vestibulum vitae faucibus ipsum. Duis in sem nec dui interdum laoreet. Proin nec vulputate tellus. Sed a neque id mi pharetra mollis. Integer ac nisl nec neque tincidunt gravida in a velit. Proin ut ante odio. Maecenas volutpat pharetra posuere. Curabitur sit amet bibendum est. Vestibulum ut posuere neque. Praesent eleifend varius tortor at mollis.
-
-      %h3 Cookies
-
-      %p Nam egestas velit eu diam consectetur mattis. Sed a orci felis. Aenean ut enim magna. Quisque mollis sagittis lacus eget rhoncus. Vestibulum imperdiet sodales magna, quis adipiscing justo congue in. Pellentesque elementum, massa eu euismod iaculis, turpis ligula ullamcorper diam, ut semper velit arcu et mauris. Aliquam ullamcorper, tellus non rutrum convallis, elit tellus congue quam, ut rhoncus ante tortor quis erat. Praesent euismod commodo purus. Integer mattis sagittis cursus. Suspendisse a eros lorem. Nullam at orci eu ipsum dignissim dapibus.
-
-      %h3 Privacy Policy Changes
-
-      %p Proin adipiscing magna vel turpis posuere sollicitudin. Integer et diam at velit tincidunt tincidunt. Pellentesque quis augue turpis, fermentum tempor mi. Proin ac nisi quis dolor ullamcorper facilisis convallis quis magna. Proin feugiat fermentum magna, in dictum leo eleifend quis. Mauris vulputate auctor est, in posuere metus facilisis vel. Mauris imperdiet ligula ac dui commodo ac lacinia augue pretium. Mauris vehicula egestas laoreet. Maecenas pharetra turpis cursus massa venenatis pretium.
 
       #changelog
         %h3 Change log:
-
         %ul
-          %li <b>March 19, 2012:</b> Nam cursus quam id erat ultrices sollicitudin quis sed tellus.
-          %li <b>March 17, 2012:</b> Mauris sagittis neque malesuada leo scelerisque auctor dictum massa hendrerit.
-          %li <b>March 10, 2012:</b> Vivamus eleifend est at nulla elementum malesuada
+          %li
+            %b March 26, 2012:
+            Initial version
