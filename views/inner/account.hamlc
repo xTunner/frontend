@@ -1,0 +1,10 @@
+= HAML['_topbar']({})
+
+%p
+  We currently don't supprt deleting your account.
+  Please contact us using the "Help" button and we can do it manually.
+
+%p
+  To edit project settings, return to the
+  %a{href: "/"} dashboard
+  and choose "edit" for your projects.

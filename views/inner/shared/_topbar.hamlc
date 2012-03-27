@@ -18,6 +18,10 @@
 
             %ul.dropdown-menu
               %li
+                %a#logout-link{href: '/account'}
+                  Account settings
+
+              %li
                 %a#logout-link{href: '/logout'}
                   Logout
 
