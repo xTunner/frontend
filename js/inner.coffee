@@ -186,6 +186,7 @@ class Build extends Base
     "#{@vcs_url()}/commit/#{@vcs_revision()}"
 
   github_revision: =>
+    return unless @vcs_revision()
     @vcs_revision().substring 0, 9
 
   author: =>
