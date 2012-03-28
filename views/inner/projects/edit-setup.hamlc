@@ -1,91 +1,74 @@
+%h1 Setup your test machine
+
+%form.spec_form
+  %fieldset.form-stacked
+
+    .row
+      .span8.clearfix
+        %label
+          Pre-setup commands
+        .input
+          %textarea.span8#setup{ cols: 40, name: "setup", rows: 7, placeholder: "Run extra commands before the normal setup"  }
+            = "setup"
 
 
 
+      .span4
+        %p.short.infoboxtext
+          %span.major
+            %b Pre-setup commands
+            run
+            %b before
+            our inferred commands. All commands are arbitrary bash
+            statements, and run on Ubuntu 11.04.
+
+          %br
+          %br
+
+          %span.minor
+            Use this to install unusual packages or setup unusual services, such
+            as specific DNS provisions, connections to a private services, etc.
 
 
+        .infobox.short
+
+    %br
+    %br
+
+    .row
+      .span8.clearfix
+        %label
+          Setup commands
+        .input
+          %textarea.span8#dependencies{ cols: 40, name: "dependencies", rows: 7, placeholder: "Replace our inferred setup commands with your own bash commands" }
+            = "dependencies"
 
 
+      .span4
+        %p.long.infoboxtext
+          %span.major
+            %b Setup commands
+            run
+            %b instead of
+            our inferred commands. If our inferred commands are not to your liking, replace them here.
 
+          %br
+          %br
 
+          %span.minor
+            Use this to override the specific pre-test commands we run, such as
+            <code>bundle install</code>,
+            <code>rvm use</code>,
+            <code>ant build</code>,
+            <code>configure</code>,
+            <code>make</code>, etc.
 
+          %br
+          %br
+            We constantly monitor this to fix problems in our service.
+        .infobox.long
 
-
-
-
-
-
--# # TEST MACHINE
--# %h1 Setup your test machine
-
--# %form.spec_form
--#   %fieldset.form-stacked
-
--#     .row
--#       .span8.clearfix
--#         %label
--#           Pre-setup commands
--#         .input
--#           %textarea.span8#setup{ cols: 40, name: "setup", rows: 7, placeholder: "Run extra commands before the normal setup"  }
--#             = @get "setup"
-
-
-
--#       .span4
--#         %p.short.infoboxtext
--#           %span.major
--#             %b Pre-setup commands
--#             run
--#             %b before
--#             our inferred commands. All commands are arbitrary bash
--#             statements, and run on Ubuntu 11.04.
-
--#           %br
--#           %br
-
--#           %span.minor
--#             Use this to install unusual packages or setup unusual services, such
--#             as specific DNS provisions, connections to a private services, etc.
-
-
--#         .infobox.short
-
--#     %br
--#     %br
-
--#     .row
--#       .span8.clearfix
--#         %label
--#           Setup commands
--#         .input
--#           %textarea.span8#dependencies{ cols: 40, name: "dependencies", rows: 7, placeholder: "Replace our inferred setup commands with your own bash commands" }
--#             = @get "dependencies"
-
-
--#       .span4
--#         %p.long.infoboxtext
--#           %span.major
--#             %b Setup commands
--#             run
--#             %b instead of
--#             our inferred commands. If our inferred commands are not to your liking, replace them here.
-
--#           %br
--#           %br
-
--#           %span.minor
--#             Use this to override the specific pre-test commands we run, such as
--#             <code>bundle install</code>,
--#             <code>rvm use</code>,
--#             <code>ant build</code>,
--#             <code>configure</code>,
--#             <code>make</code>, etc.
-
--#           %br
--#           %br
--#             We constantly monitor this to fix problems in our service.
--#         .infobox.long
-
--#     .row
--#       .offset1
--#         %a.btn.primary.large{ href: "#tests" }
--#           Now set up your tests =>
+    .row
+      .offset1
+        %a.btn.primary.large{ href: "#tests" }
+          Now set up your tests =>
