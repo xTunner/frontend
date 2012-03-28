@@ -16,6 +16,6 @@
 
 
   .content
-    #subpage
+    #subpage{data-bind: "with: project_settings"}
       %p
-        We temporarily disabled the edit page during a site upgrade. It should be back tomorrow. Sorry for the inconvenience.
+        Loading...

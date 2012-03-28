@@ -238,7 +238,7 @@ class ProjectSettings extends HasUrl
 
 class User extends Base
   constructor: (json) ->
-    super json
+    super json, {admin: false, login: "", is_new: false}
 
 
 
@@ -249,7 +249,7 @@ display = (template, args) ->
 
 class CircleViewModel extends Base
   constructor: ->
-    @current_user = ko.observable()
+    @current_user = ko.observable(new User {})
     $.getJSON '/api/v1/me', (data) =>
       @current_user(new User data)
 
@@ -257,6 +257,7 @@ class CircleViewModel extends Base
     @builds = ko.observableArray()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
+    @project_settings = ko.observable()
 
   loadDashboard: =>
     @projects.removeAll()
@@ -290,14 +291,15 @@ class CircleViewModel extends Base
 
 
   loadEditPage: (username, project, subpage) =>
+    @project_settings(null)
     project_name = "#{username}/#{project}"
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"
     $('#main').html(HAML['edit']({project: project_name}))
     # TODO: connect to server
-    @project_settings = ko.observable({vcs_url: "https://github.com/#{project_name}"})
+    @project_settings = ko.observable(new ProjectSettings {vcs_url: "https://github.com/#{project_name}"})
     $('#subpage').html(HAML['edit_' + subpage]())
-    ko.applyBindings(VM)
+    ko.applyBindings(@)
 
   loadAccountPage: () =>
     display "account", {}

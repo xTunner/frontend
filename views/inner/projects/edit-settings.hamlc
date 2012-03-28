@@ -1,21 +1,20 @@
-# MAIN SETTINGS PAGE
 %h1.less-padding
-  Settings for #{@get 'project'}
+  Settings for
+  %span{data-bind: "text: project_name"}
 
 .more-padding
-  %a{ href: @github_url() }
-    = @github_url()
-
+  %a{data-bind: "attr: {href: vcs_url}, text: vcs_url"}
 
 
 .row
   .span6.alert-message.block-message.warning
-    - if @is_inferred()
+
+    %span{data-bind: "if: is_inferred"}
       %span.highlight
         Your project settings are automatically inferred!
       We automatically infer test settings and how to set up the machine for your project.
       If your tests aren't working, you may need to manually override our inferrence.
-    - else
+    %span{data-bind: "ifnot: is_inferred"}
       %span.highlight
         You have overridden our inferred settings!
       We'll infer your setup again if you delete your commands.
@@ -23,12 +22,11 @@
 
 .row
   .span8.indent-slightly
-    - if @is_inferred()
+    %span{data-bind: "if: is_inferred"}
       %p
         %a.btn.primary.large{ href: "#setup" }
           Override automatic inferrence
-    - else
-
+    %span{data-bind: "ifnot: is_inferred"}
       %p
         %a.btn.primary.large{ href: "#setup" }
           Edit project settings
@@ -41,7 +39,6 @@
       %button.btn.primary.large#trigger{ data-loading-text: "triggering" }
         Trigger a build
 
-    - if false # for admins to enable manually
-      %p
-        %button.btn.primary.large#trigger_inferred{ data-loading-text: "triggering" }
-          Trigger an inferred build
+    %p{data-bind: "if: false"}
+      %button.btn.primary.large#trigger_inferred{ data-loading-text: "triggering"} }
+        Trigger an inferred build
