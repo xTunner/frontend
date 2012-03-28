@@ -1,28 +1,23 @@
+%form.hook_form
+  %fieldset.form-stacked
+    %legend Add Hipchat hook
 
+    .row
+      .span8.clearfix
+        %label Room name
 
+        %input.span4#hipchat_room{ type: "text" }
 
+    .row
+      .span5.clearfix
+        %label API token
 
--# # HOOKS
--# %form.hook_form
--#   %fieldset.form-stacked
--#     %legend Add Hipchat hook
+        %input.span5#hipchat_api_token{ type: "text" }
 
--#     .row
--#       .span8.clearfix
--#         %label Room name
+        %p
+          To get your API token,
+          %a{href: "https://hipchat.com/admin/api"}
+            create a "<i>notification</i>" token on the HipChat site.
 
--#         %input.span4#hipchat_room{ type: "text" }
-
--#     .row
--#       .span5.clearfix
--#         %label API token
-
--#         %input.span5#hipchat_api_token{ type: "text" }
-
--#         %p
--#           To get your API token,
--#           %a{ href: "https://hipchat.com/admin/api"}
--#             create a "<i>notification</i>" token on the HipChat site.
-
--#     .row
--#       %input.btn.primary.span5.large{ name: "save_hooks", type: "submit", value: "Save and send a test message", data-loading-text: "Saving and sending message..." }
+    .row
+      %input.btn.primary.span5.large{name: "save_hooks", type: "submit", value: "Save and send a test message", data-loading-text: "Saving and sending message..." }

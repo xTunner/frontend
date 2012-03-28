@@ -4,15 +4,15 @@
 
   .sidebar
     .well
-      %a#menutitle{ href: "settings" }
+      %a#menutitle{ href: "edit" }
         Test settings
       %ul.tree
         %li
-          %a{ href: "setup" } Test machine
+          %a{ href: "edit#setup" } Test machine
         %li
-          %a{ href: "tests" } Test suite
+          %a{ href: "edit#tests" } Test suite
         %li.last
-          %a{ href: "hooks" } Hooks
+          %a{ href: "edit#hooks" } Hooks
 
 
   .content

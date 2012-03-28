@@ -271,10 +271,12 @@ class CircleViewModel extends Base
     display "build", {project: project_name, build_num: build_num}
 
 
-  loadEditPage: (username, project, subpage="settings") =>
+  loadEditPage: (username, project, subpage) =>
     project_name = "#{username}/#{project}"
+    subpage = subpage[0].replace('#', '')
     $('#main').html(HAML['edit']({project: project_name}))
-    $('#subpage').html(HAML[subpage]({project: project_name}))
+    if subpage
+      $('#subpage').html(HAML['edit_' + subpage]())
     ko.applyBindings(VM)
 
   loadAccountPage: () =>
@@ -299,10 +301,7 @@ VM = new CircleViewModel()
 $(document).ready () ->
   Sammy('#app', () ->
     @get('/', (cx) => VM.loadDashboard())
-    @get('/gh/:username/:project/edit', (cx) -> VM.loadEditPage cx.params.username, cx.params.project)
-    @get('/gh/:username/:project/edit/setup', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, "setup")
-    @get('/gh/:username/:project/edit/tests', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, "tests")
-    @get('/gh/:username/:project/edit/hooks', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, "hooks")
+    @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, cx.params.splat)
     @get('/account', (cx) -> VM.loadAccountPage())
     @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num)
     @get('/gh/:username/:project', (cx) -> VM.loadProject cx.params.username, cx.params.project)
