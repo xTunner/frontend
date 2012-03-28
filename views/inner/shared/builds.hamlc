@@ -12,15 +12,15 @@
   %tbody{data-bind: "foreach: #{@builds}"}
     %tr
       %td
-        %a{data-bind: "attr: { href: url() }, text: description(#{@mention_project})"}
+        %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
       %td.github_url
-        %a{data-bind: "attr: { href: github_url() }"}
+        %a{data-bind: "attr: { href: github_url }"}
           %img{src: "/img/octocat-tiny.png"}
-          %span{data-bind: "text: github_revision()"}
-        %span{data-bind: "text: branch_in_words()"}
+          %span{data-bind: "text: github_revision"}
+        %span{data-bind: "text: branch_in_words"}
 
-      %td{data-bind: "text: author()"}
+      %td{data-bind: "text: author"}
 
       %td{style: "max-width: 45em;"}
         %span{data-bind: "if: body"}
@@ -29,15 +29,13 @@
           %span{data-bind: "text: subject"}
 
       %td
-        %span{data-bind: "text: pretty_start_time()"}
+        %span{data-bind: "text: pretty_start_time"}
 
       %td
-        %span{data-bind: "text: duration()"}
+        %span{data-bind: "text: duration"}
       %td.build_status
-        %a{data-bind: "attr: { href: url() }, text: status_words(), css: style()"}
+        %a{data-bind: "attr: { href: url }, text: status_words, css: style"}
 
--#       - if build.status == :running
--#         (still running)
 
 -#- if @pagination
 -#  = paginate @builds

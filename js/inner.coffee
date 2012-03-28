@@ -13,14 +13,21 @@ class Base
     else
       ko.observable obj
 
-  project_name: =>
-    @vcs_url().substring(19)
-
-  project_path: =>
-    "/gh/#{@project_name()}"
-
   komp: (args...) =>
     ko.computed args...
+
+
+class HasUrl extends Base
+  constructor: (json) ->
+    super json
+
+    @project_name = @komp =>
+      @vcs_url().substring(19)
+
+    @project_path = @komp =>
+      "/gh/#{@project_name()}"
+
+
 
 
 
@@ -31,8 +38,6 @@ class LogOutput extends Base
     @output_style = @komp =>
       out: @type() == "out"
       err: @type() == "err"
-
-
 
 
 class ActionLog extends Base
@@ -85,7 +90,7 @@ class ActionLog extends Base
 
 
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
-class Build extends Base
+class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
@@ -98,7 +103,6 @@ class Build extends Base
       branch: null
       start_time: null
       why: null
-
 
 
     @url = @komp =>
@@ -137,7 +141,7 @@ class Build extends Base
       when "no_tests"
         "no tests"
       else
-        @status
+        @status()
 
     @committer_mailto = @komp =>
       "mailto:#{@committer_email()}"
@@ -166,13 +170,27 @@ class Build extends Base
         Circle.time.as_duration(@build_time_millis())
 
     @branch_in_words = @komp =>
-      if @branch()
-        b = @branch()
-        b = b.replace(/^remotes\/origin\//, "")
-        "(#{b})"
-      else
-        "(unknown)"
+      return "(unknown)" unless @branch()
 
+      b = @branch()
+      b = b.replace(/^remotes\/origin\//, "")
+      "(#{b})"
+
+
+
+    @github_url = @komp =>
+      "#{@vcs_url()}/commit/#{@vcs_revision()}"
+
+    @github_revision = @komp =>
+      return unless @vcs_revision()
+      @vcs_revision().substring 0, 9
+
+    @author = @komp =>
+      @committer_name() or @committer_email()
+
+  retry_build: () =>
+    [_, username, project_name] = @vcs_url().match(/https:\/\/github.com\/([^\/]+)\/([^\/]+)/)
+    $.post("/api/v1/project/#{username}/#{project_name}/#{@build_num()}/retry")
 
   description: (include_project) =>
     return unless @build_num?
@@ -182,40 +200,38 @@ class Build extends Base
     else
       @build_num()
 
-  github_url: =>
-    "#{@vcs_url()}/commit/#{@vcs_revision()}"
-
-  github_revision: =>
-    return unless @vcs_revision()
-    @vcs_revision().substring 0, 9
-
-  author: =>
-    @committer_name() or @committer_email()
-
-  retry_build: () =>
-    [_, username, project_name] = @vcs_url().match(/https:\/\/github.com\/([^\/]+)\/([^\/]+)/)
-    $.post("/api/v1/project/#{username}/#{project_name}/#{@build_num()}/retry")
 
 
 
-
-class Project extends Base
+class Project extends HasUrl
   constructor: (json) ->
     json.latest_build = (new Build(json.latest_build)) if json.latest_build
     super(json)
-    @edit_link = "#{@project_path()}/edit"
+    @edit_link = @komp () =>
+      "#{@project_path()}/edit"
 
 
-  # build_url: ->
-  #   @url() + '/build'
 
-  # is_inferred: ->
-  #   full_spec = @get "setup"
-  #   full_spec += @get "dependencies"
-  #   full_spec += @get "compile"
-  #   full_spec += @get "test"
-  #   full_spec += @get "extra"
-  #   "" == full_spec
+
+# We use a separate class for Project and ProjectSettings because computed
+# observables are calculated eagerly, and that breaks everything if the
+class ProjectSettings extends HasUrl
+  constructor: (json) ->
+    super(json)
+
+    @build_url = @komp =>
+      @vcs_url() + '/build'
+
+    @project = @komp =>
+      @project_name()
+
+    @is_inferred = @komp =>
+      full_spec = @setup
+      full_spec += @dependencies
+      full_spec += @compile
+      full_spec += @test
+      full_spec += @extra
+      "" == full_spec
 
 
 class User extends Base
@@ -274,9 +290,11 @@ class CircleViewModel extends Base
   loadEditPage: (username, project, subpage) =>
     project_name = "#{username}/#{project}"
     subpage = subpage[0].replace('#', '')
+    subpage = subpage || "settings"
     $('#main').html(HAML['edit']({project: project_name}))
-    if subpage
-      $('#subpage').html(HAML['edit_' + subpage]())
+    # TODO: connect to server
+    @project_settings = ko.observable({vcs_url: "https://github.com/#{project_name}"})
+    $('#subpage').html(HAML['edit_' + subpage]())
     ko.applyBindings(VM)
 
   loadAccountPage: () =>
