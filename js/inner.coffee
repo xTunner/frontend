@@ -206,10 +206,28 @@ class Project extends Base
     @edit_link = "#{@project_path()}/edit"
 
 
+  # build_url: ->
+  #   @url() + '/build'
+
+  # is_inferred: ->
+  #   full_spec = @get "setup"
+  #   full_spec += @get "dependencies"
+  #   full_spec += @get "compile"
+  #   full_spec += @get "test"
+  #   full_spec += @get "extra"
+  #   "" == full_spec
+
+
 class User extends Base
   constructor: (json) ->
     super json
 
+
+
+
+display = (template, args) ->
+  $('#main').html(HAML[template](args))
+  ko.applyBindings(VM)
 
 class CircleViewModel extends Base
   constructor: ->
@@ -222,7 +240,7 @@ class CircleViewModel extends Base
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
 
-  loadRoot: =>
+  loadDashboard: =>
     @projects.removeAll()
     $.getJSON '/api/v1/projects', (data) =>
       for d in data
@@ -253,21 +271,26 @@ class CircleViewModel extends Base
     display "build", {project: project_name, build_num: build_num}
 
 
-  loadEditPage: (username, project) =>
+  loadEditPage: (username, project, subpage="settings") =>
     project_name = "#{username}/#{project}"
-    display "edit", {project: project_name}
+    $('#main').html(HAML['edit']({project: project_name}))
+    $('#subpage').html(HAML[subpage]({project: project_name}))
+    ko.applyBindings(VM)
 
   loadAccountPage: () =>
     display "account", {}
+
+
+  logout: () =>
+    # TODO: add CSRF protection
+    $.post('/logout', () =>
+       window.location = "/")
 
 
   projects_with_status: (filter) => @komp =>
     p for p in @projects() when p.status() == filter
 
 
-display = (template, args) ->
-  $('#main').html(HAML[template](args))
-  ko.applyBindings(VM)
 
 
 VM = new CircleViewModel()
@@ -275,33 +298,15 @@ VM = new CircleViewModel()
 
 $(document).ready () ->
   Sammy('#app', () ->
-
-    @get('/', (cx) =>
-      VM.loadRoot()
-    )
-
-    @get('/gh/:username/:project/edit', (cx) ->
-      VM.loadEditPage cx.params.username, cx.params.project
-    )
-
-    @get('/account', (cx) ->
-      VM.loadAccountPage()
-    )
-
-    @get('/gh/:username/:project/:build_num', (cx) ->
-      VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num
-    )
-
-    @get('/gh/:username/:project', (cx) ->
-      VM.loadProject cx.params.username, cx.params.project
-    )
-
-    @get('/logout', (cx) ->
-      # TODO: add CSRF protection
-      $.post('/logout', () =>
-        window.location = "/"
-      )
-    )
+    @get('/', (cx) => VM.loadDashboard())
+    @get('/gh/:username/:project/edit', (cx) -> VM.loadEditPage cx.params.username, cx.params.project)
+    @get('/gh/:username/:project/edit/setup', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, "setup")
+    @get('/gh/:username/:project/edit/tests', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, "tests")
+    @get('/gh/:username/:project/edit/hooks', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, "hooks")
+    @get('/account', (cx) -> VM.loadAccountPage())
+    @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num)
+    @get('/gh/:username/:project', (cx) -> VM.loadProject cx.params.username, cx.params.project)
+    @get('/logout', (cx) -> VM.logout())
   ).run(window.location.pathname)
 
 
@@ -309,148 +314,73 @@ $(document).ready () ->
 
 
 
-# Routing
-App.Routers.Projects = Backbone.Router.extend
-  routes:
-    "*page": "edit" # note that this isn't actually the blank url because Backbone's root url is set.
 
-  edit: (page) ->
+# # Events
+# App.Views.EditProject = Backbone.View.extend
 
-    [dc, dc, user, project, dc] = App.base_url.split /\// # dk means 'dontcare'
-    project_name = "#{user}/#{project}"
+#   events:
+#     "submit form.spec_form": "save_specs"
+#     "submit form.hook_form": "save_hooks"
+#     "click #reset": "reset_specs"
+#     "click #trigger": "trigger_build"
+#     "click #trigger_inferred": "trigger_inferred_build"
 
-    if App.view
-      App.view.set_page page
-    else
-      App.model = new App.Models.Project { project: project_name }
-      App.model.fetch
-        success: (model, resp) =>
-          App.view = new App.Views.EditProject { model: App.model }
-          App.view.set_page page
+#   save: (event, btn, redirect, keys) ->
+#     event.preventDefault()
+#     btn.button 'loading'
 
+#     # hard.
+#     keys.push "project"
+#     keys.push "_id"
 
+#     m = @model.clone()
+#     for k of m.attributes
+#       m.unset k, {silent: true} if k not in keys
 
-
-
-
-
-
-
-# Events
-App.Views.EditProject = Backbone.View.extend
-
-  events:
-    "submit form.spec_form": "save_specs"
-    "submit form.hook_form": "save_hooks"
-    "click #reset": "reset_specs"
-    "click #trigger": "trigger_build"
-    "click #trigger_inferred": "trigger_inferred_build"
+#     m.save {},
+#       success: ->
+#         btn.button 'reset'
+#         window.location = redirect
+#       error: ->
+#         btn.button 'reset'
+#         alert "Error in saving project. Please try again. If it persists, please contact Circle."
 
 
-  initialize: ->
-    @options or= {}
+#   save_specs: (e) ->
+#     @save e, $(e.target.save_specs), "#settings",
+#      ["setup", "dependencies", "compile", "test", "extra"]
+
+#   save_hooks: (e) ->
+#     @save e, $(e.target.save_hooks), "#hooks",
+#       ["hipchat_room", "hipchat_api_token"]
 
 
-  set_page: (page) ->
-    # handle both with and without a hash
-    if page[0] == '#'
-      page = page.substring 1
+#   reset_specs: (e) ->
+#     @model.set
+#       "setup": ""
+#       "compile": ""
+#       "test": ""
+#       "extra": ""
+#       "dependencies": ""
 
-    @options.page = page
-    App.router.navigate page
-    @render()
+#     @save_specs e
+#     @render()
 
+#   trigger_build: (e, payload = {}) ->
+#     e.preventDefault()
+#     btn = $(e.currentTarget)
+#     btn.button 'loading'
+#     $.post @model.build_url(), payload, () ->
+#       btn.button 'reset'
 
-  save: (event, btn, redirect, keys) ->
-    event.preventDefault()
-    btn.button 'loading'
-
-    # Only push a subset of the model to the server: we don't want to save specs
-    # for hooks and vice-versa, and splitting it up into multiple models is too
-    # hard.
-    keys.push "project"
-    keys.push "_id"
-
-    m = @model.clone()
-    for k of m.attributes
-      m.unset k, {silent: true} if k not in keys
-
-    m.save {},
-      success: ->
-        btn.button 'reset'
-        window.location = redirect
-      error: ->
-        btn.button 'reset'
-        alert "Error in saving project. Please try again. If it persists, please contact Circle."
+#   trigger_inferred_build: (e) ->
+#     @trigger_build e, {inferred: true}
 
 
-  save_specs: (e) ->
-    @save e, $(e.target.save_specs), "#settings",
-     ["setup", "dependencies", "compile", "test", "extra"]
+#   render: ->
+#     html = JST["backbone/templates/projects/edit"] @model
+#     $(@el).html(html)
 
-  save_hooks: (e) ->
-    @save e, $(e.target.save_hooks), "#hooks",
-      ["hipchat_room", "hipchat_api_token"]
-
-  el: '#el'
-
-  reset_specs: (e) ->
-    @model.set
-      "setup": ""
-      "compile": ""
-      "test": ""
-      "extra": ""
-      "dependencies": ""
-
-    @save_specs e
-    @render()
-
-  trigger_build: (e, payload = {}) ->
-    e.preventDefault()
-    btn = $(e.currentTarget)
-    btn.button 'loading'
-    $.post @model.build_url(), payload, () ->
-      btn.button 'reset'
-
-  trigger_inferred_build: (e) ->
-    @trigger_build e, {inferred: true}
-
-
-  render: ->
-    html = JST["backbone/templates/projects/edit"] @model
-    $(@el).html(html)
-
-    page = @options.page or "settings"
-    nested = JST["backbone/templates/projects/#{page}"] @model
-    $(@el).find("#el-content").html(nested)
-
-    @delegateEvents()
-    Backbone.ModelBinding.bind(@)
-    @
-
-
-
-
-# Model
-App.Models.Project = Backbone.Model.extend
-  url: ->
-    project = @get 'project'
-    "/gh/#{project}"
-
-  urlRoot: "/"
-
-  idAttribute: "_id"
-
-  github_url: ->
-    "https://github.com/#{@get 'project'}"
-
-  build_url: ->
-    @url() + '/build'
-
-  is_inferred: ->
-    full_spec = @get "setup"
-    full_spec += @get "dependencies"
-    full_spec += @get "compile"
-    full_spec += @get "test"
-    full_spec += @get "extra"
-    "" == full_spec
+#     page = @options.page or "settings"
+#     nested = JST["backbone/templates/projects/#{page}"] @model
+#     $(@el).find("#el-content").html(nested)
