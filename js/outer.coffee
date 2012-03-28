@@ -41,12 +41,7 @@
         $("input, textarea").placeholder()
     )
 
-  relativeLocation = () ->
-    a = document.createElement("a")
-    a.href = window.location
-    a.pathname
-
   # Run the application
-  $ -> circle.run relativeLocation()
+  $ -> circle.run window.location.pathname
 
 ) jQuery

@@ -265,11 +265,6 @@ class CircleViewModel extends Base
     p for p in @projects() when p.status() == filter
 
 
-relativeLocation = () ->
-  a = document.createElement("a")
-  a.href = window.location
-  a.pathname
-
 display = (template, args) ->
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
@@ -307,4 +302,4 @@ $(document).ready () ->
         window.location = "/"
       )
     )
-  ).run(relativeLocation())
+  ).run(window.location.pathname)
