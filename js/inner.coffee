@@ -144,7 +144,8 @@ class Build extends HasUrl
         @status()
 
     @committer_mailto = @komp =>
-      "mailto:#{@committer_email()}"
+      if @committer_email()
+        "mailto:#{@committer_email()}"
 
     @why_in_words = @komp =>
       switch @why()
@@ -179,6 +180,7 @@ class Build extends HasUrl
 
 
     @github_url = @komp =>
+      return unless @vcs_revision()
       "#{@vcs_url()}/commit/#{@vcs_revision()}"
 
     @github_revision = @komp =>
