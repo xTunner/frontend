@@ -5,14 +5,13 @@
     .row
       .span8.clearfix
         %label Room name
-
-        %input.span4#hipchat_room{ type: "text" }
+        %input.span4{ type: "text", data-bind: "value: hipchat_room" }
 
     .row
       .span5.clearfix
         %label API token
 
-        %input.span5#hipchat_api_token{ type: "text" }
+        %input.span5{ type: "text", data-bind: "value: hipchat_api_token" }
 
         %p
           To get your API token,

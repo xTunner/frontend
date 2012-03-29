@@ -8,9 +8,7 @@
         %label
           Pre-setup commands
         .input
-          %textarea.span8#setup{ cols: 40, name: "setup", rows: 7, placeholder: "Run extra commands before the normal setup"  }
-            = "setup"
-
+          %textarea.span8#setup{ cols: 40, name: "setup", rows: 7, placeholder: "Run extra commands before the normal setup", data-bind: "value: setup" }
 
 
       .span4
@@ -40,8 +38,7 @@
         %label
           Setup commands
         .input
-          %textarea.span8#dependencies{ cols: 40, name: "dependencies", rows: 7, placeholder: "Replace our inferred setup commands with your own bash commands" }
-            = "dependencies"
+          %textarea.span8{cols: 40, name: "dependencies", rows: 7, placeholder: "Replace our inferred setup commands with your own bash commands", data-bind: "value: dependencies"}
 
 
       .span4

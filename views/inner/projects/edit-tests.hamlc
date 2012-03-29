@@ -8,8 +8,7 @@
         %label
           Test commands
         .input
-          %textarea.span8#test{ cols: 40, name: "test", rows: 7, placeholder: "Replace out inferred test commands with your own inferred commands" }
-            = "test"
+          %textarea.span8{cols: 40, name: "test", rows: 7, placeholder: "Replace out inferred test commands with your own inferred commands", data-bind: "value: test"}
 
 
 
@@ -37,7 +36,7 @@
         %label
           Extra test commands
         .input
-          %textarea.span8#extra{ cols: 40, name: "extra", rows: 7, placeholder: "Run extra test commands after the others finish" }
+          %textarea.span8{cols: 40, name: "extra", rows: 7, placeholder: "Run extra test commands after the others finish", data-bind: "value: extra" }
             = "extra"
 
 
