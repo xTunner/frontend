@@ -1,0 +1,8 @@
+[
+  "./vendor/sammy-0.7.1.js"
+  "./vendor/modernizr-2.5.3.js"
+  "./vendor/jquery.placeholder.js"
+  "../shared/header.hamlc"
+  "../shared/footer.hamlc"
+  "./outer.coffee"
+]
