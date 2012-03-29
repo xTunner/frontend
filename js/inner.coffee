@@ -293,13 +293,14 @@ class CircleViewModel extends Base
   loadEditPage: (username, project, subpage) =>
     @project_settings(null)
     project_name = "#{username}/#{project}"
+    $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
+      @project_settings(new ProjectSettings data)
+
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"
     $('#main').html(HAML['edit']({project: project_name}))
-    # TODO: connect to server
-    @project_settings = ko.observable(new ProjectSettings {vcs_url: "https://github.com/#{project_name}"})
     $('#subpage').html(HAML['edit_' + subpage]())
-    ko.applyBindings(@)
+    ko.applyBindings(VM)
 
   loadAccountPage: () =>
     display "account", {}
