@@ -17,7 +17,7 @@
           %a{ class: 'ficon tw', href: 'http://twitter.com/circleci' }
             Twitter
         %li
-          %a{ class: 'ficon em', href: 'mailto:questions@circleci.com' }
+          %a{ class: 'ficon em', href: 'mailto:sayhi@circleci.com' }
             Email
         -#%li
           %a{ class: 'ficon fb', href: '#' }

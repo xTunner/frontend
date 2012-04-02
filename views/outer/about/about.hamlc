@@ -60,11 +60,11 @@
       %button{ class: 'button green', type: 'submit' } Send
 
     %aside.info
-      %p Don't like forms? You can contact us in the various ways below:
+      %p Don't like forms? Contact us anyway:
 
       %ul
         %li.email
-          %a{ href: 'mailto:contact@circleci.com' } contact@circleci.com
+          %a{ href: 'mailto:sayhi@circleci.com' } sayhi@circleci.com
 
         %li.twitter
           %a{ href='http://twitter.com/circleci' } @circleci
