@@ -1,2 +1,2 @@
-@JasmineReporter = new @jasmine.JsApiReporter()
-@jasmine.getEnv().addReporter @JasmineReporter
+@JasmineReporter = new jasmine.JsApiReporter()
+jasmine.getEnv().addReporter @JasmineReporter

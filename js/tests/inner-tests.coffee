@@ -1,4 +1,4 @@
-j = @jasmine.getEnv()
+j = jasmine.getEnv()
 
 j.describe "trailingSlash", ->
   j.it 'should remove trailing slashes', ->

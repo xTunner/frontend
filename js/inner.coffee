@@ -309,7 +309,10 @@ class CircleViewModel extends Base
 
 
   loadJasmineTests: () =>
-    $.getScript "/assets/js/tests/inner-tests.dieter"
+    # Run the tests within the local scope, so we can use the scope chain to
+    # access classes and values throughout this file.
+    $.get "/assets/js/tests/inner-tests.dieter", (code) =>
+      eval code
 
 
   logout: () =>
