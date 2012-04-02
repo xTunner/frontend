@@ -14,6 +14,5 @@ process = () =>
 
 try
   @jasmine.getEnv().execute()
-catch e
 finally
   process()
