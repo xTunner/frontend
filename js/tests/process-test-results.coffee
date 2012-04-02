@@ -1,6 +1,7 @@
 process = () =>
   if @JasmineReporter.finished
     results = @JasmineReporter.results()
+    results = (v for k,v of results)
     json = JSON.stringify(results)
 
     # attach it to the DOM, so the it can be retrieved by webdriver
