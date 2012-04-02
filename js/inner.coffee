@@ -327,6 +327,8 @@ class CircleViewModel extends Base
 
 
 VM = new CircleViewModel()
+stripTrailingSlash = (str) =>
+  str.replace(/(.+)\/$/, "$1")
 
 
 $(document).ready () ->
