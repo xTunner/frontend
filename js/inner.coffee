@@ -259,6 +259,7 @@ class CircleViewModel extends Base
     @recent_builds = ko.observableArray()
     @project_settings = ko.observable()
 
+
   loadDashboard: =>
     @projects.removeAll()
     $.getJSON '/api/v1/projects', (data) =>
@@ -302,15 +303,19 @@ class CircleViewModel extends Base
     $('#subpage').html(HAML['edit_' + subpage]())
     ko.applyBindings(VM)
 
+
   loadAccountPage: () =>
     display "account", {}
+
+
+  loadJasmineTests: () =>
+    $.getScript "/assets/js/tests/inner-tests.dieter"
 
 
   logout: () =>
     # TODO: add CSRF protection
     $.post('/logout', () =>
        window.location = "/")
-
 
   projects_with_status: (filter) => @komp =>
     p for p in @projects() when p.status() == filter
@@ -323,8 +328,8 @@ VM = new CircleViewModel()
 
 $(document).ready () ->
   Sammy('#app', () ->
-    @get('/test/inner', (cx) -> ) # load nothing, wait for test runner to do something
-    @get('/', (cx) => VM.loadDashboard())
+    @get('/tests/inner', (cx) -> VM.loadJasmineTests())
+    @get('/', (coux) => VM.loadDashboard())
     @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, cx.params.splat)
     @get('/account', (cx) -> VM.loadAccountPage())
     @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num)

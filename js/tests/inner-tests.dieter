@@ -1,0 +1,5 @@
+[
+  "../vendor/jasmine-1.1.0.js"
+  "./inner-tests.coffee"
+  "./circle-runner.coffee"
+]
