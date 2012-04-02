@@ -340,7 +340,7 @@ $(document).ready () ->
     @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num)
     @get('/gh/:username/:project', (cx) -> VM.loadProject cx.params.username, cx.params.project)
     @get('/logout', (cx) -> VM.logout())
-  ).run(window.location.pathname)
+  ).run stripTrailingSlash(window.location.pathname)
 
 
 
