@@ -9,7 +9,7 @@
       %p Circle was born to make sure every developer has state of the art testing without a dev tools department.
 
     %h1 Meet the Circle CI team
-    %p Donec purus risus, pharetra in condimentum dapibus ante
+    -#%p Donec purus risus, pharetra in condimentum dapibus ante
     %hr
 
     -# Iterate over team members and print their information as hCard
