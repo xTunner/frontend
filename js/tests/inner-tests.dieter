@@ -1,6 +1,6 @@
 [
   "../vendor/jasmine-1.1.0.js"
-  "./pre-runner.coffee"
+  "./prepare-test-runner.coffee"
   "./inner-tests.coffee"
-  "./circle-runner.coffee"
+  "./process-test-results.coffee"
 ]
