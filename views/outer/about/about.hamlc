@@ -26,10 +26,12 @@
               %h4.fn= user.name
               %h5.title= user.role
 
-            %p.note&= user.bio
+            - for b in user.bio
+              %p.note&= b
 
           .social
-            %a.email{ href: "mailto:#{user.email}" } Email Address
+            -if user.email
+              %a.email{ href: "mailto:#{user.email}" } Email Address
 
             %a.url{ href: "https://github.com/#{user.github}" } Github Profile
 
