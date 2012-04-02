@@ -24,7 +24,7 @@
             Contact
         %li
           - if @showJoinLink
-            %a{ id: 'join' href: @githubAuthURL, title: 'Join to Circle' }
+            %a{ id: 'join' href: @githubAuthURL, title: 'Join Circle' }
               Join
           - else
             %a{ href: @githubAuthURL, title: 'Log in to Circle' }
