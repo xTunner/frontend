@@ -323,6 +323,7 @@ VM = new CircleViewModel()
 
 $(document).ready () ->
   Sammy('#app', () ->
+    @get('/test/inner', (cx) -> ) # load nothing, wait for test runner to do something
     @get('/', (cx) => VM.loadDashboard())
     @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, cx.params.splat)
     @get('/account', (cx) -> VM.loadAccountPage())
