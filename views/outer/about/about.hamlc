@@ -27,13 +27,16 @@
               %h5.title= user.role
 
             - for b in user.bio
-              %p.note&= b
+              %p.note= b
 
           .social
-            -if user.email
+            - if user.email
               %a.email{ href: "mailto:#{user.email}" } Email Address
 
-            %a.url{ href: "https://github.com/#{user.github}" } Github Profile
+            %a.url{ href: "https://github.com/#{user.github}" } Github
+
+            - if user.twitter
+              %a.twitter{ href: "https://twitter.com/#{user.twitter}" } Twitter
 
           .visual
             -# If photo has not been defined for user, use .visual bg image
