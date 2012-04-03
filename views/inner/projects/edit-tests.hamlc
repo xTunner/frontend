@@ -22,7 +22,6 @@
             our inferred test commands. If our inferred commands are not to your liking, replace them here.
 
           %br
-          %br
 
           %span.minor
             As usual, all commands are arbitrary bash, and run on Ubuntu 11.04.
@@ -48,7 +47,6 @@
             %b after
             our inferred commands. Add extra tests that we haven't thought of yet.
 
-          %br
           %br
 
           %span.minor

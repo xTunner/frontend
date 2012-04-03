@@ -21,7 +21,6 @@
             statements, and run on Ubuntu 11.04.
 
           %br
-          %br
 
           %span.minor
             Use this to install unusual packages or setup unusual services, such
@@ -50,7 +49,6 @@
             our inferred commands. If our inferred commands are not to your liking, replace them here.
 
           %br
-          %br
 
           %span.minor
             Use this to override the specific pre-test commands we run, such as
@@ -60,7 +58,6 @@
             <code>configure</code>,
             <code>make</code>, etc.
 
-          %br
           %br
             We constantly monitor this to fix problems in our service.
         .infobox.long
