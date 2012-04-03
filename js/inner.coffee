@@ -266,13 +266,13 @@ class CircleViewModel extends Base
 
 
   loadDashboard: =>
-    @projects.removeAll()
     $.getJSON '/api/v1/projects', (data) =>
+      @projects.removeAll()
       for d in data
         @projects.push(new Project d)
 
-    @recent_builds.removeAll()
     $.getJSON '/api/v1/recent-builds', (data) =>
+      @recent_builds.removeAll()
       for d in data
         @recent_builds.push(new Build d)
 
@@ -280,16 +280,15 @@ class CircleViewModel extends Base
 
 
   loadProject: (username, project) =>
-    @builds.removeAll()
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}", (data) =>
+      @builds.removeAll()
       for d in data
         @builds.push(new Build d)
     display "project", {project: project_name}
 
 
   loadBuild: (username, project, build_num) =>
-    @build = ko.observable()
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new Build data)
@@ -297,7 +296,6 @@ class CircleViewModel extends Base
 
 
   loadEditPage: (username, project, subpage) =>
-    @project_settings(null)
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
       @project_settings(new ProjectSettings data)
