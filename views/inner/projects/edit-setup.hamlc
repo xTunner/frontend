@@ -8,7 +8,7 @@
         %label
           Pre-setup commands
         .input
-          %textarea.span8#setup{ cols: 40, name: "setup", rows: 7, placeholder: "Run extra commands before the normal setup", data-bind: "value: setup" }
+          %textarea.span8{ cols: 40, rows: 7, name: "setup", placeholder: "Run extra commands before the normal setup", data-bind: "value: setup" }
 
 
       .span4

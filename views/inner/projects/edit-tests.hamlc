@@ -36,7 +36,6 @@
           Extra test commands
         .input
           %textarea.span8{cols: 40, name: "extra", rows: 7, placeholder: "Run extra test commands after the others finish", data-bind: "value: extra" }
-            = "extra"
 
 
       .span4
@@ -57,4 +56,4 @@
 
     .row
       .offset1
-        %input.btn.primary.span5.large{ name: "save_specs", type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests..." }
+        %input.btn.primary.span5.large{ type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests...", data-bind: "click: save_specs", name: "submit" }

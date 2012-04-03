@@ -191,8 +191,7 @@ class Build extends HasUrl
       @committer_name() or @committer_email()
 
   retry_build: () =>
-    [_, username, project_name] = @vcs_url().match(/https:\/\/github.com\/([^\/]+)\/([^\/]+)/)
-    $.post("/api/v1/project/#{username}/#{project_name}/#{@build_num()}/retry")
+    $.post("/api/v1/project/#{@project_path()}/#{@build_num()}/retry")
 
   description: (include_project) =>
     return unless @build_num?
@@ -236,7 +235,29 @@ class ProjectSettings extends HasUrl
       "" == full_spec
 
   submit_hipchat: () =>
-    $.put("/api/v1/project/#{username}/#{project_name}/hipchat")
+    $.put("/api/v1/project/@project_name()}/settings",
+      hipchat_room: @hipchat_room()
+      hipchat_api_token: @hipchat_api_token()
+    )
+    false # dont bubble the event up
+
+  save_specs: () =>
+    try
+      $.ajax(
+        type: "PUT"
+        url: "/api/v1/project/#{@project_name()}/settings"
+        contentType: "application/json"
+        data: JSON.stringify(
+          setup: @setup()
+          dependencies: @dependencies()
+          compile: ""
+          test: @test()
+          extra: @extra()
+        )
+      )
+    catch e
+      alert e
+    false # dont bubble the event up
 
 
 
