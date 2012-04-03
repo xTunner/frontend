@@ -234,29 +234,31 @@ class ProjectSettings extends HasUrl
       full_spec += @extra()
       "" == full_spec
 
-  submit_hipchat: () =>
-    $.put("/api/v1/project/@project_name()}/settings",
-      hipchat_room: @hipchat_room()
-      hipchat_api_token: @hipchat_api_token()
+  save_hipchat: () =>
+    $.ajax(
+      type: "PUT"
+      url: "/api/v1/project/#{@project_name()}/settings"
+      contentType: "application/json"
+      data: JSON.stringify(
+        hipchat_room: @hipchat_room()
+        hipchat_api_token: @hipchat_api_token()
+      )
     )
     false # dont bubble the event up
 
   save_specs: () =>
-    try
-      $.ajax(
-        type: "PUT"
-        url: "/api/v1/project/#{@project_name()}/settings"
-        contentType: "application/json"
-        data: JSON.stringify(
-          setup: @setup()
-          dependencies: @dependencies()
-          compile: ""
-          test: @test()
-          extra: @extra()
-        )
+    $.ajax(
+      type: "PUT"
+      url: "/api/v1/project/#{@project_name()}/settings"
+      contentType: "application/json"
+      data: JSON.stringify(
+        setup: @setup()
+        dependencies: @dependencies()
+        compile: ""
+        test: @test()
+        extra: @extra()
       )
-    catch e
-      alert e
+    )
     false # dont bubble the event up
 
 
@@ -286,7 +288,7 @@ class CircleViewModel extends Base
     @project_settings = ko.observable()
 
 
-  loadDashboard: =>
+  loadDashboard: (cx) =>
     $.getJSON '/api/v1/projects', (data) =>
       @projects.removeAll()
       for d in data
@@ -300,7 +302,7 @@ class CircleViewModel extends Base
     display "dashboard", {}
 
 
-  loadProject: (username, project) =>
+  loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}", (data) =>
       @builds.removeAll()
@@ -309,17 +311,21 @@ class CircleViewModel extends Base
     display "project", {project: project_name}
 
 
-  loadBuild: (username, project, build_num) =>
+  loadBuild: (cx, username, project, build_num) =>
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new Build data)
     display "build", {project: project_name, build_num: build_num}
 
 
-  loadEditPage: (username, project, subpage) =>
+  loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
-    $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
-      @project_settings(new ProjectSettings data)
+
+    # if we're already on this page, dont reload
+    if (not @project_settings() or
+    (@project_settings().vcs_url() isnt "https://github.com/#{project_name}"))
+      $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
+        @project_settings(new ProjectSettings data)
 
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"
@@ -328,18 +334,18 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadAccountPage: () =>
+  loadAccountPage: (cx) =>
     display "account", {}
 
 
-  loadJasmineTests: () =>
+  loadJasmineTests: (cx) =>
     # Run the tests within the local scope, so we can use the scope chain to
     # access classes and values throughout this file.
     $.get "/assets/js/tests/inner-tests.dieter", (code) =>
       eval code
 
 
-  logout: () =>
+  logout: (cx) =>
     # TODO: add CSRF protection
     $.post('/logout', () =>
        window.location = "/")
@@ -357,13 +363,13 @@ stripTrailingSlash = (str) =>
 
 $(document).ready () ->
   Sammy('#app', () ->
-    @get('/tests/inner', (cx) -> VM.loadJasmineTests())
+    @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
     @get('/', (coux) => VM.loadDashboard())
-    @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx.params.username, cx.params.project, cx.params.splat)
-    @get('/account', (cx) -> VM.loadAccountPage())
-    @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx.params.username, cx.params.project, cx.params.build_num)
-    @get('/gh/:username/:project', (cx) -> VM.loadProject cx.params.username, cx.params.project)
-    @get('/logout', (cx) -> VM.logout())
+    @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
+    @get('/account', (cx) -> VM.loadAccountPage(cx))
+    @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
+    @get('/gh/:username/:project', (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
+    @get('/logout', (cx) -> VM.logout(cx))
   ).run stripTrailingSlash(window.location.pathname)
 
 
