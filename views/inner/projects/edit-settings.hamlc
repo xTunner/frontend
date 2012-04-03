@@ -31,11 +31,11 @@
         %a.btn.primary.large{ href: "#setup" }
           Edit project settings
 
-      %p
+      -#%p
         %button.btn.primary.large.span6#reset{ data-loading-text: "Resetting" }
           Delete your commands and revert to inferred
 
-    %p
+    -#%p
       %button.btn.primary.large#trigger{ data-loading-text: "triggering" }
         Trigger a build
 
