@@ -228,12 +228,17 @@ class ProjectSettings extends HasUrl
       @project_name()
 
     @is_inferred = @komp =>
-      full_spec = @setup
-      full_spec += @dependencies
-      full_spec += @compile
-      full_spec += @test
-      full_spec += @extra
+      full_spec = @setup()
+      full_spec += @dependencies()
+      full_spec += @compile()
+      full_spec += @test()
+      full_spec += @extra()
       "" == full_spec
+
+  submit_hipchat: () =>
+    $.put("/api/v1/project/#{username}/#{project_name}/hipchat")
+
+
 
 
 class User extends Base
