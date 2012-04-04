@@ -43,7 +43,7 @@
     %h3 Our security model
     %p
       When we run your tests, we run them in an LXC sandbox (this is the same technology both Heroku and DotCloud use, so we are in good company).
-      As such, although you have root access to your sandbox, you are unable access another customer's code, and they are unable to access yours.
+      As such, you are unable access another customer's code, and they are unable to access yours.
       We never ever run any customer code in any context which is not sandboxed, or which allows access to other customer code.
 
     %p
