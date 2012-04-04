@@ -11,7 +11,7 @@
         %ul.nav.secondary-nav{data-bind: "with: current_user"}
           %ul.nav{data-bind: "if: admin"}
             %li.development
-              %a{data-bind: "text: environment"}
+              %a{data-bind: "text: environment, css: environmentColor"}
 
           %li.dropdown
             %a.dropdown-toggle{data-bind: "text: login"}
