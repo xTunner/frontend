@@ -4,5 +4,6 @@
   "./vendor/jquery.placeholder.js"
   "../views/shared/header.hamlc"
   "../views/shared/footer.hamlc"
+  "../views/outer/home/home.hamlc"
   "./outer.coffee"
 ]
