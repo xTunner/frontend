@@ -266,12 +266,20 @@ class ProjectSettings extends HasUrl
 
 class User extends Base
   constructor: (json) ->
-    super json, {admin: false, login: "", is_new: false, environment: "production"}
+    super json,
+      admin: false
+      login: ""
+      is_new: false
+      environment: "production"
+      basic_email: "all"
 
     @environmentColor = @komp =>
       result = {}
       result["env-" + @environment()] = true
       result
+
+  save_preferences: () =>
+    false
 
 
 
