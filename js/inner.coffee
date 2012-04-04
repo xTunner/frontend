@@ -271,7 +271,7 @@ class User extends Base
       login: ""
       is_new: false
       environment: "production"
-      basic_email: "all"
+      basic_email_prefs: "all"
 
     @environmentColor = @komp =>
       result = {}
@@ -279,7 +279,14 @@ class User extends Base
       result
 
   save_preferences: () =>
-    false
+    $.ajax(
+      type: "PUT"
+      url: "/api/v1/user/save-preferences"
+      contentType: "application/json"
+      data: JSON.stringify {basic_email_prefs: @basic_email_prefs()}
+    )
+    false # dont bubble the event up
+
 
 
 
