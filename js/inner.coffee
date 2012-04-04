@@ -354,6 +354,14 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
+  loadAdminPage: (cx, subpage) =>
+    subpage = subpage[0].replace('/', '')
+    subpage = subpage || "projects"
+    $('#main').html(HAML['admin']({}))
+    $('#subpage').html(HAML['admin_' + subpage]())
+    ko.applyBindings(VM)
+
+
   loadAccountPage: (cx) =>
     display "account", {}
 
@@ -390,6 +398,7 @@ $(document).ready () ->
     @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
     @get('/gh/:username/:project', (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
     @get('/logout', (cx) -> VM.logout(cx))
+    @get('/admin(.*)', (cx) -> VM.loadAdminPage(cx, cx.params.splat))
   ).run stripTrailingSlash(window.location.pathname)
 
 

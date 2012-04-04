@@ -1,0 +1,17 @@
+= HAML['_topbar']({})
+
+.container-fluid
+  .sidebar
+    %ul
+      %li
+        %a{href: "/admin/projects"}
+          Projects
+
+      %li
+        %a{href: "/admin/users"}
+          Users
+
+  .content
+    #subpage
+      %p
+        Click to load
