@@ -306,6 +306,7 @@ class CircleViewModel extends Base
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
     @project_settings = ko.observable()
+    @admin = ko.observable()
 
 
   loadDashboard: (cx) =>
@@ -357,6 +358,10 @@ class CircleViewModel extends Base
   loadAdminPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "projects"
+
+    $.getJSON "/api/v1/admin/#{subpage}", (data) =>
+      @admin(data)
+
     $('#main').html(HAML['admin']({}))
     $('#subpage').html(HAML['admin_' + subpage]())
     ko.applyBindings(VM)
