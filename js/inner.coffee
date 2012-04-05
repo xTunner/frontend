@@ -54,7 +54,8 @@ class ActionLog extends Base
         "running"
       else if @timedout()
         "timedout"
-      else if @exit_code() == 0
+
+      else if (@exit_code() == null || @exit_code() == 0)
         "success"
       else
         "failed"
