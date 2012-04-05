@@ -1,4 +1,4 @@
 %table
   %tbody{data-bind: "foreach: admin"}
     %tr
-      %td{data-bind: "ko.toJS($data)"}
+      %td{data-bind: "text: ko.toJSON($data)"}
