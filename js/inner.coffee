@@ -255,7 +255,6 @@ class ProjectSettings extends HasUrl
       data: JSON.stringify(
         setup: @setup()
         dependencies: @dependencies()
-        compile: ""
         test: @test()
         extra: @extra()
       )
@@ -410,15 +409,8 @@ $(document).ready () ->
 
 
 
-
-
-
 # # Events
-# App.Views.EditProject = Backbone.View.extend
-
 #   events:
-#     "submit form.spec_form": "save_specs"
-#     "submit form.hook_form": "save_hooks"
 #     "click #reset": "reset_specs"
 #     "click #trigger": "trigger_build"
 #     "click #trigger_inferred": "trigger_inferred_build"
@@ -426,14 +418,6 @@ $(document).ready () ->
 #   save: (event, btn, redirect, keys) ->
 #     event.preventDefault()
 #     btn.button 'loading'
-
-#     # hard.
-#     keys.push "project"
-#     keys.push "_id"
-
-#     m = @model.clone()
-#     for k of m.attributes
-#       m.unset k, {silent: true} if k not in keys
 
 #     m.save {},
 #       success: ->
@@ -443,16 +427,6 @@ $(document).ready () ->
 #         btn.button 'reset'
 #         alert "Error in saving project. Please try again. If it persists, please contact Circle."
 
-
-#   save_specs: (e) ->
-#     @save e, $(e.target.save_specs), "#settings",
-#      ["setup", "dependencies", "compile", "test", "extra"]
-
-#   save_hooks: (e) ->
-#     @save e, $(e.target.save_hooks), "#hooks",
-#       ["hipchat_room", "hipchat_api_token"]
-
-
 #   reset_specs: (e) ->
 #     @model.set
 #       "setup": ""
@@ -460,9 +434,6 @@ $(document).ready () ->
 #       "test": ""
 #       "extra": ""
 #       "dependencies": ""
-
-#     @save_specs e
-#     @render()
 
 #   trigger_build: (e, payload = {}) ->
 #     e.preventDefault()
@@ -473,12 +444,3 @@ $(document).ready () ->
 
 #   trigger_inferred_build: (e) ->
 #     @trigger_build e, {inferred: true}
-
-
-#   render: ->
-#     html = JST["backbone/templates/projects/edit"] @model
-#     $(@el).html(html)
-
-#     page = @options.page or "settings"
-#     nested = JST["backbone/templates/projects/#{page}"] @model
-#     $(@el).find("#el-content").html(nested)
