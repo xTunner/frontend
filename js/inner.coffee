@@ -271,7 +271,7 @@ class ProjectSettings extends HasUrl
       full_spec += @dependencies()
       full_spec += @test()
       full_spec += @extra()
-      "" == full_spec
+      "" != full_spec
 
     @uninferrable = @komp =>
       @status() == "uninferrable"
