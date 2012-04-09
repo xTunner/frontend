@@ -8,7 +8,8 @@
   %tbody{data-bind: "foreach: filtered_projects('#{@filter}')"}
     %tr
       %td{data-bind: "if: show_options()"}
-        %img{src: "img/settings.png", height: 15, width: 15}
+        %a{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+          %img{src: "img/settings.png", height: 15, width: 15}
 
       %td
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
