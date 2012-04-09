@@ -242,11 +242,10 @@ class Project extends HasUrl
       else
         VM.setErrorMessage "An unknown error occurred: (#{xhr.status}). Try again? Or contact us."
 
-
     onsuccess = (data) =>
-      alert data
+      @status(data.status)
 
-    $.post('/api/v1/project/#{@project_name()}/enable')
+    $.post("/api/v1/project/#{@project_name()}/enable")
       .error(onerror)
       .success(onsuccess)
 
