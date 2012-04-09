@@ -212,6 +212,25 @@ class Project extends HasUrl
     @edit_link = @komp () =>
       "#{@project_path()}/edit"
 
+  checkbox_title: =>
+    "Add CI to #{@project_name()}"
+
+  group: =>
+    if @status() is 'active' or @status() is 'uninferrable'
+      "followed"
+    else
+      "available"
+
+  show_checkbox: =>
+    @status() is 'inactive' or @status() is 'disabled'
+
+  show_options: =>
+    @status() is 'active'
+
+  show_edit: =>
+    @status() is 'uninferrable'
+
+
 
 
 
@@ -389,8 +408,9 @@ class CircleViewModel extends Base
   unsupportedRoute: (cx) =>
     throw("Unsupported route: " + cx.params.splat)
 
-  projects_with_status: (filter) => @komp =>
-    p for p in @projects() when p.status() == filter
+  filtered_projects: (filter) => @komp =>
+    p for p in @projects() when p.group() == filter
+
 
 
 

@@ -1,11 +1,11 @@
 %table.condensed-table.well
   %thead
     %tr
-      %th
+      %th{colspan: 3}
         = @title
         Projects
 
-  %tbody{data-bind: "foreach: projects_with_status('#{@filter}')"}
+  %tbody{data-bind: "foreach: filtered_projects('#{@filter}')"}
     %tr
       %td
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
@@ -15,5 +15,14 @@
           %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
 
       %td.icons
-        %a{data-bind: "attr: { href: edit_link }"}
-          edit
+        .x{data-bind: "if: show_checkbox()"}
+          %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }"}
+
+
+        .x{data-bind: "if: show_edit()"}
+          %a{data-bind: "attr: { href: edit_link }"}
+            edit
+
+        .x{data-bind: "if: show_options()"}
+          %a{data-bind: "attr: { href: edit_link }"}
+            *
