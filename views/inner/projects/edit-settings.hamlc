@@ -16,14 +16,14 @@
 
     %span{data-bind: "if: inferred"}
       %span.highlight
-        You have overridden our inferred settings!
-      We'll infer your setup again if you delete your commands.
+        Your project settings are automatically inferred!
+      We automatically infer test settings and how to set up the machine for your project.
+      If your tests aren't working, you may need to manually override our inferrence.
 
     %span{data-bind: "if: overridden"}
       %span.highlight
         You have overridden our inferred settings!
       We'll infer your setup again if you delete your commands.
-
 
 .row
   .span8.indent-slightly
