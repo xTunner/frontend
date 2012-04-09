@@ -192,7 +192,7 @@ class Build extends HasUrl
       @committer_name() or @committer_email()
 
   retry_build: () =>
-    $.post("/api/v1/project/#{@project_path()}/#{@build_num()}/retry")
+    $.post("/api/v1/project/#{@project_name()}/#{@build_num()}/retry")
 
   description: (include_project) =>
     return unless @build_num?
