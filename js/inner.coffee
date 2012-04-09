@@ -216,19 +216,23 @@ class Project extends HasUrl
     "Add CI to #{@project_name()}"
 
   group: =>
-    if @status() is 'active' or @status() is 'uninferrable'
-      "followed"
-    else
+    if @status() is 'available'
       "available"
+    else
+      "followed"
 
   show_enable_button: =>
-    @status() is 'inactive' or @status() is 'disabled'
+    @status() is 'available'
 
   show_problems: =>
     @status() is 'uninferrable'
 
   show_options: =>
-    @status() is 'active'
+    @status() is 'followed'
+
+  # We should show this either way, but dont have a good design for it
+  show_build: =>
+    @status() is 'followed'
 
 
 
