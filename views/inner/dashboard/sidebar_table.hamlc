@@ -1,28 +1,27 @@
 %table.condensed-table.well
   %thead
     %tr
-      %th{colspan: 3}
+      %th{colspan: 4}
         = @title
         Projects
 
   %tbody{data-bind: "foreach: filtered_projects('#{@filter}')"}
     %tr
       %td
+        .x{data-bind: "if: show_options()"}
+          %img{src: "img/settings.png", height: 14, width: 14}
+
+      %td
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
-      %td.build_status{data-bind: "with: latest_build()"}
-        %span{data-bind: "attr: { class: style }"}
-          %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+      %td
+        %span{data-bind: "if: show_problems()"}
+          %img{src: "img/red-flag.png", height: 14, width: 14}
 
-      %td.icons
-        .x{data-bind: "if: show_checkbox()"}
+        %span{data-bind: "ifnot: show_problems()"}
+          %span.build_status{data-bind: "with: latest_build()"}
+            %span{data-bind: "attr: { class: style }"}
+              %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+
+        %span{data-bind: "if: show_enable_button()"}
           %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }"}
-
-
-        .x{data-bind: "if: show_edit()"}
-          %a{data-bind: "attr: { href: edit_link }"}
-            edit
-
-        .x{data-bind: "if: show_options()"}
-          %a{data-bind: "attr: { href: edit_link }"}
-            *

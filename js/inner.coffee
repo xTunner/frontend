@@ -221,14 +221,15 @@ class Project extends HasUrl
     else
       "available"
 
-  show_checkbox: =>
+  show_enable_button: =>
     @status() is 'inactive' or @status() is 'disabled'
+
+  show_problems: =>
+    @status() is 'uninferrable'
 
   show_options: =>
     @status() is 'active'
 
-  show_edit: =>
-    @status() is 'uninferrable'
 
 
 
