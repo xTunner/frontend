@@ -247,13 +247,22 @@ class ProjectSettings extends HasUrl
     @project = @komp =>
       @project_name()
 
-    @is_inferred = @komp =>
+    @has_settings = @komp =>
       full_spec = @setup()
       full_spec += @dependencies()
-      full_spec += @compile()
       full_spec += @test()
       full_spec += @extra()
       "" == full_spec
+
+    @uninferrable = @komp =>
+      @status() == "uninferrable"
+
+    @inferred = @komp =>
+      (not @uninferrable()) and (not @has_settings())
+
+    @overridden = @komp =>
+      (not @uninferrable()) and @has_settings()
+
 
   save_hipchat: () =>
     $.ajax(

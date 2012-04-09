@@ -16,7 +16,8 @@
 
       %td
         %span{data-bind: "if: show_problems()"}
-          %img{src: "img/error.png", height: 15, width: 15}
+          %a{data-bind: "attr: { href: edit_link }", title: "Setup uninferrable project"}
+            %img{src: "img/error.png", height: 15, width: 15}
 
         %span{data-bind: "ifnot: show_problems()"}
           %span.build_status{data-bind: "with: latest_build()"}
