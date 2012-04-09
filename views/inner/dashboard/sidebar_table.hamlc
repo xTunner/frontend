@@ -1,22 +1,21 @@
-%table.condensed-table.well
+%table.condensed-table.well{cols: 3}
   %thead
     %tr
-      %th{colspan: 4}
+      %th{colspan: 3}
         = @title
         Projects
 
   %tbody{data-bind: "foreach: filtered_projects('#{@filter}')"}
     %tr
-      %td
-        .x{data-bind: "if: show_options()"}
-          %img{src: "img/settings.png", height: 14, width: 14}
+      %td{data-bind: "if: show_options()"}
+        %img{src: "img/settings.png", height: 15, width: 15}
 
       %td
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
       %td
         %span{data-bind: "if: show_problems()"}
-          %img{src: "img/red-flag.png", height: 14, width: 14}
+          %img{src: "img/error.png", height: 15, width: 15}
 
         %span{data-bind: "ifnot: show_problems()"}
           %span.build_status{data-bind: "with: latest_build()"}
