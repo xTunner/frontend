@@ -9,7 +9,7 @@
     = HAML['sidebar_table']({ title: "Disabled", filter: "disabled" })
 
   .content
-    .row{data-bind: "if: current_user.is_new"}
+    .row{data-bind: "if: current_user().is_new"}
       .alert-message.block-message.success.span8.offset2
         %strong Welcome to Circle! Push your code to start your builds!
         %br
