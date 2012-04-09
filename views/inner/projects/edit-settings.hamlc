@@ -30,7 +30,7 @@
     %span{data-bind: "if: uninferrable"}
       %p
         %a.btn.primary.large{ href: "#setup" }
-          Set up project
+          Set up your project
 
     %span{data-bind: "if: inferred"}
       %p
