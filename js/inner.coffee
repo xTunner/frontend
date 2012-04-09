@@ -383,6 +383,9 @@ class CircleViewModel extends Base
     $.post('/logout', () =>
        window.location = "/")
 
+  unsupportedRoute: (cx) =>
+    throw("Unsupported route: " + cx.params.splat)
+
   projects_with_status: (filter) => @komp =>
     p for p in @projects() when p.status() == filter
 
@@ -392,7 +395,6 @@ class CircleViewModel extends Base
 VM = new CircleViewModel()
 stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
-
 
 $(document).ready () ->
   Sammy('#app', () ->
@@ -404,6 +406,7 @@ $(document).ready () ->
     @get('/gh/:username/:project', (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
     @get('/logout', (cx) -> VM.logout(cx))
     @get('/admin(.*)', (cx) -> VM.loadAdminPage(cx, cx.params.splat))
+    @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
   ).run stripTrailingSlash(window.location.pathname)
 
 
