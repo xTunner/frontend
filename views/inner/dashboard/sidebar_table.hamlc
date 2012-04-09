@@ -25,4 +25,4 @@
               %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
 
         %span{data-bind: "if: show_enable_button()"}
-          %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }"}
+          %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }, click: enable"}

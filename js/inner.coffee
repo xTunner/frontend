@@ -191,6 +191,7 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name() or @committer_email()
 
+  # TODO: CSRF protection
   retry_build: () =>
     $.post("/api/v1/project/#{@project_path()}/#{@build_num()}/retry")
 
@@ -233,6 +234,21 @@ class Project extends HasUrl
   # We should show this either way, but dont have a good design for it
   show_build: =>
     @status() is 'followed'
+
+  enable: =>
+    onerror = (xhr, status, errorThrown) =>
+      if errorThrown
+        VM.setErrorMessage "HTTP error (#{xhr.status}): #{errorThrown}. Try again? Or contact us."
+      else
+        VM.setErrorMessage "An unknown error occurred: (#{xhr.status}). Try again? Or contact us."
+
+
+    onsuccess = (data) =>
+      alert data
+
+    $.post('/api/v1/project/#{@project_name()}/enable')
+      .error(onerror)
+      .success(onsuccess)
 
 
 
@@ -343,6 +359,16 @@ class CircleViewModel extends Base
     @recent_builds = ko.observableArray()
     @project_settings = ko.observable()
     @admin = ko.observable()
+    @error_message = ko.observable(null)
+
+
+  clearErrorMessage: () =>
+    @error_message null
+
+  setErrorMessage: (message) =>
+    @error_message message
+    $('html, body').animate({ scrollTop: 0 }, 0);
+
 
 
   loadDashboard: (cx) =>

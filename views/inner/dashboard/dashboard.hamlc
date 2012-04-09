@@ -1,12 +1,16 @@
 = HAML['_topbar']({})
 
 .container-fluid
+
   .sidebar
     -# TECHNICAL_DEBT: use namespaces for these
     = HAML['sidebar_table']({ title: "Followed", filter: "followed" })
     = HAML['sidebar_table']({ title: "Available", filter: "available" })
 
   .content
+
+    = HAML['flashes']({})
+
     .row{data-bind: "if: current_user().is_new"}
       .alert-message.block-message.success.span8.offset2
         %strong Welcome to Circle! Push your code to start your builds!
