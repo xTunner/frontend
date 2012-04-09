@@ -359,6 +359,7 @@ class CircleViewModel extends Base
     @project_settings = ko.observable()
     @admin = ko.observable()
     @error_message = ko.observable(null)
+    @first_login = true;
 
 
   clearErrorMessage: () =>
@@ -375,6 +376,10 @@ class CircleViewModel extends Base
       @projects.removeAll()
       for d in data
         @projects.push(new Project d)
+      if @first_login
+        @first_login = false
+        setTimeout(() => @loadDashboard cx, 3000)
+
 
     $.getJSON '/api/v1/recent-builds', (data) =>
       @recent_builds.removeAll()
@@ -461,7 +466,7 @@ stripTrailingSlash = (str) =>
 $(document).ready () ->
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
-    @get('/', (coux) => VM.loadDashboard())
+    @get('/', (cx) => VM.loadDashboard(cx))
     @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
     @get('/account', (cx) -> VM.loadAccountPage(cx))
     @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
