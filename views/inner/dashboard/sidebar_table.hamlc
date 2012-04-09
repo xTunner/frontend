@@ -1,19 +1,28 @@
-%table.condensed-table.well
+%table.condensed-table.well{cols: 3}
   %thead
     %tr
-      %th
+      %th{colspan: 3}
         = @title
         Projects
 
-  %tbody{data-bind: "foreach: projects_with_status('#{@filter}')"}
+  %tbody{data-bind: "foreach: filtered_projects('#{@filter}')"}
     %tr
+      %td{data-bind: "if: show_options()"}
+        %a{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+          %img{src: "img/settings.png", height: 15, width: 15}
+
       %td
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
-      %td.build_status{data-bind: "with: latest_build()"}
-        %span{data-bind: "attr: { class: style }"}
-          %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+      %td
+        %span{data-bind: "if: show_problems()"}
+          %a{data-bind: "attr: { href: edit_link }", title: "Setup uninferrable project"}
+            %img{src: "img/error.png", height: 15, width: 15}
 
-      %td.icons
-        %a{data-bind: "attr: { href: edit_link }"}
-          edit
+        %span{data-bind: "if: show_build()"}
+          %span.build_status{data-bind: "with: latest_build()"}
+            %span{data-bind: "attr: { class: style }"}
+              %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+
+        %span{data-bind: "if: show_enable_button()"}
+          %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }, click: enable"}

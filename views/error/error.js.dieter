@@ -1,7 +1,7 @@
 [
- "./error.hamlc"
+  "./error.hamlc"
   "../shared/header.hamlc"
   "../shared/footer.hamlc"
   "../../js/vendor/modernizr-2.5.3.js"
   "../../js/error.coffee"
- ]
+]

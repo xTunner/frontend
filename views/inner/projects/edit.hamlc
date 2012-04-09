@@ -16,6 +16,9 @@
 
 
   .content
+
+    = HAML['flashes']({})
+
     #subpage{data-bind: "with: project_settings"}
       %p
         Loading...

@@ -191,6 +191,7 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name() or @committer_email()
 
+  # TODO: CSRF protection
   retry_build: () =>
     $.post("/api/v1/project/#{@project_name()}/#{@build_num()}/retry")
 
@@ -212,6 +213,44 @@ class Project extends HasUrl
     @edit_link = @komp () =>
       "#{@project_path()}/edit"
 
+  checkbox_title: =>
+    "Add CI to #{@project_name()}"
+
+  group: =>
+    if @status() is 'available'
+      "available"
+    else
+      "followed"
+
+  show_enable_button: =>
+    @status() is 'available'
+
+  show_problems: =>
+    @status() is 'uninferrable'
+
+  show_options: =>
+    @status() is 'followed'
+
+  # We should show this either way, but dont have a good design for it
+  show_build: =>
+    @status() is 'followed'
+
+  enable: =>
+    onerror = (xhr, status, errorThrown) =>
+      if errorThrown
+        VM.setErrorMessage "HTTP error (#{xhr.status}): #{errorThrown}. Try again? Or contact us."
+      else
+        VM.setErrorMessage "An unknown error occurred: (#{xhr.status}). Try again? Or contact us."
+
+    onsuccess = (data) =>
+      @status(data.status)
+
+    $.post("/api/v1/project/#{@project_name()}/enable")
+      .error(onerror)
+      .success(onsuccess)
+
+
+
 
 
 
@@ -227,13 +266,22 @@ class ProjectSettings extends HasUrl
     @project = @komp =>
       @project_name()
 
-    @is_inferred = @komp =>
+    @has_settings = @komp =>
       full_spec = @setup()
       full_spec += @dependencies()
-      full_spec += @compile()
       full_spec += @test()
       full_spec += @extra()
-      "" == full_spec
+      "" != full_spec
+
+    @uninferrable = @komp =>
+      @status() == "uninferrable"
+
+    @inferred = @komp =>
+      (not @uninferrable()) and (not @has_settings())
+
+    @overridden = @komp =>
+      (not @uninferrable()) and @has_settings()
+
 
   save_hipchat: () =>
     $.ajax(
@@ -255,7 +303,6 @@ class ProjectSettings extends HasUrl
       data: JSON.stringify(
         setup: @setup()
         dependencies: @dependencies()
-        compile: ""
         test: @test()
         extra: @extra()
       )
@@ -273,6 +320,9 @@ class User extends Base
       is_new: false
       environment: "production"
       basic_email_prefs: "all"
+
+    @showEnvironment = @komp =>
+      @admin() || (@environment() is "staging") || (@environment() is "development")
 
     @environmentColor = @komp =>
       result = {}
@@ -307,6 +357,18 @@ class CircleViewModel extends Base
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
     @project_settings = ko.observable()
+    @admin = ko.observable()
+    @error_message = ko.observable(null)
+    @first_login = true;
+
+
+  clearErrorMessage: () =>
+    @error_message null
+
+  setErrorMessage: (message) =>
+    @error_message message
+    $('html, body').animate({ scrollTop: 0 }, 0);
+
 
 
   loadDashboard: (cx) =>
@@ -314,6 +376,10 @@ class CircleViewModel extends Base
       @projects.removeAll()
       for d in data
         @projects.push(new Project d)
+      if @first_login
+        @first_login = false
+        setTimeout(() => @loadDashboard cx, 3000)
+
 
     $.getJSON '/api/v1/recent-builds', (data) =>
       @recent_builds.removeAll()
@@ -355,6 +421,18 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
+  loadAdminPage: (cx, subpage) =>
+    subpage = subpage[0].replace('/', '')
+    subpage = subpage || "projects"
+
+    $.getJSON "/api/v1/admin/#{subpage}", (data) =>
+      @admin(data)
+
+    $('#main').html(HAML['admin']({}))
+    $('#subpage').html(HAML['admin_' + subpage]())
+    ko.applyBindings(VM)
+
+
   loadAccountPage: (cx) =>
     display "account", {}
 
@@ -371,8 +449,12 @@ class CircleViewModel extends Base
     $.post('/logout', () =>
        window.location = "/")
 
-  projects_with_status: (filter) => @komp =>
-    p for p in @projects() when p.status() == filter
+  unsupportedRoute: (cx) =>
+    throw("Unsupported route: " + cx.params.splat)
+
+  filtered_projects: (filter) => @komp =>
+    p for p in @projects() when p.group() == filter
+
 
 
 
@@ -381,30 +463,24 @@ VM = new CircleViewModel()
 stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
-
 $(document).ready () ->
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
-    @get('/', (coux) => VM.loadDashboard())
+    @get('/', (cx) => VM.loadDashboard(cx))
     @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
     @get('/account', (cx) -> VM.loadAccountPage(cx))
     @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
     @get('/gh/:username/:project', (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
     @get('/logout', (cx) -> VM.logout(cx))
+    @get('/admin(.*)', (cx) -> VM.loadAdminPage(cx, cx.params.splat))
+    @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
   ).run stripTrailingSlash(window.location.pathname)
 
 
 
 
-
-
-
 # # Events
-# App.Views.EditProject = Backbone.View.extend
-
 #   events:
-#     "submit form.spec_form": "save_specs"
-#     "submit form.hook_form": "save_hooks"
 #     "click #reset": "reset_specs"
 #     "click #trigger": "trigger_build"
 #     "click #trigger_inferred": "trigger_inferred_build"
@@ -412,14 +488,6 @@ $(document).ready () ->
 #   save: (event, btn, redirect, keys) ->
 #     event.preventDefault()
 #     btn.button 'loading'
-
-#     # hard.
-#     keys.push "project"
-#     keys.push "_id"
-
-#     m = @model.clone()
-#     for k of m.attributes
-#       m.unset k, {silent: true} if k not in keys
 
 #     m.save {},
 #       success: ->
@@ -429,16 +497,6 @@ $(document).ready () ->
 #         btn.button 'reset'
 #         alert "Error in saving project. Please try again. If it persists, please contact Circle."
 
-
-#   save_specs: (e) ->
-#     @save e, $(e.target.save_specs), "#settings",
-#      ["setup", "dependencies", "compile", "test", "extra"]
-
-#   save_hooks: (e) ->
-#     @save e, $(e.target.save_hooks), "#hooks",
-#       ["hipchat_room", "hipchat_api_token"]
-
-
 #   reset_specs: (e) ->
 #     @model.set
 #       "setup": ""
@@ -446,9 +504,6 @@ $(document).ready () ->
 #       "test": ""
 #       "extra": ""
 #       "dependencies": ""
-
-#     @save_specs e
-#     @render()
 
 #   trigger_build: (e, payload = {}) ->
 #     e.preventDefault()
@@ -459,12 +514,3 @@ $(document).ready () ->
 
 #   trigger_inferred_build: (e) ->
 #     @trigger_build e, {inferred: true}
-
-
-#   render: ->
-#     html = JST["backbone/templates/projects/edit"] @model
-#     $(@el).html(html)
-
-#     page = @options.page or "settings"
-#     nested = JST["backbone/templates/projects/#{page}"] @model
-#     $(@el).find("#el-content").html(nested)

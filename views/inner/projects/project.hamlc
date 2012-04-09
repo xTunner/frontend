@@ -2,6 +2,8 @@
 
 .container-fluid
 
+  = HAML['flashes']({})
+
   = HAML['builds']({builds: "builds", mention_project: false, pagination: false})
 
 -# .running-jobs
