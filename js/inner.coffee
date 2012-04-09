@@ -273,6 +273,9 @@ class User extends Base
       environment: "production"
       basic_email_prefs: "all"
 
+    @showEnvironment = @komp =>
+      @admin() || (@environment() is "staging") || (@environment() is "development")
+
     @environmentColor = @komp =>
       result = {}
       result["env-" + @environment()] = true
