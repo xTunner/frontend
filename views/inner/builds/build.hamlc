@@ -82,4 +82,4 @@
               %b{data-bind: "text: '(TIMED OUT)'"}
         .detail{data-bind: "if: out, css: action_log_style, visible: !minimize()"}
           %pre.output{data-bind: "foreach: out"}
-            %span{data-bind: "css: output_style(), text: message"}
+            %span{data-bind: "css: output_style, text: message"}

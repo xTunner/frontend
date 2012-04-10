@@ -44,18 +44,17 @@ class LogOutput extends Base
   constructor: (json) ->
     super json, {}, ["type"], false
 
-  output_style: =>
-    out: @type == "out"
-    err: @type == "err"
+    @output_style =
+      out: @type == "out"
+      err: @type == "err"
 
 
 class ActionLog extends Base
   constructor: (json) ->
     json.out = (new LogOutput(j) for j in json.out) if json.out
-    super json, {timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis"]
+    super json, {timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out"]
 
-    @status = @komp =>
-      if @end_time == null
+    @status = if @end_time == null
         "running"
       else if @timedout
         "timedout"
@@ -65,27 +64,26 @@ class ActionLog extends Base
       else
         "failed"
 
-    @success = @komp => (@status() == "success")
+    @success = @status == "success"
 
     # Expand failing actions
-    @minimize(@success())
+    @minimize(@success)
 
 
     @action_header_style = @komp =>
-      css = @status()
+      css = @status
 
       result =
         minimize: @minimize()
-        contents: @out()
+        contents: @out
 
       result[css] = true
       result
 
-    @action_log_style = @komp =>
+    @action_log_style =
       minimize: @minimize()
 
-    @duration = @komp () =>
-      Circle.time.as_duration(@run_time_millis)
+    @duration = Circle.time.as_duration(@run_time_millis)
 
   toggle_minimize: =>
     @minimize(!@minimize())
