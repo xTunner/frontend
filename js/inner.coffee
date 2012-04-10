@@ -100,14 +100,14 @@ class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
-    super json, {}, ["build_num"]
+    super json, {}, ["build_num", "status"]
 
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
 
     @style = @komp =>
-      klass = switch @status()
+      klass = switch @status
         when "failed"
           "important"
         when "infrastructure_fail"
@@ -133,7 +133,7 @@ class Build extends HasUrl
       return result
 
 
-    @status_words = @komp => switch @status()
+    @status_words = @komp => switch @status
       when "infrastructure_fail"
         "circle bug"
       when "timedout"
@@ -141,7 +141,7 @@ class Build extends HasUrl
       when "no_tests"
         "no tests"
       else
-        @status()
+        @status
 
     @committer_mailto = @komp =>
       if @committer_email()
