@@ -443,6 +443,8 @@ class CircleViewModel extends Base
     $.get "/assets/js/tests/inner-tests.dieter", (code) =>
       eval code
 
+  raiseIntercomDialog: () =>
+    $("#IntercomDefaultWidget").click();
 
   logout: (cx) =>
     # TODO: add CSRF protection

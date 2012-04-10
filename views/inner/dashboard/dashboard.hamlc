@@ -20,9 +20,12 @@
         settings, and automatically add hooks and deploy keys to your repos.
         %br
 
-        If something goes wrong, we're here to help. Click "help" to get support. Looking forward to hearing from ye.
+        If something goes wrong, we're here to
+        <a data-bind="click: raiseIntercomDialog" href="#">help</a>.
+        We look forward to hearing from you.
+
         %br
-        \- Paul & Allen and the rest of the Circle team
+        \- Paul, Allen and the rest of the Circle team
 
 
     .row
