@@ -1,25 +1,34 @@
-class Base
+window.observableCount = 0
 
-  constructor: (json, defaults = {}) ->
+class Base
+  constructor: (json, defaults={}, nonObservables=[], observe=true) ->
     for k,v of defaults
-      @[k] = @observable(v)
+      if observe and nonObservables.indexOf(k) == -1
+        @[k] = @observable(v)
+      else
+        @[k] = v
 
     for k,v of json
-      @[k] = @observable(v)
+      if observe and nonObservables.indexOf(k) == -1
+        @[k] = @observable(v)
+      else
+        @[k] = v
 
   observable: (obj) ->
+    observableCount += 1
     if $.isArray obj
       ko.observableArray obj
     else
       ko.observable obj
 
   komp: (args...) =>
+    observableCount += 1
     ko.computed args...
 
 
 class HasUrl extends Base
-  constructor: (json) ->
-    super json
+  constructor: (json, defaults, nonObservables) ->
+    super json, defaults, nonObservables
 
     @project_name = @komp =>
       @vcs_url().substring(19)
@@ -43,11 +52,7 @@ class LogOutput extends Base
 class ActionLog extends Base
   constructor: (json) ->
     json.out = (new LogOutput(j) for j in json.out) if json.out
-    super json,
-      timedout: null
-      exit_code: 0
-      out: null
-      minimize: true
+    super json, {timedout: null, exit_code: 0, out: null, minimize: true}
 
     @status = @komp =>
       if @end_time() == null
@@ -95,19 +100,11 @@ class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
-    super json,
-      committer_email: null,
-      committer_name: null,
-      body: null,
-      subject: null
-      user: null
-      branch: null
-      start_time: null
-      why: null
+    super json, {}, ["build_num"]
 
 
     @url = @komp =>
-      "#{@project_path()}/#{@build_num()}"
+      "#{@project_path()}/#{@build_num}"
 
     @style = @komp =>
       klass = switch @status()
@@ -195,15 +192,15 @@ class Build extends HasUrl
 
   # TODO: CSRF protection
   retry_build: () =>
-    $.post("/api/v1/project/#{@project_path()}/#{@build_num()}/retry")
+    $.post("/api/v1/project/#{@project_path()}/#{@build_num}/retry")
 
   description: (include_project) =>
     return unless @build_num?
 
     if include_project
-      "#{@project_name()} ##{@build_num()}"
+      "#{@project_name()} ##{@build_num}"
     else
-      @build_num()
+      @build_num
 
 
 
@@ -211,7 +208,7 @@ class Build extends HasUrl
 class Project extends HasUrl
   constructor: (json) ->
     json.latest_build = (new Build(json.latest_build)) if json.latest_build
-    super(json)
+    super json
     @edit_link = @komp () =>
       "#{@project_path()}/edit"
 
@@ -260,7 +257,7 @@ class Project extends HasUrl
 # observables are calculated eagerly, and that breaks everything if the
 class ProjectSettings extends HasUrl
   constructor: (json) ->
-    super(json)
+    super json
 
     @build_url = @komp =>
       @vcs_url() + '/build'
@@ -316,19 +313,14 @@ class ProjectSettings extends HasUrl
 
 class User extends Base
   constructor: (json) ->
-    super json,
-      admin: false
-      login: ""
-      is_new: false
-      environment: "production"
-      basic_email_prefs: "all"
+    super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
 
     @showEnvironment = @komp =>
-      @admin() || (@environment() is "staging") || (@environment() is "development")
+      @admin || (@environment is "staging") || (@environment is "development")
 
     @environmentColor = @komp =>
       result = {}
-      result["env-" + @environment()] = true
+      result["env-" + @environment] = true
       result
 
   save_preferences: () =>
@@ -336,7 +328,7 @@ class User extends Base
       type: "PUT"
       url: "/api/v1/user/save-preferences"
       contentType: "application/json"
-      data: JSON.stringify {basic_email_prefs: @basic_email_prefs()}
+      data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
     )
     false # dont bubble the event up
 
@@ -350,6 +342,7 @@ display = (template, args) ->
 
 class CircleViewModel extends Base
   constructor: ->
+    observableCount = 0
     @current_user = ko.observable(new User {})
     $.getJSON '/api/v1/me', (data) =>
       @current_user(new User data)
@@ -362,6 +355,8 @@ class CircleViewModel extends Base
     @admin = ko.observable()
     @error_message = ko.observable(null)
     @first_login = true;
+    observableCount += 8
+
 
 
   clearErrorMessage: () =>
