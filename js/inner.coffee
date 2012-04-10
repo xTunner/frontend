@@ -123,6 +123,8 @@ class Build extends HasUrl
           "warning"
         when "fixed"
           "success"
+        when "deploy"
+          "success"
         when "success"
           "success"
         when "running"
