@@ -100,7 +100,7 @@ class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
-    super json, {}, ["build_num", "status"]
+    super json, {}, ["build_num", "status", "committer_name", "committer_email"]
 
 
     @url = @komp =>
@@ -144,8 +144,8 @@ class Build extends HasUrl
         @status
 
     @committer_mailto = @komp =>
-      if @committer_email()
-        "mailto:#{@committer_email()}"
+      if @committer_email
+        "mailto:#{@committer_email}"
 
     @why_in_words = @komp =>
       switch @why()
@@ -188,7 +188,7 @@ class Build extends HasUrl
       @vcs_revision().substring 0, 9
 
     @author = @komp =>
-      @committer_name() or @committer_email()
+      @committer_name or @committer_email
 
   # TODO: CSRF protection
   retry_build: () =>
@@ -370,18 +370,18 @@ class CircleViewModel extends Base
 
   loadDashboard: (cx) =>
     $.getJSON '/api/v1/projects', (data) =>
-      @projects.removeAll()
-      for d in data
-        @projects.push(new Project d)
+      start_time = Date.now()
+      @projects((new Project d for d in data))
+      window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
         setTimeout(() => @loadDashboard cx, 3000)
 
 
     $.getJSON '/api/v1/recent-builds', (data) =>
-      @recent_builds.removeAll()
-      for d in data
-        @recent_builds.push(new Build d)
+      start_time = Date.now()
+      @recent_builds((new Build d for d in data))
+      window.time_taken_recent_builds = Date.now() - start_time
 
     display "dashboard", {}
 
@@ -389,16 +389,18 @@ class CircleViewModel extends Base
   loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}", (data) =>
-      @builds.removeAll()
-      for d in data
-        @builds.push(new Build d)
+      start_time = Date.now()
+      @builds((new Build d for d in data))
+      window.time_taken_project = Date.now() - start_time
     display "project", {project: project_name}
 
 
   loadBuild: (cx, username, project, build_num) =>
     project_name = "#{username}/#{project}"
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
+      start_time = Date.now()
       @build(new Build data)
+      window.time_taken_build = Date.now() - start_time
     display "build", {project: project_name, build_num: build_num}
 
 
