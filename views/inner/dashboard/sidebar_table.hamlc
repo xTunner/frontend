@@ -12,7 +12,7 @@
           %a{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
             %img{src: "img/settings.png", height: 15, width: 15}
 
-      %td
+      %td.project-name
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
       %td
