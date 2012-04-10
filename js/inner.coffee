@@ -100,7 +100,7 @@ class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
-    super json, {}, ["build_num", "status", "committer_name", "committer_email"]
+    super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
 
 
     @url = @komp =>
@@ -148,44 +148,44 @@ class Build extends HasUrl
         "mailto:#{@committer_email}"
 
     @why_in_words = @komp =>
-      switch @why()
+      switch @why
         when "github"
           "GitHub push"
         when "trigger"
-          if @user()
-            "#{@user()} on CircleCI.com"
+          if @user
+            "#{@user} on CircleCI.com"
           else
             "CircleCI.com"
         else
-          if @job_name() == "deploy"
+          if @job_name == "deploy"
             "deploy"
           else
             "unknown"
 
     @pretty_start_time = @komp =>
-      if @start_time()
-        Circle.time.as_time_since(@start_time())
+      if @start_time
+        Circle.time.as_time_since(@start_time)
 
     @duration = @komp () =>
-      if @start_time()
-        Circle.time.as_duration(@build_time_millis())
+      if @start_time
+        Circle.time.as_duration(@build_time_millis)
 
     @branch_in_words = @komp =>
-      return "(unknown)" unless @branch()
+      return "(unknown)" unless @branch
 
-      b = @branch()
+      b = @branch
       b = b.replace(/^remotes\/origin\//, "")
       "(#{b})"
 
 
 
     @github_url = @komp =>
-      return unless @vcs_revision()
-      "#{@vcs_url()}/commit/#{@vcs_revision()}"
+      return unless @vcs_revision
+      "#{@vcs_url()}/commit/#{@vcs_revision}"
 
     @github_revision = @komp =>
-      return unless @vcs_revision()
-      @vcs_revision().substring 0, 9
+      return unless @vcs_revision
+      @vcs_revision.substring 0, 9
 
     @author = @komp =>
       @committer_name or @committer_email
