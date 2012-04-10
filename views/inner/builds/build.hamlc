@@ -38,18 +38,18 @@
 
         %dt
           Started at
-        %dd{data-bind: "text: pretty_start_time()"}
+        %dd{data-bind: "text: pretty_start_time"}
 
         %dt
           Length
-        %dd{data-bind: "text: duration()"}
+        %dd{data-bind: "text: duration"}
 
 
       %dl.offset1
 
         %dt
           Started by
-        %dd{data-bind: "text: why_in_words()"}
+        %dd{data-bind: "text: why_in_words"}
 
         %dt.offset6
           %button.btn.btn-mini.primary{data-bind: "click: retry_build"}
@@ -66,20 +66,20 @@
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 
-    %div{data-bind: "foreach: action_logs()"}
+    %div{data-bind: "foreach: action_logs"}
 
       -# wrapper allows the header and detail be siblings, for the JS
       .wrapper.build-output
-        .action_header{data-bind: "css: action_header_style(), click: toggle_minimize"}
+        .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
           %span.command
             \$
             %span{data-bind: "text: name"}
           %span.time
             = surround '(', ' )', ->
-              %span{data-bind: "text: duration()"}
+              %span{data-bind: "text: duration"}
 
             %span{data-bind: "if: timedout"}
               %b{data-bind: "text: '(TIMED OUT)'"}
-        .detail{data-bind: "if: out(), css: action_log_style(), visible: !minimize()"}
-          %pre.output{data-bind: "foreach: out()"}
+        .detail{data-bind: "if: out, css: action_log_style, visible: !minimize()"}
+          %pre.output{data-bind: "foreach: out"}
             %span{data-bind: "css: output_style(), text: message"}
