@@ -42,25 +42,25 @@ class HasUrl extends Base
 
 class LogOutput extends Base
   constructor: (json) ->
-    super json
+    super json, {}, ["type"], false
 
-    @output_style = @komp =>
-      out: @type() == "out"
-      err: @type() == "err"
+  output_style: =>
+    out: @type == "out"
+    err: @type == "err"
 
 
 class ActionLog extends Base
   constructor: (json) ->
     json.out = (new LogOutput(j) for j in json.out) if json.out
-    super json, {timedout: null, exit_code: 0, out: null, minimize: true}
+    super json, {timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis"]
 
     @status = @komp =>
-      if @end_time() == null
+      if @end_time == null
         "running"
-      else if @timedout()
+      else if @timedout
         "timedout"
 
-      else if (@exit_code() == null || @exit_code() == 0)
+      else if (@exit_code == null || @exit_code == 0)
         "success"
       else
         "failed"
@@ -85,7 +85,7 @@ class ActionLog extends Base
       minimize: @minimize()
 
     @duration = @komp () =>
-      Circle.time.as_duration(@run_time_millis())
+      Circle.time.as_duration(@run_time_millis)
 
   toggle_minimize: =>
     @minimize(!@minimize())
