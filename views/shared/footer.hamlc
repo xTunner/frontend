@@ -11,10 +11,16 @@
           %a{ href: '#', title: 'Find support for your issues' }
             Support
         %li
-          %a{ href: '/privacy', title: 'Learn more about our Privacy Policy' }
+          %a{ href: '/privacy#privacy', title: 'Read our Privacy Policy' }
             Privacy
         %li
-          %a{ class: 'ficon tw', href: 'http://twitter.com/circleci' }
+          %a{ href: '/privacy#security', title: 'Read our Security Policy' }
+            Security
+        %li
+          %a{ href: '/about#contact', title: 'Contact us in more ways' }
+            Contact
+        %li
+          %a{ class: 'ficon tw', href: 'https://twitter.com/circleci' }
             Twitter
         %li
           %a{ class: 'ficon em', href: 'mailto:sayhi@circleci.com' }

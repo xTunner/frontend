@@ -43,12 +43,14 @@
             - if user.photo?
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
-  .contact
+  .contact#contact
+    %a{name: 'contact'}
+
     %h1 Contact Us
     %p We'd love to hear from you.
     %hr
 
-    %form{ action: '', method='post' }
+    %form{ action: '', method: 'post' }
 
       // Name
       %label{ for: 'name'} Name:
@@ -72,7 +74,7 @@
           %a{ href: 'mailto:sayhi@circleci.com' } sayhi@circleci.com
 
         %li.twitter
-          %a{ href='http://twitter.com/circleci' } @circleci
+          %a{ href='https://twitter.com/circleci' } @circleci
 
         %li.telephone (415) 341 - 2432
 
