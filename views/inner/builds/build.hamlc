@@ -51,9 +51,14 @@
           Started by
         %dd{data-bind: "text: why_in_words"}
 
-        %dt.offset6
-          %button.btn.btn-mini.primary{data-bind: "click: retry_build"}
+        %dt
+          Actions:
+        %dd
+          %a.btn.small.primary{data-bind: "click: retry_build", title: "Rerun the same version of the tests"}
             Retry
+          %a.btn.small.error{data-bind: "click: report_build", title: "Report an error in how Circle ran this build"}
+            Report
+
 
     .row
       %dl.offset1

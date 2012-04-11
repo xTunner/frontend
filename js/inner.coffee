@@ -192,6 +192,10 @@ class Build extends HasUrl
   retry_build: () =>
     $.post("/api/v1/project/#{@project_name()}/#{@build_num}/retry")
 
+  report_build: () =>
+    VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + ':\n\n')
+
+
   description: (include_project) =>
     return unless @build_num?
 
@@ -440,8 +444,11 @@ class CircleViewModel extends Base
     $.get "/assets/js/tests/inner-tests.dieter", (code) =>
       eval code
 
-  raiseIntercomDialog: () =>
+  raiseIntercomDialog: (message=null) =>
     $("#IntercomDefaultWidget").click()
+    if message
+      $('#newMessageBody').text(message)
+      $('#newMessageBody').focus()
 
   logout: (cx) =>
     # TODO: add CSRF protection
