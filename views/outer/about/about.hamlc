@@ -72,7 +72,7 @@
           %a{ href: 'mailto:sayhi@circleci.com' } sayhi@circleci.com
 
         %li.twitter
-          %a{ href='http://twitter.com/circleci' } @circleci
+          %a{ href='https://twitter.com/circleci' } @circleci
 
         %li.telephone (415) 341 - 2432
 
