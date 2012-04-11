@@ -44,11 +44,13 @@
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
   .contact
+
     %h1 Contact Us
     %p We'd love to hear from you.
     %hr
+    %a{name: 'contact'}
 
-    %form{ action: '', method='post' }
+    %form{ action: '', method: 'post' }
 
       // Name
       %label{ for: 'name'} Name:
