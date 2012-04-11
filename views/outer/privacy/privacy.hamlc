@@ -3,13 +3,14 @@
 
 #content
   %section
-    %h1 Security policy
+    %h1#security Security policy
 
     %p If we lose your code, we're out of business
+
     %hr
 
     %p
-      %a{ href: "#changelog" } Last modified: March 26, 2012
+      %a{ href: "#security-changelog" } Last modified: March 26, 2012
 
 
     %h3 Code security
@@ -52,8 +53,7 @@
       Circle's founders and employees are well versed in full-stack security.
       Paul worked on
       = succeed "'s", ->
-        %a{href: "http://mozilla.org"}
-          Mozilla
+        %a{href: "http://mozilla.org"} Mozilla
       Javascript engine, where every bug is a potential security bug; and was a principal engineer at
       = succeed ',', ->
         %a{href: "http://mylookout.com"} Lookout
@@ -127,25 +127,28 @@
       We will act immediately to deal with the issue.
 
 
-      #changelog
+      #changelog#security-changelog
         %h3 Change log:
         %ul
           %li
-            %b March 26, 2012:
-            Initial version
             %b April 11, 2012:
             We now only enable individual projects when selected by users.
+          %li
+            %b March 26, 2012:
+            Initial version.
 
 
 
   %section
-    %h1 Privacy policy
+    %h1#privacy Privacy policy
+
     %p
       We will never sell your private information
+
     %hr
 
     %p
-      %a{ href: "#changelog" } Last modified: March 26, 2012
+      %a{ href: "#privacy-changelog" } Last modified: March 26, 2012
 
     %h2 Private data
     %p
@@ -183,13 +186,14 @@
           Circle uses
           %a{href: "http://www.google.com/analytics/"} Google Analytics
           to provide us with information about how people use our site.
-          %a{href: "http://www.google.com/intl/en/analytics/privacyoverview.html"} Google Analytics' privacy policy
+          This means we use the Google Analytics tracking cookie throughout our site.
+          %a{href: "http://www.google.co.uk/intl/en/analytics/privacyoverview.html"} Google Analytics' privacy policy
           discusses how they use this information.
 
 
-      #changelog
+      #changelog#privacy-changelog
         %h3 Change log:
         %ul
           %li
             %b March 26, 2012:
-            Initial version
+            Initial version.

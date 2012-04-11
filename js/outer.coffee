@@ -9,10 +9,15 @@
       render: ->
         document.title = "Circle - " + @title
         $('html, body').animate({ scrollTop: 0 }, 0);
-        $("body").attr("id",@name).html HAML['header'](renderContext)
+        $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
         $("body").append HAML[@name](renderContext)
         $("body").append HAML['footer'](renderContext)
         @polyfill() if @polyfill?
+
+        # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
+        hash = window.location.hash
+        if hash != '' and hash != '#'
+          window.location.hash = hash
 
       load: (show) ->
         self = this
