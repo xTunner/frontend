@@ -42,8 +42,7 @@
 
     %h3 Our security model
     %p
-      When we run your tests, we run them in an LXC sandbox (this is the same technology both Heroku and DotCloud use, so we are in good company).
-      As such, you are unable access another customer's code, and they are unable to access yours.
+      When we run your tests, we run them in a sandbox, meaning you are unable access another customer's code, and they are unable to access yours.
       We never ever run any customer code in any context which is not sandboxed, or which allows access to other customer code.
 
     %p
@@ -83,14 +82,14 @@
       and by removing Circle's <i>Deploy Keys</i> and <i>Service Hooks</i> from your repositories' <i>Admin</i> pages.
 
     %p
-      Note that GitHub's permissions model is "all or nothing" -- Circle gets access to all of a user's repositories or none of them.
+      While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" -- Circle gets permission to access all of a user's repositories or none of them.
       We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term.
       Please
       %a{href: "https://github.com/contact"} contact GitHub
       if this is important to you.
 
-    %p
-      We are currently adding the ability to disable tests on individual projects.
+
+
 
 
     %h3 Canceling your account
@@ -134,6 +133,8 @@
           %li
             %b March 26, 2012:
             Initial version
+            %b April 11, 2012:
+            We now only enable individual projects when selected by users.
 
 
 
