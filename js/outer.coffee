@@ -32,8 +32,8 @@
 
     # Navigation
     @get "/", (context) -> home.display()
-    @get "/about", (context) -> about.display()
-    @get "/privacy", (context) -> privacy.display()
+    @get "/about.*", (context) -> about.display()
+    @get "/privacy.*", (context) -> privacy.display()
 
     # Polyfill Detection
     home.polyfill = ->
