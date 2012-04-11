@@ -235,9 +235,9 @@ class Project extends HasUrl
   enable: =>
     onerror = (xhr, status, errorThrown) =>
       if errorThrown
-        VM.setErrorMessage "HTTP error (#{xhr.status}): #{errorThrown}. Try again? Or contact us."
+        VM.setErrorMessage "HTTP error (#{xhr.status}): #{errorThrown}."
       else
-        VM.setErrorMessage "An unknown error occurred: (#{xhr.status}). Try again? Or contact us."
+        VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
 
     onsuccess = (data) =>
       @status(data.status)
