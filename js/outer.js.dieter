@@ -3,5 +3,6 @@
   "./vendor/modernizr-2.5.3.js"
   "../views/shared/header.hamlc"
   "../views/shared/footer.hamlc"
+  "../views/outer/home/home.hamlc"
   "./outer.coffee"
 ]
