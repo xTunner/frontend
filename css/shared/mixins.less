@@ -103,11 +103,11 @@
 
 .font-face (@family, @path, @file, @weight: 400, @style: normal) {
     font-family: '@{family}';
-    src: url('_shared/fonts/@{path}/@{file}.eot');
-    src: url('_shared/fonts/@{path}/@{file}.eot?#iefix') format('embedded-opentype'),
-         url('_shared/fonts/@{path}/@{file}.woff') format('woff'),
-         url('_shared/fonts/@{path}/@{file}.ttf') format('truetype'),
-         url('_shared/fonts/@{path}/@{file}.svg#@{family}') format('svg');
+    src: url('shared/fonts/@{path}/@{file}.eot');
+    src: url('shared/fonts/@{path}/@{file}.eot?#iefix') format('embedded-opentype'),
+         url('shared/fonts/@{path}/@{file}.woff') format('woff'),
+         url('shared/fonts/@{path}/@{file}.ttf') format('truetype'),
+         url('shared/fonts/@{path}/@{file}.svg#@{family}') format('svg');
     font-weight: @weight;
     font-style: @style;
 }
