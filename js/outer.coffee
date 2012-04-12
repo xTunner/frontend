@@ -43,6 +43,9 @@ circle = $.sammy("body", ->
   # Polyfill Detection
   home.polyfill = ->
     if !Modernizr.input.placeholder then require [ "placeholder" ]
+
+  about.polyfill = ->
+    if !Modernizr.input.placeholder then require [ "placeholder" ]
   )
 
 # Run the application
