@@ -6,23 +6,33 @@ circle = $.sammy("body", ->
 
     render: ->
       document.title = "Circle - " + @title
-      $('html, body').animate({ scrollTop: 0 }, 0);
+
+      # Render content
       $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
       $("body").append HAML[@name](renderContext)
       $("body").append HAML['footer'](renderContext)
-
-      # Apply polyfill(s) if they exists for the page
-      @polyfill() if @polyfill?
 
       # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
       hash = window.location.hash
       if hash != '' and hash != '#'
         window.location.hash = hash
+        @scroll(hash)
+      else
+        @scroll()
 
-    load: (show) ->
+      # Apply polyfill(s) if they exists
+      @polyfill() if @polyfill?
+
+    load: ->
       self = this
       require [ "views/outer/#{@name}/#{@name}" ], () ->
         $ -> self.render()
+
+    scroll: (hash) ->
+      if hash?
+        $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
+      else
+        $('html, body').animate({ scrollTop: 0 }, 0);
 
     display: ->
       if HAML? and HAML[@name]? @render() else @load()
