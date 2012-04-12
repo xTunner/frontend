@@ -369,22 +369,26 @@ class CircleViewModel extends Base
     $('html, body').animate({ scrollTop: 0 }, 0);
 
 
-
-  loadDashboard: (cx) =>
+  loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
       start_time = Date.now()
       @projects((new Project d for d in data))
       window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
-        setTimeout(() => @loadDashboard cx, 3000)
+        setTimeout(() => @loadProjects(), 3000)
 
 
+  loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
       start_time = Date.now()
       @recent_builds((new Build d for d in data))
       window.time_taken_recent_builds = Date.now() - start_time
 
+
+  loadDashboard: (cx) =>
+    @loadProjects()
+    @loadRecentBuilds()
     display "dashboard", {}
 
 
