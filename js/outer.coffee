@@ -13,12 +13,7 @@ circle = $.sammy("body", ->
       $("body").append HAML['footer'](renderContext)
 
       # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
-      hash = window.location.hash
-      if hash != '' and hash != '#'
-        window.location.hash = hash
-        @scroll(hash)
-      else
-        @scroll()
+      @scroll(window.location.hash)
 
       # Apply polyfill(s) if they exists
       @polyfill() if @polyfill?
@@ -29,10 +24,8 @@ circle = $.sammy("body", ->
         $ -> self.render()
 
     scroll: (hash) ->
-      if hash?
-        $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
-      else
-        $('html, body').animate({ scrollTop: 0 }, 0);
+      if hash == '' or hash == '#' then hash = "body"
+      $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
 
     display: ->
       if HAML? and HAML[@name]? @render() else @load()
