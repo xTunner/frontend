@@ -451,10 +451,14 @@ class CircleViewModel extends Base
       eval code
 
   raiseIntercomDialog: (message=null) =>
-    $("#IntercomDefaultWidget").click()
+    jq = intercomJQuery
+    jq("#IntercomDefaultWidget").click()
+    unless jq('#IntercomNewMessageContainer').is(':visible')
+      jq('.new_message').click()
+    jq('#newMessageBody').focus()
     if message
-      $('#newMessageBody').text(message)
-      $('#newMessageBody').focus()
+      jq('#newMessageBody').text(message)
+
 
   logout: (cx) =>
     # TODO: add CSRF protection
