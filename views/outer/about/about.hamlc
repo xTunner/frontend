@@ -43,10 +43,10 @@
             - if user.photo?
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
-  %section.contact#contact
+  %section.contact
     %a{name: 'contact'}
 
-    %h1 Contact Us
+    %h1#contact Contact Us
     %p We'd love to hear from you.
     %hr
 
