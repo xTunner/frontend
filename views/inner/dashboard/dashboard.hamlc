@@ -21,7 +21,8 @@
         %br
 
         If something goes wrong, we're here to
-        <a data-bind="click: raiseIntercomDialog" href="#">help</a>.
+        = succeed '.', ->
+          %a{data-bind: "click: raiseIntercomDialog", href: "#"} help
         We look forward to hearing from you.
 
         %br
