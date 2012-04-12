@@ -5,12 +5,16 @@
   background: url("@{imgPath}/outer/bg_pattern.png");
 
   & > section {
-    background: url("@{imgPath}/outer/about/sf_watermark.png") no-repeat top right;
+    padding-top: 100px;
     .container;
   }
 
+  & > section:first-child {
+    background: url("@{imgPath}/outer/about/sf_watermark.png") no-repeat top right;
+  }
+
   h1 {
-    margin: 100px auto 0;
+    margin: 0 auto;
     color: #444;
     font-size: 48px;
     line-height: 62px;
@@ -35,7 +39,8 @@
   }
 
   .story {
-    margin: 80px auto 0;
+    margin-top: -20px;
+    margin-bottom: 100px;
     padding: 10px 0;
     .push(2);
     .pull(2);

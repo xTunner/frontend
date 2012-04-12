@@ -1,7 +1,6 @@
 [
   "./vendor/sammy-0.7.1.js"
   "./vendor/modernizr-2.5.3.js"
-  "./vendor/jquery.placeholder.js"
   "../views/shared/header.hamlc"
   "../views/shared/footer.hamlc"
   "../views/outer/home/home.hamlc"

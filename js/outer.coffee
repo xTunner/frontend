@@ -1,52 +1,57 @@
-# Navigation
-(($) ->
-  circle = $.sammy("body", ->
+circle = $.sammy("body", ->
 
-    # Page
-    class Page
-      constructor: (@name, @title) ->
+  # Page
+  class Page
+    constructor: (@name, @title) ->
 
-      render: ->
-        document.title = "Circle - " + @title
-        $('html, body').animate({ scrollTop: 0 }, 0);
-        $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
-        $("body").append HAML[@name](renderContext)
-        $("body").append HAML['footer'](renderContext)
-        @polyfill() if @polyfill?
+    render: ->
+      document.title = "Circle - " + @title
 
-        # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
-        hash = window.location.hash
-        if hash != '' and hash != '#'
-          window.location.hash = hash
+      # Render content
+      $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
+      $("body").append HAML[@name](renderContext)
+      $("body").append HAML['footer'](renderContext)
 
-      load: (show) ->
-        self = this
-        $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", ->
-          self.render() if show?
+      # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
+      @scroll(window.location.hash)
 
-      display: ->
-        if HAML? and HAML[@name]?
-          @render()
-        else
-          @load(true)
+      # Apply polyfill(s) if they exists
+      @polyfill() if @polyfill?
 
-    # Pages
-    home = new Page("home", "Continuous Integration made easy")
-    about = new Page("about", "About Us")
-    privacy = new Page("privacy", "Privacy Policy")
+    load: ->
+      self = this
+      require [ "views/outer/#{@name}/#{@name}" ], () ->
+        $ -> self.render()
 
-    # Navigation
-    @get "/", (context) -> home.display()
-    @get "/about.*", (context) -> about.display()
-    @get "/privacy.*", (context) -> privacy.display()
+    scroll: (hash) ->
+      if hash == '' or hash == '#' then hash = "body"
+      $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
 
-    # Polyfill Detection
-    home.polyfill = ->
-      if !Modernizr.input.placeholder
-        $("input, textarea").placeholder()
-    )
+    display: ->
+      if HAML? and HAML[@name]? @render() else @load()
 
-  # Run the application
-  $ -> circle.run window.location.pathname
+  # Pages
+  home = new Page("home", "Continuous Integration made easy")
+  about = new Page("about", "About Us")
+  privacy = new Page("privacy", "Privacy Policy")
 
-) jQuery
+  # Navigation
+  @get "/", (context) -> home.display()
+  @get "/about.*", (context) -> about.display()
+  @get "/privacy.*", (context) -> privacy.display()
+
+  # Per-Page Polyfills
+  home.polyfill = ->
+    if !Modernizr.input.placeholder then require [ "placeholder" ]
+
+  about.polyfill = ->
+    if !Modernizr.input.placeholder then require [ "placeholder" ]
+  )
+
+# Global polyfills
+if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
+  require [ "js/vendor/selectivizr-1.0.2.js" ]
+
+# Run the application
+$ -> circle.run window.location.pathname
+
