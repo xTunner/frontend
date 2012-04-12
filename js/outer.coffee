@@ -43,4 +43,4 @@ circle = $.sammy("body", ->
   )
 
 # Run the application
-circle.run window.location.pathname
+$ -> circle.run window.location.pathname
