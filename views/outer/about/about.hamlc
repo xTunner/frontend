@@ -2,7 +2,7 @@
   %h1 About Us
 
 #content
-  %section
+  %section.about
 
     .story
       %p In 2011, Paul & Allen got frustrated with the state of testing and decided to solve the problem.
