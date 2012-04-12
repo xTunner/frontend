@@ -239,7 +239,7 @@ class Project extends HasUrl
   enable: =>
     onerror = (xhr, status, errorThrown) =>
       if errorThrown
-        VM.setErrorMessage "HTTP error (#{xhr.status}): #{errorThrown}."
+        VM.setErrorMessage "Error: #{xhr.responseText}"
       else
         VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
 
@@ -376,7 +376,9 @@ class CircleViewModel extends Base
       window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
-        setTimeout(() => @loadProjects(), 3000)
+        setTimeout(
+          () => @loadProjects(),
+          3000)
 
 
   loadRecentBuilds: () =>
