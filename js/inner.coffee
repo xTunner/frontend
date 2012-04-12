@@ -52,7 +52,7 @@ class LogOutput extends Base
 class ActionLog extends Base
   constructor: (json) ->
     json.out = (new LogOutput(j) for j in json.out) if json.out
-    super json, {timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out"]
+    super json, {bash_command: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time"]
 
     @status = if @end_time == null
         "running"
@@ -82,6 +82,8 @@ class ActionLog extends Base
 
     @action_log_style =
       minimize: @minimize()
+
+    @start_to_end_string = "#{@start_time} to #{@end_time}"
 
     @duration = Circle.time.as_duration(@run_time_millis)
 
