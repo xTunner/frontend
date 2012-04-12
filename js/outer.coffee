@@ -40,7 +40,7 @@ circle = $.sammy("body", ->
   @get "/about.*", (context) -> about.display()
   @get "/privacy.*", (context) -> privacy.display()
 
-  # Polyfill Detection
+  # Per-Page Polyfills
   home.polyfill = ->
     if !Modernizr.input.placeholder then require [ "placeholder" ]
 
@@ -48,5 +48,10 @@ circle = $.sammy("body", ->
     if !Modernizr.input.placeholder then require [ "placeholder" ]
   )
 
+# Global polyfills
+if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
+  require [ "js/vendor/selectivizr-1.0.2.js" ]
+
 # Run the application
 $ -> circle.run window.location.pathname
+
