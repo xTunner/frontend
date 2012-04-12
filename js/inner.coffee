@@ -1,5 +1,11 @@
 window.observableCount = 0
 
+$(document).ajaxError (e, xhr, status, errorThrown) ->
+  if errorThrown
+    VM.setErrorMessage "Error: #{xhr.responseText}"
+  else
+    VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
+
 class Base
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
     for k,v of defaults
@@ -239,18 +245,12 @@ class Project extends HasUrl
     @status() is 'followed'
 
   enable: =>
-    onerror = (xhr, status, errorThrown) =>
-      if errorThrown
-        VM.setErrorMessage "Error: #{xhr.responseText}"
-      else
-        VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
-
-    onsuccess = (data) =>
-      @status(data.status)
-
-    $.post("/api/v1/project/#{@project_name()}/enable")
-      .error(onerror)
-      .success(onsuccess)
+    $.post "/api/v1/project/#{@project_name()}/enable",
+      (data) =>
+        # Sometimes this returns {status: "available"} in development mode,
+        # because the keys are already installed in production, but aren't in
+        # the dev database. Solution: do nothing.
+        @status(data.status)
 
 
 
