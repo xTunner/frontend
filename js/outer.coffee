@@ -1,5 +1,5 @@
-# Navigation
-(($) ->
+# Ordered dependencies for Sammy
+define [ "outer" ], () ->
   circle = $.sammy("body", ->
 
     # Page
@@ -12,6 +12,8 @@
         $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
         $("body").append HAML[@name](renderContext)
         $("body").append HAML['footer'](renderContext)
+
+        # Apply polyfill(s) if they exists for the page
         @polyfill() if @polyfill?
 
         # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
@@ -21,14 +23,11 @@
 
       load: (show) ->
         self = this
-        $.getScript "assets/views/outer/#{@name}/#{@name}.hamlc", ->
-          self.render() if show?
+        require [ "views/outer/#{@name}/#{@name}" ], () ->
+          $ -> self.render()
 
       display: ->
-        if HAML? and HAML[@name]?
-          @render()
-        else
-          @load(true)
+        if HAML? and HAML[@name]? @render() else @load()
 
     # Pages
     home = new Page("home", "Continuous Integration made easy")
@@ -42,11 +41,8 @@
 
     # Polyfill Detection
     home.polyfill = ->
-      if !Modernizr.input.placeholder
-        $("input, textarea").placeholder()
+      if !Modernizr.input.placeholder then require [ "placeholder" ]
     )
 
   # Run the application
-  $ -> circle.run window.location.pathname
-
-) jQuery
+  circle.run window.location.pathname
