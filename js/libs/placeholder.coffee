@@ -1,2 +1,2 @@
-define [ "outer", "js/vendor/jquery.placeholder" ], () ->
+define [ "js/vendor/jquery.placeholder" ], () ->
   $("input, textarea").placeholder()
