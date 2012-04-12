@@ -19,8 +19,8 @@
         -#%li
           %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
             Blog
-        -#%li
-          %a{ href: '#', title: 'Get in contact with Circle' }
+        %li
+          %a{ href: '/about#contact', title: 'Get in contact with Circle' }
             Contact
         %li
           - if @showJoinLink
