@@ -8,8 +8,5 @@ require.config paths:
   # Polyfills
   placeholder: "js/libs/placeholder"
 
-  # Modules
-  outerApp: "js/outer"
-
 # Main Application
-require [ "outerApp" ], (App) ->
+require [ "outer" ], (App) ->
