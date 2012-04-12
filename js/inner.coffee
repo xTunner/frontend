@@ -52,7 +52,7 @@ class LogOutput extends Base
 class ActionLog extends Base
   constructor: (json) ->
     json.out = (new LogOutput(j) for j in json.out) if json.out
-    super json, {bash_command: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time"]
+    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time"]
 
     @status = if @end_time == null
         "running"
