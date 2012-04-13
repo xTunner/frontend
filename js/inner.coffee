@@ -222,6 +222,17 @@ class Project extends HasUrl
     @edit_link = @komp () =>
       "#{@project_path()}/edit"
 
+  @sidebarSort: (l, r) ->
+    if l.latest_build()
+      if r.latest_build()
+        if l.latest_build().build_num < r.latest_build().build_num then 1 else -1
+      else
+        -1
+    else
+      if l.vcs_url().toLowerCase() < r.vcs_url().toLowerCase() then 1 else -1
+
+
+
   checkbox_title: =>
     "Add CI to #{@project_name()}"
 
@@ -374,7 +385,9 @@ class CircleViewModel extends Base
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
       start_time = Date.now()
-      @projects((new Project d for d in data))
+      data = (new Project d for d in data)
+      data.sort Project.sidebarSort
+      @projects(data)
       window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
@@ -475,7 +488,7 @@ class CircleViewModel extends Base
 
 
 
-VM = new CircleViewModel()
+window.VM = new CircleViewModel()
 stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
