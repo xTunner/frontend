@@ -7,9 +7,9 @@
         %li
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
-        -#%li
-          %a{ href: '#', title: 'Find support for your issues' }
-            Support
+        %li
+          %a{ href: 'https://www.hipchat.com/gjwkHcrD5', target: "_blank", title: 'Go to our pre-sales support chatroom' }
+            Live support
         %li
           %a{ href: '/privacy#privacy', title: 'Read our Privacy Policy' }
             Privacy
@@ -25,9 +25,3 @@
         %li
           %a{ class: 'ficon em', href: 'mailto:sayhi@circleci.com' }
             Email
-        -#%li
-          %a{ class: 'ficon fb', href: '#' }
-            Facebook
-        -#%li
-          %a{ class: 'ficon gp', href: '#' }
-            Google Plus

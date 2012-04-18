@@ -18,12 +18,23 @@
 
             %ul.dropdown-menu
               %li
-                %a#logout-link{href: '/account'}
-                  Account settings
+                %a{href: '/account'}
+                  Settings
 
               %li
                 %a#logout-link{href: '/logout'}
                   Logout
+
+
+              %li.divider
+              %li
+                %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
+                  Support
+
+              %li
+                %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+                  Live chat
+
 
               %div{data-bind: "if: admin"}
                 %li.divider
