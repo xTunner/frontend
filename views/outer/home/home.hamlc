@@ -4,7 +4,11 @@
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
     - if @showJoinLink
-      %a{ href: @githubAuthURL, title: 'Authorize us on Github' class: 'authGithub' } Join using Github
+      %a.authGithub{ href: @githubAuthURL, title: 'Authorize us on Github' }
+        Join using Github
+
+      %a.footnote{ href: '/privacy' title: 'Privacy and Security' }
+        Learn about how we keep your code safe
 
     - else
       %p Sign up for the beta. We'll email you when we're ready.
