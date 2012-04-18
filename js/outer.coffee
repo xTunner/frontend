@@ -20,8 +20,9 @@ circle = $.sammy("body", ->
 
     load: ->
       self = this
-      require [ "views/outer/#{@name}/#{@name}" ], () ->
+      $.getScript("assets/views/outer/#{@name}/#{@name}.hamlc", ->
         $ -> self.render()
+      )
 
     scroll: (hash) ->
       if hash == '' or hash == '#' then hash = "body"
@@ -42,11 +43,17 @@ circle = $.sammy("body", ->
 
   # Per-Page Polyfills
   home.polyfill = ->
-    if !Modernizr.input.placeholder then require [ "placeholder" ]
+    if !Modernizr.input.placeholder
+      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
+        $("input, textarea").placeholder()
+      )
 
   about.polyfill = ->
-    if !Modernizr.input.placeholder then require [ "placeholder" ]
-  )
+    if !Modernizr.input.placeholder
+      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
+        $("input, textarea").placeholder()
+      )
+)
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
