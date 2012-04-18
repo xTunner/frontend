@@ -57,7 +57,7 @@ circle = $.sammy("body", ->
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
-  require [ "js/vendor/selectivizr-1.0.2.js" ]
+  $.getScript("assets/js/vendor/selectivizr-1.0.2.js")
 
 # Run the application
 $ -> circle.run window.location.pathname
