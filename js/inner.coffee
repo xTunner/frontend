@@ -443,10 +443,11 @@ class CircleViewModel extends Base
 
   loadAdminPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
-    subpage = subpage || "projects"
+    subpage = subpage
 
-    $.getJSON "/api/v1/admin/#{subpage}", (data) =>
-      @admin(data)
+    if subpage
+      $.getJSON "/api/v1/admin/#{subpage}", (data) =>
+        @admin(data)
 
     $('#main').html(HAML['admin']({}))
     $('#subpage').html(HAML['admin_' + subpage]())
