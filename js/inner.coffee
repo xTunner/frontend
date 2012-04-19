@@ -503,6 +503,17 @@ $(document).ready () ->
     @get('/logout', (cx) -> VM.logout(cx))
     @get('/admin(.*)', (cx) -> VM.loadAdminPage(cx, cx.params.splat))
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
+
+    # Google analytics
+    @bind 'event-context-after', ->
+      if window._gaq? # we dont use ga in test mode
+        window._gaq.push @path
+
+    # Airbrake
+    @bind 'error', (e, data) ->
+      if data? and data.error? and window.Hoptoad?
+        window.Hoptoad.notify data.error
+
   ).run stripTrailingSlash(window.location.pathname)
 
 
