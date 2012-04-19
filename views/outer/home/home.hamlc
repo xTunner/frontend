@@ -21,10 +21,7 @@
     %p Making testing this easy took work
 
   -# Iterate over features and print to template
-  - for key of @features
-
-    - feature = @features[key]
-
+  - for feature in @features
     %section
       %figure.tour{ class: "#{feature.class}" }
         %figcaption
