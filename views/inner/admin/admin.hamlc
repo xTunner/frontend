@@ -5,11 +5,15 @@
     %ul
       %li
         %a{href: "/admin/projects"}
-          Projects
+          Enabled Projects
 
       %li
         %a{href: "/admin/users"}
           Users
+
+      %li
+        %a{href: "/admin/recent-builds"}
+          Recent builds
 
   .content
     #subpage

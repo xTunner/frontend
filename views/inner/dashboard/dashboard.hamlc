@@ -11,24 +11,6 @@
 
     = HAML['flashes']({})
 
-    .row{data-bind: "if: current_user().is_new"}
-      .alert-message.block-message.success.span8.offset2
-        %strong Welcome to Circle! Enable projects on the left, then push to build.
-        %br
-
-        Everything should just work - we infer your build
-        settings, and automatically add hooks and deploy keys to your repos.
-        %br
-
-        If something goes wrong, we're here to
-        = succeed '.', ->
-          %a{data-bind: "click: raiseIntercomDialog", href: "#"} help
-        We look forward to hearing from you.
-
-        %br
-        \- Paul, Allen and the rest of the Circle team
-
-
     .row
       %h2
         Latest builds for your projects

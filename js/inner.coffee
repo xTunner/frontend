@@ -441,16 +441,32 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadAdminPage: (cx, subpage) =>
-    subpage = subpage[0].replace('/', '')
-    subpage = subpage || "projects"
-
-    $.getJSON "/api/v1/admin/#{subpage}", (data) =>
-      @admin(data)
-
+  renderAdminPage: (subpage) =>
     $('#main').html(HAML['admin']({}))
     $('#subpage').html(HAML['admin_' + subpage]())
     ko.applyBindings(VM)
+
+
+  loadAdminPage: (cx, subpage) =>
+    subpage = subpage.replace('/', '')
+
+    if subpage
+      $.getJSON "/api/v1/admin/#{subpage}", (data) =>
+        @admin(data)
+    @renderAdminPage subpage
+
+
+  loadAdminProjects: (cx) =>
+    $.getJSON '/api/v1/admin/projects', (data) =>
+      data = (new Project d for d in data)
+      @projects(data)
+    @renderAdminPage "projects"
+
+
+  loadAdminRecentBuilds: () =>
+    $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @recent_builds((new Build d for d in data))
+    @renderAdminPage "recent_builds"
 
 
   loadAccountPage: (cx) =>
@@ -471,7 +487,6 @@ class CircleViewModel extends Base
     jq('#newMessageBody').focus()
     if message
       jq('#newMessageBody').text(message)
-
 
   logout: (cx) =>
     # TODO: add CSRF protection
@@ -495,14 +510,36 @@ stripTrailingSlash = (str) =>
 $(document).ready () ->
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
+
     @get('/', (cx) => VM.loadDashboard(cx))
-    @get('/gh/:username/:project/edit(.*)', (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
-    @get('/account', (cx) -> VM.loadAccountPage(cx))
-    @get('/gh/:username/:project/:build_num', (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
-    @get('/gh/:username/:project', (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
+    @get('/gh/:username/:project/edit(.*)',
+      (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
+    @get('/account',
+      (cx) -> VM.loadAccountPage(cx))
+    @get('/gh/:username/:project/:build_num',
+      (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
+    @get('/gh/:username/:project',
+      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
+
     @get('/logout', (cx) -> VM.logout(cx))
-    @get('/admin(.*)', (cx) -> VM.loadAdminPage(cx, cx.params.splat))
+
+    @get('/admin', (cx) -> VM.loadAdminPage cx)
+    @get('/admin/users', (cx) -> VM.loadAdminPage cx, "users")
+    @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
+    @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
+
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
+
+    # Google analytics
+    @bind 'event-context-after', ->
+      if window._gaq? # we dont use ga in test mode
+        window._gaq.push @path
+
+    # Airbrake
+    @bind 'error', (e, data) ->
+      if data? and data.error? and window.Hoptoad?
+        window.Hoptoad.notify data.error
+
   ).run stripTrailingSlash(window.location.pathname)
 
 

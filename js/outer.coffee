@@ -20,8 +20,9 @@ circle = $.sammy("body", ->
 
     load: ->
       self = this
-      require [ "views/outer/#{@name}/#{@name}" ], () ->
+      $.getScript("assets/views/outer/#{@name}/#{@name}.hamlc", ->
         $ -> self.render()
+      )
 
     scroll: (hash) ->
       if hash == '' or hash == '#' then hash = "body"
@@ -35,23 +36,34 @@ circle = $.sammy("body", ->
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy Policy")
 
+  # Per-Page Polyfills
+  polyfill = ->
+    if !Modernizr.input.placeholder
+      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
+        $("input, textarea").placeholder()
+      )
+  about.polyfill = polyfill
+  home.polyfill = polyfill
+
+  # Google analytics
+  @bind 'event-context-after', ->
+    if window._gaq? # we dont use ga in test mode
+      window._gaq.push @path
+
+  # Airbrake
+  @bind 'error', (e, data) ->
+    if data? and data.error? and window.Hoptoad?
+      window.Hoptoad.notify data.error
+
   # Navigation
   @get "/", (context) -> home.display()
   @get "/about.*", (context) -> about.display()
   @get "/privacy.*", (context) -> privacy.display()
-
-  # Per-Page Polyfills
-  home.polyfill = ->
-    if !Modernizr.input.placeholder then require [ "placeholder" ]
-
-  about.polyfill = ->
-    if !Modernizr.input.placeholder then require [ "placeholder" ]
-  )
+)
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
-  require [ "js/vendor/selectivizr-1.0.2.js" ]
+  $.getScript("assets/js/vendor/selectivizr-1.0.2.js")
 
 # Run the application
 $ -> circle.run window.location.pathname
-
