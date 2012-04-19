@@ -50,6 +50,10 @@ circle = $.sammy("body", ->
     if window._gaq? # we dont use ga in test mode
       window._gaq.push @path
 
+  # Airbrake
+  @bind 'error', (e, data) ->
+    if data? and data.error? and window.Hoptoad?
+      window.Hoptoad.notify data.error
 
   # Navigation
   @get "/", (context) -> home.display()
@@ -63,4 +67,3 @@ if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
 
 # Run the application
 $ -> circle.run window.location.pathname
-
