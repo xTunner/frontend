@@ -1,4 +1,2 @@
-%table
-  %tbody{data-bind: "foreach: admin"}
-    %tr
-      %td{data-bind: "text: ko.toJSON($data)"}
+.sidebar
+  = HAML['sidebar_table']({ title: "Followed", filter: "followed" })

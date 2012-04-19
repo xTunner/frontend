@@ -5,7 +5,7 @@
     %ul
       %li
         %a{href: "/admin/projects"}
-          All Projects
+          Enabled Projects
 
       %li
         %a{href: "/admin/users"}
