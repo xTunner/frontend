@@ -448,9 +448,8 @@ class CircleViewModel extends Base
 
 
   loadAdminPage: (cx, subpage) =>
-    subpage = subpage.replace('/', '')
-
     if subpage
+      subpage = subpage.replace('/', '')
       $.getJSON "/api/v1/admin/#{subpage}", (data) =>
         @admin(data)
     @renderAdminPage subpage
