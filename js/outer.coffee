@@ -36,23 +36,19 @@ circle = $.sammy("body", ->
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy Policy")
 
+  # Per-Page Polyfills
+  polyfill = ->
+    if !Modernizr.input.placeholder
+      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
+        $("input, textarea").placeholder()
+      )
+  about.polyfill = polyfill
+  home.polyfill = polyfill
+
   # Navigation
   @get "/", (context) -> home.display()
   @get "/about.*", (context) -> about.display()
   @get "/privacy.*", (context) -> privacy.display()
-
-  # Per-Page Polyfills
-  home.polyfill = ->
-    if !Modernizr.input.placeholder
-      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
-        $("input, textarea").placeholder()
-      )
-
-  about.polyfill = ->
-    if !Modernizr.input.placeholder
-      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
-        $("input, textarea").placeholder()
-      )
 )
 
 # Global polyfills
