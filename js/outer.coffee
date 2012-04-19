@@ -45,6 +45,12 @@ circle = $.sammy("body", ->
   about.polyfill = polyfill
   home.polyfill = polyfill
 
+  # Google analytics
+  @bind 'event-context-after', ->
+    if window._gaq? # we dont use ga in test mode
+      window._gaq.push @path
+
+
   # Navigation
   @get "/", (context) -> home.display()
   @get "/about.*", (context) -> about.display()
