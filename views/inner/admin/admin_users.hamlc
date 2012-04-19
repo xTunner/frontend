@@ -2,6 +2,8 @@
   %thead
     %td Username
     %td Name
+    %td Sign in count
+    %td Member since
   %tbody{data-bind: "foreach: admin"}
     %tr
       %td{data-bind: "text: login"}
