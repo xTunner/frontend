@@ -44,21 +44,9 @@ class HasUrl extends Base
 
 
 
-
-
-class LogOutput extends Base
-  constructor: (json) ->
-    super json, {}, ["type"], false
-
-    @output_style =
-      out: @type == "out"
-      err: @type == "err"
-
-
 class ActionLog extends Base
   constructor: (json) ->
-    json.out = (new LogOutput(j) for j in json.out) if json.out
-    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time"]
+    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["out", "end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time"]
 
     @status = if @end_time == null
         "running"
@@ -96,6 +84,13 @@ class ActionLog extends Base
   toggle_minimize: =>
     @minimize(!@minimize())
 
+  htmlEscape: (str) =>
+    str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+  log_output: =>
+    x = for o in @out
+      "<span class='#{o.type}'>#{@htmlEscape(o.message)}</span>"
+    x.join ""
 
 
 
