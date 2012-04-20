@@ -17,11 +17,12 @@
     - for member of @team
 
       - user = @team[member]
+      - userclass = user.name.toLowerCase().split(' ')
 
       - if user.visible
         %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
 
-          %figcaption
+          %figcaption{ class: "#{userclass[0]}" }
             %div
               %h4.fn= user.name
               %h5.title= user.role
