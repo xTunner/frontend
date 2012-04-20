@@ -33,14 +33,14 @@
             - if user.email
               %a.email{ href: "mailto:#{user.email}" } Email Address
 
-            %a.url{ href: "https://github.com/#{user.github}" } Github
+            %a.github{ href: "https://github.com/#{user.github}" } Github
 
             - if user.twitter
               %a.twitter{ href: "https://twitter.com/#{user.twitter}" } Twitter
 
           .visual
             -# If photo has not been defined for user, use .visual bg image
-            - if user.photo?
+            - if user.photo
               %img.photo{ src: "img/outer/about/#{user.photo}" }
 
   %section.contact
