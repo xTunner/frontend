@@ -8,15 +8,15 @@
 
   figcaption {
     .column(9);
-    background-image: url("@{imgPath}/outer/about/sprite.png");
+    background-image: url("@{imgPath}/outer/about/dividers.png");
     background-repeat: no-repeat;
-    background-position: 0 -265px;
+    background-position: 10px 5px;
     height: 280px;
     float: right;
 
     // Name & Title
     & > div {
-      margin-top: 25px;
+      margin-top: 5px;
     }
 
     .note, & > div { margin-left: 50px; }
@@ -50,22 +50,22 @@
   .visual {
     .column(3);
     float: left;
-    background: url("@{imgPath}/outer/about/sprite.png") no-repeat -22px -25px;
+    background: url("@{imgPath}/outer/about/sprite.png") no-repeat -9px 0;
     height: 215px;
     .transition(250ms all ease-in);
     z-index: 1;
 
-    &:hover { .rotate(-2deg); }
+    // &:hover { .rotate(-2deg); }
   }
 
   // Social Media Icons
   .social {
     position: absolute;
-    left: 215px;
+    left: 218px;
     top: 30px;
     z-index: 100;
 
-    &:hover + .visual { .rotate(-2deg); }
+    // &:hover + .visual { .rotate(-2deg); }
 
     // Sprites with hover states
     a {
@@ -77,14 +77,14 @@
     }
 
     // Individual sprite positions
-    .email    { background-position: -281px -170px;
-      &:hover { background-position: -311px -170px; }}
+    .email    { background-position: -244px -20px;
+      &:hover { background-position: -244px -120px; }}
 
-    .github   { background-position: -281px -200px;
-      &:hover { background-position: -311px -200px; }}
+    .github   { background-position: -244px -50px;
+      &:hover { background-position: -244px -150px; }}
 
-    .twitter  { background-position: -281px -231px;
-      &:hover { background-position: -311px -231px; }}
+    .twitter  { background-position: -244px -81px;
+      &:hover { background-position: -244px -181px; }}
   }
 
   // Reverse profile
@@ -92,7 +92,7 @@
 
     // Alternate shadow
     figcaption {
-      background-position: -15px -482px;
+      background-position: 628px -384px;
       float: left;
 
       // Reverse margins
@@ -105,21 +105,25 @@
     // Align image
     .visual {
       float: right;
-      background-position: 0 -25px;
+      background-position: 14px -4px;
 
       // Subtle animation on hover
-      &:hover {
-        .rotate(2deg);
-      }
+      // &:hover { .rotate(2deg); }
     }
 
     // Align social icons
     .social {
       position: absolute;
-      left: 717px;
+      left: 713px;
       top: 30px;
 
-      &:hover + .visual { .rotate(2deg); }
+      // &:hover + .visual { .rotate(2deg); }
     }
   }
+
+  img.photo { margin: 15px 11px 0; }
 }
+
+// Individual adjustments
+.nuclearsandwich > div { padding-top: 25px; }
+.disusered > div { padding-top: 15px; }
