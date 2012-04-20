@@ -54,15 +54,15 @@
 
       // Name
       %label{ for: 'name'} Name:
-      %input{ type: 'text', name: 'name', id: 'name', placeholder: 'Your Name', tabindex: '1' }
+      %input{ type: 'text', name: 'name', id: 'name', placeholder: 'Your Name', tabindex: '1', required: '' }
 
       // Email
       %label{ for: 'email'} Email Address:
-      %input{ type: 'text', name: 'email', id: 'email', placeholder: 'Your Email Address', tabindex: '2' }
+      %input{ type: 'email', name: 'email', id: 'email', placeholder: 'Your Email Address', tabindex: '2', required: '' }
 
       // Message
       %label{ for: 'message'} Message:
-      %textarea{ name: 'message', id: 'message', tabindex: '3' }
+      %textarea{ name: 'message', id: 'message', tabindex: '3', required: '' }
 
       %button{ class: 'button green', type: 'submit' } Send
 
