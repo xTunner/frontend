@@ -56,4 +56,4 @@
 
     .row
       .offset1
-        %input.btn.primary.span5.large{ type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests...", data-bind: "click: save_specs", name: "submit" }
+        %input.btn.primary.span5.large{ type: "submit", value: "Save commands and run your tests", data-loading-text: "Saving and starting tests...", data-bind: "click: save_specs", name: "submit", data-finished-text: "Saved"}

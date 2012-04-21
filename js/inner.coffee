@@ -1,10 +1,36 @@
 window.observableCount = 0
 
-$(document).ajaxError (e, xhr, status, errorThrown) ->
+$(document).ajaxError (ev, xhr, status, errorThrown) ->
   if errorThrown
     VM.setErrorMessage "Error: #{xhr.responseText}"
   else
     VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
+
+# Make the buttons disabled when clicked
+$.ajaxSetup
+  complete: (xhr, status) ->
+    if @event
+      t = $(@event.target)
+      done = t.attr("data-finished-text") or "Done"
+
+      t.val(done)
+      func = () =>
+        t.val(@event.savedText)
+        t.removeClass "disabled"
+      setTimeout(func, 1500)
+
+  beforeSend: (xhr, status) ->
+    if @event
+      t = $(@.event.target)
+      t.addClass "disabled"
+      # change to loading text
+      loading = t.attr("data-loading-text") or "..."
+      @event.savedText = t.val()
+      t.val(loading)
+
+
+
+
 
 class Base
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
@@ -292,9 +318,10 @@ class ProjectSettings extends HasUrl
       (not @uninferrable()) and @has_settings()
 
 
-  save_hipchat: () =>
+  save_hipchat: (data, event) =>
     $.ajax(
       type: "PUT"
+      event: event
       url: "/api/v1/project/#{@project_name()}/settings"
       contentType: "application/json"
       data: JSON.stringify(
@@ -304,9 +331,10 @@ class ProjectSettings extends HasUrl
     )
     false # dont bubble the event up
 
-  save_specs: () =>
+  save_specs: (data, event) =>
     $.ajax(
       type: "PUT"
+      event: event
       url: "/api/v1/project/#{@project_name()}/settings"
       contentType: "application/json"
       data: JSON.stringify(
@@ -333,9 +361,10 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
-  save_preferences: () =>
+  save_preferences: (data, event) =>
     $.ajax(
       type: "PUT"
+      event: event
       url: "/api/v1/user/save-preferences"
       contentType: "application/json"
       data: JSON.stringify {basic_email_prefs: @basic_email_prefs}

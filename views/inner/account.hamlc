@@ -24,7 +24,7 @@
           %label
             %input{type: "radio", name: "email", value: "none", data-bind: "checked: basic_email_prefs"}
             %span Don't send any email
-      %input.btn.primary.small.span3{ type: "submit", value: "Save preferences", data-bind: "click: save_preferences"}
+      %input.btn.primary.small.span3{ type: "submit", value: "Save preferences", data-bind: "click: save_preferences", data-loading-text: "Saving...", data-finished-text: "Saved"}
 
 
 
