@@ -6,16 +6,24 @@ $(document).ajaxError (ev, xhr, status, errorThrown) ->
   else
     VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
 
+textVal = (elem, val) ->
+  "Takes a jquery element and gets or sets either val() or text(), depending on what's appropriate for this element type (ie input vs button vs a, etc)"
+  if elem.is("input")
+    if val? then elem.val val else elem.val()
+  else # button or a
+    if val? then elem.text(val) else elem.text()
+
+
 # Make the buttons disabled when clicked
 $.ajaxSetup
   complete: (xhr, status) ->
     if @event
       t = $(@event.target)
-      done = t.attr("data-finished-text") or "Done"
+      done = t.attr("data-finished-text") or "Saved"
+      textVal t, done
 
-      t.val(done)
       func = () =>
-        t.val(@event.savedText)
+        textVal t, @event.savedText
         t.removeClass "disabled"
       setTimeout(func, 1500)
 
@@ -25,8 +33,8 @@ $.ajaxSetup
       t.addClass "disabled"
       # change to loading text
       loading = t.attr("data-loading-text") or "..."
-      @event.savedText = t.val()
-      t.val(loading)
+      @event.savedText = textVal t
+      textVal t, loading
 
 
 
@@ -218,11 +226,16 @@ class Build extends HasUrl
       @committer_name or @committer_email
 
   # TODO: CSRF protection
-  retry_build: () =>
-    $.post("/api/v1/project/#{@project_name()}/#{@build_num}/retry")
+  retry_build: (data, event) =>
+    $.ajax(
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
+      type: "POST"
+      event: event
+    )
+    false
 
   report_build: () =>
-    VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + ':\n\n')
+    VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
 
   description: (include_project) =>
