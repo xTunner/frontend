@@ -19,17 +19,17 @@ circle = $.sammy("body", ->
       @polyfill() if @polyfill?
 
     load: ->
-      self = this
-      $.getScript("assets/views/outer/#{@name}/#{@name}.hamlc", ->
-        $ -> self.render()
-      )
+      $.getScript("/assets/views/outer/#{@name}/#{@name}.hamlc", => @render())
 
     scroll: (hash) ->
       if hash == '' or hash == '#' then hash = "body"
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
 
     display: ->
-      if HAML? and HAML[@name]? @render() else @load()
+      if HAML? and HAML[@name]?
+        @render()
+      else
+        @load()
 
   # Pages
   home = new Page("home", "Continuous Integration made easy")
@@ -39,7 +39,7 @@ circle = $.sammy("body", ->
   # Per-Page Polyfills
   polyfill = ->
     if !Modernizr.input.placeholder
-      $.getScript("assets/js/vendor/jquery.placeholder.js", ->
+      $.getScript("/assets/js/vendor/jquery.placeholder.js", ->
         $("input, textarea").placeholder()
       )
   about.polyfill = polyfill
@@ -63,7 +63,7 @@ circle = $.sammy("body", ->
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
-  $.getScript("assets/js/vendor/selectivizr-1.0.2.js")
+  $.getScript("/assets/js/vendor/selectivizr-1.0.2.js")
 
 # Run the application
 $ -> circle.run window.location.pathname
