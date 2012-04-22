@@ -1,6 +1,6 @@
 #footer
   %footer
-    %span &copy; 2012 CircleCi.com
+    %span &copy; 2012 CircleCI.com
 
     %nav
       %ul

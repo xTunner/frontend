@@ -17,7 +17,7 @@
         %input{ class: 'signup', type: 'email', placeholder: 'Your email address&hellip;', name: 'signup', required: '' }
         %button{ class: 'button green', type: 'submit' } Notify Me
 
-    .screenshot CircleCi Screenshot
+    .screenshot CircleCI Screenshot
 
 #features
   %header
