@@ -16,6 +16,7 @@ textVal = (elem, val) ->
 
 # Make the buttons disabled when clicked
 $.ajaxSetup
+  contentType: "application/json"
   complete: (xhr, status) ->
     if @event
       t = $(@event.target)
@@ -336,7 +337,6 @@ class ProjectSettings extends HasUrl
       type: "PUT"
       event: event
       url: "/api/v1/project/#{@project_name()}/settings"
-      contentType: "application/json"
       data: JSON.stringify(
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
@@ -379,7 +379,6 @@ class User extends Base
       type: "PUT"
       event: event
       url: "/api/v1/user/save-preferences"
-      contentType: "application/json"
       data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
     )
     false # dont bubble the event up
