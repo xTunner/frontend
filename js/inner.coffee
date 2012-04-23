@@ -349,7 +349,6 @@ class ProjectSettings extends HasUrl
       type: "PUT"
       event: event
       url: "/api/v1/project/#{@project_name()}/settings"
-      contentType: "application/json"
       data: JSON.stringify(
         setup: @setup()
         dependencies: @dependencies()
