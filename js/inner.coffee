@@ -316,11 +316,7 @@ class ProjectSettings extends HasUrl
       @project_name()
 
     @has_settings = @komp =>
-      full_spec = @setup()
-      full_spec += @dependencies()
-      full_spec += @test()
-      full_spec += @extra()
-      "" != full_spec
+      @setup() or @dependencies() or @test() or @extra()
 
     @uninferrable = @komp =>
       @status() == "uninferrable"
