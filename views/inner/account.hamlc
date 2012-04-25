@@ -49,16 +49,16 @@
 
     %h3 Existing tokens
 
-    %p{data-bind: "ifnot: tokens.length"}
+    %p{data-bind: "ifnot: tokens().length"}
       No existing tokens
 
-    %div{data-bind: "if: tokens.length"}
+    %div{data-bind: "if: tokens().length"}
       %table
         %thead
           %th Label
           %th Token
           %th Created
-        %tbody{data-bind: "foreach: tokens"}
+        %tbody{data-bind: "foreach: tokens()"}
           %td{data-bind: "text: label"}
           %td
             %span.code{data-bind: "text: token"}

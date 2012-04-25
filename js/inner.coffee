@@ -46,6 +46,9 @@ $(document).ajaxSend((ev, xhr, options) ->
 # Make the buttons disabled when clicked
 $.ajaxSetup
   contentType: "application/json"
+  accepts: {json: "application/json"}
+  dataType: "json"
+
 
 
 
@@ -367,6 +370,7 @@ class ProjectSettings extends HasUrl
 
 class User extends Base
   constructor: (json) ->
+    json.tokens = ko.observableArray(json.tokens or [])
     super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
 
     @tokenLabel = ko.observable("")
@@ -384,10 +388,11 @@ class User extends Base
       type: "POST"
       event: event
       url: "/api/v1/user/create-token"
-      data: JSON.stringify {label: @tokenLabel}
+      data: JSON.stringify {label: @tokenLabel()}
       success: (result) =>
-        @tokens.push result
+        @tokens result
         @tokenLabel("")
+        true
     false
 
 
