@@ -19,4 +19,8 @@
             create a "<i>notification</i>" token on the HipChat site.
 
     .row
-      %input.btn.primary.span5.large{data-bind: "click: save_hipchat", type: "submit", value: "Save", data-loading-text: "Saving and sending message...", data-finished-text: "Saved" }
+      %input.btn.primary.span5.large{data-bind: "click: save_hipchat",
+                                     type: "submit",
+                                     value: "Save",
+                                     data-loading-text: "Saving and sending message...",
+                                     data-finished-text: "Saved"}
