@@ -1,5 +1,5 @@
 = HAML['_topbar']({})
-
+= HAML['flashes']({})
 
 .row{data-bind: "with: current_user"}
   .offset1
