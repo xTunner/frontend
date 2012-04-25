@@ -369,13 +369,21 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
+  create_token: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/user/create-token"
+      data: JSON.stringify {label: @label}
+    false
+
+
   save_preferences: (data, event) =>
-    $.ajax(
+    $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/user/save-preferences"
       data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
-    )
     false # dont bubble the event up
 
 

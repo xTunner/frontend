@@ -24,18 +24,45 @@
           %label
             %input{type: "radio", name: "email", value: "none", data-bind: "checked: basic_email_prefs"}
             %span Don't send any email
-      %input.btn.primary.small.span3{ type: "submit", value: "Save preferences", data-bind: "click: save_preferences", data-loading-text: "Saving...", data-finished-text: "Saved"}
+      %input.btn.primary.small.span3{type: "submit",
+                                     value: "Save preferences",
+                                     data-bind: "click: save_preferences",
+                                     data-loading-text: "Saving...",
+                                     data-finished-text: "Saved"}
 
 
 
     %br
-    %h2 Other preferences
+    %h2 Project preferences
 
     %p Projects can be individually configured, from a project's <b>edit</b> page.
 
     %p Instant message settings are per-project; edit a project to set them.
 
 
+    %br
+    %h2 API tokens
+
+    %p
+      Create tokens to access the API outside the browser.
+      Apps using these tokens can act as you, and have full read- and write-permissions.
+
+    %h3 Existing tokens
+    %p No existing tokens
+
+    %h3 Create new tokens
+    %form.api
+      %fieldset.form-stacked
+        .row
+          %label{for: "label"} Name
+          %input{type: "text", name: "label"}
+        .row
+          %br
+          %input.btn.primary{type: "submit",
+                             value: "Create token",
+                             data-bind: "click: create_token",
+                             data-loading-text: "Creating...",
+                             data-success-text: "Created"}
 
     %br
     %h2 Delete your account
@@ -43,3 +70,6 @@
     %p
       We currently don't support automatically deleting your account.
       Please contact us using the "Help" button and we can do it manually.
+
+      %br
+      %br
