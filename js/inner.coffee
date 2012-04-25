@@ -18,32 +18,34 @@ finishAjax = (event, attrName, buttonName) ->
       t.removeClass "disabled"
     setTimeout(func, 1500)
 
+$(document).ajaxSuccess((ev, xhr, options) ->
+  finishAjax(xhr.event, "data-success-text", "Saved")
+)
+
+$(document).ajaxError((ev, xhr, status, errorThrown) ->
+  finishAjax(xhr.event, "data-failed-text", "Failed")
+
+  if xhr.responseText.indexOf("<!DOCTYPE") is 0
+    VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
+  else
+    VM.setErrorMessage "Error: #{xhr.responseText}"
+)
+
+$(document).ajaxSend((ev, xhr, options) ->
+  xhr.event = options.event
+  if xhr.event
+    t = $(xhr.event.target)
+    t.addClass "disabled"
+    # change to loading text
+    loading = t.attr("data-loading-text") or "..."
+    xhr.event.savedText = textVal t
+    textVal t, loading
+)
+
+
 # Make the buttons disabled when clicked
 $.ajaxSetup
   contentType: "application/json"
-
-  success: (xhr, status) ->
-    finishAjax(@event, "data-success-text", "Saved")
-
-  error: (xhr, status, errorThrown) ->
-    finishAjax(@event, "data-failed-text", "Failed")
-
-    if xhr.responseText.indexOf("<!DOCTYPE") is 0
-      VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
-    else
-      VM.setErrorMessage "Error: #{xhr.responseText}"
-
-
-  beforeSend: (xhr, status) ->
-    if @event
-      t = $(@.event.target)
-      t.addClass "disabled"
-      # change to loading text
-      loading = t.attr("data-loading-text") or "..."
-      @event.savedText = textVal t
-      textVal t, loading
-
-
 
 
 
