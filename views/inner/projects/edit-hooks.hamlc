@@ -23,4 +23,4 @@
                                      type: "submit",
                                      value: "Save",
                                      data-loading-text: "Saving and sending message...",
-                                     data-finished-text: "Saved"}
+                                     data-success-text: "Saved"}

@@ -1,11 +1,5 @@
 window.observableCount = 0
 
-$(document).ajaxError (ev, xhr, status, errorThrown) ->
-  if errorThrown
-    VM.setErrorMessage "Error: #{xhr.responseText}"
-  else
-    VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
-
 textVal = (elem, val) ->
   "Takes a jquery element and gets or sets either val() or text(), depending on what's appropriate for this element type (ie input vs button vs a, etc)"
   if elem.is("input")
@@ -13,20 +7,32 @@ textVal = (elem, val) ->
   else # button or a
     if val? then elem.text(val) else elem.text()
 
+finishAjax = (event, attrName, buttonName) ->
+  if event
+    t = $(event.target)
+    done = t.attr(attrName) or buttonName
+    textVal t, done
+
+    func = () =>
+      textVal t, event.savedText
+      t.removeClass "disabled"
+    setTimeout(func, 1500)
 
 # Make the buttons disabled when clicked
 $.ajaxSetup
   contentType: "application/json"
-  complete: (xhr, status) ->
-    if @event
-      t = $(@event.target)
-      done = t.attr("data-finished-text") or "Saved"
-      textVal t, done
 
-      func = () =>
-        textVal t, @event.savedText
-        t.removeClass "disabled"
-      setTimeout(func, 1500)
+  success: (xhr, status) ->
+    finishAjax(@event, "data-success-text", "Saved")
+
+  error: (xhr, status, errorThrown) ->
+    finishAjax(@event, "data-failed-text", "Failed")
+
+    if xhr.responseText.indexOf("<!DOCTYPE") is 0
+      VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
+    else
+      VM.setErrorMessage "Error: #{xhr.responseText}"
+
 
   beforeSend: (xhr, status) ->
     if @event

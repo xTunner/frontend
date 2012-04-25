@@ -28,7 +28,7 @@
                                      value: "Save preferences",
                                      data-bind: "click: save_preferences",
                                      data-loading-text: "Saving...",
-                                     data-finished-text: "Saved"}
+                                     data-success-text: "Saved"}
 
 
 
