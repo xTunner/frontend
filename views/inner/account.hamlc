@@ -48,7 +48,23 @@
       Apps using these tokens can act as you, and have full read- and write-permissions.
 
     %h3 Existing tokens
-    %p No existing tokens
+
+    %p{data-bind: "ifnot: tokens.length"}
+      No existing tokens
+
+    %div{data-bind: "if: tokens.length"}
+      %table
+        %thead
+          %th Label
+          %th Token
+          %th Created
+        %tbody{data-bind: "foreach: tokens"}
+          %td{data-bind: "text: label"}
+          %td
+            %span.code{data-bind: "text: token"}
+          %td{data-bind: "text: time"}
+
+
 
     %h3 Create new tokens
     %form.api

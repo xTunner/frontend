@@ -365,7 +365,7 @@ class ProjectSettings extends HasUrl
 
 class User extends Base
   constructor: (json) ->
-    super json, {tokens: false, admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
+    super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
 
     @tokenLabel = ko.observable("")
 
