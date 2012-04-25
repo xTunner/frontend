@@ -365,7 +365,9 @@ class ProjectSettings extends HasUrl
 
 class User extends Base
   constructor: (json) ->
-    super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
+    super json, {tokens: false, admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
+
+    @tokenLabel = ko.observable("")
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -380,7 +382,10 @@ class User extends Base
       type: "POST"
       event: event
       url: "/api/v1/user/create-token"
-      data: JSON.stringify {label: @label}
+      data: JSON.stringify {label: @tokenLabel}
+      success: (result) =>
+        @tokens.push result
+        @tokenLabel("")
     false
 
 

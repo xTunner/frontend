@@ -55,7 +55,9 @@
       %fieldset.form-stacked
         .row
           %label{for: "label"} Name
-          %input{type: "text", name: "label"}
+          %input{type: "text",
+                 name: "label",
+                 data-bind: "value: tokenLabel"}
         .row
           %br
           %input.btn.primary{type: "submit",
