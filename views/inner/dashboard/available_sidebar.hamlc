@@ -4,14 +4,10 @@
       %th{colspan: 2}
         Available Projects
 
-  %tbody{data-bind: "foreach: filtered_projects('available')"}
+  %tbody{data-bind: "foreach: available_projects()"}
     %tr
       %td.project-name
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
       %td
-        %span{data-bind: "if: show_problems()"}
-          %a{data-bind: "attr: { href: edit_link }", title: "Setup uninferrable project"}
-            %img{src: "/img/error.png", height: 15, width: 15}
-
         %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }, click: follow"}

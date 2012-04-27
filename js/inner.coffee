@@ -283,8 +283,6 @@ class Project extends HasUrl
     @overridden = @komp =>
       (not @uninferrable()) and @has_settings()
 
-    @is_followed = @komp =>
-      @status() is 'followed'
 
 
 
@@ -298,28 +296,11 @@ class Project extends HasUrl
       if l.vcs_url().toLowerCase() < r.vcs_url().toLowerCase() then 1 else -1
 
 
-
   checkbox_title: =>
     "Add CI to #{@project_name()}"
 
-  group: =>
-    if @status() is 'available'
-      "available"
-    else
-      "followed"
-
-  show_enable_button: =>
-    @status() is 'available'
-
   show_problems: =>
     @status() is 'uninferrable'
-
-  show_options: =>
-    @status() is 'followed'
-
-  # We should show this either way, but dont have a good design for it
-  show_build: =>
-    @status() is 'followed'
 
   unfollow: (data, event) =>
     $.ajax
@@ -329,6 +310,7 @@ class Project extends HasUrl
       success:
         (data) =>
           @status(data.status)
+          @followed(data.followed)
 
   follow: (data, event) =>
     $.ajax
@@ -339,6 +321,7 @@ class Project extends HasUrl
         # The new model here is not going to be "enabled" and "available", but
         # will allow you to add a project without being an admin
         @status(data.status)
+        @followed(data.followed)
 
   save_hipchat: (data, event) =>
     $.ajax(
@@ -455,6 +438,12 @@ class CircleViewModel extends Base
         @first_login = false
         setTimeout(@loadProjects, 3000)
 
+  available_projects: () => @komp =>
+    (p for p in @projects() when not p.followed())
+
+  followed_projects: () => @komp =>
+    (p for p in @projects() when p.followed())
+
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
@@ -557,8 +546,6 @@ class CircleViewModel extends Base
   unsupportedRoute: (cx) =>
     throw("Unsupported route: " + cx.params.splat)
 
-  filtered_projects: (filter) => @komp =>
-    p for p in @projects() when p.group() == filter
 
 
 
