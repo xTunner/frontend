@@ -299,7 +299,7 @@ class Project extends HasUrl
   checkbox_title: =>
     "Add CI to #{@project_name()}"
 
-  show_problems: =>
+  uninferrable: =>
     @status() is 'uninferrable'
 
   unfollow: (data, event) =>

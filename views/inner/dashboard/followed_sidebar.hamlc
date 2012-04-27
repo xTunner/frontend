@@ -12,7 +12,7 @@
 
       %td.project-name
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
-        %span{data-bind: "if: show_problems()"}
+        %span{data-bind: "if: uninferrable()"}
           %a{data-bind: "attr: { href: edit_link }", title: "Setup uninferrable project"}
             %img{src: "/img/error.png", height: 15, width: 15}
 
