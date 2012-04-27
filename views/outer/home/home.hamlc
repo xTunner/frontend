@@ -14,8 +14,8 @@
       %p Sign up for the beta. We'll email you when we're ready.
 
       %form{action: "/notify", method: "post"}
-        %input{ class: 'signup', type: 'email', placeholder: 'Your email address&hellip;', name: 'signup', required: '' }
-        %button{ class: 'button green', type: 'submit' } Notify Me
+        %input.signup{ type: 'email', placeholder: 'Your email address&hellip;', name: 'signup', required: '' }
+        %button.button.green{ type: 'submit' } Notify Me
 
     .screenshot CircleCI Screenshot
 
@@ -45,10 +45,10 @@
       %h2 All this power from one little button
 
     - if @showJoinLink
-      %a{ href: @githubAuthURL, title: 'Join using Github' class: 'authGithub' } Join using Github
+      %a.authGithub{ href: @githubAuthURL, title: 'Join using Github' } Join using Github
 
     - else
-      %a{ title: 'Currently in private beta', class: 'authGithub disabled' } Currently in private beta
+      %a.authGithub.disabled{ title: 'Currently in private beta' } Currently in private beta
 
     %ul
       %li No fiddling with ssh keys
@@ -66,5 +66,5 @@
       %p <span>Sign up for the beta.</span> We'll email you when we're ready.
 
       %form{action: "/notify", method: "post"}
-        %input{ class: 'signup', type: 'text', placeholder: 'Your email address&hellip;', name: 'signup'}
-        %button{ class: 'button green', type: 'submit' } Notify me
+        %input.signup{ type: 'text', placeholder: 'Your email address&hellip;', name: 'signup'}
+        %button.button.green{ type: 'submit' } Notify me
