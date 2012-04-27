@@ -4,7 +4,7 @@
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
     - if @showJoinLink
-      %a.authGithub{ href: @githubAuthURL, title: 'Authorize us on Github' }
+      %a.authGithub{ href: @githubAuthURL, title: 'Join using Github' }
         Join using Github
 
       %a.footnote{ href: '/privacy' title: 'Privacy and Security' }
@@ -45,10 +45,10 @@
       %h2 All this power from one little button
 
     - if @showJoinLink
-      %a{ href: @githubAuthURL, title: 'Authorize us on Github' class: 'authGithub' } Authorize us on Github
+      %a{ href: @githubAuthURL, title: 'Join using Github' class: 'authGithub' } Join using Github
 
     - else
-      %a{ title: 'Currently in private beta', class: 'authGithub disabled' } Authorize us on Github
+      %a{ title: 'Currently in private beta', class: 'authGithub disabled' } Currently in private beta
 
     %ul
       %li No fiddling with ssh keys
