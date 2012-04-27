@@ -34,7 +34,7 @@ circle = $.sammy("body", ->
   # Pages
   home = new Page("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
-  privacy = new Page("privacy", "Privacy Policy")
+  privacy = new Page("privacy", "Privacy and Security")
 
   # Per-Page Polyfills
   polyfill = ->
