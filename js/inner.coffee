@@ -268,6 +268,26 @@ class Project extends HasUrl
     @edit_link = @komp () =>
       "#{@project_path()}/edit"
 
+    @build_url = @komp =>
+      @vcs_url() + '/build'
+
+    @has_settings = @komp =>
+      @setup() or @dependencies() or @test() or @extra()
+
+    @uninferrable = @komp =>
+      @status() == "uninferrable"
+
+    @inferred = @komp =>
+      (not @uninferrable()) and (not @has_settings())
+
+    @overridden = @komp =>
+      (not @uninferrable()) and @has_settings()
+
+    @is_followed = @komp =>
+      @status() is 'followed'
+
+
+
   @sidebarSort: (l, r) ->
     if l.latest_build()
       if r.latest_build()
@@ -301,43 +321,24 @@ class Project extends HasUrl
   show_build: =>
     @status() is 'followed'
 
-  enable: =>
-    $.post "/api/v1/project/#{@project_name()}/enable",
-      (data) =>
-        # Sometimes this returns {status: "available"} in development mode,
-        # because the keys are already installed in production, but aren't in
-        # the dev database. Solution: do nothing.
+  unfollow: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/unfollow"
+      success:
+        (data) =>
+          @status(data.status)
+
+  follow: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/follow"
+      success: (data) =>
+        # The new model here is not going to be "enabled" and "available", but
+        # will allow you to add a project without being an admin
         @status(data.status)
-
-
-
-
-
-
-# We use a separate class for Project and ProjectSettings because computed
-# observables are calculated eagerly, and that breaks everything if the
-class ProjectSettings extends HasUrl
-  constructor: (json) ->
-    super json
-
-    @build_url = @komp =>
-      @vcs_url() + '/build'
-
-    @project = @komp =>
-      @project_name()
-
-    @has_settings = @komp =>
-      @setup() or @dependencies() or @test() or @extra()
-
-    @uninferrable = @komp =>
-      @status() == "uninferrable"
-
-    @inferred = @komp =>
-      (not @uninferrable()) and (not @has_settings())
-
-    @overridden = @komp =>
-      (not @uninferrable()) and @has_settings()
-
 
   save_hipchat: (data, event) =>
     $.ajax(
@@ -421,12 +422,13 @@ class CircleViewModel extends Base
 
     @build = ko.observable()
     @builds = ko.observableArray()
+    @project = ko.observable()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
-    @project_settings = ko.observable()
     @admin = ko.observable()
     @error_message = ko.observable(null)
     @first_login = true;
+    @project_map = {}
     observableCount += 8
 
 
@@ -442,9 +444,12 @@ class CircleViewModel extends Base
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
       start_time = Date.now()
-      data = (new Project d for d in data)
-      data.sort Project.sidebarSort
-      @projects(data)
+      projects = (new Project d for d in data)
+      projects.sort Project.sidebarSort
+      for p in projects
+        @project_map[p.vcs_url()] = p
+
+      @projects(projects)
       window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
@@ -486,10 +491,10 @@ class CircleViewModel extends Base
     project_name = "#{username}/#{project}"
 
     # if we're already on this page, dont reload
-    if (not @project_settings() or
-    (@project_settings().vcs_url() isnt "https://github.com/#{project_name}"))
+    if (not @project() or
+    (@project().vcs_url() isnt "https://github.com/#{project_name}"))
       $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
-        @project_settings(new ProjectSettings data)
+        @project(new Project data)
 
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"

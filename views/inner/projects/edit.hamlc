@@ -19,6 +19,6 @@
 
     = HAML['flashes']({})
 
-    #subpage{data-bind: "with: project_settings"}
+    #subpage{data-bind: "with: project"}
       %p
         Loading...
