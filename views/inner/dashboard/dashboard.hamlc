@@ -4,8 +4,8 @@
 
   .sidebar
     -# TECHNICAL_DEBT: use namespaces for these
-    = HAML['sidebar_table']({ title: "Followed", filter: "followed" })
-    = HAML['sidebar_table']({ title: "Available", filter: "available" })
+    = HAML['followed_sidebar']({})
+    = HAML['available_sidebar']({})
 
   .content
 
