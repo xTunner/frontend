@@ -42,6 +42,17 @@
         %a.btn.primary.large{ href: "#setup" }
           Edit project settings
 
+
+    %span{data-bind: "if: is_followed"}
+      %p
+        %button.btn.primary.large{ data-bind: 'click: unfollow' }
+          Unfollow
+
+    %span{data-bind: "ifnot: is_followed"}
+      %p
+        %button.btn.primary.large{ data-bind: 'click: follow' }
+          Follow
+
     -#%p
       %button.btn.primary.large.span6#reset{ data-loading-text: "Resetting" }
         Delete your commands and revert to inferred
