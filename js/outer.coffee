@@ -23,7 +23,7 @@ circle = $.sammy("body", ->
 
     scroll: (hash) ->
       if hash == '' or hash == '#' then hash = "body"
-      $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
+      $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
     display: ->
       if HAML? and HAML[@name]?
