@@ -494,10 +494,11 @@ class CircleViewModel extends Base
 
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
-    subpage = subpage || "email"
+    subpage = subpage || "notifications"
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage]())
     ko.applyBindings(VM)
+    $("##{subpage}").addClass('active')
 
 
   renderAdminPage: (subpage) =>
