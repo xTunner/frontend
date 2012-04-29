@@ -1,25 +1,24 @@
 = HAML['_topbar']({})
 
+%div
+  %ul.tabs
+    %li#notifications
+      %a{href: '/account/notifications'}
+        Notifications
+
+    %li#api
+      %a{:href: '/account/api'}
+        API
+
+    -#%li#billing
+      %a{:href: '/account/billing'}
+        Billing
+
+    %li#close
+      %a{:href: '/account/close'}
+        Close account
+
 .row{data-bind: "with: current_user"}
-  .offset0
-    %div
-      %ul.tabs
-        %li
-          %a{href: '/account/email'}
-            Emails
-
-        %li
-          %a{:href: '/account/api'}
-            API
-
-        -#%li
-          %a{:href: '/account/billing'}
-            Billing
-
-        %li
-          %a{:href: '/account/close'}
-            Close account
-
   .offset1
     = HAML['flashes']({})
     #subpage
