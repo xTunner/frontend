@@ -1,0 +1,40 @@
+%h2 API tokens
+
+%p
+  Create tokens to access the API outside the browser.
+  Apps using these tokens can act as you, and have full read- and write-permissions.
+
+%h3 Existing tokens
+
+%p{data-bind: "ifnot: tokens().length"}
+  No existing tokens
+
+%div{data-bind: "if: tokens().length"}
+  %table
+    %thead
+      %th Label
+      %th Token
+      %th Created
+    %tbody{data-bind: "foreach: tokens()"}
+      %td{data-bind: "text: label"}
+      %td
+        %span.code{data-bind: "text: token"}
+      %td{data-bind: "text: time"}
+
+
+
+%h3 Create new tokens
+%form.api
+  %fieldset.form-stacked
+    .row
+      %label{for: "label"} Name
+      %input{type: "text",
+             name: "label",
+             data-bind: "value: tokenLabel"}
+    .row
+      %br
+      %input.btn.primary{type: "submit",
+                         value: "Create token",
+                         data-bind: "click: create_token",
+                         data-loading-text: "Creating...",
+                         data-success-text: "Created"}

@@ -492,6 +492,14 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
+  loadAccountPage: (cx, subpage) =>
+    subpage = subpage[0].replace('/', '')
+    subpage = subpage || "email"
+    $('#main').html(HAML['account']({}))
+    $('#subpage').html(HAML['account_' + subpage]())
+    ko.applyBindings(VM)
+
+
   renderAdminPage: (subpage) =>
     $('#main').html(HAML['admin']({}))
     $('#subpage').html(HAML['admin_' + subpage]())
@@ -517,10 +525,6 @@ class CircleViewModel extends Base
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
       @recent_builds((new Build d for d in data))
     @renderAdminPage "recent_builds"
-
-
-  loadAccountPage: (cx) =>
-    display "account", {}
 
 
   loadJasmineTests: (cx) =>
@@ -562,8 +566,8 @@ $(document).ready () ->
     @get('/', (cx) => VM.loadDashboard(cx))
     @get('/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
-    @get('/account',
-      (cx) -> VM.loadAccountPage(cx))
+    @get('/account(.*)',
+      (cx) -> VM.loadAccountPage(cx, cx.params.splat))
     @get('/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
     @get('/gh/:username/:project',
