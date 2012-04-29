@@ -23,7 +23,7 @@ circle = $.sammy("body", ->
 
     scroll: (hash) ->
       if hash == '' or hash == '#' then hash = "body"
-      $('html, body').animate({scrollTop: $(hash).offset().top}, 0);
+      $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
     display: ->
       if HAML? and HAML[@name]?
@@ -34,7 +34,7 @@ circle = $.sammy("body", ->
   # Pages
   home = new Page("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
-  privacy = new Page("privacy", "Privacy Policy")
+  privacy = new Page("privacy", "Privacy and Security")
 
   # Per-Page Polyfills
   polyfill = ->

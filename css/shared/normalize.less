@@ -471,6 +471,24 @@ input[type="submit"].green:active {
   top: 1px;
 }
 
+
+// Github Authorize button
+.authGithub {
+  .ir;
+  position: relative;
+  background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat -16px -138px;
+  .size(84px,311px);
+
+  &:hover, &:focus {
+    background-position: -16px -244px;
+  }
+
+  &:active {
+    background-position: -16px -350px;
+    top: 3px;
+  }
+}
+
 /*
  * Re-set default cursor for disabled elements
  */
