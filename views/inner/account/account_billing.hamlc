@@ -1,1 +1,29 @@
 %h2 Billing
+
+.row
+  .span6
+    %span{data-bind: "if: card_on_file"}
+      Thanks!
+      We really appreciate your support.
+      We'd love to hear any way we can make the service better.
+
+    %span{data-bind: "ifnot: card_on_file"}
+      Stripe form
+
+  .offset6.span5
+    %h3 Your plan: "The Awesome!"
+
+    %ul
+      %li
+        %h5 8-way parallel tests
+        %p Reduce your hour-long tests to 10 minutes.
+      %li
+        %h5 Same day support
+        %p In app, by phone, by chat, by email
+      %li
+        %h5 High limits
+        %p
+          40 machine hours should be enough for anyone
+          (cost price after that, we don't want to encourage long tests).
+      %li
+        %h5 $29 per developer

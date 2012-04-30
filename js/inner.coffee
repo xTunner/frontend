@@ -355,7 +355,7 @@ class Project extends HasUrl
 class User extends Base
   constructor: (json) ->
     json.tokens = ko.observableArray(json.tokens or [])
-    super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all"}, [], false
+    super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all", card_on_file: false}, [], false
 
     @tokenLabel = ko.observable("")
 

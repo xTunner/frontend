@@ -10,7 +10,7 @@
       %a{:href: '/account/api'}
         API
 
-    -#%li#billing
+    %li#billing
       %a{:href: '/account/billing'}
         Billing
 
