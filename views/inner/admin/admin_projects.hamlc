@@ -1,2 +1,2 @@
 .sidebar
-  = HAML['sidebar_table']({ title: "Followed", filter: "followed" })
+  = HAML['followed_sidebar']({})
