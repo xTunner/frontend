@@ -92,7 +92,7 @@ class HasUrl extends Base
 
 class ActionLog extends Base
   constructor: (json) ->
-    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["out", "end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time"]
+    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time", "bash_command"]
 
     @status = if @end_time == null
         "running"
@@ -109,14 +109,15 @@ class ActionLog extends Base
     # Expand failing actions
     @minimize(@success)
 
+    @has_content = () =>
+      @out or @bash_command
 
     @action_header_style = @komp =>
       css = @status
 
       result =
         minimize: @minimize()
-        contents: @out
-
+        contents: @has_content()
       result[css] = true
       result
 
@@ -128,12 +129,15 @@ class ActionLog extends Base
     @duration = Circle.time.as_duration(@run_time_millis)
 
   toggle_minimize: =>
-    @minimize(!@minimize())
+    if @has_content()
+      @minimize(!@minimize())
+
 
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
   log_output: =>
+    return "" unless @out
     x = for o in @out
       "<span class='#{o.type}'>#{@htmlEscape(o.message)}</span>"
     x.join ""
