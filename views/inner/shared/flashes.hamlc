@@ -1,6 +1,6 @@
 %div{data-bind: "if: $root.error_message"}
-  .alert-message.block-message.error
-    %span{data-bind: "text: $root.error_message"}
+  .alert-message.block-message.error{data-bind: "with: $root"}
+    %span{data-bind: "text: error_message"}
     If we can help,
     %a{href: "#", data-bind: "click: raiseIntercomDialog"}
       contact us.
