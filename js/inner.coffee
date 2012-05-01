@@ -371,6 +371,36 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
+
+
+  stripeSubmit: (event) ->
+    Stripe.setPublishableKey('pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD');
+
+    # disable the submit button to prevent repeated clicks
+    $('.submit-button').attr "disabled", "disabled"
+
+    Stripe.createToken {
+      number: $('.card-number').val()
+      cvc: $('.card-cvc').val(),
+      exp_month: $('.card-expiry-month').val(),
+      exp_year: $('.card-expiry-year').val()
+    }, (status, response) =>
+      if response.error
+        VM.setErrorMessage response.error.message
+      else
+        @recordStripeTransaction response # TODO: add the plan
+
+
+    # prevent the form from submitting with the default action
+    return false;
+
+  recordStripeTransaction: (response) =>
+    $.ajax(
+      url: "/api/v1/user/record-stripe-transaction"
+      type: "POST"
+    )
+    false
+
   create_token: (data, event) =>
     $.ajax
       type: "POST"
@@ -492,7 +522,7 @@ class CircleViewModel extends Base
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"
     $('#main').html(HAML['edit']({project: project_name}))
-    $('#subpage').html(HAML['edit_' + subpage]())
+    $('#subpage').html(HAML['edit_' + subpage]({}))
     ko.applyBindings(VM)
 
 
@@ -500,7 +530,7 @@ class CircleViewModel extends Base
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage]())
+    $('#subpage').html(HAML['account_' + subpage]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
 
