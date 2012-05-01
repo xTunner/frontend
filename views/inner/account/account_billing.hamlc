@@ -10,20 +10,27 @@
       We'd love to hear any way we can make the service better.
 
     %span{data-bind: "ifnot: card_on_file"}
-      %form#payment-form
+      %form.form-stacked#payment-form
         .form-row
           %label Card Number
-          %input.card-number{type: "text", size: 20, autocomplete: "off"}
+          %input.card-number{type: "text", size: "20", autocomplete: "off"}
+          %br
         .form-row
           %label CVC
-          %input.card-cvc{type: "text", size: 4}
+          %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
+          %br
         .form-row
           %label Expiration (MM/YYYY)
-          %input.card-expiry-month{type: "text", size: 2}
+          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
           %span /
-          %input.card-expiry-year{type: "text", size: 4}
-        %button.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
-          Submit button
+          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
+        %br
+        .alert-message.block-message
+          %p
+            Upon successfully submitting this form, you will be charged $29 at the end of
+            your trial, and again on a recurring basis, once per month.
+        %button.btn.primary.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
+          Pay for Circle
 
   .offset2.span5
     %h3
@@ -31,18 +38,23 @@
 
     %ul
       %li
-        %h5 8-way parallel tests
-        %p Reduce your hour-long tests to 10 minutes.
+        %h5 4-way parallel tests
+        %p
+          Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
+          (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
 
       %li
         %h5 Same day support
-        %p In app, by phone, by chat, by email
+        %p By phone, by chat, by email, we just want someone to talk to.
 
       %li
         %h5 High limits
         %p
-          40 machine hours should be enough for anyone
-          (cost price after that, we don't want to encourage long tests).
+          We don't charge you overages (unless you go insane, and even then we'd be reluctant).
 
       %li
-        %h5 $29 per developer
+        %h5 $29 - all in.
+        %p
+          This covers all <b>your</b> builds, in all branches, in all repositories.
+          It does not cover your colleagues, who will need their own accounts.
+          (We currently do not enforce this, but will in the near future).
