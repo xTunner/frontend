@@ -565,6 +565,14 @@ stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
 $(document).ready () ->
+  if window.renderContext.env == 'development'
+    hoptoad_on_error = window.onerror
+    window.onerror = (message, file, line) =>
+      hoptoad_on_error message, file, line
+      VM.setErrorMessage message + "\nfile: " + file + "\nline: " + line
+      return false
+
+
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
