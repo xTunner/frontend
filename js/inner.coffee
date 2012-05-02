@@ -377,9 +377,9 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
+  selectPlan: (data) =>
+    @selectedPlan data
 
-  selectPlan: (data, event) =>
-    alert $(event.target).attr("plan-name")
 
 
 

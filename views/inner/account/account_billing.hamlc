@@ -35,7 +35,7 @@
           %span{data-bind: "text: price"}
           p/m
 
-        %button.select.btn.success{data-bind: "click: function () { selectPlan($data); }"}
+        %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data.plan); }"}
           Sign up
 
 
