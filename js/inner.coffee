@@ -368,6 +368,7 @@ class User extends Base
               {title: "Ultra", parallel: 64, limits: null, support: "Email + phone + SLA", plan: "ultra1", price: 129}]
 
     @tokenLabel = ko.observable("")
+    @selectedPlan = ko.observable(null)
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -376,6 +377,12 @@ class User extends Base
       result = {}
       result["env-" + @environment] = true
       result
+
+  showPlan: (data) => @komp =>
+    @selectedPlan() == null or @selectedPlan() == data
+
+  showCreditCardForm: () => @komp =>
+    @selectedPlan()?
 
   selectPlan: (data) =>
     @selectedPlan data
