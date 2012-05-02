@@ -1,0 +1,1 @@
+No limits<a class="asterix" href="#" data-bind="click: function() { alert('Well, within limits. Standard “don\\\'t be a dick” rules apply. ') }">*</a>

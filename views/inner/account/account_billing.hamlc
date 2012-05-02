@@ -2,6 +2,81 @@
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
+.alert-message.block-message#per-developer-plan
+  All plans are per developer per month.
+  Your plan covers all <b>your</b> builds, in all branches, in all repositories.
+  It does not cover your colleagues, who will need their own accounts.
+  (We currently do not enforce this, but will in the near future).
+
+%table#pricing-table
+  %thead
+    %tr
+      %th
+      %th.heading Fast
+      %th.heading Lightning
+      %th.heading Warp
+      %th.heading Insane
+      %th.heading Instant
+
+
+  %tbody
+    %tr
+      %td Incredibly fast builds
+      %td.tick ✔
+      %td.tick ✔
+      %td.tick ✔
+      %td.tick ✔
+      %td.tick ✔
+
+    %tr
+      %td Parallelism
+      %td 2-way
+      %td 4-way
+      %td 8-way
+      %td 16-way
+      %td 64-way
+
+    %tr
+      %td Limits
+      %td
+        3 concurrent builds per project,
+        15 hours build time.
+      %td
+        = HAML['unlimited']()
+      %td
+        = HAML['unlimited']()
+      %td
+        = HAML['unlimited']()
+      %td
+        = HAML['unlimited']()
+
+    %tr
+      %td Fanatical Support
+      %td Email
+      %td Email + phone
+      %td Email + phone
+      %td Email + phone + SLA
+      %td Email + phone + SLA
+
+    %tr
+      %td
+      %td
+        %button.price{plan-name: "fast1", data-bind: "click: selectPlan"}
+          $16
+      %td
+        %button.price{plan-name: "lightning1", data-bind: "click: selectPlan"}
+          $29
+      %td
+        %button.price{plan-name: "warp1", data-bind: "click: selectPlan"}
+          $49
+      %td
+        %button.price{plan-name: "insane1", data-bind: "click: selectPlan"}
+          $79
+      %td
+        %button.price{plan-name: "instant1", data-bind: "click: selectPlan"}
+          $129
+
+
 .row
   .span6
     %span{data-bind: "if: card_on_file"}
@@ -32,29 +107,32 @@
         %button.btn.primary.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
           Pay for Circle
 
-  .offset2.span5
-    %h3
-      Your plan: "The Awesome!"
 
-    %ul
-      %li
-        %h5 4-way parallel tests
-        %p
-          Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
-          (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
 
-      %li
-        %h5 Same day support
-        %p By phone, by chat, by email, we just want someone to talk to.
 
-      %li
-        %h5 High limits
-        %p
-          We don't charge you overages (unless you go insane, and even then we'd be reluctant).
+-#   .offset2.span5
+-#     %h3
+-#       Your plan: "The Awesome!"
 
-      %li
-        %h5 $29 - all in.
-        %p
-          This covers all <b>your</b> builds, in all branches, in all repositories.
-          It does not cover your colleagues, who will need their own accounts.
-          (We currently do not enforce this, but will in the near future).
+-#     %ul
+-#       %li
+-#         %h5 4-way parallel tests
+-#         %p
+-#           Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
+-#           (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
+
+-#       %li
+-#         %h5 Same day support
+-#         %p By phone, by chat, by email, we just want someone to talk to.
+
+-#       %li
+-#         %h5 High limits
+-#         %p
+-#           We don't charge you overages (unless you go insane, and even then we'd be reluctant).
+
+-#       %li
+-#         %h5 $29 - all in.
+-#         %p
+-#           This covers all <b>your</b> builds, in all branches, in all repositories.
+-#           It does not cover your colleagues, who will need their own accounts.
+-#           (We currently do not enforce this, but will in the near future).

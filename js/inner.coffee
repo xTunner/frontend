@@ -372,6 +372,10 @@ class User extends Base
       result
 
 
+  selectPlan: (data, event) =>
+    alert $(event.target).attr("plan-name")
+
+
 
   stripeSubmit: (event) ->
     Stripe.setPublishableKey('pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD');
