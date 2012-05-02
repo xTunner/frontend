@@ -361,6 +361,12 @@ class User extends Base
     json.tokens = ko.observableArray(json.tokens or [])
     super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all", card_on_file: false}, [], false
 
+    @plans = [{title: "Fast", parallel: 2, limits: "3 concurrent builds per project, 15 hours build time", support: "Email", plan: "fast1", price: 16}
+              {title: "Lightning", parallel: 4, limits: null, support: "Email + phone", plan: "lightning1", price: 29}
+              {title: "Awesome", parallel: 8, limits: null, support: "Email + phone", plan: "awesome1", price: 49}
+              {title: "Insane", parallel: 16, limits: null, support: "Email + phone + SLA", plan: "insane1", price: 79}
+              {title: "Ultra", parallel: 64, limits: null, support: "Email + phone + SLA", plan: "ultra1", price: 129}]
+
     @tokenLabel = ko.observable("")
 
     @showEnvironment = @komp =>

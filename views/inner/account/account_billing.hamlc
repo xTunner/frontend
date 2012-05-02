@@ -1,111 +1,75 @@
-%h2 Billing
+%h2 Plans
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
-.alert-message.block-message#per-developer-plan
-  All plans are per developer per month.
-  Your plan covers all <b>your</b> builds, in all branches, in all repositories.
-  It does not cover your colleagues, who will need their own accounts.
-  (We currently do not enforce this, but will in the near future).
+.row#pricing
+  .offset0.titles.span4
+    %div.title
+    %div.tick Incredibly fast builds
+    %div.parallelism Parallelism
+    %div.limits Limits
+    %div.support Fanatical Support
+    %div.price
 
-%table#pricing-table
-  %thead
-    %tr
-      %th
-      %th.heading Fast
-      %th.heading Lightning
-      %th.heading Warp
-      %th.heading Insane
-      %th.heading Instant
+  .offset1
+    .row.plans{data-bind: "foreach: plans"}
+      .plan.span3
+        .title{data-bind: "text: title"}
+        .tick ✔
+        .parallelism
+          = succeed "-way", ->
+            %span{data-bind: "text: parallel"}
 
+        .limits
+          %span{data-bind: "if: limits, text: limits"}
+          %span.none{data-bind: "ifnot: limits"}
+            = HAML['unlimited']()
 
-  %tbody
-    %tr
-      %td Incredibly fast builds
-      %td.tick ✔
-      %td.tick ✔
-      %td.tick ✔
-      %td.tick ✔
-      %td.tick ✔
+        .support{data-bind: "text: support"}
 
-    %tr
-      %td Parallelism
-      %td 2-way
-      %td 4-way
-      %td 8-way
-      %td 16-way
-      %td 64-way
+        .price
+          $
+          %span{data-bind: "text: price"}
+          p/m
 
-    %tr
-      %td Limits
-      %td
-        3 concurrent builds per project,
-        15 hours build time.
-      %td
-        = HAML['unlimited']()
-      %td
-        = HAML['unlimited']()
-      %td
-        = HAML['unlimited']()
-      %td
-        = HAML['unlimited']()
-
-    %tr
-      %td Fanatical Support
-      %td Email
-      %td Email + phone
-      %td Email + phone
-      %td Email + phone + SLA
-      %td Email + phone + SLA
-
-    %tr
-      %td
-      %td
-        %button.price{plan-name: "fast1", data-bind: "click: selectPlan"}
-          $16
-      %td
-        %button.price{plan-name: "lightning1", data-bind: "click: selectPlan"}
-          $29
-      %td
-        %button.price{plan-name: "warp1", data-bind: "click: selectPlan"}
-          $49
-      %td
-        %button.price{plan-name: "insane1", data-bind: "click: selectPlan"}
-          $79
-      %td
-        %button.price{plan-name: "instant1", data-bind: "click: selectPlan"}
-          $129
+        %button.select.btn.success{data-bind: "click: function () { selectPlan($data); }"}
+          Sign up
 
 
+%br
 .row
-  .span6
-    %span{data-bind: "if: card_on_file"}
-      Thanks!
-      We really appreciate your support.
-      We'd love to hear any way we can make the service better.
+  .offset6.span8.alert-message.block-message#per-developer-plan
+    All plans are per developer per month.
+    Your plan covers all <b>your</b> builds, in all branches, in all repositories.
+    It does not cover your colleagues, who will need their own accounts.
+    (We currently do not enforce this, but will in the near future).
 
-    %span{data-bind: "ifnot: card_on_file"}
-      %form.form-stacked#payment-form
-        .form-row
-          %label Card Number
-          %input.card-number{type: "text", size: "20", autocomplete: "off"}
-          %br
-        .form-row
-          %label CVC
-          %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
-          %br
-        .form-row
-          %label Expiration (MM/YYYY)
-          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
-          %span /
-          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
-        %br
-        .alert-message.block-message
-          %p
-            Upon successfully submitting this form, you will be charged $29 at the end of
-            your trial, and again on a recurring basis, once per month.
-        %button.btn.primary.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
-          Pay for Circle
+
+
+-# .row
+-#   .span6
+-#     %span
+-#       %form.form-stacked#payment-form
+-#         .form-row
+-#           %label Card Number
+-#           %input.card-number{type: "text", size: "20", autocomplete: "off"}
+-#           %br
+-#         .form-row
+-#           %label CVC
+-#           %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
+-#           %br
+-#         .form-row
+-#           %label Expiration (MM/YYYY)
+-#           %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
+-#           %span /
+-#           %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
+-#         %br
+-#         .alert-message.block-message
+-#           %p
+-#             Upon successfully submitting this form, you will be charged $29 at the end of
+-#             your trial, and again on a recurring basis, once per month.
+-#         %button.btn.primary.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
+-#           Pay for Circle
 
 
 
