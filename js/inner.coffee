@@ -390,11 +390,12 @@ class User extends Base
 
 
 
-  stripeSubmit: (event) ->
+  stripeSubmit: (data, event) ->
     Stripe.setPublishableKey('pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD');
 
     # disable the submit button to prevent repeated clicks
-    $('.submit-button').attr "disabled", "disabled"
+    button = $('.submit-button')
+    button.attr "disabled", "disabled"
 
     Stripe.createToken {
       number: $('.card-number').val()
@@ -403,17 +404,19 @@ class User extends Base
       exp_year: $('.card-expiry-year').val()
     }, (status, response) =>
       if response.error
+        button.removeAttr "disabled", "disabled"
         VM.setErrorMessage response.error.message
       else
-        @recordStripeTransaction response # TODO: add the plan
+        @recordStripeTransaction event, response # TODO: add the plan
 
 
     # prevent the form from submitting with the default action
     return false;
 
-  recordStripeTransaction: (response) =>
+  recordStripeTransaction: (event, response) =>
     $.ajax(
       url: "/api/v1/user/record-stripe-transaction"
+      event: event
       type: "POST"
     )
     false
