@@ -471,6 +471,8 @@ class CircleViewModel extends Base
     @error_message null
 
   setErrorMessage: (message) =>
+    if message[-1] != '.'
+      message += '.'
     @error_message message
     $('html, body').animate({ scrollTop: 0 }, 0);
 
