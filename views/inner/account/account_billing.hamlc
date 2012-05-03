@@ -13,7 +13,7 @@
 
   .offset1
     .row.plans{data-bind: "foreach: plans"}
-      .plan.span3{data-bind: "visible: $parent.showPlan($data)"}
+      .plan.span3{data-bind: "if: $parent.showPlan($data)"}
         .title{data-bind: "text: title"}
         .tick ✔
         .parallelism
@@ -31,40 +31,40 @@
         .support{data-bind: "text: support"}
 
         .price
-          $
-          %span{data-bind: "text: price"}
+          = precede '$', ->
+            %span{data-bind: "text: price"}
           p/m
 
-        %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
-          Sign up
+        .button{data-bind: "ifnot: $parent.showCreditCardForm()"}
+          %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
+            Sign up
 
 
-  .span6{data-bind: "visible: showCreditCardForm()"}
-    %span{data-bind: "with: selectedPlan"}
+    .span6{data-bind: "if: showCreditCardForm()"}
       %form.form-stacked#payment-form
         .form-row
           %label Card Number
-          %input.card-number{type: "text", size: "20", autocomplete: "off"}
+          %input.card-number{type: "text", size: "20", autocomplete: "off", value: "42424242424242"}
           %br
         .form-row
           %label CVC
-          %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
+          %input.card-cvc{type: "text", size: 4, style: "width: auto;", value: "123"}
           %br
         .form-row
           %label Expiration (MM/YYYY)
-          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
+          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;", value: "01"}
           %span /
-          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
+          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;", value: "2013"}
         %br
         .alert-message.block-message
           %p
             Upon successfully submitting this form, you will be charged
-            = preceed '$', ->
-              %span{data-bind: "text: price"}
+            = precede '$', ->
+              %span{data-bind: "text: selectedPlan().price"}
             at the end of
             your trial, and again on a recurring basis, once per month.
         %button.btn.primary.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
-          Pay for Circle
+          Charge me
 
 
 
