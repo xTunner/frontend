@@ -415,9 +415,10 @@ class User extends Base
 
   recordStripeTransaction: (event, response) =>
     $.ajax(
-      url: "/api/v1/user/record-stripe-transaction"
+      url: "/api/v1/user/pay-single-user"
       event: event
       type: "POST"
+      data: JSON.stringify {token: response, plan: @selectedPlan().plan}
     )
     false
 
