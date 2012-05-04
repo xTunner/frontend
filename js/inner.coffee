@@ -360,7 +360,8 @@ class User extends Base
   constructor: (json) ->
     json.tokens = ko.observableArray(json.tokens or [])
     json.paid = ko.observable(json.paid or false)
-    super json, {paid: false, admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all", card_on_file: false, plan: null}, [], false
+    json.environment = window.renderContext.env if window.renderContext
+    super json, {paid: false, admin: false, login: "", is_new: false, basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
 
     @tokenLabel = ko.observable("")
     @selectedPlan = ko.observable(null)
@@ -431,7 +432,10 @@ class User extends Base
 
 
   stripeSubmit: (data, event) ->
-    Stripe.setPublishableKey('pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD');
+    key = switch @environment
+      when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
+      else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
+    Stripe.setPublishableKey(key)
 
     # disable the submit button to prevent repeated clicks
     button = $('.submit-button')
