@@ -63,8 +63,11 @@
               %span{data-bind: "text: selectedPlan().price"}
             at the end of
             your trial, and again on a recurring basis, once per month.
-        %button.btn.primary.submit-button{type: "submit", data-bind: "click: stripeSubmit"}
-          Charge me
+        %button.btn.primary.submit-button{type: "submit",
+                                          data-bind: "click: stripeSubmit",
+                                          data-loading-text: "Charging",
+                                          data-success-text: "Denied"}
+          Charge
 
 
 
