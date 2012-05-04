@@ -395,7 +395,7 @@ class User extends Base
 
     # disable the submit button to prevent repeated clicks
     button = $('.submit-button')
-    button.attr "disabled", "disabled"
+    button.addClass "disabled"
 
     Stripe.createToken {
       number: $('.card-number').val()
@@ -404,7 +404,7 @@ class User extends Base
       exp_year: $('.card-expiry-year').val()
     }, (status, response) =>
       if response.error
-        button.removeAttr "disabled", "disabled"
+        button.removeClass "disabled"
         VM.setErrorMessage response.error.message
       else
         @recordStripeTransaction event, response # TODO: add the plan
