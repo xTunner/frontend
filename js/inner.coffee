@@ -366,40 +366,41 @@ class User extends Base
     @selectedPlan = ko.observable(null)
 
     @plans = [
-      title: "Fast"
-      parallel: 2
-      limits: "3 concurrent builds per project, 15 hours build time"
-      support: "Email"
-      plan: "fast1"
-      price: 16
-    ,
       title: "Lightning"
-      parallel: 4
+      parallel: 8
       limits: null
       support: "Email + phone"
       plan: "lightning1"
       price: 29
     ,
-      title: "Awesome"
-      parallel: 8
-      limits: null
-      support: "Email + phone"
-      plan: "awesome1"
-      price: 49
-    ,
       title: "Insane"
       parallel: 16
       limits: null
-      support: "Email + phone + SLA"
+      support: "Email + phone"
       plan: "insane1"
-      price: 79
+      price: 49
+    ,
+      title: "Pay as you go"
+      parallel: 8
+      limits: null,
+      support: "Email"
+      plan: "payg1"
+      price: 0
+    ,
+      title: "Fast"
+      parallel: 2
+      limits: "3 concurrent builds per project, 15 hours build time"
+      support: "Email"
+      plan: "fast1"
+      price: 14
     ,
       title: "Ultra"
       parallel: 64
       limits: null
       support: "Email + phone + SLA"
       plan: "ultra1"
-      price: 129]
+      price: 89
+    ]
 
     for p in @plans
       if @plan == p.plan
