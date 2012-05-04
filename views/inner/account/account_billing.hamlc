@@ -3,7 +3,7 @@
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
 .row#pricing
-  .offset0.titles.span4
+  .offset0.titles.span5
     %div.title
     %div.tick Incredibly fast builds
     %div.parallelism Parallelism
@@ -11,64 +11,64 @@
     %div.support Fanatical Support
     %div.price
 
-  .offset1
-    .row.plans{data-bind: "foreach: plans"}
-      .plan.span3{data-bind: "if: $parent.showPlan($data)"}
-        .title{data-bind: "text: title"}
-        .tick ✔
-        .parallelism
-          - str = HAML['unlimited']({title: '-way', message: 'We are still in beta, and parallelism is in advanced stage. Ask us to turn it on for your project.'})
-          = succeed str, ->
-            %span{data-bind: "text: parallel"}
+  / ko foreach: plans
+  .plan.span3{data-bind: "if: $parent.showPlan($data)"}
+    .title{data-bind: "text: title"}
+    .tick ✔
+    .parallelism
+      - str = HAML['unlimited']({title: '-way', message: 'We are still in beta, and parallelism is in advanced stage. Ask us to turn it on for your project.'})
+      = succeed str, ->
+        %span{data-bind: "text: parallel"}
 
 
 
-        .limits
-          %span{data-bind: "if: limits, text: limits"}
-          %span.none{data-bind: "ifnot: limits"}
-            = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
+    .limits
+      %span{data-bind: "if: limits, text: limits"}
+      %span.none{data-bind: "ifnot: limits"}
+        = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
 
-        .support{data-bind: "text: support"}
+    .support{data-bind: "text: support"}
 
-        .price
-          = precede '$', ->
-            %span{data-bind: "text: price"}
-          p/m
+    .price
+      = precede '$', ->
+        %span{data-bind: "text: price"}
+      p/m
 
-        .button{data-bind: "if: $parent.allowPlanSelection()"}
-          %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
-            Sign up
+    .button{data-bind: "if: $parent.allowPlanSelection()"}
+      %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
+        Sign up
+  / /ko
 
 
-    .span6{data-bind: "if: showCreditCardForm()"}
-      %form.form-stacked#payment-form
-        .form-row
-          %label Card Number
-          %input.card-number{type: "text", size: "20", autocomplete: "off", value: "42424242424242"}
-          %br
-        .form-row
-          %label CVC
-          %input.card-cvc{type: "text", size: 4, style: "width: auto;", value: "123"}
-          %br
-        .form-row
-          %label Expiration (MM/YYYY)
-          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;", value: "01"}
-          %span /
-          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;", value: "2013"}
+  .offset2.span6{data-bind: "if: showCreditCardForm()"}
+    %form.form-stacked#payment-form
+      .form-row
+        %label Card Number
+        %input.card-number{type: "text", size: "20", autocomplete: "off", value: "42424242424242"}
         %br
-        .alert-message.block-message
-          %p
-            Upon successfully submitting this form, you will be charged
-            = precede '$', ->
-              %span{data-bind: "text: selectedPlan().price"}
-            at the end of
-            your trial, and again on a recurring basis, once per month.
-        %button.btn.primary.submit-button{type: "submit",
-                                          data-bind: "click: stripeSubmit",
-                                          data-loading-text: "Charging",
-                                          data-failed-text: "Denied",
-                                          data-success-text: "Success"}}
-          Charge
+      .form-row
+        %label CVC
+        %input.card-cvc{type: "text", size: 4, style: "width: auto;", value: "123"}
+        %br
+      .form-row
+        %label Expiration (MM/YYYY)
+        %input.card-expiry-month{type: "text", size: 2, style: "width: auto;", value: "01"}
+        %span /
+        %input.card-expiry-year{type: "text", size: 4, style: "width: auto;", value: "2013"}
+      %br
+      .alert-message.block-message
+        %p
+          Upon successfully submitting this form, you will be charged
+          = precede '$', ->
+            %span{data-bind: "text: selectedPlan().price"}
+          at the end of
+          your trial, and again on a recurring basis, once per month.
+      %button.btn.primary.submit-button{type: "submit",
+                                        data-bind: "click: stripeSubmit",
+                                        data-loading-text: "Charging",
+                                        data-failed-text: "Denied",
+                                        data-success-text: "Success"}}
+        Charge
 
 
 
