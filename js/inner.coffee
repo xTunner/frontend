@@ -28,7 +28,7 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
     VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
   else
-    VM.setErrorMessage "Error: #{xhr.responseText}"
+    VM.setErrorMessage xhr.responseText
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
@@ -475,7 +475,9 @@ class CircleViewModel extends Base
     @error_message null
 
   setErrorMessage: (message) =>
-    if message[-1] != '.'
+    if message == ""
+      message = "Unknown error"
+    if message.slice(-1) != '.'
       message += '.'
     @error_message message
     $('html, body').animate({ scrollTop: 0 }, 0);
