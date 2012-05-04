@@ -35,7 +35,7 @@
             %span{data-bind: "text: price"}
           p/m
 
-        .button{data-bind: "ifnot: $parent.showCreditCardForm()"}
+        .button{data-bind: "if: $parent.allowPlanSelection()"}
           %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
             Sign up
 
