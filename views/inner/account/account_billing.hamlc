@@ -16,12 +16,8 @@
     .title{data-bind: "text: title"}
     .tick ✔
     .parallelism
-      - str = HAML['unlimited']({title: '-way', message: 'We are still in beta, and parallelism is in advanced stage. Ask us to turn it on for your project.'})
-      = succeed str, ->
+      = succeed '-way', ->
         %span{data-bind: "text: parallel"}
-
-
-
     .limits
       %span{data-bind: "if: limits, text: limits"}
       %span.none{data-bind: "ifnot: limits"}
