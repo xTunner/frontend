@@ -40,25 +40,21 @@
     %form.form-stacked#payment-form
       .form-row
         %label Card Number
-        %input.card-number{type: "text", size: "20", autocomplete: "off", value: "42424242424242"}
+        %input.card-number{type: "text", size: "20", autocomplete: "off"}
         %br
       .form-row
         %label CVC
-        %input.card-cvc{type: "text", size: 4, style: "width: auto;", value: "123"}
+        %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
         %br
       .form-row
         %label Expiration (MM/YYYY)
-        %input.card-expiry-month{type: "text", size: 2, style: "width: auto;", value: "01"}
+        %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
         %span /
-        %input.card-expiry-year{type: "text", size: 4, style: "width: auto;", value: "2013"}
+        %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
       %br
-      .alert-message.block-message
+      .alert-message.block-message.info
         %p
-          Upon successfully submitting this form, you will be charged
-          = precede '$', ->
-            %span{data-bind: "text: selectedPlan().price"}
-          at the end of
-          your trial, and again on a recurring basis, once per month.
+          We'll charge you as soon as your trial ends, then once a month.
       %button.btn.primary.submit-button{type: "submit",
                                         data-bind: "click: stripeSubmit",
                                         data-loading-text: "Charging",
