@@ -359,7 +359,8 @@ class Project extends HasUrl
 class User extends Base
   constructor: (json) ->
     json.tokens = ko.observableArray(json.tokens or [])
-    super json, {admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all", card_on_file: false}, [], false
+    json.paid = ko.observable(json.paid or false)
+    super json, {paid: false, admin: false, login: "", is_new: false, environment: "production", basic_email_prefs: "all", card_on_file: false}, [], false
 
     @plans = [{title: "Fast", parallel: 2, limits: "3 concurrent builds per project, 15 hours build time", support: "Email", plan: "fast1", price: 16}
               {title: "Lightning", parallel: 4, limits: null, support: "Email + phone", plan: "lightning1", price: 29}
@@ -419,6 +420,8 @@ class User extends Base
       event: event
       type: "POST"
       data: JSON.stringify {token: response, plan: @selectedPlan().plan}
+      success: () =>
+        @paid true
     )
     false
 
