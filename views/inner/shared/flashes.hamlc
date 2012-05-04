@@ -1,5 +1,6 @@
 %div{data-bind: "if: $root.error_message"}
   .alert-message.block-message.error{data-bind: "with: $root"}
+    Error:
     %span{data-bind: "text: error_message"}
     %br
     If we can help,
