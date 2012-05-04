@@ -36,32 +36,37 @@
   / /ko
 
 
-  .offset2.span6{data-bind: "if: showCreditCardForm()"}
-    %form.form-stacked#payment-form
-      .form-row
-        %label Card Number
-        %input.card-number{type: "text", size: "20", autocomplete: "off"}
+  .offset2.span6
+    %div{data-bind: "if: showCreditCardForm()"}
+      %form.form-stacked#payment-form
+        .form-row
+          %label Card Number
+          %input.card-number{type: "text", size: "20", autocomplete: "off"}
+          %br
+        .form-row
+          %label CVC
+          %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
+          %br
+        .form-row
+          %label Expiration (MM/YYYY)
+          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
+          %span /
+          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
         %br
-      .form-row
-        %label CVC
-        %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
-        %br
-      .form-row
-        %label Expiration (MM/YYYY)
-        %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
-        %span /
-        %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
-      %br
-      .alert-message.block-message.info
-        %p
-          We'll charge you as soon as your trial ends, then once a month.
-      %button.btn.primary.submit-button{type: "submit",
-                                        data-bind: "click: stripeSubmit",
-                                        data-loading-text: "Charging",
-                                        data-failed-text: "Denied",
-                                        data-success-text: "Success"}}
-        Charge
+        .alert-message.block-message.info
+          %p
+            We'll charge you as soon as your trial ends, then once a month.
+        %button.btn.primary.submit-button{type: "submit",
+                                          data-bind: "click: stripeSubmit",
+                                          data-loading-text: "Charging",
+                                          data-failed-text: "Denied",
+                                          data-success-text: "Success"}}
+          Charge
 
+    %div{data-bind: "if: showThanks"}
+      .alert-message.block-message.info
+        %h2 Thanks!
+        %h6 We really genuinely appreciate it!
 
 
 %br

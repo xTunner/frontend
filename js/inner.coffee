@@ -422,6 +422,9 @@ class User extends Base
   showCreditCardForm: () => @komp =>
     @selectedPlan()? and not @paid()
 
+  showThanks: () => @komp =>
+    @paid()
+
   allowPlanSelection: () => @komp =>
     not @selectedPlan()?
 
