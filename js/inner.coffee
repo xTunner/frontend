@@ -361,11 +361,18 @@ class User extends Base
     json.tokens = ko.observableArray(json.tokens or [])
     json.paid = ko.observable(json.paid or false)
     json.environment = window.renderContext.env if window.renderContext
-    super json, {paid: false, admin: false, login: "", is_new: false, basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
+    super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
 
     @tokenLabel = ko.observable("")
-    @selectedPlan = ko.observable(null)
+    @showEnvironment = @komp =>
+      @admin || (@environment is "staging") || (@environment is "development")
 
+    @environmentColor = @komp =>
+      result = {}
+      result["env-" + @environment] = true
+      result
+
+    # billing
     @plans = [
       title: "Ultra"
       cost: 0
@@ -413,19 +420,12 @@ class User extends Base
       price: 0
     ]
 
+    @selectedPlan = ko.observable(null)
     for p in @plans
       if @plan == p.plan
         @selectedPlan(p)
 
-
-    @showEnvironment = @komp =>
-      @admin || (@environment is "staging") || (@environment is "development")
-
-    @environmentColor = @komp =>
-      result = {}
-      result["env-" + @environment] = true
-      result
-
+    # team billing
     @users = [
       login: "pbiggar"
       name: "Paul Biggar"
@@ -436,7 +436,9 @@ class User extends Base
       login: "disusered"
       name: "Carlos Rosquilles"
     ]
+    @sidebarPlan = ko.observable(@plans[2])
 
+  # billing
   showPlan: (data) => @komp =>
     @selectedPlan() == null or @selectedPlan() == data
 

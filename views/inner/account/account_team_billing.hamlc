@@ -27,7 +27,7 @@
   .offset3.span3.pricing
     = HAML['account_plan_titles']()
 
-  .span3.pricing{data-bind: "with: plans[0]"}
+  .span3.pricing{data-bind: "with: sidebarPlan"}
     = HAML['account_plan']()
 
 
