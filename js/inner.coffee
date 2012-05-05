@@ -385,7 +385,7 @@ class User extends Base
       parallel: 8
       limits: null,
       support: "Email"
-      plan: "payg1"
+      plan: "payasyougo1"
       price: 0
     ,
       title: "Fast"
