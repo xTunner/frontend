@@ -426,6 +426,17 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
+    @users = [
+      login: "pbiggar"
+      name: "Paul Biggar"
+    ,
+      login: "arohner"
+      name: "Allen Rohner"
+    ,
+      login: "disusered"
+      name: "Carlos Rosquilles"
+    ]
+
   showPlan: (data) => @komp =>
     @selectedPlan() == null or @selectedPlan() == data
 

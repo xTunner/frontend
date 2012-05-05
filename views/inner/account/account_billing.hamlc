@@ -11,7 +11,7 @@
       %span<>
         ?
 
-.row#pricing
+.row.pricing
   .offset0.span4
 
     = HAML['account_plan_titles']()
