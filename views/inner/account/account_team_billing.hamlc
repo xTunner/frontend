@@ -18,9 +18,8 @@
           %td{data-bind: "text: login"}
           %td{data-bind: "text: name"}
           %td
-            %select{name: "plan"}
-              %option{value: "insane1"} Insane
-              %option{value: "fast1"} Fast
+            %select{name: "plan", data-bind: "foreach: $parent.plans"}
+              %option{data-bind: "value: plan, text: title, attr: {selected: plan == 'lightning1'}"}
           %td
             %input{type: "checkbox"}
 
