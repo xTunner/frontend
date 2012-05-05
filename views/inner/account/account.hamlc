@@ -14,7 +14,7 @@
       %a{:href: '/account/billing'}
         Billing
 
-    %li#team-billing
+    -#%li#team-billing
       %a{:href: '/account/team-billing'}
         Team Billing
 
