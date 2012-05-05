@@ -426,17 +426,33 @@ class User extends Base
         @selectedPlan(p)
 
     # team billing
-    @users = [
+    # The options binding stores a user's selected plan in
+    # chosenTeamPlan, and then triggers the changePlan function which saves the
+    # result in teamPlanStore.
+
+    @users = @komp => [
       login: "pbiggar"
       name: "Paul Biggar"
+      plan: ko.observable(null)
     ,
       login: "arohner"
       name: "Allen Rohner"
+      plan: ko.observable(null)
     ,
       login: "disusered"
+      plan: ko.observable(null)
       name: "Carlos Rosquilles"
     ]
-    @sidebarPlan = ko.observable(@plans[2])
+
+    @teamTotal = @komp =>
+      total = 0
+      for u in @users()
+        if u.plan()
+          total += u.plan().price
+      total
+
+
+
 
   # billing
   showPlan: (data) => @komp =>
@@ -453,6 +469,10 @@ class User extends Base
 
   selectPlan: (data) =>
     @selectedPlan data
+
+  # team billing
+
+
 
 
 

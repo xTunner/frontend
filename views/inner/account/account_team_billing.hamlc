@@ -1,6 +1,19 @@
 %h2 Team Billing
 
+%h3 Plans
+
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
+
+
+.row.pricing
+  .offset0.span4
+    = HAML['account_plan_titles']()
+
+  / ko foreach: plans
+  .span3{data-bind: "if: $parent.showPlan($data)"}
+    = HAML['account_plan']()
+  / /ko
+
 
 .row
   .alert-message.block-message.info.span6
@@ -10,28 +23,23 @@
     Choose "Pay as you go" for occasional contributors like contractors.
     Select them, and their plan.
 
+
 .row#users
-  .offset1.span5
+  .offset1.span4
     %table
       %tbody{data-bind: "foreach: users"}
         %tr
           %td{data-bind: "text: login"}
           %td{data-bind: "text: name"}
           %td
-            %select{name: "plan", data-bind: "foreach: $parent.plans"}
-              %option{data-bind: "value: plan, text: title, attr: {selected: plan == 'lightning1'}"}
-          %td
-            %input{type: "checkbox"}
+            %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
 
-
-  .offset3.span3.pricing
-    = HAML['account_plan_titles']()
-
-  .span3.pricing{data-bind: "with: sidebarPlan"}
-    = HAML['account_plan']()
+  .offset7
+    %span{data-bind: "text: teamTotal"}
 
 
 
 
-  -# .offset2.span6
-  -#   = HAML['account_credit_card_form']()
+
+-# .offset2.span6
+-#   = HAML['account_credit_card_form']()
