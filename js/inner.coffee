@@ -367,12 +367,12 @@ class User extends Base
     @selectedPlan = ko.observable(null)
 
     @plans = [
-      title: "Lightning"
-      parallel: 8
+      title: "Ultra"
+      parallel: 64
       limits: null
-      support: "Email + phone"
-      plan: "lightning1"
-      price: 29
+      support: "Email + phone + SLA"
+      plan: "ultra1"
+      price: 89
     ,
       title: "Insane"
       parallel: 16
@@ -381,12 +381,12 @@ class User extends Base
       plan: "insane1"
       price: 49
     ,
-      title: "Pay as you go"
+      title: "Lightning"
       parallel: 8
-      limits: null,
-      support: "Email"
-      plan: "payasyougo1"
-      price: 0
+      limits: null
+      support: "Email + phone"
+      plan: "lightning1"
+      price: 29
     ,
       title: "Fast"
       parallel: 2
@@ -395,12 +395,12 @@ class User extends Base
       plan: "fast1"
       price: 14
     ,
-      title: "Ultra"
-      parallel: 64
-      limits: null
-      support: "Email + phone + SLA"
-      plan: "ultra1"
-      price: 89
+      title: "Pay as you go"
+      parallel: 8
+      limits: null,
+      support: "Email"
+      plan: "payasyougo1"
+      price: 0
     ]
 
     for p in @plans
