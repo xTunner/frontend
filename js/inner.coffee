@@ -297,7 +297,7 @@ class Project extends HasUrl
       else
         -1
     else
-      if l.vcs_url().toLowerCase() < r.vcs_url().toLowerCase() then 1 else -1
+      if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
 
 
   checkbox_title: =>
