@@ -1,9 +1,9 @@
-%h2 Plans
+%h2 Team Billing
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
 .row#pricing
-  .offset0.titles.span5
+  .offset0.titles.span4
     %div.title
     %div.tick Incredibly fast builds
     %div.parallelism= HAML['unlimited']({title: 'Parallelism', message: "Parallelism support isn’t completely finished, but is being trialed by a number of beta users. Ask us to turn it on for your project."})
