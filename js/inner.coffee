@@ -368,35 +368,45 @@ class User extends Base
 
     @plans = [
       title: "Ultra"
+      cost: 0
       parallel: 64
       limits: null
       support: "Email + phone + SLA"
+      reason: "Annihilate long builds"
       plan: "ultra1"
       price: 89
     ,
       title: "Insane"
+      cost: 0
       parallel: 16
       limits: null
+      reason: "Ludicrously fast testing"
       support: "Email + phone"
       plan: "insane1"
       price: 49
     ,
       title: "Lightning"
       parallel: 8
+      cost: 0
       limits: null
+      reason: "Incredibly fast builds"
       support: "Email + phone"
       plan: "lightning1"
       price: 29
     ,
       title: "Fast"
       parallel: 2
+      cost: 0
+      reason: "Fast builds, low cost"
       limits: "3 concurrent builds per project, 15 hours build time"
       support: "Email"
       plan: "fast1"
       price: 14
     ,
       title: "Pay as you go"
+      reason: "For occasional contributors"
       parallel: 8
+      cost: 1
       limits: null,
       support: "Email"
       plan: "payasyougo1"

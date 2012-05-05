@@ -7,7 +7,7 @@
     = HAML['account_plan_titles']()
 
   / ko foreach: plans
-  .plan.span3{data-bind: "if: $parent.showPlan($data)"}
+  .span3{data-bind: "if: $parent.showPlan($data)"}
     = HAML['account_plan']()
   / /ko
 

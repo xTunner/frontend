@@ -1,20 +1,31 @@
-.title{data-bind: "text: title"}
-.tick ✔
-.parallelism
-  = succeed '-way', ->
-    %span{data-bind: "text: parallel"}
-.limits
-  %span{data-bind: "if: limits, text: limits"}
-  %span.none{data-bind: "ifnot: limits"}
-    = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
+.plan
+  .title{data-bind: "text: title"}
+  .reason{data-bind: "text: reason"}
+  .tick ✔
+  .parallelism
+    = succeed '-way', ->
+      %span{data-bind: "text: parallel"}
+  .limits
+    %span{data-bind: "if: limits, text: limits"}
+    %span.none{data-bind: "ifnot: limits"}
+      = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
 
-.support{data-bind: "text: support"}
+  .cost
+    %span{data-bind: "if: cost > 0"}
+      $
+      %span{data-bind: "text: cost"}>
+      \/build
 
-.price
-  = precede '$', ->
-    %span{data-bind: "text: price"}
-  p/m
+    %span{data-bind: "ifnot: cost"}
+      Included
 
-.button{data-bind: "if: $parent.allowPlanSelection()"}
-  %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
-    Sign up
+  .support{data-bind: "text: support"}
+
+  .price
+    $
+    %span{data-bind: "text: price"}>
+    \/build
+
+  .button{data-bind: "if: $parent.allowPlanSelection()"}
+    %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
+      Sign up

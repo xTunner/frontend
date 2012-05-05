@@ -95,8 +95,6 @@ body {
 
 
 #pricing {
-   .plans { text-align: center; }
-
    .titles > div {
       width: 200px;
       padding: 3px 2px 3px 0;
@@ -106,9 +104,18 @@ body {
    }
 
    .plan > div {
+      text-align: center;
       height: 33px;
       padding: 3px 0 3px 0;
     }
+
+   .plan > .reason {
+      font-weight: bold;
+      font-size: 15px;
+      height: 40px;
+      padding: 0px 20px; // override padding above
+   }
+
 
    .price {
       font-size: 18px;
