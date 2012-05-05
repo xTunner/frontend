@@ -14,6 +14,10 @@
       %a{:href: '/account/billing'}
         Billing
 
+    %li#team-billing
+      %a{:href: '/account/team-billing'}
+        Team Billing
+
     %li#close
       %a{:href: '/account/close'}
         Close account

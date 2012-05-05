@@ -604,7 +604,7 @@ class CircleViewModel extends Base
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage]({}))
+    $('#subpage').html(HAML['account_' + subpage.replace('-', '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
 
