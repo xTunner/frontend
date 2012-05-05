@@ -2,8 +2,18 @@
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
+.row
+  .offset2.span7
+    .alert-message.info
+      Looking to handle
+      %a{href: "/account/team-billing"}
+        billing for your entire team at once
+      %span<>
+        ?
+
 .row#pricing
   .offset0.span4
+
     = HAML['account_plan_titles']()
 
   / ko foreach: plans
