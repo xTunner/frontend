@@ -2,71 +2,27 @@
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
+.alert-message.block-message.info
+  Pay for your entire team from one interface.
+  Members of your organizations are listed below.
+  Select them, and their plan.
+
+
+
+
+
 .row#pricing
-  .offset0.titles.span4
-    %div.title
-    %div.tick Incredibly fast builds
-    %div.parallelism= HAML['unlimited']({title: 'Parallelism', message: "Parallelism support isn’t completely finished, but is being trialed by a number of beta users. Ask us to turn it on for your project."})
-    %div.limits Limits
-    %div.support Fanatical Support
-    %div.price
+  .offset0.span4
+    = HAML['account_plan_titles']()
 
   / ko foreach: plans
   .plan.span3{data-bind: "if: $parent.showPlan($data)"}
-    .title{data-bind: "text: title"}
-    .tick ✔
-    .parallelism
-      = succeed '-way', ->
-        %span{data-bind: "text: parallel"}
-    .limits
-      %span{data-bind: "if: limits, text: limits"}
-      %span.none{data-bind: "ifnot: limits"}
-        = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
-
-    .support{data-bind: "text: support"}
-
-    .price
-      = precede '$', ->
-        %span{data-bind: "text: price"}
-      p/m
-
-    .button{data-bind: "if: $parent.allowPlanSelection()"}
-      %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
-        Sign up
+    = HAML['account_plan']()
   / /ko
 
 
   .offset2.span6
-    %div{data-bind: "if: showCreditCardForm()"}
-      %form.form-stacked#payment-form
-        .form-row
-          %label Card Number
-          %input.card-number{type: "text", size: "20", autocomplete: "off"}
-          %br
-        .form-row
-          %label CVC
-          %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
-          %br
-        .form-row
-          %label Expiration (MM/YYYY)
-          %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
-          %span /
-          %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
-        %br
-        .alert-message.block-message.info
-          %p
-            We'll charge you as soon as your trial ends, then once a month.
-        %button.btn.primary.submit-button{type: "submit",
-                                          data-bind: "click: stripeSubmit",
-                                          data-loading-text: "Charging",
-                                          data-failed-text: "Denied",
-                                          data-success-text: "Success"}}
-          Charge
-
-    %div{data-bind: "if: showThanks()"}
-      .alert-message.block-message.info
-        %h2 Thanks!
-        %h6 We really genuinely appreciate it!
+    = HAML['account_credit_card_form']()
 
 
 %br

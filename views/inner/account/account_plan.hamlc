@@ -1,0 +1,20 @@
+.title{data-bind: "text: title"}
+.tick ✔
+.parallelism
+  = succeed '-way', ->
+    %span{data-bind: "text: parallel"}
+.limits
+  %span{data-bind: "if: limits, text: limits"}
+  %span.none{data-bind: "ifnot: limits"}
+    = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
+
+.support{data-bind: "text: support"}
+
+.price
+  = precede '$', ->
+    %span{data-bind: "text: price"}
+  p/m
+
+.button{data-bind: "if: $parent.allowPlanSelection()"}
+  %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
+    Sign up

@@ -1,0 +1,7 @@
+.titles
+  %div.title
+  %div.tick Incredibly fast builds
+  %div.parallelism= HAML['unlimited']({title: 'Parallelism', message: "Parallelism support isn’t completely finished, but is being trialed by a number of beta users. Ask us to turn it on for your project."})
+  %div.limits Limits
+  %div.support Fanatical Support
+  %div.price
