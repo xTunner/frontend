@@ -16,7 +16,7 @@
 
   / ko foreach: plans
   .span3{data-bind: "if: $parent.showPlan($data)"}
-    = HAML['account_plan']()
+    = HAML['account_plan']({show_buy_button: true})
   / /ko
 
 
