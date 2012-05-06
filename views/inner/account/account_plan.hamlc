@@ -24,7 +24,7 @@
   .price
     $
     %span{data-bind: "text: price"}>
-    \/month
+    \/dev
 
   .button{data-bind: "if: $parent.allowPlanSelection()"}
     %button.select.btn.success{data-bind: "click: function () { $parent.selectPlan($data); }"}
