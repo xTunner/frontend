@@ -2,11 +2,11 @@
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
-.row#refer-to-team-billing
+.row#refer-to-other-billing
   .offset8.span4
     .alert-message.info.block-message
       %a{href: "/account/team-billing"}
-        Looking for team billing?
+        Looking for team plans?
 
 
 .row.pricing
