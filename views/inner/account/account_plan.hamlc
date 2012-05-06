@@ -17,7 +17,7 @@
       \/build
 
     %span{data-bind: "ifnot: cost"}
-      Included
+      None
 
   .support{data-bind: "text: support"}
 
