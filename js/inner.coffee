@@ -411,7 +411,7 @@ class User extends Base
       price: 14
     ,
       title: "Pay as you go"
-      reason: "For occasional contributors"
+      reason: "For occasional committers"
       parallel: 8
       cost: 1
       limits: null,
