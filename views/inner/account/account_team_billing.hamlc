@@ -1,6 +1,4 @@
-%h2 Team Billing
-
-%h3 Plans
+%h2 Team plans
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
