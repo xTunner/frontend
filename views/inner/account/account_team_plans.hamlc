@@ -6,7 +6,7 @@
 
   .row#refer-to-other-billing
     .offset8.span4.alert-message.info.block-message
-      %a{href: "/account/billing"}
+      %a{href: "/account/plans"}
         Looking for individual plans?
 
   .row

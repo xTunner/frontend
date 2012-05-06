@@ -10,13 +10,13 @@
       %a{:href: '/account/api'}
         API
 
-    %li#billing
-      %a{:href: '/account/billing'}
-        Billing
+    %li#plans
+      %a{:href: '/account/plans'}
+        Plans
 
-    %li#team-billing
-      %a{:href: '/account/team-billing'}
-        Team Billing
+    %li#team-plans
+      %a{:href: '/account/team-plans'}
+        Team Plans
 
     %li#close
       %a{:href: '/account/close'}

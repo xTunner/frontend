@@ -5,7 +5,7 @@
 .row#refer-to-other-billing
   .offset8.span4
     .alert-message.info.block-message
-      %a{href: "/account/team-billing"}
+      %a{href: "/account/team-plans"}
         Looking for team plans?
 
 
@@ -30,7 +30,7 @@
     Plans are <b><i>per-developer</i></b> per month.
     Your plan covers all <i>your</i> builds, in all branches, in all repositories.
     Use
-    %a{href: "/account/team-billing"}
+    %a{href: "/account/team-plans"}
       team billing
     to cover entire organizations or all committers to a repository.
 
