@@ -643,9 +643,21 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
+  loadStripe: () =>
+    unless @stripeLoaded
+      @stripeLoaded = true
+      s = document.createElement 'script'
+      s.setAttribute "type", "text/javascript"
+      s.setAttribute "src", "https://js.stripe.com/v1/"
+      document.getElementsByTagName("head")[0].appendChild(s)
+
+
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
+    if subpage == 'plans' or subpage == "team-plans"
+      @loadStripe()
+
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace('-', '_')]({}))
     ko.applyBindings(VM)
