@@ -1,46 +1,50 @@
-%h2 Team plans
+#team
 
-%script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
+  %h2 Team plans
 
-.row#refer-to-other-billing
-  .offset8.span4.alert-message.info.block-message
-    %a{href: "/account/billing"}
-      Looking for individual plans?
+  %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
-.row
-  .offset7.span6.alert-message.block-message.info
-    Handle all of your team's plans in one place.
-    All team members need a plan.
-    (Choose "Pay as you go" for occasional contributors like contractors)
+  .row#refer-to-other-billing
+    .offset8.span4.alert-message.info.block-message
+      %a{href: "/account/billing"}
+        Looking for individual plans?
 
-
-.row#users
-  .offset1.span5
-    %table
-      %tbody{data-bind: "foreach: users"}
-        %tr
-          %td{data-bind: "text: login"}
-          %td{data-bind: "text: name"}
-          %td
-            %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
-
-  .offset7
-    %span{data-bind: "text: teamTotal"}
+  .row
+    .offset7.span6.alert-message.block-message.info
+      Handle all of your team's plans in one place.
+      All team members need a plan.
+      (Choose "Pay as you go" for occasional contributors like contractors)
 
 
-.row.pricing
-  .offset0.span4
-    = HAML['account_plan_titles']()
+  .row#users
+    .offset1.span8
+      %table
+        %tbody{data-bind: "foreach: users"}
+          %tr
+            %td{data-bind: "text: login"}
+            %td#name{data-bind: "text: name"}
+            %td
+              %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
 
-  / ko foreach: plans
-  .span3
-    = HAML['account_plan']({show_buy_button: false})
-  / /ko
+    .offset1.span3
+      #total
+        Total: $
+        %span{data-bind: "text: teamTotal"}<>
+
+
+  .row.pricing
+    .offset0.span4
+      = HAML['account_plan_titles']()
+
+    / ko foreach: plans
+    .span3
+      = HAML['account_plan']({show_buy_button: false})
+    / /ko
 
 
 
 
 
 
--# .offset2.span6
--#   = HAML['account_credit_card_form']()
+  -# .offset2.span6
+  -#   = HAML['account_credit_card_form']()
