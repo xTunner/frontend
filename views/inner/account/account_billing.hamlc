@@ -1,15 +1,13 @@
-%h2 Plans
+%h2 Individual Plans
 
 %script{type: "text/javascript", src: "https://js.stripe.com/v1/"}
 
-.row
-  .offset2.span7
-    .alert-message.info
-      Looking to handle
+.row#refer-to-team-billing
+  .offset8.span4
+    .alert-message.info.block-message
       %a{href: "/account/team-billing"}
-        billing for your entire team at once
-      %span<>
-        ?
+        Looking for team billing?
+
 
 .row.pricing
   .offset0.span4
@@ -27,17 +25,14 @@
 
 
 
-%br
 .row
   .offset6.span8.alert-message.block-message#per-developer-plan
-    All plans are per developer per month.
-    Your plan covers all <b>your</b> builds, in all branches, in all repositories.
-    It does not cover your colleagues, who will need their own accounts.
-    (We currently do not enforce this, but will in the near future).
-
-
-
-
+    Plans are <b><i>per-developer</i></b> per month.
+    Your plan covers all <i>your</i> builds, in all branches, in all repositories.
+    Use
+    %a{href: "/account/team-billing"}
+      team billing
+    to cover entire organizations or all committers to a repository.
 
 
 -#   .offset2.span5
