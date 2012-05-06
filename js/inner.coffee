@@ -381,7 +381,7 @@ class User extends Base
       support: "Email + phone + SLA"
       reason: "Annihilate long builds"
       plan: "ultra1"
-      price: 89
+      price: 99
     ,
       title: "Insane"
       cost: 0
@@ -390,7 +390,7 @@ class User extends Base
       reason: "Ludicrously fast testing"
       support: "Email + phone"
       plan: "insane1"
-      price: 49
+      price: 59
     ,
       title: "Lightning"
       parallel: 8
