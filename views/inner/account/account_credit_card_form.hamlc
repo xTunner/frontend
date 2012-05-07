@@ -26,6 +26,7 @@
 
 
 %div{data-bind: "if: showThanks()"}
-  .alert-message.block-message.info
-    %h2 Thanks!
-    %h6 We really genuinely appreciate it!
+  #showThanks
+    .alert-message.block-message.info
+      %h2 Thanks!
+      %h6 We really genuinely appreciate it!
