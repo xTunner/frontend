@@ -441,29 +441,13 @@ class User extends Base
         @selectedPlan(p)
 
     # team billing
-    # The options binding stores a user's selected plan in
-    # chosenTeamPlan, and then triggers the changePlan function which saves the
-    # result in teamPlanStore.
-
-    @users = @komp => [
-      login: "pbiggar"
-      name: "Paul Biggar"
-      plan: ko.observable(null)
-    ,
-      login: "arohner"
-      name: "Allen Rohner"
-      plan: ko.observable(null)
-    ,
-      login: "disusered"
-      plan: ko.observable(null)
-      name: "Carlos Rosquilles"
-    ]
+    @collaborators = ko.observable(null)
 
     @teamTotal = @komp =>
+      return 0 unless @collaborators()
       total = 0
-      for u in @users()
-        if u.plan()
-          total += u.plan().price
+      for u in @collaborators()
+        total += u.plan().price if u.plan()
       total
 
 
@@ -484,9 +468,6 @@ class User extends Base
 
   selectPlan: (data) =>
     @selectedPlan data
-
-  # team billing
-
 
 
 
@@ -666,11 +647,18 @@ class CircleViewModel extends Base
       s.setAttribute "src", "https://js.stripe.com/v1/"
       document.getElementsByTagName("head")[0].appendChild(s)
 
+  loadTeamMembers: () =>
+    $.getJSON '/api/v1/user/team-members', (data) =>
+      for d in data
+        d.plan = ko.observable(null)
+      @current_user().collaborators(data)
+
 
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
     if subpage == 'plans' or subpage == "team-plans"
+      @loadTeamMembers()
       @loadStripe()
 
     $('#main').html(HAML['account']({}))
