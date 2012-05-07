@@ -19,6 +19,7 @@ finishAjax = (event, attrName, buttonName) ->
     setTimeout(func, 1500)
 
 $(document).ajaxSuccess((ev, xhr, options) ->
+  window.onerror = notifyError
   finishAjax(xhr.event, "data-success-text", "Saved")
 )
 
@@ -32,6 +33,9 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
+  # airbrake loads asynchronously, so catch it afterwards
+  window.onerror = notifyError
+
   xhr.event = options.event
   if xhr.event
     t = $(xhr.event.target)
@@ -49,7 +53,18 @@ $.ajaxSetup
   accepts: {json: "application/json"}
   dataType: "json"
 
-
+notifyError = (message, file, line) ->
+  # jquery errors sometimes call this with a different signature, not sure
+  # what's happening there
+  if message instanceof Object and file instanceof Object
+    message = file.message
+    file = null
+  if window.renderContext? and window.renderContext.env == "development" and VM?
+    VM.setErrorMessage message + "\nfile: " + file + "\nline: " + line
+  if window.Hoptoad?
+    callback = () => Hoptoad.notify({message: message, stack: '()@' + file + ':' + line})
+    setTimeout callback, 100
+  return false
 
 
 class Base
@@ -724,14 +739,7 @@ stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
 $(document).ready () ->
-  if window.renderContext.env == 'development'
-    hoptoad_on_error = window.onerror
-    window.onerror = (message, file, line) =>
-      hoptoad_on_error message, file, line
-      VM.setErrorMessage message + "\nfile: " + file + "\nline: " + line
-      return false
-
-
+  window.onerror = notifyError
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
@@ -759,10 +767,6 @@ $(document).ready () ->
       if window._gaq? # we dont use ga in test mode
         window._gaq.push @path
 
-    # Airbrake
-    @bind 'error', (e, data) ->
-      if data? and data.error? and window.Hoptoad?
-        window.Hoptoad.notify data.error
 
   ).run stripTrailingSlash(window.location.pathname)
 
