@@ -35,6 +35,7 @@ circle = $.sammy("body", ->
   home = new Page("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy and Security")
+  docs = new Page("docs", "Documentation")
 
   # Per-Page Polyfills
   polyfill = ->
@@ -59,6 +60,7 @@ circle = $.sammy("body", ->
   @get "/", (context) -> home.display()
   @get "/about.*", (context) -> about.display()
   @get "/privacy.*", (context) -> privacy.display()
+  @get "/docs.*", (context) -> docs.display()
 )
 
 # Global polyfills
