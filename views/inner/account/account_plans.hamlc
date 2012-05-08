@@ -47,7 +47,7 @@
 
       .offset6.span3
         #total
-          Total: $
+          Team plan total: $
           %span{data-bind: "text: teamTotal"}<>
         %button.select.btn.success
           Sign up
@@ -55,8 +55,7 @@
 
 
 
-  .offset2.span6
-    = HAML['account_credit_card_form']()
+  = HAML['account_credit_card_form']()
 
 
 

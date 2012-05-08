@@ -1,4 +1,4 @@
-.row.offset6.span3
+.row.offset6.span5
   %form.form-stacked#payment-form
     .form-row
       %label Card Number
