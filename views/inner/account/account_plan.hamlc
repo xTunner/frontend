@@ -1,4 +1,4 @@
-.plan
+.plan{data-bind: "css: { selected: $parent.individualPlan() == $data }"}
   .title{data-bind: "text: title"}
   .reason{data-bind: "text: reason"}
   .tick ✔
@@ -27,5 +27,5 @@
     \/dev
 
   .button
-    %button.select.btn.success{data-bind: ""}
+    %button.select.btn.success{data-bind: "click: function () {$parent.selectPlan($data); }"}
       Select

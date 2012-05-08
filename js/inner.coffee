@@ -326,10 +326,9 @@ class Project extends HasUrl
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/unfollow"
-      success:
-        (data) =>
-          @status(data.status)
-          @followed(data.followed)
+      success: (data) =>
+        @status(data.status)
+        @followed(data.followed)
 
   follow: (data, event) =>
     $.ajax
@@ -450,6 +449,10 @@ class User extends Base
 
 
   # billing
+  selectPlan: (data) =>
+    window.DATA = data
+    @individualPlan(data)
+
 
 
 
@@ -485,7 +488,7 @@ class User extends Base
       url: "/api/v1/user/pay"
       event: event
       type: "POST"
-      data: JSON.stringify {token: response, plan: @selectedPlan().plan}
+      data: JSON.stringify {token: response, plan: @individualPlan().plan}
       success: () =>
         @paid true
     )
