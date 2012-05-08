@@ -1,5 +1,3 @@
-%hr
-
 .row
   %form.form-stacked.offset3.span6#payment-form
     .form-row

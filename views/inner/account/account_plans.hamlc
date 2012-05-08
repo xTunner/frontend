@@ -12,6 +12,7 @@
       = HAML['account_plan']()
     / /ko
 
+  %hr
 
   .row
     .offset6.span8.alert-message.block-message#per-developer-plan
@@ -55,6 +56,7 @@
           Team plan total: $
           %span{data-bind: "text: teamTotal"}<>
 
+  %hr
 
 
   = HAML['account_credit_card_form']()
