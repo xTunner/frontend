@@ -39,8 +39,14 @@
               %div{data-bind: "if: admin"}
                 %li.divider
                 %li
-                  %a{href: "/admin"}
-                    Admin
+                  %a{href: "/admin"} Admin
+                %li
+                  %a{href: "/admin/users"} Users
+                %li
+                  %a{href: "/admin/recent-builds"} Recent builds
+                %li
+                  %a{href: "/admin/projects"} Projects
+
 
 -# This is used to create the 25px space under the navigation bar. I know.
 %ul
