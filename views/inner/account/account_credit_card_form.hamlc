@@ -1,5 +1,7 @@
-.row.offset6.span5
-  %form.form-stacked#payment-form
+%hr
+
+.row
+  %form.form-stacked.offset3.span6#payment-form
     .form-row
       %label Card Number
       %input.card-number{type: "text", size: "20", autocomplete: "off"}
@@ -14,19 +16,29 @@
       %span /
       %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
     %br
-    .alert-message.block-message.info
+    .alert-message.block-message.info#warning
       %p
         We'll charge you as soon as your trial ends, then once a month.
-    %button.btn.primary.submit-button{type: "submit",
-                                      data-bind: "click: stripeSubmit",
-                                      data-loading-text: "Charging",
-                                      data-failed-text: "Denied",
-                                      data-success-text: "Success"}}
+    %button.btn.primary.large.submit-button#charge-button{type: "submit",
+                                                    data-bind: "click: stripeSubmit",
+                                                    data-loading-text: "Charging",
+                                                    data-failed-text: "Denied",
+                                                    data-success-text: "Success"}}
       Charge
 
 
-%div
-  #showThanks
-    .alert-message.block-message.info
-      %h2 Thanks!
-      %h6 We really genuinely appreciate it!
+  .offset2.span5
+    %h2
+      Team total: $
+      %span{data-bind: "text: teamTotal"}
+    %h2
+      Your plan: $
+      %span{data-bind: "text: individualPlan().price"}
+    %h2
+      Total: $
+      %span{data-bind: "text: overallTotal"}
+
+    #showThanks
+      .alert-message.block-message.info
+        %h2 Thanks!
+        %h5 We really genuinely appreciate it!

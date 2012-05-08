@@ -435,18 +435,25 @@ class User extends Base
       price: 0
     ]
 
-    @individualPlan = ko.observable(null)
+    @individualPlan = ko.observable(@plans[4])
 
     # team billing
     @teamPlan = ko.observable(null)
     @collaborators = ko.observable(null)
 
     @showTeam = ko.observable(false)
+
     @teamTotal = @komp =>
-      total = if @individualPlan() then @individualPlan().price else 0
+      total = 0
       if @collaborators()
         for u in @collaborators()
           total += u.plan().price if u.plan()
+      total
+
+    @overallTotal = @komp =>
+      total = @teamTotal()
+      if @individualPlan()
+        total += @individualPlan().price
       total
 
 
