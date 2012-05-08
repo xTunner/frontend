@@ -441,18 +441,21 @@ class User extends Base
     @teamPlan = ko.observable(null)
     @collaborators = ko.observable(null)
 
+    @showTeam = ko.observable(false)
     @teamTotal = @komp =>
-      return 0 unless @collaborators()
-      total = 0
-      for u in @collaborators()
-        total += u.plan().price if u.plan()
+      total = if @individualPlan() then @individualPlan().price else 0
+      if @collaborators()
+        for u in @collaborators()
+          total += u.plan().price if u.plan()
       total
 
 
   # billing
   selectPlan: (data) =>
-    window.DATA = data
     @individualPlan(data)
+
+  toggleTeam: () =>
+    @showTeam !@showTeam()
 
 
 

@@ -2,7 +2,6 @@
 
   %h2 Your Plan
 
-
   .row.pricing
     .offset0.span4
 
@@ -14,60 +13,54 @@
     / /ko
 
 
-    .offset2.span6
-      = HAML['account_credit_card_form']()
-
-
-
   .row
     .offset6.span8.alert-message.block-message#per-developer-plan
-      Plans are <b><i>per-developer</i></b> per month.
+      Plans are <b><i>per-developer</i></b>.
       Your plan covers all <i>your</i> builds, in all branches, in all repositories.
-      Use
-      %a{href: "/account/team-plans"}
-        team billing
-      to cover entire organizations or all committers to a repository.
+
+      %br
+      %button.btn.primary.large#team-button{data-bind: "click: toggleTeam"}
+        %span{data-bind: "if: showTeam"}
+          Hide team plans
+        %span{data-bind: "ifnot: showTeam"}
+          Add a plan for your team
 
 
-  -# #team
 
-  -#   %h2 Team plans
+  #team{data-bind: "if: showTeam"}
+    %h2 Team plans
+    %h6 Add plans for you colleagues
 
-  -#   .row#users
-  -#     .span6
-  -#       = HAML
-  -#       %div{data-bind: "if: teamPlan"}
-  -#         We have a plan!
-
-  -#       %div{data-bind: "ifnot: teamPlan"}
-  -#         %div{data-bind: "ifnot: collaborators"}
-  -#           Loading collaborators...
-  -#         %table{data-bind: "if: collaborators"}
-  -#           %tbody{data-bind: "foreach: collaborators"}
-  -#             %tr
-  -#               %td{data-bind: "text: login"}
-  -#               %td#name{data-bind: "text: name"}
-  -#               %td
-  -#                 %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
-  -#               %td#sources{data-bind: "text: sources"}
+    .row
+      .span6.offset1
+        %div{data-bind: "ifnot: collaborators"}
+          Loading collaborators...
+        %table{data-bind: "if: collaborators"}
+          %tbody{data-bind: "foreach: collaborators"}
+            %tr
+              %td{data-bind: "text: login"}
+              %td#name{data-bind: "text: name"}
+              %td
+                %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
+              %td#sources{data-bind: "text: sources"}
 
 
-  -#     .offset6.span3
-  -#       #total
-  -#         Total: $
-  -#         %span{data-bind: "text: teamTotal"}<>
-  -#       %button.select.btn.success{data-bind: "click: select_team_plan"}
-  -#         Sign up
+      .offset6.span3
+        #total
+          Total: $
+          %span{data-bind: "text: teamTotal"}<>
+        %button.select.btn.success
+          Sign up
 
 
-  -#   .row.pricing
-  -#     .offset0.span4
-  -#       = HAML['account_plan_titles']()
 
-  -#     / ko foreach: plans
-  -#     .span3
-  -#       = HAML['account_plan']({show_buy_button: false})
-  -#     / /ko
+
+  .offset2.span6
+    = HAML['account_credit_card_form']()
+
+
+
+
 
 
 
