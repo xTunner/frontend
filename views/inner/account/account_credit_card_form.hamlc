@@ -18,10 +18,10 @@
       %p
         We'll charge you as soon as your trial ends, then once a month.
     %button.btn.primary.large.submit-button#charge-button{type: "submit",
-                                                    data-bind: "click: stripeSubmit",
-                                                    data-loading-text: "Charging",
-                                                    data-failed-text: "Denied",
-                                                    data-success-text: "Success"}}
+                                                          data-bind: "click: stripeSubmit",
+                                                          data-loading-text: "Charging",
+                                                          data-failed-text: "Denied",
+                                                          data-success-text: "Success"}}
       Charge
 
 
