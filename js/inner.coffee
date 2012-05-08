@@ -435,7 +435,7 @@ class User extends Base
       price: 0
     ]
 
-    @individualPlan = ko.observable(@plans[4])
+    @individualPlan = ko.observable(@plans[2])
 
     # team billing
     @teamPlan = ko.observable(null)
