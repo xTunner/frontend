@@ -377,6 +377,8 @@ class User extends Base
     json.environment = window.renderContext.env if window.renderContext
     super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
 
+    @tokenLabel = ko.observable("")
+
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
 
@@ -433,7 +435,6 @@ class User extends Base
       price: 0
     ]
 
-    @tokenLabel = ko.observable("")
     @individualPlan = ko.observable(null)
 
     # team billing
