@@ -93,9 +93,11 @@ body {
  * Billing page
  */
 
+@color: #77aaff;
+
 #plans {
    .selected {
-      background-color: red;
+      background-color: @color;
    }
 
    #per-developer-plan {
@@ -113,7 +115,7 @@ body {
    }
 
    #payment-form {
-      background-color: #77aaff;
+      background-color: @color;
       padding-top: 12px;
       padding-bottom: 20px;
       #warning {
