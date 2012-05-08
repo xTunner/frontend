@@ -1,4 +1,4 @@
-%div{data-bind: "if: showCreditCardForm()"}
+%div
   %form.form-stacked#payment-form
     .form-row
       %label Card Number
@@ -25,7 +25,7 @@
       Charge
 
 
-%div{data-bind: "if: showThanks()"}
+%div
   #showThanks
     .alert-message.block-message.info
       %h2 Thanks!

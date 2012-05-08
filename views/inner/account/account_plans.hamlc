@@ -1,61 +1,106 @@
-%h2 Individual Plans
+#plans
 
-.row#refer-to-other-billing
-  .offset8.span4
-    .alert-message.info.block-message
+  %h2 Your Plan
+
+
+  .row.pricing
+    .offset0.span4
+
+      = HAML['account_plan_titles']()
+
+    / ko foreach: plans
+    .span3
+      = HAML['account_plan']()
+    / /ko
+
+
+    .offset2.span6
+      = HAML['account_credit_card_form']()
+
+
+
+  .row
+    .offset6.span8.alert-message.block-message#per-developer-plan
+      Plans are <b><i>per-developer</i></b> per month.
+      Your plan covers all <i>your</i> builds, in all branches, in all repositories.
+      Use
       %a{href: "/account/team-plans"}
-        Looking for team plans?
+        team billing
+      to cover entire organizations or all committers to a repository.
 
 
-.row.pricing
-  .offset0.span4
+  -# #team
 
-    = HAML['account_plan_titles']()
+  -#   %h2 Team plans
 
-  / ko foreach: plans
-  .span3{data-bind: "if: $parent.showPlan($data)"}
-    = HAML['account_plan']({show_buy_button: true})
-  / /ko
+  -#   .row#users
+  -#     .span6
+  -#       = HAML
+  -#       %div{data-bind: "if: teamPlan"}
+  -#         We have a plan!
 
-
-  .offset2.span6
-    = HAML['account_credit_card_form']()
-
-
-
-.row
-  .offset6.span8.alert-message.block-message#per-developer-plan
-    Plans are <b><i>per-developer</i></b> per month.
-    Your plan covers all <i>your</i> builds, in all branches, in all repositories.
-    Use
-    %a{href: "/account/team-plans"}
-      team billing
-    to cover entire organizations or all committers to a repository.
+  -#       %div{data-bind: "ifnot: teamPlan"}
+  -#         %div{data-bind: "ifnot: collaborators"}
+  -#           Loading collaborators...
+  -#         %table{data-bind: "if: collaborators"}
+  -#           %tbody{data-bind: "foreach: collaborators"}
+  -#             %tr
+  -#               %td{data-bind: "text: login"}
+  -#               %td#name{data-bind: "text: name"}
+  -#               %td
+  -#                 %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
+  -#               %td#sources{data-bind: "text: sources"}
 
 
--#   .offset2.span5
--#     %h3
--#       Your plan: "The Awesome!"
+  -#     .offset6.span3
+  -#       #total
+  -#         Total: $
+  -#         %span{data-bind: "text: teamTotal"}<>
+  -#       %button.select.btn.success{data-bind: "click: select_team_plan"}
+  -#         Sign up
 
--#     %ul
--#       %li
--#         %h5 4-way parallel tests
--#         %p
--#           Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
--#           (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
 
--#       %li
--#         %h5 Same day support
--#         %p By phone, by chat, by email, we just want someone to talk to.
+  -#   .row.pricing
+  -#     .offset0.span4
+  -#       = HAML['account_plan_titles']()
 
--#       %li
--#         %h5 High limits
--#         %p
--#           We don't charge you overages (unless you go insane, and even then we'd be reluctant).
+  -#     / ko foreach: plans
+  -#     .span3
+  -#       = HAML['account_plan']({show_buy_button: false})
+  -#     / /ko
 
--#       %li
--#         %h5 $29 - all in.
--#         %p
--#           This covers all <b>your</b> builds, in all branches, in all repositories.
--#           It does not cover your colleagues, who will need their own accounts.
--#           (We currently do not enforce this, but will in the near future).
+
+
+
+
+
+    -# .offset2.span6
+    -#   = HAML['account_credit_card_form']()
+
+
+  -#   .offset2.span5
+  -#     %h3
+  -#       Your plan: "The Awesome!"
+
+  -#     %ul
+  -#       %li
+  -#         %h5 4-way parallel tests
+  -#         %p
+  -#           Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
+  -#           (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
+
+  -#       %li
+  -#         %h5 Same day support
+  -#         %p By phone, by chat, by email, we just want someone to talk to.
+
+  -#       %li
+  -#         %h5 High limits
+  -#         %p
+  -#           We don't charge you overages (unless you go insane, and even then we'd be reluctant).
+
+  -#       %li
+  -#         %h5 $29 - all in.
+  -#         %p
+  -#           This covers all <b>your</b> builds, in all branches, in all repositories.
+  -#           It does not cover your colleagues, who will need their own accounts.
+  -#           (We currently do not enforce this, but will in the near future).

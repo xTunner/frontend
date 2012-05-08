@@ -14,10 +14,6 @@
       %a{:href: '/account/plans'}
         Plans
 
-    %li#team-plans
-      %a{:href: '/account/team-plans'}
-        Team Plans
-
     %li#close
       %a{:href: '/account/close'}
         Close account

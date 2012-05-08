@@ -378,7 +378,6 @@ class User extends Base
     json.environment = window.renderContext.env if window.renderContext
     super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
 
-    @tokenLabel = ko.observable("")
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
 
@@ -435,13 +434,11 @@ class User extends Base
       price: 0
     ]
 
-    @selectedPlan = ko.observable(null)
-    @teamPlan = ko.observable(null)
-    for p in @plans
-      if @plan == p.plan
-        @selectedPlan(p)
+    @tokenLabel = ko.observable("")
+    @individualPlan = ko.observable(null)
 
     # team billing
+    @teamPlan = ko.observable(null)
     @collaborators = ko.observable(null)
 
     @teamTotal = @komp =>
@@ -452,34 +449,7 @@ class User extends Base
       total
 
 
-
-
   # billing
-  showPlan: (data) => @komp =>
-    @selectedPlan() == null or @selectedPlan() == data
-
-  showCreditCardForm: () => @komp =>
-    @selectedPlan()? and not @paid()
-
-  showThanks: () => @komp =>
-    @paid()
-
-  allowPlanSelection: () => @komp =>
-    not @selectedPlan()?
-
-  selectPlan: (data) =>
-    @selectedPlan data
-
-  select_team_plan: () =>
-    plan = {}
-    for c in @collaborators()
-      plan[c.login] = c.plan()
-    @teamPlan plan
-
-
-
-
-
 
 
 
@@ -512,7 +482,7 @@ class User extends Base
 
   recordStripeTransaction: (event, response) =>
     $.ajax(
-      url: "/api/v1/user/pay-single-user"
+      url: "/api/v1/user/pay"
       event: event
       type: "POST"
       data: JSON.stringify {token: response, plan: @selectedPlan().plan}
