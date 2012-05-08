@@ -1,0 +1,10 @@
+#title
+  %h1 Documentation
+
+#content
+  %section
+    %h1 Getting Started
+
+    %p If we lose your code, we're out of business
+
+    %hr
