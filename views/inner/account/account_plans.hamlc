@@ -38,15 +38,17 @@
           Loading collaborators...
         %table{data-bind: "if: collaborators"}
           %thead
-            %th Username (GitHub)
+            %th#username Username (GitHub)
             %th Plan
-            %th Collaborating repo/organization
+            %th Collaborating on
           %tbody{data-bind: "foreach: collaborators"}
             %tr
-              %td{data-bind: "text: login"}
+              %td#username{data-bind: "text: login"}
               %td
                 %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
-              %td#sources{data-bind: "text: sources"}
+              %td#sources
+                %ul{data-bind: "foreach: sources"}
+                  %li{data-bind: "text: $data"}
 
 
       .offset6.span5
