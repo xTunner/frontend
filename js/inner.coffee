@@ -436,6 +436,7 @@ class User extends Base
     ]
 
     @selectedPlan = ko.observable(null)
+    @teamPlan = ko.observable(null)
     for p in @plans
       if @plan == p.plan
         @selectedPlan(p)
@@ -468,6 +469,16 @@ class User extends Base
 
   selectPlan: (data) =>
     @selectedPlan data
+
+  select_team_plan: () =>
+    plan = {}
+    for c in @collaborators()
+      plan[c.login] = c.plan()
+    @teamPlan plan
+
+
+
+
 
 
 

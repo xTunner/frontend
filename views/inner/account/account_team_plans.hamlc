@@ -13,25 +13,32 @@
       All team members need a plan.
       (Choose "Pay as you go" for occasional contributors like contractors)
 
-  %div{data-bind: "ifnot: collaborators"}
-    Loading collaborators...
 
-  .row#users{data-bind: "if: collaborators"}
-    .span10
-      %table{data-bind: "foreach: collaborators"}
-        %tbody
-          %tr
-            %td{data-bind: "text: login"}
-            %td#name{data-bind: "text: name"}
-            %td
-              %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
-            %td#sources{data-bind: "text: sources"}
+  .row#users
+    .span6
+      = HAML
+      %div{data-bind: "if: teamPlan"}
+        We have a plan!
+
+      %div{data-bind: "ifnot: teamPlan"}
+        %div{data-bind: "ifnot: collaborators"}
+          Loading collaborators...
+        %table{data-bind: "if: collaborators"}
+          %tbody{data-bind: "foreach: collaborators"}
+            %tr
+              %td{data-bind: "text: login"}
+              %td#name{data-bind: "text: name"}
+              %td
+                %select{data-bind: "options: $parent.plans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
+              %td#sources{data-bind: "text: sources"}
 
 
-    .offset1.span3
+    .offset6.span3
       #total
         Total: $
         %span{data-bind: "text: teamTotal"}<>
+      %button.select.btn.success{data-bind: "click: select_team_plan"}
+        Sign up
 
 
   .row.pricing
