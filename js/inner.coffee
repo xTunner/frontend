@@ -438,16 +438,15 @@ class User extends Base
     @individualPlan = ko.observable(@plans[2])
 
     # team billing
-    @teamPlan = ko.observable(null)
     @collaborators = ko.observable(null)
 
     @showTeam = ko.observable(false)
 
     @teamTotal = @komp =>
+      return 0 unless @collaborators()
       total = 0
-      if @collaborators()
-        for u in @collaborators()
-          total += u.plan().price if u.plan()
+      for c in @collaborators()
+        total += c.plan().price if c.plan()
       total
 
     @overallTotal = @komp =>
@@ -463,6 +462,13 @@ class User extends Base
 
   toggleTeam: () =>
     @showTeam !@showTeam()
+
+  teamPlans: () =>
+    return {} unless @collaborators()
+    result = {}
+    for c in @collaborators()
+      result[c.login] = c.plan().plan if c.plan()
+    result
 
 
 
@@ -499,7 +505,10 @@ class User extends Base
       url: "/api/v1/user/pay"
       event: event
       type: "POST"
-      data: JSON.stringify {token: response, plan: @individualPlan().plan}
+      data: JSON.stringify
+        token: response
+        plan: @individualPlan().plan
+        team_plans: @teamPlans()
       success: () =>
         @paid true
     )
