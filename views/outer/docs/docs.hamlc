@@ -3,8 +3,16 @@
 
 #content
   %section
-    %h1 Getting Started
+    %h1 Documentation
 
-    %p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    %p Welcome, how can we help you?
 
     %hr
+
+  %section.categories
+    %ul
+      %li
+        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+
+        %h3 Pellentesque cursus, leo quis sodales accumsan
+
