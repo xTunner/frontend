@@ -11,8 +11,9 @@
 
   %section.categories
     %ul
-      %li
-        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+      - for i in [1..5]
+        %li
+          %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
 
-        %h3 Pellentesque cursus, leo quis sodales accumsan
+          %h3 Pellentesque cursus, leo quis sodales accumsan
 
