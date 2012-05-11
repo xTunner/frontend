@@ -562,6 +562,14 @@ class CircleViewModel extends Base
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
+  user_refresh_projects: (data, event) =>
+    $.ajax
+      url: "/api/v1/user/project-refresh"
+      type: "POST"
+      event: event
+      success:
+        (data) =>
+          @loadProjects()
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
