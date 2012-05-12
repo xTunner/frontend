@@ -11,11 +11,12 @@
 
   %section.categories
     %ul
-      - for i in [1..5]
-        %li
-          %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+      %li
+        %i.icon-cogs
 
-          %h3 Pellentesque cursus, leo quis sodales accumsan
+        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+
+        %h3 Pellentesque cursus, leo quis sodales accumsan
 
     %aside.status
       %ul
