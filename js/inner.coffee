@@ -525,10 +525,9 @@ class CircleViewModel extends Base
     @admin = ko.observable()
     @error_message = ko.observable(null)
     @first_login = true;
+    @refreshing_projects = ko.observable(false);
     @project_map = {}
     observableCount += 8
-
-
 
   clearErrorMessage: () =>
     @error_message null
@@ -540,7 +539,6 @@ class CircleViewModel extends Base
       message += '.'
     @error_message message
     $('html, body').animate({ scrollTop: 0 }, 0);
-
 
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
@@ -562,6 +560,24 @@ class CircleViewModel extends Base
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
+  user_refresh_projects: (data, event) =>
+    @refreshing_projects true
+    $.ajax
+      url: "/api/v1/user/project-refresh"
+      type: "POST"
+      event: event
+      complete:
+        (jqXHR, text_status) =>
+          @refreshing_projects false
+      success:
+        (data) =>
+          @loadProjects()
+
+  refresh_project_src: () => @komp =>
+    if @refreshing_projects()
+      "/img/ajax-loader.gif"
+    else
+      "/img/arrow_refresh.png"
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
