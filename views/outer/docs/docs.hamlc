@@ -19,13 +19,3 @@
         %h3 Pellentesque cursus, leo quis sodales accumsan
 
     %aside.status
-      %ul
-        %li
-          %h3.good <strong>01:23 AM PDT</strong> - Fully Operational
-          %p We've got the timeouts under control, we think, by a number of IO improvements. Let us know if you're still getting timeouts.
-
-          %h3.major <strong>01:11 PM PDT</strong> - Major Interruption
-          %p Things are a little on fire right now. Builds aren't being pulled off the queue, and we have a backlog. It looks like our scaling code broke with this morning's deploy. We're rolling out new machines as fast as humanly possible, and will have the machines doing their job again soon.
-
-          %h3.good <strong>01:11 PM PDT</strong> - Fully Operational
-          %p The queue is draining, and things will be back to normal shortly
