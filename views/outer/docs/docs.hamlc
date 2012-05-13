@@ -21,30 +21,30 @@
       %li
         %i.icon-lock
 
-        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+        %h2 Maecenas dignissim, risus quis dapibus fringilla.
 
-        %h3 Pellentesque cursus, leo quis sodales accumsan
+        %h3 Pum sociis natoque penatibus et magnis dis parturient montes
 
       %li
         %i.icon-repeat
 
-        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+        %h2 Fusce auctor aliquam odio quis consectetur.
 
-        %h3 Pellentesque cursus, leo quis sodales accumsan
+        %h3 Mauris non odio sed metus varius cursus nulla facilisi
 
       %li
         %i.icon-user
 
-        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+        %h2 Pellentesque habitant morbi tristique senectus.
 
-        %h3 Pellentesque cursus, leo quis sodales accumsan
+        %h3 Aenean vulputate, sapien sed imperdiet accumsan sem nunc
 
 
       %li
         %i.icon-list-alt
 
-        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+        %h2 Nullam malesuada hendrerit justo, nec vulputate.
 
-        %h3 Pellentesque cursus, leo quis sodales accumsan
+        %h3 Curabitur eget felis eros, imperdiet ultrices urna
 
     %aside.status
