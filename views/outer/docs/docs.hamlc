@@ -18,4 +18,33 @@
 
         %h3 Pellentesque cursus, leo quis sodales accumsan
 
+      %li
+        %i.icon-lock
+
+        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+
+        %h3 Pellentesque cursus, leo quis sodales accumsan
+
+      %li
+        %i.icon-repeat
+
+        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+
+        %h3 Pellentesque cursus, leo quis sodales accumsan
+
+      %li
+        %i.icon-user
+
+        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+
+        %h3 Pellentesque cursus, leo quis sodales accumsan
+
+
+      %li
+        %i.icon-list-alt
+
+        %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+
+        %h3 Pellentesque cursus, leo quis sodales accumsan
+
     %aside.status
