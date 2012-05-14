@@ -11,36 +11,36 @@
 
   %section.categories
     %ul
-      %a
-        %li
+      %li
+        %a
           %i.icon-cogs
           %hgroup
             %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
             %h3 Pellentesque cursus, leo quis sodales accumsan
 
-      %a
-        %li
+      %li
+        %a
           %i.icon-lock
           %hgroup
             %h2 Maecenas dignissim, risus quis dapibus fringilla.
             %h3 Pum sociis natoque penatibus et magnis dis parturient montes
 
-      %a
-        %li
+      %li
+        %a
           %i.icon-repeat
           %hgroup
             %h2 Fusce auctor aliquam odio quis consectetur.
             %h3 Mauris non odio sed metus varius cursus nulla facilisi
 
-      %a
-        %li
+      %li
+        %a
           %i.icon-user
           %hgroup
             %h2 Pellentesque habitant morbi tristique senectus.
             %h3 Aenean vulputate, sapien sed imperdiet accumsan sem nunc
 
-      %a
-        %li
+      %li
+        %a
           %i.icon-list-alt
           %hgroup
             %h2 Nullam malesuada hendrerit justo, nec vulputate.
