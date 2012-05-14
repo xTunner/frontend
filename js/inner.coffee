@@ -548,10 +548,7 @@ display = (template, args) ->
 class CircleViewModel extends Base
   constructor: ->
     observableCount = 0
-    @current_user = ko.observable(new User {})
-    $.getJSON '/api/v1/me', (data) =>
-      @current_user(new User data)
-
+    @current_user = ko.observable(new User window.renderContext.current_user)
     @build = ko.observable()
     @builds = ko.observableArray()
     @project = ko.observable()
