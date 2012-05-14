@@ -661,7 +661,7 @@ class CircleViewModel extends Base
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
-    if subpage == 'plans' or subpage == "team-plans"
+    if subpage == 'plans'
       @loadTeamMembers()
       @loadStripe()
 
