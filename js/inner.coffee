@@ -27,9 +27,9 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
 
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
-    VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
+    notifyError "An unknown error occurred: (#{xhr.status})."
   else
-    VM.setErrorMessage xhr.responseText
+    notifyError xhr.responseText
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
@@ -492,7 +492,7 @@ class User extends Base
     }, (status, response) =>
       if response.error
         button.removeClass "disabled"
-        VM.setErrorMessage response.error.message
+        notifyError response.error.message
       else
         @recordStripeTransaction event, response # TODO: add the plan
 
