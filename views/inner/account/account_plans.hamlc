@@ -3,16 +3,19 @@
 
   .paid{data-bind: "if: paid"}
 
-    .row
-      .offset4.span3.selected{data-bind: "with: individualPlan"}
-        #plans
-          .pricing
-            = HAML['account_plan']()
+    .row.pricing
+      .offset0.span4
 
-      .span6.offset4
-        .alert-message.block-message.info
+        = HAML['account_plan_titles']()
+
+      .span3.selected{data-bind: "with: individualPlan"}
+        = HAML['account_plan']()
+
+
+      .span6.offset2
+        .alert-message.block-message.info#thanks
           %h2 Thanks!
-          %h5 We really genuinely appreciate it!
+          %h5 We really genuinely appreciate it :)
 
 
 
