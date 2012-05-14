@@ -1,6 +1,7 @@
 %ul.topics
 
   %li
+    %i.icon-cogs
     %ul.expand Suspendisse
       %li Facilisis quis
       %li Lectus sed vulputate
@@ -8,12 +9,14 @@
       %li Pum sociis varius cursus
 
   %li
+    %i.icon-lock
     %ul Maecenas
       %li Natoque varius nulla
       %li Magnis dis parturient montes
       %li Aenean sed
 
   %li
+    %i.icon-repeat
     %ul Fusce Auctor
       %li Curabitur eget felis
       %li Natoque varius nulla
@@ -21,12 +24,14 @@
       %li Pum sociis varius cursus
 
   %li
+    %i.icon-user
     %ul Pellentesque
       %li Curabitur eget felis
       %li Natoque varius nulla
       %li Pum sociis varius cursus
 
   %li
+    %i.icon-list-alt
     %ul Nullam Justo
       %li Natoque varius nulla
       %li Lectus sed vulputate
