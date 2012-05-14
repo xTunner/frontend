@@ -26,6 +26,7 @@
     %span{data-bind: "text: price"}>
     \/dev
 
-  .button
-    %button.select.btn.success{data-bind: "click: function () {$parent.selectPlan($data); }"}
-      Select
+  - if @showButton
+    .button
+      %button.select.btn.success{data-bind: "click: function () {$parent.selectPlan($data); }"}
+        Select

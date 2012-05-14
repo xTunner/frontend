@@ -9,7 +9,7 @@
         = HAML['account_plan_titles']()
 
       .span3.selected{data-bind: "with: individualPlan"}
-        = HAML['account_plan']()
+        = HAML['account_plan']({showButton: false})
 
 
       .span6.offset2
@@ -28,7 +28,7 @@
 
       / ko foreach: availablePlans
       .span3
-        = HAML['account_plan']()
+        = HAML['account_plan']({showButton: true})
       / /ko
 
     %hr
