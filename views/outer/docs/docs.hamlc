@@ -11,40 +11,39 @@
 
   %section.categories
     %ul
-      %li
-        %i.icon-cogs
+      %a
+        %li
+          %i.icon-cogs
+          %hgroup
+            %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
+            %h3 Pellentesque cursus, leo quis sodales accumsan
 
-        %hgroup
-          %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
-          %h3 Pellentesque cursus, leo quis sodales accumsan
+      %a
+        %li
+          %i.icon-lock
+          %hgroup
+            %h2 Maecenas dignissim, risus quis dapibus fringilla.
+            %h3 Pum sociis natoque penatibus et magnis dis parturient montes
 
-      %li
-        %i.icon-lock
+      %a
+        %li
+          %i.icon-repeat
+          %hgroup
+            %h2 Fusce auctor aliquam odio quis consectetur.
+            %h3 Mauris non odio sed metus varius cursus nulla facilisi
 
-        %hgroup
-          %h2 Maecenas dignissim, risus quis dapibus fringilla.
-          %h3 Pum sociis natoque penatibus et magnis dis parturient montes
+      %a
+        %li
+          %i.icon-user
+          %hgroup
+            %h2 Pellentesque habitant morbi tristique senectus.
+            %h3 Aenean vulputate, sapien sed imperdiet accumsan sem nunc
 
-      %li
-        %i.icon-repeat
-
-        %hgroup
-          %h2 Fusce auctor aliquam odio quis consectetur.
-          %h3 Mauris non odio sed metus varius cursus nulla facilisi
-
-      %li
-        %i.icon-user
-
-        %hgroup
-          %h2 Pellentesque habitant morbi tristique senectus.
-          %h3 Aenean vulputate, sapien sed imperdiet accumsan sem nunc
-
-
-      %li
-        %i.icon-list-alt
-
-        %hgroup
-          %h2 Nullam malesuada hendrerit justo, nec vulputate.
-          %h3 Curabitur eget felis eros, imperdiet ultrices urna
+      %a
+        %li
+          %i.icon-list-alt
+          %hgroup
+            %h2 Nullam malesuada hendrerit justo, nec vulputate.
+            %h3 Curabitur eget felis eros, imperdiet ultrices urna
 
     %aside.status
