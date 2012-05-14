@@ -2,7 +2,9 @@
 
   %li
     %i.icon-cogs
-    %ul.expand Suspendisse
+    %a Suspendisse
+
+    %ul.expand
       %li Facilisis quis
       %li Lectus sed vulputate
       %li Odio leo
@@ -10,14 +12,18 @@
 
   %li
     %i.icon-lock
-    %ul Maecenas
+    %a Maecenas
+
+    %ul
       %li Natoque varius nulla
       %li Magnis dis parturient montes
       %li Aenean sed
 
   %li
     %i.icon-repeat
-    %ul Fusce Auctor
+    %a Fusce Auctor
+
+    %ul
       %li Curabitur eget felis
       %li Natoque varius nulla
       %li Odio Leo
@@ -25,14 +31,18 @@
 
   %li
     %i.icon-user
-    %ul Pellentesque
+    %a Pellentesque
+
+    %ul
       %li Curabitur eget felis
       %li Natoque varius nulla
       %li Pum sociis varius cursus
 
   %li
     %i.icon-list-alt
-    %ul Nullam Justo
+    %a Nullam Justo
+
+    %ul
       %li Natoque varius nulla
       %li Lectus sed vulputate
       %li Curabitur eget felis
