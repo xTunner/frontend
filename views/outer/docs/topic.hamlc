@@ -85,3 +85,16 @@
     %td Table Row Column One
     %td Table Row Column Two
     %td Table Row Column Three
+
+%a.scrollback.icon-chevron-up Back to top
+
+%img{ src: "http://www.wpfill.me.s3-website-us-east-1.amazonaws.com/img/img_large.png" }
+  %p.wp-caption-text This is the optional caption.</p></div>
+
+%p
+  The next issue we face is image alignment, users get the option of <em>None</em>, <em>Left</em>, <em>Right</em> &amp; <em>Center</em>.
+
+%img{ src="http://www.wpfill.me.s3-website-us-east-1.amazonaws.com/img/img_medium.png" }
+%img.alignright{ src="http://www.wpfill.me.s3-website-us-east-1.amazonaws.com/img/img_medium.png" }
+%img.alignleft{ src="http://www.wpfill.me.s3-website-us-east-1.amazonaws.com/img/img_medium.png" }
+%img.aligncenter{ src="http://www.wpfill.me.s3-website-us-east-1.amazonaws.com/img/img_medium.png" }
