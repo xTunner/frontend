@@ -46,3 +46,42 @@
       %a href="http://html5doctor.com/blockquote-q-cite/" Oli Studholme, HTML5doctor.com
 
 %a.scrollback.icon-chevron-up Back to top
+
+%table
+  %thead
+    %tr
+      %th Table Head Column One
+      %th Table Head Column Two
+      %th Table Head Column Three
+
+  %tfoot
+    %tr
+      %td Table Footer Column One
+      %td Table Footer Column Two
+      %td Table Footer Column Three
+
+  %tbody
+    %tr
+      %td Table Row Column One
+      %td Short Text
+      %td Testing a table cell with a longer amount of text to see what happens, you're not using tables for site layouts are you?
+
+  %tr
+    %td Table Row Column One
+    %td Table Row Column Two
+    %td Table Row Column Three
+
+  %tr
+    %td Table Row Column One
+    %td Table Row Column Two
+    %td Table Row Column Three
+
+  %tr
+    %td Table Row Column One
+    %td Table Row Column Two
+    %td Table Row Column Three
+
+  %tr
+    %td Table Row Column One
+    %td Table Row Column Two
+    %td Table Row Column Three
