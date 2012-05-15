@@ -27,9 +27,9 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
 
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
-    notifyError "An unknown error occurred: (#{xhr.status})."
+    notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
-    notifyError xhr.responseText
+    notifyError xhr.responseText or xhr.statusText
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
@@ -59,8 +59,11 @@ notifyError = (message, file, line) ->
   if message instanceof Object and file instanceof Object
     message = file.message
     file = null
-  if window.renderContext? and window.renderContext.env == "development" and VM?
-    VM.setErrorMessage message + "\nfile: " + file + "\nline: " + line
+  if VM? and window.renderContext? and (window.renderContext.env == "development" or window.renderContext.env == "test")
+    if file
+      message += "\\nfile: #{file}"
+      message += "\\nline: #{line}"
+    VM.setErrorMessage message
   if window.Hoptoad?
     callback = () => Hoptoad.notify({message: message, stack: '()@' + file + ':' + line})
     setTimeout callback, 100
