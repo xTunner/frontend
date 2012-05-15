@@ -85,8 +85,8 @@
 
           %br
           .alert-message.block-message.info
-            You can add plans for committers who haven't signed up for Circle.
-            Send them this link so they can sign up:
+            You can add plans for committers who haven't signed up for Circle right now.
+            Send them this link later so they can sign up:
             %br
             %a{href: "https://circleci.com/?join=team-plan"}
               https://circleci.com/?join=team-plan
