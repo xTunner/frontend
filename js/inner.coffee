@@ -374,6 +374,7 @@ class User extends Base
   constructor: (json) ->
     json.tokens = ko.observableArray(json.tokens or [])
     json.paid = ko.observable(json.paid or false)
+    json.plan = ko.observable(json.plan)
     json.environment = window.renderContext.env if window.renderContext
     super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
 
@@ -388,79 +389,38 @@ class User extends Base
       result
 
     # billing
-    @plans =
-      "ultra1":
-        title: "Ultra"
-        cost: 0
-        parallel: 64
-        limits: null
-        support: "Email + phone + SLA"
-        reason: "Annihilate long builds"
-        plan: "ultra1"
-        price: 99
-      "insane1":
-        title: "Insane"
-        cost: 0
-        parallel: 16
-        limits: null
-        reason: "Ludicrously fast testing"
-        support: "Email + phone"
-        plan: "insane1"
-        price: 59
-      "lightning1":
-        title: "Lightning"
-        parallel: 8
-        cost: 0
-        limits: null
-        reason: "Incredibly fast builds"
-        support: "Email + phone"
-        plan: "lightning1"
-        price: 29
-      "fast1":
-        title: "Fast"
-        parallel: 2
-        cost: 0
-        reason: "Fast builds, low cost"
-        limits: "3 concurrent builds per project, 15 hours build time"
-        support: "Email"
-        plan: "fast1"
-        price: 14
-      "payasyougo1":
-        title: "Pay as you go"
-        reason: "For occasional committers"
-        parallel: 8
-        cost: 1
-        limits: null
-        support: "Email"
-        plan: "payasyougo1"
-        price: 0
+    @plans = ko.observable()
+    @individualPlan = @komp =>
+      if @plans()? and @plans()?
+        @plans()[@plan()]
 
 
-    @individualPlan = ko.observable(@plans[@plan or "lightning1"])
-    @availablePlans = (v for k,v of @plans)
+
+
+    @availablePlans = @komp =>
+      (v for k,v of @plans())
 
     # team billing
     @collaborators = ko.observable(null)
-
     @showTeam = ko.observable(false)
+
+    @individualTotal = @komp =>
+      if @individualPlan() then @individualPlan().price / 100 else 0
 
     @teamTotal = @komp =>
       return 0 unless @collaborators()
       total = 0
       for c in @collaborators()
         total += c.plan().price if c.plan()
-      total
+      total / 100
 
     @overallTotal = @komp =>
-      total = @teamTotal()
-      if @individualPlan()
-        total += @individualPlan().price
-      total
+      @teamTotal() + @individualTotal()
 
 
   # billing
   selectPlan: (data) =>
-    @individualPlan(data)
+    @plan(data.id)
 
   toggleTeam: () =>
     @showTeam !@showTeam()
@@ -509,7 +469,7 @@ class User extends Base
       type: "POST"
       data: JSON.stringify
         token: response
-        plan: @individualPlan().plan
+        plan: @individualPlan().id
         team_plans: @teamPlans()
       success: () =>
         @paid true
@@ -672,11 +632,16 @@ class CircleViewModel extends Base
         d.plan = ko.observable(null)
       @current_user().collaborators(data)
 
+  loadPlans: () =>
+    $.getJSON '/api/v1/user/plans', (data) =>
+      @current_user().plans(data)
+
 
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
     if subpage == 'plans'
+      @loadPlans()
       @loadTeamMembers()
       @loadStripe()
 

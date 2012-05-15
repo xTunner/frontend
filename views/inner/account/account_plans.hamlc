@@ -1,4 +1,5 @@
 #plans
+
   %h2 Your plan
 
   .paid{data-bind: "if: paid"}
@@ -64,7 +65,7 @@
               %tr
                 %td#username{data-bind: "text: login"}
                 %td
-                  %select{data-bind: "options: $parent.availablePlans, optionsText: 'title', optionsCaption: 'Choose a plan', value: $data.plan"}
+                  %select{data-bind: "options: $parent.availablePlans, optionsText: 'name', optionsCaption: 'Choose a plan', value: $data.plan"}
                 %td#sources
                   %ul{data-bind: "foreach: sources"}
                     %li{data-bind: "text: $data"}

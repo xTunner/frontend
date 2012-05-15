@@ -31,7 +31,7 @@
       %span{data-bind: "text: teamTotal"}
     %h2
       Your plan: $
-      %span{data-bind: "text: individualPlan().price"}
+      %span{data-bind: "text: individualTotal"}
     %h2
       Total: $
       %span{data-bind: "text: overallTotal"}
