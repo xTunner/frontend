@@ -18,3 +18,12 @@
 %li Ordered list item three.
 %li Ordered list item four.
 %li By the way, Wordpress does not let you create nested lists through the visual editor.
+
+%blockquote
+  Currently WordPress blockquotes are just wrapped in blockquote tags and have no clear way for the user to define a source. Maybe one day they'll be more semantic (and easier to style) like the version below.
+
+%blockquote{ cite: "http://html5doctor.com/blockquote-q-cite/" }
+  %p HTML5 comes to our rescue with the footer element, allowing us to add semantically separate information about the quote.
+  %footer
+    %cite
+      %a href="http://html5doctor.com/blockquote-q-cite/" Oli Studholme, HTML5doctor.com
