@@ -4,3 +4,17 @@
 %h4 Level Four Heading
 %h5 Level Five Heading
 %h6 Level Six Heading
+
+%ul
+%li Unordered list item one.
+%li Unordered list item two.
+%li Unordered list item three.
+%li Unordered list item four.
+%li By the way, Wordpress does not let you create nested lists through the visual editor.
+
+%ol
+%li Ordered list item one.
+%li Ordered list item two.
+%li Ordered list item three.
+%li Ordered list item four.
+%li By the way, Wordpress does not let you create nested lists through the visual editor.
