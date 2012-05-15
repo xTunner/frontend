@@ -43,7 +43,7 @@
           %span{data-bind: "if: showTeam"}
             Hide team plans
           %span{data-bind: "ifnot: showTeam"}
-            Add a plan for your team
+            Add plans for your team members
 
 
 
@@ -70,12 +70,26 @@
                     %li{data-bind: "text: $data"}
 
 
-        .offset6.span5
+        .offset5.span7
           %br
           %br
           #total
             Team plan total: $
             %span{data-bind: "text: teamTotal"}<>
+          %br
+          .alert-message.block-message
+            You'll need a plan for anyone who pushes.
+            If they don't have a plan, we won't test their pushes.
+            Use the Pay As You Go plan for rare contributors.
+
+          %br
+          .alert-message.block-message.info
+            You can add plans for committers who haven't signed up for Circle.
+            Send them this link so they can sign up:
+            %br
+            %a{href: "https://circleci.com/?join=team-plan"}
+              https://circleci.com/?join=team-plan
+
 
     %hr
 
