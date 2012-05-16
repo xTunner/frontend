@@ -23,16 +23,16 @@
 %a.scrollback.icon-chevron-up Back to top
 
 %ul
-%li Unordered list item one.
-%li Unordered list item two.
-%li Unordered list item three.
-%li Unordered list item four.
+  %li Unordered list item one.
+  %li Unordered list item two.
+  %li Unordered list item three.
+  %li Unordered list item four.
 
 %ol
-%li Ordered list item one.
-%li Ordered list item two.
-%li Ordered list item three.
-%li Ordered list item four.
+  %li Ordered list item one.
+  %li Ordered list item two.
+  %li Ordered list item three.
+  %li Ordered list item four.
 
 %a.scrollback.icon-chevron-up Back to top
 
@@ -43,7 +43,7 @@
   %p HTML5 comes to our rescue with the footer element, allowing us to add semantically separate information about the quote.
   %footer
     %cite
-      %a href="http://html5doctor.com/blockquote-q-cite/" Oli Studholme, HTML5doctor.com
+      %a{ href: "http://html5doctor.com/blockquote-q-cite/" } Oli Studholme, HTML5doctor.com
 
 %a.scrollback.icon-chevron-up Back to top
 
@@ -104,3 +104,5 @@
 %p
   Additionally, to add further confusion, images can be wrapped inside paragraph content, lets test some examples here.<img src: "img/docs/placeholder.gif" class="alignright">
   Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="img/docs/placeholder.gif" class="alignleft">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="img/docs/placeholder.gif" class="aligncenter">Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec ullamcorper nulla non metus auctor fringilla. Aenean lacinia bibendum nulla sed consectetur.</p>
+
+
