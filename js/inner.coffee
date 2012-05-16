@@ -394,7 +394,7 @@ class User extends Base
     # billing
     @plans = ko.observable()
     @individualPlan = @komp =>
-      if @plans()? and @plans()?
+      if @plan()? and @plans()?
         @plans()[@plan()]
 
 
