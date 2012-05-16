@@ -100,3 +100,7 @@
 %img.aligncenter{ src: "" }
 
 %a.scrollback.icon-chevron-up Back to top
+
+%p
+  Additionally, to add further confusion, images can be wrapped inside paragraph content, lets test some examples here.<img src="" class="alignright">
+  Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="" class="alignleft">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="" class="aligncenter">Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec ullamcorper nulla non metus auctor fringilla. Aenean lacinia bibendum nulla sed consectetur.</p>
