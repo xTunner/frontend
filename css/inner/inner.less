@@ -93,69 +93,134 @@ body {
  * Billing page
  */
 
+@color: #77aaff;
 
-#pricing {
-   .titles > div {
-      width: 200px;
-      padding: 3px 2px 3px 0;
-      text-align: right;
-      height: 33px;
-      font-size: 20px;
+#plans {
+   .selected {
+      background-color: @color;
    }
 
-   .plan > div {
+   #per-developer-plan {
+      margin-top: 30px;
+      font-size: 18px;
+   }
+
+   #thanks {
+      margin-top: 100px;
       text-align: center;
-      height: 33px;
-      padding: 3px 0 3px 0;
-    }
+   }
 
-   .plan > .reason {
-      font-weight: bold;
-      font-size: 15px;
-      height: 40px;
-      padding: 0px 20px; // override padding above
+   #team-button {
+      margin-left: 95px;
+   }
+
+   #sources {
+      min-width: 150px;
+      max-width: 150px;
+   }
+
+   #username {
+      min-width: 150px;
+      max-width: 150px;
+   }
+
+   #sources > ul {
+     margin-bottom: 0px;
+     margin-left: 5px;
+     list-style-type: none;
+   }
+
+   #payment-form {
+      background-color: @color;
+      padding-top: 12px;
+      padding-bottom: 20px;
+      #warning {
+        width: 290px;
+      }
+      #charge-button {
+         margin-left: 120px;
+      }
    }
 
 
-   .price {
-      font-size: 18px;
+   #team {
+      #total {
+         padding-top: 20px;
+         font-weight: bold;
+         font-size: 24px;
+      }
+
+      #name {
+         min-width: 150px;
+         max-width: 150px;
+      }
    }
 
-   .title {
-     font-weight: strong;
-     font-size: 24px;
-   }
 
-   .plan > .tick {
-      color: green;
-      font-size: 20px;
-   }
+   .pricing {
+      margin-top: -36px;
+      #team-plan-button {
+         text-align: center;
+      }
 
-   .tick {
-      padding-top: 3px;
-   }
+      .titles > div {
+         width: 200px;
+         padding: 3px 2px 3px 0;
+         text-align: right;
+         height: 33px;
+         font-size: 20px;
+      }
 
-   .plan > .parallelism {
-      font-size: 24px;
-   }
+      .plan > div {
+         text-align: center;
+         height: 33px;
+         padding: 3px 0 3px 0;
+      }
 
-   .plan > .limits {
-      padding-top: 5px;
-      font-size: 12px;
-      line-height: 0.5;
-   }
+      .plan > .reason {
+         font-weight: bold;
+         font-size: 15px;
+         height: 40px;
+         padding: 0px 20px; // override padding above
+      }
 
-   .plan > .limits > .none {
-      font-size: 24px;
-   }
 
-   .asterix {
-      font-size: 18px;
-   }
+      .price {
+         font-size: 18px;
+      }
 
-   .btn {
-      height: 40px;
-      font-size: 24px;
-      width: 120px;
+      .name {
+         font-weight: strong;
+         font-size: 24px;
+      }
+
+      .plan > .tick {
+         color: green;
+         font-size: 20px;
+      }
+
+      .tick {
+         padding-top: 3px;
+      }
+
+      .plan > .parallelism {
+         font-size: 24px;
+      }
+
+      .plan > .limits {
+         padding-top: 5px;
+         font-size: 24px;
+         line-height: 0.5;
+      }
+
+      .asterix {
+         font-size: 18px;
+      }
+
+      .btn {
+         height: 40px;
+         font-size: 24px;
+         width: 120px;
+      }
    }
 }

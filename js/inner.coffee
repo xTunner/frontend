@@ -19,6 +19,7 @@ finishAjax = (event, attrName, buttonName) ->
     setTimeout(func, 1500)
 
 $(document).ajaxSuccess((ev, xhr, options) ->
+  window.onerror = notifyError
   finishAjax(xhr.event, "data-success-text", "Saved")
 )
 
@@ -26,12 +27,15 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
 
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
-    VM.setErrorMessage "An unknown error occurred: (#{xhr.status})."
+    notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
-    VM.setErrorMessage xhr.responseText
+    notifyError xhr.responseText or xhr.statusText
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
+  # airbrake loads asynchronously, so catch it afterwards
+  window.onerror = notifyError
+
   xhr.event = options.event
   if xhr.event
     t = $(xhr.event.target)
@@ -49,7 +53,21 @@ $.ajaxSetup
   accepts: {json: "application/json"}
   dataType: "json"
 
-
+notifyError = (message, file, line) ->
+  # jquery errors sometimes call this with a different signature, not sure
+  # what's happening there
+  if message instanceof Object and file instanceof Object
+    message = file.message
+    file = null
+  if VM? and window.renderContext? and (window.renderContext.env == "development" or window.renderContext.env == "test")
+    if file
+      message += "\\nfile: #{file}"
+      message += "\\nline: #{line}"
+    VM.setErrorMessage message
+  if window.Hoptoad?
+    callback = () => Hoptoad.notify({message: message, stack: '()@' + file + ':' + line})
+    setTimeout callback, 100
+  return false
 
 
 class Base
@@ -311,10 +329,9 @@ class Project extends HasUrl
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/unfollow"
-      success:
-        (data) =>
-          @status(data.status)
-          @followed(data.followed)
+      success: (data) =>
+        @status(data.status)
+        @followed(data.followed)
 
   follow: (data, event) =>
     $.ajax
@@ -360,63 +377,11 @@ class User extends Base
   constructor: (json) ->
     json.tokens = ko.observableArray(json.tokens or [])
     json.paid = ko.observable(json.paid or false)
+    json.plan = ko.observable(json.plan)
     json.environment = window.renderContext.env if window.renderContext
-    super json, {paid: false, admin: false, login: "", is_new: false, basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
+    super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
 
     @tokenLabel = ko.observable("")
-    @selectedPlan = ko.observable(null)
-
-    @plans = [
-      title: "Ultra"
-      cost: 0
-      parallel: 64
-      limits: null
-      support: "Email + phone + SLA"
-      reason: "Annihilate long builds"
-      plan: "ultra1"
-      price: 89
-    ,
-      title: "Insane"
-      cost: 0
-      parallel: 16
-      limits: null
-      reason: "Ludicrously fast testing"
-      support: "Email + phone"
-      plan: "insane1"
-      price: 49
-    ,
-      title: "Lightning"
-      parallel: 8
-      cost: 0
-      limits: null
-      reason: "Incredibly fast builds"
-      support: "Email + phone"
-      plan: "lightning1"
-      price: 29
-    ,
-      title: "Fast"
-      parallel: 2
-      cost: 0
-      reason: "Fast builds, low cost"
-      limits: "3 concurrent builds per project, 15 hours build time"
-      support: "Email"
-      plan: "fast1"
-      price: 14
-    ,
-      title: "Pay as you go"
-      reason: "For occasional contributors"
-      parallel: 8
-      cost: 1
-      limits: null,
-      support: "Email"
-      plan: "payasyougo1"
-      price: 0
-    ]
-
-    for p in @plans
-      if @plan == p.plan
-        @selectedPlan(p)
-
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -426,20 +391,50 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
-  showPlan: (data) => @komp =>
-    @selectedPlan() == null or @selectedPlan() == data
+    # billing
+    @plans = ko.observable()
+    @individualPlan = @komp =>
+      if @plan()? and @plans()?
+        @plans()[@plan()]
 
-  showCreditCardForm: () => @komp =>
-    @selectedPlan()? and not @paid()
 
-  showThanks: () => @komp =>
-    @paid()
 
-  allowPlanSelection: () => @komp =>
-    not @selectedPlan()?
 
+    @availablePlans = @komp =>
+      (v for k,v of @plans())
+
+    # team billing
+    @collaborators = ko.observable(null)
+    @showTeam = ko.observable(false)
+
+    @individualTotal = @komp =>
+      if @individualPlan() then @individualPlan().price / 100 else 0
+
+    @teamTotal = @komp =>
+      return 0 unless @collaborators()
+      total = 0
+      for c in @collaborators()
+        total += c.plan().price if c.plan()
+      total / 100
+
+    @overallTotal = @komp =>
+      @teamTotal() + @individualTotal()
+
+
+  # billing
   selectPlan: (data) =>
-    @selectedPlan data
+    @plan(data.id)
+
+  toggleTeam: () =>
+    @showTeam !@showTeam()
+
+  teamPlans: () =>
+    return {} unless @collaborators()
+    result = {}
+    for c in @collaborators()
+      result[c.login] = c.plan().plan if c.plan()
+    result
+
 
 
 
@@ -462,7 +457,7 @@ class User extends Base
     }, (status, response) =>
       if response.error
         button.removeClass "disabled"
-        VM.setErrorMessage response.error.message
+        notifyError response.error.message
       else
         @recordStripeTransaction event, response # TODO: add the plan
 
@@ -472,10 +467,13 @@ class User extends Base
 
   recordStripeTransaction: (event, response) =>
     $.ajax(
-      url: "/api/v1/user/pay-single-user"
+      url: "/api/v1/user/pay"
       event: event
       type: "POST"
-      data: JSON.stringify {token: response, plan: @selectedPlan().plan}
+      data: JSON.stringify
+        token: response
+        plan: @individualPlan().id
+        team_plans: @teamPlans()
       success: () =>
         @paid true
     )
@@ -513,10 +511,7 @@ display = (template, args) ->
 class CircleViewModel extends Base
   constructor: ->
     observableCount = 0
-    @current_user = ko.observable(new User {})
-    $.getJSON '/api/v1/me', (data) =>
-      @current_user(new User data)
-
+    @current_user = ko.observable(new User window.renderContext.current_user)
     @build = ko.observable()
     @builds = ko.observableArray()
     @project = ko.observable()
@@ -626,9 +621,33 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
+  loadStripe: () =>
+    unless @stripeLoaded
+      @stripeLoaded = true
+      s = document.createElement 'script'
+      s.setAttribute "type", "text/javascript"
+      s.setAttribute "src", "https://js.stripe.com/v1/"
+      document.getElementsByTagName("head")[0].appendChild(s)
+
+  loadTeamMembers: () =>
+    $.getJSON '/api/v1/user/team-members', (data) =>
+      for d in data
+        d.plan = ko.observable(null)
+      @current_user().collaborators(data)
+
+  loadPlans: () =>
+    $.getJSON '/api/v1/user/plans', (data) =>
+      @current_user().plans(data)
+
+
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
+    if subpage == 'plans'
+      @loadPlans()
+      @loadTeamMembers()
+      @loadStripe()
+
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace('-', '_')]({}))
     ko.applyBindings(VM)
@@ -695,14 +714,7 @@ stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
 $(document).ready () ->
-  if window.renderContext.env == 'development'
-    hoptoad_on_error = window.onerror
-    window.onerror = (message, file, line) =>
-      hoptoad_on_error message, file, line
-      VM.setErrorMessage message + "\nfile: " + file + "\nline: " + line
-      return false
-
-
+  window.onerror = notifyError
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
@@ -730,10 +742,6 @@ $(document).ready () ->
       if window._gaq? # we dont use ga in test mode
         window._gaq.push @path
 
-    # Airbrake
-    @bind 'error', (e, data) ->
-      if data? and data.error? and window.Hoptoad?
-        window.Hoptoad.notify data.error
 
   ).run stripTrailingSlash(window.location.pathname)
 

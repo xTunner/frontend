@@ -1,0 +1,126 @@
+#plans
+
+  %h2 Your plan
+
+  .paid{data-bind: "if: paid"}
+
+    .row.pricing
+      .offset0.span4
+
+        = HAML['account_plan_titles']()
+
+      .span3.selected{data-bind: "with: individualPlan"}
+        = HAML['account_plan']({showButton: false})
+
+
+      .span6.offset2
+        .alert-message.block-message.info#thanks
+          %h2 Thanks!
+          %h5 We really genuinely appreciate it :)
+
+
+
+  .unpaid{data-bind: "ifnot: paid"}
+
+    .row.pricing
+      .offset0.span4
+
+        = HAML['account_plan_titles']()
+
+      / ko foreach: availablePlans
+      .span3
+        = HAML['account_plan']({showButton: true})
+      / /ko
+
+    %hr
+
+    .row
+      .offset6.span8.alert-message.block-message#per-developer-plan
+        Plans are <b><i>per-developer</i></b>.
+        Your plan covers all <i>your</i> builds, in all branches, in all repositories.
+
+        %br
+        %button.btn.primary.large#team-button{data-bind: "click: toggleTeam"}
+          %span{data-bind: "if: showTeam"}
+            Hide team plans
+          %span{data-bind: "ifnot: showTeam"}
+            Add plans for your team members
+
+
+
+    #team{data-bind: "if: showTeam"}
+      %h2 Team plans
+      %h6 Add plans for you colleagues
+
+      .row
+        .span6.offset1
+          %div{data-bind: "ifnot: collaborators"}
+            Loading collaborators...
+          %table{data-bind: "if: collaborators"}
+            %thead
+              %th#username Username (GitHub)
+              %th Plan
+              %th Collaborating on
+            %tbody{data-bind: "foreach: collaborators"}
+              %tr
+                %td#username{data-bind: "text: login"}
+                %td
+                  %select{data-bind: "options: $parent.availablePlans, optionsText: 'name', optionsCaption: 'Choose a plan', value: $data.plan"}
+                %td#sources
+                  %ul{data-bind: "foreach: sources"}
+                    %li{data-bind: "text: $data"}
+
+
+        .offset5.span7
+          %br
+          %br
+          #total
+            Team plan total: $
+            %span{data-bind: "text: teamTotal"}<>
+          %br
+          .alert-message.block-message
+            You'll need a plan for anyone who pushes.
+            If they don't have a plan, we won't test their pushes.
+            Use the Pay As You Go plan for rare contributors.
+
+          %br
+          .alert-message.block-message.info
+            You can add plans for committers who haven't signed up for Circle right now.
+            Send them this link later so they can sign up:
+            %br
+            %a{href: "https://circleci.com/?join=team-plan"}
+              https://circleci.com/?join=team-plan
+
+
+    %hr
+
+
+    = HAML['account_credit_card_form']()
+
+
+    -#   .offset2.span5
+    -#     %h3
+    -#       Your plan: "The Awesome!"
+
+    -#     %ul
+    -#       %li
+    -#         %h5 4-way parallel tests
+    -#         %p
+    -#           Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
+    -#           (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
+
+    -#       %li
+    -#         %h5 Same day support
+    -#         %p By phone, by chat, by email, we just want someone to talk to.
+
+    -#       %li
+    -#         %h5 High limits
+    -#         %p
+    -#           We don't charge you overages (unless you go insane, and even then we'd be reluctant).
+
+    -#       %li
+    -#         %h5 $29 - all in.
+    -#         %p
+    -#           This covers all <b>your</b> builds, in all branches, in all repositories.
+    -#           It does not cover your colleagues, who will need their own accounts.
+    -#           (We currently do not enforce this, but will in the near future).
