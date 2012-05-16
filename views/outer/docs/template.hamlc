@@ -88,19 +88,19 @@
 
 %a.scrollback.icon-chevron-up Back to top
 
-%img{ src: "" }
+%img{ src: "img/docs/placeholder.gif" }
   %p.wp-caption-text This is the optional caption.</p></div>
 
 %p
   The next issue we face is image alignment, users get the option of <em>None</em>, <em>Left</em>, <em>Right</em> &amp; <em>Center</em>.
 
-%img{ src: "" }
-%img.alignright{ src: "" }
-%img.alignleft{ src: "" }
-%img.aligncenter{ src: "" }
+%img{ src: "img/docs/placeholder.gif" }
+%img.alignright{ src: "img/docs/placeholder.gif" }
+%img.alignleft{ src: "img/docs/placeholder.gif" }
+%img.aligncenter{ src: "img/docs/placeholder.gif" }
 
 %a.scrollback.icon-chevron-up Back to top
 
 %p
-  Additionally, to add further confusion, images can be wrapped inside paragraph content, lets test some examples here.<img src="" class="alignright">
-  Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="" class="alignleft">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="" class="aligncenter">Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec ullamcorper nulla non metus auctor fringilla. Aenean lacinia bibendum nulla sed consectetur.</p>
+  Additionally, to add further confusion, images can be wrapped inside paragraph content, lets test some examples here.<img src: "img/docs/placeholder.gif" class="alignright">
+  Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="img/docs/placeholder.gif" class="alignleft">Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean lacinia bibendum nulla sed consectetur.<img src="img/docs/placeholder.gif" class="aligncenter">Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec ullamcorper nulla non metus auctor fringilla. Aenean lacinia bibendum nulla sed consectetur.</p>
