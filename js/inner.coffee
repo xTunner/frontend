@@ -403,7 +403,10 @@ class User extends Base
 
 
     @availablePlans = @komp =>
-      (v for k,v of @plans())
+      ap = (v for k,v of @plans())
+      ap.sort (a, b) ->
+        b.price - a.price # most expensive first
+      ap
 
     # team billing
     @collaborators = ko.observable(null)
