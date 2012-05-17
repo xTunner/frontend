@@ -35,7 +35,7 @@
       %li Ordered list item one.
       %li Ordered list item two.
       %li Ordered list item three.
-    %li Ordered list item four.
+      %li Ordered list item four.
 
     %blockquote
       Basic blockquotes are just wrapped in blockquote tags and have no clear way for the user to define a source
