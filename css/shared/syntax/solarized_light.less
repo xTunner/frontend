@@ -13,13 +13,16 @@ pre {
 
 pre code {
   display: block;
-  background: #fdf6e3 url(../img/solarized-light-pattern.png);
+  background: #fdf6e3 url("@{imgPath}/syntax/solarized-light-pattern.png");
   .box-shadow(inset 0px 0px 8px hsla(44, 35%, 79%,0.65));
   color: #657b83;
   counter-reset: line-numbering;
   border: none;
-  padding: 10px 5px 10px 0px;
+  padding: 15px 20px;
   position: relative;
+  font-size: 12px;
+  line-height: 18px;
+  .border-radius(6px);
 
   // Line styles. position: relative; for line number anchoring,
   // padding-left to prevent the code from being covered by the gutter
