@@ -79,11 +79,11 @@
 
     %pre
       %code
-        $ circle login
-        Enter your Circle credentials.
-        Email: user@example.com
-        Password:
-        Could not find an existing public key.
-        Would you like to generate one? [Yn]
-        Generating new SSH public key.
-        Uploading ssh public key /Users/user/.ssh/id_rsa.pub
+        Cloning into /home/ubuntu/CircleCI-177...
+        Warning: Permanently added 'github.com,207.97.227.239' (RSA) to the list of known hosts.
+        Note: checking out '50f2626256c8ba0f78705d4405ca812186e0e6ec'.
+        You are in 'detached HEAD' state. You can look around, make experimental
+        changes and commit them, and you can discard any commits you make in this
+        state without impacting any branches by performing another checkout.
+
+
