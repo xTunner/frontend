@@ -8,6 +8,7 @@ Modified for CircleCI by Carlos Rosquillas
 
 pre {
   padding: 0;
+  margin-left: 25px;
   border-color: darken(#eee8d5,5%);
 }
 
@@ -53,89 +54,6 @@ pre code {
       -o-user-select: none;
       user-select: none;
       z-index: 2500;
-  }
-
-  // stderr & stdout
-  .err > .line {
-    &.hilite,
-    &:hover {
-      background: rgba(225, 153, 152, 0.2);
-    }
-
-    &::after {
-      content: '\27A4';
-      font-size: 20px;
-      position: absolute;
-      top: 0;
-      left: 6px;
-      z-index: 4000;
-      color: hsl(1, 41%, 63%);
-      -webkit-touch-callout: none;
-      -webkit-use-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -o-user-select: none;
-      user-select: none;
-      z-index: 2500;
-    }
-  }
-  .out > .line {
-    &.hilite,
-    &:hover {
-      background: rgba(162, 196, 90, 0.15);
-    }
-
-    &::after {
-      content: '\27A4';
-      font-size: 20px;
-      position: absolute;
-      top: 0;
-      left: 6px;
-      z-index: 4000;
-      color: hsl(86, 41%, 53%);
-      -webkit-touch-callout: none;
-      -webkit-use-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -o-user-select: none;
-      user-select: none;
-      z-index: 2500;
-    }
-  }
-
-  // Disabled line numbers styling
-  &.simple {
-    padding: 10px 15px;
-
-    .line {
-      padding-left: 0;
-     .transition( 0.25s ease);
-    }
-
-    // No line numbers
-    .line::before {
-      display: none;
-    }
-
-    // No gutter 
-    &::after,
-    &::before {
-      display: none;
-    }
-
-    // stderr & stdout for simple
-    .err > .line {
-      &::after {
-        display: none;
-      }
-    }
-    .out > .line {
-      &::after {
-        display: none;
-      }
-    }
   }
 
   // Solarized theme colors
