@@ -1,3 +1,7 @@
+.title
+  %h1 Getting Started with Circle
+  %p Last Updated: 16 May 2012
+
 %h1 Level One Heading
 %h2 Level Two Heading
 %h3 Level Three Heading
