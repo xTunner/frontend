@@ -209,6 +209,8 @@ class Build extends HasUrl
         "timed out"
       when "no_tests"
         "no tests"
+      when "not_running"
+        "not running"
       else
         @status
 
