@@ -403,7 +403,9 @@ class User extends Base
 
 
     @availablePlans = @komp =>
-      ap = (v for k,v of @plans())
+      ap = for k,v of @plans()
+        v.id = k
+        v
       ap.sort (a, b) ->
         b.price - a.price # most expensive first
       ap
