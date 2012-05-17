@@ -18,13 +18,6 @@
     %p
       And last, and by no means least, users can also apply the <code>Address</code> tag to text like this:
 
-      %address
-        123 Example Street,
-        Testville,
-        West Madeupsburg,
-        CSSland,
-        1234
-
     %ul
       %li.icon-ok .icon-ok
       %li.icon-chevron-right .icon-chevron-right
