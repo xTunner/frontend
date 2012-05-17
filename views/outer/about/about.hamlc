@@ -50,7 +50,7 @@
     %p We'd love to hear from you.
     %hr
 
-    %form{ action: '', method: 'post' }
+    %form{ action: "/about/contact", method: "POST" }
 
       // Name
       %label{ for: 'name'} Name:
