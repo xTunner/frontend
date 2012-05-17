@@ -29,38 +29,6 @@ pre code {
     display: block;
   }
 
-  // Gutter pseudoelement global styles
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    height:100%;
-  }
-
-  // Give impression of depth with some tricks on the gutter
-  &::before {
-    background: #eee8d5 url(../img/solarized-light-num-pattern.png);
-    background-repeat: repeat;
-    border-right: 1px solid lighten(#eee8d5,6%);
-    .box-shadow(1px 0 0  rgba(0,0,0,0.075) ;
-    width: 55px;
-    z-index: 2000;
-  }
-
-  // Simulate a drop shadow behind the gutter
-  &::after {
-    width: 83px;
-    z-index: 1000;
-    background: -moz-linear-gradient(left,  rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 74%);
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,1)), color-stop(74%,rgba(0,0,0,0.0)));
-    background: -webkit-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
-    background: -o-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
-    background: -ms-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
-    background: linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
-  }
-
   // Line numbers
   .line::before {
       content: counter(line-numbering) ".";
