@@ -19,6 +19,7 @@
       And last, and by no means least, users can also apply the <code>Address</code> tag to text like this:
 
     %ul
+      %li Normal
       %li.icon-ok .icon-ok
       %li.icon-chevron-right .icon-chevron-right
       %li.icon-info-sign .icon-info-sign
