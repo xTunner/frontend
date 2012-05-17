@@ -1,0 +1,264 @@
+/*
+
+Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmail.com>
+
+Modified for CircleCI by Carlos Rosquillas
+
+*/
+
+pre {
+  padding: 0;
+  border-color: darken(#eee8d5,5%);
+}
+
+pre code {
+  display: block;
+  background: #fdf6e3 url(../img/solarized-light-pattern.png);
+  .box-shadow(inset 0px 0px 8px hsla(44, 35%, 79%,0.65));
+  color: #657b83;
+  counter-reset: line-numbering;
+  border: none;
+  padding: 10px 5px 10px 0px;
+  position: relative;
+
+  // Line styles. position: relative; for line number anchoring,
+  // padding-left to prevent the code from being covered by the gutter
+  .line {
+    position: relative;
+    padding-left: 70px;
+    display: block;
+  }
+
+  // Gutter pseudoelement global styles
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height:100%;
+  }
+
+  // Give impression of depth with some tricks on the gutter
+  &::before {
+    background: #eee8d5 url(../img/solarized-light-num-pattern.png);
+    background-repeat: repeat;
+    border-right: 1px solid lighten(#eee8d5,6%);
+    .box-shadow(1px 0 0  rgba(0,0,0,0.075) ;
+    width: 55px;
+    z-index: 2000;
+  }
+
+  // Simulate a drop shadow behind the gutter
+  &::after {
+    width: 83px;
+    z-index: 1000;
+    background: -moz-linear-gradient(left,  rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 74%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,1)), color-stop(74%,rgba(0,0,0,0.0)));
+    background: -webkit-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
+    background: -o-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
+    background: -ms-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
+    background: linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0.0) 74%);
+  }
+
+  // Line numbers
+  .line::before {
+      content: counter(line-numbering) ".";
+      counter-increment: line-numbering;
+      width: 45px;
+      text-align: right;
+      font-size: 10px;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.45);
+      color: #B8AB84;
+      position: absolute;
+      left: 0;
+      top: 0;
+      // Disable text selection
+      -webkit-touch-callout: none;
+      -webkit-use-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      z-index: 2500;
+  }
+
+  // stderr & stdout
+  .err > .line {
+    &.hilite,
+    &:hover {
+      background: rgba(225, 153, 152, 0.2);
+    }
+
+    &::after {
+      content: '\27A4';
+      font-size: 20px;
+      position: absolute;
+      top: 0;
+      left: 6px;
+      z-index: 4000;
+      color: hsl(1, 41%, 63%);
+      -webkit-touch-callout: none;
+      -webkit-use-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      z-index: 2500;
+    }
+  }
+  .out > .line {
+    &.hilite,
+    &:hover {
+      background: rgba(162, 196, 90, 0.15);
+    }
+
+    &::after {
+      content: '\27A4';
+      font-size: 20px;
+      position: absolute;
+      top: 0;
+      left: 6px;
+      z-index: 4000;
+      color: hsl(86, 41%, 53%);
+      -webkit-touch-callout: none;
+      -webkit-use-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      z-index: 2500;
+    }
+  }
+
+  // Disabled line numbers styling
+  &.simple {
+    padding: 10px 15px;
+
+    .line {
+      padding-left: 0;
+     .transition( 0.25s ease);
+    }
+
+    // No line numbers
+    .line::before {
+      display: none;
+    }
+
+    // No gutter 
+    &::after,
+    &::before {
+      display: none;
+    }
+
+    // stderr & stdout for simple
+    .err > .line {
+      &::after {
+        display: none;
+      }
+    }
+    .out > .line {
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  // Solarized theme colors
+  // #93a1a1
+  .comment,
+  .template_comment,
+  .diff .header,
+  .doctype,
+  .lisp .string,
+  .javadoc {
+    color: #93a1a1;
+    font-style: italic;
+  }
+
+  // #859900
+  .keyword,
+  .css .rule .keyword,
+  .winutils,
+  .javascript .title,
+  .method,
+  .addition,
+  .css .tag,
+  .lisp .title {
+    color: #859900;
+  }
+
+  // #2aa198
+  .number,
+  .command,
+  .string,
+  .tag .value,
+  .phpdoc,
+  .tex .formula,
+  .regexp,
+  .hexcolor {
+    color: #2aa198;
+  }
+
+  // #268bd2
+  .title,
+  .localvars,
+  .function .title,
+  .chunk,
+  .decorator,
+  .builtin,
+  .built_in,
+  .lisp .title,
+  .identifier,
+  .title .keymethods,
+  .id {
+    color: #268bd2;
+  }
+
+  .tag .title,
+  .rules .property,
+  .django .tag .keyword {
+    font-weight: bold;
+  }
+
+  // #b58900
+  .attribute,
+  .variable,
+  .instancevar,
+  .lisp .body,
+  .smalltalk .number,
+  .constant,
+  .class .title,
+  .parent,
+  .haskell .label {
+    color: #b58900;
+  }
+
+  // #cb4b16
+  .preprocessor,
+  .pi,
+  .shebang,
+  .symbol,
+  .diff .change,
+  .special,
+  .keymethods,
+  .attr_selector,
+  .important,
+  .subst,
+  .cdata {
+    color: #cb4b16;
+  }
+
+  // #dc322f
+  .deletion {
+    color: #dc322f;
+  }
+
+  // #eee8d5
+  .tex .formula {
+    background: #eee8d5;
+  }
+}
