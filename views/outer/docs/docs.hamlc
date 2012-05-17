@@ -10,11 +10,11 @@
   %section.categories
     %ul
       %li
-        %a
+        %a{ href: "docs/category/template" }
           %i.icon-cogs
           %hgroup
-            %h2 Suspendisse facilisis lectus sed odio auctor ultricies.
-            %h3 Pellentesque cursus, leo quis sodales accumsan
+            %h2 This is a link to a template
+            %h3 The template is found in docs/category/template.hamlc
 
       %li
         %a
