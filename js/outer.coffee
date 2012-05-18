@@ -38,13 +38,14 @@ circle = $.sammy("body", ->
   docs = new Page("docs", "Documentation")
 
   # Per-Page Polyfills
-  polyfill = ->
+  about.polyfill = placeholder
+  home.polyfill = placeholder
+
+  placeholder = ->
     if !Modernizr.input.placeholder
       $.getScript("/assets/js/vendor/jquery.placeholder.js", ->
         $("input, textarea").placeholder()
       )
-  about.polyfill = polyfill
-  home.polyfill = polyfill
 
   # Google analytics
   @bind 'event-context-after', ->
