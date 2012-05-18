@@ -68,10 +68,7 @@ circle = $.sammy("body", ->
   article = new Doc("article", "Sample template for an Article")
 
   # Per-Page Libs
-  home.lib = placeholder
-  about.lib = placeholder
-
-  article.lib = ->
+  highlight = ->
     if !hljs?
       $.getScript("/assets/js/vendor/highlight.pack.js", ->
         $("pre code").each (i, e) -> hljs.highlightBlock e
@@ -84,6 +81,10 @@ circle = $.sammy("body", ->
       $.getScript("/assets/js/vendor/jquery.placeholder.js", ->
         $("input, textarea").placeholder()
       )
+
+  home.lib = placeholder
+  about.lib = placeholder
+  article.lib = highlight
 
   # Google analytics
   @bind 'event-context-after', ->
