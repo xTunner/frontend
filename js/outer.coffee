@@ -70,18 +70,17 @@ circle = $.sammy("body", ->
   # Per-Page Libs
   home.lib = placeholder
   about.lib = placeholder
-  article.lib = syntaxhighlight
+
+  article.lib = ->
+    $.getScript("/assets/js/vendor/highlight.pack.js", ->
+      $("pre code").each (i, e) -> hljs.highlightBlock e
+    )
 
   placeholder = ->
     if !Modernizr.input.placeholder
       $.getScript("/assets/js/vendor/jquery.placeholder.js", ->
         $("input, textarea").placeholder()
       )
-
-  syntaxhighlight = ->
-    $.getScript("/assets/js/vendor/highlight.pack.js", ->
-      $("pre code").each (i, e) -> hljs.highlightBlock e
-    )
 
   # Google analytics
   @bind 'event-context-after', ->
