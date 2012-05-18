@@ -4,22 +4,25 @@ circle = $.sammy("body", ->
   class Page
     constructor: (@name, @title) ->
 
-    render: ->
+    init: ->
       document.title = "Circle - " + @title
 
       # Render content
+      @render()
+
+      # Land at the right anchor on the page
+      @scroll(window.location.hash)
+
+      # Fetch page-specific libraries
+      @lib() if @lib?
+
+    render: ->
       $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
       $("body").append HAML[@name](renderContext)
       $("body").append HAML['footer'](renderContext)
 
-      # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
-      @scroll(window.location.hash)
-
-      # Fetch page-specific libraries
-      @library() if @library?
-
     load: ->
-      $.getScript("/assets/views/outer/#{@name}/#{@name}.hamlc", => @render())
+      $.getScript("/assets/views/outer/#{@name}/#{@name}.hamlc", => @init())
 
     scroll: (hash) ->
       if hash == '' or hash == '#' then hash = "body"
@@ -27,7 +30,7 @@ circle = $.sammy("body", ->
 
     display: ->
       if HAML? and HAML[@name]?
-        @render()
+        @init()
       else
         @load()
 
@@ -47,14 +50,20 @@ circle = $.sammy("body", ->
   article = new Doc("article", "Sample template for an Article")
 
   # Per-Page Libs
-  home.library = placeholder
-  about.library = placeholder
+  home.lib = placeholder
+  about.lib = placeholder
+  article.lib = syntaxhighlight
 
   placeholder = ->
     if !Modernizr.input.placeholder
       $.getScript("/assets/js/vendor/jquery.placeholder.js", ->
         $("input, textarea").placeholder()
       )
+
+  syntaxhighlight = ->
+    $.getScript("/assets/js/vendor/highlight.pack.js", ->
+      $("pre code").each (i, e) -> hljs.highlightBlock e
+    )
 
   # Google analytics
   @bind 'event-context-after', ->
