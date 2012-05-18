@@ -31,11 +31,19 @@ circle = $.sammy("body", ->
       else
         @load()
 
+  # Doc
+  class Doc extends Page
+    load: ->
+      $.getScript("/assets/views/outer/docs/category/#{@name}.hamlc")
+
   # Pages
   home = new Page("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy and Security")
   docs = new Page("docs", "Documentation")
+
+  # Docs
+  article = new Doc("article", "Sample template for an Article")
 
   # Per-Page Polyfills
   about.polyfill = placeholder
