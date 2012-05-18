@@ -72,9 +72,12 @@ circle = $.sammy("body", ->
   about.lib = placeholder
 
   article.lib = ->
-    $.getScript("/assets/js/vendor/highlight.pack.js", ->
+    if !hljs?
+      $.getScript("/assets/js/vendor/highlight.pack.js", ->
+        $("pre code").each (i, e) -> hljs.highlightBlock e
+      )
+    else
       $("pre code").each (i, e) -> hljs.highlightBlock e
-    )
 
   placeholder = ->
     if !Modernizr.input.placeholder
