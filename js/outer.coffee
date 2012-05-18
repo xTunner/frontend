@@ -18,6 +18,9 @@ circle = $.sammy("body", ->
       # Apply polyfill(s) if they exists
       @polyfill() if @polyfill?
 
+      # Fetch libraries endemic to page
+      @library() if @library?
+
     load: ->
       $.getScript("/assets/views/outer/#{@name}/#{@name}.hamlc", => @render())
 
