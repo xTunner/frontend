@@ -1,4 +1,5 @@
 = HAML['_topbar']({})
+= HAML['flashes']({})
 
 .container-fluid
   .sidebar
