@@ -36,9 +36,16 @@ circle = $.sammy("body", ->
 
   # Doc
   class Doc extends Page
+    render: ->
+      $('.doc-title').remove();
+      $('.categories').html(HAML['article'](renderContext));
+      $('.categories').removeClass('categories').addClass('article');
+
     load: ->
       if !HAML['categories']
-        $.getScript("/assets/views/outer/docs/categories.hamlc")
+        $.getScript("/assets/views/outer/docs/categories.hamlc", => @article())
+      else
+        @article()
 
     article: ->
       $.getScript("/assets/views/outer/docs/category/#{@name}.hamlc", => @init())

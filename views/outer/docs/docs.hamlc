@@ -2,7 +2,7 @@
   %h1 Documentation
 
 #content
-  %section
+  %section.doc-title
     %h1 How can we help you?
 
     %hr
