@@ -28,7 +28,7 @@
           %br
 
           %span.minor
-            As usual, all commands are arbitrary bash, and run on Ubuntu 11.04.
+            As usual, all commands are arbitrary bash, and run on Ubuntu 11.10.
         .infobox.short
 
     %br
