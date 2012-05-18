@@ -209,6 +209,8 @@ class Build extends HasUrl
         "timed out"
       when "no_tests"
         "no tests"
+      when "not_running"
+        "not running"
       else
         @status
 
@@ -401,7 +403,12 @@ class User extends Base
 
 
     @availablePlans = @komp =>
-      (v for k,v of @plans())
+      ap = for k,v of @plans()
+        v.id = k
+        v
+      ap.sort (a, b) ->
+        b.price - a.price # most expensive first
+      ap
 
     # team billing
     @collaborators = ko.observable(null)
@@ -517,6 +524,7 @@ class CircleViewModel extends Base
     @project = ko.observable()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
+    @build_state = ko.observable()
     @admin = ko.observable()
     @error_message = ko.observable(null)
     @first_login = true;
@@ -656,7 +664,8 @@ class CircleViewModel extends Base
 
   renderAdminPage: (subpage) =>
     $('#main').html(HAML['admin']({}))
-    $('#subpage').html(HAML['admin_' + subpage]())
+    if subpage
+      $('#subpage').html(HAML['admin_' + subpage]())
     ko.applyBindings(VM)
 
 
@@ -666,6 +675,11 @@ class CircleViewModel extends Base
       $.getJSON "/api/v1/admin/#{subpage}", (data) =>
         @admin(data)
     @renderAdminPage subpage
+
+  loadAdminBuildState: () =>
+    $.getJSON '/api/v1/admin/build-state', (data) =>
+      @build_state(data)
+    @renderAdminPage "build_state"
 
 
   loadAdminProjects: (cx) =>
@@ -679,6 +693,14 @@ class CircleViewModel extends Base
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
       @recent_builds((new Build d for d in data))
     @renderAdminPage "recent_builds"
+
+  adminRefreshIntercomData: (data, event) =>
+    $.ajax(
+      url: "/api/v1/admin/refresh-intercom-data"
+      type: "POST"
+      event: event
+    )
+    false
 
 
   loadJasmineTests: (cx) =>
@@ -734,6 +756,7 @@ $(document).ready () ->
     @get('/admin/users', (cx) -> VM.loadAdminPage cx, "users")
     @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
     @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
+    @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 
