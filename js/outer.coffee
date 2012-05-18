@@ -61,7 +61,10 @@ circle = $.sammy("body", ->
   @get "/", (context) -> home.display()
   @get "/about.*", (context) -> about.display()
   @get "/privacy.*", (context) -> privacy.display()
-  @get "/docs.*", (context) -> docs.display()
+  @get "/docs", (context) -> docs.display()
+
+  # Documentation
+  @get "/docs/article.*", -> article.display()
 )
 
 # Global polyfills
