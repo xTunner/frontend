@@ -15,10 +15,7 @@ circle = $.sammy("body", ->
       # Sammy eats hashes, so we need to reapply it to land at the right anchor on the page
       @scroll(window.location.hash)
 
-      # Apply polyfill(s) if they exists
-      @polyfill() if @polyfill?
-
-      # Fetch libraries endemic to page
+      # Fetch page-specific libraries
       @library() if @library?
 
     load: ->
@@ -49,9 +46,9 @@ circle = $.sammy("body", ->
   # Docs
   article = new Doc("article", "Sample template for an Article")
 
-  # Per-Page Polyfills
-  about.polyfill = placeholder
-  home.polyfill = placeholder
+  # Per-Page Libs
+  home.library = placeholder
+  about.library = placeholder
 
   placeholder = ->
     if !Modernizr.input.placeholder
