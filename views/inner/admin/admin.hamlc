@@ -17,6 +17,10 @@
           Recent builds
 
       %li
+        %a{href: "/admin/build-state"}
+          Hazelcast build-state
+
+      %li
         %button.btn.primary{data-bind: "click: adminRefreshIntercomData"}
           Refresh all Intercom data
 

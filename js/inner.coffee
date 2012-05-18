@@ -524,6 +524,7 @@ class CircleViewModel extends Base
     @project = ko.observable()
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
+    @build_state = ko.observable()
     @admin = ko.observable()
     @error_message = ko.observable(null)
     @first_login = true;
@@ -675,6 +676,11 @@ class CircleViewModel extends Base
         @admin(data)
     @renderAdminPage subpage
 
+  loadAdminBuildState: () =>
+    $.getJSON '/api/v1/admin/build-state', (data) =>
+      @build_state(data)
+    @renderAdminPage "build_state"
+
 
   loadAdminProjects: (cx) =>
     $.getJSON '/api/v1/admin/projects', (data) =>
@@ -750,6 +756,7 @@ $(document).ready () ->
     @get('/admin/users', (cx) -> VM.loadAdminPage cx, "users")
     @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
     @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
+    @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 
