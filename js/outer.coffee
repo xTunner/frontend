@@ -40,6 +40,9 @@ circle = $.sammy("body", ->
       if !HAML['categories']
         $.getScript("/assets/views/outer/docs/categories.hamlc")
 
+    article: ->
+      $.getScript("/assets/views/outer/docs/category/#{@name}.hamlc", => @init())
+
   # Pages
   home = new Page("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
