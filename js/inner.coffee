@@ -663,7 +663,8 @@ class CircleViewModel extends Base
 
   renderAdminPage: (subpage) =>
     $('#main').html(HAML['admin']({}))
-    $('#subpage').html(HAML['admin_' + subpage]())
+    if subpage
+      $('#subpage').html(HAML['admin_' + subpage]())
     ko.applyBindings(VM)
 
 
