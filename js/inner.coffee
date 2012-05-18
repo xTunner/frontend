@@ -687,6 +687,14 @@ class CircleViewModel extends Base
       @recent_builds((new Build d for d in data))
     @renderAdminPage "recent_builds"
 
+  adminRefreshIntercomData: (data, event) =>
+    $.ajax(
+      url: "/api/v1/admin/refresh-intercom-data"
+      type: "POST"
+      event: event
+    )
+    false
+
 
   loadJasmineTests: (cx) =>
     # Run the tests within the local scope, so we can use the scope chain to
