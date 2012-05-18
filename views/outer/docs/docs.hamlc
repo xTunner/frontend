@@ -14,7 +14,7 @@
           %i.icon-cogs
           %hgroup
             %h2 This is a link to a template
-            %h3 The template is found in docs/category/template.hamlc
+            %h3 The template is found in docs/topics/article.hamlc
 
       %li
         %a
