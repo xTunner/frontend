@@ -3,47 +3,47 @@
   %li
     %i.icon-cogs
     %a Suspendisse
+      %i.icon-chevron-up
     %ul.expand
       %li Facilisis quis
       %li Lectus sed vulputate
       %li Odio leo
       %li Pum sociis varius cursus
-    %i.icon-chevron-up
 
   %li
     %i.icon-lock
     %a Maecenas
+      %i.icon-chevron-down
     %ul
       %li Natoque varius nulla
       %li Magnis dis parturient montes
       %li Aenean sed
-    %i.icon-chevron-down
 
   %li
     %i.icon-repeat
     %a Fusce Auctor
+      %i.icon-chevron-down
     %ul
       %li Curabitur eget felis
       %li Natoque varius nulla
       %li Odio Leo
       %li Pum sociis varius cursus
-    %i.icon-chevron-down
 
   %li
     %i.icon-user
     %a Pellentesque
+      %i.icon-chevron-down
     %ul
       %li Curabitur eget felis
       %li Natoque varius nulla
       %li Pum sociis varius cursus
-    %i.icon-chevron-down
 
   %li
     %i.icon-list-alt
     %a Nullam Justo
+      %i.icon-chevron-down
     %ul
       %li Natoque varius nulla
       %li Lectus sed vulputate
       %li Curabitur eget felis
       %li Pum sociis varius cursus
-    %i.icon-chevron-down
