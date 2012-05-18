@@ -524,23 +524,30 @@ class CircleViewModel extends Base
     @project_map = {}
     observableCount += 8
 
+    @setupPusher()
+
+  setupPusher: () =>
     @pusher = new Pusher("356b7c379e56e14c261b")
-    @user_channel = @pusher.subscribe(@current_user().login)
-    @user_channel.bind("alert", (data) -> alert data.message )
 
-    @setupPusherChannels()
+    Pusher.channel_auth_endpoint = "/auth/pusher"
 
-  testCall: (arg) =>
-    alert(arg)
+    @userSubscribePrivateChannel()
+    @pusherSetupBindings()
 
-  setupPusherChannels: () =>
+  userSubscribePrivateChannel: () =>
+    channel_name = "private-" + @current_user().login
+
+    @user_channel = @pusher.subscribe(channel_name)
+    @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
+  pusherSetupBindings: () =>
     @user_channel.bind "call", (data) =>
-      # alert("fn is " + this[data.fn])
-      # alert("args is " + data.args)
       window.fn = data.fn
       window.args = data.args
       this[data.fn].apply(this, data.args)
 
+  testCall: (arg) =>
+    alert(arg)
 
   clearErrorMessage: () =>
     @error_message null
