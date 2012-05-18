@@ -10,7 +10,7 @@
   %section.categories
     %ul
       %li
-        %a{ href: "docs/category/template" }
+        %a{ href: "docs/article" }
           %i.icon-cogs
           %hgroup
             %h2 This is a link to a template
