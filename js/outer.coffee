@@ -37,9 +37,17 @@ circle = $.sammy("body", ->
   # Doc
   class Doc extends Page
     render: ->
-      $('.doc-title').remove();
-      $('.categories').html(HAML['article'](renderContext));
-      $('.categories').removeClass('categories').addClass('article');
+      if $('.categories').length > 0
+        $('.doc-title').remove();
+        $('.categories').removeClass('categories').addClass('article');
+        $('.article').html(HAML[@name](renderContext));
+      else
+        $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
+        $("body").append(HAML['title'](renderContext))
+        $("#title h1").text("Documentation")
+        $("body").append("<div id='content'><section class='article'></section></div>")
+        $(".article").append(HAML[@name](renderContext))
+        $("body").append(HAML['footer'](renderContext))
 
     load: ->
       if !HAML['categories']
