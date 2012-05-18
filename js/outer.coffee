@@ -34,6 +34,7 @@ circle = $.sammy("body", ->
   # Doc
   class Doc extends Page
     load: ->
+      $.getScript("/assets/views/outer/docs/categories.hamlc")
       $.getScript("/assets/views/outer/docs/category/#{@name}.hamlc")
 
   # Pages
