@@ -1,0 +1,1 @@
+%pre{data-bind: "text: JSON.stringify(VM.build_state(), undefined, 2)"}

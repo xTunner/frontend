@@ -4,7 +4,8 @@
       %th{colspan: 2}
         Available Projects
       %th
-        %img{height: 15, width: 15, data-bind: "attr: {src: refresh_project_src()}, click: user_refresh_projects"}
+        %a{href: "#"}
+          %img{height: 15, width: 15, data-bind: "attr: {src: refresh_project_src()}, click: user_refresh_projects"}
 
   %tbody{data-bind: "foreach: available_projects()"}
     %tr

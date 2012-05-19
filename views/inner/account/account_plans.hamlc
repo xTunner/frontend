@@ -90,6 +90,11 @@
             %br
             %a{href: "https://circleci.com/?join=team-plan"}
               https://circleci.com/?join=team-plan
+            %br
+            Inviting users and creating plans does not give them access to your projects.
+            Project membership is only ever determined using GitHub permissions.
+
+
 
 
     %hr
