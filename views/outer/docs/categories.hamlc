@@ -2,13 +2,19 @@
 
   %li
     %i.icon-cogs
-    %a Suspendisse
+    %a{ href: "docs/article" } Getting Started
       %i.icon-chevron-up
     %ul.expand
-      %li Facilisis quis
-      %li Lectus sed vulputate
-      %li Odio leo
-      %li Pum sociis varius cursus
+      %li
+        %a{ href: "docs/article#headings" } Headings
+      %li
+        %a{ href: "docs/article#text" } Text Elements
+      %li
+        %a{ href: "docs/article#lists" } Ordered and Unordered List
+      %li
+        %a{ href: "docs/article#blockquotes" } Blockquotes
+      %li
+        %a{ href: "docs/article#pre" } Pre & Code
 
   %li
     %i.icon-lock
