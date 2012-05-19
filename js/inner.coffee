@@ -29,7 +29,7 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
-    notifyError xhr.responseText or xhr.statusText
+    notifyError xhr.responseText or xhr.statusText, null, null, true
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
@@ -53,13 +53,13 @@ $.ajaxSetup
   accepts: {json: "application/json"}
   dataType: "json"
 
-notifyError = (message, file, line) ->
+notifyError = (message, file, line, always_display) ->
   # jquery errors sometimes call this with a different signature, not sure
   # what's happening there
   if message instanceof Object and file instanceof Object
     message = file.message
     file = null
-  if VM? and window.renderContext? and (window.renderContext.env == "development" or window.renderContext.env == "test")
+  if always_display or (VM? and window.renderContext? and (window.renderContext.env == "development" or window.renderContext.env == "test"))
     if file
       message += "\\nfile: #{file}"
       message += "\\nline: #{line}"
