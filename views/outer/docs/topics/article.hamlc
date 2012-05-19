@@ -7,7 +7,7 @@
 
   .doc
     %h1.section
-      %a{ href: "#headings" } Headings
+      %a#headings Headings
     %hr
 
     %h1 Level One Heading
@@ -17,8 +17,16 @@
     %h5 Level Five Heading
     %h6 Level Six Heading
 
+    %h1.section
+      %a#text Text Elements
+    %hr
+
     %p
       This is a standard paragraph. It has a <strong>strong tag</strong>, an <em>em tag</em> and a <del>strikethrough</del> which is actually just the del element. There are a few more inline elements which are not in the WordPress admin but we should check for incase your users get busy with the copy and paste. These include <cite>citations</cite>, <abbr title="abbreviation">abbr</abbr>, bits of <code class="inline">code</code> and <var>variables</var>, <q>inline quotations</q>, <ins datetime="2011-12-08T20:19:53+00:00">inserted text</ins>, text that is <s>no longer accurate</s> or something <mark>so important</mark> you might want to mark it. We can also style subscript and superscript characters like C0<sub>2</sub>, here is our 2<sup>nd</sup> example. If they are feeling non-semantic they might even use <b>bold</b>, <i>italic</i>, <big>big</big> or <small>small</small> elements too. Incidentally, these HTML4.01 tags have been given new life and semantic meaning in HTML5, you may be interested in reading this <a title="HTML5 Semantics" href="http://csswizardry.com/2011/01/html5-and-text-level-semantics">article by Harry Roberts  <i class="icon-external-link"></i></a> which gives a nice excuse to test a link.
+
+    %h1.section
+      %a#lists Lists
+    %hr
 
     %ul
       %li Normal
@@ -33,6 +41,10 @@
       %li Ordered list item three.
       %li Ordered list item four.
 
+    %h1.section
+      %a#blockquote Blockquotes
+    %hr
+
     %blockquote
       Basic blockquotes are just wrapped in blockquote tags and have no clear way for the user to define a source
 
@@ -42,6 +54,10 @@
         %cite
           %a{ href: "http://html5doctor.com/blockquote-q-cite/" } Oli Studholme, HTML5doctor.com
             %i.icon-external-link
+
+    %h1.section
+      %a#table Tables
+    %hr
 
     %table
       %thead
@@ -81,6 +97,10 @@
         %td Table Row Column One
         %td Table Row Column Two
         %td Table Row Column Three
+
+    %h1.section
+      %a#pre Pre/Code
+    %hr
 
     %pre
       :preserve:escaped
