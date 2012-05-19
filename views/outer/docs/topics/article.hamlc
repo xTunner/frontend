@@ -6,6 +6,9 @@
     %hr
 
   .doc
+    %h1
+      %a{ href: "#headings" } Headings
+
     %h1 Level One Heading
     %h2 Level Two Heading
     %h3 Level Three Heading
