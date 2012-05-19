@@ -42,7 +42,7 @@
       %li Ordered list item four.
 
     %h1.section
-      %a#blockquote Blockquotes
+      %a#blockquotes Blockquotes
     %hr
 
     %blockquote
@@ -56,7 +56,7 @@
             %i.icon-external-link
 
     %h1.section
-      %a#table Tables
+      %a#tables Tables
     %hr
 
     %table
