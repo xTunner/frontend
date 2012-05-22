@@ -18,10 +18,7 @@ finishAjax = (event, attrName, buttonName) ->
       t.removeClass "disabled"
     setTimeout(func, 1500)
 
-$(document).ajaxSuccess((ev, xhr, options) ->
-  window.onerror = notifyError
-  finishAjax(xhr.event, "data-success-text", "Saved")
-)
+$(document).ajaxSuccess((ev, xhr, options) -> finishAjax(xhr.event, "data-success-text", "Saved"))
 
 $(document).ajaxError((ev, xhr, status, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
@@ -33,8 +30,6 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
-  # airbrake loads asynchronously, so catch it afterwards
-  window.onerror = notifyError
 
   xhr.event = options.event
   if xhr.event
@@ -52,22 +47,6 @@ $.ajaxSetup
   contentType: "application/json"
   accepts: {json: "application/json"}
   dataType: "json"
-
-notifyError = (message, file, line, always_display) ->
-  # jquery errors sometimes call this with a different signature, not sure
-  # what's happening there
-  if message instanceof Object and file instanceof Object
-    message = file.message
-    file = null
-  if always_display or (VM? and window.renderContext? and (window.renderContext.env == "development" or window.renderContext.env == "test"))
-    if file
-      message += "\\nfile: #{file}"
-      message += "\\nline: #{line}"
-    VM.setErrorMessage message
-  if window.Hoptoad?
-    callback = () => Hoptoad.notify({message: message, stack: '()@' + file + ':' + line})
-    setTimeout callback, 100
-  return false
 
 
 class Base
@@ -532,7 +511,7 @@ class CircleViewModel extends Base
     @project_map = {}
     observableCount += 8
 
-    # @setupPusher()
+    #@setupPusher()
 
   setupPusher: () =>
     @pusher = new Pusher("356b7c379e56e14c261b")
@@ -761,7 +740,6 @@ stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
 $(document).ready () ->
-  window.onerror = notifyError
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
