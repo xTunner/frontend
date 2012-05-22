@@ -3,7 +3,7 @@
 
   %h3 Organizations
 
-  %select{data-bind: "options: organizations, value: selectOrganization"}
+  %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}
 
   %br
 
