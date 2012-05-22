@@ -412,7 +412,7 @@ class Billing extends Obj
     teamMembers: null # data from github about possible collaborators
     stripeCard: null # card info to be used with stripe
     stripeToken: null
-    matrix: {} # plan/user/org matrix
+    matrix: {users: {}, orgs: {}} # plan/user/org matrix
     availablePlans: [] # the list of plans that a user can choose
 
   constructor: ->
@@ -646,12 +646,12 @@ class CircleViewModel extends Base
 
 
   loadAccountPage: (cx, subpage) =>
-    subpage = subpage[0].replace('/', '')
+    subpage = subpage[0].replace(/\//g, '_')
     subpage = subpage || "notifications"
     if subpage == 'plans'
       @billing.load()
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage.replace('-', '_')]({}))
+    $('#subpage').html(HAML['account' + subpage.replace(/-/, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
 
