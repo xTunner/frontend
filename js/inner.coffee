@@ -434,11 +434,12 @@ class Billing extends Obj
       total / 100
 
 
+    # use computer observable because knockout select boxes make it hard to do otherwise
     @selectOrganization = @komp
       write: (value) =>
         @selectedOrganization(value)
         if value
-          SammyApp.setLocation "/account/plans/#{value}/edit"
+          SammyApp.setLocation "/account/plans/#{@selectedOrganization()}/plan"
       read: () =>
         @selectedOrganization()
 
@@ -448,15 +449,14 @@ class Billing extends Obj
     @collaborators = @komp =>
       @teamMembers()[@selectedOrganization()] or []
 
-    @editNextPath = @komp =>
-      "/account/plans/#{@selectedOrganization()}/refine"
-
     @refineNextPath = @komp =>
       "/account/plans/card"
 
 
   selectPlan: (plan) =>
     @selectedPlan(plan)
+    SammyApp.setLocation "/account/plans/#{@selectedOrganization()}/edit"
+
 
   load: (org) =>
     @selectOrganization(org)
@@ -760,10 +760,10 @@ window.SammyApp = Sammy '#app', () ->
     @get('/', (cx) => VM.loadDashboard(cx))
     @get('/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
+    @get('/account/plans/:organization/plan',
+      (cx) -> VM.loadAccountPage(cx, ["plans_plan"], cx.params.organization))
     @get('/account/plans/:organization/edit',
       (cx) -> VM.loadAccountPage(cx, ["plans_edit"], cx.params.organization))
-    @get('/account/plans/:organization/refine',
-      (cx) -> VM.loadAccountPage(cx, ["plans_refine"], cx.params.organization))
     @get('/account(.*)',
       (cx) -> VM.loadAccountPage(cx, cx.params.splat))
     @get('/gh/:username/:project/:build_num',

@@ -1,0 +1,38 @@
+.row.pricing
+  .offset0.span4
+    = HAML['account_plan_titles']()
+
+  / ko foreach: plans
+  .span3
+    = HAML['account_plan']({showButton: true})
+  / /ko
+
+
+
+
+    -# -#   .offset2.span5
+    -# -#     %h3
+    -# -#       Your plan: "The Awesome!"
+
+    -# -#     %ul
+    -# -#       %li
+    -# -#         %h5 4-way parallel tests
+    -# -#         %p
+    -# -#           Our builds are insanely fast, but 4-way parallelization will make them 2-3x faster again!
+    -# -#           (Not that this feature is in beta testing - it works pretty well - and will be rolled out to customers soon).
+
+    -# -#       %li
+    -# -#         %h5 Same day support
+    -# -#         %p By phone, by chat, by email, we just want someone to talk to.
+
+    -# -#       %li
+    -# -#         %h5 High limits
+    -# -#         %p
+    -# -#           We don't charge you overages (unless you go insane, and even then we'd be reluctant).
+
+    -# -#       %li
+    -# -#         %h5 $29 - all in.
+    -# -#         %p
+    -# -#           This covers all <b>your</b> builds, in all branches, in all repositories.
+    -# -#           It does not cover your colleagues, who will need their own accounts.
+    -# -#           (We currently do not enforce this, but will in the near future).
