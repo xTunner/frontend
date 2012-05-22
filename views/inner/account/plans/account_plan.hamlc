@@ -1,4 +1,4 @@
-.plan{data-bind: "css: { selected: $parent.individualPlan() == $data }"}
+.plan{data-bind: "css: { selected: $parent.selectedPlan == $data }"}
   .name{data-bind: "text: name"}
   .reason{data-bind: "text: reason"}
   .tick ✔
