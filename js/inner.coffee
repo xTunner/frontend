@@ -415,6 +415,7 @@ class Billing extends Obj
     availablePlans: [] # the list of plans that a user can choose
     paid: true
     selectedOrganization: null
+    selectedPlan: null
 
   constructor: ->
     super
@@ -436,6 +437,8 @@ class Billing extends Obj
     @selectOrganization = @komp
       write: (value) =>
         @selectedOrganization(value)
+        if value
+          SammyApp.setLocation "/account/plans/#{value}/edit"
       read: () =>
         @selectedOrganization()
 
@@ -446,8 +449,12 @@ class Billing extends Obj
       "/account/plans/#{@selectedOrganization()}/refine"
 
 
-  load: () =>
-#    @loadAvailablePlans()
+  selectPlan: (plan) =>
+    @selectedPlan(plan)
+
+  load: (org) =>
+    @selectOrganization(org)
+    @loadAvailablePlans()
 #    @loadExistingMatrix()
 #    @loadExistingCard()
     @loadTeamMembers()
@@ -659,13 +666,14 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadAccountPage: (cx, subpage) =>
-    subpage = subpage[0].replace(/\//g, '_')
+  loadAccountPage: (cx, subpage, organization) =>
+    subpage = subpage[0].replace(/\//, '') # first one
+    subpage = subpage.replace(/\//g, '_')
     subpage = subpage || "notifications"
-    if subpage.indexOf("_plans") == 0
-      @billing().load()
+    if subpage.indexOf("plans") == 0
+      @billing().load(organization)
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account' + subpage.replace(/-/g, '_')]({}))
+    $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
 
@@ -740,16 +748,14 @@ class CircleViewModel extends Base
 
 
 window.VM = new CircleViewModel()
-stripTrailingSlash = (str) =>
-  str.replace(/(.+)\/$/, "$1")
-
-$(document).ready () ->
-  Sammy('#app', () ->
+window.SammyApp = Sammy '#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
     @get('/', (cx) => VM.loadDashboard(cx))
     @get('/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
+    @get('/account/plans/:organization/edit',
+      (cx) -> VM.loadAccountPage(cx, ["plans_edit"], cx.params.organization))
     @get('/account(.*)',
       (cx) -> VM.loadAccountPage(cx, cx.params.splat))
     @get('/gh/:username/:project/:build_num',
@@ -773,7 +779,8 @@ $(document).ready () ->
         window._gaq.push @path
 
 
-  ).run stripTrailingSlash(window.location.pathname)
+$(document).ready () ->
+  SammyApp.run window.location.pathname.replace(/(.+)\/$/, "$1")
 
 
 
