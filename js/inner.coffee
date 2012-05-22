@@ -408,7 +408,7 @@ class User extends Obj
 
 class Billing extends Obj
   observables: =>
-    teamMembers: null # data from github about possible collaborators
+    teamMembers: {} # github data; map of org->[users]
     stripeCard: null # card info to be used with stripe
     stripeToken: null
     matrix: {users: {}, orgs: {}} # plan/user/org matrix
@@ -445,8 +445,14 @@ class Billing extends Obj
     @organizations = @komp =>
       (k for k,v of @teamMembers())
 
+    @collaborators = @komp =>
+      @teamMembers()[@selectedOrganization()] or []
+
     @editNextPath = @komp =>
       "/account/plans/#{@selectedOrganization()}/refine"
+
+    @refineNextPath = @komp =>
+      "/account/plans/card"
 
 
   selectPlan: (plan) =>
@@ -756,6 +762,8 @@ window.SammyApp = Sammy '#app', () ->
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
     @get('/account/plans/:organization/edit',
       (cx) -> VM.loadAccountPage(cx, ["plans_edit"], cx.params.organization))
+    @get('/account/plans/:organization/refine',
+      (cx) -> VM.loadAccountPage(cx, ["plans_refine"], cx.params.organization))
     @get('/account(.*)',
       (cx) -> VM.loadAccountPage(cx, cx.params.splat))
     @get('/gh/:username/:project/:build_num',

@@ -21,4 +21,4 @@
 
   #edit-next
     %a{data-bind: "attr: { href: editNextPath }"}
-      Next
+      Next: Choose more specific plans for each developer
