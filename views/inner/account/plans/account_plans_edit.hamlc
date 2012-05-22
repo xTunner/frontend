@@ -9,10 +9,6 @@
 
   (For solo plans, select your organization, and refine the users on the next page)
 
-  #edit-next
-    %a{data-bind: "attr: { href: editNextPath }"}
-      Next
-
 
   .row.pricing
     .offset0.span4
@@ -22,3 +18,7 @@
     .span3
       = HAML['account_plan']({showButton: true})
     / /ko
+
+  #edit-next
+    %a{data-bind: "attr: { href: editNextPath }"}
+      Next
