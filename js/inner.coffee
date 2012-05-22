@@ -467,7 +467,7 @@ class Billing extends Obj
     @loadStripe()
 
   stripeSubmit: (data, event) ->
-    key = switch VM.ssv().environment
+    key = switch renderContext.environment
       when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
     Stripe.setPublishableKey(key)
