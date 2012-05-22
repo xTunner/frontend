@@ -364,7 +364,6 @@ class Project extends HasUrl
 class User extends Obj
   observables: =>
     tokens: []
-    paid: false
     tokenLabel: ""
 
   constructor: (json) ->
@@ -414,6 +413,8 @@ class Billing extends Obj
     stripeToken: null
     matrix: {users: {}, orgs: {}} # plan/user/org matrix
     availablePlans: [] # the list of plans that a user can choose
+    paid: true
+    selectedOrganization: null
 
   constructor: ->
     super
@@ -430,6 +431,19 @@ class Billing extends Obj
       for login, info in @matrix().users
         total += @availablePlans()[info.plan].price
       total / 100
+
+
+    @selectOrganization = @komp
+      write: (value) =>
+        @selectedOrganization(value)
+      read: () =>
+        @selectedOrganization()
+
+    @organizations = @komp =>
+      (k for k,v of @teamMembers())
+
+    @editNextPath = @komp =>
+      "/account/plans/#{@selectedOrganization()}/refine"
 
 
   load: () =>
