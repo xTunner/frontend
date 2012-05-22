@@ -1,4 +1,4 @@
-#account-plans-edit{data-bind: "with: $root.billing"}
+#plans{data-bind: "with: $root.billing"}
   %h1 Organization plans:
 
   %h3 Organizations
