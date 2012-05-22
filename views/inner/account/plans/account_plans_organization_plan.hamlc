@@ -1,0 +1,10 @@
+#plans{data-bind: "with: $root.billing"}
+  %h1 Organization plans:
+
+  %h3 Organizations
+
+  %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}
+
+  %br
+
+  (For solo plans, select your organization, and refine the users on the next page)
