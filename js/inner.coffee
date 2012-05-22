@@ -761,9 +761,9 @@ window.SammyApp = Sammy '#app', () ->
     @get('/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
     @get('/account/plans/:organization/plan',
-      (cx) -> VM.loadAccountPage(cx, ["plans_plan"], cx.params.organization))
+      (cx) -> VM.loadAccountPage(cx, ["plans_organization_plan"], cx.params.organization))
     @get('/account/plans/:organization/edit',
-      (cx) -> VM.loadAccountPage(cx, ["plans_edit"], cx.params.organization))
+      (cx) -> VM.loadAccountPage(cx, ["plans_organization_edit"], cx.params.organization))
     @get('/account(.*)',
       (cx) -> VM.loadAccountPage(cx, cx.params.splat))
     @get('/gh/:username/:project/:build_num',
