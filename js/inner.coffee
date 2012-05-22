@@ -49,19 +49,19 @@ $.ajaxSetup
   dataType: "json"
 
 
-class Base
-  constructor: (json, defaults={}, nonObservables=[], observe=true) ->
-    for k,v of defaults
-      if observe and nonObservables.indexOf(k) == -1
-        @[k] = @observable(v)
-      else
-        @[k] = v
+class Obj
+  constructor: (json={}, defaults={}) ->
+    for k,v of @observables()
+      @[k] = @observable(v)
 
-    for k,v of json
-      if observe and nonObservables.indexOf(k) == -1
-        @[k] = @observable(v)
-      else
-        @[k] = v
+    for k,v of $.extend {}, defaults, json
+      if @observables().hasOwnProperty(k) then @[k](v) else @[k] = v
+
+  observables: () => {}
+
+  komp: (args...) =>
+    observableCount += 1
+    ko.computed args...
 
   observable: (obj) ->
     observableCount += 1
@@ -70,14 +70,21 @@ class Base
     else
       ko.observable obj
 
-  komp: (args...) =>
-    observableCount += 1
-    ko.computed args...
+
+
+
+class Base extends Obj
+  constructor: (json, defaults={}, nonObservables=[], observe=true) ->
+    for k,v of $.extend {}, defaults, json
+      if observe and nonObservables.indexOf(k) == -1
+        @[k] = @observable(v)
+      else
+        @[k] = v
 
 
 class HasUrl extends Base
-  constructor: (json, defaults, nonObservables) ->
-    super json, defaults, nonObservables
+  constructor: (json, defaults, nonObservables, observe) ->
+    super json, defaults, nonObservables, observe
 
     @project_name = @komp =>
       @vcs_url().substring(19)
@@ -354,15 +361,19 @@ class Project extends HasUrl
 
 
 
-class User extends Base
-  constructor: (json) ->
-    json.tokens = ko.observableArray(json.tokens or [])
-    json.paid = ko.observable(json.paid or false)
-    json.plan = ko.observable(json.plan)
-    json.environment = window.renderContext.env if window.renderContext
-    super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
+class User extends Obj
+  observables: =>
+    tokens: []
+    paid: false
+    tokenLabel: ""
 
-    @tokenLabel = ko.observable("")
+  constructor: (json) ->
+    super json,
+      admin: false
+      login: ""
+      basic_email_prefs: "all"
+
+    @environment = window.renderContext.environment
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -372,61 +383,64 @@ class User extends Base
       result["env-" + @environment] = true
       result
 
-    # billing
-    @plans = ko.observable()
-    @individualPlan = @komp =>
-      if @plan()? and @plans()?
-        @plans()[@plan()]
+  create_token: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/user/create-token"
+      data: JSON.stringify {label: @tokenLabel()}
+      success: (result) =>
+        @tokens result
+        @tokenLabel("")
+        true
+    false
+
+
+  save_preferences: (data, event) =>
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/user/save-preferences"
+      data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
+    false # dont bubble the event up
 
 
 
 
-    @availablePlans = @komp =>
-      ap = for k,v of @plans()
+class Billing extends Obj
+  observables: =>
+    teamMembers: null # data from github about possible collaborators
+    stripeCard: null # card info to be used with stripe
+    stripeToken: null
+    matrix: {} # plan/user/org matrix
+    availablePlans: [] # the list of plans that a user can choose
+
+  constructor: ->
+    super
+    @plans = @komp =>
+      ap = for k,v of @availablePlans()
         v.id = k
         v
       ap.sort (a, b) ->
         b.price - a.price # most expensive first
       ap
 
-    # team billing
-    @collaborators = ko.observable(null)
-    @showTeam = ko.observable(false)
-
-    @individualTotal = @komp =>
-      if @individualPlan() then @individualPlan().price / 100 else 0
-
-    @teamTotal = @komp =>
-      return 0 unless @collaborators()
+    @total = @komp =>
       total = 0
-      for c in @collaborators()
-        total += c.plan().price if c.plan()
+      for login, info in @matrix().users
+        total += @availablePlans()[info.plan].price
       total / 100
 
-    @overallTotal = @komp =>
-      @teamTotal() + @individualTotal()
 
-
-  # billing
-  selectPlan: (data) =>
-    @plan(data.id)
-
-  toggleTeam: () =>
-    @showTeam !@showTeam()
-
-  teamPlans: () =>
-    return {} unless @collaborators()
-    result = {}
-    for c in @collaborators()
-      result[c.login] = c.plan().plan if c.plan()
-    result
-
-
-
-
+  load: () =>
+#    @loadAvailablePlans()
+#    @loadExistingMatrix()
+#    @loadExistingCard()
+    @loadTeamMembers()
+    @loadStripe()
 
   stripeSubmit: (data, event) ->
-    key = switch @environment
+    key = switch VM.ssv().environment
       when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
     Stripe.setPublishableKey(key)
@@ -458,33 +472,30 @@ class User extends Base
       type: "POST"
       data: JSON.stringify
         token: response
-        plan: @individualPlan().id
-        team_plans: @teamPlans()
+        matrix: @matrix()
       success: () =>
         @paid true
     )
     false
 
-  create_token: (data, event) =>
-    $.ajax
-      type: "POST"
-      event: event
-      url: "/api/v1/user/create-token"
-      data: JSON.stringify {label: @tokenLabel()}
-      success: (result) =>
-        @tokens result
-        @tokenLabel("")
-        true
-    false
 
+  loadStripe: () =>
+    unless @stripeLoaded
+      $.getScript "https://js.stripe.com/v1/"
+      @stripeLoaded = true
 
-  save_preferences: (data, event) =>
-    $.ajax
-      type: "PUT"
-      event: event
-      url: "/api/v1/user/save-preferences"
-      data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
-    false # dont bubble the event up
+  loadExistingPlans: () =>
+    $.getJSON '/api/v1/user/plans', (data) =>
+      @matrix(data)
+
+  loadTeamMembers: () =>
+    $.getJSON '/api/v1/user/team-members', (data) =>
+      @teamMembers(data)
+
+  loadAvailablePlans: () =>
+    $.getJSON '/api/v1/user/available-plans', (data) =>
+      @availablePlans(data)
+
 
 
 
@@ -502,6 +513,7 @@ class CircleViewModel extends Base
     @builds = ko.observableArray()
     @project = ko.observable()
     @projects = ko.observableArray()
+    @billing = ko.observable(new Billing)
     @recent_builds = ko.observableArray()
     @build_state = ko.observable()
     @admin = ko.observable()
@@ -633,33 +645,11 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadStripe: () =>
-    unless @stripeLoaded
-      @stripeLoaded = true
-      s = document.createElement 'script'
-      s.setAttribute "type", "text/javascript"
-      s.setAttribute "src", "https://js.stripe.com/v1/"
-      document.getElementsByTagName("head")[0].appendChild(s)
-
-  loadTeamMembers: () =>
-    $.getJSON '/api/v1/user/team-members', (data) =>
-      for d in data
-        d.plan = ko.observable(null)
-      @current_user().collaborators(data)
-
-  loadPlans: () =>
-    $.getJSON '/api/v1/user/plans', (data) =>
-      @current_user().plans(data)
-
-
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace('/', '')
     subpage = subpage || "notifications"
     if subpage == 'plans'
-      @loadPlans()
-      @loadTeamMembers()
-      @loadStripe()
-
+      @billing.load()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace('-', '_')]({}))
     ko.applyBindings(VM)
