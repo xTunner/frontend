@@ -433,8 +433,7 @@ class Billing extends Obj
         total += @availablePlans()[info.plan].price
       total / 100
 
-
-    # use computer observable because knockout select boxes make it hard to do otherwise
+    # use computed observable because knockout select boxes make it hard to do otherwise
     @selectOrganization = @komp
       write: (value) =>
         @selectedOrganization(value)
