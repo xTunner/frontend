@@ -416,6 +416,7 @@ class Billing extends Obj
     paid: true
     selectedOrganization: null
     selectedPlan: null
+    collaborators: []
 
   constructor: ->
     super
@@ -429,9 +430,12 @@ class Billing extends Obj
 
     @total = @komp =>
       total = 0
-      for login, info in @matrix().users
-        total += @availablePlans()[info.plan].price
+      for c in @collaborators()
+        total += c.plan().price if c.plan()?
       total / 100
+
+    @matrix = @komp =>
+
 
     # use computed observable because knockout select boxes make it hard to do otherwise
     @selectOrganization = @komp
@@ -445,8 +449,6 @@ class Billing extends Obj
     @organizations = @komp =>
       (k for k,v of @teamMembers())
 
-    @collaborators = @komp =>
-      @teamMembers()[@selectedOrganization()] or []
 
     @refineNextPath = @komp =>
       "/account/plans/card"
@@ -454,16 +456,21 @@ class Billing extends Obj
 
   selectPlan: (plan) =>
     @selectedPlan(plan)
+    @collaborators(({login: v, plan: ko.observable(plan)} for v in @teamMembers()[@selectedOrganization()]))
+
+
     SammyApp.setLocation "/account/plans/#{@selectedOrganization()}/edit"
 
 
-  load: (org) =>
-    @selectOrganization(org)
-    @loadAvailablePlans()
-#    @loadExistingMatrix()
-#    @loadExistingCard()
-    @loadTeamMembers()
-    @loadStripe()
+  load: () =>
+    unless @loaded
+      @loadAvailablePlans()
+  #    @loadExistingMatrix()
+  #    @loadExistingCard()
+      @loadTeamMembers()
+      @loadStripe()
+      @loaded = true
+
 
   stripeSubmit: (data, event) ->
     key = switch renderContext.environment
@@ -521,8 +528,6 @@ class Billing extends Obj
   loadAvailablePlans: () =>
     $.getJSON '/api/v1/user/available-plans', (data) =>
       @availablePlans(data)
-
-
 
 
 
@@ -676,7 +681,7 @@ class CircleViewModel extends Base
     subpage = subpage.replace(/\//g, '_')
     subpage = subpage || "notifications"
     if subpage.indexOf("plans") == 0
-      @billing().load(organization)
+      @billing().load()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
