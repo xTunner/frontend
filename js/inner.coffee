@@ -411,7 +411,6 @@ class Billing extends Obj
     teamMembers: {} # github data; map of org->[users]
     stripeCard: null # card info to be used with stripe
     stripeToken: null
-    matrix: {users: {}, orgs: {}} # plan/user/org matrix
     availablePlans: [] # the list of plans that a user can choose
     paid: true
     selectedOrganization: null
@@ -434,7 +433,17 @@ class Billing extends Obj
         total += c.plan().price if c.plan()?
       total / 100
 
-    @matrix = @komp =>
+
+    @userMatrix = @komp =>
+      users = {}
+      for login, plan of @collaborators()
+        users[login] = plan.id
+      users
+
+    @organizationMatrix = @komp =>
+      orgs = {} # TODO: merge with existing plans
+      orgs[@selectedOrganization()] = {add_new: false, default: @selectedPlan()}
+      orgs
 
 
     # use computed observable because knockout select boxes make it hard to do otherwise
@@ -457,8 +466,6 @@ class Billing extends Obj
   selectPlan: (plan) =>
     @selectedPlan(plan)
     @collaborators(({login: v, plan: ko.observable(plan)} for v in @teamMembers()[@selectedOrganization()]))
-
-
     SammyApp.setLocation "/account/plans/#{@selectedOrganization()}/edit"
 
 
@@ -505,7 +512,8 @@ class Billing extends Obj
       type: "POST"
       data: JSON.stringify
         token: response
-        matrix: @matrix()
+        orgs: @organizationMatrix()
+        team_plans: @userMatrix()
       success: () =>
         @paid true
     )
