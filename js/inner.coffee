@@ -235,7 +235,7 @@ class Build extends HasUrl
 
     @github_revision = @komp =>
       return unless @vcs_revision
-      @vcs_revision.substring 0, 9
+      @vcs_revision.substring 0, 7
 
     @author = @komp =>
       @committer_name or @committer_email
