@@ -466,8 +466,11 @@ class Billing extends Obj
       write: (value) =>
         @selectedOrganization(value)
         if value
-          SammyApp.setLocation @editNextPath
-          @collaborators(({login: v, plan: ko.observable(plan)} for v in @teamMembers()[@selectedOrganization()]))
+          cs = for v in @teamMembers()[value]
+            {login: v, plan: ko.observable(@selectedPlan())}
+          @collaborators(cs)
+          SammyApp.setLocation "/account/plans/users"
+
 
 
       read: () =>
@@ -475,10 +478,6 @@ class Billing extends Obj
 
     @organizations = @komp =>
       (k for k,v of @teamMembers())
-
-    @editNextPath = @komp =>
-      "/account/plans/#{@selectedOrganization()}/plan"
-
 
     @refineNextPath = @komp =>
       "/account/plans/card"
@@ -489,6 +488,9 @@ class Billing extends Obj
     SammyApp.setLocation "/account/plans/organization"
 
   load: () =>
+    unless @selectedPlan()?
+      SammyApp.setLocation "/account/plans"
+
     unless @loaded
       @loadAvailablePlans()
       @loadExistingPlans()
@@ -614,7 +616,7 @@ class CircleViewModel extends Base
     @error_message null
 
   setErrorMessage: (message) =>
-    if message == ""
+    if message == "" or not message?
       message = "Unknown error"
     if message.slice(-1) != '.'
       message += '.'
