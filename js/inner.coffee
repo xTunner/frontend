@@ -412,10 +412,16 @@ class Billing extends Obj
     stripeCard: null # card info to be used with stripe
     stripeToken: null
     availablePlans: [] # the list of plans that a user can choose
-    paid: true
     selectedOrganization: null
     selectedPlan: null
     collaborators: []
+    existingMatrix: null
+    teamPlans: null
+    existingOrganizationMatrix: null
+    cardInfo: null
+    payer: null
+    plan: null
+    currentTotal: null
 
   constructor: ->
     super
@@ -445,6 +451,15 @@ class Billing extends Obj
       orgs[@selectedOrganization()] = {add_new: false, default: @selectedPlan()}
       orgs
 
+    @paidFor = @komp =>
+      @payer() and (@payer() isnt VM.current_user().login())
+
+    @selfPayer = @komp =>
+      @payer() and (@payer() is VM.current_user().login())
+
+    @notPaid = @komp =>
+      not @payer()?
+
 
     # use computed observable because knockout select boxes make it hard to do otherwise
     @selectOrganization = @komp
@@ -472,8 +487,7 @@ class Billing extends Obj
   load: () =>
     unless @loaded
       @loadAvailablePlans()
-  #    @loadExistingMatrix()
-  #    @loadExistingCard()
+      @loadExistingPlans()
       @loadTeamMembers()
       @loadStripe()
       @loaded = true
@@ -526,8 +540,14 @@ class Billing extends Obj
       @stripeLoaded = true
 
   loadExistingPlans: () =>
-    $.getJSON '/api/v1/user/plans', (data) =>
-      @matrix(data)
+    $.getJSON '/api/v1/user/existing-plans', (data) =>
+      @teamPlans(data.team_plans)
+      @cardInfo(data.card_info)
+      @existingOrganizationMatrix(data.orgs)
+      @currentTotal(data.amount)
+      @payer(data.payer)
+      if @notPaid()
+        SammyApp.setLocation "/account/plans/edit"
 
   loadTeamMembers: () =>
     $.getJSON '/api/v1/user/team-members', (data) =>
