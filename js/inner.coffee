@@ -421,7 +421,7 @@ class Billing extends Obj
     cardInfo: null
     payer: null
     plan: null
-    currentTotal: null
+    oldTotal: 0
 
   constructor: ->
     super
@@ -459,6 +459,10 @@ class Billing extends Obj
 
     @notPaid = @komp =>
       not @payer()?
+
+    @savedCardNumber = @komp =>
+      return "" unless @cardInfo()
+      "************" + @cardInfo().last4
 
 
     # use computed observable because knockout select boxes make it hard to do otherwise
@@ -523,17 +527,21 @@ class Billing extends Obj
     # prevent the form from submitting with the default action
     return false;
 
-  recordStripeTransaction: (event, response) =>
+  recordStripeTransaction: (event, stripeInfo) =>
     $.ajax(
       url: "/api/v1/user/pay"
       event: event
       type: "POST"
       data: JSON.stringify
-        token: response
+        token: stripeInfo
         orgs: @organizationMatrix()
         team_plans: @userMatrix()
       success: () =>
         @payer VM.current_user().login
+        @cardInfo(stripeInfo.card)
+        @oldTotal(@total())
+        # @existingOrganizationMatrix(data.orgs)
+
         SammyApp.setLocation "/account/plans"
     )
     false
@@ -547,7 +555,7 @@ class Billing extends Obj
       @teamPlans(data.team_plans)
       @cardInfo(data.card_info)
       @existingOrganizationMatrix(data.orgs)
-      @currentTotal(data.amount)
+      @oldTotal(data.amount)
       @payer(data.payer)
 
 

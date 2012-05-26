@@ -1,36 +1,93 @@
-.row{data-bind: "with: $root.billing"}
-  %form.form-stacked.offset3.span6#payment-form
-    .form-row
-      %label Card Number
-      %input.card-number{type: "text", size: "20", autocomplete: "off"}
-      %br
-    .form-row
-      %label CVC
-      %input.card-cvc{type: "text", size: 4, style: "width: auto;"}
-      %br
-    .form-row
-      %label Expiration (MM/YYYY)
-      %input.card-expiry-month{type: "text", size: 2, style: "width: auto;"}
-      %span /
-      %input.card-expiry-year{type: "text", size: 4, style: "width: auto;"}
-    %br
-    .alert-message.block-message.info#warning
-      %p
-        We'll charge you as soon as your trial ends, then once a month.
-    %button.btn.primary.large.submit-button#charge-button{type: "submit",
-                                                          data-bind: "click: stripeSubmit",
-                                                          data-loading-text: "Charging",
-                                                          data-failed-text: "Denied",
-                                                          data-success-text: "Success"}}
-      Charge
+#plans{data-bind: "with: $root.billing"}
+  .div{data-bind: "ifnot: cardInfo"}
+    .row
+      .offset0
+        %form.form-stacked.offset3.span6#payment-form
+          .form-row
+            %label Card Number
+            %input.card-number{type: "text",
+                               size: "20",
+                               autocomplete: "off"}
+            %br
+          .form-row
+            %label CVC
+            %input.card-cvc{type: "text",
+                            size: 4,
+                            style: "width: auto;"}
+            %br
+          .form-row
+            %label Expiration (MM/YYYY)
+            %input.card-expiry-month{type: "text",
+                                     size: 2,
+                                     style: "width: auto;"}
+            %span /
+            %input.card-expiry-year{type: "text",
+                                    size: 4,
+                                    style: "width: auto;"}
+          %br
+          .alert-message.block-message.info#warning
+            %p
+              We'll charge you as soon as your trial ends, then once a month.
+          %button.btn.primary.large.submit-button#charge-button{type: "submit",
+                                                                data-bind: "click: stripeSubmit",
+                                                                data-loading-text: "Charging",
+                                                                data-failed-text: "Denied",
+                                                                data-success-text: "Success"}
+            Charge
+
+      .offset2.span5
+        %h2
+          Total: $
+          %span{data-bind: "text: total"}
 
 
-  .offset2.span5
-    %h2
-      Total: $
-      %span{data-bind: "text: total"}
 
-    #showThanks
-      .alert-message.block-message.info
-        %h2 Thanks!
-        %h5 We really genuinely appreciate it!
+  .div{data-bind: "if: cardInfo"}
+    .row
+      .offset0
+
+        %form.form-stacked.offset3.span6#payment-form
+          .form-row
+            %label Card Number
+            %input.card-number{type: "text",
+                               size: "20",
+                               autocomplete: "off",
+                               disabled: true,
+                               data-bind: "value: savedCardNumber"}
+            %br
+          .form-row
+            %label Expiration (MM/YYYY)
+            %input.card-expiry-month{type: "text",
+                                     size: 2,
+                                     style: "width: auto;",
+                                     disabled: true,
+                                     data-bind: "value: cardInfo().exp_month"}
+            %span /
+            %input.card-expiry-year{type: "text",
+                                    size: 4,
+                                    style: "width: auto;",
+                                    disabled: true,
+                                    data-bind: "value: cardInfo().exp_year"}}
+
+          %button.btn.primary.large.submit-button#charge-button{type: "submit",
+                                                                data-bind: "click: stripeSubmit",
+                                                                data-loading-text: "Charging",
+                                                                data-failed-text: "Denied",
+                                                                data-success-text: "Success"}}
+            Confirm
+
+
+      .offset2.span5
+        %h2
+          Previous Total: $
+          %span{data-bind: "text: oldTotal"}
+
+        %h2
+          New Total: $
+          %span{data-bind: "text: total"}
+
+
+
+
+  %a.back{href: "/account/plans/users"}
+    Next: Customize plans for each user
