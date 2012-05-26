@@ -1,8 +1,10 @@
 #plans{data-bind: "with: $root.billing"}
 
-  %h2 Choose a plan for your organization
-
   .row.pricing
+    %h2
+      Choose a plan to start.
+
+
     .offset0.span4
       = HAML['account_plan_titles']()
 
@@ -12,6 +14,12 @@
     / /ko
 
 
+  .next
+    %a{data-bind: "if: selectedPlan", href: "/account/plans/organization"}
+      Next: Choose users for this plan
+
+    .nope{data-bind: "ifnot: selectedPlan", style: "cursor: not-allowed;"}
+      Next: Choose users for this plan
 
 
     -# -#   .offset2.span5

@@ -1,4 +1,4 @@
-#plans{data-bind: "with: $root.billing"}
+%div{data-bind: "with: $root.billing"}
 
   .paid{data-bind: "if: selfPayer"}
 
@@ -34,24 +34,5 @@
 
 
   .paid{data-bind: "if: notPaid"}
-    .row.pricing
 
-      %h2
-        Choose a plan to start.
-
-
-      .offset0.span4
-        = HAML['account_plan_titles']()
-
-      / ko foreach: plans
-      .span3
-        = HAML['account_plan']({showButton: true})
-      / /ko
-
-
-    .next
-      %a{data-bind: "if: selectedPlan", href: "/account/plans/organization"}
-        Next: Choose users for this plan
-
-      .nope{data-bind: "ifnot: selectedPlan", style: "cursor: not-allowed;"}
-        Next: Choose users for this plan
+    = HAML['account_plans_edit']()
