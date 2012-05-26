@@ -7,8 +7,6 @@
       %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}
 
 
-      %br
-
   %a.back{href: "/account/plans"}
     Back: Change default plan
 
