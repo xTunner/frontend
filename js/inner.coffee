@@ -466,12 +466,18 @@ class Billing extends Obj
       write: (value) =>
         @selectedOrganization(value)
         if value
-          SammyApp.setLocation "/account/plans/#{@selectedOrganization()}/plan"
+          SammyApp.setLocation @editNextPath
+          @collaborators(({login: v, plan: ko.observable(plan)} for v in @teamMembers()[@selectedOrganization()]))
+
+
       read: () =>
         @selectedOrganization()
 
     @organizations = @komp =>
       (k for k,v of @teamMembers())
+
+    @editNextPath = @komp =>
+      "/account/plans/#{@selectedOrganization()}/plan"
 
 
     @refineNextPath = @komp =>
@@ -480,9 +486,7 @@ class Billing extends Obj
 
   selectPlan: (plan) =>
     @selectedPlan(plan)
-    @collaborators(({login: v, plan: ko.observable(plan)} for v in @teamMembers()[@selectedOrganization()]))
-    SammyApp.setLocation "/account/plans/#{@selectedOrganization()}/edit"
-
+    SammyApp.setLocation "/account/plans/organization"
 
   load: () =>
     unless @loaded
@@ -546,8 +550,7 @@ class Billing extends Obj
       @existingOrganizationMatrix(data.orgs)
       @currentTotal(data.amount)
       @payer(data.payer)
-      if @notPaid()
-        SammyApp.setLocation "/account/plans/edit"
+
 
   loadTeamMembers: () =>
     $.getJSON '/api/v1/user/team-members', (data) =>
