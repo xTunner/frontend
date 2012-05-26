@@ -452,10 +452,10 @@ class Billing extends Obj
       orgs
 
     @paidFor = @komp =>
-      @payer() and (@payer() isnt VM.current_user().login())
+      @payer() and (@payer() isnt VM.current_user().login)
 
     @selfPayer = @komp =>
-      @payer() and (@payer() is VM.current_user().login())
+      @payer() and (@payer() is VM.current_user().login)
 
     @notPaid = @komp =>
       not @payer()?
@@ -488,10 +488,8 @@ class Billing extends Obj
     SammyApp.setLocation "/account/plans/organization"
 
   load: () =>
-    unless @selectedPlan()?
-      SammyApp.setLocation "/account/plans"
-
     unless @loaded
+      SammyApp.setLocation "/account/plans"
       @loadAvailablePlans()
       @loadExistingPlans()
       @loadTeamMembers()
@@ -535,15 +533,14 @@ class Billing extends Obj
         orgs: @organizationMatrix()
         team_plans: @userMatrix()
       success: () =>
-        @paid true
+        @payer VM.current_user().login
+        SammyApp.setLocation "/account/plans"
     )
     false
 
 
   loadStripe: () =>
-    unless @stripeLoaded
-      $.getScript "https://js.stripe.com/v1/"
-      @stripeLoaded = true
+    $.getScript "https://js.stripe.com/v1/"
 
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>

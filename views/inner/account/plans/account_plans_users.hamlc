@@ -41,6 +41,8 @@
         Project membership is only ever determined using GitHub permissions.
 
 
-  #refine-next
-    %a{href: "/account/plans/card"}
-      Next: Enter your credit card
+  %a.back{href: "/account/plans/organization"}
+    Back: Choose a different organization
+
+  %a{href: "/account/plans/card"}
+    Next: Enter your credit card
