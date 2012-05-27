@@ -14,10 +14,6 @@
               Edit plans
           %br
           = surround "(", ")", ->
-            %a{href: "/account/plans/card"}<>
-              Change card
-          %br
-          = surround "(", ")", ->
             %a{href: "/account/plans/edit"}<>
               Add another organization
 
