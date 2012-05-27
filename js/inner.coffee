@@ -409,18 +409,26 @@ class User extends Obj
 class Billing extends Obj
   observables: =>
     teamMembers: {} # github data; map of org->[users]
-    stripeToken: null
-    availablePlans: [] # the list of plans that a user can choose
-    selectedOrganization: null
-    selectedPlan: null
     collaborators: []
+
+    availablePlans: [] # the list of plans that a user can choose
+    existingPlanName: null
+    chosenPlan: null
+
+    selectedOrganization: null
+    existingOrganization: null
+
+    stripeToken: null
     cardInfo: null
+    oldTotal: 0
+
     payer: null
     plan: null
-    oldTotal: 0
+
 
   constructor: ->
     super
+
     @plans = @komp =>
       ap = for k,v of @availablePlans()
         v.id = k
@@ -429,11 +437,11 @@ class Billing extends Obj
         b.price - a.price # most expensive first
       ap
 
-    @total = @komp =>
-      total = 0
-      for c in @collaborators()
-        total += c.plan().price if c.plan()?
-      total / 100
+    @selectedPlan = @komp =>
+      if @chosenPlan()?
+        @chosenPlan()
+      else if @existingPlanName()? and @availablePlans()?
+        @availablePlans()[@existingPlanName()]
 
 
     @userMatrix = @komp =>
@@ -442,13 +450,11 @@ class Billing extends Obj
         users[c.login] = c.plan().id if c.plan()?
       users
 
-    @organizationMatrix = @komp =>
-      orgs = {} # TODO: merge with existing plans
-      orgs[@selectedOrganization()] = {
-        add_new: false
-        default: @selectedPlan().id if @selectedPlan()?
-      }
-      orgs
+    @total = @komp =>
+      total = 0
+      for c in @collaborators()
+        total += c.plan().price if c.plan()?
+      total / 100
 
     @paidFor = @komp =>
       @payer() and (@payer() isnt VM.current_user().login)
@@ -464,8 +470,21 @@ class Billing extends Obj
       "************" + @cardInfo().last4
 
 
-    # use computed observable because knockout select boxes make it hard to do otherwise
+
+
+    @organizationMatrix = @komp =>
+      orgs = {} # TODO: merge with existing plans
+      orgs[@selectedOrganization()] = {
+        add_new: false
+        default: @selectedPlan().id if @selectedPlan()?
+      }
+      orgs
+
+    @organizations = @komp =>
+      (k for k,v of @teamMembers())
+
     @selectOrganization = @komp
+      # use computed observable because knockout select boxes make it hard to do otherwise
       write: (value) =>
         @selectedOrganization(value)
         if value
@@ -474,20 +493,13 @@ class Billing extends Obj
           @collaborators(cs)
           SammyApp.setLocation "/account/plans/users"
 
-
-
       read: () =>
         @selectedOrganization()
 
-    @organizations = @komp =>
-      (k for k,v of @teamMembers())
-
-    @refineNextPath = @komp =>
-      "/account/plans/card"
 
 
   selectPlan: (plan) =>
-    @selectedPlan(plan)
+    @chosenPlan(plan)
     SammyApp.setLocation "/account/plans/organization"
 
   load: () =>
@@ -555,8 +567,14 @@ class Billing extends Obj
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>
       @cardInfo(data.card_info)
-      @oldTotal(data.amount)
+      @oldTotal(data.amount / 100)
       @payer(data.payer)
+
+      # we want the first plan/org, but iteration is the only way to get that from an object
+      for k,v of data.orgs
+        @existingOrganization(k)
+        @existingPlanName v['default']
+        break
 
 
   loadTeamMembers: () =>
