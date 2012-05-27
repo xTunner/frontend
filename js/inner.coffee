@@ -409,15 +409,11 @@ class User extends Obj
 class Billing extends Obj
   observables: =>
     teamMembers: {} # github data; map of org->[users]
-    stripeCard: null # card info to be used with stripe
     stripeToken: null
     availablePlans: [] # the list of plans that a user can choose
     selectedOrganization: null
     selectedPlan: null
     collaborators: []
-    existingMatrix: null
-    teamPlans: null
-    existingOrganizationMatrix: null
     cardInfo: null
     payer: null
     plan: null
@@ -555,9 +551,7 @@ class Billing extends Obj
 
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>
-      @teamPlans(data.team_plans)
       @cardInfo(data.card_info)
-      @existingOrganizationMatrix(data.orgs)
       @oldTotal(data.amount)
       @payer(data.payer)
 
