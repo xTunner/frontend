@@ -12,10 +12,6 @@
           = surround "(", ")", ->
             %a{href: "/account/plans/edit"}<>
               Edit plans
-          %br
-          = surround "(", ")", ->
-            %a{href: "/account/plans/edit"}<>
-              Add another organization
 
 
   .paid{data-bind: "if: paidFor"}
