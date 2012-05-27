@@ -1,8 +1,11 @@
 #plans{data-bind: "with: $root.billing"}
   .row.pricing
     .span7.offset4
-      %h1
-        Pick an organization for your plan
+      %h2
+        Choose an organization
+
+      (We'll mix and match if necessary in the next step)
+      %br
 
       %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}
 

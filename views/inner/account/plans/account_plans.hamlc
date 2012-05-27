@@ -7,7 +7,7 @@
         #thanks
           .alert-message.block-message.info
             %h2 Thanks!
-            %h5 We really genuinely appreciate it :)
+            %h5 We really appreciate it :)
 
           = surround "(", ")", ->
             %a{href: "/account/plans/edit"}<>

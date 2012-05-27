@@ -1,10 +1,11 @@
 #plans{data-bind: "with: $root.billing"}
 
+  %h2
+    Choose a plan:
+
+  (We'll customize it in a moment)
+
   .row.pricing
-    %h2
-      Choose a plan to start.
-
-
     .offset0.span4
       = HAML['account_plan_titles']()
 

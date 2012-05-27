@@ -1,9 +1,10 @@
-#team{data-bind: "with: $root.billing"}
-  %h2 Team plans
-  %h6 Add plans for you colleagues
-
-  .row
+#plans{data-bind: "with: $root.billing"}
+  .row#team
     .span6.offset1
+
+      %h2
+        Customize your team's plan:
+
       %div{data-bind: "ifnot: collaborators"}
         Loading collaborators...
       %table{data-bind: "if: collaborators"}
@@ -18,20 +19,20 @@
 
 
     .offset5.span7
-      %br
-      %br
+
       #total
-        Team plan total: $
+        Total: $
         %span{data-bind: "text: total"}<>
+
       %br
+
       .alert-message.block-message
         You'll need a plan for anyone who pushes.
         If they don't have a plan, we won't test their pushes.
-        Use the Pay As You Go plan for rare contributors.
+        Use the Contractor plan for rare contributors.
 
-      %br
       .alert-message.block-message.info
-        You can add plans for committers who haven't signed up for Circle right now.
+        You can add plans for committers even if they haven't signed up for Circle yet.
         Send them this link later so they can sign up:
         %br
         %a{href: "https://circleci.com/?join=team-plan"}
