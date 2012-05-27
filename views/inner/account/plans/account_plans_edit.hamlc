@@ -15,12 +15,14 @@
     / /ko
 
 
-  .next
-    %a{data-bind: "if: selectedPlan", href: "/account/plans/organization"}
-      Next: Choose users for this plan
+  .navigation
+    .next{data-bind: "if: selectedPlan"}
+      %a.btn.primary.large{href: "/account/plans/organization"}
+        Next: Choose users for this plan
 
-    .nope{data-bind: "ifnot: selectedPlan", style: "cursor: not-allowed;"}
-      Next: Choose users for this plan
+    .next{data-bind: "ifnot: selectedPlan"}
+      %a.btn.primary.large.disabled{style: "cursor: not-allowed;"}
+        Next: Choose users for this plan
 
 
     -# -#   .offset2.span5

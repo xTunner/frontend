@@ -10,13 +10,14 @@
       %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}
 
 
-  %a.back{href: "/account/plans"}
-    Back: Change default plan
+  .navigation
+    .next{data-bind: "if: selectedOrganization"}
+      %a.btn.primary.large{href: "/account/plans/users"}
+        Next: Customize plans for each user
 
+    .next{data-bind: "ifnot: selectedOrganization"}
+      %a.btn.primary.large.disabled{style: "cursor: not-allowed;"}
+        Next: Customize plans for each user
 
-  .next
-    %a{href: "/account/plans/users", data-bind: "if: selectedOrganization"}
-      Next: Customize plans for each user
-
-    .nope{data-bind: "ifnot: selectedOrganization", style: "cursor: not-allowed;"}
-      Next: Customize plans for each user
+    %a.btn.large.back{href: "/account/plans"}
+      Back: Change default plan

@@ -42,8 +42,9 @@
         Project membership is only ever determined using GitHub permissions.
 
 
-  %a.back{href: "/account/plans/organization"}
-    Back: Choose a different organization
+  .navigation
+    %a.btn.primary.large.next{href: "/account/plans/card"}
+      Next: Enter your credit card
 
-  %a{href: "/account/plans/card"}
-    Next: Enter your credit card
+    %a.btn.large.back{href: "/account/plans/organization"}
+      Back: Choose a different organization

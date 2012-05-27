@@ -1,7 +1,7 @@
 #plans{data-bind: "with: $root.billing"}
   .div{data-bind: "ifnot: cardInfo"}
     .row
-      .offset0.span5
+      .offset4.span5
         %form.form-stacked.offset3.span6#payment-form
           .form-row
             %label Card Number
@@ -92,6 +92,6 @@
 
 
 
-
-  %a.back{href: "/account/plans/users"}
-    Back: Customize plans for each user
+  .navigation
+    %a.btn.large.back{href: "/account/plans/users"}
+      Back: Customize plans for each user
