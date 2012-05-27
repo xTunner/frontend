@@ -409,6 +409,7 @@ class User extends Obj
 class Billing extends Obj
   observables: =>
     teamMembers: {} # github data; map of org->[users]
+    existingPlans: {}
     collaborators: []
 
     availablePlans: [] # the list of plans that a user can choose
@@ -488,8 +489,11 @@ class Billing extends Obj
       write: (value) =>
         @selectedOrganization(value)
         if value
-          cs = for v in @teamMembers()[value]
-            {login: v, plan: ko.observable(@selectedPlan())}
+          cs = for login in @teamMembers()[value]
+            plan = ko.observable @selectedPlan()
+            existing = @existingPlans()[login]
+            plan(@availablePlans()[existing]) if existing
+            {login: login, plan: plan}
           @collaborators(cs)
           SammyApp.setLocation "/account/plans/users"
 
@@ -569,6 +573,7 @@ class Billing extends Obj
       @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
       @payer(data.payer)
+      @existingPlans(data.team_plans)
 
       # we want the first plan/org, but iteration is the only way to get that from an object
       for k,v of data.orgs
