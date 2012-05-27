@@ -90,4 +90,4 @@
 
 
   %a.back{href: "/account/plans/users"}
-    Next: Customize plans for each user
+    Back: Customize plans for each user
