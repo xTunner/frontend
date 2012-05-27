@@ -438,13 +438,16 @@ class Billing extends Obj
 
     @userMatrix = @komp =>
       users = {}
-      for login, plan of @collaborators()
-        users[login] = plan.id
+      for c in @collaborators()
+        users[c.login] = c.plan().id if c.plan()?
       users
 
     @organizationMatrix = @komp =>
       orgs = {} # TODO: merge with existing plans
-      orgs[@selectedOrganization()] = {add_new: false, default: @selectedPlan()}
+      orgs[@selectedOrganization()] = {
+        add_new: false
+        default: @selectedPlan().id if @selectedPlan()?
+      }
       orgs
 
     @paidFor = @komp =>
