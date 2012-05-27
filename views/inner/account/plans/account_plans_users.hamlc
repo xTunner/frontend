@@ -3,7 +3,7 @@
     .span6.offset1
 
       %h2
-        Customize your team's plan:
+        Customize your team's plans:
 
       %div{data-bind: "ifnot: collaborators"}
         Loading collaborators...

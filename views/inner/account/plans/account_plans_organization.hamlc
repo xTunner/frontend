@@ -2,9 +2,9 @@
   .row.pricing
     .span7.offset4
       %h2
-        Choose an organization
+        Choose an organization:
 
-      (We'll mix and match if necessary in the next step)
+      (You can mix-and-match plans for your team members in the next step)
       %br
 
       %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}

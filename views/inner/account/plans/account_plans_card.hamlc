@@ -71,7 +71,7 @@
           %br
           .alert-message.block-message.info#warning
             %p
-              New plans will begin immediately, and will be pro-rated on your next billing date.
+              New plans will apply immediately, and will be pro-rated on your next billing date.
 
           %button.btn.primary.large.submit-button#charge-button{type: "submit",
                                                                 data-bind: "click: stripeUpdate",

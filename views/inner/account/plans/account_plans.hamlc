@@ -1,4 +1,4 @@
-%div{data-bind: "with: $root.billing"}
+#plans{data-bind: "with: $root.billing"}
 
   .paid{data-bind: "if: selfPayer"}
 
