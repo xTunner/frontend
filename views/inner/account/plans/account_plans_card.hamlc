@@ -70,7 +70,7 @@
                                     data-bind: "value: cardInfo().exp_year"}}
 
           %button.btn.primary.large.submit-button#charge-button{type: "submit",
-                                                                data-bind: "click: stripeSubmit",
+                                                                data-bind: "click: stripeUpdate",
                                                                 data-loading-text: "Charging",
                                                                 data-failed-text: "Denied",
                                                                 data-success-text: "Success"}}

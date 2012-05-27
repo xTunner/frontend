@@ -527,20 +527,23 @@ class Billing extends Obj
     # prevent the form from submitting with the default action
     return false;
 
+  stripeUpdate: (data, event) ->
+    @recordStripeTransaction event, null
+
+
   recordStripeTransaction: (event, stripeInfo) =>
     $.ajax(
       url: "/api/v1/user/pay"
       event: event
-      type: "POST"
+      type: if stripeInfo then "POST" else "PUT"
       data: JSON.stringify
         token: stripeInfo
         orgs: @organizationMatrix()
         team_plans: @userMatrix()
       success: () =>
         @payer VM.current_user().login
-        @cardInfo(stripeInfo.card)
+        @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
-        # @existingOrganizationMatrix(data.orgs)
 
         SammyApp.setLocation "/account/plans"
     )
