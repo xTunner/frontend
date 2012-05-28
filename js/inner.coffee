@@ -491,7 +491,8 @@ class Billing extends Obj
         if value
           cs = for login in @teamMembers()[value]
             plan = ko.observable @selectedPlan()
-            existing = @existingPlans()[login]
+            # clojure converts keys to underscores...
+            existing = @existingPlans()[login.replace(/-/g, '_')]
             plan(@availablePlans()[existing]) if existing
             {login: login, plan: plan}
           @collaborators(cs)
