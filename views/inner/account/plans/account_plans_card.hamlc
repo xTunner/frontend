@@ -81,11 +81,11 @@
       .offset5.span5
         %h2
           Previous Total: $
-          %span{data-bind: "text: oldTotal"}
+          %span{data-bind: "text: oldTotal"}<>
 
         %h2
           New Total: $
-          %span{data-bind: "text: total"}
+          %span{data-bind: "text: total"}<>
 
 
 
