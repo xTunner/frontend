@@ -7,15 +7,20 @@
       %i.icon-chevron-up
     %ul.expand
       %li
-        %a{ href: "/docs/article#headings" } Headings
+        %a{ href: "/docs/article#headings" }
+          Headings
       %li
-        %a{ href: "/docs/article#text" } Text Elements
+        %a{ href: "/docs/article#text" }
+          Text Elements
       %li
-        %a{ href: "/docs/article#lists" } Ordered and Unordered List
+        %a{ href: "/docs/article#lists" }
+          Ordered and Unordered List
       %li
-        %a{ href: "/docs/article#blockquotes" } Blockquotes
+        %a{ href: "/docs/article#blockquotes" }
+          Blockquotes
       %li
-        %a{ href: "/docs/article#pre" } Pre & Code
+        %a{ href: "/docs/article#pre" }
+          Pre & Code
 
   %li
     %i.icon-cogs
