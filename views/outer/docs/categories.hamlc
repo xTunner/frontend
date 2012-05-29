@@ -1,8 +1,9 @@
 %ul.topics
 
   %li
-    %i.icon-cogs
-    %a{ href: "/docs/article" } Getting Started
+    %i.icon-repeat
+    %a{ href: "/docs/getting-started" }
+      Getting Started
       %i.icon-chevron-up
     %ul.expand
       %li
@@ -17,8 +18,9 @@
         %a{ href: "/docs/article#pre" } Pre & Code
 
   %li
-    %i.icon-lock
-    %a Maecenas
+    %i.icon-cogs
+    %a{ href: "/docs/common-problems" }
+      “It works on my machine”
       %i.icon-chevron-down
     %ul
       %li Natoque varius nulla
@@ -26,8 +28,9 @@
       %li Aenean sed
 
   %li
-    %i.icon-repeat
-    %a Fusce Auctor
+    %i.icon-user
+    %a{ href: "/docs/faq" }
+      How do I ... ?
       %i.icon-chevron-down
     %ul
       %li Curabitur eget felis
@@ -36,8 +39,9 @@
       %li Pum sociis varius cursus
 
   %li
-    %i.icon-user
-    %a Pellentesque
+    %i.icon-lock
+    %a{ href: "/docs/integrations" }
+      Integrations
       %i.icon-chevron-down
     %ul
       %li Curabitur eget felis
@@ -46,10 +50,21 @@
 
   %li
     %i.icon-list-alt
-    %a Nullam Justo
+    %a{ href: "/docs/configuration" }
+      Configuring Circle
       %i.icon-chevron-down
     %ul
       %li Natoque varius nulla
       %li Lectus sed vulputate
       %li Curabitur eget felis
+      %li Pum sociis varius cursus
+
+  %li
+    %i.icon-lock
+    %a{ href: "/docs/api" }
+      The Circle REST API
+      %i.icon-chevron-down
+    %ul
+      %li Curabitur eget felis
+      %li Natoque varius nulla
       %li Pum sociis varius cursus
