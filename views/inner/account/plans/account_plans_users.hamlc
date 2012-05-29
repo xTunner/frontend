@@ -15,7 +15,7 @@
           %tr
             %td#username{data-bind: "text: login"}
             %td
-              %select{data-bind: "options: $parent.plans, optionsText: 'name', value: $data.plan, optionsCaption: 'None'"}
+              %select{data-bind: "options: $parent.plans, optionsText: 'name_price', value: $data.plan, optionsCaption: 'None'"}
 
 
     .offset5.span7
