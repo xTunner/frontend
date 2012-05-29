@@ -1,0 +1,23 @@
+#plans{data-bind: "with: $root.billing"}
+  .row.pricing
+    .span7.offset4
+      %h2
+        Choose an organization:
+
+      (You can mix-and-match plans for your team members in the next step)
+      %br
+
+      %select{data-bind: "options: organizations, value: selectOrganization, optionsCaption: 'Choose an organization/user'"}
+
+
+  .navigation
+    .next{data-bind: "if: selectedOrganization"}
+      %a.btn.primary.large{href: "/account/plans/users"}
+        Next: Customize plans for each user
+
+    .next{data-bind: "ifnot: selectedOrganization"}
+      %a.btn.primary.large.disabled{style: "cursor: not-allowed;"}
+        Next: Customize plans for each user
+
+    %a.btn.large.back{href: "/account/plans"}
+      Back: Change default plan

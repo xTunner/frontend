@@ -1,0 +1,50 @@
+#plans{data-bind: "with: $root.billing"}
+  .row#team
+    .span6.offset1
+
+      %h2
+        Customize your team's plans:
+
+      %div{data-bind: "ifnot: collaborators"}
+        Loading collaborators...
+      %table{data-bind: "if: collaborators"}
+        %thead
+          %th#username Username (GitHub)
+          %th Plan
+        %tbody{data-bind: "foreach: collaborators"}
+          %tr
+            %td#username{data-bind: "text: login"}
+            %td
+              %select{data-bind: "options: $parent.plans, optionsText: 'name', value: $data.plan, optionsCaption: 'None'"}
+
+
+    .offset5.span7
+
+      #total
+        Total: $
+        %span{data-bind: "text: total"}<>
+
+      %br
+
+      .alert-message.block-message
+        You'll need a plan for anyone who pushes.
+        If they don't have a plan, we won't test their pushes.
+        Use the Contractor plan for rare contributors.
+
+      .alert-message.block-message.info
+        You can add plans for committers even if they haven't signed up for Circle yet.
+        Send them this link later so they can sign up:
+        %br
+        %a{href: "https://circleci.com/?join=team-plan"}
+          https://circleci.com/?join=team-plan
+        %br
+        Inviting users and creating plans does not give them access to your projects.
+        Project membership is only ever determined using GitHub permissions.
+
+
+  .navigation
+    %a.btn.primary.large.next{href: "/account/plans/card"}
+      Next: Enter your credit card
+
+    %a.btn.large.back{href: "/account/plans/organization"}
+      Back: Choose a different organization

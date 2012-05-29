@@ -49,19 +49,19 @@ $.ajaxSetup
   dataType: "json"
 
 
-class Base
-  constructor: (json, defaults={}, nonObservables=[], observe=true) ->
-    for k,v of defaults
-      if observe and nonObservables.indexOf(k) == -1
-        @[k] = @observable(v)
-      else
-        @[k] = v
+class Obj
+  constructor: (json={}, defaults={}) ->
+    for k,v of @observables()
+      @[k] = @observable(v)
 
-    for k,v of json
-      if observe and nonObservables.indexOf(k) == -1
-        @[k] = @observable(v)
-      else
-        @[k] = v
+    for k,v of $.extend {}, defaults, json
+      if @observables().hasOwnProperty(k) then @[k](v) else @[k] = v
+
+  observables: () => {}
+
+  komp: (args...) =>
+    observableCount += 1
+    ko.computed args...
 
   observable: (obj) ->
     observableCount += 1
@@ -70,14 +70,21 @@ class Base
     else
       ko.observable obj
 
-  komp: (args...) =>
-    observableCount += 1
-    ko.computed args...
+
+
+
+class Base extends Obj
+  constructor: (json, defaults={}, nonObservables=[], observe=true) ->
+    for k,v of $.extend {}, defaults, json
+      if observe and nonObservables.indexOf(k) == -1
+        @[k] = @observable(v)
+      else
+        @[k] = v
 
 
 class HasUrl extends Base
-  constructor: (json, defaults, nonObservables) ->
-    super json, defaults, nonObservables
+  constructor: (json, defaults, nonObservables, observe) ->
+    super json, defaults, nonObservables, observe
 
     @project_name = @komp =>
       @vcs_url().substring(19)
@@ -347,15 +354,18 @@ class Project extends HasUrl
 
 
 
-class User extends Base
-  constructor: (json) ->
-    json.tokens = ko.observableArray(json.tokens or [])
-    json.paid = ko.observable(json.paid or false)
-    json.plan = ko.observable(json.plan)
-    json.environment = window.renderContext.env if window.renderContext
-    super json, {paid: false, admin: false, login: "", basic_email_prefs: "all", card_on_file: false, plan: null, environment: "production"}, [], false
+class User extends Obj
+  observables: =>
+    tokens: []
+    tokenLabel: ""
 
-    @tokenLabel = ko.observable("")
+  constructor: (json) ->
+    super json,
+      admin: false
+      login: ""
+      basic_email_prefs: "all"
+
+    @environment = window.renderContext.environment
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -364,99 +374,6 @@ class User extends Base
       result = {}
       result["env-" + @environment] = true
       result
-
-    # billing
-    @plans = ko.observable()
-    @individualPlan = @komp =>
-      if @plan()? and @plans()?
-        @plans()[@plan()]
-
-
-
-
-    @availablePlans = @komp =>
-      ap = for k,v of @plans()
-        v.id = k
-        v
-      ap.sort (a, b) ->
-        b.price - a.price # most expensive first
-      ap
-
-    # team billing
-    @collaborators = ko.observable(null)
-    @showTeam = ko.observable(false)
-
-    @individualTotal = @komp =>
-      if @individualPlan() then @individualPlan().price / 100 else 0
-
-    @teamTotal = @komp =>
-      return 0 unless @collaborators()
-      total = 0
-      for c in @collaborators()
-        total += c.plan().price if c.plan()
-      total / 100
-
-    @overallTotal = @komp =>
-      @teamTotal() + @individualTotal()
-
-
-  # billing
-  selectPlan: (data) =>
-    @plan(data.id)
-
-  toggleTeam: () =>
-    @showTeam !@showTeam()
-
-  teamPlans: () =>
-    return {} unless @collaborators()
-    result = {}
-    for c in @collaborators()
-      result[c.login] = c.plan().plan if c.plan()
-    result
-
-
-
-
-
-  stripeSubmit: (data, event) ->
-    key = switch @environment
-      when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
-      else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
-    Stripe.setPublishableKey(key)
-
-    # disable the submit button to prevent repeated clicks
-    button = $('.submit-button')
-    button.addClass "disabled"
-
-    Stripe.createToken {
-      number: $('.card-number').val()
-      cvc: $('.card-cvc').val(),
-      exp_month: $('.card-expiry-month').val(),
-      exp_year: $('.card-expiry-year').val()
-    }, (status, response) =>
-      if response.error
-        button.removeClass "disabled"
-        notifyError response.error.message
-      else
-        @recordStripeTransaction event, response # TODO: add the plan
-
-
-    # prevent the form from submitting with the default action
-    return false;
-
-  recordStripeTransaction: (event, response) =>
-    $.ajax(
-      url: "/api/v1/user/pay"
-      event: event
-      type: "POST"
-      data: JSON.stringify
-        token: response
-        plan: @individualPlan().id
-        team_plans: @teamPlans()
-      success: () =>
-        @paid true
-    )
-    false
 
   create_token: (data, event) =>
     $.ajax
@@ -482,6 +399,193 @@ class User extends Base
 
 
 
+class Billing extends Obj
+  observables: =>
+    teamMembers: {} # github data; map of org->[users]
+    existingPlans: {}
+    collaborators: []
+
+    availablePlans: [] # the list of plans that a user can choose
+    existingPlanName: null
+    chosenPlan: null
+
+    selectedOrganization: null
+    existingOrganization: null
+
+    stripeToken: null
+    cardInfo: null
+    oldTotal: 0
+
+    payer: null
+    plan: null
+
+
+  constructor: ->
+    super
+
+    @plans = @komp =>
+      ap = for k,v of @availablePlans()
+        v.id = k
+        v
+      ap.sort (a, b) ->
+        b.price - a.price # most expensive first
+      ap
+
+    @selectedPlan = @komp =>
+      if @chosenPlan()?
+        @chosenPlan()
+      else if @existingPlanName()? and @availablePlans()?
+        @availablePlans()[@existingPlanName()]
+
+
+    @userMatrix = @komp =>
+      users = {}
+      for c in @collaborators()
+        users[c.login] = c.plan().id if c.plan()?
+      users
+
+    @total = @komp =>
+      total = 0
+      for c in @collaborators()
+        total += c.plan().price if c.plan()?
+      total / 100
+
+    @paidFor = @komp =>
+      @payer() and (@payer() isnt VM.current_user().login)
+
+    @selfPayer = @komp =>
+      @payer() and (@payer() is VM.current_user().login)
+
+    @notPaid = @komp =>
+      not @payer()?
+
+    @savedCardNumber = @komp =>
+      return "" unless @cardInfo()
+      "************" + @cardInfo().last4
+
+
+
+
+    @organizationMatrix = @komp =>
+      orgs = {} # TODO: merge with existing plans
+      orgs[@selectedOrganization()] = {
+        add_new: false
+        default: @selectedPlan().id if @selectedPlan()?
+      }
+      orgs
+
+    @organizations = @komp =>
+      (k for k,v of @teamMembers())
+
+    @selectOrganization = @komp
+      # use computed observable because knockout select boxes make it hard to do otherwise
+      write: (value) =>
+        @selectedOrganization(value)
+        if value
+          cs = for login in @teamMembers()[value]
+            plan = ko.observable @selectedPlan()
+            # clojure converts keys to underscores...
+            existing = @existingPlans()[login.replace(/-/g, '_')]
+            plan(@availablePlans()[existing]) if existing
+            {login: login, plan: plan}
+          @collaborators(cs)
+          SammyApp.setLocation "/account/plans/users"
+
+      read: () =>
+        @selectedOrganization()
+
+
+
+  selectPlan: (plan) =>
+    @chosenPlan(plan)
+    SammyApp.setLocation "/account/plans/organization"
+
+  load: () =>
+    unless @loaded
+      SammyApp.setLocation "/account/plans"
+      @loadAvailablePlans()
+      @loadExistingPlans()
+      @loadTeamMembers()
+      @loadStripe()
+      @loaded = true
+
+
+  stripeSubmit: (data, event) ->
+    key = switch renderContext.environment
+      when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
+      else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
+    Stripe.setPublishableKey(key)
+
+    # disable the submit button to prevent repeated clicks
+    button = $('.submit-button')
+    button.addClass "disabled"
+
+    Stripe.createToken {
+      number: $('.card-number').val()
+      cvc: $('.card-cvc').val(),
+      exp_month: $('.card-expiry-month').val(),
+      exp_year: $('.card-expiry-year').val()
+    }, (status, response) =>
+      if response.error
+        button.removeClass "disabled"
+        notifyError response.error.message
+      else
+        @recordStripeTransaction event, response # TODO: add the plan
+
+
+    # prevent the form from submitting with the default action
+    return false;
+
+  stripeUpdate: (data, event) ->
+    @recordStripeTransaction event, null
+
+
+  recordStripeTransaction: (event, stripeInfo) =>
+    $.ajax(
+      url: "/api/v1/user/pay"
+      event: event
+      type: if stripeInfo then "POST" else "PUT"
+      data: JSON.stringify
+        token: stripeInfo
+        orgs: @organizationMatrix()
+        team_plans: @userMatrix()
+      success: () =>
+        @payer VM.current_user().login
+        @cardInfo(stripeInfo.card) if stripeInfo?
+        @oldTotal(@total())
+
+        SammyApp.setLocation "/account/plans"
+    )
+    false
+
+
+  loadStripe: () =>
+    $.getScript "https://js.stripe.com/v1/"
+
+  loadExistingPlans: () =>
+    $.getJSON '/api/v1/user/existing-plans', (data) =>
+      @cardInfo(data.card_info)
+      @oldTotal(data.amount / 100)
+      @payer(data.payer)
+      @existingPlans(data.team_plans)
+
+      # we want the first plan/org, but iteration is the only way to get that from an object
+      for k,v of data.orgs
+        @existingOrganization(k)
+        @existingPlanName v['default']
+        break
+
+
+  loadTeamMembers: () =>
+    $.getJSON '/api/v1/user/team-members', (data) =>
+      @teamMembers(data)
+
+  loadAvailablePlans: () =>
+    $.getJSON '/api/v1/user/available-plans', (data) =>
+      @availablePlans(data)
+
+
+
 
 display = (template, args) ->
   $('#main').html(HAML[template](args))
@@ -495,6 +599,7 @@ class CircleViewModel extends Base
     @builds = ko.observableArray()
     @project = ko.observable()
     @projects = ko.observableArray()
+    @billing = ko.observable(new Billing)
     @recent_builds = ko.observableArray()
     @build_state = ko.observable()
     @admin = ko.observable()
@@ -533,7 +638,7 @@ class CircleViewModel extends Base
     @error_message null
 
   setErrorMessage: (message) =>
-    if message == ""
+    if message == "" or not message?
       message = "Unknown error"
     if message.slice(-1) != '.'
       message += '.'
@@ -632,35 +737,14 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadStripe: () =>
-    unless @stripeLoaded
-      @stripeLoaded = true
-      s = document.createElement 'script'
-      s.setAttribute "type", "text/javascript"
-      s.setAttribute "src", "https://js.stripe.com/v1/"
-      document.getElementsByTagName("head")[0].appendChild(s)
-
-  loadTeamMembers: () =>
-    $.getJSON '/api/v1/user/team-members', (data) =>
-      for d in data
-        d.plan = ko.observable(null)
-      @current_user().collaborators(data)
-
-  loadPlans: () =>
-    $.getJSON '/api/v1/user/plans', (data) =>
-      @current_user().plans(data)
-
-
-  loadAccountPage: (cx, subpage) =>
-    subpage = subpage[0].replace('/', '')
+  loadAccountPage: (cx, subpage, organization) =>
+    subpage = subpage[0].replace(/\//, '') # first one
+    subpage = subpage.replace(/\//g, '_')
     subpage = subpage || "notifications"
-    if subpage == 'plans'
-      @loadPlans()
-      @loadTeamMembers()
-      @loadStripe()
-
+    if subpage.indexOf("plans") == 0
+      @billing().load()
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage.replace('-', '_')]({}))
+    $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
 
@@ -735,11 +819,7 @@ class CircleViewModel extends Base
 
 
 window.VM = new CircleViewModel()
-stripTrailingSlash = (str) =>
-  str.replace(/(.+)\/$/, "$1")
-
-$(document).ready () ->
-  Sammy('#app', () ->
+window.SammyApp = Sammy '#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
     @get('/', (cx) => VM.loadDashboard(cx))
@@ -768,7 +848,8 @@ $(document).ready () ->
         window._gaq.push @path
 
 
-  ).run stripTrailingSlash(window.location.pathname)
+$(document).ready () ->
+  SammyApp.run window.location.pathname.replace(/(.+)\/$/, "$1")
 
 
 
