@@ -18,10 +18,7 @@ finishAjax = (event, attrName, buttonName) ->
       t.removeClass "disabled"
     setTimeout(func, 1500)
 
-$(document).ajaxSuccess((ev, xhr, options) ->
-  window.onerror = notifyError
-  finishAjax(xhr.event, "data-success-text", "Saved")
-)
+$(document).ajaxSuccess((ev, xhr, options) -> finishAjax(xhr.event, "data-success-text", "Saved"))
 
 $(document).ajaxError((ev, xhr, status, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
@@ -29,12 +26,10 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
-    notifyError xhr.responseText or xhr.statusText
+    notifyError xhr.responseText or xhr.statusText, null, null, true
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
-  # airbrake loads asynchronously, so catch it afterwards
-  window.onerror = notifyError
 
   xhr.event = options.event
   if xhr.event
@@ -52,22 +47,6 @@ $.ajaxSetup
   contentType: "application/json"
   accepts: {json: "application/json"}
   dataType: "json"
-
-notifyError = (message, file, line) ->
-  # jquery errors sometimes call this with a different signature, not sure
-  # what's happening there
-  if message instanceof Object and file instanceof Object
-    message = file.message
-    file = null
-  if VM? and window.renderContext? and (window.renderContext.env == "development" or window.renderContext.env == "test")
-    if file
-      message += "\\nfile: #{file}"
-      message += "\\nline: #{line}"
-    VM.setErrorMessage message
-  if window.Hoptoad?
-    callback = () => Hoptoad.notify({message: message, stack: '()@' + file + ':' + line})
-    setTimeout callback, 100
-  return false
 
 
 class Base
@@ -532,6 +511,31 @@ class CircleViewModel extends Base
     @project_map = {}
     observableCount += 8
 
+    #@setupPusher()
+
+  setupPusher: () =>
+    @pusher = new Pusher("356b7c379e56e14c261b")
+
+    Pusher.channel_auth_endpoint = "/auth/pusher"
+
+    @userSubscribePrivateChannel()
+    @pusherSetupBindings()
+
+  userSubscribePrivateChannel: () =>
+    channel_name = "private-" + @current_user().login
+
+    @user_channel = @pusher.subscribe(channel_name)
+    @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
+  pusherSetupBindings: () =>
+    @user_channel.bind "call", (data) =>
+      window.fn = data.fn
+      window.args = data.args
+      this[data.fn].apply(this, data.args)
+
+  testCall: (arg) =>
+    alert(arg)
+
   clearErrorMessage: () =>
     @error_message null
 
@@ -555,7 +559,13 @@ class CircleViewModel extends Base
       window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
-        setTimeout(@loadProjects, 3000)
+        # make sure users aren't seeing the blank page
+        setTimeout(@loadProjects, 1000)
+        setTimeout(@loadProjects, 4000)
+        setTimeout(@loadProjects, 7000)
+        setTimeout(@loadProjects, 15000)
+        setTimeout(@loadProjects, 30000)
+
 
   available_projects: () => @komp =>
     (p for p in @projects() when not p.followed())
@@ -736,7 +746,6 @@ stripTrailingSlash = (str) =>
   str.replace(/(.+)\/$/, "$1")
 
 $(document).ready () ->
-  window.onerror = notifyError
   Sammy('#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
