@@ -10,38 +10,49 @@
   %section.categories
     %ul
       %li
-        %a{ href: "docs/article" }
-          %i.icon-cogs
-          %hgroup
-            %h2 This is a link to a template
-            %h3 The template is found in docs/topics/article.hamlc
-
-      %li
-        %a
-          %i.icon-lock
-          %hgroup
-            %h2 Maecenas dignissim, risus quis dapibus fringilla.
-            %h3 Pum sociis natoque penatibus et magnis dis parturient montes
-
-      %li
-        %a
+        %a{ href: "/docs/getting-started" }
           %i.icon-repeat
           %hgroup
-            %h2 Fusce auctor aliquam odio quis consectetur.
-            %h3 Mauris non odio sed metus varius cursus nulla facilisi
+            %h2 Getting started with Circle
+            %h3 A step-by-step introduction to your first time.
 
       %li
-        %a
+        %a{ href: "/docs/common-problems" }
+          %i.icon-cogs
+          %hgroup
+            %h2 “It works on my machine”
+            %h3 Common problems and their solutions.
+
+      %li
+        %a{ href: "/docs/faq" }
           %i.icon-user
           %hgroup
-            %h2 Pellentesque habitant morbi tristique senectus.
-            %h3 Aenean vulputate, sapien sed imperdiet accumsan sem nunc
+            %h2 How do I ... ?
+            %h3 Frequently Asked Questions, and questions that should be asked more frequently.
 
       %li
-        %a
+        %a{ href: "/docs/api" }
+          %i.icon-lock
+          %hgroup
+            %h2 Integrations
+            %h3 Hooking Circle up to 3rd-party products.
+
+      %li
+        %a{ href: "/docs/configuration" }
           %i.icon-list-alt
           %hgroup
-            %h2 Nullam malesuada hendrerit justo, nec vulputate.
-            %h3 Curabitur eget felis eros, imperdiet ultrices urna
+            %h2 Configuring Circle
+            %h3
+              Exhaustive reference to
+              = succeed ".", ->
+                %code circle.yml
+
+      %li
+        %a{ href: "/docs/api" }
+          %i.icon-lock
+          %hgroup
+            %h2 The Circle REST API
+            %h3 Embrace and extend.
+
 
     %aside.status
