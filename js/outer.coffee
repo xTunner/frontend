@@ -30,7 +30,7 @@ circle = $.sammy "body", ->
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
     display: (cx) =>
-      if HAML? and HAML[@name]?
+      if HAML? and HAML[@filename cx]?
         @init(cx)
       else
         @load(cx)
