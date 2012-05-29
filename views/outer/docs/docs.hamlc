@@ -31,7 +31,7 @@
             %h3 Frequently Asked Questions, and questions that should be asked more frequently.
 
       %li
-        %a{ href: "/docs/api" }
+        %a{ href: "/docs/integrations" }
           %i.icon-lock
           %hgroup
             %h2 Integrations
