@@ -42,8 +42,9 @@ circle = $.sammy "body", ->
       @lib = highlight
 
     filename: (cx) =>
-      if cx.params.splat[0]
-        cx.params.splat[0].replace('/', '').replace('#', '').replace('-', '_')
+      name = cx.params.splat[0]
+      if name
+        name.replace('/', '').replace('-', '_').replace(/#.*/, '')
       else
         "docs"
 
