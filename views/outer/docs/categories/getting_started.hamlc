@@ -2,13 +2,100 @@
   .title
     %h1 Getting Started with Circle
       %i.icon-cogs
-    %p Last Updated: 16 May 2012
+    %p Last Updated: May 28, 2012
     %hr
 
   .doc
     %h1.section
-      %a#headings Headings
+      %a#overview Overview
     %hr
+
+    %p
+      For about 90% of web apps, setting up Continous Integration with Circle is a matter of 3 mouse clicks.
+      We detect your project's configuration, and run the standard configuration and testing commands for your project.
+      We're pretty good at it, so this should work even if you deviate from the norm in a couple of ways.
+      You use Riak? That's not going to phase us.
+
+      The standard project setup is therefore to login, click on the project you want to test, and sit back and wait for the tests to finish.
+      We'll make everything else work.
+
+      Of course, life is not always sunshine and daisies.
+      And that's what this guide is for:
+      %ul
+        %li
+          We'll talk you through the
+          %a{href: "#inference"} standard things
+          we look for to make projects work.
+        %li
+          We'll help you our with
+          %a{href: "/docs/common-problems"} common problems
+          that users experience when running tests with Circle.
+        %li
+          We'll even show you how to test your
+          %a{href: "/docs/configuration#custom"} completely custom
+          project.
+
+    %h1.section
+      %a#what-happens
+    %hr
+
+    %p
+      But first a quick detour:
+      %i what happens when you add an account to Circle?
+
+    %p
+      Basically, exactly what you'd expect:
+      %ul
+        %li
+          Using the permissiosns you gave us when you signed up, we'll add some settings to your project on GitHub.
+          A
+          %i deploy key
+          is used to check your project out from GitHub.
+          A
+          %i service hook
+          is used to notify Circle when you push to GitHub.
+        %li
+          As soon as you add the project, we'll immediately check out the code onto our machines, and infer your settings.
+          We'll also do this each time you push to GitHub.
+        %li
+          Our inference algorithms look through your dependencies, Gems, libraries and code to figure out how to run your tests.
+          For example, we might find that you have a standard Rails project using Postgres, with specs and features, so we'll run
+          = succeed ",", ->
+            %code bundle install
+          = succeed ",", ->
+            %code bundle exec rake db:schema:load
+          = succeed ",", ->
+            %code bundle exec rspec spec
+          = succeed ",", ->
+            %code bundle exec cucumber
+        %li
+          You can watch the build update in real-time on your dashboard.
+        %li
+          We'll send you a notification when you're done.
+
+      OK then, go add your first project!
+
+    %h1.section
+      %a#inference Inference
+    %hr
+
+    %h2 Getting to green
+
+    %p
+      If this is your first time setting up Continuous Integration, your build is not likely have passed.
+      At this point, it'
+
+
+
+    %h1.section
+      %a#headings When inference doesn't work
+    %hr
+
+
+    %h1.section
+      %a#headings When you have something custom
+    %hr
+
 
     %h1 Level One Heading
     %h2 Level Two Heading
