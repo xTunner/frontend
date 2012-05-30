@@ -25,12 +25,15 @@ circle = $.sammy "body", ->
       $.getScript "/assets/views/outer/#{@name}/#{@name}.hamlc", =>
          @init(cx)
 
+    loaded: (cx) =>
+      HAML? and HAML[@name]?
+
     scroll: (hash) =>
       if hash == '' or hash == '#' then hash = "body"
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
     display: (cx) =>
-      if HAML? and HAML[@name]?
+      if @loaded(cx)
         @init(cx)
       else
         @load(cx)
@@ -66,6 +69,9 @@ circle = $.sammy "body", ->
           @article(cx)
       else
         @article(cx)
+
+    loaded: (cx) =>
+      super(cx) and HAML[@filename cx]?
 
     article: (cx) =>
       name = @filename cx
