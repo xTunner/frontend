@@ -1,6 +1,6 @@
 %article
   .title
-    %h1 Getting Started with Circle
+    %h1 Configuring Circle
       %i.icon-cogs
     %p Last Updated: 16 May 2012
     %hr

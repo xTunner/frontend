@@ -1,8 +1,8 @@
 %article
   .title
-    %h1 Getting Started with Circle
+    %h1 It works on my machine
       %i.icon-cogs
-    %p Last Updated: 16 May 2012
+    %p Last Updated: May 29, 2012
     %hr
 
   .doc
