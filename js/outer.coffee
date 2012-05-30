@@ -46,7 +46,14 @@ circle = $.sammy "body", ->
 
     categories: (cx) =>
       # build a table of contents dynamically from all the pages. DRY.
-      pages = ["getting-started", "common-problems", "faq", "integrations", "configuration", "api"]
+      pages = [
+                "getting-started",
+#                "common-problems",
+#                "faq",
+#                "integrations",
+#                "configuration",
+#                "api"
+              ]
       categories = {}
       for p in pages
         slug = p.replace("-", "_")
