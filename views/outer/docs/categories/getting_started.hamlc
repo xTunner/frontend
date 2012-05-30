@@ -1,8 +1,9 @@
 %article
   .title
     %h1 Getting Started with Circle
-      %i.icon-cogs
+      %i.icon-repeat
     %p Last Updated: May 28, 2012
+    %h4 Step-by-step introduction to your first build
     %hr
 
   .doc

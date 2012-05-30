@@ -1,8 +1,9 @@
 %article
   .title
-    %h1 It works on my machine
+    %h1 “It works on my machine”
       %i.icon-cogs
     %p Last Updated: May 29, 2012
+    %h4 Common problems and their solutions.
     %hr
 
   .doc

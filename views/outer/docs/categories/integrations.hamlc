@@ -1,8 +1,9 @@
 %article
   .title
     %h1 Integrations
-      %i.icon-cogs
+      %i.icon-lock
     %p Last Updated: 16 May 2012
+    %h4 Hooking Circle up to 3rd-party products.
     %hr
 
   .doc

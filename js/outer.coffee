@@ -45,16 +45,40 @@ circle = $.sammy "body", ->
         "docs"
 
     categories: (cx) =>
-      HAML['categories']()
+      # build a table of contents dynamically from all the pages. DRY.
+      pages = ["getting-started", "common-problems", "faq", "integrations", "configuration", "api"]
+      categories = {}
+      for p in pages
+        template = HAML[p.replace("-", "_")]()
+        node = $(template)
+        title = node.find('.title > h1').text().trim()
+        subtitle = node.find('.title > h4').text().trim()
+        icon = node.find('.title > h1 > i').attr('class')
+        sections = node.find('.doc > .section')
+        sections = for s in sections
+          $(s).text().trim()
+        categories[p] =
+          url: "/docs/#{p}"
+          title: title
+          subtitle: subtitle
+          icon: icon
+          sections: sections
+      categories
+
 
     render: (cx) =>
       name = @filename cx
-      $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
-      $("body").append(HAML['title'](renderContext))
-      $("#title h1").text("Documentation")
-      $("body").append("<div id='content'><section class='article'></section></div>")
-      $(".article").append(@categories()).append(HAML[name](renderContext))
-      $("body").append(HAML['footer'](renderContext))
+      if name == 'docs'
+        $("body").attr("id","docs-page").html HAML['header'](renderContext)
+        $("body").append HAML['docs']({categories: @categories()})
+        $("body").append HAML['footer'](renderContext)
+      else
+        $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
+        $("body").append(HAML['title'](renderContext))
+        $("#title h1").text("Documentation")
+        $("body").append("<div id='content'><section class='article'></section></div>")
+        $(".article").append(HAML['categories']({categories: @categories()})).append(HAML[name](renderContext))
+        $("body").append(HAML['footer'](renderContext))
 
     load: (cx) =>
       $.getScript "/assets/views/outer/docs/docs.js.dieter", =>

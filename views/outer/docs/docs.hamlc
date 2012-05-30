@@ -8,51 +8,13 @@
     %hr
 
   %section.categories
-    %ul
-      %li
-        %a{ href: "/docs/getting-started" }
-          %i.icon-repeat
-          %hgroup
-            %h2 Getting started with Circle
-            %h3 A step-by-step introduction to your first time.
-
-      %li
-        %a{ href: "/docs/common-problems" }
-          %i.icon-cogs
-          %hgroup
-            %h2 “It works on my machine”
-            %h3 Common problems and their solutions.
-
-      %li
-        %a{ href: "/docs/faq" }
-          %i.icon-user
-          %hgroup
-            %h2 How do I ... ?
-            %h3 Frequently Asked Questions, and questions that should be asked more frequently.
-
-      %li
-        %a{ href: "/docs/integrations" }
-          %i.icon-lock
-          %hgroup
-            %h2 Integrations
-            %h3 Hooking Circle up to 3rd-party products.
-
-      %li
-        %a{ href: "/docs/configuration" }
-          %i.icon-list-alt
-          %hgroup
-            %h2 Configuring Circle
-            %h3
-              Exhaustive reference to
-              = succeed ".", ->
-                %code circle.yml
-
-      %li
-        %a{ href: "/docs/api" }
-          %i.icon-lock
-          %hgroup
-            %h2 The Circle REST API
-            %h3 Embrace and extend.
-
+    - for k,c of @categories
+      %ul
+        %li
+          %a{ href: c.url }
+            %i{ class: c.icon }
+            %hgroup
+              %h2= c.title
+              %h3= c.subtitle
 
     %aside.status

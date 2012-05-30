@@ -1,8 +1,9 @@
 %article
   .title
     %h1 Configuring Circle
-      %i.icon-cogs
+      %i.icon-list-alt
     %p Last Updated: 16 May 2012
+    %h4 Exhaustive reference to <code>circle.yml</code>
     %hr
 
   .doc

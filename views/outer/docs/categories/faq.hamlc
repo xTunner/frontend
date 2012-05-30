@@ -1,8 +1,9 @@
 %article
   .title
     %h1 How do I ... ?
-      %i.icon-cogs
+      %i.icon-user
     %p Last Updated: 16 May 2012
+    %h4 Frequently Asked Questions, and questions that should be asked more frequently.
     %hr
 
   .doc

@@ -1,8 +1,9 @@
 %article
   .title
     %h1 The Circle REST API
-      %i.icon-cogs
+      %i.icon-lock
     %p Last Updated: 16 May 2012
+    %h4 Embrace and extend
     %hr
 
   .doc
