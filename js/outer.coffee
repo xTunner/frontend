@@ -49,7 +49,8 @@ circle = $.sammy "body", ->
       pages = ["getting-started", "common-problems", "faq", "integrations", "configuration", "api"]
       categories = {}
       for p in pages
-        template = HAML[p.replace("-", "_")]()
+        slug = p.replace("-", "_")
+        template = HAML[slug]()
         node = $(template)
         title = node.find('.title > h1').text().trim()
         subtitle = node.find('.title > h4').text().trim()
@@ -59,6 +60,7 @@ circle = $.sammy "body", ->
           $(s).text().trim()
         categories[p] =
           url: "/docs/#{p}"
+          slug: slug
           title: title
           subtitle: subtitle
           icon: icon
@@ -77,7 +79,7 @@ circle = $.sammy "body", ->
         $("body").append(HAML['title'](renderContext))
         $("#title h1").text("Documentation")
         $("body").append("<div id='content'><section class='article'></section></div>")
-        $(".article").append(HAML['categories']({categories: @categories()})).append(HAML[name](renderContext))
+        $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
         $("body").append(HAML['footer'](renderContext))
 
     load: (cx) =>
