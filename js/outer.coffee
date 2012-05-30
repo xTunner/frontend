@@ -25,25 +25,18 @@ circle = $.sammy "body", ->
       $.getScript "/assets/views/outer/#{@name}/#{@name}.hamlc", =>
          @init(cx)
 
-    loaded: (cx) =>
-      HAML? and HAML[@name]?
-
     scroll: (hash) =>
       if hash == '' or hash == '#' then hash = "body"
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
     display: (cx) =>
-      if @loaded(cx)
+      if HAML? and HAML[@name]?
         @init(cx)
       else
         @load(cx)
 
   # Doc
   class Docs extends Page
-    constructor: (args...) ->
-      super(args...)
-      @lib = highlight
-
     filename: (cx) =>
       name = cx.params.splat[0]
       if name
@@ -51,36 +44,21 @@ circle = $.sammy "body", ->
       else
         "docs"
 
+    categories: (cx) =>
+      HAML['categories']()
+
     render: (cx) =>
       name = @filename cx
-      if name == "docs"
-        super cx
-      else
-        $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
-        $("body").append(HAML['title'](renderContext))
-        $("#title h1").text("Documentation")
-        $("body").append("<div id='content'><section class='article'></section></div>")
-        $(".article").append(HAML['categories']).append(HAML[name](renderContext))
-        $("body").append(HAML['footer'](renderContext))
+      $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
+      $("body").append(HAML['title'](renderContext))
+      $("#title h1").text("Documentation")
+      $("body").append("<div id='content'><section class='article'></section></div>")
+      $(".article").append(@categories()).append(HAML[name](renderContext))
+      $("body").append(HAML['footer'](renderContext))
 
     load: (cx) =>
-      if !HAML['categories']
-        $.getScript "/assets/views/outer/docs/categories.hamlc", =>
-          @article(cx)
-      else
-        @article(cx)
-
-    loaded: (cx) =>
-      super(cx) and HAML[@filename cx]?
-
-    article: (cx) =>
-      name = @filename cx
-      if name == "docs"
-        $.getScript "/assets/views/outer/docs/docs.hamlc", =>
-          @init(cx)
-      else
-        $.getScript "/assets/views/outer/docs/categories/#{name}.hamlc", =>
-          @init(cx)
+      $.getScript "/assets/views/outer/docs/docs.js.dieter", =>
+        @init(cx)
 
   # Pages
   home = new Page("home", "Continuous Integration made easy")
@@ -105,6 +83,7 @@ circle = $.sammy "body", ->
 
   home.lib = placeholder
   about.lib = placeholder
+  docs.lib = highlight
 
   # Google analytics
   @bind 'event-context-after', ->
