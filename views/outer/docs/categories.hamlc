@@ -1,75 +1,14 @@
 %ul.topics
 
-  %li
-    %i.icon-repeat
-    %a{ href: "/docs/getting-started" }
-      Getting Started
-      %i.icon-chevron-up
-    %ul.expand
-      %li
-        %a{ href: "/docs/article#headings" }
-          Headings
-      %li
-        %a{ href: "/docs/article#text" }
-          Text Elements
-      %li
-        %a{ href: "/docs/article#lists" }
-          Ordered and Unordered List
-      %li
-        %a{ href: "/docs/article#blockquotes" }
-          Blockquotes
-      %li
-        %a{ href: "/docs/article#pre" }
-          Pre & Code
-
-  %li
-    %i.icon-cogs
-    %a{ href: "/docs/common-problems" }
-      “It works on my machine”
-      %i.icon-chevron-down
-    %ul
-      %li Natoque varius nulla
-      %li Magnis dis parturient montes
-      %li Aenean sed
-
-  %li
-    %i.icon-user
-    %a{ href: "/docs/faq" }
-      How do I ... ?
-      %i.icon-chevron-down
-    %ul
-      %li Curabitur eget felis
-      %li Natoque varius nulla
-      %li Odio Leo
-      %li Pum sociis varius cursus
-
-  %li
-    %i.icon-lock
-    %a{ href: "/docs/integrations" }
-      Integrations
-      %i.icon-chevron-down
-    %ul
-      %li Curabitur eget felis
-      %li Natoque varius nulla
-      %li Pum sociis varius cursus
-
-  %li
-    %i.icon-list-alt
-    %a{ href: "/docs/configuration" }
-      Configuring Circle
-      %i.icon-chevron-down
-    %ul
-      %li Natoque varius nulla
-      %li Lectus sed vulputate
-      %li Curabitur eget felis
-      %li Pum sociis varius cursus
-
-  %li
-    %i.icon-lock
-    %a{ href: "/docs/api" }
-      The Circle REST API
-      %i.icon-chevron-down
-    %ul
-      %li Curabitur eget felis
-      %li Natoque varius nulla
-      %li Pum sociis varius cursus
+  - for k,c of @categories
+    %li
+      %i{ class: c.icon }
+      %a{ href: c.url }
+        = c.title
+        %i.icon-chevron-up
+        -#%i.icon-chevron-down
+      %ul.expand
+        - for s in c.sections
+          %li
+            %a{ href: "/docs/article#headings" }
+              = s
