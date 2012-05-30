@@ -30,7 +30,7 @@ circle = $.sammy "body", ->
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
     display: (cx) =>
-      if HAML? and HAML[@filename cx]?
+      if HAML? and HAML[@name]?
         @init(cx)
       else
         @load(cx)
@@ -111,10 +111,10 @@ circle = $.sammy "body", ->
       window.Hoptoad.notify data.error
 
   # Navigation
-  @get "/", (cx) => home.display(cx)
-  @get "/about.*", (cx) => about.display(cx)
-  @get "/privacy.*", (cx) => privacy.display(cx)
-  @get "/docs(.*)", (cx) => docs.display(cx)
+  @get "/about.*", (cx) -> about.display(cx)
+  @get "/privacy.*", (cx) -> privacy.display(cx)
+  @get "/docs(.*)", (cx) -> docs.display(cx)
+  @get "/", (cx) -> home.display(cx)
 
 
 # Global polyfills
@@ -122,4 +122,4 @@ if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
   $.getScript("/assets/js/vendor/selectivizr-1.0.2.js")
 
 # Run the application
-$ -> circle.run window.location.pathname
+$ -> circle.run window.location.pathname.replace(/\/$/, '')
