@@ -3,7 +3,7 @@
     %h1 Getting Started with Circle
       %i.icon-repeat
     %p Last Updated: May 28, 2012
-    %h4 Step-by-step introduction to your first build
+    %h4 Getting your first tests set up
     %hr
 
   .doc
@@ -17,28 +17,35 @@
       %li Give Circle permission to access GitHub on your behalf
       %li Click on a project
 
-    %p It really is that easy.
+    %p It really is that easy, in about 90% of cases.
 
     %h2 Magic
     %p
-      We make it this easy because we automatically infer your settings from your code.
-      We expect you have a project which roughly follows
-      best practices -# TODO link
-      for your platform.
+      The reason it's so easy is that we automatically infer your settings from your code.
+      We expect you have a project which roughly follows best practices for your platform.
       If you do, your tests will be up and running in mere moments.
       %a{ href: "/" } Add your first project now!
+
+    %a.related{href: "/docs/about-circle#what-happens"}
+      Related: What happens when you add a project?
+
 
     %h2 Non-magic
 
     %p
       Of course, life is not always sunshine and daisies.
-      And that's what this guide is for:
-      %ul
+      When our automatic inference doesn't work, you'll need to
+      %a{ href: "/docs/configuration"} tweak your setup
+      using a
+      %code circle.yml
+      file.
+
+      -#%ul
         -#%li
           We'll talk you through the
           %a{href: "#inference"} standard things
           we look for to make projects work.
-        %li
+        -#%li
           We'll help you with
           %a{href: "/docs/common-problems"} common problems
           that users experience when using Circle.
@@ -47,45 +54,29 @@
           %a{href: "/docs/configuration#custom"} completely custom
           project.
 
+    %h2 Add your colleagues
+
+    %p
+      Testing is no fun if you're the only one playing.
+      Circle is designed around the idea of every person having their own account.
+      You can invite your colleagues using the original invite code you used
+      = surround "(", ").", ->
+        %a{href: "mailto:sayhi@circleci.com"}<>
+          ask us if you lost your code or haven't got on yet
+
+    %h2 Add more projects
+
+    %p
+      You should add all your projects to Circle - it costs the same either way.
+      Even if you only commit to it once a month, or if the project is just started, adding it to Circle will help keep the project working.
+
 
     %h1.section
-      %a#what-happens What happens when you add a project?
+      %a#were-done
+        We're done!
     %hr
 
     %p
-      But first a quick detour:
-      %quote what happens when you add a project to Circle?
-      Generally, pretty much what you'd expect if you were implementing this yourself:
-
-    %ul
-      %li
-        Using the permissions you gave us when you signed up, we'll add some settings to your project on GitHub:
-        %ul
-          %li
-            A
-            %b deploy key
-            is used to check your project out from GitHub.
-          %li
-            A
-            %b service hook
-            is used to notify Circle when you push to GitHub.
-      %li
-        We immediately check your code out onto our machines, and infer your settings.
-      %li
-        Our inference algorithms looks through your dependencies, Gems, libraries and code to figure out how to run your tests.
-        For example, we might find that you have a standard Rails project using Postgres, with specs and features, so we'll run:
-        %ol
-          %li
-            bundle install
-          %li
-            bundle exec rake db:schema:load
-          %li
-            bundle exec rspec spec
-          %li
-            bundle exec cucumber
-      %li
-        You can watch the build update in real-time on
-        = succeed ".", ->
-          %a{href: "/"} your dashboard
-      %li
-        We'll send you a notification when you're done.
+      Now all that's left is to
+      = succeed ".", ->
+        %a{ href: "/" } add that first project

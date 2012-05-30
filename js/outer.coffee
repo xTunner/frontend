@@ -50,8 +50,9 @@ circle = $.sammy "body", ->
                 "getting-started",
 #                "common-problems",
 #                "faq",
+                "about-circle",
 #                "integrations",
-#                "configuration",
+                "configuration",
 #                "api"
               ]
       categories = {}

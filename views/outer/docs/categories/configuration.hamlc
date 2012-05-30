@@ -2,11 +2,134 @@
   .title
     %h1 Configuring Circle
       %i.icon-list-alt
-    %p Last Updated: 16 May 2012
+    %p Last Updated: May 29, 2012
     %h4 Exhaustive reference to <code>circle.yml</code>
     %hr
 
   .doc
     %h1.section
-      %a#intro Coming soon
+      %a#circle-yml-file Circle.yml file
     %hr
+
+    %p
+      If you want to tweak your Circle settings in any way, the most straight-forward way to do it is to use the
+      %code circle.yml
+      file.
+      This is simply a YAML file which you place in your git repo's root directory.
+
+    %p
+      Circle reads the file each time it runs a build.
+      If you're adding
+      %code circle.yml
+      for the first time, you may want to experiment in a branch.
+      We build all branches, and we'll only notify you'll avoid annoying your colleagues.
+
+
+    %h2 Simple things
+    %p
+      Most web apps need their CI server tweaked ever so slightly.
+      %code circle.yml
+      is designed to make it easy to do easy things, while still possible to model complex behaviours.
+
+    %p
+      Here's a quick example:
+
+    %pre
+      %code<>
+        :preserve
+          machine:
+            timezone: Americas/Los_Angeles
+            ruby:
+              version: 1.9.3
+          dependencies:
+            bundler:
+              without: ["production", "darwin"]
+
+          test:
+            post:
+              \- bundle exec rake custom:test:suite
+
+    %p
+      This file sets the time zone, choosed a Ruby version, tweaks the
+      %code bundle install
+      settings, and runs a custom test suite.
+
+    %p
+      Each setting in this file should only be necesaary if you do something unusual.
+      If you completely follow best practices, your tests should just work, without having to set anything here at all.
+
+    %p
+      If you only want to make a minor change, we recommend you check out the
+      = surround '"', '"', ->
+        %a{ href: "/docs/common-problems" }
+          how do I ... ?
+      for simple solutions to common problems.
+
+    %h2 Complex behaviour
+    %p
+      Circle allows quite complex behaviour, though we try to hide you from it.
+      Most web apps won't need this, and if you're in this section already, it would be good to
+      %a{href: "mailto: sayhi@circleci.com" } drop us a line
+      and let us know what you're working on.
+
+    %h2 Phases and File structure
+
+    %p
+      In
+      = succeed ",", ->
+        %code circle.yml
+      top-level collections represent a phase
+      %i phase
+      in the build pipeline.
+      The phases are, in order:
+    %ol
+      %li machine - configuring the test machine, starting services, installing packages, etc
+      %li checkout - downloading your code from your repository
+      %li dependencies - installing your code's dependencies
+      %li database - configure your databases
+      -#%li compile - compilation step for compiled languages
+      %li test - actually run your tests
+      -#%li artifact - save or upload build artifacts
+      -#%li deploy - deploying successful builds to your web server
+
+
+
+    %h3 Machine configuration
+
+    %p
+      We set up our CI machines to support a large variety of configurations, but you can tweak an awful lot of settings.
+
+    %h3
+      Timezone
+
+    %pre
+      %code<>
+        :preserve
+          machine:
+            timezone:
+              Americas/Los_Angeles
+
+    %p
+      Set the machine's timezone using the
+      %code TZ
+      environmental variable, and restart daemons which may depend on this, like Postgres.
+      We support any value here, and will put it into TZ unmolested.
+
+    %h4 Alternative: Using UTC on your production servers avoids dreaded daylight-savings bugs, and has no issues when your developers are in multiple time zones.
+
+
+    %h3 Checkout
+    %p
+      No suported configuration yet
+
+    %h3 Dependencies
+    %p
+      To be continued...
+
+    %h3 Database
+    %p
+      No suported configuration yet
+
+    %h3 Test
+    %p
+      To be continued...
