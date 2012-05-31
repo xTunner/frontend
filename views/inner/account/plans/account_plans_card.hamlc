@@ -1,0 +1,94 @@
+#plans{data-bind: "with: $root.billing"}
+  .div{data-bind: "ifnot: cardInfo"}
+    .row
+      .offset4.span5
+        %form.form-stacked.offset3.span6#payment-form
+          .form-row
+            %label Card Number
+            %input.card-number{type: "text",
+                               size: "20",
+                               autocomplete: "off"}
+            %br
+          .form-row
+            %label CVC
+            %input.card-cvc{type: "text",
+                            size: 4,
+                            style: "width: auto;"}
+            %br
+          .form-row
+            %label Expiration (MM/YYYY)
+            %input.card-expiry-month{type: "text",
+                                     size: 2,
+                                     style: "width: auto;"}
+            %span /
+            %input.card-expiry-year{type: "text",
+                                    size: 4,
+                                    style: "width: auto;"}
+          %br
+          %button.btn.primary.large.submit-button#charge-button{type: "submit",
+                                                                data-bind: "click: stripeSubmit",
+                                                                data-loading-text: "Charging",
+                                                                data-failed-text: "Denied",
+                                                                data-success-text: "Success"}
+            Charge
+
+      .offset5.span5
+        %h2
+          Total: $
+          %span{data-bind: "text: total"}<>
+
+
+
+  .div{data-bind: "if: cardInfo"}
+    .row
+      .offset0.span5
+
+        %form.form-stacked.offset3.span6#payment-form
+          .form-row
+            %label Card Number
+            %input.card-number{type: "text",
+                               size: "20",
+                               autocomplete: "off",
+                               disabled: true,
+                               data-bind: "value: savedCardNumber"}
+            %br
+          .form-row
+            %label Expiration (MM/YYYY)
+            %input.card-expiry-month{type: "text",
+                                     size: 2,
+                                     style: "width: auto;",
+                                     disabled: true,
+                                     data-bind: "value: cardInfo().exp_month"}
+            %span /
+            %input.card-expiry-year{type: "text",
+                                    size: 4,
+                                    style: "width: auto;",
+                                    disabled: true,
+                                    data-bind: "value: cardInfo().exp_year"}}
+          %br
+          .alert-message.block-message.info#warning
+            %p
+              New plans will apply immediately, and will be pro-rated on your next billing date.
+
+          %button.btn.primary.large.submit-button#charge-button{type: "submit",
+                                                                data-bind: "click: stripeUpdate",
+                                                                data-loading-text: "Charging",
+                                                                data-failed-text: "Denied",
+                                                                data-success-text: "Success"}}
+            Confirm
+
+
+      .offset5.span5
+        %h2
+          Previous Total: $
+          %span{data-bind: "text: oldTotal"}<>
+
+        %h2
+          New Total: $
+          %span{data-bind: "text: total"}<>
+
+
+
+  .navigation
+    %a.btn.large.back{href: "/account/plans/users"}
+      Back: Customize plans for each user

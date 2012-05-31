@@ -1,4 +1,4 @@
-.plan{data-bind: "css: { selected: $parent.individualPlan() == $data }"}
+.plan{data-bind: "css: { selected: $parent.selectedPlan() == $data }"}
   .name{data-bind: "text: name"}
   .reason{data-bind: "text: reason"}
   .tick ✔
@@ -6,7 +6,7 @@
     = succeed '-way', ->
       %span{data-bind: "text: parallel"}
   .limits
-    = HAML['unlimited']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
+    = HAML['asterisk']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
 
   .cost
     %span{data-bind: "if: cost > 0"}
