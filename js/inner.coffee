@@ -426,6 +426,7 @@ class Billing extends Obj
     @plans = @komp =>
       ap = for k,v of @availablePlans()
         v.id = k
+        v.name_price = "#{v.name}    ($#{v.price / 100})"
         v
       ap.sort (a, b) ->
         b.price - a.price # most expensive first
