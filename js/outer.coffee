@@ -130,9 +130,9 @@ circle = $.sammy "body", ->
       window.Hoptoad.notify data.error
 
   # Navigation
+  @get "/docs(.*)", (cx) -> docs.display(cx)
   @get "/about.*", (cx) -> about.display(cx)
   @get "/privacy.*", (cx) -> privacy.display(cx)
-  @get "/docs(.*)", (cx) -> docs.display(cx)
   @get "/", (cx) -> home.display(cx)
 
 
