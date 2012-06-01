@@ -48,7 +48,7 @@ circle = $.sammy "body", ->
       # build a table of contents dynamically from all the pages. DRY.
       pages = [
                 "getting-started",
-#                "common-problems",
+                "common-problems",
 #                "faq",
                 "about-circle",
 #                "integrations",
