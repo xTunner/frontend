@@ -148,15 +148,24 @@ class ActionLog extends Base
 
 
 
+class Node extends Base
+  constructor: (json) ->
+
+    json.logs = (new ActionLog(j) for j in json.logs) if json.logs
+    super json, {index: null, logs :null}, ["index"]
+
+    @tab_id = @komp =>
+      "#node#{@index}"
+
 
 
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends HasUrl
   constructor: (json) ->
-    # make the actionlogs observable
-    json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
-    super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
 
+    json.nodes = (new Node(j) for j in json.nodes) if json.nodes
+
+    super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
