@@ -617,10 +617,10 @@ class CircleViewModel extends Base
     @project_map = {}
     observableCount += 8
 
-    #@setupPusher()
+    @setupPusher()
 
   setupPusher: () =>
-    @pusher = new Pusher("356b7c379e56e14c261b")
+    @pusher = new Pusher("356b7c379e56e14c261b", { encrypted: true})
 
     Pusher.channel_auth_endpoint = "/auth/pusher"
 
