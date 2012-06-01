@@ -9,6 +9,15 @@
 
   .doc
     %h1.section
+      %a#overview Under construction
+    %hr
+
+    %p
+      We are adding support for configuring every part of your build.
+      If a configuration setting is not yet available, please contact us and we'll implement it immediately.
+
+
+    %h1.section
       %a#overview Overview
     %hr
 
@@ -39,9 +48,9 @@
             ruby:
               version: 1.9.3-p0-falcon
 
-          test:
-            post:
-              \- bundle exec rake custom:test:suite
+        -#test:
+          post:
+            \- bundle exec rake custom:test:suite
 
     %p
       This sets the
@@ -62,93 +71,100 @@
       %code circle.yml
       is designed to make easy things easy things, and hard things possible.
 
-    %p
-      Each setting in this file should only be necesaary if you do something unusual.
-      If you completely follow best practices, your tests should just work, without having to set anything here at all.
+    -# %p
+    -#   Each setting in this file should only be necesaary if you do something unusual.
+    -#   If you completely follow best practices, your tests should just work, without having to set anything here at all.
 
-    %p
-      If you only want to make a minor change, we recommend you check out the
-      = surround '"', '"', ->
-        %a{ href: "/docs/faq" }<>
-          How do I ... ?
-      section for simple common tweaks people need, or check out the
-      = surround '"', '"', ->
-        %a{ href: "/docs/common-problems" }<>
-          It works on my machine
-      section for fixes for common problems.
+    -# %p
+    -#   If you only want to make a minor change, we recommend you check out the
+    -#   = surround '"', '"', ->
+    -#     %a{ href: "/docs/faq" }<>
+    -#       How do I ... ?
+    -#   section for simple common tweaks people need, or check out the
+    -#   = surround '"', '"', ->
+    -#     %a{ href: "/docs/common-problems" }<>
+    -#       It works on my machine
+    -#   section for fixes for common problems.
 
 
 
-    %h2 Complex behaviour
-    %p
-      Circle allows quite complex behaviour, if you need it.
-      You can override almost anything, and we make it as simple as possible.
-      That said, if you find yourself relying on this section a lot, please
-      %a{href: "mailto: sayhi@circleci.com" } drop us a line
-      and let us know what you're working on.
+    -# %h2 Complex behaviour
+    -# %p
+    -#   Circle allows quite complex behaviour, if you need it.
+    -#   You can override almost anything, and we make it as simple as possible.
+    -#   That said, if you find yourself relying on this section a lot, please
+    -#   %a{href: "mailto: sayhi@circleci.com" } drop us a line
+    -#   and let us know what you're working on.
+
+    -# %h1.section
+    -#   %a#phases File structure
+    -# %hr
+
+    -# %p
+    -#   The
+    -#   %code circle.yml
+    -#   file represents a
+    -#   = succeed ",", ->
+    -#     %em build
+    -#   which is a collection of
+    -#   %em commands,
+    -#   grouped into
+    -#   %em phases.
+
+    -#   A
+    -#   %em command
+    -#   is something like running
+    -#   %code cucumber
+    -#   , while a
+    -#   %em phase
+    -#   would groups all the test commands, including `cucumber`, `rake test`, `rspec`, etc.
+
+
+
+    -# %p
+    -#   In
+    -#   = succeed ",", ->
+    -#     %code circle.yml
+    -#   top-level collections represent a
+    -#   %i phase
+    -#   in the build pipeline.
+    -#   The phases are, in order:
+    -# %ol
+    -#   %li machine - configuring the test machine, starting services, installing packages, etc
+    -#   %li checkout - downloading your code from your repository
+    -#   %li dependencies - installing your code's dependencies
+    -#   %li database - configure your databases
+    -#   -#%li compile - compilation step for compiled languages
+    -#   %li test - actually run your tests
+    -#   -#%li artifact - save or upload build artifacts
+    -#   %li deploy - deploying successful builds to your web server
+
+
+    -# %p
+    -#   You only need to specify the
+    -#   %em phases
+    -#   you wish to customize or add commands to.
+    -#   If you do not specify anything, we'll infer the correct settings.
+    -#   If you leave the entire file blank, we'll infer the entire build.
+
+
 
     %h1.section
-      %a#phases File structure
+      %a#machine Machine configuration
     %hr
 
     %p
       The
-      %code circle.yml
-      file represents a
-      = succeed ",", ->
-        %em build
-      which is a collection of
-      %em commands,
-      grouped into
-      %em phases.
+      %code machine
+      top-level structure allows you to configure the virtual machine on which your tests are run.
+      These tweaks happen before any test steps are run.
 
-      A
-      %em command
-      is something like running
-      %code cucumber
-      , while a
-      %em phase
-      would groups all the test commands, including `cucumber`, `rake test`, `rspec`, etc.
-
-
-
-    %p
-      In
-      = succeed ",", ->
-        %code circle.yml
-      top-level collections represent a
-      %i phase
-      in the build pipeline.
-      The phases are, in order:
-    %ol
-      %li machine - configuring the test machine, starting services, installing packages, etc
-      %li checkout - downloading your code from your repository
-      %li dependencies - installing your code's dependencies
-      %li database - configure your databases
-      -#%li compile - compilation step for compiled languages
-      %li test - actually run your tests
-      -#%li artifact - save or upload build artifacts
-      %li deploy - deploying successful builds to your web server
-
-
-    %p
-      You only need to specify the
-      %em phases
-      you wish to customize or add commands to.
-      If you do not specify anything, we'll infer the correct settings.
-      If you leave the entire file blank, we'll infer the entire build.
-
-
-
-    %h1.section
-      %a#machine Machine
-    %hr
-
-    %p
-      We set up our CI machines to support a large variety of configurations, but you can tweak an awful lot of settings.
 
     %h3#timezone
       Timezone
+
+    %p
+      Set the machine's timezone, for example:
 
     %pre
       %code<>
@@ -158,50 +174,67 @@
               Americas/Los_Angeles
 
     %p
-      Set the machine's timezone using the
-      %code TZ
-      environmental variable, and restart daemons which may depend on this, like Postgres.
-      We support any value here, and will put it into TZ unmolested.
-
-    %h4 Alternative: Using UTC on your production servers avoids dreaded daylight-savings bugs, and has no issues when your developers are in multiple time zones.
-
-
-    %h1.section
-      %a#checkout Checkout
-    %hr
+      Use this to override the machine's timezone, which is UTC by default.
+      This overwrites
+      %code /etc/timezone
+      and then restarts all databases and services which rely on it.
 
     %p
-      No suported configuration yet
-
-
-    %h1.section
-      %a#dependencies Dependencies
-    %hr
+      You should change this to use the same time zone as your production server.
+      If your production server and your development machine use different time zones, then changing this setting to your development machine's time zone is asking for trouble.
 
     %p
-      Coming soon...
+      This setting supports any time zone in the listed in the IANA time zone database.
+      You can find this by looking in
+      %code /usr/share/zoneinfo/
+      on your Unix machine, or in the
+      %em TZ
+      = succeed ".", ->
+        %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}
+          column in Wikipedia's list of tz database time zones
 
 
-    %h1.section
-      %a#dependencies Database
-    %hr
-
-    %p
-      Coming soon...
+  %h4 Alternative
+  %p
+    Using UTC on your production servers avoids dreaded daylight-savings bugs, and has no issues when your developers are in multiple time zones.
 
 
+  -# %h1.section
+  -#   %a#checkout Checkout
+  -# %hr
 
-    %h1.section
-      %a#test Test
-    %hr
-
-    %p
-      Coming soon...
+  -# %p
+  -#   No suported configuration yet
 
 
-    %h1.section
-      %a#deployment Deployment
-    %hr
+  -# %h1.section
+  -#   %a#dependencies Dependencies
+  -# %hr
 
-    %p
-      Coming soon...
+  -# %p
+  -#   Coming soon...
+
+
+  -# %h1.section
+  -#   %a#dependencies Database
+  -# %hr
+
+  -# %p
+  -#   Coming soon...
+
+
+
+  -# %h1.section
+  -#   %a#test Test
+  -# %hr
+
+  -# %p
+  -#   Coming soon...
+
+
+  -# %h1.section
+  -#   %a#deployment Deployment
+  -# %hr
+
+  -# %p
+  -#   Coming soon...
