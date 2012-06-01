@@ -31,7 +31,7 @@
       Circle reads the file each time it runs a build.
       If you're adding
       %code circle.yml
-      for the first time, you can avoid annoying your colleagues by experimenting in a brnach.
+      for the first time, you can avoid annoying your colleagues by experimenting in a branch.
 
     %p
       Here's a quick example of a
@@ -55,13 +55,14 @@
     %p
       This sets the
       = succeed ",", ->
-        %a{ href: "#timezone" }
+        %a{ href: "#timezone" }<
           time zone
-      chooses a
+      and chooses a
       %a{href: "#ruby-version"} Ruby version
-      and patchset, and adds a
-      %a{href: "#post-test"} custom test command
-      to run after the rest of your commands.
+      and patchset.
+      -#, and adds a
+      -#%a{href: "#post-test"} custom test command
+      -#to run after the rest of your commands.
 
 
 
@@ -69,7 +70,7 @@
     %p
       Most web apps will only need their settings slighty, if at all.
       %code circle.yml
-      is designed to make easy things easy things, and hard things possible.
+      is designed to make easy things easy, and hard things possible.
 
     -# %p
     -#   Each setting in this file should only be necesaary if you do something unusual.
@@ -188,58 +189,70 @@
       You can find this by looking in
       %code /usr/share/zoneinfo/
       on your Unix machine, or in the
-      %em TZ
+      %strong TZ
+      column in
       = succeed ".", ->
-        %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}
-          column in Wikipedia's list of tz database time zones
+        %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}<
+          Wikipedia's list of tz database time zones
 
 
-  %h4 Alternative
-  %p
-    Using UTC on your production servers avoids dreaded daylight-savings bugs, and has no issues when your developers are in multiple time zones.
+    %h4 Alternative
+    %p
+      As an alternative, use UTC on your production servers to avoid horrific daylight-savings bugs, or if your developers are in different time zones.
 
-  %h3#ruby-version
-    Ruby version
+    %h3#ruby-version
+      Ruby version
 
-  %p
-    Choose the version of Ruby used for your tests, for example:
+    %p
+      Choose the version of Ruby used for your tests, for example:
 
-  %pre
-    %code<>
-      :preserve
-        machine:
-          ruby:
-            version:
-              1.9.3-p0-falcon
+    %pre
+      %code<>
+        :preserve
+          machine:
+            ruby:
+              version:
+                1.9.3-p0-falcon
 
-  %p
-    Circle uses
-    %a{ href: "https://rvm.io/" } RVM to manage Ruby versions.
-    If you do not specify a version, we will use the version in your
-    %code .rvmrc
-    file,
-    or
-    Ruby 1.9.3-p0 if unspecified.
+    %p
+      Circle uses
+      %a{ href: "https://rvm.io/" } RVM
+      to manage Ruby versions.
+      If you do not specify a version, we will use the version in your
+      %code .rvmrc
+      file,
+      or
+      Ruby
+      %code 1.9.3-p0
+      if unspecified.
 
-  %p
-    You may use any version listed in
-    = succeed ".", ->
-      %code rvm list known
+    %p
+      You may use any version listed in
+      = succeed ".", ->
+        %code rvm list known
+      This includes:
+      %ul
+        %li
+          MRI Ruby versions, such as
+          %code 1.9.3
+        %li
+          Patchsets, such as
+          %code 1.9.3-p0
+        %li
+          Alternative implementations, such as
+          %code jruby-head
 
-    This includes:
-    %ul
-      %li
-        MRI Ruby versions, like "1.9.3"
-      %li
-        Patchsets, like "1.9.3-p0"
-      %li
-        Alternative implementations, like "jruby-head"
+    %p
+      We install a large number of Rubies by default.
+      If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
+      Please contact us and we'll be happy to install your version so that it does not slow down your tests.
 
-  %p
-    We install a large number of Rubies by default.
-    If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
-    Please contact us and we'll be happy to install your version so that it does not slow down your tests.
 
+    %h1.section
+      %a#notifcation Notifications
+    %hr
+
+    %p
 
 
 
