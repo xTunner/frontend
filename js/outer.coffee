@@ -63,9 +63,12 @@ circle = $.sammy "body", ->
         title = node.find('.title > h1').text().trim()
         subtitle = node.find('.title > h4').text().trim()
         icon = node.find('.title > h1 > i').attr('class')
-        sections = node.find('.doc > .section')
-        sections = for s in sections
-          $(s).text().trim()
+        section_nodes = node.find('.doc > .section > a')
+        sections = []
+        for s in section_nodes
+          sections.push
+            title: $(s).text().trim()
+            hash: $(s).attr("id")
         categories[p] =
           url: "/docs/#{p}"
           slug: slug

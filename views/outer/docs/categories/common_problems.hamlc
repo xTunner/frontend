@@ -29,7 +29,7 @@
 
 
     %h1.section
-      %a#time Time-based results are 1 day off
+      %a#time-day Time-based results are 1 day off
     %hr
 
     %p
@@ -69,7 +69,7 @@
 
 
     %h1.section
-      %a#time Time-based test results are a few seconds off
+      %a#time-seconds Time-based test results are a few seconds off
     %hr
 
     %p

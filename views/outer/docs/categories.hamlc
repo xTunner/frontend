@@ -12,5 +12,5 @@
       %ul{ class: @expand }
         - for s in c.sections
           %li
-            %a{ href: "/docs/article#headings" }
-              = s
+            %a{ href: "#{c.url}##{s.hash}" }
+              = s.title

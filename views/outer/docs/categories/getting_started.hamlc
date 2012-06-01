@@ -62,7 +62,7 @@
           project.
 
     %h1.section
-      %a What next?
+      %a#what-next What next?
     %hr
 
     %h2 Add your colleagues
