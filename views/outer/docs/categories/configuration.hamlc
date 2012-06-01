@@ -253,6 +253,27 @@
     %hr
 
     %p
+      Currently, we support sending webhooks when your build completes.
+      We also support Hipchat notifications, on your project's
+      %em settings
+      page.
+
+    %pre
+      %code<>
+        :preserves
+          notify:
+            webhooks:
+              # A list of hashes representing hooks. Only the url field is supported.
+              - url: https://circleci.com/hooks/circle
+
+    %p
+      This sends a JSON packet to the specified URL.
+      The JSON packet that will be sent can also be read using the REST API.
+      Visit
+      %code https://circleci.com/api/v1/project/:username/:projectname/:build
+      to see an example.
+
+
 
 
 
