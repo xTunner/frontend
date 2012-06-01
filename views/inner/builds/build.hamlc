@@ -77,6 +77,11 @@
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 
+
+    .row{data-bind: "if: messages().length"}
+      .offset3.span12#build-messages{data-bind: "foreach: messages"}
+        .alert-message.block-message{data-bind: "attr: { class: $parent.messageClass($data) }, text: message"}
+
     %div{data-bind: "foreach: action_logs"}
 
       -# wrapper allows the header and detail be siblings, for the JS
@@ -97,3 +102,8 @@
             %pre{data-bind: "text: bash_command", title: "The full bash comand used to run this setp"}
           %b Output:
           %pre.output{data-bind: "html: log_output()"}
+
+
+    .row{data-bind: "if: messages().length"}
+      .offset3.span12#build-messages{data-bind: "foreach: messages"}
+        .alert-message.block-message{data-bind: "attr: { class: $parent.messageClass($data) }, text: message"}
