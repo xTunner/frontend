@@ -679,6 +679,9 @@ class CircleViewModel extends Base
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
+  has_followed_projects: () => @komp =>
+    @followed_projects()().length > 0
+
   user_refresh_projects: (data, event) =>
     @refreshing_projects true
     $.ajax

@@ -11,8 +11,18 @@
 
     = HAML['flashes']({})
 
-    .row
+    .row{data-bind: "if: has_followed_projects()"}
       %h2#latest-build-header
         Latest builds for your projects
-    .row
+
       = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+
+
+    .row{data-bind: "ifnot: has_followed_projects()"}
+      .offset5.span8
+        .block-message.alert-message.warning#first-use-message
+          %h2
+            Add your first project
+          %br
+          %p#first-use-text
+            To start Continuous Integration on your first project, click on the project name on the left.
