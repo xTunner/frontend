@@ -137,6 +137,10 @@ circle = $.sammy "body", ->
   @get "/about.*", (cx) -> about.display(cx)
   @get "/privacy.*", (cx) -> privacy.display(cx)
   @get "/", (cx) -> home.display(cx)
+  @get("/gh/.*", (cx) =>
+    @unload()
+    window.location = cx.path)
+
 
 
 # Global polyfills
