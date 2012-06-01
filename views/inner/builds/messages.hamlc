@@ -1,0 +1,3 @@
+.row{data-bind: "if: messages().length"}
+  .offset4.span12#build-messages{data-bind: "foreach: messages"}
+    .alert-message.warning{data-bind: "text: message"}

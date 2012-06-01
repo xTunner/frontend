@@ -110,6 +110,8 @@ class ActionLog extends Base
 
     @success = @status == "success"
 
+    @failed = @komp => @status == "failed" or @status == "timedout"
+
     # Expand failing actions
     @minimize(@success)
 
