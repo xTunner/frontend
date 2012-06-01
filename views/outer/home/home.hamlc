@@ -4,8 +4,8 @@
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
     - if @showJoinLink
-      %a.authGithub{ href: @githubAuthURL, title: 'Join using Github' }
-        Join using Github
+      %a.authGithub{ href: @githubAuthURL, title: 'Join using GitHub' }
+        Join using GitHub
 
       %a.footnote{ href: '/privacy' title: 'Privacy and Security' }
         Learn about how we keep your code safe
@@ -45,7 +45,7 @@
       %h2 All this power from one little button
 
     - if @showJoinLink
-      %a.authGithub{ href: @githubAuthURL, title: 'Join using Github' } Join using Github
+      %a.authGithub{ href: @githubAuthURL, title: 'Join using GitHub' } Join using GitHub
 
     - else
       %a.authGithub.disabled{ title: 'Currently in private beta' } Currently in private beta
@@ -56,9 +56,9 @@
       %li No credit card required
 
     %p
-      Signing up with Github allows Circle to access your code so that we can run your tests.
+      Signing up with GitHub allows Circle to access your code so that we can run your tests.
       We also add post-commit hooks and ssh keys so that you don't have to.
-      No human ever looks at your code without your express permission, and everything can be revoked from within Github or by asking us.
+      No human ever looks at your code without your express permission, and everything can be revoked from within GitHub or by asking us.
 
 - unless @showJoinLink
   #signup

@@ -13,7 +13,7 @@
 
     %p
       Any CI server is going to have a slightly different configuration to your local machine.
-      Web applciation frameworks typically do not completely insulate your tests from the difference between operating system implementations.
+      Web application frameworks typically do not completely insulate your tests from the difference between operating system implementations.
       As a result, tests which work on your machine might not work on your CI server.
 
     %p
@@ -58,7 +58,7 @@
     %p
       If this doesn't fix the issues, check if we're near a Daylight Savings Time transition.
       Your code won't be the first, nor will it be the last, to not properly deal with time zones.
-      A common problem is that one part of the time interval you're measuring will be in Daylight savings time, and the other won't, creating a one hour discreptancy.
+      A common problem is that one part of the time interval you're measuring will be in Daylight savings time, and the other won't, creating a one hour discrepancy.
       This leads to a 2 hour window in which your tests might fail.
 
     %p

@@ -43,7 +43,7 @@
             bundle exec cucumber
       %li
         We run your tests on a clean virtual machine every time.
-        This means that your code isn't accessbile to other users, and that we run your tests freshly each time you push.
+        This means that your code isn't accessible to other users, and that we run your tests freshly each time you push.
       %li
         You can watch your tests update in real-time on
         = succeed ".", ->
