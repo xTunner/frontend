@@ -198,6 +198,51 @@
   %p
     Using UTC on your production servers avoids dreaded daylight-savings bugs, and has no issues when your developers are in multiple time zones.
 
+  %h3#ruby-version
+    Ruby version
+
+  %p
+    Choose the version of Ruby used for your tests, for example:
+
+  %pre
+    %code<>
+      :preserve
+        machine:
+          ruby:
+            version:
+              1.9.3-p0-falcon
+
+  %p
+    Circle uses
+    %a{ href: "https://rvm.io/" } RVM to manage Ruby versions.
+    If you do not specify a version, we will use the version in your
+    %code .rvmrc
+    file,
+    or
+    Ruby 1.9.3-p0 if unspecified.
+
+  %p
+    You may use any version listed in
+    = succeed ".", ->
+      %code rvm list known
+
+    This includes:
+    %ul
+      %li
+        MRI Ruby versions, like "1.9.3"
+      %li
+        Patchsets, like "1.9.3-p0"
+      %li
+        Alternative implementations, like "jruby-head"
+
+  %p
+    We install a large number of Rubies by default.
+    If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
+    Please contact us and we'll be happy to install your version so that it does not slow down your tests.
+
+
+
+
 
   -# %h1.section
   -#   %a#checkout Checkout
