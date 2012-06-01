@@ -146,6 +146,8 @@ class ActionLog extends Base
       "<span class='#{o.type}'>#{@htmlEscape(o.message)}</span>"
     x.join ""
 
+  appendLog: (json) =>
+    @out.push(json.out)
 
 
 class Node extends Base
@@ -156,6 +158,14 @@ class Node extends Base
 
     @tab_id = @komp =>
       "#node#{@index}"
+
+  # adds a new ActionLog
+  addLog: (json) =>
+    @logs.push(new ActionLog(json.log))
+
+  # adds output to an existing ActionLog
+  appendLog: (json) =>
+    @logs[json.log_index].appendLog(json)
 
 
 
@@ -277,7 +287,16 @@ class Build extends HasUrl
     else
       @build_num
 
+  pusherChannelName: () =>
+    "private-#{@project_name()}/#{@build_num}"
 
+  update: (json) =>
+    @status(json.status)
+
+  updateNode: (json) =>
+    switch json.type
+      when "add" then @nodes[json.index].addLog(json)
+      when "update" then @nodes[json.index].updateLog(json)
 
 
 class Project extends HasUrl
@@ -734,7 +753,12 @@ class CircleViewModel extends Base
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       start_time = Date.now()
       @build(new Build data)
+      @build_channel = @pusher.subscribe(@build().pusherChannelName())
+      @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
       window.time_taken_build = Date.now() - start_time
+
+
     display "build", {project: project_name, build_num: build_num}
 
 
