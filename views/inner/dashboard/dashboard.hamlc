@@ -11,11 +11,19 @@
 
     = HAML['flashes']({})
 
-    .row{data-bind: "if: has_followed_projects()"}
-      %h2#latest-build-header
-        Latest builds for your projects
+    %div{data-bind: "if: has_followed_projects()"}
+      .row
+        .offset0.span11
+          %h2#latest-build-header
+            Latest builds for your projects
+        .offset5
+          %b#invite-your-friends
+            Send this link to your colleagues:
+            %a{href: "https://circleci.com/?join=dont-test-alone" }
+              https://circleci.com/?join=dont-test-alone
 
-      = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+      .row
+        = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
 
 
     .row{data-bind: "ifnot: has_followed_projects()"}
