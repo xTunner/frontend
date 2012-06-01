@@ -847,6 +847,9 @@ window.SammyApp = Sammy '#app', () ->
     @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
     @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
     @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
+    @get('/docs(.*)', (cx) -> # go to the outer app
+      SammyApp.unload()
+      window.location = cx.path)
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 
