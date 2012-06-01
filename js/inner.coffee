@@ -247,13 +247,6 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
-  messageClass: (message) =>
-    switch message.type
-      when "warning"
-        "alert-message block-message warn"
-      else
-        "alert-message block-message #{message.type}"
-
   # TODO: CSRF protection
   retry_build: (data, event) =>
     $.ajax(
