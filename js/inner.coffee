@@ -149,31 +149,15 @@ class ActionLog extends Base
   appendLog: (json) =>
     @out.push(json.out)
 
-
-class Node extends Base
+class Step extends Base
   constructor: (json) ->
-
-    json.logs = (new ActionLog(j) for j in json.logs) if json.logs
-    super json, {index: null, logs :null}, ["index"]
-
-    @tab_id = @komp =>
-      "#node#{@index}"
-
-  # adds a new ActionLog
-  addLog: (json) =>
-    @logs.push(new ActionLog(json.log))
-
-  # adds output to an existing ActionLog
-  appendLog: (json) =>
-    @logs[json.log_index].appendLog(json)
-
-
+    super json, {}, []
 
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends HasUrl
   constructor: (json) ->
 
-    json.nodes = (new Node(j) for j in json.nodes) if json.nodes
+    json.steps = (new Step(j) for j in json.steps) if json.steps
 
     super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
 
@@ -277,7 +261,6 @@ class Build extends HasUrl
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
-
 
   description: (include_project) =>
     return unless @build_num?
