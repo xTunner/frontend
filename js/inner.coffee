@@ -652,7 +652,11 @@ class CircleViewModel extends Base
     @setupPusher()
 
   setupPusher: () =>
-    @pusher = new Pusher("356b7c379e56e14c261b", { encrypted: true})
+    key = switch renderContext.environment
+      when "production" then "6465e45f8c4a30a2a653"
+      else "3f8cb51e8a23a178f974"
+
+    @pusher = new Pusher(key, { encrypted: true})
 
     Pusher.channel_auth_endpoint = "/auth/pusher"
 
