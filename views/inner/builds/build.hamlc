@@ -77,8 +77,8 @@
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 
-    %div{data-bind: "foreach: nodes"}
-      %div{data-bind: "foreach: logs"}
+    %div{data-bind: "foreach: steps"}
+      %div{data-bind: "foreach: actions"}
 
         -# wrapper allows the header and detail be siblings, for the JS
         .wrapper.build-output
