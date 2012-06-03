@@ -150,7 +150,9 @@ class ActionLog extends Base
     @out.push(json.out)
 
 class Step extends Base
+
   constructor: (json) ->
+    json.actions = (new ActionLog(j) for j in json.actions) if json.actions
     super json, {}, []
 
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
@@ -270,7 +272,7 @@ class Build extends HasUrl
     else
       @build_num
 
-  pusherChannelName: () =>
+  pusherChannel: () =>
     "private-#{@project_name()}/#{@build_num}"
 
   update: (json) =>
