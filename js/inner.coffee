@@ -262,17 +262,16 @@ class Build extends HasUrl
     @build_channel = VM.pusher.subscribe(@pusherChannel())
     @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
-    @build_channel.bind('newAction', (json) => newAction json)
-    @build_channel.bind('updateAction', (json) => updateAction json)
+    @build_channel.bind('updateAction', (json) => @updateAction json)
     @build_channel.bind('appendAction', (json) => @appendAction json)
 
-  newAction: (json) =>
-    fillArray(@steps, json.steps, Step)
+  updateAction: (json) =>
+    fillArray(@steps(), json.steps, Step)
     fillArray(@steps()[json.step].actions, json.index, ActionLog)
-
+    @steps()[json.step].actions()[json.index] = new ActionLog(json.log)
 
   appendAction: (json) =>
-    fillArray(@steps, json.steps, Step)
+    fillArray(@steps(), json.steps, Step)
     fillArray(@steps()[json.step].actions(), json.index, ActionLog)
 
     @steps[json.step].actions()[json.action].push(json.out)
