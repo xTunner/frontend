@@ -41,6 +41,13 @@ $(document).ajaxSend((ev, xhr, options) ->
     textVal t, loading
 )
 
+#adds new instances of cls to the array until index X is valid
+fillArray = (arr, index, cls) ->
+  num_insert = arr.length - index - 1
+  for i in [0..(num_insert - 1)]
+    arr.push(new cls({}))
+
+window.fillArray = fillArray
 
 # Make the buttons disabled when clicked
 $.ajaxSetup
@@ -252,6 +259,24 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
+    @build_channel = VM.pusher.subscribe(@pusherChannel())
+    @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
+    @build_channel.bind('newAction', (json) => newAction json)
+    @build_channel.bind('updateAction', (json) => updateAction json)
+    @build_channel.bind('appendAction', (json) => @appendAction json)
+
+  newAction: (json) =>
+    fillArray(@steps, json.steps, Step)
+    fillArray(@steps()[json.step].actions, json.index, ActionLog)
+
+
+  appendAction: (json) =>
+    fillArray(@steps, json.steps, Step)
+    fillArray(@steps()[json.step].actions(), json.index, ActionLog)
+
+    @steps[json.step].actions()[json.action].push(json.out)
+
   # TODO: CSRF protection
   retry_build: (data, event) =>
     $.ajax(
@@ -273,16 +298,10 @@ class Build extends HasUrl
       @build_num
 
   pusherChannel: () =>
-    "private-#{@project_name()}/#{@build_num}"
+    "private-#{@project_name()}-#{@build_num}".replace(/\//g,"-")
 
   update: (json) =>
     @status(json.status)
-
-  updateNode: (json) =>
-    switch json.type
-      when "add" then @nodes[json.index].addLog(json)
-      when "update" then @nodes[json.index].updateLog(json)
-
 
 class Project extends HasUrl
   constructor: (json) ->
@@ -738,8 +757,6 @@ class CircleViewModel extends Base
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       start_time = Date.now()
       @build(new Build data)
-      @build_channel = @pusher.subscribe(@build().pusherChannelName())
-      @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
       window.time_taken_build = Date.now() - start_time
 
