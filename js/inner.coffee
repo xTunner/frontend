@@ -533,8 +533,6 @@ class Billing extends Obj
       read: () =>
         @selectedOrganization()
 
-
-
   selectPlan: (plan) =>
     @chosenPlan(plan)
     SammyApp.setLocation "/account/plans/organization"
@@ -547,7 +545,6 @@ class Billing extends Obj
       @loadTeamMembers()
       @loadStripe()
       @loaded = true
-
 
   stripeSubmit: (data, event) ->
     key = switch renderContext.environment
