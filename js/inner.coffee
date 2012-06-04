@@ -101,30 +101,39 @@ class HasUrl extends Base
 
 
 
-class ActionLog extends Base
-  constructor: (json) ->
-    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time", "bash_command"]
+class ActionLog extends Obj
+  observables: =>
+    timedout: null
+    end_time: null
+    exit_code: null
+    minimize: true
+    out: []
 
-    @status = if @end_time == null
+  constructor: (json) ->
+    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: [], minimize: true}
+
+    @status = @komp =>
+      if @end_time() == null
         "running"
-      else if @timedout
+      else if @timedout()
         "timedout"
 
-      else if (@exit_code == null || @exit_code == 0)
+      else if (@exit_code() == null || @exit_code() == 0)
         "success"
       else
         "failed"
 
-    @success = @status == "success"
+    @success = @komp =>
+      @status() == "success"
 
     # Expand failing actions
-    @minimize(@success)
+    @minimize(@success())
 
-    @has_content = () =>
-      @out or @bash_command
+    @has_content = @komp =>
+      (@out().length > 0) or @bash_command
 
     @action_header_style = @komp =>
-      css = @status
+      css = @status()
 
       result =
         minimize: @minimize()
@@ -148,8 +157,8 @@ class ActionLog extends Base
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
   log_output: =>
-    return "" unless @out
-    x = for o in @out
+    return "" unless @out()
+    x = for o in @out()
       "<span class='#{o.type}'>#{@htmlEscape(o.message)}</span>"
     x.join ""
 
