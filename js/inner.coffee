@@ -127,7 +127,7 @@ class ActionLog extends Obj
     @minimize(@success())
 
     @has_content = @komp =>
-      (@out().length > 0) or @bash_command
+      (@out()? and @out().length > 0) or @bash_command
 
     @action_header_style = @komp =>
       css = @status()
