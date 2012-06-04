@@ -403,9 +403,6 @@ class Project extends HasUrl
     )
     false # dont bubble the event up
 
-
-
-
 class User extends Obj
   observables: =>
     tokens: []
