@@ -162,11 +162,14 @@ class ActionLog extends Obj
   appendLog: (json) =>
     @out.push(json.out)
 
-class Step extends Base
+class Step extends Obj
+
+  observables: =>
+    actions: []
 
   constructor: (json) ->
     json.actions = (new ActionLog(j) for j in json.actions) if json.actions
-    super json, {}, []
+    super json, {actions: []}
 
 #TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends HasUrl
