@@ -255,8 +255,6 @@ class Build extends HasUrl
       b = b.replace(/^remotes\/origin\//, "")
       "(#{b})"
 
-
-
     @github_url = @komp =>
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
@@ -277,7 +275,7 @@ class Build extends HasUrl
 
   newAction: (json) =>
     if not @steps()[json.step]?
-      @steps().setIndex(json.step, new Step({}))
+      @steps.setIndex(json.step, new Step({}))
 
     @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
 
