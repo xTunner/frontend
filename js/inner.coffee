@@ -276,7 +276,7 @@ class Build extends HasUrl
     # @build_channel.bind('appendAction', (json) => @appendAction json)
 
   newAction: (json) =>
-    if not @steps()[json.step]
+    if not @steps()[json.step]?
       @steps().setIndex(json.step, new Step({}))
 
     @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
