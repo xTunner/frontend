@@ -29,6 +29,11 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
     notifyError xhr.responseText or xhr.statusText, null, null, true
 )
 
+ko.observableArray["fn"].setIndex = (index, newItem) ->
+  @valueWillMutate()
+  @()[index] = newItem
+  @valueHasMutated()
+
 $(document).ajaxSend((ev, xhr, options) ->
 
   xhr.event = options.event
