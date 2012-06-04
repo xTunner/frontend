@@ -46,14 +46,6 @@ $(document).ajaxSend((ev, xhr, options) ->
     textVal t, loading
 )
 
-#adds new instances of cls to the array until index X is valid
-fillArray = (arr, index, cls) ->
-  num_insert = arr.length - index - 1
-  for i in [0..(num_insert - 1)]
-    arr.push(new cls({}))
-
-window.fillArray = fillArray
-
 # Make the buttons disabled when clicked
 $.ajaxSetup
   contentType: "application/json"
