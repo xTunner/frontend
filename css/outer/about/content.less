@@ -5,12 +5,19 @@
   background: url("@{imgPath}/outer/bg_pattern.png");
 
   & > section {
-    padding-top: 100px;
+    padding-top: 80px;
     .container;
   }
 
-  & > section:first-child {
+  & > .about {
+    padding-top: 100px;
     background: url("@{imgPath}/outer/about/sf_watermark.png") no-repeat top right;
+  }
+
+  hr {
+    border-style: dashed;
+    border-color: @grayLight;
+    margin-bottom: 45px;
   }
 
   h1 {
@@ -72,11 +79,5 @@
       margin-top: 18px;
       margin-bottom: 18px;
     }
-  }
-
-  hr {
-    border-style: dashed;
-    border-color: @grayLight;
-    margin-bottom: 65px;
   }
 }

@@ -1,0 +1,14 @@
+%span{data-bind: "if: failed"}
+  .row
+    .offset2.span18
+      .alert-message.warning
+        Uh-oh, that didn't work. If you expected it to, read about
+        %a{href: "/docs/common-problems" } common causes
+        of test failure.
+
+        If you believe this test failure is Circle's fault,
+        please
+        %span.label.important#white{data-bind: "click: $parent.report_build",
+                                    title: "Report an error in how Circle ran this build"}
+          %a{href: "#"}<> report it
+        and we'll investigate.

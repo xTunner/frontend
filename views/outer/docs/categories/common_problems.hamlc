@@ -1,0 +1,115 @@
+%article
+  .title
+    %h1 “It works on my machine”
+      %i.icon-cogs
+    %p Last Updated: May 29, 2012
+    %h4 Common problems and their solutions.
+    %hr
+
+  .doc
+    %h1.section
+      %a#intro Why your tests fail
+    %hr
+
+    %p
+      Any CI server is going to have a slightly different configuration to your local machine.
+      Web application frameworks typically do not completely insulate your tests from the difference between operating system implementations.
+      As a result, tests which work on your machine might not work on your CI server.
+
+    %p
+      Unfortunately, this does not allow you abdicate responsibility for test failures!
+      Unless you've taken special care, Circle's environment is probably much closer to your deployment environment than your development box.
+      (We use Linux for a start, which seems to have fallen out of favour amongst web application developers).
+      As such, test failures typically raise real issues which may occur in production.
+
+    %p
+      This article discusses common problems which occur in tests, listing symptoms and suggesting solutions.
+      We've filled this from real support requests and user feedback.
+      If you find an error which isn't listed here, please get in touch.
+
+
+    %h1.section
+      %a#time-day Time-based results are 1 day off
+    %hr
+
+    %p
+      Time-zones are fickle masters, and time-based code frequently only works in the time-zone in which it was written.
+      Your code is probably tested in local time on your development machine, while Circle is in UTC.
+      If that's the case, you may end up with test failures looking like this:
+    %pre
+      %code<>
+        :preserve
+          1) 1-day trial should be 1 day long
+             Failure/Error: @trial.expiration.should == 14.day.from_now.to_date
+             expected: Fri, 28 May 2012
+                  got: Sat, 29 May 2012 (using ==)
+
+    %p
+      Fortunately, it's easy to
+      %a{ href: "/docs/configuration#timezone"} change Circle's timezone
+      to match yours.
+
+    %p
+      When making this change, it might be a good time to check what time zone your server is in.
+      You should set Circle to use the same timezone as the servers to which you deploy, not the same time zones as your development machines.
+      Otherwise you might be in for a nasty surprise when your users get a 0-day trial, but it works fine on your machine!
+
+    %h3 Daylight savings time
+    %p
+      If this doesn't fix the issues, check if we're near a Daylight Savings Time transition.
+      Your code won't be the first, nor will it be the last, to not properly deal with time zones.
+      A common problem is that one part of the time interval you're measuring will be in Daylight savings time, and the other won't, creating a one hour discrepancy.
+      This leads to a 2 hour window in which your tests might fail.
+
+    %p
+      One nice solution is to just try again, preferably at a different time of day.
+      Try to avoid midnight in both your local timezone, and the time zone that Circle uses (UTC unless you
+      %a{ href: "/docs/configuration#timezone"} changed
+      it).
+
+
+    %h1.section
+      %a#time-seconds Time-based test results are a few seconds off
+    %hr
+
+    %p
+      While 1-day variations are your responsibility, 1 second differences are probably bugs in Circle.
+
+    %p
+      This sort of bugs happen on slow computers running time-sensitive tests.
+      Even if you don't explicitly have time sensitive tests, Selenium and other browser-based tests often rely on implicit timeouts.
+      If the button hasn't appeared in 3 seconds, tests start to fail.
+
+    %p
+      Circle is not susceptible to this kind of bug.
+      Circle is really really fast, even without parallelism, and so this kind of error should never happen.
+
+    %p
+      If you do see timeouts, increase the timeout parameter to see if it goes away.
+      If it does go away,
+      %strong and the tests work on your local machine,
+      this is very possibly a bug with Circle.
+
+    %p
+      Another cause of this bug is a rendering problem.
+      Circle may not use the same exact browser as you use locally (this, of course, is a good thing), so it may catch a rendering bug that you don't.
+      Check out
+      %a{ href: "/docs/about-circle#versions" } Circle's program versions
+      to see if this is the case.
+
+
+
+
+-# Are you sure you're using the right version of X
+-# Timezone
+-# ruby keys
+-# missing gem, due to group
+-# gem wont compile - gcc or ruby 1.8.7
+-# wrong version of ruby
+-# no database.yml
+-# missing gemfile.lock
+-# wrong DB/etc/versions
+-# incorrect inference
+-# if FS dependencies, run tests individually to see if they work.
+-# maybe git clean first
+-# often updating to newer gem versions fixes problems. You'd be surprised how often that happens

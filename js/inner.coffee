@@ -128,6 +128,8 @@ class ActionLog extends Obj
     @success = @komp =>
       @status() == "success"
 
+    @failed = @komp => @status == "failed" or @status == "timedout"
+
     # Expand failing actions
     @minimize = @komp =>
       if @user_minimized()?
@@ -185,7 +187,6 @@ class Step extends Obj
     json.actions = (new ActionLog(j) for j in json.actions) if json.actions
     super json, {actions: []}
 
-#TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends HasUrl
   constructor: (json) ->
 
@@ -736,6 +737,9 @@ class CircleViewModel extends Base
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
+  has_followed_projects: () => @komp =>
+    @followed_projects()().length > 0
+
   user_refresh_projects: (data, event) =>
     @refreshing_projects true
     $.ajax
@@ -907,6 +911,9 @@ window.SammyApp = Sammy '#app', () ->
     @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
     @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
     @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
+    @get('/docs(.*)', (cx) -> # go to the outer app
+      SammyApp.unload()
+      window.location = cx.path)
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 

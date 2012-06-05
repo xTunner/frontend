@@ -11,7 +11,26 @@
 
     = HAML['flashes']({})
 
-    .row
-      %h2
-        Latest builds for your projects
-      = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+    %div{data-bind: "if: has_followed_projects()"}
+      .row
+        .offset0.span11
+          %h2#latest-build-header
+            Latest builds for your projects
+        .offset5
+          %b#invite-your-friends
+            Send this link to your colleagues:
+            %a{href: "https://circleci.com/?join=dont-test-alone" }
+              https://circleci.com/?join=dont-test-alone
+
+      .row
+        = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+
+
+    .row{data-bind: "ifnot: has_followed_projects()"}
+      .offset5.span8
+        .block-message.alert-message.warning#first-use-message
+          %h2
+            Add your first project
+          %br
+          %p#first-use-text
+            To start Continuous Integration on your first project, click on the project name on the left.

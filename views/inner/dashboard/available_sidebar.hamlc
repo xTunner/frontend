@@ -1,23 +1,20 @@
-%table.condensed-table.well{cols: 3}
+%table.condensed-table.well
   %thead
     %tr
-      %th{colspan: 2}
+      %th.sidebar-header
         Available Projects
       %th
         %a{href: "#"}
-          %img{height: 15, width: 15, data-bind: "attr: {src: refresh_project_src()}, click: user_refresh_projects"}
+          %img{height: 15,
+               width: 15,
+               data-bind: "attr: {src: refresh_project_src()}, click: user_refresh_projects"}
 
-  %tbody{data-bind: "foreach: available_projects()"}
-    %tr
-      %td
-        %input{type: "checkbox", data-bind: "attr: { title: checkbox_title() }, click: follow"}
+  %tbody.add-row{data-bind: "foreach: available_projects()"}
+    %tr{data-bind: "click: follow", title: "Enable continuous integration for this project"}
 
-      %td.project-name
-        %a{data-bind: "attr: { href: project_path }, text: project_name"}
-        %span{data-bind: "if: uninferrable()"}
-          %a{data-bind: "attr: { href: edit_link }", title: "Setup uninferrable project"}
-            %img{src: "/img/error.png", height: 15, width: 15}
+      %td.project-name{data-bind: "text: project_name"}
+
       %td
-        %span.build_status{data-bind: "with: latest_build()"}
-          %span{data-bind: "attr: { class: style }"}
-            %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+        %span.label.notice.add-button
+          %a{ href: "#" }
+            Add

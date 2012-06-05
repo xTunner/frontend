@@ -1,0 +1,16 @@
+%ul.topics
+
+  - for k,c of @categories
+    - @class = if c.slug == @page then "icon-chevron-down" else "icon-chevron-up"
+    - @expand = if c.slug == @page then "expand"
+
+    %li
+      %i{ class: c.icon }
+      %a{ href: c.url }
+        = c.title
+        %i{ class: @class }
+      %ul{ class: @expand }
+        - for s in c.sections
+          %li
+            %a{ href: "#{c.url}##{s.hash}" }
+              = s.title

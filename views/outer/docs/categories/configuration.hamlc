@@ -1,0 +1,319 @@
+%article
+  .title
+    %h1 Configuring Circle
+      %i.icon-list-alt
+    %p Last Updated: May 29, 2012
+    %h4 Tweak almost any setting you need
+    %hr
+
+
+  .doc
+    %h1.section
+      %a#construction Under construction
+    %hr
+
+    %p
+      We are adding support for configuring every part of your build.
+      If a configuration setting is not yet available, please contact us and we'll implement it immediately.
+
+
+    %h1.section
+      %a#overview Overview
+    %hr
+
+    %p
+      If you want to tweak your Circle settings in any way, the most straight-forward way to do it is to use the
+      %code circle.yml
+      file.
+      This is simply a YAML file which you place in your git repo's root directory.
+
+    %p
+      Circle reads the file each time it runs a build.
+      If you're adding
+      %code circle.yml
+      for the first time, you can avoid annoying your colleagues by experimenting in a branch.
+
+    %p
+      Here's a quick example of a
+      %code circle.yml
+      file.
+
+
+    %pre
+      %code<>
+        :preserve
+          machine:
+            timezone:
+              Americas/Los_Angeles
+            ruby:
+              version: 1.9.3-p0-falcon
+
+        -#test:
+          post:
+            \- bundle exec rake custom:test:suite
+
+    %p
+      This sets the
+      = succeed ",", ->
+        %a{ href: "#timezone" }<
+          time zone
+      and chooses a
+      %a{href: "#ruby-version"} Ruby version
+      and patchset.
+      -#, and adds a
+      -#%a{href: "#post-test"} custom test command
+      -#to run after the rest of your commands.
+
+
+
+    %h2 Simple things
+    %p
+      Most web apps will only need their settings slightly, if at all.
+      %code circle.yml
+      is designed to make easy things easy, and hard things possible.
+
+    -# %p
+    -#   Each setting in this file should only be necessary if you do something unusual.
+    -#   If you completely follow best practices, your tests should just work, without having to set anything here at all.
+
+    -# %p
+    -#   If you only want to make a minor change, we recommend you check out the
+    -#   = surround '"', '"', ->
+    -#     %a{ href: "/docs/faq" }<>
+    -#       How do I ... ?
+    -#   section for simple common tweaks people need, or check out the
+    -#   = surround '"', '"', ->
+    -#     %a{ href: "/docs/common-problems" }<>
+    -#       It works on my machine
+    -#   section for fixes for common problems.
+
+
+
+    -# %h2 Complex behaviour
+    -# %p
+    -#   Circle allows quite complex behaviour, if you need it.
+    -#   You can override almost anything, and we make it as simple as possible.
+    -#   That said, if you find yourself relying on this section a lot, please
+    -#   %a{href: "mailto: sayhi@circleci.com" } drop us a line
+    -#   and let us know what you're working on.
+
+    -# %h1.section
+    -#   %a#phases File structure
+    -# %hr
+
+    -# %p
+    -#   The
+    -#   %code circle.yml
+    -#   file represents a
+    -#   = succeed ",", ->
+    -#     %em build
+    -#   which is a collection of
+    -#   %em commands,
+    -#   grouped into
+    -#   %em phases.
+
+    -#   A
+    -#   %em command
+    -#   is something like running
+    -#   %code cucumber
+    -#   , while a
+    -#   %em phase
+    -#   would groups all the test commands, including `cucumber`, `rake test`, `rspec`, etc.
+
+
+
+    -# %p
+    -#   In
+    -#   = succeed ",", ->
+    -#     %code circle.yml
+    -#   top-level collections represent a
+    -#   %i phase
+    -#   in the build pipeline.
+    -#   The phases are, in order:
+    -# %ol
+    -#   %li machine - configuring the test machine, starting services, installing packages, etc
+    -#   %li checkout - downloading your code from your repository
+    -#   %li dependencies - installing your code's dependencies
+    -#   %li database - configure your databases
+    -#   -#%li compile - compilation step for compiled languages
+    -#   %li test - actually run your tests
+    -#   -#%li artifact - save or upload build artifacts
+    -#   %li deploy - deploying successful builds to your web server
+
+
+    -# %p
+    -#   You only need to specify the
+    -#   %em phases
+    -#   you wish to customize or add commands to.
+    -#   If you do not specify anything, we'll infer the correct settings.
+    -#   If you leave the entire file blank, we'll infer the entire build.
+
+
+
+    %h1.section
+      %a#machine Machine configuration
+    %hr
+
+    %p
+      The
+      %code machine
+      top-level structure allows you to configure the virtual machine on which your tests are run.
+      These tweaks happen before any test steps are run.
+
+
+    %h3#timezone
+      Timezone
+
+    %p
+      Set the machine's timezone, for example:
+
+    %pre
+      %code<>
+        :preserve
+          machine:
+            timezone:
+              Americas/Los_Angeles
+
+    %p
+      Use this to override the machine's timezone, which is UTC by default.
+      This overwrites
+      %code /etc/timezone
+      and then restarts all databases and services which rely on it.
+
+    %p
+      You should change this to use the same time zone as your production server.
+      If your production server and your development machine use different time zones, then changing this setting to your development machine's time zone is asking for trouble.
+
+    %p
+      This setting supports any time zone in the listed in the IANA time zone database.
+      You can find this by looking in
+      %code /usr/share/zoneinfo/
+      on your Unix machine, or in the
+      %strong TZ
+      column in
+      = succeed ".", ->
+        %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}<
+          Wikipedia's list of TZ database time zones
+
+
+    %h4 Alternative
+    %p
+      As an alternative, use UTC on your production servers to avoid horrific daylight-savings bugs, or if your developers are in different time zones.
+
+    %h3#ruby-version
+      Ruby version
+
+    %p
+      Choose the version of Ruby used for your tests, for example:
+
+    %pre
+      %code<>
+        :preserve
+          machine:
+            ruby:
+              version:
+                1.9.3-p0-falcon
+
+    %p
+      Circle uses
+      %a{ href: "https://rvm.io/" } RVM
+      to manage Ruby versions.
+      If you do not specify a version, we will use the version in your
+      %code .rvmrc
+      file,
+      or
+      Ruby
+      %code 1.9.3-p0
+      if unspecified.
+
+    %p
+      You may use any version listed in
+      = succeed ".", ->
+        %code rvm list known
+      This includes:
+      %ul
+        %li
+          MRI Ruby versions, such as
+          %code 1.9.3
+        %li
+          Patchsets, such as
+          %code 1.9.3-p0
+        %li
+          Alternative implementations, such as
+          %code jruby-head
+
+    %p
+      We install a large number of Rubies by default.
+      If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
+      Please contact us and we'll be happy to install your version so that it does not slow down your tests.
+
+
+    %h1.section
+      %a#notification Notifications
+    %hr
+
+    %p
+      Currently, we support sending web-hooks when your build completes.
+      We also support HipChat notifications, on your project's
+      %em settings
+      page.
+
+    %pre
+      %code<>
+        :preserves
+          notify:
+            webhooks:
+              # A list of hashes representing hooks. Only the url field is supported.
+              - url: https://circleci.com/hooks/circle
+
+    %p
+      This sends a JSON packet to the specified URL.
+      The JSON packet that will be sent can also be read using the REST API.
+      Visit
+      %code https://circleci.com/api/v1/project/:username/:projectname/:build
+      to see an example.
+
+
+
+
+
+
+  -# %h1.section
+  -#   %a#checkout Checkout
+  -# %hr
+
+  -# %p
+  -#   No supported configuration yet
+
+
+  -# %h1.section
+  -#   %a#dependencies Dependencies
+  -# %hr
+
+  -# %p
+  -#   Coming soon...
+
+
+  -# %h1.section
+  -#   %a#dependencies Database
+  -# %hr
+
+  -# %p
+  -#   Coming soon...
+
+
+
+  -# %h1.section
+  -#   %a#test Test
+  -# %hr
+
+  -# %p
+  -#   Coming soon...
+
+
+  -# %h1.section
+  -#   %a#deployment Deployment
+  -# %hr
+
+  -# %p
+  -#   Coming soon...

@@ -1,4 +1,4 @@
-%table
+%table.zebra-striped.condensed
   %thead
     %tr
       %th Build

@@ -1,0 +1,52 @@
+%article
+  .title
+    %h1 About Circle
+      %i.icon-list-alt
+    %p Last Updated: May 28, 2012
+    %h4 Understanding our Continuous Integration
+    %hr
+
+  .doc
+
+    %h1.section
+      %a#what-happens What happens when you add a project?
+    %hr
+
+    %p
+      Generally, pretty much what you'd expect if you were implementing this yourself:
+
+    %ul
+      %li
+        Using the permissions you gave us when you signed up, we'll add some settings to your project on GitHub:
+        %ul
+          %li
+            A
+            %b deploy key
+            is used to check your project out from GitHub,
+          %li
+            A
+            %b service hook
+            is used to notify Circle when you push to GitHub.
+      %li
+        We immediately check your code out onto our machines, infer your settings, and run your first build.
+      %li
+        Our inference algorithms looks through your dependencies, Gems, libraries and code to figure out how to run your tests.
+        For example, we might find that you have a standard Rails project using Postgres, with specs and features, so we'll run:
+        %ol
+          %li
+            bundle install
+          %li
+            bundle exec rake db:schema:load
+          %li
+            bundle exec rspec spec
+          %li
+            bundle exec cucumber
+      %li
+        We run your tests on a clean virtual machine every time.
+        This means that your code isn't accessible to other users, and that we run your tests freshly each time you push.
+      %li
+        You can watch your tests update in real-time on
+        = succeed ".", ->
+          %a{href: "/"} your dashboard
+      %li
+        We'll send you a notification when you're done.
