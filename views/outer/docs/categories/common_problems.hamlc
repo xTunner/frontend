@@ -2,7 +2,7 @@
   .title
     %h1 “It works on my machine”
       %i.icon-cogs
-    %p Last Updated: May 29, 2012
+    %p Last Updated: June 5, 2012
     %h4 Common problems and their solutions.
     %hr
 
@@ -29,7 +29,7 @@
 
 
     %h1.section
-      %a#time-day Time-based results are 1 day off
+      %a#time-day Time-based results are one day off
     %hr
 
     %p
@@ -73,12 +73,12 @@
     %hr
 
     %p
-      While 1-day variations are your responsibility, 1 second differences are probably bugs in Circle.
+      While one-day variations are your responsibility, differences of a second or so are probably bugs in Circle.
 
     %p
       This sort of bugs happen on slow computers running time-sensitive tests.
       Even if you don't explicitly have time sensitive tests, Selenium and other browser-based tests often rely on implicit timeouts.
-      If the button hasn't appeared in 3 seconds, tests start to fail.
+      For example, if some button hasn't appeared in 3 seconds, tests start to fail.
 
     %p
       Circle is not susceptible to this kind of bug.
