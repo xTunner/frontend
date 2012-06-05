@@ -1,9 +1,11 @@
-%table.condensed-table.well{cols: 3}
+%table.condensed-table.well.zebra-striped{cols: 3}
   %thead
     %tr
-      %th{colspan: 3}
+      %th.sidebar-header{colspan: 3}
         Followed Projects
 
+
+  / ko if: has_followed_projects()
   %tbody{data-bind: "foreach: followed_projects()"}
     %tr
       %td
@@ -12,11 +14,16 @@
 
       %td.project-name
         %a{data-bind: "attr: { href: project_path }, text: project_name"}
-        %span{data-bind: "if: uninferrable()"}
-          %a{data-bind: "attr: { href: edit_link }", title: "Setup uninferrable project"}
-            %img{src: "/img/error.png", height: 15, width: 15}
 
       %td
         %span.build_status{data-bind: "with: latest_build()"}
           %span{data-bind: "attr: { class: style }"}
             %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+  / /ko
+
+  / ko ifnot: has_followed_projects()
+  %tbody
+    %tr
+      %td#none-message
+        None. Add a project below.
+  / /ko

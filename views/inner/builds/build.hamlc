@@ -54,7 +54,8 @@
         %dt
           Actions:
         %dd
-          %button.btn.error{data-bind: "click: report_build", title: "Report an error in how Circle ran this build"}
+          %button.btn.error{data-bind: "click: report_build",
+                            title: "Report an error in how Circle ran this build"}
             Report
 
           %button.btn.primary{data-bind: "click: retry_build",
@@ -77,6 +78,11 @@
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 
+
+    .row{data-bind: "if: messages().length"}
+      .offset3.span12#build-messages{data-bind: "foreach: messages"}
+        .alert-message.block-message{data-bind: "attr: { class: $parent.messageClass($data) }, text: message"}
+
     %div{data-bind: "foreach: action_logs"}
 
       -# wrapper allows the header and detail be siblings, for the JS
@@ -87,13 +93,48 @@
             %span{data-bind: "text: name, attr: {title: bash_command}"}
           %span.time
             = surround '(', ' )', ->
-              %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}
+              %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
 
             %span{data-bind: "if: timedout"}
-              %b{data-bind: "text: '(TIMED OUT)'"}
+              %b (TIMED OUT)
+
         .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
+
+          %span{data-bind: "ifnot: success"}
+            .row
+              .offset4.span14
+                .alert-message.block-message.error
+                  Read about
+                  %a{href: "/docs/common-problems" } 2 common causes
+                  of test failure.
+                  If you believe this test failure is Circle's fault,
+                  please
+                  %span.label.important#white{data-bind: "click: $parent.report_build",
+                                              title: "Report an error in how Circle ran this build"}
+                    %a{href: "#"}<> report it
+                  and we'll investigate.
+
           %span{data-bind: "if: bash_command"}
             %b Command:
             %pre{data-bind: "text: bash_command", title: "The full bash comand used to run this setp"}
           %b Output:
           %pre.output{data-bind: "html: log_output()"}
+
+          .row
+            .offset4.span14
+              .alert-message.block-message.error
+                Read about
+                %a{href: "/docs/common-problems" } 2 common causes
+                of test failure.
+                If you believe this test failure is Circle's fault,
+                please
+                %span.label.important#white{data-bind: "click: $parent.report_build",
+                                            title: "Report an error in how Circle ran this build"}
+                  %a{href: "#"}<> report it
+                and we'll investigate.
+
+
+
+    .row{data-bind: "if: messages().length"}
+      .offset3.span12#build-messages{data-bind: "foreach: messages"}
+        .alert-message.block-message{data-bind: "attr: { class: $parent.messageClass($data) }, text: message"}

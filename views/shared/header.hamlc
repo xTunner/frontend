@@ -23,6 +23,9 @@
           %a{ href: '/about#contact', title: 'Get in contact with Circle' }
             Contact
         %li
+          %a{ href: '/docs', title: 'Documentation for Circle'}
+            Docs
+        %li
           - if @showJoinLink
             %a{ id: 'join' href: @githubAuthURL, title: 'Join Circle' }
               Join

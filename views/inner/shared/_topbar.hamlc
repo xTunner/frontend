@@ -28,6 +28,10 @@
 
               %li.divider
               %li
+                %a{href: "/docs", target: "_blank"}
+                  Documentation
+
+              %li
                 %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
                   Support
 

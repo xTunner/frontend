@@ -150,7 +150,6 @@ class ActionLog extends Base
 
 
 
-#TODO: next step is to add the vcs_url, which is why I was looking at the knockout.model and knockout.mapping plugin
 class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
@@ -235,7 +234,6 @@ class Build extends HasUrl
       "(#{b})"
 
 
-
     @github_url = @komp =>
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
@@ -246,6 +244,13 @@ class Build extends HasUrl
 
     @author = @komp =>
       @committer_name or @committer_email
+
+  messageClass: (message) =>
+    switch message.type
+      when "warning"
+        "alert-message block-message warn"
+      else
+        "alert-message block-message #{message.type}"
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
@@ -672,6 +677,9 @@ class CircleViewModel extends Base
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
+  has_followed_projects: () => @komp =>
+    @followed_projects()().length > 0
+
   user_refresh_projects: (data, event) =>
     @refreshing_projects true
     $.ajax
@@ -840,6 +848,9 @@ window.SammyApp = Sammy '#app', () ->
     @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
     @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
     @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
+    @get('/docs(.*)', (cx) -> # go to the outer app
+      SammyApp.unload()
+      window.location = cx.path)
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 

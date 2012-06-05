@@ -1,0 +1,154 @@
+/*
+
+Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmail.com>
+
+Modified for CircleCI by Carlos Rosquillas
+
+*/
+
+pre {
+  padding: 0;
+  margin-left: 25px;
+  border-color: darken(#eee8d5,5%);
+}
+
+pre > code {
+  display: block;
+  background: #F5F9FD;
+  .box-shadow(inset 0px 0px 8px rgba(219, 224, 231, 0.65));
+  color: #577783;
+  counter-reset: line-numbering;
+  border: none;
+  border-top: 1px solid #E5ECF3;
+  padding: 15px 20px;
+  position: relative;
+  font-size: 12px;
+  line-height: 18px;
+  .border-radius(6px);
+
+  // Line styles. position: relative; for line number anchoring,
+  // padding-left to prevent the code from being covered by the gutter
+  .line {
+    position: relative;
+    padding-left: 70px;
+    display: block;
+  }
+
+  // Line numbers
+  .line::before {
+      content: counter(line-numbering) ".";
+      counter-increment: line-numbering;
+      width: 45px;
+      text-align: right;
+      font-size: 10px;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.45);
+      color: #B8AB84;
+      position: absolute;
+      left: 0;
+      top: 0;
+      // Disable text selection
+      -webkit-touch-callout: none;
+      -webkit-use-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      z-index: 2500;
+  }
+
+  // Solarized theme colors
+  // #93a1a1
+  .comment,
+  .template_comment,
+  .diff .header,
+  .doctype,
+  .lisp .string,
+  .javadoc {
+    color: #93a1a1;
+    font-style: italic;
+  }
+
+  // #859900
+  .keyword,
+  .css .rule .keyword,
+  .winutils,
+  .javascript .title,
+  .method,
+  .addition,
+  .css .tag,
+  .lisp .title {
+    color: #859900;
+  }
+
+  // #2aa198
+  .number,
+  .command,
+  .string,
+  .tag .value,
+  .phpdoc,
+  .tex .formula,
+  .regexp,
+  .hexcolor {
+    color: #2aa198;
+  }
+
+  // #268bd2
+  .title,
+  .localvars,
+  .function .title,
+  .chunk,
+  .decorator,
+  .builtin,
+  .built_in,
+  .lisp .title,
+  .identifier,
+  .title .keymethods,
+  .id {
+    color: #268bd2;
+  }
+
+  .tag .title,
+  .rules .property,
+  .django .tag .keyword {
+    font-weight: bold;
+  }
+
+  // #b58900
+  .attribute,
+  .variable,
+  .instancevar,
+  .lisp .body,
+  .smalltalk .number,
+  .constant,
+  .class .title,
+  .parent,
+  .haskell .label {
+    color: #b58900;
+  }
+
+  // #cb4b16
+  .preprocessor,
+  .pi,
+  .shebang,
+  .symbol,
+  .diff .change,
+  .special,
+  .keymethods,
+  .attr_selector,
+  .important,
+  .subst,
+  .cdata {
+    color: #cb4b16;
+  }
+
+  // #dc322f
+  .deletion {
+    color: #dc322f;
+  }
+
+  // #eee8d5
+  .tex .formula {
+    background: #eee8d5;
+  }
+}

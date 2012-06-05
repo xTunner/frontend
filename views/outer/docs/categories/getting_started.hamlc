@@ -1,0 +1,85 @@
+%article
+  .title
+    %h1 Getting Started with Circle
+      %i.icon-repeat
+    %p Last Updated: May 28, 2012
+    %h4 Setting it up for the first time
+    %hr
+
+  .doc
+    %h1.section
+      %a#overview Overview
+    %hr
+
+    %p Setting up Circle for your project should be a matter of 3 mouse clicks:
+    %ol
+      %li Sign up to Circle,
+      %li Give Circle permission to access GitHub on your behalf,
+      %li Click on a project
+
+    %p
+      It really is that easy, in about 90% of cases.
+
+    %p
+      The reason it's so easy is that we automatically infer your settings from your code.
+      We expect you have a project which roughly follows best practices for your platform.
+      If you do, your tests will be up and running in mere moments.
+
+      Add
+      your
+      %a{ href: "/" } first project
+      now!
+
+    %p<>
+      = surround "(", ")", ->
+        %b> Related: &nbsp;
+        %a.related{href: "/docs/about-circle#what-happens"}<
+          What happens when you add a project?
+
+
+    %h2 When the magic doesn't work?
+
+    %p
+      Of course, life is not always sunshine and daisies.
+      When our automatic inference doesn't work, you'll need to
+      %a{ href: "/docs/configuration"} tweak your setup
+      using a
+      %code circle.yml
+      file.
+
+      -#%ul
+        -#%li
+          We'll talk you through the
+          %a{href: "#inference"} standard things
+          we look for to make projects work.
+        -#%li
+          We'll help you with
+          %a{href: "/docs/common-problems"} common problems
+          that users experience when using Circle.
+        -#%li
+          We'll even show you how to test your
+          %a{href: "/docs/configuration#custom"} completely custom
+          project.
+
+    %h1.section
+      %a#what-next What next?
+    %hr
+
+    %h2 Add your colleagues
+
+    %p
+      Testing is no fun if you're the only one playing.
+      Circle is designed around the idea of every person having their own account.
+      You can invite your colleagues by sending them the original invite code you used
+      = surround "(", ").", ->
+        %a{href: "mailto:sayhi@circleci.com"}<>
+          ask us if you lost your code or haven't got on yet
+
+    %h2 Add more projects
+
+    %p
+      You should add all your projects to Circle - it costs the same either way.
+      Even if you only commit to a project once a month, or if the project is just started, adding it to Circle will help keep it working.
+      Add them from the
+      = succeed ".", ->
+        %a{ href: "/"} dashboard

@@ -23,6 +23,9 @@
           %a{ href: '/about#contact', title: 'Contact us in more ways' }
             Contact
         %li
+          %a{ href: '/docs', title: 'Documentation' }
+            Docs
+        %li
           %a{ class: 'ficon tw', href: 'https://twitter.com/circleci' }
             Twitter
         %li
