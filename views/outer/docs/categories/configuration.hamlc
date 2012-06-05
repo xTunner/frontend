@@ -68,12 +68,12 @@
 
     %h2 Simple things
     %p
-      Most web apps will only need their settings slighty, if at all.
+      Most web apps will only need their settings slightly, if at all.
       %code circle.yml
       is designed to make easy things easy, and hard things possible.
 
     -# %p
-    -#   Each setting in this file should only be necesaary if you do something unusual.
+    -#   Each setting in this file should only be necessary if you do something unusual.
     -#   If you completely follow best practices, your tests should just work, without having to set anything here at all.
 
     -# %p
@@ -193,7 +193,7 @@
       column in
       = succeed ".", ->
         %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}<
-          Wikipedia's list of tz database time zones
+          Wikipedia's list of TZ database time zones
 
 
     %h4 Alternative
@@ -249,12 +249,12 @@
 
 
     %h1.section
-      %a#notifcation Notifications
+      %a#notification Notifications
     %hr
 
     %p
-      Currently, we support sending webhooks when your build completes.
-      We also support Hipchat notifications, on your project's
+      Currently, we support sending web-hooks when your build completes.
+      We also support HipChat notifications, on your project's
       %em settings
       page.
 
@@ -283,7 +283,7 @@
   -# %hr
 
   -# %p
-  -#   No suported configuration yet
+  -#   No supported configuration yet
 
 
   -# %h1.section

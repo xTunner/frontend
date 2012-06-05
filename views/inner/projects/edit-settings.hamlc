@@ -18,7 +18,7 @@
       %span.highlight
         Your project settings are automatically inferred!
       We automatically infer test settings and how to set up the machine for your project.
-      If your tests aren't working, you may need to manually override our inferrence.
+      If your tests aren't working, you may need to manually override our inference.
 
     %span{data-bind: "if: overridden"}
       %span.highlight
@@ -35,7 +35,7 @@
     %span{data-bind: "if: inferred"}
       %p
         %a.btn.primary.large{ href: "#setup" }
-          Override automatic inferrence
+          Override automatic inference
 
     %span{data-bind: "if: overridden"}
       %p

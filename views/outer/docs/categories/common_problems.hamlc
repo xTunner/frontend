@@ -2,7 +2,7 @@
   .title
     %h1 “It works on my machine”
       %i.icon-cogs
-    %p Last Updated: May 29, 2012
+    %p Last Updated: June 5, 2012
     %h4 Common problems and their solutions.
     %hr
 
@@ -13,7 +13,7 @@
 
     %p
       Any CI server is going to have a slightly different configuration to your local machine.
-      Web applciation frameworks typically do not completely insulate your tests from the difference between operating system implementations.
+      Web application frameworks typically do not completely insulate your tests from the difference between operating system implementations.
       As a result, tests which work on your machine might not work on your CI server.
 
     %p
@@ -29,7 +29,7 @@
 
 
     %h1.section
-      %a#time-day Time-based results are 1 day off
+      %a#time-day Time-based results are one day off
     %hr
 
     %p
@@ -58,7 +58,7 @@
     %p
       If this doesn't fix the issues, check if we're near a Daylight Savings Time transition.
       Your code won't be the first, nor will it be the last, to not properly deal with time zones.
-      A common problem is that one part of the time interval you're measuring will be in Daylight savings time, and the other won't, creating a one hour discreptancy.
+      A common problem is that one part of the time interval you're measuring will be in Daylight savings time, and the other won't, creating a one hour discrepancy.
       This leads to a 2 hour window in which your tests might fail.
 
     %p
@@ -73,12 +73,12 @@
     %hr
 
     %p
-      While 1-day variations are your responsibility, 1 second differences are probably bugs in Circle.
+      While one-day variations are your responsibility, differences of a second or so are probably bugs in Circle.
 
     %p
       This sort of bugs happen on slow computers running time-sensitive tests.
       Even if you don't explicitly have time sensitive tests, Selenium and other browser-based tests often rely on implicit timeouts.
-      If the button hasn't appeared in 3 seconds, tests start to fail.
+      For example, if some button hasn't appeared in 3 seconds, tests start to fail.
 
     %p
       Circle is not susceptible to this kind of bug.
@@ -98,7 +98,50 @@
       to see if this is the case.
 
 
+    %h1.section
+      %a#git-bundle-install Git errors during a bundle install
+    %hr
 
+    %p
+      When your tests run, during the
+      %code bundle install
+      step, you might see something like this:
+
+    %pre
+      %code<>
+        :preserve
+          Fetching git@github.com:rails/rails
+          Git error: command `git clone 'git@github.com:rails/rails' "/home/ubuntu/circle-2/vendor/bundle/ruby/1.9.1/cache/bundler/git/rails-47ba0391b239cf6d20fc732cd925192bcf3430fc" --bare --no-hardlinks` in directory /home/ubuntu/circle-1 has failed.
+          Permission denied (publickey).
+          fatal: The remote end hung up unexpectedly
+
+    %p
+      This happens because you have a git repository listed as a dependency in your Gemfile:
+
+    %pre
+      %code<>
+        :preserve
+          gem "rails", :git => "git://github.com/rails/rails.git"
+
+    %p
+      If the repository is public, just change the dependency to use a
+      %code http
+      url:
+
+    %pre
+      %code<>
+        :preserve
+          gem "rails", :git => "http://github.com/rails/rails"
+
+    %p
+      If the repository is private, you will need to use our "user keys" feature.
+      We will be launching that this week.
+      As a workaround, you can put a username and password into the url, for example:
+
+    %pre
+      %code<>
+        :preserve
+          gem "big-secret", :git => "http://paul:mypassword@github.com/circleci/big-secret"
 
 -# Are you sure you're using the right version of X
 -# Timezone
