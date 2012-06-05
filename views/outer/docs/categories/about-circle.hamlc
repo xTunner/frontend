@@ -50,3 +50,16 @@
           %a{href: "/"} your dashboard
       %li
         We'll send you a notification when you're done.
+
+
+    %h1.section
+      %a#look-at-code Does Circle look at my code?
+    %hr
+
+    %p
+      Nobody from Circle manually looks at your code, without permission.
+      We will occasionally ask permission to debug why your code isn't working, but we will never look at your code without this permission.
+      Our
+      %a{ href: "/privacy#security" }
+        security policy
+      goes into more detail about our safeguards to ensure the security of your code.
