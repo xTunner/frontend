@@ -285,7 +285,7 @@ class Build extends HasUrl
 
     @build_channel.bind('newAction', (json) => @newAction json)
     @build_channel.bind('updateAction', (json) => @updateAction json)
-    # @build_channel.bind('appendAction', (json) => @appendAction json)
+    @build_channel.bind('appendAction', (json) => @appendAction json)
 
   newAction: (json) =>
     if not @steps()[json.step]?
@@ -300,6 +300,9 @@ class Build extends HasUrl
 
   updateAction: (json) =>
     @steps()[json.step].actions()[json.index].updateObservables(json.log)
+
+  appendAction: (json) =>
+    @steps()[json.step].actions()[json.index].out.push(json.out)
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
