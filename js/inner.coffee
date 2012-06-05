@@ -74,8 +74,10 @@ class Obj
     else
       ko.observable obj
 
-
-
+  updateObservables: (obj) =>
+    for k,v of obj
+      if @observables().hasOwnProperty(k)
+        @[k](v)
 
 class Base extends Obj
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
@@ -100,14 +102,17 @@ class HasUrl extends Base
 
 class ActionLog extends Obj
   observables: =>
+    name: null
+    bash_command: null
     timedout: null
+    start_time: null
     end_time: null
     exit_code: null
-    minimize: true
     out: []
+    user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
   constructor: (json) ->
-    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: [], minimize: true}
+    super json
 
     @status = @komp =>
       if @end_time() == null
@@ -124,31 +129,40 @@ class ActionLog extends Obj
       @status() == "success"
 
     # Expand failing actions
-    @minimize(@success())
+    @minimize = @komp =>
+      if @user_minimized()?
+        @user_minimized()
+      else
+        @success()
+
+    @visible = @komp =>
+      not @minimize()
 
     @has_content = @komp =>
-      (@out()? and @out().length > 0) or @bash_command
+      (@out()? and @out().length > 0) or @bash_command()
 
-    @action_header_style = @komp =>
-      css = @status()
-
-      result =
-        minimize: @minimize()
-        contents: @has_content()
-      result[css] = true
-      result
+    @action_header_style =
+      # knockout CSS requires a boolean observable for each of these
+      minimize: @minimize
+      contents: @has_content
+      running: @komp => @status() == "running"
+      timedout: @komp => @status() == "timedout"
+      success: @komp => @status() == "success"
+      failed: @komp => @status() == "failed"
 
     @action_log_style =
-      minimize: @minimize()
+      minimize: @minimize
 
-    @start_to_end_string = "#{@start_time} to #{@end_time}"
+    @start_to_end_string = @komp =>
+      "#{@start_time()} to #{@end_time()}"
 
     @duration = Circle.time.as_duration(@run_time_millis)
 
   toggle_minimize: =>
-    if @has_content()
-      @minimize(!@minimize())
-
+    if not @user_minimized?
+      @user_minimized(!@user_minimized())
+    else
+      @user_minimized(!@minimize())
 
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -175,7 +189,7 @@ class Step extends Obj
 class Build extends HasUrl
   constructor: (json) ->
 
-    json.steps = (new Step(j) for j in json.steps) if json.steps
+    json.steps = if json.steps then (new Step(j) for j in json.steps) else []
 
     super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
 
@@ -270,23 +284,22 @@ class Build extends HasUrl
     @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
     @build_channel.bind('newAction', (json) => @newAction json)
-    # @build_channel.bind('updateAction', (json) => @updateAction json)
+    @build_channel.bind('updateAction', (json) => @updateAction json)
     # @build_channel.bind('appendAction', (json) => @appendAction json)
 
   newAction: (json) =>
     if not @steps()[json.step]?
       @steps.setIndex(json.step, new Step({}))
 
+    # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
+    for i in [0..json.index-1]
+      if not @steps()[json.step].actions()[i]?
+        @steps()[json.step].actions.setIndex(i, new ActionLog({}))
+
     @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
 
   updateAction: (json) =>
-    null
-
-  # appendAction: (json) =>
-  #   fillArray(@steps(), json.steps, Step)
-  #   fillArray(@steps()[json.step].actions(), json.index, ActionLog)
-
-  #   @steps[json.step].actions()[json.action].push(json.log)
+    @steps()[json.step].actions()[json.index].updateObservables(json.log)
 
   # TODO: CSRF protection
   retry_build: (data, event) =>

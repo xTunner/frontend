@@ -92,7 +92,7 @@
 
               %span{data-bind: "if: timedout"}
                 %b{data-bind: "text: '(TIMED OUT)'"}
-          .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
+          .detail{data-bind: "if: has_content, css: action_log_style, visible: visible"}
             %span{data-bind: "if: bash_command"}
               %b Command:
               %pre{data-bind: "text: bash_command", title: "The full bash comand used to run this setp"}
