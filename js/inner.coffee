@@ -242,7 +242,7 @@ class Build extends HasUrl
 
     @github_revision = @komp =>
       return unless @vcs_revision
-      @vcs_revision.substring 0, 9
+      @vcs_revision.substring 0, 7
 
     @author = @komp =>
       @committer_name or @committer_email
@@ -284,16 +284,6 @@ class Project extends HasUrl
     @has_settings = @komp =>
       @setup() or @dependencies() or @test() or @extra()
 
-    @uninferrable = @komp =>
-      @status() == "uninferrable"
-
-    @inferred = @komp =>
-      (not @uninferrable()) and (not @has_settings())
-
-    @overridden = @komp =>
-      (not @uninferrable()) and @has_settings()
-
-
 
 
   @sidebarSort: (l, r) ->
@@ -309,16 +299,12 @@ class Project extends HasUrl
   checkbox_title: =>
     "Add CI to #{@project_name()}"
 
-  uninferrable: =>
-    @status() is 'uninferrable'
-
   unfollow: (data, event) =>
     $.ajax
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
-        @status(data.status)
         @followed(data.followed)
 
   follow: (data, event) =>
@@ -329,7 +315,6 @@ class Project extends HasUrl
       success: (data) =>
         # The new model here is not going to be "enabled" and "available", but
         # will allow you to add a project without being an admin
-        @status(data.status)
         @followed(data.followed)
 
   save_hipchat: (data, event) =>
