@@ -285,14 +285,6 @@ class Project extends HasUrl
       @setup() or @dependencies() or @test() or @extra()
 
 
-    @inferred = @komp =>
-      (not @has_settings())
-
-    @overridden = @komp =>
-      @has_settings()
-
-
-
 
   @sidebarSort: (l, r) ->
     if l.latest_build()
