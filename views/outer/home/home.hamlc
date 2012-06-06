@@ -4,7 +4,7 @@
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
     - if @showJoinLink
-      %a.authGithub{ href: @githubAuthURL, title: 'Join using GitHub' }
+      %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' }
         Join using GitHub
 
       %a.footnote{ href: '/privacy' title: 'Privacy and Security' }
@@ -45,7 +45,7 @@
       %h2 All this power from one little button
 
     - if @showJoinLink
-      %a.authGithub{ href: @githubAuthURL, title: 'Join using GitHub' } Join using GitHub
+      %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' } Join using GitHub
 
     - else
       %a.authGithub.disabled{ title: 'Currently in private beta' } Currently in private beta

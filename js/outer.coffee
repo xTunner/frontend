@@ -35,6 +35,11 @@ circle = $.sammy "body", ->
       else
         @load(cx)
 
+  class Home extends Page
+    render: (cx) =>
+      super(cx)
+      _kmq.push(['trackClick', ".kissAuthGithub", 'join link clicked'])
+
   # Doc
   class Docs extends Page
     filename: (cx) =>
@@ -98,7 +103,7 @@ circle = $.sammy "body", ->
         @init(cx)
 
   # Pages
-  home = new Page("home", "Continuous Integration made easy")
+  home = new Home("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy and Security")
   docs = new Docs("docs", "Documentation")
@@ -132,6 +137,10 @@ circle = $.sammy "body", ->
     if data? and data.error? and window.Hoptoad?
       window.Hoptoad.notify data.error
 
+  # Kissmetrics
+  if renderContext.showJoinLink
+    _kmq.push(['record', "showed join link"])
+
   # Navigation
   @get "/docs(.*)", (cx) -> docs.display(cx)
   @get "/about.*", (cx) -> about.display(cx)
@@ -140,8 +149,6 @@ circle = $.sammy "body", ->
   @get("/gh/.*", (cx) =>
     @unload()
     window.location = cx.path)
-
-
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
