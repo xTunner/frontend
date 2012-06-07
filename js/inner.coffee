@@ -46,7 +46,7 @@ ko.bindingHandlers.popover =
   init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
     options = ko.utils.unwrapObservable(valueAccessor()) or {}
     content = ko.utils.unwrapObservable(options.content) or ""
-    $(element).popover({content: content})
+    $(element).popover({content: content, html: true, delayOut: 1000})
 
     ko.utils.domNodeDisposal.addDisposeCallback(element, () ->
       $(element).popover('hide')
@@ -256,9 +256,9 @@ class Build extends HasUrl
     @popover_content = @komp =>
       switch @dont_build()
         when "no-user"
-          "pusher is not a Circle member"
+          "Invite #{@author()} to Circle to test their pushes. Send them this link: https://circleci.com/?join=test-your-code"
         when "user-not-paid"
-          "pusher doesn't have a paid plan"
+          "#{@author()}'s trial is over. <a href='/account/plans'>Add them to your account</a>"
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
