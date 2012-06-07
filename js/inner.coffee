@@ -366,7 +366,7 @@ class User extends Obj
       login: ""
       basic_email_prefs: "all"
 
-    @environment = window.renderContext.environment
+    @environment = window.renderContext.env
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -513,7 +513,27 @@ class Billing extends Obj
 
 
   stripeSubmit: (data, event) ->
-    key = switch renderContext.environment
+    number = $('.card-number').val()
+    cvc = $('.card-cvc').val()
+    exp_month = $('.card-expiry-month').val()
+    exp_year = $('.card-expiry-year').val()
+
+    unless Stripe.validateCardNumber number
+      notifyError "Invalid credit card number, please try again."
+      event.preventDefault()
+      return false
+
+    unless Stripe.validateExpiry exp_month, exp_year
+      notifyError "Invalid expiry date, please try again."
+      event.preventDefault()
+      return false
+
+    unless Stripe.validateCVC cvc
+      notifyError "Invalid CVC, please try again."
+      event.preventDefault()
+      return false
+
+    key = switch renderContext.env
       when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
     Stripe.setPublishableKey(key)
@@ -523,10 +543,10 @@ class Billing extends Obj
     button.addClass "disabled"
 
     Stripe.createToken {
-      number: $('.card-number').val()
-      cvc: $('.card-cvc').val(),
-      exp_month: $('.card-expiry-month').val(),
-      exp_year: $('.card-expiry-year').val()
+      number: number,
+      cvc: cvc,
+      exp_month: exp_month,
+      exp_year: exp_year
     }, (status, response) =>
       if response.error
         button.removeClass "disabled"
