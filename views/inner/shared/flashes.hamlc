@@ -3,7 +3,7 @@
     %a.close{href: "#", data-bind: "click: clearErrorMessage"}
       x
     Error:
-    %span{data-bind: "text: error_message"}
+    %span{data-bind: "html: error_message"}
     %br
     If we can help,
     %a{href: "#", data-bind: "click: raiseIntercomDialog"}
