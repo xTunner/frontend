@@ -188,6 +188,8 @@ class Build extends HasUrl
           "success"
         when "running"
           "notice"
+        when "not_run"
+          "warning"
         when "starting"
           ""
       result = {label: true, build_status: true}
@@ -202,6 +204,8 @@ class Build extends HasUrl
         "timed out"
       when "no_tests"
         "no tests"
+      when "not_run"
+        "not run"
       when "not_running"
         "not running"
       else
