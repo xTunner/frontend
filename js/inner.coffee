@@ -254,7 +254,6 @@ class Build extends HasUrl
       @committer_name or @committer_email
 
     @popover_content = @komp =>
-      console.log("popover content: %s", @dont_build())
       switch @dont_build()
         when "no-user"
           "pusher is not a Circle member"
