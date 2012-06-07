@@ -357,7 +357,7 @@ class User extends Obj
       login: ""
       basic_email_prefs: "all"
 
-    @environment = window.renderContext.environment
+    @environment = window.renderContext.env
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -504,7 +504,7 @@ class Billing extends Obj
 
 
   stripeSubmit: (data, event) ->
-    key = switch renderContext.environment
+    key = switch renderContext.env
       when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
     Stripe.setPublishableKey(key)
