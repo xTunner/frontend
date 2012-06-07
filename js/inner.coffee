@@ -821,7 +821,11 @@ class CircleViewModel extends Base
     $.get "/assets/js/tests/inner-tests.dieter", (code) =>
       eval code
 
-  raiseIntercomDialog: (message=null) =>
+  raiseIntercomDialog: (message) =>
+    unless intercomJQuery?
+      notifyError "Uh-oh, our Help system isn't available. Please email us instead, at <a href='mailto:sayhi@circleci.com'>sayhi@circleci.com</a>!"
+      return
+
     jq = intercomJQuery
     jq("#IntercomDefaultWidget").click()
     unless jq('#IntercomNewMessageContainer').is(':visible')
