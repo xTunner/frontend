@@ -872,8 +872,7 @@ window.SammyApp = Sammy '#app', () ->
 
     # Google analytics
     @bind 'event-context-after', ->
-      if window._kmq?
-        _kmq.push(['record', 'Viewed ' + @path]);
+      _kmq.push(['record', 'Viewed ' + @path]);
       if window._gaq? # we dont use ga in test mode
         window._gaq.push @path
 
