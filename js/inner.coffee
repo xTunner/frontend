@@ -41,6 +41,16 @@ $(document).ajaxSend((ev, xhr, options) ->
     textVal t, loading
 )
 
+# http://stackoverflow.com/questions/10113006/calling-a-view-function-after-view-model-update-in-knockout-js
+ko.bindingHandlers.popover =
+  init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
+    options = ko.utils.unwrapObservable(valueAccessor()) or {}
+    content = ko.utils.unwrapObservable(options.content) or ""
+    $(element).popover({content: content})
+
+    ko.utils.domNodeDisposal.addDisposeCallback(element, () ->
+      $(element).popover('hide')
+    )
 
 # Make the buttons disabled when clicked
 $.ajaxSetup
@@ -149,15 +159,11 @@ class ActionLog extends Base
     x.join ""
 
 
-
-
-
 class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
     super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
-
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
@@ -247,6 +253,14 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
+    @popover_content = @komp =>
+      console.log("popover content: %s", @dont_build())
+      switch @dont_build()
+        when "no-user"
+          "pusher is not a Circle member"
+        when "user-not-paid"
+          "pusher doesn't have a paid plan"
+
   # TODO: CSRF protection
   retry_build: (data, event) =>
     $.ajax(
@@ -259,7 +273,6 @@ class Build extends HasUrl
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
-
   description: (include_project) =>
     return unless @build_num?
 
@@ -267,9 +280,6 @@ class Build extends HasUrl
       "#{@project_name()} ##{@build_num}"
     else
       @build_num
-
-
-
 
 class Project extends HasUrl
   constructor: (json) ->
@@ -584,6 +594,7 @@ display = (template, args) ->
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
 
+
 class CircleViewModel extends Base
   constructor: ->
     observableCount = 0
@@ -691,7 +702,6 @@ class CircleViewModel extends Base
       start_time = Date.now()
       @recent_builds((new Build d for d in data))
       window.time_taken_recent_builds = Date.now() - start_time
-
 
   loadDashboard: (cx) =>
     @loadProjects()
