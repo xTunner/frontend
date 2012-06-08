@@ -94,7 +94,7 @@
       Another cause of this bug is a rendering problem.
       Circle may not use the same exact browser as you use locally (this, of course, is a good thing), so it may catch a rendering bug that you don't.
       Check out
-      %a{ href: "/docs/about-circle#versions" } Circle's program versions
+      %a{ href: "/docs/environment#browsers" } Circle's program versions
       to see if this is the case.
 
 
