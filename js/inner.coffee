@@ -890,8 +890,7 @@ window.SammyApp = Sammy '#app', () ->
 
 $(document).ready () ->
   SammyApp.run window.location.pathname.replace(/(.+)\/$/, "$1")
-  if window._kmq?
-    _kmq.push(['identify', VM.current_user().login])
+  _kmq.push(['identify', VM.current_user().login])
 
 
 
