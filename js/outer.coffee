@@ -59,6 +59,7 @@ circle = $.sammy "body", ->
                 "about-circle",
 #                "integrations",
                 "configuration",
+                "environment",
 #                "api"
               ]
       categories = {}
