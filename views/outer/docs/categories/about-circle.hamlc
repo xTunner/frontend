@@ -63,3 +63,14 @@
       %a{ href: "/privacy#security" }
         security policy
       goes into more detail about our safeguards to ensure the security of your code.
+
+
+
+    %h1.section
+      %a#versions What version of X do you use?
+    %hr
+
+    %p
+      See our
+      %a{href: "/docs/environment"} Circle Environment
+      documentation for every detail we can think to provide you.
