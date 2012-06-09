@@ -230,7 +230,13 @@
 
 
 
+    %h1.section
+      %a#capybara-timeout (Ruby) "unable to obtain stable firefox connection in 60 seconds"
+    %hr
 
+    %p
+      There have been a number of bugs in selenium-driver that cause this error.
+      Try updating your selenium-webdriver gem to 2.21.2 or later.
 
 
 -# migrate takes forever
