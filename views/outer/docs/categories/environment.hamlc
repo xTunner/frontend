@@ -74,7 +74,7 @@
       This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
       You do not need to anything to set this up.
       We also have
-      %code phantomjs
+      %code phantomjs 1.5.0 (development)
       pre-installed.
 
     %p
