@@ -5,6 +5,14 @@
 
   (We'll customize it in a moment)
 
+  .row.move-up
+    .offset7.span8.alert-message.block-message.warning
+      Don't have the company card?
+      Send this invite link to a card holder:
+      %a{href: "https://circleci.com/?join=id-like-to-pay-please"}
+        https://circleci.com/?join=id-like-to-pay-please
+
+
   .row.pricing
     .offset0.span4
       = HAML['account_plan_titles']()
