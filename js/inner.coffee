@@ -363,6 +363,7 @@ class User extends Obj
   observables: =>
     tokens: []
     tokenLabel: ""
+    user_key_fingerprint: ""
 
   constructor: (json) ->
     super json,
@@ -392,6 +393,27 @@ class User extends Obj
         true
     false
 
+  create_user_key: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/user/ssh-key"
+      data: JSON.stringify {label: @tokenLabel()}
+      success: (result) =>
+        @user_key_fingerprint(result.user_key_fingerprint)
+        true
+    false
+
+  delete_user_key: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      event: event
+      url: "/api/v1/user/ssh-key"
+      data: JSON.stringify {label: @tokenLabel()}
+      success: (result) =>
+        @user_key_fingerprint(result.user_key_fingerprint)
+        true
+    false
 
   save_preferences: (data, event) =>
     $.ajax
