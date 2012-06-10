@@ -151,6 +151,8 @@ circle = $.sammy "body", ->
   @get("/gh/.*", (cx) =>
     @unload()
     window.location = cx.path)
+  @post "/notify", -> true # allow to propagate
+  @post "/about/contact", -> true # allow to propagate
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
