@@ -229,9 +229,8 @@
       file.
 
 
-
     %h1.section
-      %a#capybara-timeout (Ruby) "unable to obtain stable firefox connection in 60 seconds"
+      %a#capybara-timeout (Ruby) \"unable to obtain stable firefox connection in 60 seconds\"
     %hr
 
     %p
