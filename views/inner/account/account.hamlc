@@ -10,9 +10,9 @@
       %a{:href: '/account/api'}
         API
 
-    %li#ssh
-      %a{:href: '/account/ssh'}
-        SSH
+    -# %li#ssh
+    -#   %a{:href: '/account/ssh'}
+    -#     SSH
 
     %li#plans
       %a{:href: '/account/plans'}
