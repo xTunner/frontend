@@ -163,7 +163,26 @@ class Build extends HasUrl
   constructor: (json) ->
     # make the actionlogs observable
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
-    super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
+    super json,
+       body: null
+       subject: null
+       committer_name: null
+       committer_email: null
+       committer_date: null
+       author_name: null
+       author_email: null
+       author_date: null,
+       ["build_num"
+        "status"
+        "committer_name"
+        "committer_email"
+        "why"
+        "user"
+        "job_name"
+        "branch"
+        "vcs_revision"
+        "start_time"
+        "build_time_millis"]
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
