@@ -1,0 +1,36 @@
+%h2 SSH User keys
+
+%p
+  Normally, Circle associates a GitHub deploy key with each followed repo. Each deploy key is unique, and can only be used to checkout the code for that repo.
+
+%p
+  Clicking will associate a new SSH key with your user account (rather than any specific repo). You can view your GitHub ssh keys
+    %a{href: "https://github.com/settings/ssh"}
+      on Github
+
+%p
+  User Keys are useful if testing your project requires access to multiple private GitHub repos, for example if you use use Ruby Bundler, and specify a dependency on a github private repo
+
+%div{data-bind: "if: user_key_fingerprint"}
+  %h3 Existing User Key
+  %span{data-bind: "text: user_key_fingerprint"}
+  %form.api
+    %fieldset.form-stacked
+      .row
+        %input.btn.danger{type: "submit",
+                              value: "Delete User Key",
+                              data-bind: "click: delete_user_key",
+                              data-loading-text: "Deleting...",
+                              data-success-text: "Deleted"}
+
+%div{data-bind: "ifnot: user_key_fingerprint"}
+  %h3 No existing User Key
+  %h3 Create User Key
+  %form.api
+    %fieldset.form-stacked
+      .row
+        %input.btn.primary{type: "submit",
+                           value: "Create User Key",
+                           data-bind: "click: create_user_key",
+                           data-loading-text: "Creating...",
+                           data-success-text: "Created"}
