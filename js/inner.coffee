@@ -900,6 +900,10 @@ window.SammyApp = Sammy '#app', () ->
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 
+    # dont show an error when posting
+    @post '/logout', -> true
+    @post '/admin/switch-user', -> true
+
     # Google analytics
     @bind 'event-context-after', ->
       if window._gaq? # we dont use ga in test mode
