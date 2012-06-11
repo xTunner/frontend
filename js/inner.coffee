@@ -26,7 +26,7 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
-    notifyError xhr.responseText or xhr.statusText, null, null, true
+    notifyError (xhr.responseText or xhr.statusText)
 )
 
 $(document).ajaxSend((ev, xhr, options) ->
