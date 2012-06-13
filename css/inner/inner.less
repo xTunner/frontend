@@ -93,35 +93,55 @@ body {
       font-size: 18px;
    }
 
-   .action_header {
-      .border-radius;
-      background-repeat: no-repeat;
-      padding: 6px 0px 6px 40px;
-      margin: 5px 0px 5px 10px;
-   }
+   .ah_wrapper {
+      overflow: hidden; // put the contents beside each other
+      margin: 4px 0px; // space between commands
 
-   .action_header.success {
-      &.contents { background-image: url("/img/green_minus.png"); }
-      &.contents.minimize { background-image: url("/img/green_plus.png"); }
-      background-color: #57A957;
-   }
+      @green:  #57A957;
+      @red: #EE5F5B;
+      @yellow: #E0C91B;
 
-   .action_header.failed {
-      &.contents { background-image: url("/img/red_minus.png"); }
-      &.contents.minimize { background-image: url("/img/red_plus.png"); }
-      background-color: #EE5F5B;
-   }
+      .button {
+         float: left; // put to the right of .command
+         .border-radius;
+         background-repeat: no-repeat;
+         background-position: center;
+         margin-right: 7px; // space between button and command
+         height: 30px; // the button has no size without this
+         width: 30px; // the button has no size without this
 
-   .action_header.timedout {
-      &.contents { background-image: url("/img/red_minus.png"); }
-      &.contents.minimize { background-image: url("/img/red_plus.png"); }
-      background-color: #EE5F5B;
-   }
+         &.success {
+            &.contents { background-image: url("/img/green_minus.png"); }
+            &.contents.minimize { background-image: url("/img/green_plus.png"); }
+         }
 
-   .action_header.running {
-      &.contents { background-image: url("/img/green_minus.png"); }
-      &.contents.minimize { background-image: url("/img/green_plus.png"); }
-      background-color: #E0C91B;
+         &.failed {
+            &.contents { background-image: url("/img/red_minus.png"); }
+            &.contents.minimize { background-image: url("/img/red_plus.png"); }
+         }
+
+         &.timedout {
+            &.contents { background-image: url("/img/red_minus.png"); }
+            &.contents.minimize { background-image: url("/img/red_plus.png"); }
+         }
+
+         &.running {
+            &.contents { background-image: url("/img/green_minus.png"); }
+            &.contents.minimize { background-image: url("/img/green_plus.png"); }
+         }
+
+      }
+
+      .success { background-color: @green; }
+      .failed { background-color: @red; }
+      .running { background-color: @yellow; }
+      .timedout { background-color: @red; }
+
+      .command {
+         overflow: hidden; // put to the left of .button
+         padding: 5px 0 5px 20px;
+         .border-radius;
+      }
    }
 
 

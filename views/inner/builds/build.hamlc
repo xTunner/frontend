@@ -86,15 +86,18 @@
       -# wrapper allows the header and detail be siblings, for the JS
       .wrapper.build-output
         .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
-          %span.command
-            \$
-            %span{data-bind: "text: name, attr: {title: bash_command}"}
-          %span.time
-            = surround '(', ' )', ->
-              %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
+          .ah_wrapper
+            .button{data-bind: "css: action_header_style"}
+            .command{data-bind: "css: action_header_style"}
+              %span
+                \$
+                %span{data-bind: "text: name, attr: {title: bash_command}"}
+              %span.time
+                = surround '(', ' )', ->
+                  %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
 
-            %span{data-bind: "if: timedout"}
-              %b (TIMED OUT)
+                %span{data-bind: "if: timedout"}
+                  %b (TIMED OUT)
 
         .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
 
