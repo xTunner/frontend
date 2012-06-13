@@ -55,11 +55,10 @@ circle = $.sammy "body", ->
       pages = [
                 "getting-started",
                 "common-problems",
-#                "faq",
-                "about-circle",
 #                "integrations",
                 "configuration",
                 "environment",
+                "faq",
 #                "api"
               ]
       categories = {}
