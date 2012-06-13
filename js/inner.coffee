@@ -459,11 +459,21 @@ class Billing extends Obj
         b.price - a.price # most expensive first
       ap
 
+    @defaultPlan = @komp =>
+      for p in @availablePlans()
+        if p.default?
+          return p
+
     @selectedPlan = @komp =>
       if @chosenPlan()?
         @chosenPlan()
       else if @existingPlanName()? and @availablePlans()?
         @availablePlans()[@existingPlanName()]
+      else if @defaultPlan()?
+        @defaultPlan()
+      else
+        @plans()[2] # always show something - pick the 3rd most expensive
+
 
 
     @userMatrix = @komp =>
