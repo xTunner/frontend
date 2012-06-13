@@ -41,17 +41,6 @@ $(document).ajaxSend((ev, xhr, options) ->
     textVal t, loading
 )
 
-# http://stackoverflow.com/questions/10113006/calling-a-view-function-after-view-model-update-in-knockout-js
-ko.bindingHandlers.popover =
-  init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-    options = ko.utils.unwrapObservable(valueAccessor()) or {}
-    content = ko.utils.unwrapObservable(options.content) or ""
-    $(element).popover({content: content, html: true, delayOut: 1000})
-
-    ko.utils.domNodeDisposal.addDisposeCallback(element, () ->
-      $(element).popover('hide')
-    )
-
 # Make the buttons disabled when clicked
 $.ajaxSetup
   contentType: "application/json"

@@ -10,8 +10,7 @@
       %th Status
 
   %tbody{data-bind: "foreach: { data: #{@builds} }"}
-    %tr{data-bind: "css: { dont_build: dont_build }, popover: {content: popover_content }"
-        , data-placement: "below" }
+    %tr{data-bind: "css: { dont_build: dont_build }"}
       %td
         %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
