@@ -234,8 +234,18 @@
     %hr
 
     %p
-      There have been a number of bugs in selenium-driver that cause this error.
-      Try updating your selenium-webdriver gem to 2.21.2 or later.
+      This is an issue with the selenium-webdriver gem,
+      As Firefox updates to newer revisions, the interface used by selenium-webdriver can break.
+      Fortunately, the fix is pretty easy.
+
+    %p
+      Update to a new version of the selenium-webdriver gem in your Gemfile, if possible to the latest version.
+      While some Circle users have had success with 2.5, others have had to update to 2.21 or 2.22.
+      Updating to the
+      %a{href: "http://rubygems.org/gems/selenium-webdriver"}
+        latest revision
+      is probably your best bet.
+
 
 
 -# migrate takes forever
