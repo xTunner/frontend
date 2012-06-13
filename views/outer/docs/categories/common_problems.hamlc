@@ -256,3 +256,10 @@
 -# if FS dependencies, run tests individually to see if they work.
 -# maybe git clean first
 -# often updating to newer gem versions fixes problems. You'd be surprised how often that happens
+
+-# did you try googling the problem
+
+-# - is that file in any way affected by other tests, or the order of file-system traversals? OSX has ordered file traversals while Linux does not, and this sometimes leads to weird errors.
+
+-# - if you run the test multiple times locally, does it always work? if not, then it might just be a race?
+-# are you running the tests right - no shortcuts around bundle exec for example?
