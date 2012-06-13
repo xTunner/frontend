@@ -1,5 +1,12 @@
 @import "../vendor/bootstrap-1.4.0.min";
 
+.border-radius(@radius: 5px) {
+   webkit-border-radius: @radius;
+   moz-border-radius: @radius;
+   border-radius: @radius;
+}
+
+
 body {
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
    padding-top: 40px;
@@ -135,9 +142,10 @@ body {
  * Billing page
  */
 
-@color: #77aaff;
 
 #plans {
+
+   @color: #77aaff;
 
    .move-up {
       margin-top: -50px;
@@ -156,6 +164,7 @@ body {
 
    .selected {
       background-color: @color;
+      .border-radius;
    }
 
    #per-developer-plan {
@@ -190,6 +199,7 @@ body {
 
    #payment-form {
       background-color: @color;
+      .border-radius;
       padding-top: 12px;
       padding-bottom: 20px;
       #warning {
