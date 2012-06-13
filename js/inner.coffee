@@ -137,6 +137,12 @@ class ActionLog extends Base
       result[css] = true
       result
 
+    @action_header_button_style = @komp =>
+      if @has_content()
+        @action_header_style()
+      else
+        {}
+
     @action_log_style =
       minimize: @minimize()
 

@@ -87,7 +87,7 @@
       .wrapper.build-output
         .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
           .ah_wrapper
-            .button{data-bind: "css: action_header_style"}
+            .button{data-bind: "css: action_header_button_style"}
             .command{data-bind: "css: action_header_style"}
               %span
                 \$
