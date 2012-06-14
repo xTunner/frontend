@@ -244,7 +244,7 @@
 
     %p
       We install a
-      %{href: "/docs/environment#ruby" } large number of Rubies
+      %a{href: "/docs/environment#ruby" } large number of Rubies
       by default.
       If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
       Please contact us and we'll be happy to install your version so that it does not slow down your tests.
