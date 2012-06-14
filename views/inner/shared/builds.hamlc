@@ -28,11 +28,18 @@
         %span{data-bind: "ifnot: body"}
           %span.build_log{data-bind: "text: subject"}
 
+      / ko if: status != 'not_run'
       %td
         %span{data-bind: "text: pretty_start_time"}
 
       %td
         %span{data-bind: "text: duration"}
+      / /ko
+
+      / ko if: status == 'not_run'
+      %td{colspan: 2, data-bind: "text: not_run_message"}
+      / /ko
+
       %td.build_status
         %a{data-bind: "attr: { href: url }, text: status_words, css: style"}
 
