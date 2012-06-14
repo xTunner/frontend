@@ -37,7 +37,7 @@
       / /ko
 
       / ko if: status == 'not_run'
-      %td{colspan: 2, data-bind: "text: not_run_message"}
+      = HAML['not_run_message']()
       / /ko
 
       %td.build_status

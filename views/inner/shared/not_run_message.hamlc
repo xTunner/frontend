@@ -1,0 +1,15 @@
+%td.not_run_message{colspan: 2}
+
+  %span{data-bind: "if: dont_build() == 'not-paid-user'"}
+    %a{href: "/account/plans"}
+    Add
+    %span{data-bind: "text: user"}
+    to your account
+
+  %span{data-bind: "if: dont_build() == 'no-user'"}
+    Invite
+    %span{data-bind: "text: user"}
+    to Circle
+
+  %span{data-bind: "if: dont_build() == 'bad-push'"}
+    Unverified push - ignored

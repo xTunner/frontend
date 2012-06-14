@@ -271,12 +271,6 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
-    @popover_content = @komp =>
-      switch @dont_build()
-        when "no-user"
-          "Invite #{@author()} to Circle to test their pushes. Send them this link: https://circleci.com/?join=test-your-code"
-        when "user-not-paid"
-          "#{@author()}'s trial is over. <a href='/account/plans'>Add them to your account</a>"
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
