@@ -1,3 +1,13 @@
+queryParams = () ->
+  res = {}
+  params = window.location.search.substring(1).split("&")
+  for p in params
+    [k,v] = p.split("=")
+    res[k] = v
+  res
+
+window.queryParams = queryParams
+
 circle = $.sammy "body", ->
 
   # Page
