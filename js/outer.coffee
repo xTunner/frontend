@@ -1,3 +1,13 @@
+queryParams = () ->
+  res = {}
+  params = window.location.search.substring(1).split("&")
+  for p in params
+    [k,v] = p.split("=")
+    res[k] = v
+  res
+
+window.queryParams = queryParams
+
 circle = $.sammy "body", ->
 
   # Page
@@ -38,7 +48,7 @@ circle = $.sammy "body", ->
   class Home extends Page
     render: (cx) =>
       super(cx)
-      _kmq.push(['trackClick', '.kissAuthGithub', 'join link clicked'])
+      _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
 
   # Doc
