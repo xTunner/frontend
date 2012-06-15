@@ -38,7 +38,7 @@ circle = $.sammy "body", ->
   class Home extends Page
     render: (cx) =>
       super(cx)
-      _kmq.push(['trackClick', '.kissAuthGithub', 'join link clicked'])
+      _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
 
   # Doc
