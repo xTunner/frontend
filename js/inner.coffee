@@ -381,7 +381,7 @@ class Build extends HasUrl
       @build_num
 
   pusherChannel: () =>
-    "private-#{@project_name()}-#{@build_num}".replace(/\//g,"-")
+    "private-#{@project_name()}@#{@build_num}".replace(/\//g,"@")
 
   update: (json) =>
     @status(json.status)
