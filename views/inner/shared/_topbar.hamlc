@@ -37,7 +37,7 @@
 
               %li
                 %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
-                  Live chat
+                  Chat support
 
 
               %div{data-bind: "if: admin"}

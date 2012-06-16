@@ -1,3 +1,13 @@
+queryParams = () ->
+  res = {}
+  params = window.location.search.substring(1).split("&")
+  for p in params
+    [k,v] = p.split("=")
+    res[k] = v
+  res
+
+window.queryParams = queryParams
+
 circle = $.sammy "body", ->
 
   # Page
@@ -35,6 +45,12 @@ circle = $.sammy "body", ->
       else
         @load(cx)
 
+  class Home extends Page
+    render: (cx) =>
+      super(cx)
+      _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
+      _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
+
   # Doc
   class Docs extends Page
     filename: (cx) =>
@@ -49,10 +65,10 @@ circle = $.sammy "body", ->
       pages = [
                 "getting-started",
                 "common-problems",
-#                "faq",
-                "about-circle",
 #                "integrations",
                 "configuration",
+                "environment",
+                "faq",
 #                "api"
               ]
       categories = {}
@@ -98,7 +114,7 @@ circle = $.sammy "body", ->
         @init(cx)
 
   # Pages
-  home = new Page("home", "Continuous Integration made easy")
+  home = new Home("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy and Security")
   docs = new Docs("docs", "Documentation")
@@ -132,6 +148,10 @@ circle = $.sammy "body", ->
     if data? and data.error? and window.Hoptoad?
       window.Hoptoad.notify data.error
 
+  # Kissmetrics
+  if renderContext.showJoinLink
+    _kmq.push(['record', "showed join link"])
+
   # Navigation
   @get "/docs(.*)", (cx) -> docs.display(cx)
   @get "/about.*", (cx) -> about.display(cx)
@@ -140,8 +160,8 @@ circle = $.sammy "body", ->
   @get("/gh/.*", (cx) =>
     @unload()
     window.location = cx.path)
-
-
+  @post "/notify", -> true # allow to propagate
+  @post "/about/contact", -> true # allow to propagate
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9

@@ -3,6 +3,7 @@
     .row
       .offset4.span5
         %form.form-stacked.offset3.span6#payment-form
+          %img.cards{src: "/img/creditcards.png", title: "credit card logos"}
           .form-row
             %label Card Number
             %input.card-number{type: "text",
@@ -42,8 +43,8 @@
   .div{data-bind: "if: cardInfo"}
     .row
       .offset0.span5
-
         %form.form-stacked.offset3.span6#payment-form
+          %img.cards{src: "/img/creditcards.png", title: "credit card logos"}
           .form-row
             %label Card Number
             %input.card-number{type: "text",
@@ -66,9 +67,9 @@
                                     disabled: true,
                                     data-bind: "value: cardInfo().exp_year"}}
           %br
-          .alert-message.block-message.info#warning
+          .alert-message.block-message#warning
             %p
-              New plans will apply immediately, and will be pro-rated on your next billing date.
+              New plans will apply immediately, and the difference will apply to your next bill.
 
           %button.btn.primary.large.submit-button#charge-button{type: "submit",
                                                                 data-bind: "click: stripeUpdate",

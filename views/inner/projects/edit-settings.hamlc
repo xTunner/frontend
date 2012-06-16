@@ -9,35 +9,25 @@
 .row
   .span6.alert-message.block-message.warning
 
-    %span{data-bind: "if: uninferrable"}
+    %span{data-bind: "ifnot: has_settings"}
       %span.highlight
-        We could not automatically infer your project settings
-      You will need to manually set up the commands to test your project.
-
-    %span{data-bind: "if: inferred"}
-      %span.highlight
-        Your project settings are automatically inferred!
+        We will infer your project's settings during every push.
       We automatically infer test settings and how to set up the machine for your project.
       If your tests aren't working, you may need to manually override our inference.
 
-    %span{data-bind: "if: overridden"}
+    %span{data-bind: "if: has_settings"}
       %span.highlight
         You have overridden our inferred settings!
       We'll infer your setup again if you delete your commands.
 
 .row
   .span8.indent-slightly
-    %span{data-bind: "if: uninferrable"}
-      %p
-        %a.btn.primary.large{ href: "#setup" }
-          Set up your project
-
-    %span{data-bind: "if: inferred"}
+    %span{data-bind: "ifnot: has_settings"}
       %p
         %a.btn.primary.large{ href: "#setup" }
           Override automatic inference
 
-    %span{data-bind: "if: overridden"}
+    %span{data-bind: "if: has_settings"}
       %p
         %a.btn.primary.large{ href: "#setup" }
           Edit project settings

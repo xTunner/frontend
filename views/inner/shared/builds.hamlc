@@ -9,8 +9,9 @@
       %th Length
       %th Status
 
-  %tbody{data-bind: "foreach: #{@builds}"}
-    %tr
+  %tbody{data-bind: "foreach: { data: #{@builds} }"}
+    %tr{data-bind: "css: { dont_build: dont_build }, popover: {content: popover_content }"
+        , data-placement: "below" }
       %td
         %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
@@ -24,9 +25,9 @@
 
       %td{style: "max-width: 45em;"}
         %span{data-bind: "if: body"}
-          %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
+          %a.build_log{href: '#', data-bind: "text: subject, attr: { title: body }"}
         %span{data-bind: "ifnot: body"}
-          %span{data-bind: "text: subject"}
+          %span.build_log{data-bind: "text: subject"}
 
       %td
         %span{data-bind: "text: pretty_start_time"}

@@ -26,7 +26,7 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
-    notifyError xhr.responseText or xhr.statusText, null, null, true
+    notifyError (xhr.responseText or xhr.statusText)
 )
 
 ko.observableArray["fn"].setIndex = (index, newItem) ->
@@ -45,6 +45,17 @@ $(document).ajaxSend((ev, xhr, options) ->
     xhr.event.savedText = textVal t
     textVal t, loading
 )
+
+# http://stackoverflow.com/questions/10113006/calling-a-view-function-after-view-model-update-in-knockout-js
+ko.bindingHandlers.popover =
+  init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
+    options = ko.utils.unwrapObservable(valueAccessor()) or {}
+    content = ko.utils.unwrapObservable(options.content) or ""
+    $(element).popover({content: content, html: true, delayOut: 1000})
+
+    ko.utils.domNodeDisposal.addDisposeCallback(element, () ->
+      $(element).popover('hide')
+    )
 
 # Make the buttons disabled when clicked
 $.ajaxSetup
@@ -152,6 +163,12 @@ class ActionLog extends Obj
       success: @komp => @status() == "success"
       failed: @komp => @status() == "failed"
 
+    @action_header_button_style = @komp =>
+      if @has_content()
+        @action_header_style()
+      else
+        {}
+
     @action_log_style =
       minimize: @minimize
 
@@ -178,6 +195,7 @@ class ActionLog extends Obj
   appendLog: (json) =>
     @out.push(json.out)
 
+
 class Step extends Obj
 
   observables: =>
@@ -192,7 +210,26 @@ class Build extends HasUrl
 
     json.steps = if json.steps then (new Step(j) for j in json.steps) else []
 
-    super json, {}, ["build_num", "status", "committer_name", "committer_email", "why", "user", "job_name", "branch", "vcs_revision", "start_time", "build_time_millis"]
+    super json,
+      body: null
+      subject: null
+      committer_name: null
+      committer_email: null
+      committer_date: null
+      author_name: null
+      author_email: null
+      author_date: null,
+      ["build_num"
+       "status"
+       "committer_name"
+       "committer_email"
+       "why"
+       "user"
+       "job_name"
+       "branch"
+       "vcs_revision"
+       "start_time"
+       "build_time_millis"]
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
@@ -217,6 +254,8 @@ class Build extends HasUrl
           "success"
         when "running"
           "notice"
+        when "not_run"
+          "warning"
         when "starting"
           ""
       result = {label: true, build_status: true}
@@ -231,6 +270,8 @@ class Build extends HasUrl
         "timed out"
       when "no_tests"
         "no tests"
+      when "not_run"
+        "not run"
       when "not_running"
         "not running"
       else
@@ -276,10 +317,17 @@ class Build extends HasUrl
 
     @github_revision = @komp =>
       return unless @vcs_revision
-      @vcs_revision.substring 0, 9
+      @vcs_revision.substring 0, 7
 
     @author = @komp =>
       @committer_name or @committer_email
+
+    @popover_content = @komp =>
+      switch @dont_build()
+        when "no-user"
+          "Invite #{@author()} to Circle to test their pushes. Send them this link: https://circleci.com/?join=test-your-code"
+        when "user-not-paid"
+          "#{@author()}'s trial is over. <a href='/account/plans'>Add them to your account</a>"
 
     @build_channel = VM.pusher.subscribe(@pusherChannel())
     @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
@@ -344,16 +392,6 @@ class Project extends HasUrl
     @has_settings = @komp =>
       @setup() or @dependencies() or @test() or @extra()
 
-    @uninferrable = @komp =>
-      @status() == "uninferrable"
-
-    @inferred = @komp =>
-      (not @uninferrable()) and (not @has_settings())
-
-    @overridden = @komp =>
-      (not @uninferrable()) and @has_settings()
-
-
 
 
   @sidebarSort: (l, r) ->
@@ -369,16 +407,12 @@ class Project extends HasUrl
   checkbox_title: =>
     "Add CI to #{@project_name()}"
 
-  uninferrable: =>
-    @status() is 'uninferrable'
-
   unfollow: (data, event) =>
     $.ajax
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
-        @status(data.status)
         @followed(data.followed)
 
   follow: (data, event) =>
@@ -389,7 +423,6 @@ class Project extends HasUrl
       success: (data) =>
         # The new model here is not going to be "enabled" and "available", but
         # will allow you to add a project without being an admin
-        @status(data.status)
         @followed(data.followed)
 
   save_hipchat: (data, event) =>
@@ -422,6 +455,7 @@ class User extends Obj
   observables: =>
     tokens: []
     tokenLabel: ""
+    user_key_fingerprint: ""
 
   constructor: (json) ->
     super json,
@@ -429,7 +463,7 @@ class User extends Obj
       login: ""
       basic_email_prefs: "all"
 
-    @environment = window.renderContext.environment
+    @environment = window.renderContext.env
 
     @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
@@ -451,6 +485,27 @@ class User extends Obj
         true
     false
 
+  create_user_key: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/user/ssh-key"
+      data: JSON.stringify {label: @tokenLabel()}
+      success: (result) =>
+        @user_key_fingerprint(result.user_key_fingerprint)
+        true
+    false
+
+  delete_user_key: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      event: event
+      url: "/api/v1/user/ssh-key"
+      data: JSON.stringify {label: @tokenLabel()}
+      success: (result) =>
+        @user_key_fingerprint(result.user_key_fingerprint)
+        true
+    false
 
   save_preferences: (data, event) =>
     $.ajax
@@ -496,11 +551,21 @@ class Billing extends Obj
         b.price - a.price # most expensive first
       ap
 
+    @defaultPlan = @komp =>
+      for p in @availablePlans()
+        if p.default?
+          return p
+
     @selectedPlan = @komp =>
       if @chosenPlan()?
         @chosenPlan()
       else if @existingPlanName()? and @availablePlans()?
         @availablePlans()[@existingPlanName()]
+      else if @defaultPlan()?
+        @defaultPlan()
+      else
+        @plans()[2] # always show something - pick the 3rd most expensive
+
 
 
     @userMatrix = @komp =>
@@ -573,7 +638,27 @@ class Billing extends Obj
       @loaded = true
 
   stripeSubmit: (data, event) ->
-    key = switch renderContext.environment
+    number = $('.card-number').val()
+    cvc = $('.card-cvc').val()
+    exp_month = $('.card-expiry-month').val()
+    exp_year = $('.card-expiry-year').val()
+
+    unless Stripe.validateCardNumber number
+      notifyError "Invalid credit card number, please try again."
+      event.preventDefault()
+      return false
+
+    unless Stripe.validateExpiry exp_month, exp_year
+      notifyError "Invalid expiry date, please try again."
+      event.preventDefault()
+      return false
+
+    unless Stripe.validateCVC cvc
+      notifyError "Invalid CVC, please try again."
+      event.preventDefault()
+      return false
+
+    key = switch renderContext.env
       when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
     Stripe.setPublishableKey(key)
@@ -583,10 +668,10 @@ class Billing extends Obj
     button.addClass "disabled"
 
     Stripe.createToken {
-      number: $('.card-number').val()
-      cvc: $('.card-cvc').val(),
-      exp_month: $('.card-expiry-month').val(),
-      exp_year: $('.card-expiry-year').val()
+      number: number,
+      cvc: cvc,
+      exp_month: exp_month,
+      exp_year: exp_year
     }, (status, response) =>
       if response.error
         button.removeClass "disabled"
@@ -652,6 +737,7 @@ class Billing extends Obj
 display = (template, args) ->
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
+
 
 class CircleViewModel extends Base
   constructor: ->
@@ -765,7 +851,6 @@ class CircleViewModel extends Base
       @recent_builds((new Build d for d in data))
       window.time_taken_recent_builds = Date.now() - start_time
 
-
   loadDashboard: (cx) =>
     @loadProjects()
     @loadRecentBuilds()
@@ -868,7 +953,11 @@ class CircleViewModel extends Base
     $.get "/assets/js/tests/inner-tests.dieter", (code) =>
       eval code
 
-  raiseIntercomDialog: (message=null) =>
+  raiseIntercomDialog: (message) =>
+    unless intercomJQuery?
+      notifyError "Uh-oh, our Help system isn't available. Please email us instead, at <a href='mailto:sayhi@circleci.com'>sayhi@circleci.com</a>!"
+      return
+
     jq = intercomJQuery
     jq("#IntercomDefaultWidget").click()
     unless jq('#IntercomNewMessageContainer').is(':visible')
@@ -917,14 +1006,22 @@ window.SammyApp = Sammy '#app', () ->
 
     @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
 
+    # dont show an error when posting
+    @post '/logout', -> true
+    @post '/admin/switch-user', -> true
+
     # Google analytics
     @bind 'event-context-after', ->
       if window._gaq? # we dont use ga in test mode
         window._gaq.push @path
 
 
+
+
+
 $(document).ready () ->
   SammyApp.run window.location.pathname.replace(/(.+)\/$/, "$1")
+  _kmq.push(['identify', VM.current_user().login])
 
 
 
