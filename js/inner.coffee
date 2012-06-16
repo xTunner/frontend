@@ -329,12 +329,19 @@ class Build extends HasUrl
         when "user-not-paid"
           "#{@author()}'s trial is over. <a href='/account/plans'>Add them to your account</a>"
 
-    @build_channel = VM.pusher.subscribe(@pusherChannel())
-    @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+    @maybeSubscribe()
 
-    @build_channel.bind('newAction', (json) => @newAction json)
-    @build_channel.bind('updateAction', (json) => @updateAction json)
-    @build_channel.bind('appendAction', (json) => @appendAction json)
+  isRunning: () =>
+    @start_time and not @end_time()
+
+  maybeSubscribe: () =>
+    if @isRunning()
+      @build_channel = VM.pusher.subscribe(@pusherChannel())
+      @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
+      @build_channel.bind('newAction', (json) => @newAction json)
+      @build_channel.bind('updateAction', (json) => @updateAction json)
+      @build_channel.bind('appendAction', (json) => @appendAction json)
 
   newAction: (json) =>
     if not @steps()[json.step]?
