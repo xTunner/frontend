@@ -12,7 +12,7 @@
 
     %li#ssh
       %a{:href: '/account/ssh'}
-       SSH
+        SSH
 
     %li#plans
       %a{:href: '/account/plans'}
