@@ -109,8 +109,6 @@ class HasUrl extends Base
     @project_path = @komp =>
       "/gh/#{@project_name()}"
 
-
-
 class ActionLog extends Obj
   observables: =>
     name: null
@@ -218,7 +216,10 @@ class Build extends HasUrl
       committer_date: null
       author_name: null
       author_email: null
-      author_date: null,
+      author_date: null
+      start_time: null
+      stop_time: null,
+
       ["build_num"
        "status"
        "committer_name"
@@ -228,7 +229,6 @@ class Build extends HasUrl
        "job_name"
        "branch"
        "vcs_revision"
-       "start_time"
        "build_time_millis"]
 
     @url = @komp =>
@@ -297,11 +297,11 @@ class Build extends HasUrl
             "unknown"
 
     @pretty_start_time = @komp =>
-      if @start_time
-        Circle.time.as_time_since(@start_time)
+      if @start_time()
+        Circle.time.as_time_since(@start_time())
 
     @duration = @komp () =>
-      if @start_time
+      if @start_time()
         Circle.time.as_duration(@build_time_millis)
 
     @branch_in_words = @komp =>
@@ -332,7 +332,7 @@ class Build extends HasUrl
     @maybeSubscribe()
 
   isRunning: () =>
-    @start_time and not @end_time()
+    @start_time() and not @stop_time()
 
   maybeSubscribe: () =>
     if @isRunning()
