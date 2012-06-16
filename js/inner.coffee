@@ -777,14 +777,11 @@ class CircleViewModel extends Base
 
   userSubscribePrivateChannel: () =>
     channel_name = "private-" + @current_user().login
-
     @user_channel = @pusher.subscribe(channel_name)
     @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
   pusherSetupBindings: () =>
     @user_channel.bind "call", (data) =>
-      window.fn = data.fn
-      window.args = data.args
       this[data.fn].apply(this, data.args)
 
   testCall: (arg) =>
