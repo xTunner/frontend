@@ -215,10 +215,10 @@ class Build extends HasUrl
       author_email: null
       author_date: null
       start_time: null
-      stop_time: null,
+      stop_time: null
+      status: null,
 
       ["build_num"
-       "status"
        "committer_name"
        "committer_email"
        "why"
@@ -232,7 +232,7 @@ class Build extends HasUrl
       "#{@project_path()}/#{@build_num}"
 
     @style = @komp =>
-      klass = switch @status
+      klass = switch @status()
         when "failed"
           "important"
         when "infrastructure_fail"
@@ -260,7 +260,7 @@ class Build extends HasUrl
       return result
 
 
-    @status_words = @komp => switch @status
+    @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "circle bug"
       when "timedout"
@@ -272,7 +272,7 @@ class Build extends HasUrl
       when "not_running"
         "not running"
       else
-        @status
+        @status()
 
     @committer_mailto = @komp =>
       if @committer_email
@@ -339,23 +339,33 @@ class Build extends HasUrl
       @build_channel.bind('newAction', (json) => @newAction json)
       @build_channel.bind('updateAction', (json) => @updateAction json)
       @build_channel.bind('appendAction', (json) => @appendAction json)
+      @build_channel.bind('updateStatus', (json) => @updateStatus json)
 
-  newAction: (json) =>
-    if not @steps()[json.step]?
-      @steps.setIndex(json.step, new Step({}))
+  fillActions: (step, index) =>
+    # fills up steps and actions such that step and index are valid
+
+    for i in [0..step-1]
+      if not @steps()[i]?
+        @steps.setIndex(step, new Step({}))
 
     # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
-    for i in [0..json.index-1]
-      if not @steps()[json.step].actions()[i]?
-        @steps()[json.step].actions.setIndex(i, new ActionLog({}))
+    for i in [0..index-1]
+      if not @steps()[step].actions()[i]?
+        @steps()[step].actions.setIndex(i, new ActionLog({}))
 
+  newAction: (json) =>
+    @fillActions(json.step, json.index)
     @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
 
   updateAction: (json) =>
+    @fillActions(json.step, json.index)
     @steps()[json.step].actions()[json.index].updateObservables(json.log)
 
   appendAction: (json) =>
     @steps()[json.step].actions()[json.index].out.push(json.out)
+
+  updateStatus: (json) =>
+    @status(json.status)
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
