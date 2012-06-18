@@ -171,7 +171,9 @@
         %code npm 1.1.21
 
     %p
-      Please contact us if other versions of node.js would be useful to you.
+      Please
+      = HAML['contact_us']()
+      if other versions of node.js would be useful to you.
 
 
 
@@ -206,7 +208,9 @@
         %code virtualenv 1.6.4
 
     %p
-      Please contact us if other versions of Python would be useful to you.
+      Please
+      = HAML['contact_us']()
+      if other versions of Python would be useful to you.
 
 
 
@@ -222,7 +226,9 @@
         %code pecl
 
     %p
-      Please contact us if other PHP versions would be useful to you, or if you need
+      Please
+      = HAML['contact_us']()
+      if other PHP versions would be useful to you, or if you need
       %code composer
       support.
 

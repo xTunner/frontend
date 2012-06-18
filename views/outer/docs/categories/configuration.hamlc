@@ -14,7 +14,9 @@
 
     %p
       We are adding support for configuring every part of your build.
-      If a configuration setting is not yet available, please contact us and we'll implement it immediately.
+      If a configuration setting is not yet available, please
+      = HAML["contact_us"]()
+      and we'll implement it immediately.
 
 
     %h1.section
@@ -247,7 +249,9 @@
       %a{href: "/docs/environment#ruby" } large number of Rubies
       by default.
       If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
-      Please contact us and we'll be happy to install your version so that it does not slow down your tests.
+      Please
+      = HAML['contact_us']()
+      and we'll be happy to install your version so that it does not slow down your tests.
 
 
     %h1.section
