@@ -42,7 +42,7 @@
 
 
     %pre
-      %code<>
+      %code.no-highlight<>
         :preserve
           machine:
             timezone:
@@ -50,9 +50,9 @@
             ruby:
               version: 1.9.3-p0-falcon
 
-        -#test:
-          post:
-            \- bundle exec rake custom:test:suite
+          test:
+            post:
+              \- bundle exec rake custom:test:suite
 
     %p
       This sets the
@@ -62,9 +62,9 @@
       and chooses a
       %a{href: "#ruby-version"} Ruby version
       and patchset.
-      -#, and adds a
-      -#%a{href: "#post-test"} custom test command
-      -#to run after the rest of your commands.
+      and adds a
+      %a{href: "#post-test"} custom test command
+      to run after the rest of your commands.
 
 
 
