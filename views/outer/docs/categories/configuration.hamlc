@@ -43,7 +43,6 @@
             post:
               \- bundle exec rake custom:test:suite
 
-
     %p
       This sets the
       = succeed ",", ->
