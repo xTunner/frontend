@@ -91,7 +91,11 @@
     %p
       The
       %code circle.yml
-      file is made up of a set of top-level structures, representing the
+      file is made up of a set of top-level structures.
+      Apart from
+      = succeed ',', ->
+        %a{ href: "/docs/configuration#notify"} notifications
+      each structure represents a
       %em phases
       of running your tests:
 
@@ -104,7 +108,6 @@
       %li <b>test</b>: running your tests
       -#%li <b>artifact</b>: uploading your artifacts for distribution
       -#%li <b>deploy</b>: deploying your code to your web servers
-      %li <b>notify</b>: alerting you of the test results
 
     %p
       Most projects won't need to specify anything for most of the phases.
