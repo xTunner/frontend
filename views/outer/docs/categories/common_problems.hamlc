@@ -147,14 +147,10 @@
           gem "rails", :git => "http://github.com/rails/rails"
 
     %p
-      If the repository is private, you will need to use our "user keys" feature.
-      We will be launching that this week.
-      As a workaround, you can put a username and password into the url, for example:
-
-    %pre
-      %code.ruby<>
-        :preserve
-          gem "big-secret", :git => "http://paul:mypassword@github.com/circleci/big-secret"
+      If the repository is private, you will need
+      %a{href: "https://circleci.com/account/ssh"}
+        enable user keys
+      from your account settings.
 
 
     %h1.section
@@ -165,6 +161,16 @@
       Circle infers your test settings from the code in your repository, typically looking at the packages you use.
       Most problems occur when there is some error in how the packages are specified.
 
+    %p
+      If you require custom commands, it obviously won't be possible for Circle to infer them correctly.
+      In that case, you can
+      %a{href: "/docs/configuration"} specify your commands
+      using a
+      %code circle.yml
+      file.
+
+    %p
+      If you feel we should have inferred your commands correctly, your project may diverge slightly from what we expect.
       Some of the most common problems:
 
 
