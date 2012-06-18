@@ -197,7 +197,7 @@ class Step extends Obj
     actions: []
 
   constructor: (json) ->
-    json.actions = (new ActionLog(j) for j in json.actions) if json.actions else []
+    json.actions = if json.actions then (new ActionLog(j) for j in json.actions) else []
     super json
 
 class Build extends HasUrl
