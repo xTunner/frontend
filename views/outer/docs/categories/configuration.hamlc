@@ -2,23 +2,12 @@
   .title
     %h1 Configuring Circle
       %i.icon-list-alt
-    %p Last Updated: May 29, 2012
+    %p Last Updated: June 18, 2012
     %h4 Tweak almost any setting you need
     %hr
 
 
   .doc
-    %h1.section
-      %a#construction Under construction
-    %hr
-
-    %p
-      We are adding support for configuring every part of your build.
-      If a configuration setting is not yet available, please
-      = HAML["contact_us"]()
-      and we'll implement it immediately.
-
-
     %h1.section
       %a#overview Overview
     %hr
@@ -134,6 +123,7 @@
       %code override
       sections, used for adding commands before, after, and instead-of our inferred commands.
       They frequently contain other sections, which are described throughout this file.
+
 
 
     %h3 Commands
@@ -447,3 +437,14 @@
       %code https://circleci.com/api/v1/project/:username/:projectname/:build
       to see an example.
       (Note: this API is unstable and is changing very soon).
+
+
+    %h1.section
+      %a#construction Under construction
+    %hr
+
+    %p
+      We are adding support for configuring every part of your build.
+      If you need to tweak something that isn't currently possible, please
+      = HAML["contact_us"]()
+      and we'll figure something out.
