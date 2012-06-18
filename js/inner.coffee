@@ -231,34 +231,53 @@ class Build extends HasUrl
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
 
-    @style = @komp =>
-      klass = switch @status()
+    @important_style = @komp =>
+      switch @status()
         when "failed"
-          "important"
-        when "infrastructure_fail"
-          "warning"
+          true
         when "timedout"
-          "important"
+          true
         when "no_tests"
-          "important"
+          true
+        else
+          false
+    @warning_style = @komp =>
+      switch @status()
+        when "infrastructure_fail"
+          true
         when "killed"
-          "warning"
-        when "fixed"
-          "success"
-        when "deploy"
-          "success"
-        when "success"
-          "success"
-        when "running"
-          "notice"
+          true
         when "not_run"
-          "warning"
-        when "starting"
-          ""
-      result = {label: true, build_status: true}
-      result[klass] = true
-      return result
+          true
+        else
+          false
 
+    @success_style = @komp =>
+      switch @status()
+        when "success"
+          true
+        when "fixed"
+          true
+        when "deploy"
+          true
+        else
+          false
+
+    @notice_style = @komp =>
+      switch @status()
+        when "running"
+          true
+        else
+          false
+
+    @style =
+      important: @important_style
+      warning: @warning_style
+
+      success: @success_style
+      notice: @notice_style
+      label: true
+      build_status: true
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
