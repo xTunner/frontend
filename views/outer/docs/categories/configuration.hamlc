@@ -54,6 +54,7 @@
             post:
               \- bundle exec rake custom:test:suite
 
+
     %p
       This sets the
       = succeed ",", ->
@@ -74,83 +75,112 @@
       %code circle.yml
       is designed to make easy things easy, and hard things possible.
 
-    -# %p
-    -#   Each setting in this file should only be necessary if you do something unusual.
-    -#   If you completely follow best practices, your tests should just work, without having to set anything here at all.
+    %p
+      Each setting in this file should only be necessary if you do something unusual.
+      If you completely follow best practices, your tests should just work, without having to set anything here at all.
 
-    -# %p
-    -#   If you only want to make a minor change, we recommend you check out the
-    -#   = surround '"', '"', ->
-    -#     %a{ href: "/docs/faq" }<>
-    -#       How do I ... ?
-    -#   section for simple common tweaks people need, or check out the
-    -#   = surround '"', '"', ->
-    -#     %a{ href: "/docs/common-problems" }<>
-    -#       It works on my machine
-    -#   section for fixes for common problems.
+    %p
+      If you have a test failure, our
+      %a{ href: "/docs/common-problems" }
+        troubleshooting section
+      may highlight the best way to solve the problem.
 
 
 
-    -# %h2 Complex behaviour
-    -# %p
-    -#   Circle allows quite complex behaviour, if you need it.
-    -#   You can override almost anything, and we make it as simple as possible.
-    -#   That said, if you find yourself relying on this section a lot, please
-    -#   %a{href: "mailto: sayhi@circleci.com" } drop us a line
-    -#   and let us know what you're working on.
+    %h2 Complex behaviour
+    %p
+      Circle allows quite complex behaviour, if you need it.
+      You can override almost anything, and we make it as simple as possible.
+      That said, if you find yourself relying on this section a lot, please
+      = HAML['contact_us']()
+      and let us know what you're working on.
 
-    -# %h1.section
-    -#   %a#phases File structure
-    -# %hr
+    %h1.section
+      %a#phases File structure
+    %hr
 
-    -# %p
-    -#   The
-    -#   %code circle.yml
-    -#   file represents a
-    -#   = succeed ",", ->
-    -#     %em build
-    -#   which is a collection of
-    -#   %em commands,
-    -#   grouped into
-    -#   %em phases.
+    %p
+      The
+      %code circle.yml
+      file is made up of a set of top-level structures, representing the
+      %em phases
+      of running your tests:
 
-    -#   A
-    -#   %em command
-    -#   is something like running
-    -#   %code cucumber
-    -#   , while a
-    -#   %em phase
-    -#   would groups all the test commands, including `cucumber`, `rake test`, `rspec`, etc.
+    %ol
+      %li <b>machine</b>: adjusting the VM to your preferences
+      %li <b>checkout</b>: cloning your git repository
+      %li <b>dependencies</b>: installing your program's language-specific dependencies
+      %li <b>database</b>: preparing the databases for your tests
+      -#%li <b>compile</b>: compiling your code or assets (if necessary)
+      %li <b>test</b>: running your tests
+      -#%li <b>artifact</b>: uploading your artifacts for distribution
+      -#%li <b>deploy</b>: deploying your code to your web servers
+      %li <b>notify</b>: alerting you of the test results
 
+    %p
+      Most projects won't need to specify anything for most of the phases.
+      Any phases which are not specified will be inferred from your code.
+      In fact, the entire file is optional, and we will infer all your settings if it is missing.
 
-
-    -# %p
-    -#   In
-    -#   = succeed ",", ->
-    -#     %code circle.yml
-    -#   top-level collections represent a
-    -#   %i phase
-    -#   in the build pipeline.
-    -#   The phases are, in order:
-    -# %ol
-    -#   %li machine - configuring the test machine, starting services, installing packages, etc
-    -#   %li checkout - downloading your code from your repository
-    -#   %li dependencies - installing your code's dependencies
-    -#   %li database - configure your databases
-    -#   -#%li compile - compilation step for compiled languages
-    -#   %li test - actually run your tests
-    -#   -#%li artifact - save or upload build artifacts
-    -#   %li deploy - deploying successful builds to your web server
+    %h3 Sections
+    %p
+      Each phase is made up of sections, representing some part of the phase which can be configured.
+      All phases contain
+      = succeed ',', ->
+        %code pre
+      = succeed ',', ->
+        %code post
+      and
+      %code override
+      sections, used for adding commands before, after, and instead-of our inferred commands.
+      They frequently contain other sections, which are described throughout this file.
 
 
-    -# %p
-    -#   You only need to specify the
-    -#   %em phases
-    -#   you wish to customize or add commands to.
-    -#   If you do not specify anything, we'll infer the correct settings.
-    -#   If you leave the entire file blank, we'll infer the entire build.
+    %h3 Commands
+    %p
+      Each section contains a list of commands, which are ordinary bash commands, supporting pipes, environmental variables, conditional operators, etc.
+      Commands are run in the order they are provided, and stop when any command returns a non-zero exit code.
 
+    %p
+      Each command is run in a separate shell.
+      As such, they do not share environment with their predecessors -
+      %code export MYVAR=MYVAL
+      in particular does not work.
 
+    %p
+      Commands can be tweaked individually, by adding a modifier.
+      For example, changing a command's timeout:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          dependencies:
+            override:
+              - bundle install:
+                timeout: 180
+
+    %p
+      Allowed modifiers are:
+
+    %ul
+      %li <b>timeout</b>: If a command runs this many seconds without output, kill it. Defaults to 180s.
+      %li <b>pwd</b>: Run your commands using this value as its current working directory. By default, commands are run in the checkout directory, named after your project name.
+      %li <b>environment</b>: A hash creating a list of environmental variables set for this command.
+
+    %p For example:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          dependencies:
+            override:
+              - bundle install:
+                timeout: 180
+                environment:
+                  MYVAR: MYVAL
+                  MYVAR2: MYVAL2
+                pwd:
+                  test_dir
 
     %h1.section
       %a#machine Machine configuration
@@ -158,10 +188,23 @@
 
     %p
       The
+      top-level
       %code machine
-      top-level structure allows you to configure the virtual machine on which your tests are run.
-      These tweaks happen before any test steps are run.
+      structure allows you to configure the virtual machine on which your tests are run.
 
+
+    %p
+      Although override does noting, the standard pre and post sections are supported.
+      For example, installing elasticsearch:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            pre:
+              - curl -k -L -o elasticsearch-0.19.0.tar.gz http://github.com/downloads/elasticsearch/elasticsearch/elasticsearch-0.19.0.tar.gz
+              - tar -zxvf elasticsearch-0.19.0.tar.gz
+              - ./elasticsearch-0.19.0/bin/elasticsearch || [ $? -eq 1 ]
 
     %h3#timezone
       Timezone
@@ -170,7 +213,7 @@
       Set the machine's timezone, for example:
 
     %pre
-      %code<>
+      %code.no-highlight<>
         :preserve
           machine:
             timezone:
@@ -202,6 +245,8 @@
     %p
       As an alternative, use UTC on your production servers to avoid horrific daylight-savings bugs, or if your developers are in different time zones.
 
+
+
     %h3#ruby-version
       Ruby version
 
@@ -209,7 +254,7 @@
       Choose the version of Ruby used for your tests, for example:
 
     %pre
-      %code<>
+      %code.no-highlight<>
         :preserve
           machine:
             ruby:
@@ -254,13 +299,136 @@
       and we'll be happy to install your version so that it does not slow down your tests.
 
 
+
     %h1.section
-      %a#notification Notifications
+      %a#checkout Checking out your code from GitHub
     %hr
 
     %p
+      The checkout phase has no special sections.
+      The standard sections are available:
+
+    %ul
+      %li <b>pre</b>: a list of commands run before checkout
+      %li <b>override</b>: a list of commands run instead of Circle's checkout commands
+      %li <b>post</b>: a list of commands run after checkout
+
+
+    %h4 Example 1: using git submodules
+
+    %pre
+      %code.bash<>
+        :preserves
+          checkout:
+            post:
+              - git submodule init
+              - git submodule update
+
+    %h4 Example 2: Overwriting configuration files for Circle
+    %pre
+      %code.bash<>
+        :preserves
+          checkout:
+            pre:
+              - mv config/database.ci.yml config/database.yml
+              - mv config/.app.yml config/app.yml
+
+    %h1.section
+      %a#dependencies Project-specific dependencies
+    %hr
+
+    %p
+      Most web programming languages and frameworks have some form of dependency specification, including Ruby's bundler, Node.js' npm and Python's pip.
+      Circle runs these commands to automatically fetch dependencies.
+      (Currently, we only do this automatically for Ruby and Clojure - we expect to add other languages this week).
+
+    %p
+      We support the standard sections:
+
+    %ul
+      %li <b>pre</b>: a list of commands run before installing dependencies
+      %li <b>override</b>: a list of commands run instead of Circle's inferred dependency commands
+      %li <b>post</b>: a list of commands run after installing dependencies
+
+
+    %h4 Example 1: using npm and Node.js:
+
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            override:
+              - npm install --dev
+
+    %h4 Example 2: using a specific version of bundler:
+
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            pre:
+              - gem uninstall bundler
+              - gem install bundler --pre
+
+    %h1.section
+      %a#database Database setup
+    %hr
+
+    %p
+      Your web framework will typically include commands to create your database, install your schema and run your migrations.
+      The standard sections are available:
+
+    %ul
+      %li <b>pre</b>: a list of commands run before setting up databases
+      %li <b>override</b>: a list of commands run instead of Circle's inferred database setup commands
+      %li <b>post</b>: a list of commands run after setting up databases.
+
+
+    %h1.section Running your tests
+      %a#test
+    %hr
+
+    %p
+      The most important part of testing: actually running the tests!
+      As always, pre, post and override commands are supported:
+
+
+    %ul
+      %li <b>pre</b>: a list of commands to run before the tests are run
+      %li <b>override</b>: replace our inferred test commands with a list of your choosing
+      %li <b>post</b>: a list of commands to run after the tests are run, typically more tests
+
+    %h5 Example 1: Running spinach after RSpec:
+
+    %pre
+      %code.bash<>
+        :preserves
+          test:
+            post:
+              - bundle exec rake spinach:
+                env:
+                  RAILS_ENV: test
+
+    %h5 Example 2: Running phpunit on a special directory
+
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            override:
+              - phpunit my/special/subdirectory/tests
+
+    %h1.section
+      %a#notify Notifications
+    %hr
+
+    %p
+      Our normal notifications are sent by email, and can be configured on a per-user basis.
+      In addition, we allow sending notifications on a per-project basis.
+
+    %p
       Currently, we support sending web-hooks when your build completes.
-      We also support HipChat notifications, on your project's
+      We also support HipChat notifications, which are configured from your project's
       %em settings
       page.
 
@@ -278,48 +446,4 @@
       Visit
       %code https://circleci.com/api/v1/project/:username/:projectname/:build
       to see an example.
-
-
-
-
-
-
-  -# %h1.section
-  -#   %a#checkout Checkout
-  -# %hr
-
-  -# %p
-  -#   No supported configuration yet
-
-
-  -# %h1.section
-  -#   %a#dependencies Dependencies
-  -# %hr
-
-  -# %p
-  -#   Coming soon...
-
-
-  -# %h1.section
-  -#   %a#dependencies Database
-  -# %hr
-
-  -# %p
-  -#   Coming soon...
-
-
-
-  -# %h1.section
-  -#   %a#test Test
-  -# %hr
-
-  -# %p
-  -#   Coming soon...
-
-
-  -# %h1.section
-  -#   %a#deployment Deployment
-  -# %hr
-
-  -# %p
-  -#   Coming soon...
+      (Note: this API is unstable and is changing very soon).
