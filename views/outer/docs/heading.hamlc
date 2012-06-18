@@ -1,0 +1,4 @@
+%h1.section
+  %a{id: @hash, href: "##{@hash}"}
+    = @title
+%hr
