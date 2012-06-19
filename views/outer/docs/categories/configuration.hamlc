@@ -112,21 +112,15 @@
     %h3 Sections
     %p
       Each phase is made up of sections, representing some part of the phase which can be configured.
-      All phases contain
-      = succeed ',', ->
-        %code pre
-      = succeed ',', ->
-        %code post
-      and
-      %code override
-      sections, used for adding commands before, after, and instead-of our inferred commands.
-      They frequently contain other sections, which are described throughout this file.
+      Each phase has different sections depending on what configuration is available, but all phases include the standard sections:
 
+    %ul
+      %li <b>pre</b>: commands run before Circle's inferred commands
+      %li <b>override</b>: commands run instead of Circle's inferred commands
+      %li <b>post</b>:  commands run after Circle's inferred commands
 
-
-    %h3 Commands
     %p
-      Each section contains a list of commands, which are ordinary bash commands, supporting pipes, environmental variables, conditional operators, etc.
+      The standard sections contain lists of commands, which are ordinary bash commands, supporting pipes, environmental variables, conditional operators, etc.
       Commands are run in the order they are provided, and stop when any command returns a non-zero exit code.
 
     %p
