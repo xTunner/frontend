@@ -160,6 +160,7 @@ class Build extends HasUrl
     json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
     super json,
        body: null
+       branch: "unknown"
        subject: null
        committer_name: null
        committer_email: null
