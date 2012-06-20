@@ -13,46 +13,40 @@
 
       %dl.offset1.span6
 
-        %dt
-          Revision
+        %dt Revision
         %dd
           %a{data-bind: "attr: { href: github_url }, text: github_revision"}
 
-        %dt
-          Build
+        %dt Build
         %dd{data-bind: "text: build_num"}
 
-
-        %dt
-          Author
+        %dt Author
         %dd
           %a{data-bind: "text: author"}
 
 
       %dl.offset1.span6
 
-        %dt
-          Status
+        %dt Status
         %dd.build_status
           %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
 
-        %dt
-          Started at
+        %dt Started at
         %dd{data-bind: "text: pretty_start_time"}
 
-        %dt
-          Length
+        %dt Length
         %dd{data-bind: "text: duration"}
 
 
       %dl.offset1
 
-        %dt
-          Started by
+        %dt Branch
+        %dd{data-bind: "text: branch"}
+
+        %dt Started by
         %dd{data-bind: "text: why_in_words"}
 
-        %dt
-          Actions:
+        %dt Actions:
         %dd
           %button.btn.error{data-bind: "click: report_build",
                             title: "Report an error in how Circle ran this build"}
@@ -70,8 +64,7 @@
     .row
       %dl.offset1
 
-        %dt
-          Log
+        %dt Log
         %dd
           %span{data-bind: "if: body"}
             %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
