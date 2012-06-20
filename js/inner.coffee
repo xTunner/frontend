@@ -233,14 +233,22 @@ class Build extends HasUrl
       switch @why
         when "github"
           "GitHub push"
+        when "edit"
+          "Edit of the project settings"
+        when "first-build"
+          "First build"
+        when "retry"
+          "Manual retry of build #{@retry_of()}"
+        when "auto-retry"
+          "Auto-retry of build #{@retry_of()}"
         when "trigger"
           if @user
             "#{@user} on CircleCI.com"
           else
             "CircleCI.com"
         else
-          if @job_name == "deploy"
-            "deploy"
+          if @job_name?
+            @job_name
           else
             "unknown"
 
