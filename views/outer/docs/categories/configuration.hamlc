@@ -128,6 +128,14 @@
       As such, they do not share environment with their predecessors -
       %code export MYVAR=MYVAL
       in particular does not work.
+      We're going to add the ability to specify environment like this globally, but in the meantime you can work around it:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            pre:
+              - echo 'export MYVAR=MYVAL' >> ~/.circlerc
 
     %p
       Commands can be tweaked individually, by adding a modifier.
@@ -139,7 +147,7 @@
           dependencies:
             override:
               - bundle install:
-                timeout: 180
+                  timeout: 180
 
     %p
       Allowed modifiers are:
@@ -157,12 +165,21 @@
           dependencies:
             override:
               - bundle install:
-                timeout: 180
-                environment:
-                  MYVAR: MYVAL
-                  MYVAR2: MYVAL2
-                pwd:
-                  test_dir
+                  timeout: 180
+                  environment:
+                    MYVAR: MYVAL
+                    MYVAR2: MYVAL2
+                  pwd:
+                    test_dir
+
+    %p
+      Note in particular that the modifiers are indented one level from their command.
+      In the YAML above,
+      %code bundle install
+      is a key whose value is a hash containing <code>timeout</code>, <code>environment</code> and <code>pwd</code>.
+
+
+
 
     = HAML['heading']({title: "Machine configuration", hash: "machine"})
 
@@ -174,7 +191,7 @@
 
     %p
       Although override does noting, the standard pre and post sections are supported.
-      For example, installing elasticsearch:
+      For example, installing <code>elasticsearch</code>:
 
     %pre
       %code.no-highlight<>
@@ -249,7 +266,7 @@
       file,
       or
       Ruby
-      %code 1.9.3-p0
+      %code 1.9.2-p290
       if unspecified.
 
     %p
@@ -305,7 +322,7 @@
       %code.bash<>
         :preserves
           checkout:
-            pre:
+            post:
               - mv config/database.ci.yml config/database.yml
               - mv config/.app.yml config/app.yml
 
@@ -376,15 +393,15 @@
           test:
             post:
               - bundle exec rake spinach:
-                env:
-                  RAILS_ENV: test
+                  environment:
+                    RAILS_ENV: test
 
     %h5 Example 2: Running phpunit on a special directory
 
     %pre
       %code.bash<>
         :preserves
-          dependencies:
+          test:
             override:
               - phpunit my/special/subdirectory/tests
 
