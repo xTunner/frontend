@@ -398,6 +398,13 @@ class User extends Obj
       result["env-" + @environment] = true
       result
 
+    @in_trial = @komp =>
+      not @paid and @days_left_in_trial >= 0
+
+    @trial_over = @komp =>
+      not @paid and @days_left_in_trial < 0
+
+
   create_token: (data, event) =>
     $.ajax
       type: "POST"
