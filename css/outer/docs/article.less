@@ -3,9 +3,10 @@
   position: relative;
 
   & > h1 {
-    font-size: 32px;
+    font-size: 30px;
     text-align: left;
     line-height: 36px;
+    color: @linkHover;
   }
 
   i {
@@ -28,7 +29,9 @@
   }
 
   h4 {
-    margin: 1.33em 0 0.66em;
+    margin: 1.33em 0 0;
+    color: #366aa4;
+    font-size: 16px;
   }
 }
 
@@ -44,25 +47,36 @@
   .doc {
     & > h1, h1 {
       text-align: left;
-      font-size: 1.9em;
+      font-size: 26px;
       line-height: 1em;
       margin: 0.83em 0;
     }
 
+    h1:first-child { margin: 0.83em 0 0.45em; }
+
     h2, h3, h4, h5, h6 { color: #444; }
+
+    h2 {
+      font-size: 20px;
+      margin: 1.83em 0 0.83em;
+    }
+
+    hr+h2 { margin: 0.83em 0; }
 
     .section {
       line-height: 16px;
       margin-bottom: 0;
-      margin-top: 0;
+      margin-top: 2em;
 
       & a {
         display: block;
         margin-top: 1.5em;
+        color: #444
       }
     }
 
     .section+hr {
+      margin-top: 10px;
       margin-bottom: 20px;
       border-style: solid;
       border-color: #EEE;
