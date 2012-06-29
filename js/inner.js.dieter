@@ -1,6 +1,6 @@
 [
   "./vendor/knockout-2.1.0.js"
-  "./vendor/sammy-0.7.1.js"
+  "./vendor/sammy-0.7.1-patched.js"
   "./vendor/moment-1.6.2.min.js"
   "./vendor/bootstrap-buttons-1.4.0.js"
   "./vendor/bootstrap-dropdown-1.4.0.js"

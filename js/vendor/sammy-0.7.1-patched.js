@@ -262,7 +262,7 @@
         });
         // bind to link clicks that have routes
         $('a').live('click.history-' + this.app.eventNamespace(), function(e) {
-          if (e.isDefaultPrevented()) {
+          if (e.isDefaultPrevented() || e.metaKey || e.ctrlKey) { // patched by pbiggar to fix https://github.com/quirkey/sammy/commit/41ff58ea208aec5c723ae8562d93129d806cdd0e
             return;
           }
           var full_path = lp.fullPath(this);
