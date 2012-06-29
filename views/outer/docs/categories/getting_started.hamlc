@@ -44,7 +44,7 @@
       When our automatic inference doesn't work, you'll need to
       %a{ href: "/docs/configuration"} tweak your setup
       using a
-      %code circle.yml
+      %code.inline circle.yml
       file.
 
       -#%ul
