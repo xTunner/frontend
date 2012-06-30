@@ -1,4 +1,4 @@
-%table.zebra-striped.condensed
+%table.well.condensed
   %thead
     %tr
       %th Build
@@ -9,8 +9,8 @@
       %th Length
       %th Status
 
-  %tbody{data-bind: "foreach: { data: #{@builds} }"}
-    %tr.build-row{data-bind: "css: { dont_build: dont_build }, click: visit"}
+  %tbody.build-row{data-bind: "foreach: { data: #{@builds} }"}
+    %tr{data-bind: "css: { dont_build: dont_build }, click: visit"}
       %td
         %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
