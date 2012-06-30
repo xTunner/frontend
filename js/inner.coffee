@@ -345,9 +345,9 @@ class Project extends HasUrl
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        # The new model here is not going to be "enabled" and "available", but
-        # will allow you to add a project without being an admin
+        $('html, body').animate({ scrollTop: 0 }, 0);
         @followed(data.followed)
+        VM.loadRecentBuilds()
 
   save_hipchat: (data, event) =>
     $.ajax(
