@@ -10,14 +10,14 @@
       %th Status
 
   %tbody{data-bind: "foreach: { data: #{@builds} }"}
-    %tr{data-bind: "css: { dont_build: dont_build }"}
+    %tr.build-row{data-bind: "css: { dont_build: dont_build }, click: visit"}
       %td
         %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
       %td.github_url
         %a{data-bind: "attr: { href: github_url }"}
           %img{src: "/img/octocat-tiny.png"}
-          %span{data-bind: "text: github_revision"}
+        %span{data-bind: "text: github_revision"}
         %span{data-bind: "text: branch_in_words"}
 
       %td{data-bind: "text: author"}

@@ -280,6 +280,8 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
+  visit: () =>
+    SammyApp.setLocation @url()
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
@@ -689,7 +691,6 @@ class CircleViewModel extends Base
     @error_message = ko.observable(null)
     @first_login = true;
     @refreshing_projects = ko.observable(false);
-    @project_map = {}
     observableCount += 8
 
     #@setupPusher()
@@ -733,8 +734,6 @@ class CircleViewModel extends Base
       start_time = Date.now()
       projects = (new Project d for d in data)
       projects.sort Project.sidebarSort
-      for p in projects
-        @project_map[p.vcs_url()] = p
 
       @projects(projects)
       window.time_taken_projects = Date.now() - start_time
