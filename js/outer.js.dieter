@@ -1,5 +1,5 @@
 [
-  "./vendor/sammy-0.7.1.js"
+  "./vendor/sammy-0.7.1-patched.js"
   "./vendor/modernizr-2.5.3.js"
   "../views/shared/header.hamlc"
   "../views/shared/footer.hamlc"

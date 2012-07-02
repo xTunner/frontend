@@ -47,4 +47,4 @@
             Add your first project
           %br
           %p#first-use-text
-            To start Continuous Integration on your first project, click on the project name on the left.
+            To start Continuous Integration on your first app, click on the repository name on the left.

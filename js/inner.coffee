@@ -291,6 +291,8 @@ class Build extends HasUrl
         build_num: @build_num
     false
 
+  visit: () =>
+    SammyApp.setLocation @url()
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
@@ -354,9 +356,9 @@ class Project extends HasUrl
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        # The new model here is not going to be "enabled" and "available", but
-        # will allow you to add a project without being an admin
+        $('html, body').animate({ scrollTop: 0 }, 0);
         @followed(data.followed)
+        VM.loadRecentBuilds()
 
   save_hipchat: (data, event) =>
     $.ajax
@@ -698,7 +700,6 @@ class CircleViewModel extends Base
     @error_message = ko.observable(null)
     @first_login = true;
     @refreshing_projects = ko.observable(false);
-    @project_map = {}
     observableCount += 8
 
     #@setupPusher()
@@ -742,8 +743,6 @@ class CircleViewModel extends Base
       start_time = Date.now()
       projects = (new Project d for d in data)
       projects.sort Project.sidebarSort
-      for p in projects
-        @project_map[p.vcs_url()] = p
 
       @projects(projects)
       window.time_taken_projects = Date.now() - start_time
