@@ -280,6 +280,17 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
+  invite_user: (data, event) =>
+    $.ajax
+      url: "/api/v1/account/invite"
+      type: "POST"
+      event: event
+      data: JSON.stringify
+        invitee: @user
+        vcs_url: @vcs_url()
+        build_num: @build_num
+    false
+
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
