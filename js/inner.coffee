@@ -348,29 +348,27 @@ class Project extends HasUrl
         @followed(data.followed)
 
   save_hipchat: (data, event) =>
-    $.ajax(
+    $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/project/#{@project_name()}/settings"
-      data: JSON.stringify(
+      data: JSON.stringify
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
-      )
-    )
     false # dont bubble the event up
 
   save_specs: (data, event) =>
-    $.ajax(
+    $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/project/#{@project_name()}/settings"
-      data: JSON.stringify(
+      data: JSON.stringify
         setup: @setup()
         dependencies: @dependencies()
         test: @test()
         extra: @extra()
-      )
-    )
+
+
     false # dont bubble the event up
 
 
