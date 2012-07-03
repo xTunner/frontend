@@ -296,11 +296,12 @@ class Build extends HasUrl
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
-    $.ajax(
+    $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
       type: "POST"
       event: event
-    )
+      success: (data) =>
+        (new Build(data)).visit()
     false
 
   report_build: () =>
@@ -356,9 +357,12 @@ class Project extends HasUrl
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        $('html, body').animate({ scrollTop: 0 }, 0);
-        @followed(data.followed)
-        VM.loadRecentBuilds()
+        if data.first_build
+          (new Build(data.first_build)).visit()
+        else
+          $('html, body').animate({ scrollTop: 0 }, 0);
+          @followed(data.followed)
+          VM.loadRecentBuilds()
 
   save_hipchat: (data, event) =>
     $.ajax
@@ -380,6 +384,9 @@ class Project extends HasUrl
         dependencies: @dependencies()
         test: @test()
         extra: @extra()
+      success: (data) =>
+        (new Build(data)).visit()
+
 
 
     false # dont bubble the event up
