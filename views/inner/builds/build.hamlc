@@ -71,6 +71,14 @@
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 
+    %span{data-bind: "ifnot: stop_time"}
+      .row
+        .offset6.span6
+          .alert-message.warning#still-running-message
+            Your build is still running. Refresh to update.
+
+
+
     = HAML['report_error']()
     = HAML['messages']()
 
