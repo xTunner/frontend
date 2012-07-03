@@ -233,7 +233,7 @@ class Build extends HasUrl
     @why_in_words = @komp =>
       switch @why
         when "github"
-          "GitHub push"
+          "GitHub push by #{@user.login}"
         when "edit"
           "Edit of the project settings"
         when "first-build"
