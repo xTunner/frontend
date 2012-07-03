@@ -6,7 +6,7 @@
       %span{data-bind: "text: user.login"}
       to your account
 
-  %span{data-bind: "if: dont_build() == 'no-user'"}
+  %span{data-bind: "if: dont_build() == 'no-user' && !user.is_user"}
     %a.btn.primary{href: "#",
                    data-bind: "click: invite_user",
                    data-loading-text: "Sending",
@@ -14,6 +14,11 @@
                    data-failed-text: "Failed to send"}
       Invite
       %span{data-bind: "text: user.login"}
+
+  %span{data-bind: "if: dont_build() == 'no-user' && user.is_user"}
+    %a.btn.primary.disabled
+      %span{data-bind: "text: user.login"}
+      invited
 
   %span{data-bind: "if: dont_build() == 'bad-push'"}
     Unverified push - ignored
