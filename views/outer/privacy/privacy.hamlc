@@ -10,7 +10,7 @@
     %hr
 
     %p
-      %a{ href: "#security-changelog" } Last modified: March 26, 2012
+      %a{ href: "#security-changelog" } Last modified: July 3, 2012
 
 
     %h3 Code security
@@ -25,9 +25,10 @@
       Otherwise, no human reads your code.
 
     %p
-      However, we do write code that reads your code, typically to provide data over what features and services to provide next.
-      For example, in determining whether to support node.js, we ran scripts to tell us how many of our current customers had
-      %i packages.json
+      However, we occasionally do automated analysis of active projects to provide data over what features and services to provide next.
+      We only analyze projects which are already being tested on Circle.
+      For example, when looking at deployment, we ran scripts which told us the percentage of active projects which have
+      %i Capfiles
       in their repositories.
 
     %p
@@ -130,6 +131,9 @@
       #changelog#security-changelog
         %h3 Change log:
         %ul
+          %li
+            %b July 3, 2012:
+            Clarified that only tested project are analyzed.
           %li
             %b April 11, 2012:
             We now only enable individual projects when selected by users.
