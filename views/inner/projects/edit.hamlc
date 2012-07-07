@@ -19,6 +19,15 @@
 
     = HAML['flashes']({})
 
+    .row
+      .offset4.span8
+        .alert-message.notice
+          Make quick, unstructured changes to your settings here.
+          More advanced changes go in your
+          %a{href: "/docs/configuration"}
+            circle.yml
+          file.
+
     #subpage{data-bind: "with: project"}
       %p
         Loading...

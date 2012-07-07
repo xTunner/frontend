@@ -46,17 +46,6 @@ $(document).ajaxSend((ev, xhr, options) ->
     textVal t, loading
 )
 
-# http://stackoverflow.com/questions/10113006/calling-a-view-function-after-view-model-update-in-knockout-js
-ko.bindingHandlers.popover =
-  init: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-    options = ko.utils.unwrapObservable(valueAccessor()) or {}
-    content = ko.utils.unwrapObservable(options.content) or ""
-    $(element).popover({content: content, html: true, delayOut: 1000})
-
-    ko.utils.domNodeDisposal.addDisposeCallback(element, () ->
-      $(element).popover('hide')
-    )
-
 # Make the buttons disabled when clicked
 $.ajaxSetup
   contentType: "application/json"
@@ -207,6 +196,7 @@ class Build extends HasUrl
 
     super json,
       body: null
+      branch: "unknown"
       subject: null
       committer_name: null
       committer_email: null
@@ -217,7 +207,6 @@ class Build extends HasUrl
       start_time: null
       stop_time: null
       status: null,
-
       ["build_num"
        "committer_name"
        "committer_email"
@@ -300,15 +289,23 @@ class Build extends HasUrl
     @why_in_words = @komp =>
       switch @why
         when "github"
-          "GitHub push"
+          "GitHub push by #{@user.login}"
+        when "edit"
+          "Edit of the project settings"
+        when "first-build"
+          "First build"
+        when "retry"
+          "Manual retry of build #{@retry_of()}"
+        when "auto-retry"
+          "Auto-retry of build #{@retry_of()}"
         when "trigger"
           if @user
             "#{@user} on CircleCI.com"
           else
             "CircleCI.com"
         else
-          if @job_name == "deploy"
-            "deploy"
+          if @job_name?
+            @job_name
           else
             "unknown"
 
@@ -338,12 +335,19 @@ class Build extends HasUrl
     @author = @komp =>
       @committer_name or @committer_email
 
-    @popover_content = @komp =>
-      switch @dont_build()
-        when "no-user"
-          "Invite #{@author()} to Circle to test their pushes. Send them this link: https://circleci.com/?join=test-your-code"
-        when "user-not-paid"
-          "#{@author()}'s trial is over. <a href='/account/plans'>Add them to your account</a>"
+  invite_user: (data, event) =>
+    $.ajax
+      url: "/api/v1/account/invite"
+      type: "POST"
+      event: event
+      data: JSON.stringify
+        invitee: @user
+        vcs_url: @vcs_url()
+        build_num: @build_num
+    false
+
+  visit: () =>
+    SammyApp.setLocation @url()
 
     @maybeSubscribe()
 
@@ -388,11 +392,12 @@ class Build extends HasUrl
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
-    $.ajax(
+    $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
       type: "POST"
       event: event
-    )
+      success: (data) =>
+        (new Build(data)).visit()
     false
 
   report_build: () =>
@@ -454,34 +459,38 @@ class Project extends HasUrl
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        # The new model here is not going to be "enabled" and "available", but
-        # will allow you to add a project without being an admin
-        @followed(data.followed)
+        if data.first_build
+          (new Build(data.first_build)).visit()
+        else
+          $('html, body').animate({ scrollTop: 0 }, 0);
+          @followed(data.followed)
+          VM.loadRecentBuilds()
 
   save_hipchat: (data, event) =>
-    $.ajax(
+    $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/project/#{@project_name()}/settings"
-      data: JSON.stringify(
+      data: JSON.stringify
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
-      )
-    )
     false # dont bubble the event up
 
   save_specs: (data, event) =>
-    $.ajax(
+    $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/project/#{@project_name()}/settings"
-      data: JSON.stringify(
+      data: JSON.stringify
         setup: @setup()
         dependencies: @dependencies()
         test: @test()
         extra: @extra()
-      )
-    )
+      success: (data) =>
+        (new Build(data)).visit()
+
+
+
     false # dont bubble the event up
 
 class User extends Obj
@@ -505,6 +514,13 @@ class User extends Obj
       result = {}
       result["env-" + @environment] = true
       result
+
+    @in_trial = @komp =>
+      not @paid and @days_left_in_trial >= 0
+
+    @trial_over = @komp =>
+      not @paid and @days_left_in_trial < 0
+
 
   create_token: (data, event) =>
     $.ajax
@@ -787,7 +803,6 @@ class CircleViewModel extends Base
     @error_message = ko.observable(null)
     @first_login = true;
     @refreshing_projects = ko.observable(false);
-    @project_map = {}
     observableCount += 8
 
     @setupPusher()
@@ -832,8 +847,6 @@ class CircleViewModel extends Base
       start_time = Date.now()
       projects = (new Project d for d in data)
       projects.sort Project.sidebarSort
-      for p in projects
-        @project_map[p.vcs_url()] = p
 
       @projects(projects)
       window.time_taken_projects = Date.now() - start_time

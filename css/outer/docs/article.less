@@ -3,9 +3,10 @@
   position: relative;
 
   & > h1 {
-    font-size: 32px;
+    font-size: 30px;
     text-align: left;
     line-height: 36px;
+    color: @linkHover;
   }
 
   i {
@@ -25,6 +26,13 @@
 
   hr {
     margin: 0.5em 0 1.5em;
+    border-color: #d7dce3;
+  }
+
+  h4 {
+    margin: 1.33em 0 0;
+    color: #366aa4;
+    font-size: 16px;
   }
 }
 
@@ -40,46 +48,58 @@
   .doc {
     & > h1, h1 {
       text-align: left;
-      font-size: 1.9em;
+      font-size: 26px;
       line-height: 1em;
       margin: 0.83em 0;
     }
 
+    h1:first-child { margin: 0.83em 0 0.45em; }
+
     h2, h3, h4, h5, h6 { color: #444; }
+
+    h2 {
+      font-size: 20px;
+      margin: 1.83em 0 0.83em;
+    }
+
+    hr+h2 { margin: 0.83em 0; }
 
     .section {
       line-height: 16px;
       margin-bottom: 0;
-      margin-top: 0;
+      margin-top: 2em;
 
       & a {
         display: block;
         margin-top: 1.5em;
+        color: #444
       }
     }
 
     .section+hr {
+      margin-top: 10px;
       margin-bottom: 20px;
       border-style: solid;
-      border-color: #EEE;
+      border-color: #eff2f6;
     }
 
     .inline {
       font-family: monospace;
       font-weight: normal;
       border: 1px solid #C1D6EB;
-      padding: 0px 5px;
-      font-size: 13px;
+      padding: 2px 5px;
+      font-size: 12px;
       color: #146280;
       background: #F5F9FD;
       .border-radius(3px);
+      margin: 0 3px;
     }
 
     h6 { margin: 0; }
 
     p {
       font-size: 14px;
-      line-height: 20px;
+      line-height: 22px;
     }
 
     li {
@@ -104,7 +124,7 @@
       li::before {
         content: counter(ordered);
         counter-increment: ordered;
-        background: #0F5391;
+        background: #366aa4;
         color: white;
         border-radius: 13px;
         width: 18px;

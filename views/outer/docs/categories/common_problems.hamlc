@@ -37,7 +37,7 @@
       Your code is probably tested in local time on your development machine, while Circle is in UTC.
       If that's the case, you may end up with test failures looking like this:
     %pre
-      %code<>
+      %code.no-highlight<>
         :preserve
           1) 1-day trial should be 1 day long
              Failure/Error: @trial.expiration.should == 14.day.from_now.to_date
@@ -121,7 +121,7 @@
       step, you might see something like this:
 
     %pre
-      %code<>
+      %code.no-highlight<>
         :preserve
           Fetching git@github.com:rails/rails
           Git error: command `git clone 'git@github.com:rails/rails' "/home/ubuntu/circle-2/vendor/bundle/ruby/1.9.1/cache/bundler/git/rails-47ba0391b239cf6d20fc732cd925192bcf3430fc" --bare --no-hardlinks` in directory /home/ubuntu/circle-1 has failed.
@@ -132,7 +132,7 @@
       This happens because you have a git repository listed as a dependency in your Gemfile:
 
     %pre
-      %code<>
+      %code.ruby<>
         :preserve
           gem "rails", :git => "git://github.com/rails/rails.git"
 
@@ -142,19 +142,15 @@
       url:
 
     %pre
-      %code<>
+      %code.ruby<>
         :preserve
           gem "rails", :git => "http://github.com/rails/rails"
 
     %p
-      If the repository is private, you will need to use our "user keys" feature.
-      We will be launching that this week.
-      As a workaround, you can put a username and password into the url, for example:
-
-    %pre
-      %code<>
-        :preserve
-          gem "big-secret", :git => "http://paul:mypassword@github.com/circleci/big-secret"
+      If the repository is private, you will need
+      %a{href: "https://circleci.com/account/ssh"}
+        enable user keys
+      from your account settings.
 
 
     %h1.section
@@ -165,6 +161,16 @@
       Circle infers your test settings from the code in your repository, typically looking at the packages you use.
       Most problems occur when there is some error in how the packages are specified.
 
+    %p
+      If you require custom commands, it obviously won't be possible for Circle to infer them correctly.
+      In that case, you can
+      %a{href: "/docs/configuration"} specify your commands
+      using a
+      %code circle.yml
+      file.
+
+    %p
+      If you feel we should have inferred your commands correctly, your project may diverge slightly from what we expect.
       Some of the most common problems:
 
 

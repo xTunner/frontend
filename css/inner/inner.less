@@ -30,9 +30,14 @@ body {
    a:hover { color: white; }
 }
 
+.build-row {
+  cursor: pointer;
+  tr:hover { background-color: #aaaaaa; }
+}
+
 .add-row {
-   cursor: pointer;
-   tr:hover { background-color: #aaaaaa; }
+  cursor: pointer;
+  tr:hover { background-color: #aaaaaa; }
 }
 
 /* For developers, highlight the environment */
@@ -58,6 +63,10 @@ body {
 }
 
 #none-message {
+   text-align: center;
+}
+
+#still-running-message {
    text-align: center;
 }
 
@@ -313,6 +322,12 @@ body {
    }
 }
 
-.dont_build .build_log {
-  text-decoration: line-through;
+.dont_build {
+   .build_log {
+      text-decoration: line-through;
+   }
+
+   .not_run_message {
+      text-align: center;
+   }
 }
