@@ -111,5 +111,5 @@
 
           = HAML['report_error']()
 
-    %div{data-bind: "if: action_logs().length > 1"}
+    %div{data-bind: "if: steps().length > 1"}
       = HAML['messages']()
