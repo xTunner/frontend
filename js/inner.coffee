@@ -381,10 +381,13 @@ class Build extends HasUrl
     @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
 
   updateAction: (json) =>
+    # updates the observables on the action, such as end time and status.
     @fillActions(json.step, json.index)
     @steps()[json.step].actions()[json.index].updateObservables(json.log)
 
   appendAction: (json) =>
+    # adds output to the action
+    @fillActions(json.step, json.index)
     @steps()[json.step].actions()[json.index].out.push(json.out)
 
   updateStatus: (json) =>
