@@ -127,6 +127,7 @@ class ActionLog extends Obj
       @status() == "success"
 
     @failed = @komp => @status == "failed" or @status == "timedout"
+    @infrastructure_fail = @komp => @status == "infrastructure_fail"
 
     # Expand failing actions
     @minimize = @komp =>
@@ -186,13 +187,13 @@ class Step extends Obj
     actions: []
 
   constructor: (json) ->
-    json.actions = if json.actions then (new ActionLog(j) for j in json.actions) else []
+    json.actions = if json.actions? then (new ActionLog(j) for j in json.actions) else []
     super json
 
 class Build extends HasUrl
   constructor: (json) ->
 
-    json.steps = if json.steps then (new Step(j) for j in json.steps) else []
+    json.steps = if json.steps? then (new Step(j) for j in json.steps) else []
 
     super json,
       body: null
@@ -366,10 +367,9 @@ class Build extends HasUrl
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
-
-    for i in [0..step-1]
+    for i in [0..step]
       if not @steps()[i]?
-        @steps.setIndex(step, new Step({}))
+        @steps.setIndex(i, new Step({}))
 
     # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
     for i in [0..index-1]
