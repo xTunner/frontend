@@ -351,8 +351,6 @@ class Build extends HasUrl
   visit: () =>
     SammyApp.setLocation @url()
 
-    @maybeSubscribe()
-
   isRunning: () =>
     @start_time() and not @stop_time()
 
@@ -924,6 +922,7 @@ class CircleViewModel extends Base
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       start_time = Date.now()
       @build(new Build data)
+      @build().maybeSubscribe()
 
       window.time_taken_build = Date.now() - start_time
 
