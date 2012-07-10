@@ -368,31 +368,25 @@ class Build extends HasUrl
     # fills up steps and actions such that step and index are valid
     for i in [0..step]
       if not @steps()[i]?
-        console.log("setting step %s", i)
         @steps.setIndex(i, new Step({}))
 
     # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
     for i in [0..index]
       if not @steps()[step].actions()[i]?
-        console.log("setting action %s,%s", step, i)
         @steps()[step].actions.setIndex(i, new ActionLog({}))
 
   newAction: (json) =>
     @fillActions(json.step, json.index)
-    console.log("newAction: %s, %s", json.step, json.index)
     @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
 
   updateAction: (json) =>
     # updates the observables on the action, such as end time and status.
     @fillActions(json.step, json.index)
-    console.log("updateAction: %s, %s", json.step, json.index)
     @steps()[json.step].actions()[json.index].updateObservables(json.log)
 
   appendAction: (json) =>
     # adds output to the action
     @fillActions(json.step, json.index)
-    console.log("appendAction: %s, %s", json.step, json.index)
-    console.log(json.out)
     @steps()[json.step].actions()[json.index].out.push(json.out)
 
   updateStatus: (json) =>
