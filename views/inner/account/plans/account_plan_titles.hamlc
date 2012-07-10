@@ -2,7 +2,7 @@
   %div.title
   %div.reason
     %h3
-      All plans cost less than 1 developer hour per month
+      All plans cost less than one developer hour per month
   %div.tick Incredibly fast builds
   %div.parallelism= HAML['asterisk']({title: 'Parallelism', message: "Parallelism support isn’t completely finished, but is being trialed by a number of beta users. Ask us to turn it on for your project."})
   %div.limits Limits
