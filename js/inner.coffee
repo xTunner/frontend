@@ -364,7 +364,7 @@ class Project extends HasUrl
           @followed(data.followed)
           VM.loadRecentBuilds()
 
-  save_hipchat: (data, event) =>
+  save_hooks: (data, event) =>
     $.ajax
       type: "PUT"
       event: event
@@ -372,6 +372,11 @@ class Project extends HasUrl
       data: JSON.stringify
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
+        campfire_room: @campfire_room()
+        campfire_token: @campfire_token()
+        campfire_subdomain: @campfire_subdomain()
+
+
     false # dont bubble the event up
 
   save_specs: (data, event) =>

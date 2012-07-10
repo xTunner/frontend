@@ -241,7 +241,22 @@
     %p
       As an alternative, use UTC on your production servers to avoid horrific daylight-savings bugs, or if your developers are in different time zones.
 
+    %h3#hosts
+      Hosts
 
+    %p
+      Add entries to the /etc/hosts file. For example:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            hosts:
+              circlehost: 127.0.0.1
+              foobar: 1.2.3.4
+
+    %p
+      Use this to add entries for /etc/hosts. This is useful if your tests connect to your webserver, at an established name, such as "circlehost".
 
     %h3#ruby-version
       Ruby version

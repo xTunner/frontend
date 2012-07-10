@@ -18,8 +18,32 @@
           %a{href: "https://hipchat.com/admin/api"}
             create a "<i>notification</i>" token on the HipChat site.
 
+
+  %fieldset.form-stacked
+    %legend Add Campfire hook
+
     .row
-      %input.btn.primary.span5.large{data-bind: "click: save_hipchat",
+      .span8.clearfix
+        %label Room name
+        %input.span4{ type: "text", data-bind: "value: campfire_room" }
+
+    .row
+      .span8.clearfix
+        %label Subdomain
+        %input.span4{ type: "text", data-bind: "value: campfire_subdomain" }
+
+    .row
+      .span5.clearfix
+        %label API token
+        %input.span5{ type: "text", data-bind: "value: campfire_token" }
+
+        %p
+          To get your API token,
+          %a{href: "https://hipchat.com/admin/api"}
+            create a "<i>notification</i>" token on the HipChat site.
+
+    .row
+      %input.btn.primary.span5.large{data-bind: "click: save_campfire",
                                      type: "submit",
                                      value: "Save",
                                      data-loading-text: "Saving and sending message...",
