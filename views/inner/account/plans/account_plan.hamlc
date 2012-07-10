@@ -2,11 +2,14 @@
   .name{data-bind: "text: name"}
   .reason
   .tick ✔
+  .tick ✔
+  .tick ✔
+  .tick ✔
+  .tick ✔
+  .support Mon-Sun
   .parallelism
     = succeed '-way', ->
       %span{data-bind: "text: parallel"}
-  .limits
-    = HAML['asterisk']({title: "No limits", message: "Well, within limits. Standard “don’t be a dick” rules apply"})
 
   .cost
     %span{data-bind: "if: cost > 0"}
@@ -16,8 +19,6 @@
 
     %span{data-bind: "ifnot: cost"}
       None
-
-  .support{data-bind: "text: support"}
 
   .price
     $
