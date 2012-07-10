@@ -193,6 +193,8 @@ body {
    }
 
    .selected {
+      z-index: 1;
+      position: relative;
       background-color: @color;
       .border-radius;
    }
@@ -268,19 +270,28 @@ body {
          font-size: 20px;
       }
 
+
+      .reason {
+        margin-bottom: 10px;
+        padding: 0px 30px; // override padding above
+      }
+
+
+      .titles > .reason {
+         z-index: 2; // in front of the highlighted plan
+         position: relative;
+         width: 850px;
+         background-color: #FDF5D9;
+         height: 35px;
+         text-align: center;
+         margin-left: 260px;
+      }
+
       .plan > div {
          text-align: center;
          height: 33px;
          padding: 3px 0 3px 0;
       }
-
-      .plan > .reason {
-         font-weight: bold;
-         font-size: 15px;
-         height: 40px;
-         padding: 0px 20px; // override padding above
-      }
-
 
       .price {
          font-size: 18px;
@@ -288,7 +299,7 @@ body {
 
       .name {
          font-weight: strong;
-         font-size: 24px;
+         font-size: 23px;
       }
 
       .plan > .tick {

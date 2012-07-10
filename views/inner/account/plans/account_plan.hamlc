@@ -1,6 +1,6 @@
 .plan{data-bind: "css: { selected: $parent.selectedPlan() == $data }"}
   .name{data-bind: "text: name"}
-  .reason{data-bind: "text: reason"}
+  .reason
   .tick ✔
   .parallelism
     = succeed '-way', ->
