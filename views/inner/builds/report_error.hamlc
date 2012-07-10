@@ -1,4 +1,4 @@
-%span{data-bind: "if: failed && !infrastructure_fail"}
+%span{data-bind: "if: failed() && !infrastructure_fail()"}
   .row
     .offset2.span16
       .alert-message.warning
