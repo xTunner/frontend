@@ -346,7 +346,7 @@ class Build extends HasUrl
         invitee: @user
         vcs_url: @vcs_url()
         build_num: @build_num
-    false
+    event.stopPropagation()
 
   visit: () =>
     SammyApp.setLocation @url()
