@@ -97,7 +97,7 @@
 
     %h3 Can I run Circle behind my firewall?
     %p
-      We offer behind-the-firewall plans, starting at $149 per user.
+      We offer Circle for download as a behind-the-firewall product.
       Contact
       %a{href: "paul@circleci.com"}
         paul@circleci.com
