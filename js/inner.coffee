@@ -29,6 +29,12 @@ $(document).ajaxError((ev, xhr, status, errorThrown) ->
     notifyError (xhr.responseText or xhr.statusText)
 )
 
+ko.observableArray["fn"].setIndex = (index, newItem) ->
+  @valueWillMutate()
+  result = @()[index] = newItem
+  @valueHasMutated()
+  result
+
 $(document).ajaxSend((ev, xhr, options) ->
 
   xhr.event = options.event
@@ -69,8 +75,10 @@ class Obj
     else
       ko.observable obj
 
-
-
+  updateObservables: (obj) =>
+    for k,v of obj
+      if @observables().hasOwnProperty(k)
+        @[k](v)
 
 class Base extends Obj
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
@@ -91,128 +99,178 @@ class HasUrl extends Base
     @project_path = @komp =>
       "/gh/#{@project_name()}"
 
+class ActionLog extends Obj
+  observables: =>
+    name: null
+    bash_command: null
+    timedout: null
+    start_time: null
+    end_time: null
+    exit_code: null
+    out: []
+    user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
-
-class ActionLog extends Base
   constructor: (json) ->
-    super json, {bash_command: null, start_time: null, command: null, timedout: null, exit_code: 0, out: null, minimize: true}, ["end_time", "timedout", "exit_code", "run_time_millis", "out", "start_time", "bash_command"]
+    super json
 
-    @status = if @end_time == null
+    @status = @komp =>
+      if @end_time() == null
         "running"
-      else if @timedout
+      else if @timedout()
         "timedout"
 
-      else if (@exit_code == null || @exit_code == 0)
+      else if (@exit_code() == null || @exit_code() == 0)
         "success"
       else
         "failed"
 
-    @success = @status == "success"
+    @success = @komp =>
+      @status() == "success"
 
     @failed = @komp => @status == "failed" or @status == "timedout"
+    @infrastructure_fail = @komp => @status == "infrastructure_fail"
 
     # Expand failing actions
-    @minimize(@success)
-
-    @has_content = () =>
-      @out or @bash_command
-
-    @action_header_style = @komp =>
-      css = @status
-
-      result =
-        minimize: @minimize()
-        contents: @has_content()
-      result[css] = true
-      result
-
-    @action_header_button_style = @komp =>
-      if @has_content()
-        @action_header_style()
+    @minimize = @komp =>
+      if @user_minimized()?
+        @user_minimized()
       else
-        {}
+        @success()
+
+    @visible = @komp =>
+      not @minimize()
+
+    @has_content = @komp =>
+      (@out()? and @out().length > 0) or @bash_command()
+
+    @action_header_style =
+      # knockout CSS requires a boolean observable for each of these
+      minimize: @minimize
+      contents: @has_content
+      running: @komp => @status() == "running"
+      timedout: @komp => @status() == "timedout"
+      success: @komp => @status() == "success"
+      failed: @komp => @status() == "failed"
+
+    @action_header_button_style =
+      @action_header_style
 
     @action_log_style =
-      minimize: @minimize()
+      minimize: @minimize
 
-    @start_to_end_string = "#{@start_time} to #{@end_time}"
+    @start_to_end_string = @komp =>
+      "#{@start_time()} to #{@end_time()}"
 
     @duration = Circle.time.as_duration(@run_time_millis)
 
   toggle_minimize: =>
-    if @has_content()
-      @minimize(!@minimize())
-
+    if not @user_minimized?
+      @user_minimized(!@user_minimized())
+    else
+      @user_minimized(!@minimize())
 
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
   log_output: =>
-    return "" unless @out
-    x = for o in @out
+    return "" unless @out()
+    x = for o in @out()
       "<span class='#{o.type}'>#{@htmlEscape(o.message)}</span>"
     x.join ""
 
+  appendLog: (json) =>
+    @out.push(json.out)
+
+
+class Step extends Obj
+
+  observables: =>
+    actions: []
+
+  constructor: (json) ->
+    json.actions = if json.actions? then (new ActionLog(j) for j in json.actions) else []
+    super json
 
 class Build extends HasUrl
   constructor: (json) ->
-    # make the actionlogs observable
-    json.action_logs = (new ActionLog(j) for j in json.action_logs) if json.action_logs
+
+    json.steps = if json.steps? then (new Step(j) for j in json.steps) else []
+
     super json,
-       body: null
-       branch: "unknown"
-       subject: null
-       committer_name: null
-       committer_email: null
-       committer_date: null
-       author_name: null
-       author_email: null
-       author_date: null,
-       ["build_num"
-        "status"
-        "committer_name"
-        "committer_email"
-        "why"
-        "user"
-        "job_name"
-        "branch"
-        "vcs_revision"
-        "start_time"
-        "build_time_millis"]
+      body: null
+      branch: "unknown"
+      subject: null
+      committer_name: null
+      committer_email: null
+      committer_date: null
+      author_name: null
+      author_email: null
+      author_date: null
+      start_time: null
+      stop_time: null
+      status: null,
+      ["build_num"
+       "committer_name"
+       "committer_email"
+       "why"
+       "user"
+       "job_name"
+       "branch"
+       "vcs_revision"
+       "build_time_millis"]
 
     @url = @komp =>
       "#{@project_path()}/#{@build_num}"
 
-    @style = @komp =>
-      klass = switch @status
+    @important_style = @komp =>
+      switch @status()
         when "failed"
-          "important"
-        when "infrastructure_fail"
-          "warning"
+          true
         when "timedout"
-          "important"
+          true
         when "no_tests"
-          "important"
+          true
+        else
+          false
+    @warning_style = @komp =>
+      switch @status()
+        when "infrastructure_fail"
+          true
         when "killed"
-          "warning"
-        when "fixed"
-          "success"
-        when "deploy"
-          "success"
-        when "success"
-          "success"
-        when "running"
-          "notice"
+          true
         when "not_run"
-          "warning"
-        when "starting"
-          ""
-      result = {label: true, build_status: true}
-      result[klass] = true
-      return result
+          true
+        else
+          false
 
+    @success_style = @komp =>
+      switch @status()
+        when "success"
+          true
+        when "fixed"
+          true
+        when "deploy"
+          true
+        else
+          false
 
-    @status_words = @komp => switch @status
+    @notice_style = @komp =>
+      switch @status()
+        when "running"
+          true
+        else
+          false
+
+    @style =
+      important: @important_style
+      warning: @warning_style
+
+      success: @success_style
+      notice: @notice_style
+      label: true
+      build_status: true
+
+    @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "circle bug"
       when "timedout"
@@ -224,7 +282,7 @@ class Build extends HasUrl
       when "not_running"
         "not running"
       else
-        @status
+        @status()
 
     @committer_mailto = @komp =>
       if @committer_email
@@ -254,11 +312,11 @@ class Build extends HasUrl
             "unknown"
 
     @pretty_start_time = @komp =>
-      if @start_time
-        Circle.time.as_time_since(@start_time)
+      if @start_time()
+        Circle.time.as_time_since(@start_time())
 
     @duration = @komp () =>
-      if @start_time
+      if @start_time()
         Circle.time.as_duration(@build_time_millis)
 
     @branch_in_words = @komp =>
@@ -267,7 +325,6 @@ class Build extends HasUrl
       b = @branch
       b = b.replace(/^remotes\/origin\//, "")
       "(#{b})"
-
 
     @github_url = @komp =>
       return unless @vcs_revision
@@ -294,6 +351,47 @@ class Build extends HasUrl
   visit: () =>
     SammyApp.setLocation @url()
 
+  isRunning: () =>
+    @start_time() and not @stop_time()
+
+  maybeSubscribe: () =>
+    if @isRunning()
+      @build_channel = VM.pusher.subscribe(@pusherChannel())
+      @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
+      @build_channel.bind('newAction', (json) => @newAction json)
+      @build_channel.bind('updateAction', (json) => @updateAction json)
+      @build_channel.bind('appendAction', (json) => @appendAction json)
+      @build_channel.bind('updateStatus', (json) => @updateStatus json)
+
+  fillActions: (step, index) =>
+    # fills up steps and actions such that step and index are valid
+    for i in [0..step]
+      if not @steps()[i]?
+        @steps.setIndex(i, new Step({}))
+
+    # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
+    for i in [0..index]
+      if not @steps()[step].actions()[i]?
+        @steps()[step].actions.setIndex(i, new ActionLog({}))
+
+  newAction: (json) =>
+    @fillActions(json.step, json.index)
+    @steps()[json.step].actions.setIndex(json.index, new ActionLog(json.log))
+
+  updateAction: (json) =>
+    # updates the observables on the action, such as end time and status.
+    @fillActions(json.step, json.index)
+    @steps()[json.step].actions()[json.index].updateObservables(json.log)
+
+  appendAction: (json) =>
+    # adds output to the action
+    @fillActions(json.step, json.index)
+    @steps()[json.step].actions()[json.index].out.push(json.out)
+
+  updateStatus: (json) =>
+    @status(json.status)
+
   # TODO: CSRF protection
   retry_build: (data, event) =>
     $.ajax
@@ -314,6 +412,12 @@ class Build extends HasUrl
       "#{@project_name()} ##{@build_num}"
     else
       @build_num
+
+  pusherChannel: () =>
+    "private-#{@project_name()}@#{@build_num}".replace(/\//g,"@")
+
+  update: (json) =>
+    @status(json.status)
 
 class Project extends HasUrl
   constructor: (json) ->
@@ -395,9 +499,6 @@ class Project extends HasUrl
 
 
     false # dont bubble the event up
-
-
-
 
 class User extends Obj
   observables: =>
@@ -579,8 +680,6 @@ class Billing extends Obj
       read: () =>
         @selectedOrganization()
 
-
-
   selectPlan: (plan) =>
     @chosenPlan(plan)
     SammyApp.setLocation "/account/plans/organization"
@@ -593,7 +692,6 @@ class Billing extends Obj
       @loadTeamMembers()
       @loadStripe()
       @loaded = true
-
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -714,10 +812,14 @@ class CircleViewModel extends Base
     @refreshing_projects = ko.observable(false);
     observableCount += 8
 
-    #@setupPusher()
+    @setupPusher()
 
   setupPusher: () =>
-    @pusher = new Pusher("356b7c379e56e14c261b")
+    key = switch renderContext.environment
+      when "production" then "6465e45f8c4a30a2a653"
+      else "3f8cb51e8a23a178f974"
+
+    @pusher = new Pusher(key, { encrypted: true})
 
     Pusher.channel_auth_endpoint = "/auth/pusher"
 
@@ -726,14 +828,11 @@ class CircleViewModel extends Base
 
   userSubscribePrivateChannel: () =>
     channel_name = "private-" + @current_user().login
-
     @user_channel = @pusher.subscribe(channel_name)
     @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
   pusherSetupBindings: () =>
     @user_channel.bind "call", (data) =>
-      window.fn = data.fn
-      window.args = data.args
       this[data.fn].apply(this, data.args)
 
   testCall: (arg) =>
@@ -822,7 +921,11 @@ class CircleViewModel extends Base
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       start_time = Date.now()
       @build(new Build data)
+      @build().maybeSubscribe()
+
       window.time_taken_build = Date.now() - start_time
+
+
     display "build", {project: project_name, build_num: build_num}
 
 

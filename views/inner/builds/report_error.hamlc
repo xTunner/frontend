@@ -14,7 +14,7 @@
         and we'll investigate.
 
 
-%span{data-bind: "if: infrastructure_fail"}
+%span{data-bind: "if: infrastructure_fail()"}
   .row
     .offset2.span16
       .alert-message.warning
