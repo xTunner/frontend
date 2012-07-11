@@ -1,16 +1,24 @@
 .titles
   %div.title
+
+  %div.price Monthly price
+  %div.cost Cost per build
+
   %div.reason
     %h3
       All plans cost less than one developer hour per month
+
+  %div.parallelism= HAML['asterisk']({title: 'Parallelism', message: "Parallelism support isn’t completely finished, but is being trialed by a number of beta users. Ask us to turn it on for your project."})
+
+  %div.support Same day support
   %div.tick Incredibly fast builds
   %div.tick Unlimited pushes
   %div.tick Unlimited concurrent tests
   %div.tick Unlimited collaborators
   %div.tick Unlimited testing time
-  %div.support Same day support
 
-  %div.parallelism= HAML['asterisk']({title: 'Parallelism', message: "Parallelism support isn’t completely finished, but is being trialed by a number of beta users. Ask us to turn it on for your project."})
+  %div.tick Predictable pricing
 
-  %div.cost Cost per build
+
+
   %div.price Monthly price

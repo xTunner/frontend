@@ -1,15 +1,10 @@
 .plan{data-bind: "css: { selected: $parent.selectedPlan() == $data }"}
   .name{data-bind: "text: name"}
-  .reason
-  .tick ✔
-  .tick ✔
-  .tick ✔
-  .tick ✔
-  .tick ✔
-  .support Mon-Sun
-  .parallelism
-    = succeed '-way', ->
-      %span{data-bind: "text: parallel"}
+
+  .price
+    $
+    %span{data-bind: "text: price / 100"}>
+    \/dev
 
   .cost
     %span{data-bind: "if: cost > 0"}
@@ -19,6 +14,27 @@
 
     %span{data-bind: "ifnot: cost"}
       None
+
+  .reason
+
+  .parallelism
+    = succeed '-way', ->
+      %span{data-bind: "text: parallel"}
+
+  .support Every day
+  .tick ✔
+  .tick ✔
+  .tick ✔
+  .tick ✔
+  .tick ✔
+
+  .tick
+    %span{data-bind: "if: cost == 0"}
+      ✔
+
+
+
+
 
   .price
     $
