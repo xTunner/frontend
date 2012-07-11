@@ -1,6 +1,6 @@
 %td.not_run_message{colspan: 2}
 
-  %span{data-bind: "if: dont_build() == 'not-paid-user'"}
+  %span{data-bind: "if: dont_build() == 'user-not-paid'"}
     %a.btn.primary{href: "/account/plans"}
       Add
       %span{data-bind: "text: user.login"}
