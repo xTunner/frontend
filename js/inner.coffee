@@ -9,7 +9,7 @@ textVal = (elem, val) ->
 
 finishAjax = (event, attrName, buttonName) ->
   if event
-    t = $(event.target)
+    t = $(event.currentTarget)
     done = t.attr(attrName) or buttonName
     textVal t, done
 
@@ -18,34 +18,26 @@ finishAjax = (event, attrName, buttonName) ->
       t.removeClass "disabled"
     setTimeout(func, 1500)
 
-$(document).ajaxSuccess((ev, xhr, options) -> finishAjax(xhr.event, "data-success-text", "Saved"))
+$(document).ajaxSuccess (ev, xhr, options) ->
+  finishAjax(xhr.event, "data-success-text", "Saved")
 
-$(document).ajaxError((ev, xhr, status, errorThrown) ->
+$(document).ajaxError (ev, xhr, status, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
-
   if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
     notifyError (xhr.responseText or xhr.statusText)
-)
 
-ko.observableArray["fn"].setIndex = (index, newItem) ->
-  @valueWillMutate()
-  result = @()[index] = newItem
-  @valueHasMutated()
-  result
-
-$(document).ajaxSend((ev, xhr, options) ->
-
+$(document).ajaxSend (ev, xhr, options) ->
   xhr.event = options.event
   if xhr.event
-    t = $(xhr.event.target)
+    t = $(xhr.event.currentTarget)
     t.addClass "disabled"
     # change to loading text
     loading = t.attr("data-loading-text") or "..."
     xhr.event.savedText = textVal t
     textVal t, loading
-)
+
 
 # Make the buttons disabled when clicked
 $.ajaxSetup
@@ -53,6 +45,11 @@ $.ajaxSetup
   accepts: {json: "application/json"}
   dataType: "json"
 
+ko.observableArray["fn"].setIndex = (index, newItem) ->
+  @valueWillMutate()
+  result = @()[index] = newItem
+  @valueHasMutated()
+  result
 
 class Obj
   constructor: (json={}, defaults={}) ->
