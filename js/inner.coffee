@@ -815,7 +815,7 @@ class CircleViewModel extends Base
     @setupPusher()
 
   setupPusher: () =>
-    key = switch renderContext.environment
+    key = switch renderContext.env
       when "production" then "6465e45f8c4a30a2a653"
       else "3f8cb51e8a23a178f974"
 
