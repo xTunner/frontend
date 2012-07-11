@@ -1,0 +1,104 @@
+%br
+
+%h2 Billing FAQ
+
+.row
+  .offset0.span9
+
+    %h3 What does per-developer pricing mean?
+    %p
+      Each developer that pushes to Circle will need a plan, in order for us to test their pushes.
+      During the payment process, you'll choose a plan for each developer, with the default being the plan you choose on this page.
+
+
+    %h3 Do I need a plan for everyone in my organization?
+    %p
+      No.
+      You only need a plan for everyone whose pushes you want to test.
+
+
+    %h3 Do all my users need to be on the same plan?
+    %p
+      No.
+      We test each push depending on the users plan, so you can have one plan for frequent pushers, and a cheaper plan (or no plan) for infrequent pushers.
+      We even created a special plan for rare pushers like contractors, where you'll be charged per build instead of having a monthly plan.
+
+
+
+
+
+
+    %h3 Are there any extra charges?
+    %p
+      Circle has no extra charges in any of our standard plans.
+      You have unlimited tests, unlimited testing time, unlimited concurrent builds, unlimited anything we can think of.
+      We don't believe that we should incentivise you to test less.
+
+    %p
+      The only exception to this is the "contractor" plan, but that's only for occasional contributors.
+      If you spend more than $10 a month on the contractor plan, you should probably be using a different plan.
+
+
+
+    %h3 Really? Unlimited?
+    %p
+      For practical purposes, our plans are unlimited.
+      You won't be cut off for pushing too frequently, having a long test suite, or anything like that.
+      However, like all services, we reserve the right to restrict abusive behaviour.
+      If you're pushing a 10 hour test suite every minute, we won't feel bad about cutting you off.
+
+
+    %h3 Are there limits on the cost of the contractor plan?
+    %p
+      We have controls at our end to prevent abuse, and you won't end up with a giant bill from having a contractor plan.
+      And if you did, we wouldn't expect you to pay that.
+      We're a dev-tools company, not a telco.
+
+
+
+  .offset2.span9
+
+    %h3 Why does Circle use per developer pricing?
+    %p
+      After talking to our beta users, we based our pricing on two important principles: charge in a fair way, and aligning your incentives with ours.
+      As such, we chose a price-per-developer that is much less than one hour of developer time.
+
+    %p
+      It's fair because it scales with the amount of work your team generates.
+      At the same time, it's affordable for teams of all size.
+
+    %p
+      Most importantly, it allows us to maximize your productivity, without limits on concurrent builds, testing time or number of repositories.
+      Circle works to make you as productive as possible, and we won't let our pricing get in the way.
+
+
+    %h3 Why should I pay this instead of using Jenkins?
+    %p
+      Maintaining a CI server takes considerable time - we estimate about 8% of a team's time is spent on maintaining their build infrastructure (of course, much more is wasted if you don't have build infrastructure, but that's a separate question).
+      Circle allows you buy back this productivity, and let you focus on building your product.
+
+    %p
+      With Circle, you'll never have to buy machines, install plugins, refactor the test suite for speed, or spend any time on your test infrastructure.
+      With Circle, you don't need to worry about your tools - just focus on the product and leave the tools to us.
+
+
+
+    %h3 How does parallelism work? Isn't that error-prone?
+    %p
+      Most parallelism libraries use multiple processes or threads to parallelize.
+      This is error-prone because tests share the database and filesystem, and will cause side-effects in other tests.
+
+    %p
+      Circle doesn't work like this.
+      It splits the tests and runs them in separate VMs.
+      Each VM is completely separate, no shared code, no shared databases, no shared anything.
+      Our customers have found it to be very reliable.
+
+
+    %h3 Can I run Circle behind my firewall?
+    %p
+      We offer behind-the-firewall plans, starting at $149 per user.
+      Contact
+      %a{href: "paul@circleci.com"}
+        paul@circleci.com
+      for details.
