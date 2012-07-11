@@ -7,8 +7,7 @@
       to your account
 
   %span{data-bind: "if: dont_build() == 'no-user' && !user.is_user"}
-    %a.btn.primary{href: "#",
-                   data-bind: "click: invite_user",
+    %a.btn.primary{data-bind: "click: invite_user",
                    data-loading-text: "Sending",
                    data-success-text: "Sent",
                    data-failed-text: "Failed to send"}
