@@ -3,19 +3,11 @@
     %h2 Continuous Integration &nbsp; for Web Apps
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
-    - if @showJoinLink
-      %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' }
-        Join using GitHub
+    %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' }
+      Join using GitHub
 
-      %a.footnote{ href: '/privacy' title: 'Privacy and Security' }
-        Learn about how we keep your code safe
-
-    - else
-      %p Sign up for the beta. We'll email you when we're ready.
-
-      %form{action: "/notify", method: "post"}
-        %input.signup{ type: 'email', placeholder: 'Your email address&hellip;', name: 'signup', required: '' }
-        %button.button.green{ type: 'submit' } Notify Me
+    %a.footnote{ href: '/privacy' title: 'Privacy and Security' }
+      Learn about how we keep your code safe
 
     .screenshot CircleCI Screenshot
 
@@ -44,11 +36,8 @@
     %header
       %h2 All this power from one little button
 
-    - if @showJoinLink
-      %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' } Join using GitHub
+    %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' } Join using GitHub
 
-    - else
-      %a.authGithub.disabled{ title: 'Currently in private beta' } Currently in private beta
 
     %ul
       %li No fiddling with ssh keys
@@ -59,12 +48,3 @@
       Signing up with GitHub allows Circle to access your code so that we can run your tests.
       We also add post-commit hooks and ssh keys so that you don't have to.
       No human ever looks at your code without your express permission, and everything can be revoked from within GitHub or by asking us.
-
-- unless @showJoinLink
-  #signup
-    %section
-      %p <span>Sign up for the beta.</span> We'll email you when we're ready.
-
-      %form#beta{action: "/notify", method: "post"}
-        %input.signup{ type: 'text', placeholder: 'Your email address&hellip;', name: 'signup'}
-        %button.button.green{ type: 'submit' } Notify me
