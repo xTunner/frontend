@@ -313,8 +313,10 @@ class Build extends HasUrl
         Circle.time.as_time_since(@start_time())
 
     @duration = @komp () =>
-      if @start_time()
+      if @build_time_millis
         Circle.time.as_duration(@build_time_millis)
+      else
+        "still running"
 
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch
