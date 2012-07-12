@@ -4,7 +4,7 @@
     %a.btn.primary{href: "/account/plans"}
       Add
       %span{data-bind: "text: user.login"}
-      to your account
+      to your plan
 
   %span{data-bind: "if: dont_build() == 'no-user' && !user.is_user"}
     %a.btn.primary{data-bind: "click: invite_user",
@@ -17,7 +17,7 @@
   %span{data-bind: "if: dont_build() == 'no-user' && user.is_user"}
     %a.btn.primary.disabled
       %span{data-bind: "text: user.login"}
-      invited
+      has joined
 
   %span{data-bind: "if: dont_build() == 'bad-push'"}
     Unverified push - ignored
