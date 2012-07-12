@@ -14,7 +14,7 @@ circle = $.sammy "body", ->
   class Page
     constructor: (@name, @title) ->
 
-    init: (cx) =>
+    display: (cx) =>
       document.title = "Circle - " + @title
 
       # Render content
@@ -31,19 +31,10 @@ circle = $.sammy "body", ->
       $("body").append HAML[@name](renderContext)
       $("body").append HAML['footer'](renderContext)
 
-    load: (cx) =>
-      $.getScript "/assets/views/outer/#{@name}/#{@name}.hamlc", =>
-         @init(cx)
-
     scroll: (hash) =>
       if hash == '' or hash == '#' then hash = "body"
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
-    display: (cx) =>
-      if HAML? and HAML[@name]?
-        @init(cx)
-      else
-        @load(cx)
 
   class Home extends Page
     render: (cx) =>
@@ -109,9 +100,6 @@ circle = $.sammy "body", ->
         $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
         $("body").append(HAML['footer'](renderContext))
 
-    load: (cx) =>
-      $.getScript "/assets/views/outer/docs/docs.js.dieter", =>
-        @init(cx)
 
   # Pages
   home = new Home("home", "Continuous Integration made easy")
