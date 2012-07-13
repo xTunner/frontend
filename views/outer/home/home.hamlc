@@ -3,7 +3,7 @@
     %h2#mainHeading{style: "display: none"} Continuous Integration &nbsp; for Web Apps
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
-    %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' }
+    %a.authGithub.kissAuthGithub#join{ href: @githubAuthURL, title: 'Join using GitHub' }
       Join using GitHub
 
     %a.footnote{ href: '/privacy' title: 'Privacy and Security' }

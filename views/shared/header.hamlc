@@ -26,9 +26,5 @@
           %a{ href: '/docs', title: 'Documentation for Circle'}
             Docs
         %li
-          - if @showJoinLink
-            %a.kissAuthGithub{ id: 'join' href: @githubAuthURL, title: 'Join Circle' }
-              Join
-          - else
-            %a{ href: @githubAuthURL, title: 'Log in to Circle' }
-              Login
+          %a#login{ href: @githubAuthURL, title: 'Log in to Circle' }
+            Login
