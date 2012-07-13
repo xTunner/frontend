@@ -22,8 +22,13 @@
 
         %dt Author
         %dd
-          %a{data-bind: "text: author"}
+          %a{data-bind: "text: author, attr: {href: 'mailto' + author_email}"}
 
+        / ko if: previous_build
+        %dt Previous build
+        %dd
+          %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
+        / /ko
 
       %dl.offset1.span6
 
@@ -34,7 +39,7 @@
         %dt Started at
         %dd{data-bind: "text: pretty_start_time"}
 
-        %dt Length
+        %dt Duration
         %dd{data-bind: "text: duration"}
 
 

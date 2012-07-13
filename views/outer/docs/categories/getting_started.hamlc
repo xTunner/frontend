@@ -47,19 +47,12 @@
       %code.inline circle.yml
       file.
 
-      -#%ul
-        -#%li
-          We'll talk you through the
-          %a{href: "#inference"} standard things
-          we look for to make projects work.
-        -#%li
-          We'll help you with
-          %a{href: "/docs/common-problems"} common problems
-          that users experience when using Circle.
-        -#%li
-          We'll even show you how to test your
-          %a{href: "/docs/configuration#custom"} completely custom
-          project.
+    %p
+      Sometimes, your tests won't work on our server, even though they work locally.
+      We have a list of
+      %a{ href: "/docs/common-problems"} common problems
+      that will help you through the majority of issues that you'll face.
+
 
     %h1.section
       %a#what-next What next?
