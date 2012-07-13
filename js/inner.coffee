@@ -213,11 +213,12 @@ class Build extends HasUrl
        "user"
        "job_name"
        "branch"
+       "previous"
        "vcs_revision"
        "build_time_millis"]
 
     @url = @komp =>
-      "#{@project_path()}/#{@build_num}"
+      @urlForBuildNum @build_num
 
     @important_style = @komp =>
       switch @status()
@@ -312,6 +313,10 @@ class Build extends HasUrl
       if @start_time()
         Circle.time.as_time_since(@start_time())
 
+    @previous_build = @komp =>
+      @previous? and @previous.build_num
+
+
     @duration = @komp () =>
       if @build_time_millis
         Circle.time.as_duration(@build_time_millis)
@@ -335,6 +340,9 @@ class Build extends HasUrl
 
     @author = @komp =>
       @committer_name or @committer_email
+
+  urlForBuildNum: (num) =>
+    "#{@project_path()}/#{num}"
 
   invite_user: (data, event) =>
     $.ajax
