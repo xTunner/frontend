@@ -62,6 +62,11 @@
                               data-loading-text: "Triggering...",
                               data-success-text: "Triggered"}
             Retry
+          %button.btn.primary{data-bind: "click: ssh_build",
+                              title: "Rerun the tests, with SSH into the VM",
+                              data-loading-text: "Triggering...",
+                              data-success-text: "Triggered"}
+            SSH
 
 
 

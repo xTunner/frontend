@@ -409,6 +409,16 @@ class Build extends HasUrl
         (new Build(data)).visit()
     false
 
+  ssh_build: (data, event) =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/ssh"
+      type: "POST"
+      event: event
+      success: (data) =>
+        (new Build(data)).visit()
+    false
+
+
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
