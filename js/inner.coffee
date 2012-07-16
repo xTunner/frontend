@@ -375,8 +375,11 @@ class Build extends HasUrl
   isRunning: () =>
     @start_time() and not @stop_time()
 
+  shouldSubscribe: () =>
+    @isRunning() or @status() == "queued"
+
   maybeSubscribe: () =>
-    if @isRunning()
+    if @shouldSubscribe()
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
