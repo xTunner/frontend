@@ -18,7 +18,7 @@
       = HAML['account_plan_titles']()
 
     / ko foreach: plans
-    .span3
+    .span4
       = HAML['account_plan']({showButton: true})
     / /ko
 
