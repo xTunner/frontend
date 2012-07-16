@@ -22,7 +22,13 @@
 
         %dt Author
         %dd
-          %a{data-bind: "text: author, attr: {href: 'mailto' + author_email}"}
+          %a{data-bind: "text: author, attr: {href: author_mailto}"}
+
+        / ko if: author_isnt_committer
+        %dt Committer
+        %dd
+          %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+        / /ko
 
         / ko if: previous_build
         %dt Previous build

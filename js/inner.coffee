@@ -209,6 +209,8 @@ class Build extends HasUrl
       ["build_num"
        "committer_name"
        "committer_email"
+       "author_name"
+       "author_email"
        "why"
        "user"
        "job_name"
@@ -282,10 +284,6 @@ class Build extends HasUrl
       else
         @status()
 
-    @committer_mailto = @komp =>
-      if @committer_email
-        "mailto:#{@committer_email}"
-
     @why_in_words = @komp =>
       switch @why
         when "github"
@@ -339,7 +337,23 @@ class Build extends HasUrl
       @vcs_revision.substring 0, 7
 
     @author = @komp =>
+      @author_name or @author_email
+
+    @committer = @komp =>
       @committer_name or @committer_email
+
+    @committer_mailto = @komp =>
+      if @committer_email
+        "mailto:#{@committer_email}"
+
+    @author_mailto = @komp =>
+      if @committer_email
+        "mailto:#{@committer_email}"
+
+    @author_isnt_committer = @komp =>
+      (@committer_email isnt @author_email) or (@committer_name isnt @author_name)
+
+
 
   urlForBuildNum: (num) =>
     "#{@project_path()}/#{num}"
