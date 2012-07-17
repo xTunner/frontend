@@ -12,7 +12,6 @@
     padding: 70px 0 50px 0;
     text-shadow: 0 1px 0 rgba(255,255,255,1);
     text-align: center;
-    .box-shadow(0 35px 30px -30px rgba(0,0,0,0.1));
 
     h2 {
       font-size: 60px;
@@ -29,77 +28,17 @@
 
 // Sections
 .tour {
-  padding: 40px 0;
-  text-shadow: 0 1px 0 rgba(255,255,255,1);
-  background: url("@{imgPath}/outer/home/cc-tour-divider.gif") bottom repeat-x;
-
-  &.profit { background: none; }
-
-  position: relative;
-  .clearfix;
-
-  // Tour images
-  & > div {
-    background-image: url("@{imgPath}/outer/home/features_sprite.png");
-    background-repeat: no-repeat;
-    .box-shadow(inset 0px 0px 15px 0 rgba(0,0,0,.5));
-    border: 1px solid #989898;
-    .border-radius(4px);
-    .size(240px, 440px);
-    position: absolute;
-    right: 0;
-  }
-
-  &.magic div     { background-position: 0 0;      }
-  &.profit div    { background-position: 0 -240px; }
-  &.authorize div { background-position: 0 -480px; }
-
-  &.profit { margin-bottom: 25px; }
 
   // Tour text
   figcaption {
-    .column(6.4);
 
     h2 {
-      font-size: 45px;
-      margin: 0;
     }
 
     h3 {
-      margin: 0;
-      font-size: 25px;
-      font-family: "Myriad Semi", sans-serif;
-      font-weight: normal;
     }
 
     li {
-      margin: 0 0 15px 0;
-      font-size: 13px;
-    }
-
-    // Use a sprite for good browsers
-    .generatedcontent & ul {
-      padding-left: 20px;
-
-      li {
-        list-style: none;
-        padding-left: 15px;
-        position: relative;
-      }
-
-      li:before {
-        content: '';
-        display: block;
-        background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat -424px -5px;
-        .size(13px, 14px);
-        position: absolute;
-        left: -5px;
-      }
-    }
-
-    // Load bullet.png for crap browsers
-    .no-generatedcontent ul {
-      list-style-image: url("@{imgPath}/outer/home/bullets.png");
     }
 
   } // /Tour text
