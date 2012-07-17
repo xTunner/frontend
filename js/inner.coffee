@@ -198,6 +198,7 @@ class Build extends Obj
     author_name: null
     author_email: null
     author_date: null
+    body: null
     start_time: null
     stop_time: null
     steps: []
@@ -214,8 +215,7 @@ class Build extends Obj
 
     json.steps = if json.steps? then (new Step(j) for j in json.steps) else []
 
-    super json,
-      body: null
+    super(json)
 
     VcsUrlMixin(@)
 
