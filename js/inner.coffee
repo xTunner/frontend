@@ -125,8 +125,8 @@ class ActionLog extends Obj
     @success = komp =>
       @status() == "success"
 
-    @failed = komp => @status == "failed" or @status == "timedout"
-    @infrastructure_fail = komp => @status == "infrastructure_fail"
+    @failed = komp => @status() == "failed" or @status() == "timedout"
+    @infrastructure_fail = komp => @status() == "infrastructure_fail"
 
     # Expand failing actions
     @minimize = komp =>
