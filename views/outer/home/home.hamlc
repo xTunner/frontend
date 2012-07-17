@@ -21,9 +21,9 @@
   -# Iterate over features and print to template
   - for feature in @features
     %section
-      %figure.tour{ class: "#{feature.class}" }
+      %figure.tour{ class: "#{feature.icon}" }
         %figcaption
-          %h2{ class: "#{feature.icon}" }= feature.headline
+          %h2= feature.headline
 
           %p= feature.detail
 
