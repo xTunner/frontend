@@ -51,6 +51,10 @@ ko.observableArray["fn"].setIndex = (index, newItem) ->
   @valueHasMutated()
   result
 
+komp = (args...) =>
+  observableCount += 1
+  ko.computed args...
+
 class Obj
   constructor: (json={}, defaults={}) ->
     for k,v of @observables()
@@ -60,10 +64,6 @@ class Obj
       if @observables().hasOwnProperty(k) then @[k](v) else @[k] = v
 
   observables: () => {}
-
-  komp: (args...) =>
-    observableCount += 1
-    ko.computed args...
 
   observable: (obj) ->
     observableCount += 1
@@ -77,6 +77,17 @@ class Obj
       if @observables().hasOwnProperty(k)
         @[k](v)
 
+VcsUrlMixin = (obj) ->
+  obj.vcs_url = ko.observable(if obj.vcs_url then obj.vcs_url else "")
+
+  obj.observables["vcs_url"] = obj.vcs_url
+
+  obj.project_name = komp ->
+    obj.vcs_url().substring(19)
+
+  obj.project_path = komp ->
+    "/gh/#{obj.project_name()}"
+
 class Base extends Obj
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
     for k,v of $.extend {}, defaults, json
@@ -84,17 +95,6 @@ class Base extends Obj
         @[k] = @observable(v)
       else
         @[k] = v
-
-
-class HasUrl extends Base
-  constructor: (json, defaults, nonObservables, observe) ->
-    super json, defaults, nonObservables, observe
-
-    @project_name = @komp =>
-      @vcs_url().substring(19)
-
-    @project_path = @komp =>
-      "/gh/#{@project_name()}"
 
 class ActionLog extends Obj
   observables: =>
@@ -110,7 +110,7 @@ class ActionLog extends Obj
   constructor: (json) ->
     super json
 
-    @status = @komp =>
+    @status = komp =>
       if @end_time() == null
         "running"
       else if @timedout()
@@ -121,33 +121,33 @@ class ActionLog extends Obj
       else
         "failed"
 
-    @success = @komp =>
+    @success = komp =>
       @status() == "success"
 
-    @failed = @komp => @status == "failed" or @status == "timedout"
-    @infrastructure_fail = @komp => @status == "infrastructure_fail"
+    @failed = komp => @status == "failed" or @status == "timedout"
+    @infrastructure_fail = komp => @status == "infrastructure_fail"
 
     # Expand failing actions
-    @minimize = @komp =>
+    @minimize = komp =>
       if @user_minimized()?
         @user_minimized()
       else
         @success()
 
-    @visible = @komp =>
+    @visible = komp =>
       not @minimize()
 
-    @has_content = @komp =>
+    @has_content = komp =>
       (@out()? and @out().length > 0) or @bash_command()
 
     @action_header_style =
       # knockout CSS requires a boolean observable for each of these
       minimize: @minimize
       contents: @has_content
-      running: @komp => @status() == "running"
-      timedout: @komp => @status() == "timedout"
-      success: @komp => @status() == "success"
-      failed: @komp => @status() == "failed"
+      running: komp => @status() == "running"
+      timedout: komp => @status() == "timedout"
+      success: komp => @status() == "success"
+      failed: komp => @status() == "failed"
 
     @action_header_button_style =
       @action_header_style
@@ -155,7 +155,7 @@ class ActionLog extends Obj
     @action_log_style =
       minimize: @minimize
 
-    @start_to_end_string = @komp =>
+    @start_to_end_string = komp =>
       "#{@start_time()} to #{@end_time()}"
 
     @duration = Circle.time.as_duration(@run_time_millis)
@@ -188,41 +188,40 @@ class Step extends Obj
     json.actions = if json.actions? then (new ActionLog(j) for j in json.actions) else []
     super json
 
-class Build extends HasUrl
+class Build extends Obj
+  observables: =>
+    messages: []
+    committer_name: null
+    committer_email: null
+    committer_date: null
+    author_name: null
+    author_email: null
+    author_date: null
+    start_time: null
+    stop_time: null
+    steps: []
+    status: null
+    failed: null
+    infrastructure_fail: null
+    name: null
+    branch: "unknown"
+    previous: null
+    retry_of: null
+    subject: null,
+
   constructor: (json) ->
 
     json.steps = if json.steps? then (new Step(j) for j in json.steps) else []
 
     super json,
       body: null
-      branch: "unknown"
-      subject: null
-      committer_name: null
-      committer_email: null
-      committer_date: null
-      author_name: null
-      author_email: null
-      author_date: null
-      start_time: null
-      stop_time: null
-      status: null,
-      ["build_num"
-       "committer_name"
-       "committer_email"
-       "author_name"
-       "author_email"
-       "why"
-       "user"
-       "job_name"
-       "branch"
-       "previous"
-       "vcs_revision"
-       "build_time_millis"]
 
-    @url = @komp =>
+    VcsUrlMixin(@)
+
+    @url = komp =>
       @urlForBuildNum @build_num
 
-    @important_style = @komp =>
+    @important_style = komp =>
       switch @status()
         when "failed"
           true
@@ -232,7 +231,7 @@ class Build extends HasUrl
           true
         else
           false
-    @warning_style = @komp =>
+    @warning_style = komp =>
       switch @status()
         when "infrastructure_fail"
           true
@@ -243,7 +242,7 @@ class Build extends HasUrl
         else
           false
 
-    @success_style = @komp =>
+    @success_style = komp =>
       switch @status()
         when "success"
           true
@@ -254,7 +253,7 @@ class Build extends HasUrl
         else
           false
 
-    @notice_style = @komp =>
+    @notice_style = komp =>
       switch @status()
         when "running"
           true
@@ -270,7 +269,7 @@ class Build extends HasUrl
       label: true
       build_status: true
 
-    @status_words = @komp => switch @status()
+    @status_words = komp => switch @status()
       when "infrastructure_fail"
         "circle bug"
       when "timedout"
@@ -284,7 +283,7 @@ class Build extends HasUrl
       else
         @status()
 
-    @why_in_words = @komp =>
+    @why_in_words = komp =>
       switch @why
         when "github"
           "GitHub push by #{@user.login}"
@@ -307,51 +306,50 @@ class Build extends HasUrl
           else
             "unknown"
 
-    @pretty_start_time = @komp =>
+    @pretty_start_time = komp =>
       if @start_time()
         Circle.time.as_time_since(@start_time())
 
-    @previous_build = @komp =>
-      @previous? and @previous.build_num
+    @previous_build = komp =>
+      @previous()? and @previous().build_num
 
-
-    @duration = @komp () =>
+    @duration = komp () =>
       if @build_time_millis
         Circle.time.as_duration(@build_time_millis)
       else
         "still running"
 
-    @branch_in_words = @komp =>
-      return "(unknown)" unless @branch
+    @branch_in_words = komp =>
+      return "(unknown)" unless @branch()
 
-      b = @branch
+      b = @branch()
       b = b.replace(/^remotes\/origin\//, "")
       "(#{b})"
 
-    @github_url = @komp =>
+    @github_url = komp =>
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
 
-    @github_revision = @komp =>
+    @github_revision = komp =>
       return unless @vcs_revision
       @vcs_revision.substring 0, 7
 
-    @author = @komp =>
-      @author_name or @author_email
+    @author = komp =>
+      @author_name() or @author_email()
 
-    @committer = @komp =>
-      @committer_name or @committer_email
+    @committer = komp =>
+      @committer_name() or @committer_email()
 
-    @committer_mailto = @komp =>
-      if @committer_email
+    @committer_mailto = komp =>
+      if @committer_email()
         "mailto:#{@committer_email}"
 
-    @author_mailto = @komp =>
-      if @committer_email
-        "mailto:#{@committer_email}"
+    @author_mailto = komp =>
+      if @committer_email()
+        "mailto:#{@committer_email()}"
 
-    @author_isnt_committer = @komp =>
-      (@committer_email isnt @author_email) or (@committer_name isnt @author_name)
+    @author_isnt_committer = komp =>
+      (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
 
 
@@ -386,7 +384,8 @@ class Build extends HasUrl
       @build_channel.bind('newAction', (json) => @newAction json)
       @build_channel.bind('updateAction', (json) => @updateAction json)
       @build_channel.bind('appendAction', (json) => @appendAction json)
-      @build_channel.bind('updateStatus', (json) => @updateStatus json)
+      @build_channel.bind('updateObservables', (json) =>
+        @updateObservables(json))
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
@@ -412,9 +411,6 @@ class Build extends HasUrl
     # adds output to the action
     @fillActions(json.step, json.index)
     @steps()[json.step].actions()[json.index].out.push(json.out)
-
-  updateStatus: (json) =>
-    @status(json.status)
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
@@ -453,17 +449,35 @@ class Build extends HasUrl
   update: (json) =>
     @status(json.status)
 
-class Project extends HasUrl
+class Project extends Obj
+
+  observables: =>
+    setup: null
+    dependencies: null
+    test: null
+    extra: null
+    latest_build: null
+    hipchat_room: null
+    hipchat_api_token: null
+    campfire_room: null
+    campfire_token: null
+    campfire_subdomain: null
+    followed: null
+
   constructor: (json) ->
+
     json.latest_build = (new Build(json.latest_build)) if json.latest_build
     super json
-    @edit_link = @komp () =>
+
+    VcsUrlMixin(@)
+
+    @edit_link = komp () =>
       "#{@project_path()}/edit"
 
-    @build_url = @komp =>
+    @build_url = komp =>
       @vcs_url() + '/build'
 
-    @has_settings = @komp =>
+    @has_settings = komp =>
       @setup() or @dependencies() or @test() or @extra()
 
 
@@ -548,18 +562,18 @@ class User extends Obj
 
     @environment = window.renderContext.env
 
-    @showEnvironment = @komp =>
+    @showEnvironment = komp =>
       @admin || (@environment is "staging") || (@environment is "development")
 
-    @environmentColor = @komp =>
+    @environmentColor = komp =>
       result = {}
       result["env-" + @environment] = true
       result
 
-    @in_trial = @komp =>
+    @in_trial = komp =>
       not @paid and @days_left_in_trial >= 0
 
-    @trial_over = @komp =>
+    @trial_over = komp =>
       not @paid and @days_left_in_trial < 0
 
 
@@ -632,7 +646,7 @@ class Billing extends Obj
   constructor: ->
     super
 
-    @plans = @komp =>
+    @plans = komp =>
       ap = for k,v of @availablePlans()
         v.id = k
         v.name_price = "#{v.name}    ($#{v.price / 100})"
@@ -641,12 +655,12 @@ class Billing extends Obj
         b.price - a.price # most expensive first
       ap
 
-    @defaultPlan = @komp =>
+    @defaultPlan = komp =>
       for p in @availablePlans()
         if p.default?
           return p
 
-    @selectedPlan = @komp =>
+    @selectedPlan = komp =>
       if @chosenPlan()?
         @chosenPlan()
       else if @existingPlanName()? and @availablePlans()?
@@ -658,35 +672,35 @@ class Billing extends Obj
 
 
 
-    @userMatrix = @komp =>
+    @userMatrix = komp =>
       users = {}
       for c in @collaborators()
         users[c.login] = c.plan().id if c.plan()?
       users
 
-    @total = @komp =>
+    @total = komp =>
       total = 0
       for c in @collaborators()
         total += c.plan().price if c.plan()?
       total / 100
 
-    @paidFor = @komp =>
+    @paidFor = komp =>
       @payer() and (@payer() isnt VM.current_user().login)
 
-    @selfPayer = @komp =>
+    @selfPayer = komp =>
       @payer() and (@payer() is VM.current_user().login)
 
-    @notPaid = @komp =>
+    @notPaid = komp =>
       not @payer()?
 
-    @savedCardNumber = @komp =>
+    @savedCardNumber = komp =>
       return "" unless @cardInfo()
       "************" + @cardInfo().last4
 
 
 
 
-    @organizationMatrix = @komp =>
+    @organizationMatrix = komp =>
       orgs = {} # TODO: merge with existing plans
       orgs[@selectedOrganization()] = {
         add_new: false
@@ -694,10 +708,10 @@ class Billing extends Obj
       }
       orgs
 
-    @organizations = @komp =>
+    @organizations = komp =>
       (k for k,v of @teamMembers())
 
-    @selectOrganization = @komp
+    @selectOrganization = komp
       # use computed observable because knockout select boxes make it hard to do otherwise
       write: (value) =>
         @selectedOrganization(value)
@@ -901,13 +915,13 @@ class CircleViewModel extends Base
         setTimeout(@loadProjects, 30000)
 
 
-  available_projects: () => @komp =>
+  available_projects: () => komp =>
     (p for p in @projects() when not p.followed())
 
-  followed_projects: () => @komp =>
+  followed_projects: () => komp =>
     (p for p in @projects() when p.followed())
 
-  has_followed_projects: () => @komp =>
+  has_followed_projects: () => komp =>
     @followed_projects()().length > 0
 
   user_refresh_projects: (data, event) =>
@@ -923,7 +937,7 @@ class CircleViewModel extends Base
         (data) =>
           @loadProjects()
 
-  refresh_project_src: () => @komp =>
+  refresh_project_src: () => komp =>
     if @refreshing_projects()
       "/img/ajax-loader.gif"
     else
