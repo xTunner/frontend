@@ -88,6 +88,7 @@ VcsUrlMixin = (obj) ->
   obj.project_path = komp ->
     "/gh/#{obj.project_name()}"
 
+## Deprecated. Do not use for new classes.
 class Base extends Obj
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
     for k,v of $.extend {}, defaults, json
