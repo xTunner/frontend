@@ -80,7 +80,7 @@ class Obj
 VcsUrlMixin = (obj) ->
   obj.vcs_url = ko.observable(if obj.vcs_url then obj.vcs_url else "")
 
-  obj.observables["vcs_url"] = obj.vcs_url
+  obj.observables.vcs_url = obj.vcs_url
 
   obj.project_name = komp ->
     obj.vcs_url().substring(19)
