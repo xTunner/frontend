@@ -16,8 +16,7 @@
 
 #features
   %header
-    %h2 Features
-    %p Making testing this easy took work
+    %h2 Making testing this easy took work
 
   -# Iterate over features and print to template
   - for feature in @features
