@@ -23,13 +23,9 @@
     %section
       %figure.tour{ class: "#{feature.class}" }
         %figcaption
-          %h2= feature.headline
+          %h2{ class: "#{feature.icon}" }= feature.headline
 
-          %p= feature.tagline
-
-          %ul
-            - for bullet in feature.bullets
-              %li= bullet
+          %p= feature.detail
 
         %div
 
