@@ -205,6 +205,7 @@ class Build extends Obj
     status: null
     failed: null
     infrastructure_fail: null
+    dont_build: null
     name: null
     branch: "unknown"
     previous: null
