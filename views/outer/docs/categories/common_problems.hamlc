@@ -7,10 +7,8 @@
     %hr
 
   .doc
-    %h1.section
-      %a#intro Why your tests fail
-    %hr
 
+    = HAML['heading']({title: "Why your tests fail", hash: "intro"})
     %p
       Any CI server is going to have a slightly different configuration to your local machine.
       Web application frameworks typically do not completely insulate your tests from the difference between operating system implementations.
@@ -28,9 +26,166 @@
       If you find an error which isn't listed here, please get in touch.
 
 
-    %h1.section
-      %a#time-day Time-based results are one day off
-    %hr
+    = HAML['heading']({title: "File-ordering bugs manifest on Linux systems", hash: "file-ordering"})
+    %p
+      If your tests work on your local machine, but fail randomly on Circle, the most likely culprit is the dreaded file-ordering bug.
+      Fortunately, if you understand your code base and your tests, fixing your tests can be quite simple.
+
+    %h2 How file-ordering affects tests
+    %p
+      Many tests libraries, including Rspec, load all the test files in a certain directory, and then run them.
+      This means that the order they run the tests depends on how the files are ordered in the test directory.
+
+    %p
+      On OSX, directory contents are always ordered the same, due to OSX's HFS+ file system.
+      On Linux machines however, directory contents do not have a defined order.
+
+    %p
+      This means every OSX system will run tests in the same order, but different linux machines will run tests in different orders.
+      With Circle, where you get a new Linux machine each time you push, the tests will run in different orders on different test runs.
+      This explains why a revision's tests will sometimes fail, only to pass when retried.
+
+    %h2 Why these tests fail
+    %p
+      So why do tests fail when they are run in different orders?
+      Two major reasons: application code is loaded in a different order, or tests are not sufficiently independent.
+
+    %h3 Loading application code in a different order
+    %p
+      Test code loads application code in order to test it.
+      If you always run
+      %code ardvark.rb
+      before
+      %code bunny.rb
+      then
+      %code bunny.rb
+      might rely on code loaded by
+      = succeed ".", ->
+        %code ardvark.rb
+      If you run
+      %code bunny.rb
+      first, the code it needs won't have been loaded.
+      Here's a fine example of this, extracted from customer tests:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          Failure/Error: token = ApiTokenGenerator.generate(@user.id)
+            NameError:
+              uninitialized constant ApiTokenGenerator::Seed
+              # ./vendor/bundle/ruby/1.9.1/gems/rake-0.9.2.2/lib/rake/ext/module.rb:36:in `const_missing'
+              # ./app/controllers/api_token_generator.rb:5:in `generate'
+
+    %p
+      This particular error can be fixed by ensuring that
+      %code ApiTokenGenerator::Seed
+      has been declared before it is used, typically by adding a
+      %code require
+      call to
+      = succeed '.', ->
+        %code api_token_generator.rb
+
+
+    %p
+      Another manifestation of this bug in Rails looks like this:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          /home/ubuntu/circle-1/app/models/action.rb:1:in `<top (required)>': superclass mismatch for class Action (TypeError)
+          from /home/ubuntu/circle1/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `require'
+          from /home/ubuntu/kera-25/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
+
+    %p
+      This usually happens when a model and another class have the same name.
+      When the model is initialized first, everything works, because the second use simply reopens the class.
+      When the model is initialized second, you get a <i>superclass mismatch</i>.
+      Solve this by renaming the non-model.
+
+
+    %h3 Tests are not sufficiently indenpendent
+    %p
+      If you have two tests that are always run one after the other, you might not realize that the second test depends on some initialization in the first test.
+      If the tests are in the same file, this is often benign.
+      If the tests are in different files, then they might end up run in the wrong order, and they will fail.
+
+    %p
+      In our experience, this most commonly happens when logging a test user into your site, though it can really happen anytime you rely on state, especially if you don't clear the database between tests.
+
+    %p
+      The fix here is to remove the test interdependencies.
+      They are a bad idea.
+      Tests should always be idempotent, where possible.
+
+    %h2 Should we work around these bugs?
+    %p
+      Make no mistake, though it may be possible to workaround these bugs in your app, your tests are fundamentally broken.
+      We hate saying this, since we like to focus on getting work done and writing tests produces no value for your users, but tests which fail when run in a different order are fundamentally broken.
+      Worse, they might expose real bugs in your code.
+
+    %p
+      But if you really needed to, you might try hooking into the list of test files in your test suite, and sorting them.
+
+
+    %h2 Reproducing the bugs?
+    %p
+      The hardest part is reproducing the errors.
+      The simpest way is if your test suite offers random ordering, like rspec does with
+      = succeed '.', ->
+        %code --order
+      Otherwise, if your suite allows you to run a single test at a time, run every test individually and see if you can reproduce the error.
+
+    %p
+      Finally, if you still can't do that, Circle SSH feature is a useful way to debug this on our actual virtual machine.
+      It will create a machine, start the tests running, and let you SSH in to debug.
+
+
+    = HAML['heading']({title: "A directory is missing from your repository", hash: "missing-log-dir"})
+    %p
+      Rails expects certain directories to be present in your app, including
+      %code log/
+      and occasionally others.
+      If they are not in your repository, your tests will fail (though they ran fine locally because you created the directory a long time ago).
+    %p
+      To fix this, simply add the directory to your repository.
+      Git doesn't allow you to add directories to it, but the standard idiom is instead to add a file called
+      %code .gitkeep
+      within the directory.
+      So this should solve your problem:
+
+    %pre
+      %code.bash<>
+        :preserve
+          $ touch log/.gitkeep
+          $ git add log/.gitkeep
+          $ git commit
+
+    = HAML['heading']({title: "An important file is missing from your repository", hash: "missing-file"})
+    %p
+      Developers commonly omit certain files from their repositories, especially files containing application settings, passwords and API keys.
+      However, these files can be essential for the proper running of their programs, and often contain settings which can't be reasonable inferred by Circle.
+
+    %p
+      If you wish to remove important files from your repository, you should add a rough copy of the file under a similar name, such as
+      = succeed ".", ->
+        config/app.yml.ci
+
+      You can then copy it to its correct place with some simple commands:
+
+    %pre
+      %code.bash<>
+        :preserves
+          checkout:
+            post:
+              - cp config/app.yml.ci config/app.yml
+
+    %p
+      For a
+      %code database.yml
+      file, it's even simpler - just include it without the important settings like production and staging database keys.
+
+
+    = HAML['heading']({title: "Time-based results are one day off", hash: "time-day"})
 
     %p
       Time-zones are fickle masters, and time-based code frequently only works in the time-zone in which it was written.
@@ -68,10 +223,7 @@
       it).
 
 
-    %h1.section
-      %a#time-seconds Time-based test results are a few seconds off
-    %hr
-
+    = HAML['heading']({title: "Time-based results are a few seconds off", hash: "time-seconds"})
     %p
       While one-day variations are your responsibility, differences of a second or so are probably bugs in Circle.
 
@@ -97,10 +249,8 @@
       %a{ href: "/docs/environment#browsers" } Circle's program versions
       to see if this is the case.
 
-    %h1.section
-      %a#wrong-ruby-version Circle uses the wrong Ruby version
-    %hr
 
+    = HAML['heading']({title: "Circle uses the wrong Ruby version", hash: "wrong-ruby-version"})
     %p
       We infer your Ruby version from your .rvmrc.
       If you don't have a .rvmrc file, we'll use Ruby 1.9.2 or 1.8.7, whichever we think is best.
@@ -110,11 +260,7 @@
 
 
 
-
-    %h1.section
-      %a#git-bundle-install Git errors during a bundle install
-    %hr
-
+    = HAML['heading']({title: "Git errors during a bundle install", hash: "git-bundle-install"})
     %p
       When your tests run, during the
       %code bundle install
@@ -153,10 +299,7 @@
       from your account settings.
 
 
-    %h1.section
-      %a#wrong-commands Circle is running the wrong commands
-    %hr
-
+    = HAML['heading']({title: "Circle is running the wrong commands", hash: "wrong-commands"})
     %p
       Circle infers your test settings from the code in your repository, typically looking at the packages you use.
       Most problems occur when there is some error in how the packages are specified.
@@ -189,7 +332,6 @@
 
 
     %h2#wrong-dependencies (Ruby) Have you listed all your dependencies?
-
     %p
       Circle always prefixes its commands with
       = succeed '.', ->
@@ -234,11 +376,25 @@
       %code database.yml
       file.
 
+    = HAML['heading']({title: "Do you need the latest version of Bundler", hash: "bundler-latest"})
+    %p
+      If you use Heroku, you probably already use the latest version of bunlder.
+      Circle uses a slightly older version, but can be easily set to upgrade to the latest version.
+      Just add the following to your
+      %a{href: "/docs/configuration"}
+        circle.yml
+      file.
 
-    %h1.section
-      %a#capybara-timeout (Ruby) \"unable to obtain stable firefox connection in 60 seconds\"
-    %hr
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            pre:
+              - gem uninstall bundler
+              - gem install bundler --pre
 
+
+    = HAML['heading']({title: "\"unable to obtain stable firefox connection in 60 seconds\"", hash: "capybara-timeout"})
     %p
       This is an issue with the selenium-webdriver gem,
       As Firefox updates to newer revisions, the interface used by selenium-webdriver can break.
@@ -256,7 +412,6 @@
 
 -# migrate takes forever
 -# Are you sure you're using the right version of X
--# ruby keys
 -# gem wont compile - gcc or ruby 1.8.7
 -# no database.yml
 -# if FS dependencies, run tests individually to see if they work.
