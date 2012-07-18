@@ -18,9 +18,9 @@
   %header
     %h2 Why use Circle?
 
-  -# Iterate over features and print to template
-  - for feature in @features
-    %section
+  %section
+    -# Iterate over features and print to template
+    - for feature in @features
       %figure.tour
         %i{ class: "#{feature.icon}" }
 
