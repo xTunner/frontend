@@ -1,6 +1,13 @@
 %span{data-bind: "if: failed() && !infrastructure_fail()"}
   .row
     .offset2.span16
+
+      %span{data-bind: "if: messages.length"}
+        .alert-message.warning
+          First, a possible explantion:
+          %span{data-bind: "foreach: messages"}
+            %span{data-bind: "html: message"}
+
       .alert-message.warning
         Uh-oh, that didn't work. If you expected it to, read about
         %a{href: "/docs/common-problems" } common causes
@@ -12,6 +19,8 @@
                                     title: "Report an error in how Circle ran this build"}
           %a{href: "#"}<> report it
         and we'll investigate.
+
+
 
 
 %span{data-bind: "if: infrastructure_fail()"}
