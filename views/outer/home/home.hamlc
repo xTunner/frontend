@@ -18,8 +18,11 @@
 
 #testimonials
   %section
-    %a.zencoder{ href: "#" } Zencoder
-    %a.storenvy{ href: "#" } Storenvy
+    .customer
+      %a.zencoder{ href: "#" } Zencoder
+
+    .customer
+      %a.storenvy{ href: "#" } Storenvy
 
 #features
   %header
