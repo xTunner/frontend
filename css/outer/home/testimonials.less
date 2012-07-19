@@ -9,3 +9,21 @@
   text-align: center;
   margin: 0.75em 0;
 }
+
+#testimonials {
+  background: @blueLighter;
+  border: 1px solid @blueLight;
+  border-left: none;
+  border-right: none;
+
+  // Content container
+  & > section {
+    .container;
+    height: 80px;
+
+    a {
+      .column(6);
+      .ir;
+    }
+  }
+}
