@@ -14,9 +14,9 @@
 
     .screenshot CircleCI Screenshot
 
-#testimonials
-  %p Some of our happy customers
+%p.testimonial-header Some of our happy customers
 
+#testimonials
   %section
     %a{ href: "#" } Zencoder
     %a{ href: "#" } Storenvy
