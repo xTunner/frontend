@@ -28,7 +28,16 @@
 
     a {
       display: block;
+      position: relative;
       background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
+
+      &:after {
+        content: '';
+        display: block;
+        background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+      }
     }
   }
 
@@ -39,6 +48,12 @@
     margin-left: 140px;
     width: 249px;
     height: 35px;
+
+    &:after {
+      background-position: 0 -443px;
+      width: 249px;
+      height: 35px;
+    }
   }
 
   .storenvy {
@@ -47,5 +62,11 @@
     margin-left: 80px;
     width: 177px;
     height: 59px;
+
+    &:after {
+      background-position: -262px -446px;
+      width: 177px;
+      height: 59px;
+    }
   }
 }
