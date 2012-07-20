@@ -13,7 +13,11 @@
           %a{ href: "edit#tests" } Test suite
         %li.last
           %a{ href: "edit#hooks" } Hooks
-
+      %span#menutitle{ href: "edit" }
+        Deployment
+      %ul.tree
+        %li
+          %span{ href: "edit#heroku" } Heroku
 
   .content
 
