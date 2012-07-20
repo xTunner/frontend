@@ -554,6 +554,8 @@ class User extends Obj
   observables: =>
     tokens: []
     tokenLabel: ""
+    herokuApiKeyInput: ""
+    heroku_api_key: ""
     user_key_fingerprint: ""
 
   constructor: (json) ->
@@ -611,6 +613,18 @@ class User extends Obj
       success: (result) =>
         @user_key_fingerprint(result.user_key_fingerprint)
         true
+    false
+
+  save_heroku_key: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/user/heroku-key"
+      data: JSON.stringify {apikey: @herokuApiKeyInput()}
+      success: (result) =>
+        true
+        @heroku_api_key(@herokuApiKeyInput())
+        @herokuApiKeyInput("")
     false
 
   save_preferences: (data, event) =>
