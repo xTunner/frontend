@@ -26,4 +26,6 @@
       .alert-message.warning
         Looks like we had a bug in our infrastructure.
         We should have automatically retried this build.
-        We've been alerted of the issue and are almost certainly looking into it, please contact us if you're interested in the cause of the problem.
+        We've been alerted of the issue and are almost certainly looking into it, please
+        = HAML['contact_us_inner']()
+        if you're interested in the cause of the problem.
