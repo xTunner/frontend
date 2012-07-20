@@ -31,19 +31,17 @@
       position: relative;
       background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
 
-      &:after {
+      span {
         content: '';
         display: block;
         background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
-        .opacity(0);
-      }
-
-      .storenvy:hover:after {
-        .opacity(1);
+        opacity: 0
       }
     }
+
+    a:hover span { opacity: 1 }
   }
 
   // Logos
@@ -54,7 +52,7 @@
     width: 249px;
     height: 35px;
 
-    &:after {
+    span {
       background-position: 0 -443px;
       width: 249px;
       height: 35px;
@@ -68,7 +66,7 @@
     width: 177px;
     height: 59px;
 
-    &:after {
+    span {
       background-position: -262px -446px;
       width: 177px;
       height: 59px;
