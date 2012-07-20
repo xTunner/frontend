@@ -1,0 +1,33 @@
+%h3 Enter your Heroku API Key
+
+
+%div{data-bind: "with: VM.current_user"}
+  %p{data-bind: "if: heroku_api_key"}
+    Your Heroku key is entered. Great!
+  %p{data-bind: "text: heroku_api_key"}
+
+  %p{data-bind: "ifnot: heroku_api_key"}
+    No existing key
+
+%h3 Add an SSH Deploy Key to the project
+  %div{data-bind: "ifnot: heroku_deploy_user"}
+    %h3 No Deploy Key Installed
+    %form.api
+      %fieldset.form-stacked
+      %input.btn.primary{type: "submit",
+                         value: "Create Heroku Deploy Key",
+                         data-bind: "click: create_heroku_deploy_key",
+                         data-loading-text: "Creating...",
+                         data-success-text: "Created"}
+
+  %div{data-bind: "ifnot: deploy_keys.heroku"}
+    %h3 No Deploy Key Installed
+    %form.api
+      %fieldset.form-stacked
+      %input.btn.primary{type: "submit",
+                         value: "Create Heroku Deploy Key",
+                         data-bind: "click: create_heroku_deploy_key",
+                         data-loading-text: "Creating...",
+                         data-success-text: "Created"}
+
+%h3 Add deployment to circle.yml
