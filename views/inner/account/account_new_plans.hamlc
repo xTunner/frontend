@@ -1,0 +1,18 @@
+#new-plans{data-bind: "with: $root.billing"}
+  %div{data-bind: "foreach: newPlans().small"}
+    .plan
+      .name{data-bind: "text: name"}
+
+      .reason
+        Because
+
+      .price
+        %button.select.btn.success
+          Sign up now, just $
+          %span{data-bind: "text: price / 100"}
+
+      .line
+
+      .projects
+        %span{data-bind: "text: projects"}
+        projects

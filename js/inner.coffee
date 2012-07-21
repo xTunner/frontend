@@ -642,6 +642,36 @@ class Billing extends Obj
   observables: =>
     teamMembers: {} # github data; map of org->[users]
     existingPlans: {}
+    newPlans:
+      small: [
+        name: "Solo"
+        price: 1400
+        projects: 1
+        concurrency: 1
+        selected: false
+        suitable: "1-2"
+      ,
+        name: "Basic"
+        price: 3900
+        projects: 5
+        concurrency: 1
+        selected: true
+        suitable: "1-3"
+      ,
+        name: "Short"
+        price: 5900
+        projects: 10
+        concurrency: 1
+        selected: false
+        suitable: "1-3"
+      ,
+        name: "Plus"
+        projects: null
+        price: 7900
+        concurrency: 2
+        selected: false
+        suitable: "2-5"
+      ]
     collaborators: []
 
     availablePlans: [] # the list of plans that a user can choose
