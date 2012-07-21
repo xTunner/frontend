@@ -42,6 +42,6 @@
   %pre
     deployment:
       staging:
-      branch: master
-      heroku:
-        appname: foo-bar-123
+        branch: master
+        heroku:
+          appname: foo-bar-123
