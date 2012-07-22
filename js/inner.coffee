@@ -646,12 +646,14 @@ class Billing extends Obj
       small: [
         name: "Solo"
         price: 1400
+        why: "When it's just you"
         projects: 1
         concurrency: 1
         selected: false
         suitable: "1-2"
       ,
         name: "Basic"
+        why: "For tiny teams"
         price: 3900
         projects: 5
         concurrency: 1
@@ -659,6 +661,7 @@ class Billing extends Obj
         suitable: "1-3"
       ,
         name: "Short"
+        why: "When your project grows"
         price: 5900
         projects: 10
         concurrency: 1
@@ -666,7 +669,7 @@ class Billing extends Obj
         suitable: "1-3"
       ,
         name: "Plus"
-        projects: "∞"
+        projects: "Unlimited"
         price: 7900
         concurrency: 2
         selected: false
