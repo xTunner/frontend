@@ -661,7 +661,7 @@ class Billing extends Obj
         suitable: "1-3"
       ,
         name: "Short"
-        why: "When your project grows"
+        why: "With more projects"
         price: 5900
         projects: 10
         concurrency: 1
@@ -669,6 +669,7 @@ class Billing extends Obj
         suitable: "1-3"
       ,
         name: "Plus"
+        why: "For more frequent pushers"
         projects: "Unlimited"
         price: 7900
         concurrency: 2
@@ -1052,6 +1053,7 @@ class CircleViewModel extends Base
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
+    $('.more-info').popover({html: true, placement: "below"})
 
 
   renderAdminPage: (subpage) =>

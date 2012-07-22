@@ -1,34 +1,56 @@
 #new-plans{data-bind: "with: $root.billing"}
-
-  %div{data-bind: "foreach: newPlans().small"}
-    .plan
-      .name{data-bind: "text: name"}
-
-      .reason
-        Flawless victory, fatality.
-
-      .price
-        %button.select.btn.success.span3
-          Sign up now, just
-          = succeed '/month', ->
-            $
-            %span{data-bind: "text: price / 100"}<>
-
-      .line
-
-      .projects
-        %a.dotted-underline{href: "#"}
-          %span{data-bind: "if: projects"}
-            %span{data-bind: "text: projects"}
-            project
-            %span{data-bind: "if: projects != 1"}<> s
+  .row
+    .offset6.span9.alert-message.block-message.error
+      %h4
+        We're trying out these new plans -
+        = HAML['contact_us_inner']()
+        with your comments!
 
 
-      .concurrency
-        %a.dotted-underline{href: "#"}
-          %span{data-bind: "text: concurrency"}
-          = succeed '<span data-bind="if: concurrency != 1">s</span>', ->
-            build
-          at a time
+  .row
+    .offset4
+      %div{data-bind: "foreach: newPlans().small"}
+        .plan
+          .name{data-bind: "text: name"}
 
-      .collaborators
+          .reason
+            %span{data-bind: "text: why"}
+
+          .price
+            %button.select.btn.success.span3
+              Sign up now, just
+              = succeed '/month', ->
+                $
+                %span{data-bind: "text: price / 100"}<>
+
+          .line
+
+          .projects
+            %a.more-info{href: "#",
+                         title: "We'll test your pushes on up to <span data-bind='text: projects'></span> repositories."}
+
+              %span{data-bind: "if: projects"}
+                %span{data-bind: "text: projects"}
+                %span{data-bind: "if: projects != 1"} repositories
+                %span{data-bind: "if: projects == 1"} repository
+
+
+          .concurrency
+            %a.more-info{href: "#",
+                         data-content: ""
+                         title: "We'll test up to <span data-bind='text: concurrency'></span> pushes simultaneously, and queue the rest. Larger teams, and team who push frequently, may need more concurrent builds for fast test results."}
+              %span{data-bind: "text: concurrency"}
+              concurrent
+              %span{data-bind: "if: concurrency == 1"} build
+              %span{data-bind: "if: concurrency != 1"} builds
+
+          .collaborators
+            %a.more-info{href: "#",
+                         data-content: "You can invite as many people to your organization as you wish, all of their pushes will be tested."}
+              Unlimited collaborators
+
+          .line
+
+          .feature
+            %a.more-info{href: "#",
+                         title: ""}

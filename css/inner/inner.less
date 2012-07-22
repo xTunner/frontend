@@ -337,8 +337,10 @@ body {
    }
 }
 
-a.dotted-underline {
-
+a.more-info {
+   text-decoration: none;
+   color: black;
+   border-bottom: 1px dotted black;
 }
 
 #new-plans {
@@ -347,10 +349,11 @@ a.dotted-underline {
    font-eize: 18px;
 
    .plan {
+      padding: 5px;
       text-align: center;
       float: left;
       border: 1px solid;
-      height: 330px;
+      height: 530px;
       width: 180px;
    }
 
@@ -360,6 +363,7 @@ a.dotted-underline {
    }
 
    .reason {
+      height: 34px;
       font-size: 18px;
       margin-top: 10px;
    }
@@ -378,11 +382,23 @@ a.dotted-underline {
    }
 
    .projects {
+      margin-top: 20px;
       font-size: 18px;
    }
 
    .concurrency {
+      margin-top: 20px;
       font-size: 18px;
+   }
+
+   .collaborators {
+      margin-top: 20px;
+      font-size: 18px;
+   }
+
+   .feature {
+      font-size: 18px;
+      margin-top: 10px;
    }
 }
 
