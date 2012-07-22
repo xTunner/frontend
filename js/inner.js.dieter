@@ -4,6 +4,8 @@
   "./vendor/moment-1.6.2.min.js"
   "./vendor/bootstrap-buttons-1.4.0.js"
   "./vendor/bootstrap-dropdown-1.4.0.js"
+  "./vendor/bootstrap-twipsy-1.4.0.js"
+  "./vendor/bootstrap-popover-1.4.0.js"
   "./libs/circle/time.coffee"
   "../views/inner/"
   "./inner.coffee"
