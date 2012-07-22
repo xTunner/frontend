@@ -666,7 +666,7 @@ class Billing extends Obj
         suitable: "1-3"
       ,
         name: "Plus"
-        projects: null
+        projects: "∞"
         price: 7900
         concurrency: 2
         selected: false

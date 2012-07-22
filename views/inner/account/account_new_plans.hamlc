@@ -1,18 +1,36 @@
 #new-plans{data-bind: "with: $root.billing"}
+  %div
+    .plan
+      .name
+      .reason
+      .price
+      .line
+      .projects
+        Tested projects
+      .concurrency
+        Concurrent builds
+
   %div{data-bind: "foreach: newPlans().small"}
     .plan
       .name{data-bind: "text: name"}
 
       .reason
-        Because
+        Flawless victory, fatality.
 
       .price
-        %button.select.btn.success
-          Sign up now, just $
-          %span{data-bind: "text: price / 100"}
+        %button.select.btn.success.span3
+          Sign up now for just $
+          %span{data-bind: "text: price / 100"}<>
 
       .line
 
       .projects
-        %span{data-bind: "text: projects"}
-        projects
+        %span{data-bind: "if: projects"}
+          %span{data-bind: "text: projects"}
+          project
+          %span{data-bind: "if: projects != 1"}<> s
+
+
+      .concurrency
+        %span{data-bind: "text: concurrency"}<>
+        -at-a-time
