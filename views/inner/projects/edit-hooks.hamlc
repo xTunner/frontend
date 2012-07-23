@@ -38,9 +38,9 @@
         %input.span5{ type: "text", data-bind: "value: campfire_token" }
 
         %p
-          To get your API token,
-          %a{href: "https://hipchat.com/admin/api"}
-            create a "<i>notification</i>" token on the HipChat site.
+          To get your API token, visit your company campfire, then click "My info".
+          You should end up at
+          https://YOURSUBDOMAIN.campfirenow.com/member/edit.
 
     .row
       %input.btn.primary.span5.large{data-bind: "click: save_hooks",
