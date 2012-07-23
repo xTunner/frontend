@@ -8,7 +8,7 @@
         with your comments!
 
   .row
-    .offset1.span18
+    .offset2.span18
       %table.plan
         %thead
           %tr.name
