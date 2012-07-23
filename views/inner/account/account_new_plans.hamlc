@@ -28,7 +28,7 @@
             %td.title
             / ko foreach: newPlans().small
             %td{data-bind: "attr: { class: klass }"}
-              %button.select.btn.success.span4
+              %button.select.btn.success.span5
                 Sign up now, just
                 = succeed '/month', ->
                   $
