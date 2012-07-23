@@ -645,8 +645,9 @@ class Billing extends Obj
     newPlans:
       small: [
         name: "Solo"
-        price: 1400
         why: "When it's just you"
+        price: 1400
+        klass: "col1"
         projects: 1
         concurrency: 1
         selected: false
@@ -655,6 +656,7 @@ class Billing extends Obj
         name: "Basic"
         why: "For tiny teams"
         price: 3900
+        klass: "col2"
         projects: 5
         concurrency: 1
         selected: true
@@ -663,6 +665,7 @@ class Billing extends Obj
         name: "Short"
         why: "With more projects"
         price: 5900
+        klass: "col3"
         projects: 10
         concurrency: 1
         selected: false
@@ -671,6 +674,7 @@ class Billing extends Obj
         name: "Plus"
         why: "For more frequent pushers"
         projects: "Unlimited"
+        klass: "col4"
         price: 7900
         concurrency: 2
         selected: false

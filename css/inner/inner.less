@@ -6,7 +6,6 @@
    border-radius: @radius;
 }
 
-
 body {
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
    padding-top: 40px;
@@ -337,46 +336,90 @@ body {
    }
 }
 
-a.more-info {
-   text-decoration: none;
-   color: black;
-   border-bottom: 1px dotted black;
-}
-
 #new-plans {
 
    @color: #DDF4FB;
+   @radius: 5px;
+   table tr:first-child th:first-child {
+      -moz-border-radius-topleft: @radius;
+      -webkit-border-top-left-radius: @radius;
+      border-top-left-radius: @radius;
+   }
+
+   table tr:first-child th:last-child.col4 {
+      -moz-border-radius-topright: @radius;
+      -webkit-border-top-right-radius: @radius;
+      border-top-right-radius: @radius;
+   }
+
+   table tr:last-child td:first-child {
+      -moz-border-radius-bottomleft: @radius;
+      -webkit-border-bottom-left-radius: @radius;
+      border-bottom-left-radius: @radius;
+   }
+
+   table tr:last-child td:last-child.col4 {
+      -moz-border-radius-bottomright: @radius;
+      -webkit-border-bottom-right-radius: @radius;
+      border-bottom-right-radius: @radius;
+   }
 
    table.plan {
-      border: 1px solid;
       .border-radius;
       border-collapse: collapse;
    }
 
+
    td, th {
+      vertical-align: middle;
       width: 220px;
       text-align: center;
       padding: 1em;
       border-top: 0px;
       border-bottom: 0px;
       font-size: 24px;
-      border-right: 2px solid #cccccc;
+   }
+
+   td.title, th.title {
+      background-color: #105aaf;
+      color: white;
+      border: 0px;
    }
 
    td.title {
-      background: url("@../../img/outer/home/teaser_bg_pattern.png");
       font-size: 18px;
    }
 
-   .name > th {
-      padding: .5em;
+   td.col1, th.col1 {
+      background-color: rgba(16, 90, 175, 0.25);
+   }
+
+   td.col2, th.col2 {
+      background-color: rgba(16, 90, 175, 0.40);
+   }
+
+   td.col3, th.col3 {
+      background-color: rgba(16, 90, 175, 0.55);
+   }
+
+   td.col4, th.col4 {
+      background-color: rgba(16, 90, 175, 0.70);
+   }
+
+
+   tr.name > td {
+      padding: 10px;
       font-size: 36px;
+   }
+
+   tr:hover {
+      background-color: #ffffee;
    }
 
    .reason {
       font-size: 16px;
       td {
-         padding: 0.3em .3em;
+         padding: 5px 5px;
       }
    }
 
