@@ -6,6 +6,10 @@
    border-radius: @radius;
 }
 
+.blue-line(@width: 3px) {
+   border-bottom: @width solid #105aaf;
+}
+
 body {
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
    padding-top: 40px;
@@ -406,6 +410,9 @@ body {
       background-color: rgba(16, 90, 175, 0.70);
    }
 
+   .name {
+      .blue-line;
+   }
 
    tr.name > td {
       padding: 10px;
@@ -417,16 +424,16 @@ body {
    }
 
    .reason {
-      font-size: 16px;
       td {
-         padding: 5px 5px;
+         padding: 8px 5px 0 5px;
+         font-size: 20px;
       }
    }
 
    .price {
-      border-bottom: 2px dotted black;
+      .blue-line;
       td {
-         padding: 5px;
+         padding: 8px 10px 10px 10px;
       }
    }
 
@@ -441,6 +448,7 @@ body {
    }
 
    .collaborators {
+      .blue-line;
    }
 
    .feature {
