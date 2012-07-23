@@ -665,44 +665,6 @@ class Billing extends Obj
   observables: =>
     teamMembers: {} # github data; map of org->[users]
     existingPlans: {}
-    newPlans:
-      small: [
-        name: "Solo"
-        why: "When it's just you"
-        price: 1400
-        klass: "col1"
-        projects: 1
-        concurrency: 1
-        selected: false
-        suitable: "1-2"
-      ,
-        name: "Basic"
-        why: "For tiny teams"
-        price: 3900
-        klass: "col2"
-        projects: 5
-        concurrency: 1
-        selected: true
-        suitable: "1-3"
-      ,
-        name: "Short"
-        why: "With more projects"
-        price: 5900
-        klass: "col3"
-        projects: 10
-        concurrency: 1
-        selected: false
-        suitable: "1-3"
-      ,
-        name: "Plus"
-        why: "For more frequent pushers"
-        projects: "Unlimited"
-        klass: "col4"
-        price: 7900
-        concurrency: 2
-        selected: false
-        suitable: "2-5"
-      ]
     collaborators: []
 
     availablePlans: [] # the list of plans that a user can choose
@@ -719,9 +681,16 @@ class Billing extends Obj
     payer: null
     plan: null
 
+    newAvailablePlans: []
+    planSize: "small"
+
+
 
   constructor: ->
     super
+
+    @visiblePlans = komp =>
+      (p for p in @newAvailablePlans() when p.size == @planSize())
 
     @plans = komp =>
       ap = for k,v of @availablePlans()
@@ -813,6 +782,7 @@ class Billing extends Obj
     unless @loaded
       SammyApp.setLocation "/account/plans"
       @loadAvailablePlans()
+      @loadNewAvailablePlans()
       @loadExistingPlans()
       @loadTeamMembers()
       @loadStripe()
@@ -911,6 +881,10 @@ class Billing extends Obj
   loadAvailablePlans: () =>
     $.getJSON '/api/v1/user/available-plans', (data) =>
       @availablePlans(data)
+
+  loadNewAvailablePlans: () =>
+    $.getJSON '/api/v1/user/new-available-plans', (data) =>
+      @newAvailablePlans(data)
 
 
 
@@ -1074,7 +1048,7 @@ class CircleViewModel extends Base
     subpage = subpage[0].replace(/\//, '') # first one
     subpage = subpage.replace(/\//g, '_')
     subpage = subpage || "notifications"
-    if subpage.indexOf("plans") == 0
+    if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
       @billing().load()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
