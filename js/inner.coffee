@@ -464,6 +464,7 @@ class Project extends Obj
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
+    heroku_deploy_user: null
     followed: null
 
   constructor: (json) ->
@@ -545,10 +546,32 @@ class Project extends Obj
         extra: @extra()
       success: (data) =>
         (new Build(data)).visit()
-
-
-
     false # dont bubble the event up
+
+  set_heroku_deploy_user: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/heroku-deploy-user"
+      success: (result) =>
+        true
+        @refresh()
+    false
+
+  clear_heroku_deploy_user: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/heroku-deploy-user"
+      success: (result) =>
+        true
+        @refresh()
+    false
+
+
+  refresh: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
+      @updateObservables(data)
 
 class User extends Obj
   observables: =>
