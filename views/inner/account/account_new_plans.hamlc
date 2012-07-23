@@ -59,45 +59,10 @@
 
 
 
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
+          / ko foreach: planFeatures
+          %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"},
+            %td.title{data-bind: "text: headline"}
             / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"} TICK
+            %td TICK
             / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
+          / /ko

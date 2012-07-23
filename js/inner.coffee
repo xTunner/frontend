@@ -683,6 +683,7 @@ class Billing extends Obj
 
     newAvailablePlans: []
     planSize: "small"
+    planFeatures: []
 
 
 
@@ -783,6 +784,7 @@ class Billing extends Obj
       SammyApp.setLocation "/account/plans"
       @loadAvailablePlans()
       @loadNewAvailablePlans()
+      @loadPlanFeatures()
       @loadExistingPlans()
       @loadTeamMembers()
       @loadStripe()
@@ -885,6 +887,10 @@ class Billing extends Obj
   loadNewAvailablePlans: () =>
     $.getJSON '/api/v1/user/new-available-plans', (data) =>
       @newAvailablePlans(data)
+
+  loadPlanFeatures: () =>
+    $.getJSON '/api/v1/user/plan-features', (data) =>
+      @planFeatures(data)
 
 
 
