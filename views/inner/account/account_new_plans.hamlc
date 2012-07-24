@@ -25,10 +25,10 @@
       %table.plan
         %colgroup
           %col{class: "title"}
-          %col{class: "col2", style: "background-color: rgba(16, 90, 175, 0.25);"}
-          %col{class: "col3", style: "background-color: rgba(16, 90, 175, 0.40);"}
-          %col{class: "col4", style: "background-color: rgba(16, 90, 175, 0.55);"}
-          %col{class: "col5", style: "background-color: rgba(16, 90, 175, 0.70);"}
+          %col{class: "col2" }
+          %col{class: "col3" }
+          %col{class: "col4" }
+          %col{class: "col5" }
         %thead
           %tr.name
             %th.title
