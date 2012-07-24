@@ -7,6 +7,19 @@
         = HAML['contact_us_inner']()
         with your comments!
 
+
+  .row
+    .offset5
+      %ul.pills.larger
+        %li.active
+          %a{href: "#"} Small teams
+        %li
+          %a{href: "#"} Medium-sized teams
+        %li
+          %a{href: "#"} Large teams
+        %li
+          %a{href: "#"} Enterprise
+
   .row
     .offset2.span18
       %table.plan
