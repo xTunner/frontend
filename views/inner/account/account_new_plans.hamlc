@@ -10,24 +10,30 @@
   .row
     .offset2.span18
       %table.plan
+        %colgroup
+          %col{class: "title"}
+          %col{class: "col2", style: "background-color: rgba(16, 90, 175, 0.25);"}
+          %col{class: "col3", style: "background-color: rgba(16, 90, 175, 0.40);"}
+          %col{class: "col4", style: "background-color: rgba(16, 90, 175, 0.55);"}
+          %col{class: "col5", style: "background-color: rgba(16, 90, 175, 0.70);"}
         %thead
           %tr.name
             %th.title
             / ko foreach: visiblePlans
-            %th.title{data-bind: "text: name, attr: { class: klass }"}
+            %th.title{data-bind: "text: name"}
             / /ko
 
         %tbody
           %tr.reason
             %td.title
             / ko foreach: visiblePlans
-            %td{data-bind: "text: why, attr: { class: klass }"}
+            %td{data-bind: "text: why"}
             / /ko
 
           %tr.price
             %td.title
             / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"}
+            %td
               %button.select.btn.success.span5
                 Sign up now, just
                 = succeed '/month', ->
@@ -39,30 +45,32 @@
           %tr.projects
             %td.title Projects
             / ko foreach: visiblePlans
-            %td{data-bind: "text: projects, attr: { class: klass }"}
+            %td{data-bind: "text: projects"}
             / /ko
 
           %tr.concurrency.more-info{title: "Concurrent builds",
                                     data-content: "This is the number of pushes that we'll test at the same time, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."}
             %td.title Concurrent builds
             / ko foreach: visiblePlans
-            %td{data-bind: "text: concurrency, attr: { class: klass }"}
+            %td{data-bind: "text: concurrency"}
             / /ko
 
 
           %tr.collaborators.more-info{title: "Collaborators",
-                                      data-content: "You can invite anyone who has GitHub access to your projects, and we'll test their code."}
-            %td.title Collabarators
+                                      data-content: "We'll test code for all your collaborators - anyone will GitHub access to your organization's projects."}
+            %td.title Collaborators
             / ko foreach: visiblePlans
-            %td{data-bind: "attr: { class: klass }"} Unlimited
+            %td Unlimited
             / /ko
 
 
 
           / ko foreach: planFeatures
-          %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"},
+          %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"}
             %td.title{data-bind: "text: headline"}
-            / ko foreach: visiblePlans
+              Keep this here to avoid this td from eating the ko: foreach below
+
+            / ko foreach: $parent.visiblePlans
             %td TICK
             / /ko
           / /ko
