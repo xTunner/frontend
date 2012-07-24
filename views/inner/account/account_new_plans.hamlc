@@ -9,7 +9,7 @@
 
 
   .row
-    .offset5
+    .offset2
       %ul.pills.larger
         %li#small
           %a{href: "#small"} Small teams
@@ -21,7 +21,7 @@
           %a{href: "#enterprise"} Enterprise
 
   .row
-    .offset2.span18
+    .span20
       %table.plan
         %colgroup
           %col{class: "title"}
