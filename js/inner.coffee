@@ -800,7 +800,8 @@ class Billing extends Obj
 
   load: () =>
     unless @loaded
-      SammyApp.setLocation "/account/plans"
+      unless window.location.pathname == "/account/new-plans"
+        SammyApp.setLocation "/account/plans"
       @loadAvailablePlans()
       @loadNewAvailablePlans()
       @loadPlanFeatures()
