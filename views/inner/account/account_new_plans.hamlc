@@ -11,13 +11,13 @@
   .row
     .offset5
       %ul.pills.larger
-        %li.active
+        %li#small
           %a{href: "#small"} Small teams
-        %li
+        %li#medium
           %a{href: "#medium"} Medium-sized teams
-        %li
+        %li#large
           %a{href: "#large"} Large teams
-        %li
+        %li#enterprise
           %a{href: "#enterprise"} Enterprise
 
   .row

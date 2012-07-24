@@ -800,6 +800,7 @@ class Billing extends Obj
 
   load: (hash="small") =>
     @planSize(hash)
+    $("##{hash}").addClass('active')
     unless @loaded
       unless window.location.pathname == "/account/new-plans"
         SammyApp.setLocation "/account/plans"
@@ -1078,11 +1079,14 @@ class CircleViewModel extends Base
 
     if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
       [subpage, hash] = subpage.split('#')
+      hash or= "small"
       @billing().load(hash)
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
+    if hash?
+      $("##{hash}").addClass('active')
     $('.more-info').popover({html: true, placement: "below"})
 
 
