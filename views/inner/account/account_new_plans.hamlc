@@ -48,8 +48,8 @@
             / ko foreach: visiblePlans
             %td
               %button.select.btn.success.span5
-                Sign up now, just
-                = succeed '/month', ->
+                Sign up now
+                = succeed '/mo', ->
                   $
                   %span{data-bind: "text: price / 100"}<>
             / /ko
