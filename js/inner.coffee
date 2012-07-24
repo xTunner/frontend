@@ -660,6 +660,23 @@ class User extends Obj
 
 
 
+class Plan extends Obj
+  constructor: ->
+    super
+
+    @concurrencyTitle = komp =>
+      "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
+
+    @projectsTitle = komp =>
+      "#{@projects} project" + (if @projects == 1 then "" else "s")
+
+    @concurrencyContent = komp =>
+      "With the #{@name} plan, we will test #{@concurrency} pushes at once, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
+
+    @projectsContent = komp =>
+      "With the #{@name} plan, we will run your tests on #{@projects} projects."
+
+
 
 class Billing extends Obj
   observables: =>
@@ -886,7 +903,7 @@ class Billing extends Obj
 
   loadNewAvailablePlans: () =>
     $.getJSON '/api/v1/user/new-available-plans', (data) =>
-      @newAvailablePlans(data)
+      @newAvailablePlans((new Plan(d) for d in data))
 
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>

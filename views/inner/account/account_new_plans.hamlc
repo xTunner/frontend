@@ -45,14 +45,13 @@
           %tr.projects
             %td.title Projects
             / ko foreach: visiblePlans
-            %td{data-bind: "text: projects"}
+            %td.more-info{data-bind: "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}"}
             / /ko
 
-          %tr.concurrency.more-info{title: "Concurrent builds",
-                                    data-content: "This is the number of pushes that we'll test at the same time, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."}
+          %tr.concurrency.more-info
             %td.title Concurrent builds
             / ko foreach: visiblePlans
-            %td{data-bind: "text: concurrency"}
+            %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
             / /ko
 
 
