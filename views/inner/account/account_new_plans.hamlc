@@ -68,7 +68,7 @@
             / /ko
 
 
-          %tr.collaborators.more-info{title: "Collaborators",
+          %tr.collaborators.more-info{title: "Unlimited Collaborators",
                                       data-content: "We'll test code for all your collaborators - anyone will GitHub access to your organization's projects."}
             %td.title Collaborators
             / ko foreach: visiblePlans
