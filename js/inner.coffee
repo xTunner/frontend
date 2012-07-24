@@ -798,7 +798,8 @@ class Billing extends Obj
     @chosenPlan(plan)
     SammyApp.setLocation "/account/plans/organization"
 
-  load: () =>
+  load: (hash="small") =>
+    @planSize(hash)
     unless @loaded
       unless window.location.pathname == "/account/new-plans"
         SammyApp.setLocation "/account/plans"
@@ -1070,12 +1071,14 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadAccountPage: (cx, subpage, organization) =>
+  loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace(/\//, '') # first one
     subpage = subpage.replace(/\//g, '_')
-    subpage = subpage || "notifications"
+    subpage or= "notifications"
+
     if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
-      @billing().load()
+      [subpage, hash] = subpage.split('#')
+      @billing().load(hash)
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
