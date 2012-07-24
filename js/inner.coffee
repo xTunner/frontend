@@ -295,6 +295,8 @@ class Build extends Obj
           "First build"
         when "retry"
           "Manual retry of build #{@retry_of()}"
+        when "ssh"
+          "Retry of build #{@retry_of()}, with SSH enabled"
         when "auto-retry"
           "Auto-retry of build #{@retry_of()}"
         when "trigger"
