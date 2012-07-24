@@ -83,6 +83,6 @@
               Keep this here to avoid this td from eating the ko: foreach below
 
             / ko foreach: $parent.visiblePlans
-            %td TICK
+            %td.tick
             / /ko
           / /ko
