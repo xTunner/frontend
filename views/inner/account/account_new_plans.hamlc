@@ -75,13 +75,6 @@
             %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
             / /ko
 
-
-          %tr.concurrency.more-info
-            %td.title Concurrent builds
-            / ko foreach: visiblePlans
-            %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
-            / /ko
-
           %tr.parallelism-slider
             %td.title Parallel testing
             %td
