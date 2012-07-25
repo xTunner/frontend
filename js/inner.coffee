@@ -105,22 +105,12 @@ class ActionLog extends Obj
     start_time: null
     end_time: null
     exit_code: null
+    status: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
   constructor: (json) ->
     super json
-
-    @status = komp =>
-      if @end_time() == null
-        "running"
-      else if @timedout()
-        "timedout"
-
-      else if (@exit_code() == null || @exit_code() == 0)
-        "success"
-      else
-        "failed"
 
     @success = komp =>
       @status() == "success"
