@@ -327,7 +327,7 @@
       = succeed ',', ->
         %code rspec
       or use the wrong database.
-      You should check in your Gemfile.lock if possible (as an experiment, try checking it in on a branch to see if it fixes the problem).
+      You should check in your Gemfile.lock if possible, or manually add your test steps.
 
 
 

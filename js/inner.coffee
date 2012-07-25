@@ -105,22 +105,12 @@ class ActionLog extends Obj
     start_time: null
     end_time: null
     exit_code: null
+    status: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
   constructor: (json) ->
     super json
-
-    @status = komp =>
-      if @end_time() == null
-        "running"
-      else if @timedout()
-        "timedout"
-
-      else if (@exit_code() == null || @exit_code() == 0)
-        "success"
-      else
-        "failed"
 
     @success = komp =>
       @status() == "success"
@@ -295,6 +285,8 @@ class Build extends Obj
           "First build"
         when "retry"
           "Manual retry of build #{@retry_of()}"
+        when "ssh"
+          "Retry of build #{@retry_of()}, with SSH enabled"
         when "auto-retry"
           "Auto-retry of build #{@retry_of()}"
         when "trigger"
@@ -660,6 +652,33 @@ class User extends Obj
 
 
 
+class Plan extends Obj
+  observables: =>
+    parallelism: 1
+
+  constructor: ->
+    super
+
+    @concurrencyTitle = komp =>
+      "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
+
+    @projectsTitle = komp =>
+      "#{@projects} project" + (if @projects == 1 then "" else "s")
+
+    @concurrencyContent = komp =>
+      "With the #{@name} plan, we will test #{@concurrency} pushes at once, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
+
+    @projectsContent = komp =>
+      "With the #{@name} plan, we will run your tests on #{@projects} projects."
+
+
+
+    @total = komp =>
+      dollars = @price / 100
+      increment = Math.round(0.3 * dollars)
+      ((@parallelism() - 1) * increment) + dollars
+
+
 
 class Billing extends Obj
   observables: =>
@@ -681,9 +700,17 @@ class Billing extends Obj
     payer: null
     plan: null
 
+    newAvailablePlans: []
+    planSize: "small"
+    planFeatures: []
+    currentParallelism: 1
+
 
   constructor: ->
     super
+
+    @visiblePlans = komp =>
+      (p for p in @newAvailablePlans() when p.size == @planSize())
 
     @plans = komp =>
       ap = for k,v of @availablePlans()
@@ -771,14 +798,29 @@ class Billing extends Obj
     @chosenPlan(plan)
     SammyApp.setLocation "/account/plans/organization"
 
-  load: () =>
+  load: (hash="small") =>
+    @planSize(hash)
     unless @loaded
-      SammyApp.setLocation "/account/plans"
+      unless window.location.pathname == "/account/new-plans"
+        SammyApp.setLocation "/account/plans"
       @loadAvailablePlans()
+      @loadNewAvailablePlans()
+      @loadPlanFeatures()
       @loadExistingPlans()
       @loadTeamMembers()
       @loadStripe()
       @loaded = true
+
+  setParallelism: (event, ui) =>
+    @currentParallelism(ui.value)
+    for p in @newAvailablePlans()
+      p.parallelism(ui.value)
+
+  loadUIElements: =>
+    $('#slider').slider({min: 1, max: 8, slide: @setParallelism, value: @currentParallelism()})
+    $('.more-info').popover({html: true, placement: "below"})
+    $("##{@planSize()}").addClass('active')
+
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -873,6 +915,14 @@ class Billing extends Obj
   loadAvailablePlans: () =>
     $.getJSON '/api/v1/user/available-plans', (data) =>
       @availablePlans(data)
+
+  loadNewAvailablePlans: () =>
+    $.getJSON '/api/v1/user/new-available-plans', (data) =>
+      @newAvailablePlans((new Plan(d) for d in data))
+
+  loadPlanFeatures: () =>
+    $.getJSON '/api/v1/user/plan-features', (data) =>
+      @planFeatures(data)
 
 
 
@@ -1032,16 +1082,21 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadAccountPage: (cx, subpage, organization) =>
+  loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace(/\//, '') # first one
     subpage = subpage.replace(/\//g, '_')
-    subpage = subpage || "notifications"
-    if subpage.indexOf("plans") == 0
-      @billing().load()
+    subpage or= "notifications"
+
+    if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
+      [subpage, hash] = subpage.split('#')
+      hash or= "small"
+      @billing().load(hash)
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
+
+    @billing().loadUIElements()
 
 
   renderAdminPage: (subpage) =>

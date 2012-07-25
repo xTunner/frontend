@@ -22,6 +22,10 @@
       %a{:href: '/account/plans'}
         Plans
 
+    %li#new-plans
+      %a{:href: '/account/new-plans'}
+        New plans
+
     %li#close
       %a{:href: '/account/close'}
         Close account
