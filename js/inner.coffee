@@ -663,6 +663,9 @@ class User extends Obj
 
 
 class Plan extends Obj
+  observables: =>
+    parallelism: 1
+
   constructor: ->
     super
 
@@ -677,6 +680,13 @@ class Plan extends Obj
 
     @projectsContent = komp =>
       "With the #{@name} plan, we will run your tests on #{@projects} projects."
+
+
+
+    @total = komp =>
+      dollars = @price / 100
+      increment = Math.round(0.3 * dollars)
+      ((@parallelism() - 1) * increment) + dollars
 
 
 
@@ -703,7 +713,7 @@ class Billing extends Obj
     newAvailablePlans: []
     planSize: "small"
     planFeatures: []
-
+    currentParallelism: 1
 
 
   constructor: ->
@@ -811,8 +821,13 @@ class Billing extends Obj
       @loadStripe()
       @loaded = true
 
+  setParallelism: (event, ui) =>
+    @currentParallelism(ui.value)
+    for p in @newAvailablePlans()
+      p.parallelism(ui.value)
+
   loadUIElements: =>
-    $('#slider').slider({min: 1, max: 8})
+    $('#slider').slider({min: 1, max: 8, slide: @setParallelism, value: @currentParallelism()})
     $('.more-info').popover({html: true, placement: "below"})
     $("##{@planSize()}").addClass('active')
 
@@ -1091,7 +1106,7 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
 
-    @billing.loadUIElements()
+    @billing().loadUIElements()
 
 
   renderAdminPage: (subpage) =>

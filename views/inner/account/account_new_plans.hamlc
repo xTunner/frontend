@@ -51,7 +51,7 @@
                 Sign up now
                 = succeed '/mo', ->
                   $
-                  %span{data-bind: "text: price / 100"}<>
+                  %span{data-bind: "text: total"}<>
             / /ko
 
 
@@ -61,13 +61,6 @@
             %td.more-info{data-bind: "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}"}
             / /ko
 
-          %tr.concurrency.more-info
-            %td.title Concurrent builds
-            / ko foreach: visiblePlans
-            %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
-            / /ko
-
-
           %tr.collaborators.more-info{title: "Unlimited Collaborators",
                                       data-content: "We'll test code for all your collaborators - anyone will GitHub access to your organization's projects."}
             %td.title Collaborators
@@ -75,11 +68,25 @@
             %td Unlimited
             / /ko
 
-          %tr
+
+          %tr.concurrency.more-info
+            %td.title Concurrent builds
+            / ko foreach: visiblePlans
+            %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
+            / /ko
+
+
+          %tr.concurrency.more-info
+            %td.title Concurrent builds
+            / ko foreach: visiblePlans
+            %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
+            / /ko
+
+          %tr.parallelism-slider
             %td.title Parallel testing
             %td
-            %td.more-info{title: "Parallel testing",
-                          data-content: "We'll split your tests up and run them in parallel, for dramatically reduced test time (this doesn't affect your concurrent builds).",
+            %td.more-info{data-content: "We'll split your tests up and run them in parallel, to reduce your test time by up to 8x. Move the slider to change the parallelism (and the price). This doesn't affect your concurrent builds.",
+                          title: "Parallel testing",
                           colspan: 2}
               #slider
             %td
