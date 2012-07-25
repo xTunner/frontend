@@ -800,7 +800,6 @@ class Billing extends Obj
 
   load: (hash="small") =>
     @planSize(hash)
-    $("##{hash}").addClass('active')
     unless @loaded
       unless window.location.pathname == "/account/new-plans"
         SammyApp.setLocation "/account/plans"
@@ -811,6 +810,12 @@ class Billing extends Obj
       @loadTeamMembers()
       @loadStripe()
       @loaded = true
+
+  loadUIElements: =>
+    $('#slider').slider({min: 1, max: 8})
+    $('.more-info').popover({html: true, placement: "below"})
+    $("##{@planSize()}").addClass('active')
+
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -1085,9 +1090,8 @@ class CircleViewModel extends Base
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
-    if hash?
-      $("##{hash}").addClass('active')
-    $('.more-info').popover({html: true, placement: "below"})
+
+    @billing.loadUIElements()
 
 
   renderAdminPage: (subpage) =>

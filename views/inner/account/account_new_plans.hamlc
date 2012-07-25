@@ -75,6 +75,14 @@
             %td Unlimited
             / /ko
 
+          %tr
+            %td.title Parallel testing
+            %td
+            %td.more-info{title: "Parallel testing",
+                          data-content: "We'll split your tests up and run them in parallel, for dramatically reduced test time (this doesn't affect your concurrent builds).",
+                          colspan: 2}
+              #slider
+            %td
 
 
           / ko foreach: planFeatures
