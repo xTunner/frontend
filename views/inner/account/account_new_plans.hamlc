@@ -7,97 +7,90 @@
         = HAML['contact_us_inner']()
         with your comments!
 
+
   .row
-    .offset2.span18
+    .offset2
+      %ul.pills.larger
+        %li#small
+          %a{href: "#small"} Small teams
+        %li#medium
+          %a{href: "#medium"} Medium-sized teams
+        %li#large
+          %a{href: "#large"} Large teams
+        %li#enterprise
+          %a{href: "#enterprise"} Enterprise
+
+  .row
+    .span20
       %table.plan
+        %colgroup
+          %col{class: "title"}
+          %col{class: "col2" }
+          %col{class: "col3" }
+          %col{class: "col4" }
+          %col{class: "col5" }
         %thead
           %tr.name
             %th.title
-            / ko foreach: newPlans().small
-            %th.title{data-bind: "text: name, attr: { class: klass }"}
+            / ko foreach: visiblePlans
+            %th.title{data-bind: "text: name"}
             / /ko
 
         %tbody
           %tr.reason
             %td.title
-            / ko foreach: newPlans().small
-            %td{data-bind: "text: why, attr: { class: klass }"}
+            / ko foreach: visiblePlans
+            %td{data-bind: "text: why"}
             / /ko
 
           %tr.price
             %td.title
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"}
+            / ko foreach: visiblePlans
+            %td
               %button.select.btn.success.span5
-                Sign up now, just
-                = succeed '/month', ->
+                Sign up now
+                = succeed '/mo', ->
                   $
-                  %span{data-bind: "text: price / 100"}<>
+                  %span{data-bind: "text: total"}<>
             / /ko
 
 
           %tr.projects
             %td.title Projects
-            / ko foreach: newPlans().small
-            %td{data-bind: "text: projects, attr: { class: klass }"}
+            / ko foreach: visiblePlans
+            %td.more-info{data-bind: "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}"}
             / /ko
 
-          %tr.concurrency.more-info{title: "Concurrent builds",
-                                    data-content: "This is the number of pushes that we'll test at the same time, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."}
+          %tr.collaborators.more-info{title: "Unlimited Collaborators",
+                                      data-content: "We'll test code for all your collaborators - anyone will GitHub access to your organization's projects."}
+            %td.title Collaborators
+            / ko foreach: visiblePlans
+            %td Unlimited
+            / /ko
+
+
+          %tr.concurrency.more-info
             %td.title Concurrent builds
-            / ko foreach: newPlans().small
-            %td{data-bind: "text: concurrency, attr: { class: klass }"}
+            / ko foreach: visiblePlans
+            %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
             / /ko
 
+          %tr.parallelism-slider
+            %td.title Parallel testing
+            %td
+            %td.more-info{data-content: "We'll split your tests up and run them in parallel, to reduce your test time by up to 8x. Move the slider to change the parallelism (and the price). This doesn't affect your concurrent builds.",
+                          title: "Parallel testing",
+                          colspan: 2}
+              #slider
+            %td
 
-          %tr.collaborators.more-info{title: "Collaborators",
-                                      data-content: "You can invite anyone who has GitHub access to your projects, and we'll test their code."}
-            %td.title Collabarators
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"} Unlimited
+
+          / ko foreach: planFeatures
+          %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"}
+            %td.title{data-bind: "text: headline"}
+              Keep this here to avoid this td from eating the ko: foreach below
+
+            / ko foreach: $parent.visiblePlans
+            %td.tick
             / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
-
-
-
-          %tr.fast.more-info{title: "Lightning fast",
-                                      data-content: "We have hand tuned our machines to get you test results as fast as possible. With hardcore IO tweaks, dependency caching, queue optimization, amongst other optimizations, we have the fastest test environment on the internet."}
-            %td.title Lightning fast
-            / ko foreach: newPlans().small
-            %td{data-bind: "attr: { class: klass }"} TICK
-            / /ko
+          / /ko
