@@ -951,6 +951,16 @@ class CircleViewModel extends Base
 
     @setupPusher()
 
+    @intercomUserLink = komp =>
+      @build() and @build() and @projects() # make it update each time the URL changes
+      path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
+      if path
+        "https://www.intercom.io/apps/vnk4oztr/users" +
+          "?utf8=%E2%9C%93" +
+          "&filters%5B0%5D%5Battr%5D=custom_data.pr-followed" +
+          "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
+          path[1]
+
   setupPusher: () =>
     key = switch renderContext.env
       when "production" then "6465e45f8c4a30a2a653"
