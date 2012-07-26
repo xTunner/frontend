@@ -20,7 +20,17 @@
         %li#enterprise
           %a{href: "#enterprise"} Enterprise
 
-  .row
+  .row{data-bind: "if: planSize() == 'enterprise'"}
+    .span20
+      %h2
+        Enterprise plans available on request.
+      %p
+        Plans are available for very large teams, and for behind-the-firewall installs.
+        Please
+        = HAML['contact_us_inner']()
+        for more information.
+
+  .row{data-bind: "ifnot: planSize() == 'enterprise'"}
     .span20
       %table.plan
         %colgroup
