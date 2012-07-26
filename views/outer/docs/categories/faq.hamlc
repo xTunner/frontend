@@ -8,10 +8,7 @@
 
   .doc
 
-    %h1.section
-      %a#what-happens What happens when you add a project?
-    %hr
-
+    = HAML['heading']({title: "What happens when you add a project?", hash: "what-happens"})
     %p
       Generally, pretty much what you'd expect if you were implementing this yourself:
 
@@ -52,10 +49,7 @@
         We'll send you a notification when you're done.
 
 
-    %h1.section
-      %a#look-at-code Does Circle look at my code?
-    %hr
-
+    = HAML['heading']({title: "Does Circle look at my code?", hash: "look-at-code"})
     %p
       Nobody from Circle manually looks at your code, without permission.
       We will occasionally ask permission to debug why your code isn't working, but we will never look at your code without this permission.
