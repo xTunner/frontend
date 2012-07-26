@@ -109,6 +109,15 @@
       Any phases which are not specified will be inferred from your code.
       In fact, the entire file is optional, and we will infer all your settings if it is missing.
 
+    %h3#subdirectory File location
+    %p
+      Most projects should put the
+      %code circle.yml
+      file in their repository's root directory.
+      However, if you store the application code in a subdirectory instead of the root, putting the
+      %code circle.yml
+      file there will tell Circle to use that directory for your tests.
+
     %h3 Sections
     %p
       Each phase is made up of sections, representing some part of the phase which can be configured.
