@@ -818,7 +818,7 @@ class Billing extends Obj
 
   loadUIElements: =>
     $('#slider').slider({min: 1, max: 8, slide: @setParallelism, value: @currentParallelism()})
-    $('.more-info').popover({html: true, placement: "below"})
+    $('.more-info').popover({html: true, placement: "below", live: true})
     $("##{@planSize()}").addClass('active')
 
 
