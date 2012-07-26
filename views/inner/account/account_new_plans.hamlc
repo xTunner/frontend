@@ -75,10 +75,34 @@
             %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
             / /ko
 
-          %tr.parallelism-slider
+          %tr.parallelism.more-info
+            %td.title Priority builds (daily)
+
+            / ko foreach: visiblePlans
+            %td.more-info{data-content: "If you don't always need your tests to finish immediately, you'll be able to save money by choosing a smaller plan. Non-priority tests may have to wait for other priority tests to finish during peak times."}
+              %span{data-bind: "if: priority"}
+                %span{data-bind: "text: priority"}
+
+              %span{data-bind: "ifnot: priority"}
+                All of them
+            / /ko
+
+
+          %tr.parallelism.more-info
             %td.title Parallel testing
+            / ko foreach: visiblePlans
+            %td.more-info
+              = succeed 'x', ->
+                %span{data-bind: "if: parallelism() <= max_parallelism"}<>
+                  %span{data-bind: "text: parallelism"}<>
+                %span{data-bind: "if: parallelism() > max_parallelism"}<>
+                  %span{data-bind: "text: max_parallelism"}<>
+            / /ko
+
+          %tr.parallelism-slider
+            %td.title
             %td
-            %td.more-info{data-content: "We'll split your tests up and run them in parallel, to reduce your test time by up to 8x. Move the slider to change the parallelism (and the price). This doesn't affect your concurrent builds.",
+            %td.more-info{data-content: "We'll split your tests up and run them in parallel, to reduce your test time by up to 8x (on larger plans). Move the slider to change the parallelism. This doesn't affect your concurrent builds.",
                           title: "Parallel testing",
                           colspan: 2}
               #slider
@@ -86,7 +110,8 @@
 
 
           / ko foreach: planFeatures
-          %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"}
+          %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}",
+                                 data-placement: "above"}
             %td.title{data-bind: "text: headline"}
               Keep this here to avoid this td from eating the ko: foreach below
 

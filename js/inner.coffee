@@ -671,13 +671,11 @@ class Plan extends Obj
     @projectsContent = komp =>
       "With the #{@name} plan, we will run your tests on #{@projects} projects."
 
-
-
     @total = komp =>
       dollars = @price / 100
-      increment = Math.round(0.3 * dollars)
-      ((@parallelism() - 1) * increment) + dollars
-
+      increment = Math.round(0.4 * dollars)
+      actualParallelism = Math.min(@parallelism(), @max_parallelism)
+      dollars + ((actualParallelism - 1) * increment)
 
 
 class Billing extends Obj
