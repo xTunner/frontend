@@ -659,6 +659,14 @@ class Plan extends Obj
   constructor: ->
     super
 
+    @actualParallelism = komp =>
+      Math.min(@parallelism(), @max_parallelism)
+
+    @total = komp =>
+      dollars = @price / 100
+      increment = Math.round(0.4 * dollars)
+      dollars + ((@actualParallelism() - 1) * increment)
+
     @concurrencyTitle = komp =>
       "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
 
@@ -671,11 +679,9 @@ class Plan extends Obj
     @projectsContent = komp =>
       "With the #{@name} plan, we will run your tests on #{@projects} projects."
 
-    @total = komp =>
-      dollars = @price / 100
-      increment = Math.round(0.4 * dollars)
-      actualParallelism = Math.min(@parallelism(), @max_parallelism)
-      dollars + ((actualParallelism - 1) * increment)
+
+
+
 
 
 class Billing extends Obj
