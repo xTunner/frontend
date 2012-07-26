@@ -25,7 +25,7 @@
       %h2
         Enterprise plans available on request.
       %p
-        Plans are available for very large teams, and for behind-the-firewall installs.
+        Plans are available for very large teams, and for behind the-firewall installs.
         Please
         = HAML['contact_us_inner']()
         for more information.
@@ -47,10 +47,13 @@
             / /ko
 
         %tbody
-          %tr.reason
+          %tr.reason{data-content: "All teams are different, and have different length test suites and push at different intervals. However, as a rough guide, you'll probably find this plan is a good choice for X developers. Of course, there are no limits to the number of developers, collaborators and contractors your plans supports."}
             %td.title
             / ko foreach: visiblePlans
-            %td{data-bind: "text: why"}
+            %td
+              Suits
+              %span{data-bind: "text: suitable"}
+              full-time devs
             / /ko
 
           %tr.price
@@ -89,7 +92,8 @@
             %td.title Priority builds (daily)
 
             / ko foreach: visiblePlans
-            %td.more-info{data-content: "If you don't always need your tests to finish immediately, you'll be able to save money by choosing a smaller plan. Non-priority tests may have to wait for other priority tests to finish during peak times."}
+            %td.more-info{title: "Priority Builds",
+                          data-content: "If you don't always need your tests to finish immediately, you'll be able to save money by choosing a smaller plan. Non-priority tests may have to wait for other priority tests to finish during peak times."}
               %span{data-bind: "if: priority"}
                 %span{data-bind: "text: priority"}
 
