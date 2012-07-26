@@ -1,6 +1,6 @@
-#plans{data-bind: "with: $root.billing"}
+#new-plans{data-bind: "with: $root.billing"}
 
-  .paid{data-bind: "if: selfPayer"}
+  .paid{data-bind: "if: true"}
 
     .row.pricing
       .span6.offset4
@@ -14,17 +14,5 @@
               Edit plans
 
 
-  .paid{data-bind: "if: paidFor"}
-
-    .row.pricing
-      .span6.offset4
-        #thanks
-          .alert-message.block-message.info
-            %h2
-              %span{data-bind: "text: payer"}
-              is covering your plan. Yay!
-
-
   .paid{data-bind: "if: notPaid"}
-
     = HAML['account_plans_edit']()

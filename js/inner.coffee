@@ -701,7 +701,6 @@ class Billing extends Obj
     cardInfo: null
     oldTotal: 0
 
-    payer: null
     plan: null
 
     newAvailablePlans: []
@@ -754,49 +753,16 @@ class Billing extends Obj
         total += c.plan().price if c.plan()?
       total / 100
 
-    @paidFor = komp =>
-      @payer() and (@payer() isnt VM.current_user().login)
-
-    @selfPayer = komp =>
-      @payer() and (@payer() is VM.current_user().login)
-
     @notPaid = komp =>
-      not @payer()?
+      false
 
     @savedCardNumber = komp =>
       return "" unless @cardInfo()
       "************" + @cardInfo().last4
 
 
-
-
-    @organizationMatrix = komp =>
-      orgs = {} # TODO: merge with existing plans
-      orgs[@selectedOrganization()] = {
-        add_new: false
-        default: @selectedPlan().id if @selectedPlan()?
-      }
-      orgs
-
     @organizations = komp =>
       (k for k,v of @teamMembers())
-
-    @selectOrganization = komp
-      # use computed observable because knockout select boxes make it hard to do otherwise
-      write: (value) =>
-        @selectedOrganization(value)
-        if value
-          cs = for login in @teamMembers()[value]
-            plan = ko.observable @selectedPlan()
-            # clojure converts keys to underscores...
-            existing = @existingPlans()[login.replace(/-/g, '_')]
-            plan(@availablePlans()[existing]) if existing
-            {login: login, plan: plan}
-          @collaborators(cs)
-          SammyApp.setLocation "/account/plans/users"
-
-      read: () =>
-        @selectedOrganization()
 
   selectPlan: (plan) =>
     @chosenPlan(plan)
@@ -805,9 +771,7 @@ class Billing extends Obj
   load: (hash="small") =>
     @planSize(hash)
     unless @loaded
-      unless window.location.pathname == "/account/new-plans"
-        SammyApp.setLocation "/account/plans"
-      @loadAvailablePlans()
+      SammyApp.setLocation "/account/plans"
       @loadNewAvailablePlans()
       @loadPlanFeatures()
       @loadExistingPlans()
@@ -902,7 +866,6 @@ class Billing extends Obj
     $.getJSON '/api/v1/user/existing-plans', (data) =>
       @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
-      @payer(data.payer)
       @existingPlans(data.team_plans)
 
       # we want the first plan/org, but iteration is the only way to get that from an object
