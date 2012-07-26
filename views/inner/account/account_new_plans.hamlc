@@ -88,7 +88,7 @@
             / /ko
 
 
-          %tr.parallelism.more-info
+          %tr.parallelism.more-info{data-content: "Your tests will split up and run in parallel, so that they can run up to 8 times faster."}
             %td.title Parallel testing
             / ko foreach: visiblePlans
             %td.more-info
