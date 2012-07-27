@@ -14,16 +14,6 @@
 
     .screenshot CircleCI Screenshot
 
-%p.testimonial-header Some of our happy customers
-
-#testimonials
-  %section
-    .customer
-      %a.zencoder{ href: "#" } Zencoder<span></span>
-
-    .customer
-      %a.storenvy{ href: "#" } Storenvy<span></span>
-
 #features
   %header
     %h2 Why use Circle?
@@ -38,6 +28,16 @@
           %h2= feature.headline
 
           %p= feature.detail
+
+%p.testimonial-header Some of our happy customers
+
+#testimonials
+  %section
+    .customer
+      %a.zencoder{ href: "#" } Zencoder<span></span>
+
+    .customer
+      %a.storenvy{ href: "#" } Storenvy<span></span>
 
 #power
   %section
