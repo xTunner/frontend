@@ -31,15 +31,17 @@
 
 // Sections
 .tour {
+  @ib-height: 160px;
+
   width: 300px;
-  min-height: 220px;
+  min-height: @ib-height;
   display: inline-block;
   vertical-align: top;
   margin: 5px;
   position: relative;
   zoom: 1;
   *display: inline;
-  _height: 220px;
+  _height: @ib-height;
 
   i {
     position: absolute;
