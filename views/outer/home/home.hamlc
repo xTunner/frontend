@@ -16,7 +16,6 @@
 
 #features
   %section
-    -# Iterate over features and print to template
     - for feature in @features
       %figure.tour
         %i{ class: "#{feature.icon}" }
@@ -26,9 +25,10 @@
 
           %p= feature.teaser
 
-%p.testimonial-header Some of our happy customers
 
 #testimonials
+  %p.testimonial-header Some of our happy customers
+
   %section
     .customer
       %a.zencoder{ href: "#" } Zencoder<span></span>
