@@ -2,19 +2,23 @@
 
 // Full width wrapper
 .testimonial-header {
+  width: 100%;
+  position: absolute;
+  top: -50px; left: 0;
   font-family: 'Lato', sans-serif;
   font-weight: bold;
   font-size: 16px;
   color: @blue;
   text-align: center;
-  margin: 0.75em 0;
 }
 
 #testimonials {
+  position: relative;
   background: @blueLighter;
   border: 1px solid @blueLight;
   border-left: none;
   border-right: none;
+  z-index: 100;
 
   // Content container
   & > section {
