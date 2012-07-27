@@ -15,9 +15,6 @@
     .screenshot CircleCI Screenshot
 
 #features
-  %header
-    %h2 Why use Circle?
-
   %section
     -# Iterate over features and print to template
     - for feature in @features
