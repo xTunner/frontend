@@ -27,7 +27,7 @@
         %figcaption
           %h2= feature.headline
 
-          %p= feature.detail
+          %p= feature.teaser
 
 %p.testimonial-header Some of our happy customers
 
