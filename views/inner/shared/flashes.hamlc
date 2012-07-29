@@ -6,5 +6,5 @@
     %span{data-bind: "html: error_message"}
     %br
     If we can help,
-    %a{href: "#", data-bind: "click: raiseIntercomDialog"}
-      contact us.
+    = succeed '.', ->
+      = HAML['contact_us_inner']()

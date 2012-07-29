@@ -8,10 +8,7 @@
 
   .doc
 
-    %h1.section
-      %a#what-happens What happens when you add a project?
-    %hr
-
+    = HAML['heading']({title: "What happens when you add a project?", hash: "what-happens"})
     %p
       Generally, pretty much what you'd expect if you were implementing this yourself:
 
@@ -52,10 +49,7 @@
         We'll send you a notification when you're done.
 
 
-    %h1.section
-      %a#look-at-code Does Circle look at my code?
-    %hr
-
+    = HAML['heading']({title: "Does Circle look at my code?", hash: "look-at-code"})
     %p
       Nobody from Circle manually looks at your code, without permission.
       We will occasionally ask permission to debug why your code isn't working, but we will never look at your code without this permission.
@@ -65,11 +59,26 @@
       goes into more detail about our safeguards to ensure the security of your code.
 
 
+    = HAML['heading']({title: "Does parallelism really work?", hash: "parallelism"})
+    %p
+      If you've ever tried a parallel testing solution, you've probably had a bad experience.
+      Most attempt to run multiple tests within the same language runtime, or within multiple processses on the same system.
 
-    %h1.section
-      %a#versions What version of X do you use?
-    %hr
+    %p
+      Circle doesn't do that.
+      We split your tests up and run them on completely different machines, which share no memory, processes or databases.
+      This fixes the vast majority of the problems that people experience with parallel testing.
 
+    %p
+      Parallelism works if tests do not share any state.
+      Occasionally tests share state by accident, for example through
+      %a{href: "/docs/common-problems#file-ordering"}
+        file-ordering bugs
+      or by using the same remote 3rd-party APIs.
+      Fortunately, both problems are relatively easy to solve.
+
+
+    = HAML['heading']({title: "What software versions do you use?", hash: "versions"})
     %p
       See our
       %a{href: "/docs/environment"} Circle Environment

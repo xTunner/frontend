@@ -1,3 +1,13 @@
+.row
+  .offset0.alert-message.block-message.error
+    %h4
+      We're working on new team-based pricing!
+      No-one liked the per-user pricing, so we're changing it to something fairer.
+      Please
+      = HAML['contact_us_inner']()
+      for access to the new pricing.
+
+
 #plans{data-bind: "with: $root.billing"}
 
   %h2

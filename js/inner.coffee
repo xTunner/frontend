@@ -105,22 +105,12 @@ class ActionLog extends Obj
     start_time: null
     end_time: null
     exit_code: null
+    status: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
   constructor: (json) ->
     super json
-
-    @status = komp =>
-      if @end_time() == null
-        "running"
-      else if @timedout()
-        "timedout"
-
-      else if (@exit_code() == null || @exit_code() == 0)
-        "success"
-      else
-        "failed"
 
     @success = komp =>
       @status() == "success"
@@ -203,6 +193,8 @@ class Build extends Obj
     stop_time: null
     steps: []
     status: null
+    lifecycle: null
+    outcome: null
     failed: null
     infrastructure_fail: null
     dont_build: null
@@ -245,12 +237,8 @@ class Build extends Obj
           false
 
     @success_style = komp =>
-      switch @status()
+      switch @outcome()
         when "success"
-          true
-        when "fixed"
-          true
-        when "deploy"
           true
         else
           false
@@ -295,6 +283,8 @@ class Build extends Obj
           "First build"
         when "retry"
           "Manual retry of build #{@retry_of()}"
+        when "ssh"
+          "Retry of build #{@retry_of()}, with SSH enabled"
         when "auto-retry"
           "Auto-retry of build #{@retry_of()}"
         when "trigger"
@@ -464,6 +454,7 @@ class Project extends Obj
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
+    heroku_deploy_user: null
     followed: null
 
   constructor: (json) ->
@@ -545,15 +536,39 @@ class Project extends Obj
         extra: @extra()
       success: (data) =>
         (new Build(data)).visit()
-
-
-
     false # dont bubble the event up
+
+  set_heroku_deploy_user: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/heroku-deploy-user"
+      success: (result) =>
+        true
+        @refresh()
+    false
+
+  clear_heroku_deploy_user: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/heroku-deploy-user"
+      success: (result) =>
+        true
+        @refresh()
+    false
+
+
+  refresh: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
+      @updateObservables(data)
 
 class User extends Obj
   observables: =>
     tokens: []
     tokenLabel: ""
+    herokuApiKeyInput: ""
+    heroku_api_key: ""
     user_key_fingerprint: ""
 
   constructor: (json) ->
@@ -613,6 +628,18 @@ class User extends Obj
         true
     false
 
+  save_heroku_key: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/user/heroku-key"
+      data: JSON.stringify {apikey: @herokuApiKeyInput()}
+      success: (result) =>
+        true
+        @heroku_api_key(@herokuApiKeyInput())
+        @herokuApiKeyInput("")
+    false
+
   save_preferences: (data, event) =>
     $.ajax
       type: "PUT"
@@ -620,6 +647,37 @@ class User extends Obj
       url: "/api/v1/user/save-preferences"
       data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
     false # dont bubble the event up
+
+
+
+class Plan extends Obj
+  observables: =>
+    parallelism: 1
+
+  constructor: ->
+    super
+
+    @actualParallelism = komp =>
+      Math.min(@parallelism(), @max_parallelism)
+
+    @total = komp =>
+      dollars = @price / 100
+      increment = Math.round(0.4 * dollars)
+      dollars + ((@actualParallelism() - 1) * increment)
+
+    @concurrencyTitle = komp =>
+      "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
+
+    @projectsTitle = komp =>
+      "#{@projects} project" + (if @projects == 1 then "" else "s")
+
+    @concurrencyContent = komp =>
+      "With the #{@name} plan, we will test #{@concurrency} pushes at once, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
+
+    @projectsContent = komp =>
+      "With the #{@name} plan, we will run your tests on #{@projects} projects."
+
+
 
 
 
@@ -644,9 +702,17 @@ class Billing extends Obj
     payer: null
     plan: null
 
+    newAvailablePlans: []
+    planSize: "small"
+    planFeatures: []
+    currentParallelism: 1
+
 
   constructor: ->
     super
+
+    @visiblePlans = komp =>
+      (p for p in @newAvailablePlans() when p.size == @planSize())
 
     @plans = komp =>
       ap = for k,v of @availablePlans()
@@ -734,14 +800,29 @@ class Billing extends Obj
     @chosenPlan(plan)
     SammyApp.setLocation "/account/plans/organization"
 
-  load: () =>
+  load: (hash="small") =>
+    @planSize(hash)
     unless @loaded
-      SammyApp.setLocation "/account/plans"
+      unless window.location.pathname == "/account/new-plans"
+        SammyApp.setLocation "/account/plans"
       @loadAvailablePlans()
+      @loadNewAvailablePlans()
+      @loadPlanFeatures()
       @loadExistingPlans()
       @loadTeamMembers()
       @loadStripe()
       @loaded = true
+
+  setParallelism: (event, ui) =>
+    @currentParallelism(ui.value)
+    for p in @newAvailablePlans()
+      p.parallelism(ui.value)
+
+  loadUIElements: =>
+    $('#slider').slider({min: 1, max: 8, slide: @setParallelism, value: @currentParallelism()})
+    $('.more-info').popover({html: true, placement: "below", live: true})
+    $("##{@planSize()}").addClass('active')
+
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -837,6 +918,14 @@ class Billing extends Obj
     $.getJSON '/api/v1/user/available-plans', (data) =>
       @availablePlans(data)
 
+  loadNewAvailablePlans: () =>
+    $.getJSON '/api/v1/user/new-available-plans', (data) =>
+      @newAvailablePlans((new Plan(d) for d in data))
+
+  loadPlanFeatures: () =>
+    $.getJSON '/api/v1/user/plan-features', (data) =>
+      @planFeatures(data)
+
 
 
 
@@ -863,6 +952,16 @@ class CircleViewModel extends Base
     observableCount += 8
 
     @setupPusher()
+
+    @intercomUserLink = komp =>
+      @build() and @build() and @projects() # make it update each time the URL changes
+      path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
+      if path
+        "https://www.intercom.io/apps/vnk4oztr/users" +
+          "?utf8=%E2%9C%93" +
+          "&filters%5B0%5D%5Battr%5D=custom_data.pr-followed" +
+          "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
+          path[1]
 
   setupPusher: () =>
     key = switch renderContext.env
@@ -995,16 +1094,21 @@ class CircleViewModel extends Base
     ko.applyBindings(VM)
 
 
-  loadAccountPage: (cx, subpage, organization) =>
+  loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace(/\//, '') # first one
     subpage = subpage.replace(/\//g, '_')
-    subpage = subpage || "notifications"
-    if subpage.indexOf("plans") == 0
-      @billing().load()
+    subpage or= "notifications"
+
+    if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
+      [subpage, hash] = subpage.split('#')
+      hash or= "small"
+      @billing().load(hash)
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
     $("##{subpage}").addClass('active')
+
+    @billing().loadUIElements()
 
 
   renderAdminPage: (subpage) =>

@@ -14,9 +14,17 @@
       %a{:href: '/account/ssh'}
         SSH
 
+    %li#ssh
+      %a{:href: '/account/heroku'}
+        Heroku
+
     %li#plans
       %a{:href: '/account/plans'}
         Plans
+
+    %li#new-plans
+      %a{:href: '/account/new-plans'}
+        New plans
 
     %li#close
       %a{:href: '/account/close'}
