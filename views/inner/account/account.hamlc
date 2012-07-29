@@ -14,7 +14,7 @@
       %a{:href: '/account/ssh'}
         SSH
 
-    %li#ssh
+    %li#heroku
       %a{:href: '/account/heroku'}
         Heroku
 

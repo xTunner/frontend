@@ -1022,6 +1022,7 @@ class CircleViewModel extends Base
       @billing().load()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
+    $("##{subpage}").addClass('active')
     ko.applyBindings(VM)
 
 
