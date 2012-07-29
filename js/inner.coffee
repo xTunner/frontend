@@ -1007,13 +1007,18 @@ class CircleViewModel extends Base
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace(/\//, '') # first one
     subpage = subpage.replace(/\//g, '_')
+    subpage = subpage.replace(/-/g, '_')
+    [subpage, hash] = subpage.split('#')
     subpage or= "notifications"
 
     if subpage.indexOf("plans") == 0
       @billing().load()
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
+    $('#subpage').html(HAML['account_' + subpage]({}))
     $("##{subpage}").addClass('active')
+    if hash?
+      $("##{hash}").addClass('active')
+      $('#hash').html(HAML['account_' + subpage + "_" + hash]({}))
     ko.applyBindings(VM)
 
 
