@@ -36,6 +36,18 @@
     .customer
       %a.storenvy{ href: "#" } Storenvy<span></span>
 
+  %blockquote{ cite: "#" }
+    %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
+
+    %footer
+      %cite Brandon Arbini, VP Eng at Zencoder.com
+
+  %blockquote{ cite: "#" }
+    %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
+
+    %footer
+      %cite Jon Crawford, CEO of Storenvy.com
+
 #power
   %section
     %header
