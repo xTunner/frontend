@@ -12,12 +12,17 @@
     %li
       %label
         %input{type: "radio", name: "email", value: "all", data-bind: "checked: basic_email_prefs"}
-        %span Send an email for every build in all your projects
+        %span Send an email for every build in all your followed projects
+
+    %li
+      %label
+        %input{type: "radio", name: "email", value: "smart", data-bind: "checked: basic_email_prefs"}
+        %span Send an email for failing builds, and once when they're fixed
 
     %li
       %label
         %input{type: "radio", name: "email", value: "none", data-bind: "checked: basic_email_prefs"}
-        %span Don't send any email
+        %span No email
   %input.btn.primary.small.span3{type: "submit",
                                  value: "Save preferences",
                                  data-bind: "click: save_preferences",
