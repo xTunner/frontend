@@ -1,26 +1,4 @@
 .row
-  .offset2
-    %ul.pills.larger
-      %li#small
-        %a{href: "#small"} Small teams
-      %li#medium
-        %a{href: "#medium"} Medium-sized teams
-      %li#large
-        %a{href: "#large"} Large teams
-      %li#enterprise
-        %a{href: "#enterprise"} Enterprise
-
-.row{data-bind: "if: planSize() == 'enterprise'"}
-  .span20
-    %h2
-      Enterprise plans available on request.
-    %p
-      Plans are available for very large teams, and for behind the-firewall installs.
-      Please
-      = HAML['contact_us_inner']()
-      for more information.
-
-.row{data-bind: "ifnot: planSize() == 'enterprise'"}
   .span20
     %table.plan
       %colgroup
@@ -32,94 +10,68 @@
       %thead
         %tr.name
           %th.title
-          / ko foreach: visiblePlans
+          / ko foreach: plans
           %th.title{data-bind: "text: name"}
           / /ko
 
       %tbody
-        %tr.reason{data-content: "All teams are different, and have different length test suites and push at different intervals. However, as a rough guide, you'll probably find this plan is a good choice for X developers. Of course, there are no limits to the number of developers, collaborators and contractors your plans supports."}
+        %tr.reason
           %td.title
-          / ko foreach: visiblePlans
-          %td
-            Suits
-            %span{data-bind: "text: suitable"}
-            full-time devs
+          / ko foreach: plans
+          %td{data-bind: "text: why"}
           / /ko
 
         %tr.price
           %td.title
-          / ko foreach: visiblePlans
+          / ko foreach: plans
           %td
-            %button.select.btn.success.span5
-              Sign up now
-              = succeed '/mo', ->
-                $
-                %span{data-bind: "text: total"}<>
+            %button.select.btn.success.span5{data-bind: "text: pricingDescription"}
           / /ko
 
 
         %tr.projects
-          %td.title Projects
-          / ko foreach: visiblePlans
+          %td.title Private Repositories
+          / ko foreach: plans
           %td.more-info{data-bind: "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}"}
           / /ko
 
         %tr.collaborators.more-info{title: "Unlimited Collaborators",
-                                    data-content: "We'll test code for all your collaborators - anyone will GitHub access to your organization's projects."}
+                                    data-content: "We'll test code for all your collaborators - anyone with GitHub access to your organization's projects."}
           %td.title Collaborators
-          / ko foreach: visiblePlans
+          / ko foreach: plans
           %td Unlimited
           / /ko
 
 
         %tr.concurrency.more-info
           %td.title Concurrent builds
-          / ko foreach: visiblePlans
+          / ko foreach: plans
           %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
           / /ko
 
         %tr.parallelism.more-info
-          %td.title Priority builds (daily)
-
-          / ko foreach: visiblePlans
-          %td.more-info{title: "Priority Builds",
-                        data-content: "If you don't always need your tests to finish immediately, you'll be able to save money by choosing a smaller plan. Non-priority tests may have to wait for other priority tests to finish during peak times."}
-            %span{data-bind: "if: priority"}
-              %span{data-bind: "text: priority"}
-
-            %span{data-bind: "ifnot: priority"}
-              All of them
+          %td.title Included parallelization
+          / ko foreach: plans
+          %td.more-info{title: "Included parallelization",
+                        data-bind: "text: minParallelismDescription, attr: {'data-content': minParallelismContent}"}
           / /ko
 
-
-        %tr.parallelism.more-info{data-content: "Your tests will split up and run in parallel, so that they can run up to 8 times faster."}
-          %td.title Parallel testing
-          / ko foreach: visiblePlans
-          %td.more-info
-            = succeed 'x', ->
-              %span{data-bind: "if: parallelism() <= max_parallelism"}<>
-                %span{data-bind: "text: parallelism"}<>
-              %span{data-bind: "if: parallelism() > max_parallelism"}<>
-                %span{data-bind: "text: max_parallelism"}<>
+        %tr.available-parallelism.more-info
+          %td.title Available parallelization
+          / ko foreach: plans
+          %td.more-info{title: "Available parallelization",
+                        data-bind: "text: maxParallelismDescription",
+                        data-content: "Automatically run your tests up to 64x faster"}
           / /ko
-
-        %tr.parallelism-slider
-          %td.title
-          %td
-          %td.more-info{data-content: "We'll split your tests up and run them in parallel, to reduce your test time by up to 8x (on larger plans). Move the slider to change the parallelism. This doesn't affect your concurrent builds.",
-                        title: "Parallel testing",
-                        colspan: 2}
-            #slider
-          %td
 
 
         / ko foreach: planFeatures
         %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}",
                                data-placement: "above"}
-          %td.title{data-bind: "text: headline"}
+          %td.title{data-bind: "text: headline, class: name"}
             Keep this here to avoid this td from eating the ko: foreach below
 
-          / ko foreach: $parent.visiblePlans
-          %td.tick
+          / ko foreach: $parent.plans
+          %td{data-bind: "css: featureAvailable($parent)"}
           / /ko
         / /ko

@@ -653,19 +653,8 @@ class User extends Obj
 
 
 class Plan extends Obj
-  observables: =>
-    parallelism: 1
-
   constructor: ->
     super
-
-    @actualParallelism = komp =>
-      Math.min(@parallelism(), @max_parallelism)
-
-    @total = komp =>
-      dollars = @price / 100
-      increment = Math.round(0.4 * dollars)
-      dollars + ((@actualParallelism() - 1) * increment)
 
     @concurrencyTitle = komp =>
       "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
@@ -674,84 +663,74 @@ class Plan extends Obj
       "#{@projects} project" + (if @projects == 1 then "" else "s")
 
     @concurrencyContent = komp =>
-      "With the #{@name} plan, we will test #{@concurrency} pushes at once, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
+      "We will test #{@concurrency} pushes at once, and queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
 
     @projectsContent = komp =>
-      "With the #{@name} plan, we will run your tests on #{@projects} projects."
+      "We'll test up to #{@projects} private repositories."
 
+    @minParallelismContent = komp =>
+      "Run yours tests at #{@min_parallelism}x the speed."
 
+    @minParallelismDescription = komp =>
+      "#{@min_parallelism}x"
 
+    @maxParallelismDescription = komp =>
+      "up to #{@max_parallelism}x"
+
+    @pricingDescription = komp =>
+      if @price?
+        "Contact us for pricing"
+      else
+        "Sign up now for $#{@price}/mo"
+
+  featureAvailable: (feature) =>
+    result =
+      tick: not feature.name? or feature.name in @features
+    if feature.name?
+      result[feature.name] = true
+    result
 
 
 
 class Billing extends Obj
   observables: =>
-    teamMembers: {} # github data; map of org->[users]
-    existingPlans: {}
-    collaborators: []
-
-    availablePlans: [] # the list of plans that a user can choose
-    existingPlanName: null
-    chosenPlan: null
-
-    selectedOrganization: null
-    existingOrganization: null
-
     stripeToken: null
     cardInfo: null
+
+    # old data
+    oldPlan: null
     oldTotal: 0
 
-    plan: null
-
-    newAvailablePlans: []
-    planSize: "small"
+    # metadata
     planFeatures: []
-    currentParallelism: 1
+
+    # new data
+    availableOrganizations: null
+    existingOrganizations: null
+    chosenPlan: null
+    plans: []
+    selectedParallelism: 1
+    selectedConcurrency: 1
 
 
   constructor: ->
     super
 
-    @visiblePlans = komp =>
-      (p for p in @newAvailablePlans() when p.size == @planSize())
-
-    @plans = komp =>
-      ap = for k,v of @availablePlans()
-        v.id = k
-        v.name_price = "#{v.name}    ($#{v.price / 100})"
-        v
-      ap.sort (a, b) ->
-        b.price - a.price # most expensive first
-      ap
-
     @defaultPlan = komp =>
-      for p in @availablePlans()
+      for p in @plans()
         if p.default?
           return p
 
     @selectedPlan = komp =>
       if @chosenPlan()?
         @chosenPlan()
-      else if @existingPlanName()? and @availablePlans()?
-        @availablePlans()[@existingPlanName()]
-      else if @defaultPlan()?
-        @defaultPlan()
+      else if @oldPlan()?
+        @oldPlan()
       else
-        @plans()[2] # always show something - pick the 3rd most expensive
-
-
-
-    @userMatrix = komp =>
-      users = {}
-      for c in @collaborators()
-        users[c.login] = c.plan().id if c.plan()?
-      users
+        @defaultPlan()
 
     @total = komp =>
       total = 0
-      for c in @collaborators()
-        total += c.plan().price if c.plan()?
-      total / 100
 
     @notPaid = komp =>
       false
@@ -760,35 +739,18 @@ class Billing extends Obj
       return "" unless @cardInfo()
       "************" + @cardInfo().last4
 
-
-    @organizations = komp =>
-      (k for k,v of @teamMembers())
-
   selectPlan: (plan) =>
     @chosenPlan(plan)
-    SammyApp.setLocation "/account/plans/organization"
 
   load: (hash="small") =>
-    @planSize(hash)
     unless @loaded
       SammyApp.setLocation "/account/plans"
-      @loadNewAvailablePlans()
+      $('.more-info').popover({html: true, placement: "below", live: true})
+      @loadPlans()
       @loadPlanFeatures()
       @loadExistingPlans()
-      @loadTeamMembers()
       @loadStripe()
-      @loaded = true
-
-  setParallelism: (event, ui) =>
-    @currentParallelism(ui.value)
-    for p in @newAvailablePlans()
-      p.parallelism(ui.value)
-
-  loadUIElements: =>
-    $('#slider').slider({min: 1, max: 8, slide: @setParallelism, value: @currentParallelism()})
-    $('.more-info').popover({html: true, placement: "below", live: true})
-    $("##{@planSize()}").addClass('active')
-
+      #      @loaded = true
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -832,7 +794,6 @@ class Billing extends Obj
       else
         @recordStripeTransaction event, response # TODO: add the plan
 
-
     # prevent the form from submitting with the default action
     return false;
 
@@ -863,29 +824,25 @@ class Billing extends Obj
     $.getScript "https://js.stripe.com/v1/"
 
   loadExistingPlans: () =>
-    $.getJSON '/api/v1/user/existing-plans', (data) =>
-      @cardInfo(data.card_info)
-      @oldTotal(data.amount / 100)
-      @existingPlans(data.team_plans)
+    # $.getJSON '/api/v1/user/existing-plans', (data) =>
+    #   @cardInfo(data.card_info)
+    #   @oldTotal(data.amount / 100)
+    #   @existingPlans(data.team_plans)
 
-      # we want the first plan/org, but iteration is the only way to get that from an object
-      for k,v of data.orgs
-        @existingOrganization(k)
-        @existingPlanName v['default']
-        break
+    #   # we want the first plan/org, but iteration is the only way to get that from an object
+    #   for k,v of data.orgs
+    #     @existingOrganization(k)
+    #     @existingPlanName v['default']
+    #     break
 
 
   loadTeamMembers: () =>
     $.getJSON '/api/v1/user/team-members', (data) =>
       @teamMembers(data)
 
-  loadAvailablePlans: () =>
-    $.getJSON '/api/v1/user/available-plans', (data) =>
-      @availablePlans(data)
-
-  loadNewAvailablePlans: () =>
-    $.getJSON '/api/v1/user/new-available-plans', (data) =>
-      @newAvailablePlans((new Plan(d) for d in data))
+  loadPlans: () =>
+    $.getJSON '/api/v1/user/plans', (data) =>
+      @plans((new Plan(d) for d in data))
 
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>
@@ -1064,16 +1021,11 @@ class CircleViewModel extends Base
     subpage = subpage.replace(/\//g, '_')
     subpage or= "notifications"
 
-    if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
-      [subpage, hash] = subpage.split('#')
-      hash or= "small"
-      @billing().load(hash)
+    if subpage.indexOf("plans") == 0
+      @billing().load()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
     ko.applyBindings(VM)
-    $("##{subpage}").addClass('active')
-
-    @billing().loadUIElements()
 
 
   renderAdminPage: (subpage) =>

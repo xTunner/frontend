@@ -6,9 +6,6 @@
    border-radius: @radius;
 }
 
-.blue-line(@width: 3px) {
-   border-bottom: @width solid #105aaf;
-}
 
 body {
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
@@ -437,33 +434,23 @@ body {
       }
    }
 
-   .price {
-      .blue-line;
-      td {
-         line-height: 1.3;
-         font-size: 19px;
-         padding: 8px 10px 15px 10px;
-      }
+   .price td {
+     line-height: 1.3;
+     font-size: 19px;
+     padding: 8px 10px 15px 10px;
+   }
+
+   .available-parallelism, .nda, .price {
+      border-bottom: 3px solid #105aaf;
    }
 
    .price > td > button {
       font-size: 18px;
    }
 
-   .parallelism-slider {
-      .blue-line;
-   }
-
-   .projects {
-   }
-
-   .concurrency {
-   }
-
-   .collaborators {
-   }
-
-   .feature {
+   #thanks {
+      margin-top: 50px;
+      text-align: center;
    }
 }
 
