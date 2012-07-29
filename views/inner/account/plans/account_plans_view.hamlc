@@ -1,0 +1,20 @@
+.row
+  %ul.pills
+    %li
+      %a Meta
+    %li
+      %a Organizations
+    %li
+      %a Change plan
+    %li
+      %a Add Speed
+
+
+.row.pricing
+  .span6.offset4
+    #thanks
+      .alert-message.block-message.info
+        %h2 Thanks!
+        %h5 We really appreciate it :)
+
+-# pills: thanks!, add things, select organizations, change plan

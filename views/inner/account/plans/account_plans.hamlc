@@ -1,18 +1,8 @@
 #new-plans{data-bind: "with: $root.billing"}
 
-  .paid{data-bind: "if: true"}
-
-    .row.pricing
-      .span6.offset4
-        #thanks
-          .alert-message.block-message.info
-            %h2 Thanks!
-            %h5 We really appreciate it :)
-
-          = surround "(", ")", ->
-            %a{href: "/account/plans/edit"}<>
-              Edit plans
+  .paid{data-bind: "if: oldPlan"}
+    = HAML['account_plans_view']()
 
 
-  .paid{data-bind: "if: notPaid"}
+  .paid{data-bind: "ifnot: oldPlan"}
     = HAML['account_plans_edit']()
