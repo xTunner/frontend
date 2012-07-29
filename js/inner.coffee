@@ -724,7 +724,10 @@ class Billing extends Obj
         @defaultPlan()
 
     @total = komp =>
-      total = 0
+      if @chosenPlan()?
+        @chosenPlan().price
+      else
+        0
 
     @notPaid = komp =>
       false
@@ -735,10 +738,11 @@ class Billing extends Obj
 
   selectPlan: (plan) =>
     @chosenPlan(plan)
+    SammyApp.setLocation("/account/plans/card")
+
 
   load: (hash="small") =>
     unless @loaded
-      SammyApp.setLocation "/account/plans"
       $('.more-info').popover({html: true, placement: "below", live: true})
       @loadPlans()
       @loadPlanFeatures()

@@ -25,7 +25,7 @@
           %td.title
           / ko foreach: plans
           %td
-            %button.select.btn.success.span5{data-bind: "text: pricingDescription, click: $parent.selectPlan($data)"}
+            %button.select.btn.success.span5{data-bind: "text: pricingDescription, click: function () { $parent.selectPlan($data) }"}
           / /ko
 
 
