@@ -14,12 +14,26 @@
 }
 
 #testimonials {
+  @quoteHeight: 280px;
+
   position: relative;
+  margin-bottom: @quoteHeight;
   background: @blueLighter;
   border: 1px solid @blueLight;
   border-left: none;
   border-right: none;
   z-index: 100;
+
+  &:after {
+    content: '';
+    width: 100%;
+    height: @quoteHeight;
+    position: absolute;
+    top: 81px;
+    left: 0;
+    #gradient > .vertical (rgba(215, 220, 227, 0.1), rgba(215, 220, 227, 0.0));
+    background-color: transparent;
+  }
 
   // Content container
   & > section {
@@ -30,6 +44,7 @@
       .column(6);
       .ir;
     }
+
 
     a {
       display: block;
@@ -50,6 +65,59 @@
     a:hover span {
       opacity: 1;
     }
+  }
+
+  // Quotes
+  & > section.quotes {
+    position: absolute;
+    height: auto;
+    top: 95px; left: 50%;
+    margin-left: -480px;
+    z-index: 1000;
+  }
+
+  blockquote {
+    width: 380px;
+    float: left;
+    margin: 10px;
+    background: white;
+    font-size: 13px;
+    .box-shadow(0 0 6px rgba(0,0,0,0.2));
+    .border-radius();
+    z-index: 100;
+
+    &:last-child {
+    }
+
+    a {
+      font-weight: bold;
+      font-style: normal;
+      color: @blueDarker;
+
+      &:first-child {
+       font-family: 'Lato', sans-serif;
+       font-size: 16px;
+     }
+
+      &:last-child {
+        color: @blueDark;
+        font-weight: normal;
+        margin-bottom: 15px;
+      }
+
+      &:hover {
+        color: @blueDarker;
+      }
+    }
+
+    p, footer {
+      padding: 0 22px;
+      color: #444;
+      line-height: 22px;
+    }
+
+    footer { margin-top: 20px }
+
   }
 
   // Logos
