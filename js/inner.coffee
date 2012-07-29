@@ -806,13 +806,11 @@ class Billing extends Obj
       type: if stripeInfo then "POST" else "PUT"
       data: JSON.stringify
         token: stripeInfo
-        orgs: @organizationMatrix()
-        team_plans: @userMatrix()
+        plan: @chosenPlan().id
+
       success: () =>
-        @payer VM.current_user().login
         @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
-
         SammyApp.setLocation "/account/plans"
     )
     false
