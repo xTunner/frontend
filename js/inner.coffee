@@ -656,14 +656,8 @@ class Plan extends Obj
   constructor: ->
     super
 
-    @concurrencyTitle = komp =>
-      "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
-
     @projectsTitle = komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
-
-    @concurrencyContent = komp =>
-      "We will test #{@concurrency} pushes at once, and queue the rest. If you need more, you can add them later at $49 per concurrent push."
 
     @projectsContent = komp =>
       "We'll test up to #{@projects} private repositories."

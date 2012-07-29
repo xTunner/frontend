@@ -43,12 +43,13 @@
           / /ko
 
 
-        %tr.concurrency.more-info
+        %tr.concurrency.more-info{data-content: "Number of pushes that will be tested at the same time. The rest will be queued. If you need more, you can buy them later at $49 per concurrent push.",
+                                  title: "Concurrent builds"}
           %td.title Concurrent builds
           / ko foreach: plans
           %td.more-info
             = succeed '*', ->
-              %span{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
+              %span{data-bind: "text: concurrency"}<>
 
           / /ko
 
