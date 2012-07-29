@@ -663,13 +663,13 @@ class Plan extends Obj
       "#{@projects} project" + (if @projects == 1 then "" else "s")
 
     @concurrencyContent = komp =>
-      "We will test #{@concurrency} pushes at once, and queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
+      "We will test #{@concurrency} pushes at once, and queue the rest. If you need more, you can add them later at $49 per concurrent push."
 
     @projectsContent = komp =>
       "We'll test up to #{@projects} private repositories."
 
     @minParallelismContent = komp =>
-      "Run yours tests at #{@min_parallelism}x the speed."
+      "Run your tests at #{@min_parallelism}x the speed."
 
     @minParallelismDescription = komp =>
       "#{@min_parallelism}x"
@@ -679,9 +679,9 @@ class Plan extends Obj
 
     @pricingDescription = komp =>
       if @price?
-        "Contact us for pricing"
-      else
         "Sign up now for $#{@price}/mo"
+      else
+        "Contact us for pricing"
 
   featureAvailable: (feature) =>
     result =

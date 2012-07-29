@@ -25,7 +25,7 @@
           %td.title
           / ko foreach: plans
           %td
-            %button.select.btn.success.span5{data-bind: "text: pricingDescription"}
+            %button.select.btn.success.span5{data-bind: "text: pricingDescription, click: $parent.selectPlan($data)"}
           / /ko
 
 
@@ -46,7 +46,10 @@
         %tr.concurrency.more-info
           %td.title Concurrent builds
           / ko foreach: plans
-          %td.more-info{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
+          %td.more-info
+            = succeed '*', ->
+              %span{data-bind: "text: concurrency, attr: {title: concurrencyTitle, 'data-content': concurrencyContent}"}
+
           / /ko
 
         %tr.parallelism.more-info
@@ -56,19 +59,17 @@
                         data-bind: "text: minParallelismDescription, attr: {'data-content': minParallelismContent}"}
           / /ko
 
-        %tr.available-parallelism.more-info
+        %tr.available-parallelism.more-info{title: "Available parallelization",
+                                            data-content: "Automatically run your tests up to 64x faster"}
           %td.title Available parallelization
           / ko foreach: plans
-          %td.more-info{title: "Available parallelization",
-                        data-bind: "text: maxParallelismDescription",
-                        data-content: "Automatically run your tests up to 64x faster"}
+          %td.more-info{data-bind: "text: maxParallelismDescription"}
           / /ko
 
 
         / ko foreach: planFeatures
-        %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}",
-                               data-placement: "above"}
-          %td.title{data-bind: "text: headline, class: name"}
+        %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"}
+          %td{data-bind: "text: headline, attr: {class: 'title ' + name}"}
             Keep this here to avoid this td from eating the ko: foreach below
 
           / ko foreach: $parent.plans
