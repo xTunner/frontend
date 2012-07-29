@@ -712,7 +712,7 @@ class Billing extends Obj
 
     @defaultPlan = komp =>
       for p in @plans()
-        if p.default?
+        if p.default
           return p
 
     @selectedPlan = komp =>
@@ -798,7 +798,6 @@ class Billing extends Obj
   stripeUpdate: (data, event) ->
     @recordStripeTransaction event, null
 
-
   recordStripeTransaction: (event, stripeInfo) =>
     $.ajax(
       url: "/api/v1/user/pay"
@@ -810,7 +809,6 @@ class Billing extends Obj
 
       success: () =>
         @cardInfo(stripeInfo.card) if stripeInfo?
-        @oldPlan(@chosenPlan())
         @oldTotal(@total())
         SammyApp.setLocation "/account/plans"
     )
@@ -821,17 +819,10 @@ class Billing extends Obj
     $.getScript "https://js.stripe.com/v1/"
 
   loadExistingPlans: () =>
-    # $.getJSON '/api/v1/user/existing-plans', (data) =>
-    #   @cardInfo(data.card_info)
-    #   @oldTotal(data.amount / 100)
-    #   @existingPlans(data.team_plans)
-
-    #   # we want the first plan/org, but iteration is the only way to get that from an object
-    #   for k,v of data.orgs
-    #     @existingOrganization(k)
-    #     @existingPlanName v['default']
-    #     break
-
+    $.getJSON '/api/v1/user/existing-plans', (data) =>
+      @cardInfo(data.card_info)
+      @oldTotal(data.amount / 100)
+      @chosenPlan(data.plan)
 
   loadTeamMembers: () =>
     $.getJSON '/api/v1/user/team-members', (data) =>

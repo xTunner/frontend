@@ -1,8 +1,8 @@
 #new-plans{data-bind: "with: $root.billing"}
 
-  .paid{data-bind: "if: oldPlan"}
+  .paid{data-bind: "if: oldTotal"}
     = HAML['account_plans_view']()
 
 
-  .paid{data-bind: "ifnot: oldPlan"}
+  .paid{data-bind: "ifnot: oldTotal"}
     = HAML['account_plans_edit']()
