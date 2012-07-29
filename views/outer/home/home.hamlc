@@ -42,16 +42,16 @@
 
       %footer
         %cite 
-          %a{ href: "http://zencoder.com/company/" } Brandon Arbini VP Eng at
-          %a{ href: "http://zencoder.com/" } Zencoder.com
+          %a{ href: "http://zencoder.com/company/" } Brandon Arbini
+          %a{ href: "http://zencoder.com/" } VP Eng at Zencoder.com
 
     %blockquote{ cite: "#" }
       %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
 
       %footer
         %cite
-          %a{ href: "http://www.storenvy.com/about/team/ "} Jon Crawford CEO of
-          %a{ href: "http://www.storenvy.com/" } Storenvy.com
+          %a{ href: "http://www.storenvy.com/about/team/ "} Jon Crawford
+          %a{ href: "http://www.storenvy.com/" } CEO of Storenvy.com
 
 #power
   %section
