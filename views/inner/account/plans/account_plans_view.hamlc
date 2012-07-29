@@ -9,15 +9,7 @@
     %li#edit
       %a{href: "/account/plans#edit"} Change plan
     %li#card
-      %a{href: "/account/plans#card"} See card
+      %a{href: "/account/plans#card"} Credit card
 
 
 #hash
-  .row.pricing
-    .span6.offset4
-      #thanks
-        .alert-message.block-message.info
-          %h2 Thanks!
-          %h5 We really appreciate it :)
-
--# pills: thanks!, add things, select organizations, change plan

@@ -738,7 +738,7 @@ class Billing extends Obj
 
   selectPlan: (plan) =>
     @chosenPlan(plan)
-    SammyApp.setLocation("/account/plans/card")
+    SammyApp.setLocation("/account/plans#card")
 
 
   load: (hash="small") =>
@@ -1010,13 +1010,14 @@ class CircleViewModel extends Base
     subpage = subpage.replace(/-/g, '_')
     [subpage, hash] = subpage.split('#')
     subpage or= "notifications"
+    hash or= "meta"
 
     if subpage.indexOf("plans") == 0
       @billing().load()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage]({}))
     $("##{subpage}").addClass('active')
-    if hash?
+    if $('#hash').length
       $("##{hash}").addClass('active')
       $('#hash').html(HAML['account_' + subpage + "_" + hash]({}))
     ko.applyBindings(VM)
