@@ -810,6 +810,7 @@ class Billing extends Obj
 
       success: () =>
         @cardInfo(stripeInfo.card) if stripeInfo?
+        @oldPlan(@chosenPlan())
         @oldTotal(@total())
         SammyApp.setLocation "/account/plans"
     )
