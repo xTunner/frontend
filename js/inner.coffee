@@ -807,8 +807,8 @@ class Billing extends Obj
       @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
       @chosenPlan(data.plan)
-      @concurrency(data.concurrency)
-      @parallelism(data.parallelism)
+      @concurrency(data.concurrency or 1)
+      @parallelism(data.parallelism or 1)
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
@@ -836,6 +836,8 @@ class Billing extends Obj
       data: JSON.stringify
         parallelism: @parallelism()
         concurrency: @concurrency()
+      success: (data) =>
+        @oldTotal(@total())
 
 
   loadPlans: () =>

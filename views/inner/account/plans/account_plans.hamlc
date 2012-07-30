@@ -4,5 +4,10 @@
     = HAML['account_plans_view']()
 
 
-  .paid{data-bind: "ifnot: oldTotal"}
-    = HAML['account_plans_edit']()
+  .not-paid{data-bind: "ifnot: oldTotal"}
+
+    %div{data-bind: "ifnot: chosenPlan"}
+      = HAML['account_plans_edit']()
+
+    %div{data-bind: "if: chosenPlan"}
+      = HAML['account_plans_card']()
