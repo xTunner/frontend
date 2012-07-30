@@ -732,7 +732,7 @@ class Billing extends Obj
       @loadExistingPlans()
       @loadOrganizations()
       @loadStripe()
-      #      @loaded = true
+      @loaded = true
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
