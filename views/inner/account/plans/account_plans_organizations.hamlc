@@ -21,8 +21,8 @@
                   %span{data-bind: "text: name"}
 
 
-    %input.btn.primary.large{data-bind: "click: saveOrganizations",
+    %input.btn.primary.span5{data-bind: "click: saveOrganizations",
                              type: "submit",
-                             value: "Save",
+                             value: "Run tests for these organizations",
                              data-loading-text: "Saving...",
                              data-success-text: "Saved"}
