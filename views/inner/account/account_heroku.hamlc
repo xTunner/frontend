@@ -1,7 +1,10 @@
 %h2 Heroku API key
 
 %p
-  Add your Heroku API Key here, to set up deployment with Heroku.
+  Add your
+  %a{href: "https://api.heroku.com/account"}
+    Heroku API Key
+  to set up deployment with Heroku.
 
 %h3 Existing key
 

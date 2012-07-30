@@ -193,6 +193,8 @@ class Build extends Obj
     stop_time: null
     steps: []
     status: null
+    lifecycle: null
+    outcome: null
     failed: null
     infrastructure_fail: null
     dont_build: null
@@ -235,12 +237,8 @@ class Build extends Obj
           false
 
     @success_style = komp =>
-      switch @status()
+      switch @outcome()
         when "success"
-          true
-        when "fixed"
-          true
-        when "deploy"
           true
         else
           false

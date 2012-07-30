@@ -480,6 +480,58 @@
       to see an example.
       (Note: this API is unstable and is changing very soon).
 
+    = HAML['heading']({title: "Deployment", hash: "deployment"})
+
+    %p
+      You can run commands at the end of the build, to deploy to
+      staging or production. Deployment commands are only run if the
+      build was successful.
+
+
+    %h5 Example 1:
+    %pre
+      %code.bash<>
+        :preserves
+          deployment:
+            production:
+              branch: production
+              commands:
+                - ./deploy_prod.sh
+            staging:
+              branch: master
+              commands:
+                - ./deploy_staging.sh
+
+
+    %p
+      Deployment consists of multiple sections. The section must
+      contain a field named branch. There can be multiple sections,
+      and the first one that matches the branch being built will be
+      run. The deployment commands will only be run if the build is
+      green.
+
+    %h5 Heroku:
+
+    %pre
+      %code.bash<>
+        :preserves
+          deployment:
+            staging:
+              branch: master
+              heroku:
+                appname: foo-bar-123
+
+    %p
+      There is additional support for deploying to Heroku. specify
+      the name of the app you'd like to 'git push' to. Then, visit the
+      web UI to edit the project, and associate an SSH key with your
+      user account.
+
+    %p
+      We've only completed our first iteration of deployment. If we
+      are currently not meeting your deployment needs, please let us
+      know!
+
     = HAML['heading']({title: "Under construction", hash: "construction"})
 
     %p
