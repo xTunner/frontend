@@ -697,10 +697,10 @@ class Billing extends Obj
 
     # metadata
     planFeatures: []
+    loadingOrganizations: false
 
     # new data
-    availableOrganizations: null
-    existingOrganizations: null
+    organizations: []
     chosenPlan: null
     plans: []
     selectedParallelism: 1
@@ -747,6 +747,7 @@ class Billing extends Obj
       @loadPlans()
       @loadPlanFeatures()
       @loadExistingPlans()
+      @loadOrganizations()
       @loadStripe()
       #      @loaded = true
 
@@ -824,9 +825,23 @@ class Billing extends Obj
       @oldTotal(data.amount / 100)
       @chosenPlan(data.plan)
 
-  loadTeamMembers: () =>
-    $.getJSON '/api/v1/user/team-members', (data) =>
-      @teamMembers(data)
+  loadOrganizations: () =>
+    @loadingOrganizations(true)
+    $.getJSON '/api/v1/user/organizations', (data) =>
+      @loadingOrganizations(false)
+      @organizations(({name: k, value: v} for k,v of data))
+
+  saveOrganizations: (data, event) =>
+    orgs = {}
+    for o in @organizations()
+      orgs[o.name] = o.value
+
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/user/organizations"
+      data: JSON.stringify
+        organizations: orgs
 
   loadPlans: () =>
     $.getJSON '/api/v1/user/plans', (data) =>
