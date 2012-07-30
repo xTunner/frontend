@@ -703,34 +703,20 @@ class Billing extends Obj
     organizations: []
     chosenPlan: null
     plans: []
-    selectedParallelism: 1
-    selectedConcurrency: 1
-
+    parallelism: "1"
+    concurrency: "1"
 
   constructor: ->
     super
 
-    @defaultPlan = komp =>
-      for p in @plans()
-        if p.default
-          return p
-
-    @selectedPlan = komp =>
-      if @chosenPlan()?
-        @chosenPlan()
-      else if @oldPlan()?
-        @oldPlan()
-      else
-        @defaultPlan()
-
     @total = komp =>
       if @chosenPlan()?
-        @chosenPlan().price
+        p = parseInt(@parallelism()) - @chosenPlan().min_parallelism
+        p = Math.max(p, 0)
+        c = parseInt(@concurrency()) - 1
+        @chosenPlan().price + (c * 49) + (p * 99)
       else
         0
-
-    @notPaid = komp =>
-      false
 
     @savedCardNumber = komp =>
       return "" unless @cardInfo()
@@ -739,7 +725,6 @@ class Billing extends Obj
   selectPlan: (plan) =>
     @chosenPlan(plan)
     SammyApp.setLocation("/account/plans#card")
-
 
   load: (hash="small") =>
     unless @loaded
@@ -824,6 +809,8 @@ class Billing extends Obj
       @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
       @chosenPlan(data.plan)
+      @concurrency(data.concurrency)
+      @parallelism(data.parallelism)
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
@@ -842,6 +829,16 @@ class Billing extends Obj
       url: "/api/v1/user/organizations"
       data: JSON.stringify
         organizations: orgs
+
+  saveParallelism: (data, event) =>
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/user/parallelism"
+      data: JSON.stringify
+        parallelism: @parallelism()
+        concurrency: @concurrency()
+
 
   loadPlans: () =>
     $.getJSON '/api/v1/user/plans', (data) =>
