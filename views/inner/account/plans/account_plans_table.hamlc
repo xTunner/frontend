@@ -60,7 +60,7 @@
                         data-bind: "text: minParallelismDescription, attr: {'data-content': minParallelismContent}"}
           / /ko
 
-        %tr.available-parallelism.more-info{title: "Available parallelization",
+        %tr.available-parallelism.more-info{title: "Automatic parallelization",
                                             data-content: "Automatically run your tests up to 64x faster"}
           %td.title Available parallelization
           / ko foreach: plans
