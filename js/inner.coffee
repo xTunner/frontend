@@ -694,6 +694,7 @@ class Billing extends Obj
     oldTotal: 0
 
     # metadata
+    wizardStep: 1
     planFeatures: []
     loadingOrganizations: false
 
@@ -720,9 +721,12 @@ class Billing extends Obj
       return "" unless @cardInfo()
       "************" + @cardInfo().last4
 
+    @wizardCompleted = komp =>
+      @wizardStep() > 4
+
   selectPlan: (plan) =>
     @chosenPlan(plan)
-    SammyApp.setLocation("/account/plans#card")
+    @advanceWizard(2)
 
   load: (hash="small") =>
     unless @loaded
@@ -794,9 +798,12 @@ class Billing extends Obj
       success: () =>
         @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
-        SammyApp.setLocation "/account/plans"
+        @advanceWizard(3)
     )
     false
+
+  advanceWizard: (new_step) =>
+    @wizardStep(Math.min(new_step, @wizardStep() + 1))
 
 
   loadStripe: () =>
@@ -827,6 +834,8 @@ class Billing extends Obj
       url: "/api/v1/user/organizations"
       data: JSON.stringify
         organizations: orgs
+      success: =>
+        @advanceWizard(4)
 
   saveParallelism: (data, event) =>
     $.ajax
@@ -838,6 +847,7 @@ class Billing extends Obj
         concurrency: @concurrency()
       success: (data) =>
         @oldTotal(@total())
+        @advanceWizard(5)
 
 
   loadPlans: () =>

@@ -1,12 +1,5 @@
 #new-plans{data-bind: "with: $root.billing"}
 
-  -#.row.move-up
-    .offset7.span8.alert-message.block-message.warning
-      Don't have the company card?
-      Send this invite link to a card holder:
-      %a{href: "https://circleci.com/?join=id-like-to-pay-please"}
-        https://circleci.com/?join=id-like-to-pay-please
-
   = HAML['account_plans_table']()
 
   = HAML['account_plans_common_questions']()

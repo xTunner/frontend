@@ -1,13 +1,7 @@
 #new-plans{data-bind: "with: $root.billing"}
 
-  .paid{data-bind: "if: oldTotal"}
+  .paid{data-bind: "if: wizardCompleted"}
     = HAML['account_plans_view']()
 
-
-  .not-paid{data-bind: "ifnot: oldTotal"}
-
-    %div{data-bind: "ifnot: chosenPlan"}
-      = HAML['account_plans_edit']()
-
-    %div{data-bind: "if: chosenPlan"}
-      = HAML['account_plans_card']()
+  .not-paid{data-bind: "ifnot: wizardCompleted"}
+    = HAML['account_plans_wizard']()
