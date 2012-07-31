@@ -1,6 +1,6 @@
 #teaser
   %section{ role: 'main' }
-    %h2#mainHeading{style: "display: none"} Continuous Integration &nbsp; for Web Apps
+    %h2#mainHeading{style: "display: none"} Continuous Integration for Web Apps
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
     %a.authGithub.kissAuthGithub#join{ href: @githubAuthURL, title: 'Join using GitHub' }
@@ -15,24 +15,43 @@
     .screenshot CircleCI Screenshot
 
 #features
-  %header
-    %h2 Features
-    %p Making testing this easy took work
+  %section
+    - for feature in @features
+      %figure.tour
+        %i{ class: "#{feature.icon}" }
 
-  -# Iterate over features and print to template
-  - for feature in @features
-    %section
-      %figure.tour{ class: "#{feature.class}" }
         %figcaption
           %h2= feature.headline
 
-          %p= feature.tagline
+          %p= feature.teaser
 
-          %ul
-            - for bullet in feature.bullets
-              %li= bullet
 
-        %div
+#testimonials
+  %p.testimonial-header Some of our happy customers
+
+  %section
+    .customer
+      %a.zencoder{ href: "#" } Zencoder<span></span>
+
+    .customer
+      %a.storenvy{ href: "#" } Storenvy<span></span>
+
+  %section.quotes
+    %blockquote{ cite: "#" }
+      %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
+
+      %footer
+        %cite 
+          %a{ href: "http://zencoder.com/company/" } Brandon Arbini
+          %a{ href: "http://zencoder.com/" } VP Eng at Zencoder.com
+
+    %blockquote{ cite: "#" }
+      %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
+
+      %footer
+        %cite
+          %a{ href: "http://www.storenvy.com/about/team/ "} Jon Crawford
+          %a{ href: "http://www.storenvy.com/" } CEO of Storenvy.com
 
 #power
   %section

@@ -2,12 +2,9 @@
 
 // Full width wrapper
 #head {
-  height: 88px;
-  #gradient > .vertical(#FFF, #EEE);
+  height: 65px;
   border-top: 5px solid #105AAF;
-
-  // No gradients fallback
-  .no-cssgradients & { background: url("@{imgPath}/blocks/header/header-bg-repeat.png") repeat-x; }
+  background: url("@{imgPath}/blocks/header/header-bg.png") repeat-x;
 
   // Content container
   & > header {
@@ -17,7 +14,7 @@
   // Logo
   #circle {
     .column(3);
-    margin: 20px 0;
+    margin: 9px 0;
 
     a {
       .ir;
@@ -32,7 +29,7 @@
   nav {
     .column(6);
     .push(3);
-    margin-top: 36px;
+    margin-top: 25px;
     float: right;
 
     ul {

@@ -1,0 +1,153 @@
+// Testimonials -------------------------------------------------------------
+
+// Full width wrapper
+.testimonial-header {
+  width: 100%;
+  position: absolute;
+  top: -55px; left: 0;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  color: @blue;
+  text-align: center;
+  text-shadow: -1px 1px 0 white;
+}
+
+#testimonials {
+  @quoteHeight: 290px;
+
+  position: relative;
+  margin-bottom: @quoteHeight;
+  background: @blueLighter;
+  border: 1px solid @blueLight;
+  border-left: none;
+  border-right: none;
+  z-index: 100;
+
+  &:after {
+    content: '';
+    width: 100%;
+    height: @quoteHeight;
+    position: absolute;
+    top: 81px;
+    left: 0;
+    #gradient > .vertical (rgba(215, 220, 227, 0.1), rgba(215, 220, 227, 0.0));
+    background-color: transparent;
+  }
+
+  // Content container
+  & > section {
+    .container;
+    height: 80px;
+
+    .customer {
+      .column(6);
+      .ir;
+    }
+
+
+    a {
+      display: block;
+      position: relative;
+      background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
+
+      span {
+        content: '';
+        display: block;
+        background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        opacity: 0;
+        .transition(opacity 0.5s);
+      }
+    }
+
+    a:hover span {
+      opacity: 1;
+    }
+  }
+
+  // Quotes
+  & > section.quotes {
+    position: absolute;
+    height: auto;
+    top: 80px; left: 50%;
+    margin-left: -480px;
+    z-index: 1000;
+  }
+
+  blockquote {
+    position: relative;
+    width: 380px;
+    float: left;
+    margin: 30px 10px 10px 68px;
+    background: white;
+    font-size: 13px;
+    .box-shadow(0 0 6px rgba(0,0,0,0.2));
+    .border-radius();
+    z-index: 500;
+
+    &:last-child {
+      margin-left: 48px;
+    }
+
+    a {
+      font-weight: bold;
+      font-style: normal;
+      color: @blueDarker;
+
+      &:first-child {
+       font-family: 'Lato', sans-serif;
+       font-size: 16px;
+     }
+
+      &:last-child {
+        color: @blueDark;
+        font-weight: normal;
+        margin-bottom: 15px;
+      }
+
+      &:hover {
+        color: @blueDarker;
+      }
+    }
+
+    p, footer {
+      padding: 0 22px;
+      color: #444;
+      line-height: 22px;
+    }
+
+    footer { margin-top: 20px }
+
+  }
+
+  // Logos
+  .zencoder {
+    background-position: 0 -503px;
+    margin-top: 20px;
+    margin-left: 140px;
+    width: 249px;
+    height: 35px;
+
+    span {
+      background-position: 0 -443px;
+      width: 249px;
+      height: 35px;
+    }
+  }
+
+  .storenvy {
+    background-position: -262px -506px;
+    margin-top: 15px;
+    margin-left: 80px;
+    width: 177px;
+    height: 59px;
+
+    span {
+      background-position: -262px -446px;
+      width: 177px;
+      height: 59px;
+    }
+  }
+}

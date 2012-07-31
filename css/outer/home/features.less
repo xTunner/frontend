@@ -4,112 +4,76 @@
 #features {
   position: relative;
   z-index: 1;
-  background-color: #efefef;
-  background-repeat: repeat-x;
-  background-position: top left;
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), #efefef;
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -webkit-gradient(linear, left top, left bottom, from(rgb(239, 239, 239)), to(rgb(192, 201, 212)));
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -webkit-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -moz-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -o-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), -ms-linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  background-image: url("@{imgPath}/outer/home/feature-bg-repeat.png"), linear-gradient(top, rgb(239, 239, 239), rgb(192, 201, 212));
-  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#efefef', EndColorStr='#c0c9d4');
+  background: url("@{imgPath}/outer/bg_pattern.png");
 
   // Header
   & > header {
     .container;
-    padding: 70px 0 50px 0;
+    padding: 10px 0;
     text-shadow: 0 1px 0 rgba(255,255,255,1);
-    text-align: center;
-    .box-shadow(0 35px 30px -30px rgba(0,0,0,0.1));
 
     h2 {
-      font-size: 60px;
-      margin: 0;
+      font-size: 42px;
+      text-align: center;
+      color: @blueDarker;
     }
 
-    p { margin: 0 }
+    p {
+
+    }
   } // /Header
 
   & > section {
     .container;
+    padding-top: 35px;
+    padding-bottom: 45px;
   }
 }
 
 // Sections
 .tour {
-  padding: 40px 0;
-  text-shadow: 0 1px 0 rgba(255,255,255,1);
-  background: url("@{imgPath}/outer/home/cc-tour-divider.gif") bottom repeat-x;
+  @ib-height: 160px;
 
-  &.profit { background: none; }
-
+  width: 280px;
+  min-height: @ib-height;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 35px;
   position: relative;
-  .clearfix;
+  text-shadow: 0 1px 0 white;
+  zoom: 1;
+  *display: inline;
+  _height: @ib-height;
 
-  // Tour images
-  & > div {
-    background-image: url("@{imgPath}/outer/home/features_sprite.png");
-    background-repeat: no-repeat;
-    .box-shadow(inset 0px 0px 15px 0 rgba(0,0,0,.5));
-    border: 1px solid #989898;
-    .border-radius(4px);
-    .size(240px, 440px);
+  i {
     position: absolute;
-    right: 0;
+    font-size: 35px;
+    top: -4px;
+    left: -25px;
+    color: #2F5F9E;
+    z-index: 1;
+
+    .icon-beaker    { left: -23px; }
+    .icon-bolt      { left: -19px; }
+    .icon-bullhorn  { left: -24px; }
   }
-
-  &.magic div     { background-position: 0 0;      }
-  &.profit div    { background-position: 0 -240px; }
-  &.authorize div { background-position: 0 -480px; }
-
-  &.profit { margin-bottom: 25px; }
 
   // Tour text
   figcaption {
-    .column(6.4);
+    padding-left: 20px;
+    position: relative;
+    z-index: 10;
 
     h2 {
-      font-size: 45px;
+      color: @blueDark;
       margin: 0;
     }
 
-    h3 {
-      margin: 0;
-      font-size: 25px;
-      font-family: "Myriad Semi", sans-serif;
-      font-weight: normal;
-    }
-
-    li {
-      margin: 0 0 15px 0;
-      font-size: 13px;
-    }
-
-    // Use a sprite for good browsers
-    .generatedcontent & ul {
-      padding-left: 20px;
-
-      li {
-        list-style: none;
-        padding-left: 15px;
-        position: relative;
-      }
-
-      li:before {
-        content: '';
-        display: block;
-        background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat -424px -5px;
-        .size(13px, 14px);
-        position: absolute;
-        left: -5px;
-      }
-    }
-
-    // Load bullet.png for crap browsers
-    .no-generatedcontent ul {
-      list-style-image: url("@{imgPath}/outer/home/bullets.png");
+    p {
+      margin: 0.75em 0;
+      font-size: 14px;
+      line-height: 20px;
+      color: #444;
     }
 
   } // /Tour text

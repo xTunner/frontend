@@ -3,14 +3,15 @@
 // Full width wrapper
 #teaser {
   background: url("@{imgPath}/outer/home/teaser_bg_pattern.png");
-  // .box-shadow( inset 0 8px 25px -6px rgba(0,0,0,.5) );
-  // #gradient > .vertical(rgb(11, 90, 175), rgb(8, 55, 107));
+  -webkit-box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
 
   // Content container
   & > section {
     .container;
     position: relative;
-    height: 518px;
+    height: 455px;
     color: white;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55);
   }
@@ -23,7 +24,7 @@
     height: 431px;
     position: absolute;
     bottom: 0;
-    left: 21em;
+    left: 30.5em;
     background: url("@{imgPath}/outer/home/teaser_ss.png") no-repeat;
   }
 
@@ -37,12 +38,12 @@
   // Typography
   h2 {
     font-size: 36px;
-    margin-top: 88px;
+    margin-top: 40px;
   }
 
   h3 {
     margin-top: 1em;
-    font: 400 20px/30px "Open Sans", sans-serif;
+    font: 400 18px/30px "Open Sans", sans-serif;
   }
 
   p {
@@ -53,22 +54,22 @@
 
   .authGithub {
     top: 31px;
-    left: 20px;
+    left: 32px;
 
     &:active { top: 34px; }
   }
 
   // Privacy policy
   .footnote {
-    width: 249px;
-    margin: 45px 0 0 50px;
+    width: 280px;
+    margin: 50px 0 0 45px;
     font-size: 13px;
     text-align: center;
 
     span {
       display: block;
-      margin-bottom: 8px;
-      font-size: 16px;
+      margin-bottom: 12px;
+      font-size: 18px;
     }
 
     a {
