@@ -591,7 +591,10 @@ class User extends Obj
       not @paid and @days_left_in_trial >= 0
 
     @trial_over = komp =>
-      not @paid and @days_left_in_trial < 0
+      #not @paid and @days_left_in_trial < 0
+      # need to figure "paid" out before we really show this
+      false
+
 
 
   create_token: (data, event) =>
