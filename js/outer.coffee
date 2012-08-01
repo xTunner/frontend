@@ -133,16 +133,17 @@ circle = $.sammy "body", ->
       $.getScript "/assets/js/vendor/jquery.placeholder.js", =>
         $("input, textarea").placeholder()
 
-  waypoints = =>
+  waypoints = (trigger) =>
     if !$.waypoints?
       $.getScript "/assets/js/vendor/waypoints-1.1.7.min.js", =>
-
-    else
-
+        trigger()
 
   home.lib = =>
     placeholder()
-    waypoints()
+    trigger = =>
+      $("#testimonials").waypoint ->
+        console.log("test")
+    waypoints(trigger)
 
   about.lib = placeholder
   docs.lib = highlight
