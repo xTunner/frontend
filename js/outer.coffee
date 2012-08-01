@@ -143,7 +143,7 @@ circle = $.sammy "body", ->
       $("#testimonials").waypoint ((event, direction) ->
         $(".customer a").addClass("scrolled")
       ),
-        offset: "100%"
+        offset: "80%"
             
     waypoints(trigger)
     placeholder()
