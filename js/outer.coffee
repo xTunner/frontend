@@ -139,11 +139,14 @@ circle = $.sammy "body", ->
         trigger()
 
   home.lib = =>
-    placeholder()
     trigger = =>
-      $("#testimonials").waypoint ->
-        console.log("test")
+      $("#testimonials").waypoint ((event, direction) ->
+        $(".customer a").addClass("scrolled")
+      ),
+        offset: "100%"
+            
     waypoints(trigger)
+    placeholder()
 
   about.lib = placeholder
   docs.lib = highlight
