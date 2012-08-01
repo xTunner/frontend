@@ -806,7 +806,7 @@ class Billing extends Obj
     false
 
   advanceWizard: (new_step) =>
-    @wizardStep(Math.min(new_step, @wizardStep() + 1))
+    @wizardStep(Math.max(new_step, @wizardStep() + 1))
 
 
   loadStripe: () =>
