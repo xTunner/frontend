@@ -6,7 +6,6 @@
   "./vendor/bootstrap-dropdown-1.4.0.js"
   "./vendor/bootstrap-twipsy-1.4.0.js"
   "./vendor/bootstrap-popover-1.4.0.js"
-  "./vendor/timeago-0.0.2.js"
   "./libs/circle/time.coffee"
   "../views/inner/"
   "./inner.coffee"
