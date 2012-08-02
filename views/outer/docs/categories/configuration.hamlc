@@ -504,7 +504,14 @@
       run. The deployment commands will only be run if the build is
       green.
 
-    %h5 Heroku:
+    %h3 Heroku
+
+    %p
+      We also have first-class support for deploying to Heroku.
+      Specify the add you'd like to
+      %code git push
+      to under <code>appname</code>.
+      Upon a successful build, we'll automatically deploy to the app in the section which matches the push, if there is one.
 
     %pre
       %code.bash<>
@@ -516,15 +523,14 @@
                 appname: foo-bar-123
 
     %p
-      There is additional support for deploying to Heroku. specify
-      the name of the app you'd like to 'git push' to. Then, visit the
-      web UI to edit the project, and associate an SSH key with your
-      user account.
+      Using our deployment to Heroku requires one extra step.
+      Due to Heroku's architecture and security model, we need to deploy as a particular user.
+      A member of your project, possibly you, will need to register as that user.
+      You can do this on your project's settings page on Circle.
 
     %p
-      We've only completed our first iteration of deployment. If we
-      are currently not meeting your deployment needs, please let us
-      know!
+      We've only completed our first iteration of deployment.
+      If we are currently not meeting your deployment needs, please let us know!
 
     = HAML['heading']({title: "Under construction", hash: "construction"})
 
