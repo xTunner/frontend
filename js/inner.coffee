@@ -105,6 +105,7 @@ class ActionLog extends Obj
     start_time: null
     end_time: null
     exit_code: null
+    run_time_millis: null
     status: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
@@ -149,7 +150,8 @@ class ActionLog extends Obj
     @start_to_end_string = komp =>
       "#{@start_time()} to #{@end_time()}"
 
-    @duration = Circle.time.as_duration(@run_time_millis)
+    @duration = komp =>
+      Circle.time.as_duration(@run_time_millis())
 
   toggle_minimize: =>
     if not @user_minimized?
@@ -182,6 +184,7 @@ class Step extends Obj
 class Build extends Obj
   observables: =>
     messages: []
+    build_time_millis: null
     committer_name: null
     committer_email: null
     committer_date: null
@@ -225,6 +228,7 @@ class Build extends Obj
           true
         else
           false
+
     @warning_style = komp =>
       switch @status()
         when "infrastructure_fail"
@@ -306,8 +310,8 @@ class Build extends Obj
       @previous()? and @previous().build_num
 
     @duration = komp () =>
-      if @build_time_millis
-        Circle.time.as_duration(@build_time_millis)
+      if @build_time_millis()?
+        Circle.time.as_duration(@build_time_millis())
       else
         "still running"
 
