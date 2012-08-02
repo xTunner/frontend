@@ -1,0 +1,2 @@
+%article
+  = HAML['article_title']({icon: "icon-repeat", title: "Setting your build up manually", lastUpdated: "Aug 1, 2012", subtitle: "Step by step instructions"})

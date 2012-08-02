@@ -1,10 +1,5 @@
 %article
-  .title
-    %h1 FAQ
-      %i.icon-list-alt
-    %p Last Updated: May 28, 2012
-    %h4 Frequently asked questions, and questions which should be asked more frequently
-    %hr
+  = HAML['article_title']({icon: "icon-list-alt", title: 'FAQ', lastUpdated: "Aug 1, 2012", subtitle: "Frequently asked questions, and questions which should be asked more frequently"})
 
   .doc
 

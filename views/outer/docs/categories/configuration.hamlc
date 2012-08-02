@@ -1,11 +1,5 @@
 %article
-  .title
-    %h1 Configuring Circle
-      %i.icon-list-alt
-    %p Last Updated: June 18, 2012
-    %h4 Tweak almost any setting you need
-    %hr
-
+  = HAML['article_title']({icon: "icon-list-alt", title: 'Configuring Circle', lastUpdated: "Aug 1, 2012", subtitle: "Tweak almost any setting you need"})
 
   .doc
     = HAML['heading']({title: "Overview", hash: "overview"})
