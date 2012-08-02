@@ -819,6 +819,8 @@ class Billing extends Obj
       @chosenPlan(data.plan)
       @concurrency(data.concurrency or 1)
       @parallelism(data.parallelism or 1)
+      if @chosenPlan
+        @advanceWizard(5)
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
