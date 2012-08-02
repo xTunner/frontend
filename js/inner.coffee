@@ -588,7 +588,8 @@ class User extends Obj
       result
 
     @in_trial = komp =>
-      not @paid and @days_left_in_trial >= 0
+      # not @paid and @days_left_in_trial >= 0
+      false
 
     @trial_over = komp =>
       #not @paid and @days_left_in_trial < 0
