@@ -141,7 +141,7 @@ circle = $.sammy "body", ->
   home.lib = =>
     trigger = =>
       $("#testimonials").waypoint ((event, direction) ->
-        $(".customer a").addClass("scrolled")
+        $("#testimonials").addClass("scrolled")
       ),
         offset: "80%"
             
