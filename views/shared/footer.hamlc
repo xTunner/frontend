@@ -26,8 +26,8 @@
           %a{ href: '/docs', title: 'Documentation' }
             Docs
         %li
-          %a{ class: 'ficon tw', href: 'https://twitter.com/circleci' }
+          %a.ficon.tw{ href: 'https://twitter.com/circleci' }
             Twitter
         %li
-          %a{ class: 'ficon em', href: 'mailto:sayhi@circleci.com' }
+          %a.ficon.em{ href: 'mailto:sayhi@circleci.com' }
             Email

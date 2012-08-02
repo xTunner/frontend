@@ -74,10 +74,10 @@
           %a{ href: 'mailto:sayhi@circleci.com' } sayhi@circleci.com
 
         %li.twitter
-          %a{ href='https://twitter.com/circleci' } @circleci
+          %a{ href: 'https://twitter.com/circleci' } @circleci
 
         %li.telephone (415) 341 - 2432
 
         %li.address
-          %a{ href='http://g.co/maps/p29yr', target: '_blank' }
+          %a{ href: 'http://g.co/maps/p29yr', target: '_blank' }
             149 9th Street<br>San Francisco CA 94103
