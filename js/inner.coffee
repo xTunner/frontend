@@ -171,6 +171,8 @@ class ActionLog extends Obj
   appendLog: (json) =>
     @out.push(json.out)
 
+  report_build: () =>
+    VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
 class Step extends Obj
 
@@ -363,6 +365,7 @@ class Build extends Obj
         build_num: @build_num
     event.stopPropagation()
 
+
   visit: () =>
     SammyApp.setLocation @url()
 
@@ -426,7 +429,6 @@ class Build extends Obj
       success: (data) =>
         (new Build(data)).visit()
     false
-
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')

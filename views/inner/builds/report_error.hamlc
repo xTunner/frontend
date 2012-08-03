@@ -1,29 +1,29 @@
 %span{data-bind: "if: failed() && !infrastructure_fail()"}
   .row
-    .offset2.span16
+    .offset2.span12
 
       %span{data-bind: "if: messages.length"}
-        .alert-message.warning
+        .alert.alert-danger
           %span{data-bind: "foreach: messages"}
             %span{data-bind: "html: message"}
 
-      .alert-message.warning
+      .alert.alert-danger
         Uh-oh, that didn't work. If you expected it to, read about
         %a{href: "/docs/common-problems" } common causes
         of test failure.
 
         If you believe this test failure is Circle's fault,
         please
-        %span.label.important#white{data-bind: "click: $parent.report_build",
-                                    title: "Report an error in how Circle ran this build"}
+        %span.label.label-important#white{data-bind: "click: report_build",
+                                          title: "Report an error in how Circle ran this build"}
           %a{href: "#"}<> report it
         and we'll investigate.
 
 
 %span{data-bind: "if: infrastructure_fail()"}
   .row
-    .offset2.span16
-      .alert-message.warning
+    .offset2.span12
+      .alert.alert-danger
         Looks like we had a bug in our infrastructure.
         We should have automatically retried this build.
         We've been alerted of the issue and are almost certainly looking into it, please
