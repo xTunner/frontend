@@ -11,7 +11,7 @@
 
     .row.build-table
 
-      %dl.offset1.span6
+      %dl.offset1.span4
 
         %dt Revision
         %dd
@@ -36,7 +36,7 @@
           %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
         / /ko
 
-      %dl.offset1.span6
+      %dl.offset1.span4
 
         %dt Status
         %dd.build_status
@@ -49,7 +49,7 @@
         %dd{data-bind: "text: duration"}
 
 
-      %dl.offset1
+      %dl.offset1.span4
 
         %dt Branch
         %dd{data-bind: "text: branch"}
@@ -59,19 +59,19 @@
 
         %dt Actions:
         %dd
-          %button.btn.error{data-bind: "click: report_build",
-                            title: "Report an error in how Circle ran this build"}
-            Report
+          %button.btn.btn-danger{data-bind: "click: report_build",
+                                 title: "Report an error in how Circle ran this build"}
+            Report...
 
-          %button.btn.primary{data-bind: "click: retry_build",
+          %button.btn.btn-primary{data-bind: "click: retry_build",
                               title: "Rerun the same version of the tests",
                               data-loading-text: "Triggering...",
                               data-success-text: "Triggered"}
             Retry
-          %button.btn.primary{data-bind: "click: ssh_build",
-                              title: "Rerun the tests, with SSH into the VM",
-                              data-loading-text: "Triggering...",
-                              data-success-text: "Triggered"}
+          %button.btn.btn-primary{data-bind: "click: ssh_build",
+                                title: "Rerun the tests, with SSH into the VM",
+                                data-loading-text: "Triggering...",
+                                data-success-text: "Triggered"}
             SSH
 
 

@@ -40,8 +40,8 @@
 
 
       .row{data-bind: "ifnot: has_followed_projects()"}
-        .offset5.span8
-          .block-message.alert-message.warning#first-use-message
+        .offset4.span6
+          .alert-block.alert-notice#first-use-message
             %h2
               Add your first project
             %br
