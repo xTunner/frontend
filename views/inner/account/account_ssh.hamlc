@@ -1,28 +1,30 @@
 %h2 SSH user keys
 
 .row
-  %br
+  %p
   .span5.offset0
     %div{data-bind: "if: user_key_fingerprint"}
       %h3 Existing User Key
-      %span{data-bind: "text: user_key_fingerprint"}
-      %form.api
-        %fieldset.form-stacked
-          %input.btn.danger{type: "submit",
-                            value: "Delete User Key",
-                            data-bind: "click: delete_user_key",
-                            data-loading-text: "Deleting...",
-                            data-success-text: "Deleted"}
+      %p
+      .well
+        %span{data-bind: "text: user_key_fingerprint"}
+        %p
+        %form.api
+          %input.btn.btn-danger{type: "submit",
+                                value: "Delete User Key",
+                                data-bind: "click: delete_user_key",
+                                data-loading-text: "Deleting...",
+                                data-success-text: "Deleted"}
 
     %div{data-bind: "ifnot: user_key_fingerprint"}
       %h3 No User Key
-      %form.api
-        %fieldset.form-stacked
-          %input.btn.primary{type: "submit",
-                             value: "Create User Key",
-                             data-bind: "click: create_user_key",
-                             data-loading-text: "Creating...",
-                             data-success-text: "Created"}
+      %p
+      %form.api.well
+        %input.btn.btn-primary{type: "submit",
+                               value: "Create User Key",
+                               data-bind: "click: create_user_key",
+                               data-loading-text: "Creating...",
+                               data-success-text: "Created"}
 
   %span.span8.offset2
 
