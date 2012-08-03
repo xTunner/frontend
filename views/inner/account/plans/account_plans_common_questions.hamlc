@@ -3,7 +3,7 @@
 %h2 Billing FAQ
 
 .row
-  .offset0.span9
+  .offset0.span7
 
     %h3 Who is included in my plan?
     %p
@@ -50,7 +50,7 @@
       With Circle, you don't need to worry about your tools - just focus on the product and leave the tools to us.
 
 
-  .offset2.span9
+  .offset1.span7
     %h3 How does parallelism work? Isn't that error-prone?
     %p
       Most parallelism libraries are aimed at running on single machines, and so can be error-prone.
