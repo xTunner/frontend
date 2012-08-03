@@ -31,10 +31,10 @@
 
   %section#customers
     .customer
-      %a.zencoder{ href: "#" } Zencoder<span></span>
+      %a.zencoder{ href: "#" } Zencoder
 
     .customer
-      %a.storenvy{ href: "#" } Storenvy<span></span>
+      %a.storenvy{ href: "#" } Storenvy
 
   %section.quotes
     %blockquote{ cite: "#" }

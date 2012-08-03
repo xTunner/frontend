@@ -8,7 +8,7 @@
   font-family: 'Lato', sans-serif;
   font-weight: bold;
   font-size: 16px;
-  color: @blue;
+  color: @blueDark;
   text-align: center;
   text-shadow: -1px 1px 0 white;
 }
@@ -23,7 +23,7 @@
   border-left: none;
   border-right: none;
   z-index: 100;
-  .transition(all 3s);
+  // .transition(all 3s);
 
   &:after {
     content: '';
@@ -44,8 +44,6 @@
     .customer {
       .column(6);
       .ir;
-      .opacity(30);
-      .transition(opacity 3s);
     }
 
     blockquote {
@@ -58,16 +56,6 @@
       visibility: visible;
       position: relative;
       background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
-
-      span {
-        content: '';
-        display: block;
-        background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
-        position: absolute;
-        top: 0; right: 0; bottom: 0; left: 0;
-        .opacity(0);
-        .transition(all 1.5s);
-      }
     }
   }
 
@@ -77,14 +65,13 @@
     border: 1px solid @blueLight;
 
     // Logos
-    .customer { .opacity(100) }
+    .customer { }
 
     #customers a {
       visibility: hidden;
 
       span {
         visibility: visible;
-        .opacity(100);
       }
     }
   }
