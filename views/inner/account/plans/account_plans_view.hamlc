@@ -1,5 +1,5 @@
 .row
-  %ul.pills
+  %ul.nav.nav-pills
     %li#meta
       %a{href: "/account/plans"} Meta
     %li#speed
