@@ -1,30 +1,29 @@
 %h2 Heroku API key
 
-%p
-  Add your
-  %a{href: "https://api.heroku.com/account"}
-    Heroku API Key
-  to set up deployment with Heroku.
+.row
+  .span7
+    %p
+      Add your
+      %a{href: "https://api.heroku.com/account"}
+        Heroku API Key
+      to set up deployment with Heroku.
 
-%h3 Existing key
+    %h3 Existing key
 
-%p{data-bind: "if: heroku_api_key"}
-  %span{data-bind: "text: heroku_api_key"}
+    %p{data-bind: "if: heroku_api_key"}
+      %span{data-bind: "text: heroku_api_key"}
 
-%p{data-bind: "ifnot: heroku_api_key"}
-  No existing key
+    .well
+      %p{data-bind: "ifnot: heroku_api_key"}
+        No existing key
 
-%h3 Set key
-%form.api
-  %fieldset.form-stacked
-    .row
+    %h3 Set key
+    %form.api.form-inline.well
       %input{type: "text",
              name: "apikey",
              data-bind: "value: herokuApiKeyInput"}
-    .row
-      %br
-      %input.btn.primary{type: "submit",
-                         value: "Save",
-                         data-bind: "click: save_heroku_key",
-                         data-loading-text: "Saving...",
-                         data-success-text: "Saved"}
+      %input.btn.btn-primary{type: "submit",
+                             value: "Save",
+                             data-bind: "click: save_heroku_key",
+                             data-loading-text: "Saving...",
+                             data-success-text: "Saved"}
