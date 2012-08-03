@@ -29,7 +29,7 @@
 #testimonials
   %p.testimonial-header Some of our happy customers
 
-  %section
+  %section#customers
     .customer
       %a.zencoder{ href: "#" } Zencoder<span></span>
 

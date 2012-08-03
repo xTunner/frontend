@@ -18,11 +18,12 @@
 
   position: relative;
   margin-bottom: @quoteHeight;
-  background: @blueLighter;
-  border: 1px solid @blueLight;
+  background: lighten(@blueLighter, 3%);
+  border: 1px solid lighten(@blueLighter, 1%);
   border-left: none;
   border-right: none;
   z-index: 100;
+  .transition(all 3s);
 
   &:after {
     content: '';
@@ -43,11 +44,18 @@
     .customer {
       .column(6);
       .ir;
+      .opacity(30);
+      .transition(opacity 3s);
+    }
+
+    blockquote {
+      height: 10%;
     }
 
 
     a {
       display: block;
+      visibility: visible;
       position: relative;
       background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
 
@@ -57,18 +65,28 @@
         background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
-        opacity: 0;
-        .transition(opacity 1.5s);
+        .opacity(0);
+        .transition(all 1.5s);
       }
     }
   }
 
   // Scrolled trigger styles
   &.scrolled {
+    background: @blueLighter;
+    border: 1px solid @blueLight;
 
-    // Logo Saturation
-    a span { opacity: 1 }
-    
+    // Logos
+    .customer { .opacity(100) }
+
+    #customers a {
+      visibility: hidden;
+
+      span {
+        visibility: visible;
+        .opacity(100);
+      }
+    }
   }
 
   // Quotes
