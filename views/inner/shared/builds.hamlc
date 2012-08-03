@@ -1,4 +1,4 @@
-%table.well.condensed
+%table.well.table-condensed
   %thead
     %tr
       %th Build

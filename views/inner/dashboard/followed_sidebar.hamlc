@@ -1,4 +1,4 @@
-%table.condensed-table.well.zebra-striped{cols: 3}
+%table.table-condensed.well.table-striped{cols: 3}
   %thead
     %tr
       %th.sidebar-header{colspan: 3}

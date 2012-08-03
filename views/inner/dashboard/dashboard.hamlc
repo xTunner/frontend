@@ -2,49 +2,48 @@
 
 .container-fluid
 
-  .sidebar
-    -# TECHNICAL_DEBT: use namespaces for these
-    = HAML['followed_sidebar']({})
-    = HAML['available_sidebar']({})
+  .row-fluid
+    .span3
+      = HAML['followed_sidebar']({})
+      = HAML['available_sidebar']({})
 
-  .content
+    .span9
+      = HAML['flashes']({})
 
-    = HAML['flashes']({})
+      %div{data-bind: "if: has_followed_projects()"}
+        .row
+          .offset0.span8
+            %h2#latest-build-header
+              Latest builds for your projects
+          .offset4
+            %b#invite-your-friends
+              Send this link to your colleagues:
+              %a{href: "https://circleci.com/?join=dont-test-alone" }
+                https://circleci.com/?join=dont-test-alone
+          .offset5#days-in-trial{data-bind: "with: current_user"}
+            %b{data-bind: "if: in_trial"}
+              You have
+              %span{data-bind: "text: days_left_in_trial"}
+              days left in your trial.
+              %a{href: "/account/plans" }
+                Sign up now.
 
-    %div{data-bind: "if: has_followed_projects()"}
-      .row
-        .offset0.span11
-          %h2#latest-build-header
-            Latest builds for your projects
-        .offset5
-          %b#invite-your-friends
-            Send this link to your colleagues:
-            %a{href: "https://circleci.com/?join=dont-test-alone" }
-              https://circleci.com/?join=dont-test-alone
-        .offset5#days-in-trial{data-bind: "with: current_user"}
-          %b{data-bind: "if: in_trial"}
-            You have
-            %span{data-bind: "text: days_left_in_trial"}
-            days left in your trial.
-            %a{href: "/account/plans" }
-              Sign up now.
+            %b{data-bind: "if: trial_over"}
+              Your trial ended
+              %span{data-bind: "text: (-1 * days_left_in_trial)"}
+              days ago.
+              %a{href: "/account/plans" }
+                Re-enable your tests.
 
-          %b{data-bind: "if: trial_over"}
-            Your trial ended
-            %span{data-bind: "text: (-1 * days_left_in_trial)"}
-            days ago.
-            %a{href: "/account/plans" }
-              Re-enable your tests.
-
-      .row
-        = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+        .row
+          = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
 
 
-    .row{data-bind: "ifnot: has_followed_projects()"}
-      .offset5.span8
-        .block-message.alert-message.warning#first-use-message
-          %h2
-            Add your first project
-          %br
-          %p#first-use-text
-            To start Continuous Integration on your first app, click on the repository name on the left.
+      .row{data-bind: "ifnot: has_followed_projects()"}
+        .offset5.span8
+          .block-message.alert-message.warning#first-use-message
+            %h2
+              Add your first project
+            %br
+            %p#first-use-text
+              To start Continuous Integration on your first app, click on the repository name on the left.

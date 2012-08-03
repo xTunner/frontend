@@ -1,4 +1,4 @@
-%table.condensed-table.well
+%table.table-condensed.well
   %thead
     %tr
       %th.sidebar-header
