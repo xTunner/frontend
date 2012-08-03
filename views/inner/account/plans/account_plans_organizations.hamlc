@@ -9,20 +9,18 @@
 %div{data-bind: "ifnot: loadingOrganizations"}
   %form
 
-    %fieldset
-      .clearfix
-        %label
-          Tested organizations:
-        .input
-          %ul.inputs-list{data-bind: "foreach: organizations"}
-            %li
-              %label
-                %input{type: "checkbox", data-bind: "checked: value"}
-                  %span{data-bind: "text: name"}
+    %label Tested organizations:
+    %div.controls{data-bind: "foreach: organizations"}
+      %label.checkbox
+        %input{type: "checkbox", data-bind: "checked: value"}
+          %span{data-bind: "text: name"}
 
 
-    %input.btn.primary.span5{data-bind: "click: saveOrganizations",
-                             type: "submit",
-                             value: "Run tests for these organizations",
-                             data-loading-text: "Saving...",
-                             data-success-text: "Saved"}
+    .row
+      .span7
+        .form-actions
+          %input.btn.btn-primary.btn.large{data-bind: "click: saveOrganizations",
+                                           type: "submit",
+                                           value: "Run tests for these organizations",
+                                           data-loading-text: "Saving...",
+                                           data-success-text: "Saved"}
