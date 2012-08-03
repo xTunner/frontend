@@ -73,7 +73,7 @@
       This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
       You do not need to anything to set this up.
       We also have
-      %code phantomjs 1.5.0 (development)
+      %code phantomjs 1.6.1 (development)
       pre-installed.
 
     %p
@@ -82,7 +82,7 @@
       environmental variable has already been set.
 
     %p
-      Selenium-based tests are able to use Chrome stable channel (Chrome 19.0 as of June 7, 2012), and Firefox 12.
+      Selenium-based tests are able to use Chrome stable channel (Chrome 19.0 as of Aug 1, 2012), and Firefox 13.
 
 
     %h1.section
@@ -305,5 +305,7 @@
       %code mysql
       are set up to use the
       %code ubuntu
-      user, and don't require any password.
+      user, have a database called
+      %code circle_test
+      available, and don't require any password.
       The other databases should not need any specific username or password, and should just work.
