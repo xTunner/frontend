@@ -68,8 +68,8 @@ circle = $.sammy "body", ->
       pages = [
                 "getting-started",
                 "common-problems",
-#                "integrations",
                 "configuration",
+                "manually",
                 "environment",
                 "faq",
 #                "api"

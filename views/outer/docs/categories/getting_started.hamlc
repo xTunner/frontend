@@ -1,15 +1,8 @@
 %article
-  .title
-    %h1 Getting Started with Circle
-      %i.icon-repeat
-    %p Last Updated: May 28, 2012
-    %h4 Setting it up for the first time
-    %hr
+  = HAML['article_title']({icon: "icon-repeat", title: "Getting started with Circle", lastUpdated: "Aug 1, 2012", subtitle: "An overview of Circle"})
 
   .doc
-    %h1.section
-      %a#overview Overview
-    %hr
+    = HAML['heading']({title: "Overview", hash: "overview"})
 
     %p Setting up Circle for your project should be a matter of 3 mouse clicks:
     %ol
@@ -41,25 +34,35 @@
 
     %p
       Of course, life is not always sunshine and daisies.
-      When our automatic inference doesn't work, you'll need to
-      %a{ href: "/docs/configuration"} tweak your setup
-      using a
-      %code.inline circle.yml
-      file.
+      Sometimes your tests will fail, or we won't infer your custom setup, or our inference won't be aware of your test suite.
 
-    %p
-      Sometimes, your tests won't work on our server, even though they work locally.
-      We have a list of
-      %a{ href: "/docs/common-problems"} common problems
-      that will help you through the majority of issues that you'll face.
+    %ul
+      %li
+
+      %li
+        If we didn't run an important step or omitted some tests,
+        %a{ href: "/docs/configuration"}
+          add a
+          %code.inline circle.yml
+          file
+        to tweak your test run.
+
+      %li
+        If we didn't infer anything, you can still
+        = succeed '.', ->
+          %a{ href: "/docs/manually"}
+            set your project up manually
+
+      %li
+        Sometimes, your tests won't work on our server, even though they work locally.
+        Read our list of
+        %a{ href: "/docs/common-problems"} common problems
+        and their solutions.
 
 
-    %h1.section
-      %a#what-next What next?
-    %hr
+    = HAML['heading']({title: "What next", hash: "what-next"})
 
     %h2 Add your colleagues
-
     %p
       Testing is no fun if you're the only one playing.
       Circle is designed around the idea of every person having their own account.
@@ -69,9 +72,7 @@
           ask us if you lost your code or haven't got on yet
 
     %h2 Add more projects
-
     %p
-      You should add all your projects to Circle - it costs the same either way.
       Even if you only commit to a project once a month, or if the project is just started, adding it to Circle will help keep it working.
       Add them from the
       = succeed ".", ->
