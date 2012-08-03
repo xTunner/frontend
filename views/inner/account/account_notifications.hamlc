@@ -1,33 +1,28 @@
 %h1 Personal preferences
 
+%br
 %h2 Email notifications
 
-%p
-  We're working on fine-grained notification settings.
-  Contact us to tell us what you'd like to see.
-
-
-%form.input
-  %ul.inputs-list
-    %li
-      %label
+.row
+  .span7
+    %form.well
+      %label.radio
         %input{type: "radio", name: "email", value: "all", data-bind: "checked: basic_email_prefs"}
-        %span Send an email for every build in all your followed projects
+          %span Send an email for every build in all your followed projects
 
-    %li
-      %label
+      %label.radio
         %input{type: "radio", name: "email", value: "smart", data-bind: "checked: basic_email_prefs"}
-        %span Send an email for failing builds, and once when they're fixed
+          %span Send an email for failing builds, and once when they're fixed
 
-    %li
-      %label
+      %label.radio
         %input{type: "radio", name: "email", value: "none", data-bind: "checked: basic_email_prefs"}
-        %span No email
-  %input.btn.primary.small.span3{type: "submit",
-                                 value: "Save preferences",
-                                 data-bind: "click: save_preferences",
-                                 data-loading-text: "Saving...",
-                                 data-success-text: "Saved"}
+          %span No email
+
+      %input.btn.btn-primary.btn-large{type: "submit",
+                                       value: "Save preference",
+                                       data-bind: "click: save_preferences",
+                                       data-loading-text: "Saving...",
+                                       data-success-text: "Saved"}
 
 
 
