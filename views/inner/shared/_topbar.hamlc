@@ -1,57 +1,57 @@
-.topbar-wrapper
-  .topbar{"data-dropdown": "dropdown"}
-    .topbar-inner
-      .container-fluid
-        %h3
-          %a.brand{href: "/"}
-            Circle
+.navbar.navbar-fixed-top{"data-dropdown": "dropdown"}
+  .navbar-inner
+    .container
+      %a.brand{href: "/"}
+        Circle
 
-        = (@crumbs or "")
+      = (@crumbs or "")
 
-        %ul.nav.secondary-nav{data-bind: "with: current_user"}
-          %ul.nav{data-bind: "if: showEnvironment"}
-            %li.development
-              %a{data-bind: "text: environment, css: environmentColor"}
+      %ul.nav.pull-right{data-bind: "with: current_user"}
+        %ul.nav{data-bind: "if: showEnvironment"}
+          %li.development
+            %a{data-bind: "text: environment, css: environmentColor"}
 
-          %li.dropdown
-            %a.dropdown-toggle{data-bind: "text: login"}
+        %li.dropdown
+          %a.dropdown-toggle{data-toggle: "dropdown"}
+            %span{data-bind: "text: login"}
+            %b.caret
 
-            %ul.dropdown-menu
-              %li
-                %a{href: '/account'}
-                  Settings
+          %ul.dropdown-menu
+            %li
+              %a{href: '/account'}
+                Settings
 
-              %li
-                %a#logout-link{href: '/logout'}
-                  Logout
+            %li
+              %a#logout-link{href: '/logout'}
+                Logout
 
 
+            %li.divider
+            %li
+              %a{href: "/docs", target: "_blank"}
+                Documentation
+
+            %li
+              %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
+                Support
+
+            %li
+              %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+                Chat support
+
+
+            %div{data-bind: "if: admin"}
               %li.divider
               %li
-                %a{href: "/docs", target: "_blank"}
-                  Documentation
-
+                %a{href: "/admin"} Admin
               %li
-                %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
-                  Support
-
+                %a{href: "/admin/users"} Users
               %li
-                %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
-                  Chat support
-
-
-              %div{data-bind: "if: admin"}
-                %li.divider
-                %li
-                  %a{href: "/admin"} Admin
-                %li
-                  %a{href: "/admin/users"} Users
-                %li
-                  %a{href: "/admin/recent-builds"} Recent builds
-                %li
-                  %a{href: "/admin/projects"} Projects
-                %li
-                  %a{data-bind: "attr: {href: VM.intercomUserLink}"}"} Find project on Intercom
+                %a{href: "/admin/recent-builds"} Recent builds
+              %li
+                %a{href: "/admin/projects"} Projects
+              %li
+                %a{data-bind: "attr: {href: VM.intercomUserLink}"}"} Find project on Intercom
 
 -# This is used to create the 25px space under the navigation bar. I know.
 %ul
