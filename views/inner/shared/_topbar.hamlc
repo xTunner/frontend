@@ -1,6 +1,6 @@
-.navbar.navbar-fixed-top{"data-dropdown": "dropdown"}
+.navbar.navbar-fixed-top
   .navbar-inner
-    .container
+    .container-fluid
       %a.brand{href: "/"}
         Circle
 
