@@ -1,6 +1,6 @@
 %div{data-bind: "if: $root.error_message"}
   .alert.alert-block.alert-danger{data-bind: "with: $root"}
-    %a.close{href: "#", data-bind: "click: clearErrorMessage"}
+    %a.close{data-dismiss: "alert", data-bind: "click: clearErrorMessage"}
       x
     Error:
     %span{data-bind: "html: error_message"}
