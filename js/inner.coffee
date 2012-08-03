@@ -247,7 +247,7 @@ class Build extends Obj
         else
           false
 
-    @notice_style = komp =>
+    @info_style = komp =>
       switch @status()
         when "running"
           true
@@ -255,11 +255,11 @@ class Build extends Obj
           false
 
     @style =
-      important: @important_style
-      warning: @warning_style
+      "label-important": @important_style
+      "label-warning": @warning_style
 
-      success: @success_style
-      notice: @notice_style
+      "label-success": @success_style
+      "label-info": @info_style
       label: true
       build_status: true
 

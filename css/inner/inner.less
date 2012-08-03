@@ -1,5 +1,12 @@
 @import "../vendor/bootstrap.min.css";
 
+/* Bootstrap2 doesn't use the pretty colours for href labels, so switch back */
+.label-success[href], .badge-success[href] { background-color: #468847; }
+.label-important[href], .badge-important[href] { background-color: #B94A48; }
+.label-warning[href], .badge-warning[href] { background-color: #F89406; }
+.label-info[href], .badge-info[href] { background-color: #3a87ad; }
+.label-inverse[href], .badge-inverse[href] { background-color: #333; }
+
 .border-radius(@radius: 5px) {
    webkit-border-radius: @radius;
    moz-border-radius: @radius;
@@ -10,6 +17,7 @@
 body {
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
    background:  url(../../../img/outer/bg_pattern.png);
+   padding-top: 40px;
 }
 
 .sidebar-header {
@@ -68,11 +76,6 @@ body {
 
 #still-running-message {
    text-align: center;
-}
-
-.build_status {
-   a { color: white; }
-   a:hover { color: white; }
 }
 
 .content {
