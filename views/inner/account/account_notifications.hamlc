@@ -1,10 +1,11 @@
 %h1 Personal preferences
 
-%br
-%h2 Email notifications
-
 .row
   .span7
+    %br
+    %h2 Email notifications
+
+
     %form.well
       %label.radio
         %input{type: "radio", name: "email", value: "all", data-bind: "checked: basic_email_prefs"}
@@ -26,9 +27,10 @@
 
 
 
-%br
-%h2 Project preferences
+    %br
+    %h2 Project preferences
 
-%p Projects can be individually configured, from a project's <b>edit</b> page.
+    .well
+      %p Projects can be individually configured, from a project's <b>edit</b> page.
 
-%p Instant message settings are per-project; edit a project to set them.
+      %p Instant message settings are per-project; edit a project to set them.
