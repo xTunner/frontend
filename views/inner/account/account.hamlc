@@ -1,7 +1,7 @@
 = HAML['_topbar']({})
 
 %div
-  %ul.tabs
+  %ul.nav.nav-tabs
     %li#notifications
       %a{href: '/account/notifications'}
         Notifications
