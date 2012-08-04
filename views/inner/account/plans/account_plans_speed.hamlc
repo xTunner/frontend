@@ -42,8 +42,11 @@
     %p
       Run your tests across multiple machines, to significantly reduce your run time.
 
+    %p{data-bind: "ifnot: chosenPlan.allowsParallelism"}
+      %b Your plan does not support parallelism.
+
     %form
-      %select.span2{data-bind: "value: parallelism"}
+      %select.span2{data-bind: "value: parallelism, enable: chosenPlan.allowsParallelism"}
         %option{value: 1} 1-way
         %option{value: 2} 2-way
         %option{value: 3} 3-way
