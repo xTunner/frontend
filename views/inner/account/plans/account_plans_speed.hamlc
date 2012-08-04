@@ -1,60 +1,81 @@
 .row
-  .offset1.span6
-    %h3 Concurrency
+  .offset1.span4
+    %h3 Concurrent builds
     %p
-      More concurrent builds allows us to test more pushes at the same time.
+      More concurrent builds allows us to test more GitHub pushes at the same time.
       Other pushes will queue up waiting to be tested.
 
     %form
-      %select{data-bind: "value: concurrency"}
-        %option{value: 1} 1
-        %option{value: 2} 2
-        %option{value: 3} 3
-        %option{value: 4} 4
-        %option{value: 5} 5
-        %option{value: 6} 6
-        %option{value: 7} 7
-        %option{value: 8} 8
-        %option{value: 9} 9
-        %option{value: 10} 10
-        %option{value: 11} 11
-        %option{value: 12} 12
-        %option{value: 13} 13
-        %option{value: 14} 14
-        %option{value: 15} 15
-        %option{value: 16} 16
-        %option{value: 17} 17
-        %option{value: 18} 18
-        %option{value: 19} 19
-        %option{value: 20} 20
+      %select.span3{data-bind: "value: concurrency"}
+        %option{value: 1} 1 build at a time
+        %option{value: 2} 2 builds at a time
+        %option{value: 3} 3 builds at a time
+        %option{value: 4} 4 builds at a time
+        %option{value: 5} 5 builds at a time
+        %option{value: 6} 6 builds at a time
+        %option{value: 7} 7 builds at a time
+        %option{value: 8} 8 builds at a time
+        %option{value: 9} 9 builds at a time
+        %option{value: 10} 10 builds at a time
+        %option{value: 11} 11 builds at a time
+        %option{value: 12} 12 builds at a time
+        %option{value: 13} 13 builds at a time
+        %option{value: 14} 14 builds at a time
+        %option{value: 15} 15 builds at a time
+        %option{value: 16} 16 builds at a time
+        %option{value: 17} 17 builds at a time
+        %option{value: 18} 18 builds at a time
+        %option{value: 19} 19 builds at a time
+        %option{value: 20} 20 builds at a time
 
+    %span.help-block
+      You'll need more concurrent builds if you:
+      %ul
+        %li have a large team - 1 concurrent build per 3 full-time developers is typical,
+        %li have a long test suite - add 20% more concurrent builds for every 7 minutes of test time,
+        %li build frequently - if your developers push more than 5 times per day on average, you should scale up your concurrent builds linearly.
+
+
+  .offset1.span4
     %h3 Parallelism
 
     %p
       Run your tests across multiple machines, to significantly reduce your run time.
 
     %form
-      %select{data-bind: "value: parallelism"}
-        %option{value: 1} 1
-        %option{value: 2} 2
-        %option{value: 3} 3
-        %option{value: 4} 4
-        %option{value: 5} 5
-        %option{value: 6} 6
-        %option{value: 7} 7
-        %option{value: 8} 8
+      %select.span2{data-bind: "value: parallelism"}
+        %option{value: 1} 1-way
+        %option{value: 2} 2-way
+        %option{value: 3} 3-way
+        %option{value: 4} 4-way
+        %option{value: 5} 5-way
+        %option{value: 6} 6-way
+        %option{value: 7} 7-way
+        %option{value: 8} 8-way
 
-  .offset4.span4
-    %h3
-      Old total: $
-      %span{data-bind: "text: oldTotal"}<>
 
+    %span.help-inline
+      Parallelism can reduce your tests' run-times by up to 8x, by splitting up your tests and running them on different machines.
+      You can expect almost linear speedup in test times.
+      Some customer examples:
+      %ul
+        %li a 20 minute build time with 2x parallelization runs in 11 minutes
+        %li a 45 minute build time with 3x parallelization runs in 18 minutes
+
+
+
+  .offset1.span4
     %h3
       New total: $
       %span{data-bind: "text: total"}<>
 
-    %input.btn.primary.large{data-bind: "click: saveParallelism",
-                             type: "submit",
-                             value: "Update plan",
-                             data-loading-text: "Saving...",
-                             data-success-text: "Saved"}
+    %h4
+      Old total: $
+      %span{data-bind: "text: oldTotal"}<>
+
+    %br
+      %button.btn.btn-primary.btn-large{data-bind: "click: saveParallelism",
+                                        type: "submit",
+                                        data-loading-text: "Saving...",
+                                        data-success-text: "Saved"}
+        Update plan
