@@ -73,7 +73,7 @@
       Old total: $
       %span{data-bind: "text: oldTotal"}<>
 
-    %br
+    .form-actions
       %button.btn.btn-primary.btn-large{data-bind: "click: saveParallelism",
                                         type: "submit",
                                         data-loading-text: "Saving...",
