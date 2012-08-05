@@ -686,10 +686,17 @@ class Plan extends Obj
       "up to #{@max_parallelism}x"
 
     @pricingDescription = komp =>
-      if @price?
-        "Sign up now for $#{@price}/mo"
+      if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id
+        "Your current plan"
       else
-        "Contact us for pricing"
+        if not @price?
+          "Contact us for pricing"
+        else
+          if VM.billing().chosenPlan()?
+            "Switch plan $#{@price}/mo"
+          else
+            "Sign up now for $#{@price}/mo"
+
 
   featureAvailable: (feature) =>
     result =
