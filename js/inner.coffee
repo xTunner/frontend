@@ -1,5 +1,8 @@
 window.observableCount = 0
 
+log2 = (v) ->
+  Math.log(v) / Math.log(2)
+
 textVal = (elem, val) ->
   "Takes a jquery element and gets or sets either val() or text(), depending on what's appropriate for this element type (ie input vs button vs a, etc)"
   if elem.is("input")
@@ -664,6 +667,9 @@ class Plan extends Obj
   constructor: ->
     super
 
+    @allowsParallelism = komp =>
+      @max_parallelism > 1
+
     @projectsTitle = komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
 
@@ -719,13 +725,7 @@ class Billing extends Obj
     super
 
     @total = komp =>
-      if @chosenPlan()?
-        p = parseInt(@parallelism()) - @chosenPlan().min_parallelism
-        p = Math.max(p, 0)
-        c = parseInt(@concurrency()) - 1
-        @chosenPlan().price + (c * 49) + (p * 99)
-      else
-        0
+      @calculateCost(@chosenPlan(), parseInt(@concurrency()), parseInt(@parallelism()))
 
     @savedCardNumber = komp =>
       return "" unless @cardInfo()
@@ -733,6 +733,22 @@ class Billing extends Obj
 
     @wizardCompleted = komp =>
       @wizardStep() > 4
+
+  calculateCost: (plan, concurrency, parallelism) ->
+    unless plan
+      0
+    else
+      c = concurrency or 0
+      extra_c = Math.max(0, c - 1)
+
+      p = parallelism or 1
+      p = Math.max(p, 2)
+      extra_p = (log2 p) - 1
+      extra_p = Math.max(0, extra_p)
+
+      plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
+
+
 
   selectPlan: (plan) =>
     @chosenPlan(plan)
@@ -1101,8 +1117,10 @@ class CircleViewModel extends Base
   loadJasmineTests: (cx) =>
     # Run the tests within the local scope, so we can use the scope chain to
     # access classes and values throughout this file.
-    $.get "/assets/js/tests/inner-tests.dieter", (code) =>
-      eval code
+    window.TestTargets =
+      log2: log2
+      Billing: Billing
+    $.getScript "/assets/js/tests/inner-tests.js.dieter"
 
   raiseIntercomDialog: (message) =>
     unless intercomJQuery?
