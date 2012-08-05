@@ -852,7 +852,7 @@ class Billing extends Obj
     $.getJSON '/api/v1/user/existing-plans', (data) =>
       @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
-      @chosenPlan(data.plan)
+      @chosenPlan(new Plan(data.plan))
       @concurrency(data.concurrency or 1)
       @parallelism(data.parallelism or 1)
       if @chosenPlan()
