@@ -751,8 +751,14 @@ class Billing extends Obj
 
 
   selectPlan: (plan) =>
-    @chosenPlan(plan)
-    @advanceWizard(2)
+    if plan.price?
+      @chosenPlan(plan)
+      if @wizardCompleted()?
+        SammyApp.setLocation "/account/plans#card"
+      else
+        @advanceWizard(2)
+    else
+      VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
 
   load: (hash="small") =>
     unless @loaded
