@@ -1,6 +1,6 @@
-.row-fluid
-  .offset1.span11
-    %div{data-bind: "if: $root.error_message"}
+%div{data-bind: "if: $root.error_message"}
+  .row-fluid
+    .offset1.span11
       .alert.alert-block.alert-danger{data-bind: "with: $root"}
         %a.close{href: "#", data-dismiss: "alert", data-bind: "click: clearErrorMessage"}
           x
