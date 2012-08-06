@@ -1,50 +1,46 @@
-%form.hook_form
-  %fieldset.form-stacked
-    %legend Add Hipchat hook
+%form.hook_form.form-horizontal
+  %legend Add Hipchat hook
 
-    .row
-      .span8.clearfix
-        %label Room name
-        %input.span4{ type: "text", data-bind: "value: hipchat_room" }
+  .control-group
+    %label.control-label{for: "hipchat-room"} Room name
+    .controls
+      %input.span4#hipchat-room{ type: "text", data-bind: "value: hipchat_room" }
 
-    .row
-      .span5.clearfix
-        %label API token
-
-        %input.span5{ type: "text", data-bind: "value: hipchat_api_token" }
-
-        %p
-          To get your API token,
-          %a{href: "https://hipchat.com/admin/api"}
-            create a "<i>notification</i>" token on the HipChat site.
+  .control-group
+    %label.control-label{for: "hipchat-token"} API token
+    .controls
+      %input.span4#hipchat-token{ type: "text", data-bind: "value: hipchat_api_token" }
+      .help-block
+        To get your API token,
+        %a{href: "https://hipchat.com/admin/api"}
+          create a "<i>notification</i>" token on the HipChat site.
 
 
-  %fieldset.form-stacked
-    %legend Add Campfire hook
 
-    .row
-      .span8.clearfix
-        %label Room name
-        %input.span4{ type: "text", data-bind: "value: campfire_room" }
+  %legend Add Campfire hook
+  .control-group
+    %label.control-label{for: "campfire-room"} Room name
+    .controls
+      %input.span4#campfire-room{ type: "text", data-bind: "value: campfire_room" }
 
-    .row
-      .span8.clearfix
-        %label Subdomain
-        %input.span4{ type: "text", data-bind: "value: campfire_subdomain" }
+  .control-group
+    %label.control-label{for: "campfire-subdomain"} Subdomain
+    .controls
+      %input.span4#campfire-subdomain{ type: "text", data-bind: "value: campfire_subdomain" }
 
-    .row
-      .span5.clearfix
-        %label API token
-        %input.span5{ type: "text", data-bind: "value: campfire_token" }
+  .control-group
+    %label.control-label{for: "campfire-token"} API token
+    .controls
+      %input.span4#campfire-token{ type: "text", data-bind: "value: campfire_token" }
+      .help-block
+        To get your API token, visit your company Campfire, then click "My info".
+        You should end up at
+        https://YOURSUBDOMAIN.campfirenow.com/member/edit.
 
-        %p
-          To get your API token, visit your company campfire, then click "My info".
-          You should end up at
-          https://YOURSUBDOMAIN.campfirenow.com/member/edit.
 
-    .row
-      %input.btn.primary.span5.large{data-bind: "click: save_hooks",
-                                     type: "submit",
-                                     value: "Save",
-                                     data-loading-text: "Saving and sending message...",
-                                     data-success-text: "Saved"}
+  .form-actions
+    %input.btn.btn-primary.span5.btn-large{data-bind: "click: save_hooks",
+                                           type: "submit",
+                                           value: "Save notification hooks",
+                                           data-loading-text: "Saving",
+                                           data-success-text: "Saved"}
