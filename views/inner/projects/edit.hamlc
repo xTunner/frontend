@@ -13,11 +13,11 @@
 
 
       %li.nav-header
-        Test settings
+        Test commands
       %li
-        %a{ href: "edit#setup" } Machine setup
+        %a{ href: "edit#setup" } Dependencies
       %li
-        %a{ href: "edit#tests" } Test commands
+        %a{ href: "edit#tests" } Tests
       %li.divider
 
 
