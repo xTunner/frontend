@@ -3,7 +3,7 @@
     .offset1.span11
       .alert.alert-block.alert-danger{data-bind: "with: $root"}
         %a.close{href: "#", data-dismiss: "alert", data-bind: "click: clearErrorMessage"}
-          x
+          &times;
         Error:
         %span{data-bind: "html: error_message"}
         %br
