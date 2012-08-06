@@ -1,68 +1,56 @@
-%h1 Setup your test machine
+%h1 Install your dependencies
 
 %form.spec_form
-  %fieldset.form-stacked
+  %fieldset
 
+    %label{ for: "setup" }
+      %h4 Pre-dependency commands
     .row
-      .span8.clearfix
-        %label
-          Pre-setup commands
-        .input
-          %textarea.span8{ cols: 40, rows: 7, name: "setup", placeholder: "Run extra commands before the normal setup", data-bind: "value: setup, valueUpdate: 'keyup'" }
+      .span5
+        %textarea.span5{rows: 7,
+                        name: "setup",
+                        placeholder: "Run extra commands before the normal setup",
+                        data-bind: "value: setup, valueUpdate: 'keyup'"}
+
+      .span4
+        %p
+          %b Pre-dependency commands
+          run
+          %b before
+          our inferred commands. All commands are arbitrary bash
+          statements, and run on Ubuntu 11.04.
+
+        %p
+          Use this to install and setup unusual services, such
+          as specific DNS provisions, connections to a private services, etc.
+
+    %label{ for: "dependencies"}
+      %h4 Dependency overrides
+    .row
+      .span5
+        %textarea.span5{name: "dependencies",
+                        rows: 7,
+                        placeholder: "Replace our inferred setup commands with your own bash commands",
+                        data-bind: "value: dependencies, valueUpdate: 'keyup'"}
 
 
       .span4
-        %p.short.infoboxtext
-          %span.major
-            %b Pre-setup commands
-            run
-            %b before
-            our inferred commands. All commands are arbitrary bash
-            statements, and run on Ubuntu 11.04.
-
-          %br
-
-          %span.minor
-            Use this to install unusual packages or setup unusual services, such
-            as specific DNS provisions, connections to a private services, etc.
+        %p
+          %b Dependency overrides
+          run
+          %b instead of
+          our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here.
 
 
-        .infobox.short
-
-    %br
-    %br
-
-    .row
-      .span8.clearfix
-        %label
-          Setup commands
-        .input
-          %textarea.span8{cols: 40, name: "dependencies", rows: 7, placeholder: "Replace our inferred setup commands with your own bash commands", data-bind: "value: dependencies, valueUpdate: 'keyup'"}
-
-
-      .span4
-        %p.long.infoboxtext
-          %span.major
-            %b Setup commands
-            run
-            %b instead of
-            our inferred commands. If our inferred commands are not to your liking, replace them here.
-
-          %br
-
-          %span.minor
-            Use this to override the specific pre-test commands we run, such as
-            <code>bundle install</code>,
-            <code>rvm use</code>,
-            <code>ant build</code>,
-            <code>configure</code>,
-            <code>make</code>, etc.
-
-          %br
-            We constantly monitor this to fix problems in our service.
-        .infobox.long
+        %p
+          Use this to override the specific pre-test commands we run, such as
+          <code>bundle install</code>,
+          <code>rvm use</code>,
+          <code>ant build</code>,
+          <code>configure</code>,
+          <code>make</code>, etc.
 
     .row
       .offset1
-        %a.btn.primary.large{ href: "#tests" }
+        %a.btn.btn-primary.btn-large{ href: "#tests" }
           Now set up your tests =>
