@@ -2,31 +2,30 @@
   Settings for
   %a{data-bind: "attr: {href: vcs_url}, text: project_name"}
 
-.row
-  .span6.alert-block.alert-warning
+.row.settings-list
+  .offset2.span6
+    %h2
+      Configure your project:
 
-    %span{data-bind: "ifnot: has_settings"}
-      %span
-        We will infer your project's settings during every push.
-      We automatically infer test settings and how to set up the machine for your project.
-      If your tests aren't working, you may need to manually override our inference.
+    %ol
+      %li
+        Circle infers your settings automatically.
+        Works great for Ruby, Python, NodeJS, Java and Clojure.
 
-    %span{data-bind: "if: has_settings"}
-      %span
-        You have overridden our inferred settings!
-      We'll infer your setup again if you delete your commands.
+      %li
+        Override inferred settings and add new test commands
+        %a{ href: "#setup" }
+          through the web UI.
+        Great for prototyping changes.
 
-.row
-  .span8
-    %span{data-bind: "ifnot: has_settings"}
-      %p
-        %a.btn.btn-primary.btn-large{ href: "#setup" }
-          Override automatic inference
+      %li
+        Override all settings via a
+        %a{ href: "/docs/configuration" }
+          %i circle.yml
+          file
+        in your repo.
+        Very powerful.
 
-    %span{data-bind: "if: has_settings"}
-      %p
-        %a.btn.btn-primary.btn-large{ href: "#setup" }
-          Edit project settings
 
     -#%p
       %button.btn.btn-primary.btn-large.span6#reset{ data-loading-text: "Resetting" }
