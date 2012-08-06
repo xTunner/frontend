@@ -1,8 +1,7 @@
 = HAML['_topbar']({crumbs: HAML['topbar_project']({project: @project})})
 
 .container-fluid
-
-  .sidebar
+  .span3
     .well
       %a#menutitle{ href: "edit" }
         Test settings
@@ -19,18 +18,29 @@
         %li
           %a{ href: "edit#heroku" } Heroku
 
-  .content
 
+
+    .well{data-bind: "with: project"}
+      %div{data-bind: "if: followed"}
+        .followed
+          %button.followed.btn.btn-primary.btn-large{ data-bind: 'click: unfollow' }
+            Unfollow
+        %p
+          You are following this project, and will receive build emails.
+
+
+      %div{data-bind: "ifnot: followed"}
+        .followed
+          %button.btn.btn-primary.btn-large{ data-bind: 'click: follow' }
+            Follow
+        %p
+          You are not following this project, and will not receive build emails.
+          Projects are only tested if they have a follower.
+
+
+
+  .span9
     = HAML['flashes']({})
-
-    .row
-      .offset4.span8
-        .alert-message.alert-notice
-          Make quick, unstructured changes to your settings here.
-          More advanced changes go in your
-          %a{href: "/docs/configuration"}
-            circle.yml
-          file.
 
     #subpage{data-bind: "with: project"}
       %p

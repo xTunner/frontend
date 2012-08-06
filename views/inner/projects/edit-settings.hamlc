@@ -1,56 +1,41 @@
-%h1.less-padding
+%h1
   Settings for
-  %span{data-bind: "text: project_name"}
-
-.more-padding
-  %a{data-bind: "attr: {href: vcs_url}, text: vcs_url"}
-
+  %a{data-bind: "attr: {href: vcs_url}, text: project_name"}
 
 .row
-  .span6.alert-message.block-message.warning
+  .span6.alert-block.alert-warning
 
     %span{data-bind: "ifnot: has_settings"}
-      %span.highlight
+      %span
         We will infer your project's settings during every push.
       We automatically infer test settings and how to set up the machine for your project.
       If your tests aren't working, you may need to manually override our inference.
 
     %span{data-bind: "if: has_settings"}
-      %span.highlight
+      %span
         You have overridden our inferred settings!
       We'll infer your setup again if you delete your commands.
 
 .row
-  .span8.indent-slightly
+  .span8
     %span{data-bind: "ifnot: has_settings"}
       %p
-        %a.btn.primary.large{ href: "#setup" }
+        %a.btn.btn-primary.btn-large{ href: "#setup" }
           Override automatic inference
 
     %span{data-bind: "if: has_settings"}
       %p
-        %a.btn.primary.large{ href: "#setup" }
+        %a.btn.btn-primary.btn-large{ href: "#setup" }
           Edit project settings
 
-
-    %span{data-bind: "if: followed"}
-      %p
-        %button.btn.primary.large{ data-bind: 'click: unfollow' }
-          Unfollow
-
-    %span{data-bind: "ifnot: followed"}
-      %p
-        %button.btn.primary.large{ data-bind: 'click: follow' }
-          Follow
-
     -#%p
-      %button.btn.primary.large.span6#reset{ data-loading-text: "Resetting" }
+      %button.btn.btn-primary.btn-large.span6#reset{ data-loading-text: "Resetting" }
         Delete your commands and revert to inferred
 
     -#%p
-      %button.btn.primary.large#trigger{ data-loading-text: "triggering" }
+      %button.btn.btn-primary.btn-large#trigger{ data-loading-text: "triggering" }
         Trigger a build
 
     %p{data-bind: "if: false"}
-      %button.btn.primary.large#trigger_inferred{ data-loading-text: "triggering"} }
+      %button.btn.btn-primary.btn-large#trigger_inferred{ data-loading-text: "triggering"} }
         Trigger an inferred build
