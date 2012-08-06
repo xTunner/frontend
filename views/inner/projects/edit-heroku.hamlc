@@ -1,3 +1,5 @@
+%h2 Step 1: Set your personal Heroku API key
+
 %div{data-bind: "with: VM.current_user"}
   %p{data-bind: "if: heroku_api_key"}
     Your Heroku key is entered. Great!
@@ -6,42 +8,49 @@
   %div{data-bind: "ifnot: heroku_api_key"}
     = HAML['account_heroku']({})
 
-%h3 Add an SSH Deploy Key to the project
-  %p Current deploy user is
+%hr
+%h2 Step 2: Select a user whose Heroku key we'll use to deploy
+%p Current deploy user is
+  %strong
+    %span{data-bind: "if: heroku_deploy_user()"}
+      %span{data-bind: "text: heroku_deploy_user" }
+    %span{data-bind: "ifnot: heroku_deploy_user()"}
+      None
+
+%div{data-bind: "if: heroku_deploy_user() == VM.current_user().login"}
+  %form.api
+    %input.btn.btn-danger{type: "submit",
+                          value: "Remove Heroku Deploy User",
+                          data-bind: "click: clear_heroku_deploy_user",
+                          data-loading-text: "Saving...",
+                          data-success-text: "Saved"}
+
+
+%div{data-bind: "if: heroku_deploy_user() != VM.current_user().login"}
+  %p Clicking this will cause
     %strong
-      %span{data-bind: "if: heroku_deploy_user()"}
-        %span{data-bind: "text: heroku_deploy_user" }
-      %span{data-bind: "ifnot: heroku_deploy_user()"}
-        None
-
-  %div{data-bind: "if: heroku_deploy_user() == VM.current_user().login"}
-    %form.api
-      %input.btn.danger{type: "submit",
-                         value: "Remove Heroku Deploy User",
-                         data-bind: "click: clear_heroku_deploy_user",
-                         data-loading-text: "Saving...",
-                         data-success-text: "Saved"}
-
-
-  %div{data-bind: "if: heroku_deploy_user() != VM.current_user().login"}
-    %p Clicking this will cause
-      %strong
-        all
-      deploys on this project to use
+      all
+    deploys on this project to use
+    = succeed "'s SSH key", ->
       %span{data-bind: "text: VM.current_user().login"}
-      's SSH key
-      %form.api
-        %input.btn.primary{type: "submit",
-                           value: "Set Heroku Deploy User to #{VM.current_user().login}",
-                           data-bind: "click: set_heroku_deploy_user",
-                           data-loading-text: "Saving...",
-                           data-success-text: "Saved"}
 
-%h3 Add deployment to circle.yml
-%p Something that looks like:
-  %pre
-    deployment:
-      staging:
-        branch: master
-        heroku:
-          appname: foo-bar-123
+    %form.api
+      %input.btn.btn-primary{type: "submit",
+                             value: "Set Heroku Deploy User to #{VM.current_user().login}",
+                             data-bind: "click: set_heroku_deploy_user",
+                             data-loading-text: "Saving...",
+                             data-success-text: "Saved"}
+
+%hr
+%h2
+  Step 3: Add deployment settings to your
+  %a{href: "https://circleci.com/docs/configuration#deployment"} circle.yml file
+
+%p For example:
+  %pre<>
+    :preserve
+      deployment:
+        staging:
+          branch: master
+          heroku:
+            appname: foo-bar-123
