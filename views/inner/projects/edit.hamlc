@@ -2,27 +2,40 @@
 
 .container-fluid
   .span3
-    .well
-      %a#menutitle{ href: "edit" }
+
+    %ul.nav.nav-list.well
+      %li.nav-header
+        Project settings
+      %li
+        %a{ href: "edit" }
+          Overview
+      %li.divider
+
+
+      %li.nav-header
         Test settings
-      %ul.tree
-        %li
-          %a{ href: "edit#setup" } Test machine
-        %li
-          %a{ href: "edit#tests" } Test suite
-        %li.last
-          %a{ href: "edit#hooks" } Hooks
-      %a#menutitle{ href: "edit" }
-        Deployment
-      %ul.tree
-        %li
-          %a{ href: "edit#heroku" } Heroku
+      %li
+        %a{ href: "edit#setup" } Machine setup
+      %li
+        %a{ href: "edit#tests" } Test commands
+      %li.divider
 
 
+      %li.nav-header
+        Hooks
+      %li
+        %a{ href: "edit#hooks" } Notifications
+      %li.divider
 
-    .well{data-bind: "with: project"}
+      %li.nav-header
+        Continuous Deployment
+      %li
+        %a{ href: "edit#heroku" } Heroku settings
+
+
+    .well.follow-status{data-bind: "with: project"}
       %div{data-bind: "if: followed"}
-        .followed
+        .follow-align
           %button.followed.btn.btn-primary.btn-large{ data-bind: 'click: unfollow' }
             Unfollow
         %p
@@ -30,7 +43,7 @@
 
 
       %div{data-bind: "ifnot: followed"}
-        .followed
+        .followa-align
           %button.btn.btn-primary.btn-large{ data-bind: 'click: follow' }
             Follow
         %p

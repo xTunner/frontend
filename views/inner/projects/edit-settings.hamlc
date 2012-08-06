@@ -3,14 +3,16 @@
   %a{data-bind: "attr: {href: vcs_url}, text: project_name"}
 
 .row.settings-list
-  .offset2.span6
+  .offset1.span6
     %h2
-      Configure your project:
+      To configure your project:
 
     %ol
       %li
-        Circle infers your settings automatically.
+        %b Do nothing!
+        Circle infers many settings automatically.
         Works great for Ruby, Python, NodeJS, Java and Clojure.
+        However, if it needs tweaks or doesn't work, see below.
 
       %li
         Override inferred settings and add new test commands
