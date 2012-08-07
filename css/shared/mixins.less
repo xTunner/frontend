@@ -215,9 +215,9 @@
 }
 
 // Saturation ----------------------------------------------------------------
-.saturate(@percent) {
-  -webkit-filter: rotate(@percent);
-  -moz-filter: rotate(@percent);
-  -ms-filter: rotate(@percent);
-  -o-filter: rotate(-@percent);
+.saturate(@value) {
+  -webkit-filter: ~"saturate(@{value}%)";
+  -moz-filter: ~"saturate(@{value}%)";
+  -ms-filter: ~"saturate(@{value}%)";
+  -o-filter: ~"saturate(@{value}%)";
 }
