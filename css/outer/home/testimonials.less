@@ -23,7 +23,8 @@
   border-left: none;
   border-right: none;
   z-index: 100;
-  // .transition(all 3s);
+  .saturate(10, "logo");
+  .transition(all 2.5s);
 
   &:after {
     content: '';
@@ -61,19 +62,7 @@
 
   // Scrolled trigger styles
   &.scrolled {
-    background: @blueLighter;
-    border: 1px solid @blueLight;
-
-    // Logos
-    .customer { }
-
-    #customers a {
-      visibility: hidden;
-
-      span {
-        visibility: visible;
-      }
-    }
+    .saturate(100, "logo");
   }
 
   // Quotes
