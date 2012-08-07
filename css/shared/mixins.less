@@ -215,9 +215,13 @@
 }
 
 // Saturation ----------------------------------------------------------------
-.saturate(@value) {
+.saturate(@value, @class) {
   -webkit-filter: ~"saturate(@{value}%)";
-  -moz-filter: ~"saturate(@{value}%)";
-  -ms-filter: ~"saturate(@{value}%)";
-  -o-filter: ~"saturate(@{value}%)";
+
+  (~".@{class}") {
+    &:after {
+      display: block;
+      .square(100%);
+    }
+  }
 }
