@@ -1,6 +1,6 @@
 [
   "./vendor/sammy-0.7.1-patched.js"
-  "./vendor/modernizr-2.5.3.js"
+  "./vendor/modernizr-2.6.1.js"
   "../views/shared/"
   "../views/outer/"
   "./outer.coffee"
