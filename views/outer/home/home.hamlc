@@ -43,7 +43,7 @@
       %footer
         %cite 
           %a{ href: "http://zencoder.com/company/" } Brandon Arbini
-          %a{ href: "http://zencoder.com/" } VP of Product & Engineering
+          %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
 
     %blockquote{ cite: "#" }
       %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
