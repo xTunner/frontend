@@ -24,7 +24,7 @@
   border-right: none;
   z-index: 100;
   .saturate(10, "logo");
-  .transition(all 2.5s);
+  .transition(-webkit-filter 2.5s);
 
   &:after {
     content: '';
@@ -111,13 +111,31 @@
     }
 
     p, footer {
-      padding: 0 22px;
+      padding: 0 20px 0 38px;
       color: #444;
       line-height: 22px;
     }
 
-    footer { margin-top: 20px }
+    p {
+      position: relative;
+      margin-right: .5em;
 
+      &:before, &:after {
+        font-family: Georgia, serif;
+        font-size: 60px;
+        color: @blueLight;
+        position: absolute;
+      }
+
+      &:before {
+        content: '\201C';
+        top: 10px;
+        left: 8px;
+      }
+
+    }
+
+    footer { margin-top: 20px }
   }
 
   // Logos
