@@ -1,6 +1,7 @@
 [
   "./vendor/sammy-0.7.1-patched.js"
   "./vendor/modernizr-2.6.1.js"
+  "./vendor/stickyMojo.js"
   "../views/shared/"
   "../views/outer/"
   "./outer.coffee"
