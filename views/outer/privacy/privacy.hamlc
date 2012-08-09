@@ -61,11 +61,11 @@
       the premiere Android security company.
       Before that, he did his
       = succeed ',', ->
-        %a{href: "http://paulbiggar.com/research/#phd-dissertation"} PhD in static analysis
+        %a{ href: "http://paulbiggar.com/research/#phd-dissertation" } PhD in static analysis
       which kept him well versed with the latest security research and vulnerabilities.
       Allen was a lead developer at
       = succeed ',', ->
-        %a{:href: "http://crossroads.com"} Crossroads
+        %a{ href: "http://crossroads.com" } Crossroads
       where he provided security audits for their full-stack SAN solution.
       His experience includes work on Storage Area Networks, Linux kernel drivers and medical imaging software, all of which have an extremely security-oriented focus.
 

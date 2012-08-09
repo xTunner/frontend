@@ -1,0 +1,12 @@
+#hash
+  %div{data-bind: "if: wizardStep() == 1"}
+    = HAML['account_plans_edit']()
+
+  %div{data-bind: "if: wizardStep() == 2"}
+    = HAML['account_plans_card']()
+
+  %div{data-bind: "if: wizardStep() == 3"}
+    = HAML['account_plans_organizations']()
+
+  %div{data-bind: "if: wizardStep() == 4"}
+    = HAML['account_plans_speed']()

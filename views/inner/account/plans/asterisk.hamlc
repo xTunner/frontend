@@ -1,2 +1,0 @@
-= succeed "<a class='asterix' href='#' data-bind='click: function() { alert(\"#{@message}\"); }'>*</a>", =>
-  = @title

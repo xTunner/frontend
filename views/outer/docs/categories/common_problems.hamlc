@@ -1,11 +1,5 @@
 %article
-  .title
-    %h1 “It works on my machine”
-      %i.icon-cogs
-    %p Last Updated: June 5, 2012
-    %h4 Common problems and their solutions.
-    %hr
-
+  = HAML['article_title']({icon: "icon-cogs", title: '“It works on my machine”', lastUpdated: "Aug 1, 2012", subtitle: "Common problems and their solutions"})
   .doc
 
     = HAML['heading']({title: "Why your tests fail", hash: "intro"})

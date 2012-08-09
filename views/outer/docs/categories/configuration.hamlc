@@ -1,11 +1,5 @@
 %article
-  .title
-    %h1 Configuring Circle
-      %i.icon-list-alt
-    %p Last Updated: June 18, 2012
-    %h4 Tweak almost any setting you need
-    %hr
-
+  = HAML['article_title']({icon: "icon-list-alt", title: 'Configuring Circle', lastUpdated: "Aug 1, 2012", subtitle: "Tweak almost any setting you need"})
 
   .doc
     = HAML['heading']({title: "Overview", hash: "overview"})
@@ -108,6 +102,15 @@
       Most projects won't need to specify anything for most of the phases.
       Any phases which are not specified will be inferred from your code.
       In fact, the entire file is optional, and we will infer all your settings if it is missing.
+
+    %h3#subdirectory File location
+    %p
+      Most projects should put the
+      %code circle.yml
+      file in their repository's root directory.
+      However, if you store the application code in a subdirectory instead of the root, putting the
+      %code circle.yml
+      file there will tell Circle to use that directory for your tests.
 
     %h3 Sections
     %p
@@ -470,6 +473,64 @@
       %code https://circleci.com/api/v1/project/:username/:projectname/:build
       to see an example.
       (Note: this API is unstable and is changing very soon).
+
+    = HAML['heading']({title: "Deployment", hash: "deployment"})
+
+    %p
+      You can run commands at the end of the build, to deploy to
+      staging or production. Deployment commands are only run if the
+      build was successful.
+
+
+    %h5 Example 1:
+    %pre
+      %code.bash<>
+        :preserves
+          deployment:
+            production:
+              branch: production
+              commands:
+                - ./deploy_prod.sh
+            staging:
+              branch: master
+              commands:
+                - ./deploy_staging.sh
+
+
+    %p
+      Deployment consists of multiple sections. The section must
+      contain a field named branch. There can be multiple sections,
+      and the first one that matches the branch being built will be
+      run. The deployment commands will only be run if the build is
+      green.
+
+    %h3 Heroku
+
+    %p
+      We also have first-class support for deploying to Heroku.
+      Specify the add you'd like to
+      %code git push
+      to under <code>appname</code>.
+      Upon a successful build, we'll automatically deploy to the app in the section which matches the push, if there is one.
+
+    %pre
+      %code.bash<>
+        :preserves
+          deployment:
+            staging:
+              branch: master
+              heroku:
+                appname: foo-bar-123
+
+    %p
+      Using our deployment to Heroku requires one extra step.
+      Due to Heroku's architecture and security model, we need to deploy as a particular user.
+      A member of your project, possibly you, will need to register as that user.
+      You can do this on your project's settings page on Circle.
+
+    %p
+      We've only completed our first iteration of deployment.
+      If we are currently not meeting your deployment needs, please let us know!
 
     = HAML['heading']({title: "Under construction", hash: "construction"})
 

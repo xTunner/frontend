@@ -6,9 +6,6 @@
    border-radius: @radius;
 }
 
-.blue-line(@width: 3px) {
-   border-bottom: @width solid #105aaf;
-}
 
 body {
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
@@ -261,6 +258,7 @@ body {
    }
 
 
+
    .pricing {
       #team-plan-button {
          text-align: center;
@@ -369,10 +367,6 @@ body {
       border-bottom-right-radius: @radius;
    }
 
-   .pills.larger a {
-      font-size: 22px;
-   }
-
    table.plan {
       .border-radius;
       border-collapse: collapse;
@@ -393,20 +387,20 @@ body {
       }
    }
 
-  td { font-size: 16px; }
+   td { font-size: 16px; }
 
-    td.title, th.title {
+   td.title, th.title {
       color: #1b4f8a;
-      border: 0px;
       padding: 20px 10px 10px;
-      border-bottom: solid 1px transparent;
-    }
+   }
 
    td.title {
       font-size: 16px;
    }
 
-   .tick { background: url(../../../img/check.png) no-repeat center center; }
+   .tick {
+      background: url("../../../img/check.png") no-repeat center center;
+   }
 
    .col2 { background-color: rgba(16, 90, 175, 0.05) }
    .col3 { background-color: rgba(16, 90, 175, 0.15) }
@@ -414,7 +408,7 @@ body {
    .col5 { background-color: rgba(16, 90, 175, 0.25) }
 
    .name, .reason, .price {
-     border-bottom: 0px;
+      border-bottom: 0px;
    }
 
    tr { border-bottom: 1px solid hsla(214, 28%, 95%, 0.3) }
@@ -431,48 +425,40 @@ body {
 
    .reason {
       td {
-       color: #366aa4;
-       padding: 0 0 10px;
-       font-size: 16px;
+         color: #366aa4;
+         padding: 0 0 10px;
+         font-size: 16px;
       }
    }
 
-   .price {
-      .blue-line;
-      td {
-         line-height: 1.3;
-         font-size: 19px;
-         padding: 8px 10px 15px 10px;
-      }
+   .price td {
+      line-height: 1.3;
+      font-size: 19px;
+      padding: 8px 10px 15px 10px;
    }
 
    .price > td > button {
       font-size: 18px;
    }
 
-   .parallelism-slider {
-      .blue-line;
-   }
-
-   .projects {
-   }
-
-   .concurrency {
-   }
-
-   .collaborators {
-   }
-
-   .feature {
-   }
-}
-
-.dont_build {
-   .build_log {
-      text-decoration: line-through;
-   }
-
-   .not_run_message {
+   #thanks {
+      margin-top: 50px;
       text-align: center;
    }
+
+   .available-parallelism, .firewall, .price {
+      border-bottom: 3px solid #105aaf;
+   }
+
+
 }
+
+   .dont_build {
+      .build_log {
+         text-decoration: line-through;
+      }
+
+      .not_run_message {
+         text-align: center;
+      }
+   }

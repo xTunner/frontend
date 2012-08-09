@@ -7,27 +7,23 @@
         Notifications
 
     %li#api
-      %a{:href: '/account/api'}
+      %a{href: '/account/api'}
         API
 
     %li#ssh
-      %a{:href: '/account/ssh'}
+      %a{href: '/account/ssh'}
         SSH
 
-    %li#ssh
-      %a{:href: '/account/heroku'}
+    %li#heroku
+      %a{href: '/account/heroku'}
         Heroku
 
     %li#plans
-      %a{:href: '/account/plans'}
+      %a{href: '/account/plans'}
         Plans
 
-    %li#new-plans
-      %a{:href: '/account/new-plans'}
-        New plans
-
     %li#close
-      %a{:href: '/account/close'}
+      %a{href: '/account/close'}
         Close account
 
 .row{data-bind: "with: current_user"}

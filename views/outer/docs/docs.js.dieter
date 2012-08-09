@@ -2,6 +2,7 @@
   "categories/"
   "categories.hamlc"
   "docs.hamlc"
+  "article-title.hamlc"
   "contact_us.hamlc"
   "heading.hamlc"
 ]

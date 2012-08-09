@@ -87,9 +87,3 @@
         %h2
           New Total: $
           %span{data-bind: "text: total"}<>
-
-
-
-  .navigation
-    %a.btn.large.back{href: "/account/plans/users"}
-      Back: Customize plans for each user

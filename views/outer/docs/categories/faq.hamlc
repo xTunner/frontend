@@ -1,10 +1,5 @@
 %article
-  .title
-    %h1 FAQ
-      %i.icon-list-alt
-    %p Last Updated: May 28, 2012
-    %h4 Frequently asked questions, and questions which should be asked more frequently
-    %hr
+  = HAML['article_title']({icon: "icon-list-alt", title: 'FAQ', lastUpdated: "Aug 1, 2012", subtitle: "Frequently asked questions, and questions which should be asked more frequently"})
 
   .doc
 
@@ -83,3 +78,19 @@
       See our
       %a{href: "/docs/environment"} Circle Environment
       documentation for every detail we can think to provide you.
+
+    = HAML['heading']({title: "Can I test projects with unusual requirements?", hash: "unusual"})
+
+    %p
+      Circle is completely configurable.
+      While we have a very simple setup for projects that follow established conventions, we also support many variations on the theme.
+
+    %ul
+      %li
+        We support
+        %a{href: "/docs/configuration#subdirectory"} running tests from a subdirectory of your repository.
+
+      %li
+        You can completely
+        %a{href: "/docs/configuration"} override every single step of your tests
+        with custom settings, or minor tweaks.

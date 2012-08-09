@@ -105,6 +105,7 @@ class ActionLog extends Obj
     start_time: null
     end_time: null
     exit_code: null
+    run_time_millis: null
     status: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
@@ -149,7 +150,8 @@ class ActionLog extends Obj
     @start_to_end_string = komp =>
       "#{@start_time()} to #{@end_time()}"
 
-    @duration = Circle.time.as_duration(@run_time_millis)
+    @duration = komp =>
+      Circle.time.as_duration(@run_time_millis())
 
   toggle_minimize: =>
     if not @user_minimized?
@@ -182,6 +184,7 @@ class Step extends Obj
 class Build extends Obj
   observables: =>
     messages: []
+    build_time_millis: null
     committer_name: null
     committer_email: null
     committer_date: null
@@ -225,6 +228,7 @@ class Build extends Obj
           true
         else
           false
+
     @warning_style = komp =>
       switch @status()
         when "infrastructure_fail"
@@ -306,8 +310,8 @@ class Build extends Obj
       @previous()? and @previous().build_num
 
     @duration = komp () =>
-      if @build_time_millis
-        Circle.time.as_duration(@build_time_millis)
+      if @build_time_millis()?
+        Circle.time.as_duration(@build_time_millis())
       else
         "still running"
 
@@ -588,10 +592,14 @@ class User extends Obj
       result
 
     @in_trial = komp =>
-      not @paid and @days_left_in_trial >= 0
+      # not @paid and @days_left_in_trial >= 0
+      false
 
     @trial_over = komp =>
-      not @paid and @days_left_in_trial < 0
+      #not @paid and @days_left_in_trial < 0
+      # need to figure "paid" out before we really show this
+      false
+
 
 
   create_token: (data, event) =>
@@ -651,178 +659,92 @@ class User extends Obj
 
 
 class Plan extends Obj
-  observables: =>
-    parallelism: 1
-
   constructor: ->
     super
-
-    @actualParallelism = komp =>
-      Math.min(@parallelism(), @max_parallelism)
-
-    @total = komp =>
-      dollars = @price / 100
-      increment = Math.round(0.4 * dollars)
-      dollars + ((@actualParallelism() - 1) * increment)
-
-    @concurrencyTitle = komp =>
-      "#{@concurrency} concurrent build" + (if @concurrency == 1 then "" else "s")
 
     @projectsTitle = komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
 
-    @concurrencyContent = komp =>
-      "With the #{@name} plan, we will test #{@concurrency} pushes at once, and we'll queue the rest. Larger teams, and teams who push very frequently, may need more concurrent builds for fast test results."
-
     @projectsContent = komp =>
-      "With the #{@name} plan, we will run your tests on #{@projects} projects."
+      "We'll test up to #{@projects} private repositories."
 
+    @minParallelismContent = komp =>
+      "Run your tests at #{@min_parallelism}x the speed."
 
+    @minParallelismDescription = komp =>
+      "#{@min_parallelism}x"
 
+    @maxParallelismDescription = komp =>
+      "up to #{@max_parallelism}x"
+
+    @pricingDescription = komp =>
+      if @price?
+        "Sign up now for $#{@price}/mo"
+      else
+        "Contact us for pricing"
+
+  featureAvailable: (feature) =>
+    result =
+      tick: not feature.name? or feature.name in @features
+    if feature.name?
+      result[feature.name] = true
+    result
 
 
 
 class Billing extends Obj
   observables: =>
-    teamMembers: {} # github data; map of org->[users]
-    existingPlans: {}
-    collaborators: []
-
-    availablePlans: [] # the list of plans that a user can choose
-    existingPlanName: null
-    chosenPlan: null
-
-    selectedOrganization: null
-    existingOrganization: null
-
     stripeToken: null
     cardInfo: null
+
+    # old data
+    oldPlan: null
     oldTotal: 0
 
-    payer: null
-    plan: null
-
-    newAvailablePlans: []
-    planSize: "small"
+    # metadata
+    wizardStep: 1
     planFeatures: []
-    currentParallelism: 1
+    loadingOrganizations: false
 
+    # new data
+    organizations: []
+    chosenPlan: null
+    plans: []
+    parallelism: "1"
+    concurrency: "1"
 
   constructor: ->
     super
 
-    @visiblePlans = komp =>
-      (p for p in @newAvailablePlans() when p.size == @planSize())
-
-    @plans = komp =>
-      ap = for k,v of @availablePlans()
-        v.id = k
-        v.name_price = "#{v.name}    ($#{v.price / 100})"
-        v
-      ap.sort (a, b) ->
-        b.price - a.price # most expensive first
-      ap
-
-    @defaultPlan = komp =>
-      for p in @availablePlans()
-        if p.default?
-          return p
-
-    @selectedPlan = komp =>
-      if @chosenPlan()?
-        @chosenPlan()
-      else if @existingPlanName()? and @availablePlans()?
-        @availablePlans()[@existingPlanName()]
-      else if @defaultPlan()?
-        @defaultPlan()
-      else
-        @plans()[2] # always show something - pick the 3rd most expensive
-
-
-
-    @userMatrix = komp =>
-      users = {}
-      for c in @collaborators()
-        users[c.login] = c.plan().id if c.plan()?
-      users
-
     @total = komp =>
-      total = 0
-      for c in @collaborators()
-        total += c.plan().price if c.plan()?
-      total / 100
-
-    @paidFor = komp =>
-      @payer() and (@payer() isnt VM.current_user().login)
-
-    @selfPayer = komp =>
-      @payer() and (@payer() is VM.current_user().login)
-
-    @notPaid = komp =>
-      not @payer()?
+      if @chosenPlan()?
+        p = parseInt(@parallelism()) - @chosenPlan().min_parallelism
+        p = Math.max(p, 0)
+        c = parseInt(@concurrency()) - 1
+        @chosenPlan().price + (c * 49) + (p * 99)
+      else
+        0
 
     @savedCardNumber = komp =>
       return "" unless @cardInfo()
       "************" + @cardInfo().last4
 
-
-
-
-    @organizationMatrix = komp =>
-      orgs = {} # TODO: merge with existing plans
-      orgs[@selectedOrganization()] = {
-        add_new: false
-        default: @selectedPlan().id if @selectedPlan()?
-      }
-      orgs
-
-    @organizations = komp =>
-      (k for k,v of @teamMembers())
-
-    @selectOrganization = komp
-      # use computed observable because knockout select boxes make it hard to do otherwise
-      write: (value) =>
-        @selectedOrganization(value)
-        if value
-          cs = for login in @teamMembers()[value]
-            plan = ko.observable @selectedPlan()
-            # clojure converts keys to underscores...
-            existing = @existingPlans()[login.replace(/-/g, '_')]
-            plan(@availablePlans()[existing]) if existing
-            {login: login, plan: plan}
-          @collaborators(cs)
-          SammyApp.setLocation "/account/plans/users"
-
-      read: () =>
-        @selectedOrganization()
+    @wizardCompleted = komp =>
+      @wizardStep() > 4
 
   selectPlan: (plan) =>
     @chosenPlan(plan)
-    SammyApp.setLocation "/account/plans/organization"
+    @advanceWizard(2)
 
   load: (hash="small") =>
-    @planSize(hash)
     unless @loaded
-      unless window.location.pathname == "/account/new-plans"
-        SammyApp.setLocation "/account/plans"
-      @loadAvailablePlans()
-      @loadNewAvailablePlans()
+      $('.more-info').popover({html: true, placement: "below", live: true})
+      @loadPlans()
       @loadPlanFeatures()
       @loadExistingPlans()
-      @loadTeamMembers()
+      @loadOrganizations()
       @loadStripe()
       @loaded = true
-
-  setParallelism: (event, ui) =>
-    @currentParallelism(ui.value)
-    for p in @newAvailablePlans()
-      p.parallelism(ui.value)
-
-  loadUIElements: =>
-    $('#slider').slider({min: 1, max: 8, slide: @setParallelism, value: @currentParallelism()})
-    $('.more-info').popover({html: true, placement: "below", live: true})
-    $("##{@planSize()}").addClass('active')
-
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -866,13 +788,11 @@ class Billing extends Obj
       else
         @recordStripeTransaction event, response # TODO: add the plan
 
-
     # prevent the form from submitting with the default action
     return false;
 
   stripeUpdate: (data, event) ->
     @recordStripeTransaction event, null
-
 
   recordStripeTransaction: (event, stripeInfo) =>
     $.ajax(
@@ -881,16 +801,17 @@ class Billing extends Obj
       type: if stripeInfo then "POST" else "PUT"
       data: JSON.stringify
         token: stripeInfo
-        orgs: @organizationMatrix()
-        team_plans: @userMatrix()
+        plan: @chosenPlan().id
+
       success: () =>
-        @payer VM.current_user().login
         @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
-
-        SammyApp.setLocation "/account/plans"
+        @advanceWizard(3)
     )
     false
+
+  advanceWizard: (new_step) =>
+    @wizardStep(Math.max(new_step, @wizardStep() + 1))
 
 
   loadStripe: () =>
@@ -900,27 +821,48 @@ class Billing extends Obj
     $.getJSON '/api/v1/user/existing-plans', (data) =>
       @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
-      @payer(data.payer)
-      @existingPlans(data.team_plans)
+      @chosenPlan(data.plan)
+      @concurrency(data.concurrency or 1)
+      @parallelism(data.parallelism or 1)
+      if @chosenPlan()
+        @advanceWizard(5)
 
-      # we want the first plan/org, but iteration is the only way to get that from an object
-      for k,v of data.orgs
-        @existingOrganization(k)
-        @existingPlanName v['default']
-        break
+  loadOrganizations: () =>
+    @loadingOrganizations(true)
+    $.getJSON '/api/v1/user/organizations', (data) =>
+      @loadingOrganizations(false)
+      @organizations(({name: k, value: v} for k,v of data))
+
+  saveOrganizations: (data, event) =>
+    orgs = {}
+    for o in @organizations()
+      orgs[o.name] = o.value
+
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/user/organizations"
+      data: JSON.stringify
+        organizations: orgs
+      success: =>
+        @advanceWizard(4)
+
+  saveParallelism: (data, event) =>
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/user/parallelism"
+      data: JSON.stringify
+        parallelism: @parallelism()
+        concurrency: @concurrency()
+      success: (data) =>
+        @oldTotal(@total())
+        @advanceWizard(5)
 
 
-  loadTeamMembers: () =>
-    $.getJSON '/api/v1/user/team-members', (data) =>
-      @teamMembers(data)
-
-  loadAvailablePlans: () =>
-    $.getJSON '/api/v1/user/available-plans', (data) =>
-      @availablePlans(data)
-
-  loadNewAvailablePlans: () =>
-    $.getJSON '/api/v1/user/new-available-plans', (data) =>
-      @newAvailablePlans((new Plan(d) for d in data))
+  loadPlans: () =>
+    $.getJSON '/api/v1/user/plans', (data) =>
+      @plans((new Plan(d) for d in data))
 
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>
@@ -1097,18 +1039,20 @@ class CircleViewModel extends Base
   loadAccountPage: (cx, subpage) =>
     subpage = subpage[0].replace(/\//, '') # first one
     subpage = subpage.replace(/\//g, '_')
+    subpage = subpage.replace(/-/g, '_')
+    [subpage, hash] = subpage.split('#')
     subpage or= "notifications"
+    hash or= "meta"
 
-    if subpage.indexOf("plans") == 0 or subpage.indexOf("new-plans") == 0
-      [subpage, hash] = subpage.split('#')
-      hash or= "small"
-      @billing().load(hash)
+    if subpage.indexOf("plans") == 0
+      @billing().load()
     $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage.replace(/-/g, '_')]({}))
-    ko.applyBindings(VM)
+    $('#subpage').html(HAML['account_' + subpage]({}))
     $("##{subpage}").addClass('active')
-
-    @billing().loadUIElements()
+    if $('#hash').length
+      $("##{hash}").addClass('active')
+      $('#hash').html(HAML['account_' + subpage + "_" + hash]({}))
+    ko.applyBindings(VM)
 
 
   renderAdminPage: (subpage) =>

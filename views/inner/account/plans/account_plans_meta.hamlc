@@ -1,0 +1,6 @@
+.row.pricing
+  .span6.offset4
+    #thanks
+      .alert-message.block-message.info
+        %h2 Thanks!
+        %h5 We really appreciate it :)

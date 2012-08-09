@@ -1,0 +1,28 @@
+%h2 Select organizations
+
+%p
+  We'll use your plan to test any followed repositories in the following organizations:
+
+%div{data-bind: "if: loadingOrganizations"}
+  Loading organization list...
+
+%div{data-bind: "ifnot: loadingOrganizations"}
+  %form
+
+    %fieldset
+      .clearfix
+        %label
+          Tested organizations:
+        .input
+          %ul.inputs-list{data-bind: "foreach: organizations"}
+            %li
+              %label
+                %input{type: "checkbox", data-bind: "checked: value"}
+                  %span{data-bind: "text: name"}
+
+
+    %input.btn.primary.span5{data-bind: "click: saveOrganizations",
+                             type: "submit",
+                             value: "Run tests for these organizations",
+                             data-loading-text: "Saving...",
+                             data-success-text: "Saved"}

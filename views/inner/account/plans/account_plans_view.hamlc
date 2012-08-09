@@ -1,0 +1,15 @@
+.row
+  %ul.pills
+    %li#meta
+      %a{href: "/account/plans"} Meta
+    %li#speed
+      %a{href: "/account/plans#speed"} More Speed!
+    %li#organizations
+      %a{href: "/account/plans#organizations"} Organizations
+    %li#edit
+      %a{href: "/account/plans#edit"} Change plan
+    %li#card
+      %a{href: "/account/plans#card"} Credit card
+
+
+#hash
