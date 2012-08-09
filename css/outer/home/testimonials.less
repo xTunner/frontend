@@ -24,7 +24,7 @@
   border-right: none;
   z-index: 100;
   .saturate(10, "logo");
-  .transition(-webkit-filter 2.5s);
+  .transition(~"margin 2s, -webkit-filter 2.5s");
 
   &:after {
     content: '';
@@ -57,7 +57,18 @@
 
   // Scrolled trigger styles
   &.scrolled {
+    @quoteHeightScrolled: 290px;
+
+    margin-bottom: @quoteHeightScrolled;
     .saturate(100, "logo");
+
+    &:after {
+      height: @quoteHeightScrolled;
+    }
+
+    blockquote {
+      .opacity(100);
+    }
   }
 
   // Quotes
@@ -76,9 +87,11 @@
     margin: 30px 10px 10px 68px;
     background: white;
     font-size: 13px;
+    .transition(opacity 3s);
     .box-shadow(0 0 6px rgba(0,0,0,0.2));
     .border-radius();
     z-index: 0;
+    .opacity(0);
 
     &:last-child {
       margin-left: 48px;
