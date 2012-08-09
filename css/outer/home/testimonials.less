@@ -24,7 +24,7 @@
   border-right: none;
   z-index: 100;
   .saturate(10, "logo");
-  .transition(~"margin 2s, -webkit-filter 2.5s");
+  .transition(~"margin 1.5s, -webkit-filter 2s");
 
   &:after {
     content: '';
@@ -86,8 +86,9 @@
     float: left;
     margin: 30px 10px 10px 68px;
     background: white;
+    color: white;
     font-size: 13px;
-    .transition(opacity 3s);
+    .transition(opacity 2.5s);
     .box-shadow(0 0 6px rgba(0,0,0,0.2));
     .border-radius();
     z-index: 0;
@@ -95,6 +96,15 @@
 
     &:last-child {
       margin-left: 48px;
+    }
+
+    &:after {
+      content: "▲";
+      position: absolute;
+      top: -23px;
+      right: 50%;
+      font-size: 25px;
+      text-shadow: 0px -2px 3px rgba(0,0,0,0.15);
     }
 
     a {
