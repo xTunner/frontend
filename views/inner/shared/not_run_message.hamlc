@@ -1,15 +1,15 @@
 %td.not_run_message{colspan: 2}
 
   %span{data-bind: "if: dont_build() == 'no-user' && !user.is_user"}
-    %a.btn.primary{data-bind: "click: invite_user",
-                   data-loading-text: "Sending",
-                   data-success-text: "Sent",
-                   data-failed-text: "Failed to send"}
+    %a.btn.btn-primary{data-bind: "click: invite_user",
+                       data-loading-text: "Sending",
+                       data-success-text: "Sent",
+                       data-failed-text: "Failed to send"}
       Invite
       %span{data-bind: "text: user.login"}
 
   %span{data-bind: "if: dont_build() == 'no-user' && user.is_user"}
-    %a.btn.primary.disabled
+    %a.btn.btn-primary.disabled
       %span{data-bind: "text: user.login"}
       has joined
 
