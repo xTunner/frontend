@@ -2,29 +2,30 @@
 = HAML['flashes']({})
 
 .container-fluid
-  .sidebar
-    %ul
-      %li
-        %a{href: "/admin/projects"}
-          Enabled Projects
+  .row-fluid
+    .span3
+      %ul
+        %li#projects
+          %a{href: "/admin/projects"}
+            Enabled Projects
 
-      %li
-        %a{href: "/admin/users"}
-          Users
+        %li#users
+          %a{href: "/admin/users"}
+            Users
 
-      %li
-        %a{href: "/admin/recent-builds"}
-          Recent builds
+        %li#recent-builds
+          %a{href: "/admin/recent-builds"}
+            Recent builds
 
-      %li
-        %a{href: "/admin/build-state"}
-          Hazelcast build-state
+        %li#build-state
+          %a{href: "/admin/build-state"}
+            Hazelcast build-state
 
-      %li
-        %button.btn.primary{data-bind: "click: adminRefreshIntercomData"}
-          Refresh all Intercom data
+        %li
+          %button.btn.btn-primary{data-bind: "click: adminRefreshIntercomData"}
+            Refresh all Intercom data
 
-  .content
-    #subpage
-      %p
-        Click to load
+    .span9
+      #subpage
+        %p
+          Click to load
