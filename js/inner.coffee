@@ -485,11 +485,12 @@ class Project extends Obj
 
 
   @sidebarSort: (l, r) ->
-    if l.latest_build()
-      if r.latest_build()
-        if l.latest_build().build_num < r.latest_build().build_num then 1 else -1
-      else
-        -1
+    if l.followed() and r.followed()
+      if l.latest_build().build_num > r.latest_build().build_num then -1 else 1
+    else if l.followed()
+      -1
+    else if r.followed()
+      1
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
 
