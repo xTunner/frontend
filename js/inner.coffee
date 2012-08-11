@@ -760,7 +760,7 @@ class Billing extends Obj
   selectPlan: (plan) =>
     if plan.price?
       @chosenPlan(plan)
-      if @wizardCompleted()?
+      if @wizardCompleted()
         SammyApp.setLocation "/account/plans#card"
       else
         @advanceWizard(2)
