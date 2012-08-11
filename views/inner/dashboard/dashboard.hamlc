@@ -3,11 +3,11 @@
 .container-fluid
 
   .row-fluid
-    .span3
+    .span2
       = HAML['followed_sidebar']({})
       = HAML['available_sidebar']({})
 
-    .span9
+    .span10
       = HAML['flashes']({})
 
       %div{data-bind: "if: has_followed_projects()"}

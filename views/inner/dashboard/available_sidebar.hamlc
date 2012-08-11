@@ -12,7 +12,7 @@
   %tbody.add-row{data-bind: "foreach: available_projects()"}
     %tr{data-bind: "click: follow", title: "Enable continuous integration for this project"}
 
-      %td.project-name{data-bind: "text: project_name"}
+      %td.available-project-name{data-bind: "text: project_name"}
 
       %td
         %span.label.label-info.add-button
