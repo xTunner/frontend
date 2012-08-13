@@ -1,5 +1,5 @@
 %article
-  = HAML['article_title']({icon: "icon-repeat", title: "Setting your build up manually", lastUpdated: "Aug 1, 2012", subtitle: "Step by step instructions"})
+  = HAML['article_title']({icon: "icon-repeat", title: "Setting your build up manually", lastUpdated: "Aug 13, 2012", subtitle: "Step by step instructions"})
 
   .doc
     %p
@@ -59,6 +59,7 @@
       %code circle.yml
       file, with 3 subsections: "override", "pre", "post".
       Each subsection should contain a list of bash commands for that phase ("override") or before the phase ("pre") or after it ("post").
+      If no "override" commands are provided, we'll automatically infer the commands you want for that phase.
 
 
     = HAML['heading']({title: "Setting up your test machine", hash: "machine"})
@@ -93,7 +94,6 @@
             post:
               \- git submodule update --init
 
-
     %p
       If you have any files in your repositories which need to be moved, this is also a good time to do it:
 
@@ -103,8 +103,6 @@
           checkout:
             post:
               \- cp ./ci-server/config.yml ./app-server/config.yml
-
-
 
     = HAML['heading']({title: "Setting up your dependencies", hash: "dependencies"})
     %p
@@ -122,7 +120,7 @@
     = HAML['heading']({title: "Setting up your test databases", hash: "databases"})
     %p
       We have already installed
-      %a{ href: "/docs/environent#databases"} most databases that you'll need
+      %a{ href: "/docs/environment#databases"} most databases that you'll need
       on our virtual machine.
 
     %p
@@ -149,7 +147,6 @@
             override:
               \- php ./test-suite/run.php --unit-tests
 
-
     %p
       Depending on how you structured your tests, you may need to start your application server first:
 
@@ -159,7 +156,7 @@
           test:
             override:
               \- php ./app/run-server.php --daemon
-
+              \- php ./test-suite/run.php --unit-tests
 
     = HAML['heading']({title: "Next steps", hash: "next"})
     %p
