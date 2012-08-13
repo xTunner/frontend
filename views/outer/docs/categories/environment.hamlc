@@ -16,7 +16,7 @@
     %hr
 
     %p
-      Our base image uses Ubuntu 11.10, with the addition of many packages
+      Our base image uses Ubuntu 12.04, with the addition of many packages
       commonly used in web development.
       Some specifics:
 
@@ -26,15 +26,15 @@
       %li
         %code Username: ubuntu
       %li
-        %code Ubuntu 11.10 (oneiric)
+        %code Ubuntu 12.04 (precise)
       %li
-        %code Kernel version: 3.0.0-20
+        %code Kernel version: 3.2
       %li
-        %code git 1.7.5.4
+        %code git 1.7.9.5
       %li
-        %code gcc 4.6.1-9ubuntu3
+        %code gcc 4.6.3-1ubuntu5
       %li
-        %code g++ 4.6.1-9ubuntu3
+        %code g++ 4.6.3-1ubuntu5
       %li
         %code GNU make 3.81
 
@@ -166,11 +166,12 @@
 
     %h3#nodejs node.js
     %p
-      We use
-      %code node 0.6.18
-      with
-      = succeed ".", ->
-        %code npm 1.1.21
+      We use NVM to provide access to a wide range of node versions.  Currently we have
+    %ul
+      %li
+        %code 0.6.18
+      %li
+        %code 0.8.2
 
     %p
       Please
@@ -241,7 +242,7 @@
       We have Java installed, along with ant and maven.
     %ul
       %li
-        %code java 1.6.0_23 (IcedTea 1.11pre)
+        %code java 1.6.0_24 (IcedTea 1.11pre)
       %li
         %code ant 1.8.2
       %li
@@ -263,9 +264,9 @@
       We currently have a number of packages installed to help you test your backend applications, including:
     %ul
       %li
-        %code gcc 4.6.1-9ubuntu3
+        %code gcc 4.6.3-1ubuntu5
       %li
-        %code g++ 4.6.1-9ubuntu3
+        %code g++ 4.6.3-1ubuntu5
       %li
         %code go r60.1-1
       %li
@@ -282,7 +283,7 @@
 
     %ul
       %li
-        %code postgresql 9.1.3
+        %code postgresql 9.1.4
         (including postgres extensions)
 
       %li
@@ -290,11 +291,11 @@
       %li
         %code mongodb 2.0.5
       %li
-        %code mysql 5.1.52
+        %code mysql 5.5.24
       %li
-        %code redis 2.4.14
+        %code redis 2.4.16
       %li
-        %code memcache 1.4.7
+        %code memcache 1.4.13-0ubuntu2
       %li
         %code sphinx 0.9.9-release
 
