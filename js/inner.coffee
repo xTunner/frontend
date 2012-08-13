@@ -485,7 +485,7 @@ class Project extends Obj
 
 
   @sidebarSort: (l, r) ->
-    if l.followed() and r.followed() and l.latest_build()? and r.lastest_build()?
+    if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
       if l.latest_build().build_num > r.latest_build().build_num then -1 else 1
     else if l.followed() and l.latest_build()?
       -1
