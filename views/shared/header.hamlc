@@ -16,8 +16,8 @@
         %li
           %a{ href: '/about', title: 'Learn more about Circle' }
             About
-        -#%li
-          %a{ href: '#', title: 'Get a behind the scenes look at Circle' }
+        %li
+          %a{ href: '/blog', title: 'Get a behind the scenes look at Circle' }
             Blog
         %li
           %a{ href: '/about#contact', title: 'Get in contact with Circle' }
