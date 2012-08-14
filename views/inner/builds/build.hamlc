@@ -87,8 +87,10 @@
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 
-    = HAML['report_error']()
-    = HAML['messages']()
+    %div{data-bind: "if: messages().length"}
+      = HAML['messages']()
+    %div{data-bind: "ifnot: messages().length"}
+      = HAML['report_error']()
 
     %div{data-bind: "foreach: steps"}
       %div{data-bind: "foreach: actions"}
