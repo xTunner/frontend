@@ -14,11 +14,11 @@
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
         %li
-          %a{ href: '/about', title: 'Learn more about Circle' }
-            About
-        %li
           %a{ href: '/blog', title: 'Get a behind the scenes look at Circle' }
             Blog
+        %li
+          %a{ href: '/about', title: 'Learn more about Circle' }
+            About
         %li
           %a{ href: '/about#contact', title: 'Get in contact with Circle' }
             Contact
