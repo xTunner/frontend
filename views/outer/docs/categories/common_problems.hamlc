@@ -167,6 +167,16 @@
           $ git add log/.gitkeep
           $ git commit
 
+    %p
+      If this solution is unacceptable (perhaps you symlink your log directory in production), you can also add a post-checkout command to create the direction:
+
+    %pre
+      %code<>
+        :preserve
+          checkout:
+            post:
+              - mkdir -p log
+
     = HAML['heading']({title: "An important file is missing from your repository", hash: "missing-file"})
     %p
       Developers commonly omit certain files from their repositories, especially files containing application settings, passwords and API keys.
@@ -298,6 +308,49 @@
       %code.ruby<>
         :preserve
           gem "rails", :git => "http://github.com/rails/rails"
+
+    %p
+      If the repository is private, you will need
+      %a{href: "https://circleci.com/account/ssh"}
+        enable user keys
+      from your account settings.
+
+    = HAML['heading']({title: "Git errors during pip install", hash: "git-pip-install"})
+    %p
+      When your tests run, during the
+      %code pip install
+      step, you might see something like this:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          Obtaining somerepo from git+ssh://git@github.com/someorg/idx_interface.git#egg=somerepo (from -r requirements.txt (line 23))
+          Cloning ssh://git@github.com/someorg/somerepo.git to ./venv/src/somerepo
+          Complete output from command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/rg2/venv/src/somerepo:
+
+          ----------------------------------------
+          Command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/yourrepo/venv/src/somerepo failed with error code 128 in None
+          Storing complete log in /home/ubuntu/.pip/pip.log
+          ERROR: Repository not found.
+          fatal: The remote end hung up unexpectedly
+
+    %p
+      This happens because you have a git repository listed as a dependency in your requirement.txt file:
+
+    %pre
+      %code.ruby<>
+        :preserve
+          git+git://github.com/kennethreitz/requests.git
+
+    %p
+      If the repository is public, just change the dependency to use a
+      %code http
+      url:
+
+    %pre
+      %code.ruby<>
+        :preserve
+          git+http://github.com/kennethreitz/requests.git
 
     %p
       If the repository is private, you will need
