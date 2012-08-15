@@ -27,7 +27,7 @@
         :preserve
           machine:
             timezone:
-              Americas/Los_Angeles
+              America/Los_Angeles
             ruby:
               version: 1.9.3-p0-falcon
 
