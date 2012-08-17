@@ -463,6 +463,7 @@ class Project extends Obj
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
+    flowdock_api_token: null
     heroku_deploy_user: null
     followed: null
 
@@ -530,6 +531,7 @@ class Project extends Obj
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()
+        flowdock_api_token: @flowdock_api_token()
 
 
     false # dont bubble the event up

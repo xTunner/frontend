@@ -38,6 +38,16 @@
         https://YOURSUBDOMAIN.campfirenow.com/member/edit.
 
 
+  %legend Add Flowdock
+
+  .control-group
+    %label.control-label{for: "flowdock-token"} API token
+    .controls
+      %input.span4#hipchat-token{ type: "text", data-bind: "value: flowdock_api_token" }
+      .help-block
+        To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
+
+
   .form-actions
     %input.btn.btn-primary.span5.btn-large{data-bind: "click: save_hooks",
                                            type: "submit",
