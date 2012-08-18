@@ -24,9 +24,11 @@ finishAjax = (event, attrName, buttonName) ->
 $(document).ajaxSuccess (ev, xhr, options) ->
   finishAjax(xhr.event, "data-success-text", "Saved")
 
-$(document).ajaxError (ev, xhr, status, errorThrown) ->
+$(document).ajaxError (ev, xhr, settings, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
-  if xhr.responseText.indexOf("<!DOCTYPE") is 0
+  if xhr.status == 401
+    notifyError "You've been logged out, log back in to continue."
+  else if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
     notifyError (xhr.responseText or xhr.statusText)
