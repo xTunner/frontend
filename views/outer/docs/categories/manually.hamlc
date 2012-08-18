@@ -10,7 +10,7 @@
     = HAML['heading']({title: "Standard projects not inferred", hash: "standard"})
 
     %p
-      If you have a standard project, and we didn't set it up, it is most commonly because the project is in a subdiretory.
+      If you have a standard project, and we didn't set it up, it is most commonly because the project is in a subdirectory.
       This is easy to fix: just add an empty file called <code>circle.yml</code>, and we'll pick it up and run your tests from there.
       If you need to configure your project, you can
       = succeed '.', ->
@@ -35,7 +35,7 @@
       %li (Optionally) deploy your code
 
     %p
-      You'll basically be listing bash commands for each step, and each command wil be run in order.
+      You'll basically be listing bash commands for each step, and each command will be run in order.
       Failing commands (those with a non-zero exit code) will cause the whole process to stop, and you'll receive a notification.
 
 
@@ -84,7 +84,7 @@
 
     = HAML['heading']({title: "Checking code out", hash: "checkout"})
     %p
-      Circle will check out your code from your github repository for you.
+      Circle will check out your code from your GitHub repository for you.
       Currently, we don't check out submodules, so you may need to add a command for this yourself, like so:
 
     %pre
@@ -106,8 +106,8 @@
 
     = HAML['heading']({title: "Setting up your dependencies", hash: "dependencies"})
     %p
-      In all likelyhood, you'll have a list of libraries and dependencies that your app requires.
-      We automatically detect Ruby's Gemfile, Python's Requirements.txt, Clojure's project.clj and NodeJS's package.json, and run the appropriate commands to install the dependencies.
+      In all likelihood, you'll have a list of libraries and dependencies that your app requires.
+      We automatically detect Ruby's Gemfile, Python's Requirements.txt, Clojure's project.clj and Node's package.json, and run the appropriate commands to install the dependencies.
       You should add an "override" command to install your commands here instead:
 
     %pre

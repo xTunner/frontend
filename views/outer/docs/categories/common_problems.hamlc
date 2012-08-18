@@ -21,7 +21,7 @@
 
     = HAML['heading']({title: "Code which should not run on your CI server", hash: "dont-run"})
     %p
-      If there is code which should not be run on your CI server, you can wrap it in a conditional statement in your codebase.
+      If there is code which should not be run on your CI server, you can wrap it in a conditional statement in your code base.
       Circle has set the
       %code CI
       environmental variable, which can be used from within your application.
@@ -41,7 +41,7 @@
 
     %h2 How file-ordering affects tests
     %p
-      Many tests libraries, including Rspec, load all the test files in a certain directory, and then run them.
+      Many tests libraries, including RSpec, load all the test files in a certain directory, and then run them.
       This means that the order they run the tests depends on how the files are ordered in the test directory.
 
     %p
@@ -62,14 +62,14 @@
     %p
       Test code loads application code in order to test it.
       If you always run
-      %code ardvark.rb
+      %code aardvark.rb
       before
       %code bunny.rb
       then
       %code bunny.rb
       might rely on code loaded by
       = succeed ".", ->
-        %code ardvark.rb
+        %code aardvark.rb
       If you run
       %code bunny.rb
       first, the code it needs won't have been loaded.
@@ -122,7 +122,7 @@
       This distinguished them from <i>application loading-order</i> bugs because the application actually loads and starts running tests.
 
     %p
-      The fix here is to remove the test interdependencies.
+      The fix here is to remove the test inter-dependencies.
       They are a bad idea.
       Tests should always be idempotent, where possible.
 
@@ -134,7 +134,7 @@
     %p
       For <b>test-ordering</b> bugs, use your test suite's commands to run only a minimal set of tests, or just the failing test.
       Often, it will fail by itself because it depends on another test's results.
-      If this doesn't isolate it, the bug may be that another test leaves state behind, which interfere's with the failing test.
+      If this doesn't isolate it, the bug may be that another test leaves state behind, which interferes with the failing test.
       Another way to expose the problem is by using your test suite's random-ordering functionality, such as <code>RSpec</code>'s <code>--order</code>.
 
     %p
@@ -326,10 +326,10 @@
         :preserve
           Obtaining somerepo from git+ssh://git@github.com/someorg/idx_interface.git#egg=somerepo (from -r requirements.txt (line 23))
           Cloning ssh://git@github.com/someorg/somerepo.git to ./venv/src/somerepo
-          Complete output from command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/rg2/venv/src/somerepo:
+          Complete output from command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/someorg/venv/src/somerepo:
 
           ----------------------------------------
-          Command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/yourrepo/venv/src/somerepo failed with error code 128 in None
+          Command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/somerepo/venv/src/somerepo failed with error code 128 in None
           Storing complete log in /home/ubuntu/.pip/pip.log
           ERROR: Repository not found.
           fatal: The remote end hung up unexpectedly
@@ -438,7 +438,7 @@
 
     = HAML['heading']({title: "Do you need the latest version of Bundler", hash: "bundler-latest"})
     %p
-      If you use Heroku, you probably already use the latest version of bunlder.
+      If you use Heroku, you probably already use the latest version of bundler.
       Circle uses a slightly older version, but can be easily set to upgrade to the latest version.
       Just add the following to your
       %a{href: "/docs/configuration"}

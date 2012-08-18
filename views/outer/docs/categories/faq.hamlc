@@ -57,7 +57,7 @@
     = HAML['heading']({title: "Does parallelism really work?", hash: "parallelism"})
     %p
       If you've ever tried a parallel testing solution, you've probably had a bad experience.
-      Most attempt to run multiple tests within the same language runtime, or within multiple processses on the same system.
+      Most attempt to run multiple tests within the same language runtime, or within multiple processes on the same system.
 
     %p
       Circle doesn't do that.
