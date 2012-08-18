@@ -378,18 +378,17 @@ class Build extends Obj
     @start_time() and not @stop_time()
 
   shouldSubscribe: () =>
-    @isRunning() or @status() == "queued"
+    @isRunning() or @status() == "queued" or @status() == "scheduled"
 
   maybeSubscribe: () =>
     if @shouldSubscribe()
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
-      @build_channel.bind('newAction', (json) => @newAction json)
-      @build_channel.bind('updateAction', (json) => @updateAction json)
-      @build_channel.bind('appendAction', (json) => @appendAction json)
-      @build_channel.bind('updateObservables', (json) =>
-        @updateObservables(json))
+      @build_channel.bind('newAction', @newAction)
+      @build_channel.bind('updateAction', @updateAction)
+      @build_channel.bind('appendAction', @appendAction)
+      @build_channel.bind('updateObservables', @updateObservables)
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
