@@ -19,21 +19,6 @@
       We've filled this from real support requests and user feedback.
       If you find an error which isn't listed here, please get in touch.
 
-    = HAML['heading']({title: "Code which should not run on your CI server", hash: "dont-run"})
-    %p
-      If there is code which should not be run on your CI server, you can wrap it in a conditional statement in your code base.
-      Circle has set the
-      %code CI
-      environmental variable, which can be used from within your application.
-
-    %pre
-      %code.ruby<>
-        :preserve
-          if !ENV['CI']
-            Debugger.initialize!
-          end
-
-
     = HAML['heading']({title: "File-ordering bugs manifest on Linux systems", hash: "file-ordering"})
     %p
       If your tests work on your local machine, but fail randomly on Circle, the most likely culprit is the dreaded file-ordering bug.
@@ -242,11 +227,11 @@
 
     = HAML['heading']({title: "Time-based results are a few seconds off", hash: "time-seconds"})
     %p
-      While one-day variations are your responsibility, differences of a second or so are probably bugs in Circle.
+      While one-day variations are your responsibility, differences of a second or so are probably bugs in your CI server, and should not happen on Circle.
 
     %p
       This sort of bugs happen on slow computers running time-sensitive tests.
-      Even if you don't explicitly have time sensitive tests, Selenium and other browser-based tests often rely on implicit timeouts.
+      Even if you don't explicitly have time-sensitive tests, Selenium and other browser-based tests often rely on implicit timeouts.
       For example, if some button hasn't appeared in 3 seconds, tests start to fail.
 
     %p
@@ -275,7 +260,19 @@
       %a{href: "/docs/configuration#ruby-version"} control the version
       if we got it wrong.
 
+    = HAML['heading']({title: "Code which should not run on your CI server", hash: "dont-run"})
+    %p
+      If there is code which should not be run on your CI server, you can wrap it in a conditional statement in your code base.
+      Circle has set the
+      %code CI
+      environmental variable, which can be used from within your application.
 
+    %pre
+      %code.ruby<>
+        :preserve
+          if !ENV['CI']
+            Debugger.initialize!
+          end
 
     = HAML['heading']({title: "Git errors during a bundle install", hash: "git-bundle-install"})
     %p

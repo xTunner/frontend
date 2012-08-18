@@ -38,8 +38,6 @@
 
     %ul
       %li
-
-      %li
         If we didn't run an important step or omitted some tests,
         %a{ href: "/docs/configuration"}
           add a
@@ -60,7 +58,7 @@
         and their solutions.
 
 
-    = HAML['heading']({title: "What next", hash: "what-next"})
+    = HAML['heading']({title: "What next?", hash: "what-next"})
 
     %h2 Add your colleagues
     %p
