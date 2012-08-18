@@ -1036,6 +1036,7 @@ class CircleViewModel extends Base
 
   loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
+    @builds.removeAll()
     $.getJSON "/api/v1/project/#{project_name}", (data) =>
       start_time = Date.now()
       @builds((new Build d for d in data))
@@ -1045,6 +1046,7 @@ class CircleViewModel extends Base
 
   loadBuild: (cx, username, project, build_num) =>
     project_name = "#{username}/#{project}"
+    @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       start_time = Date.now()
       @build(new Build data)
