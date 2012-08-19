@@ -27,7 +27,7 @@
     %h2 How file-ordering affects tests
     %p
       Many tests libraries, including RSpec, load all the test files in a certain directory, and then run them.
-      This means that the order they run the tests depends on how the files are ordered in the test directory.
+      This means that not only will tests be run in a different order than you're used to locally, but also that different parts of your application will be loaded in a different order.
 
     %p
       On OSX, directory contents are always ordered the same, due to OSX's HFS+ file system.
