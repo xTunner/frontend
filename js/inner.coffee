@@ -465,6 +465,7 @@ class Project extends Obj
     campfire_token: null
     campfire_subdomain: null
     flowdock_api_token: null
+    github_user: null
     heroku_deploy_user: null
     followed: null
 
@@ -571,6 +572,25 @@ class Project extends Obj
         @refresh()
     false
 
+  set_github_user: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/github-user"
+      success: (result) =>
+        true
+        @refresh()
+    false
+
+  clear_github_user: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/github-user"
+      success: (result) =>
+        true
+        @refresh()
+    false
 
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>

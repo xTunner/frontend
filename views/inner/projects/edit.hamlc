@@ -28,6 +28,11 @@
       %li.divider
 
       %li.nav-header
+        SSH Keys
+      %li
+        %a{ href: "edit#ssh" } SSH Keys
+
+      %li.nav-header
         Continuous Deployment
       %li
         %a{ href: "edit#heroku" } Heroku settings
