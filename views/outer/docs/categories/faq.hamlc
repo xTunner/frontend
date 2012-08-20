@@ -125,3 +125,33 @@
         You can completely
         %a{href: "/docs/configuration"} override every single step of your tests
         with custom settings, or minor tweaks.
+
+    = HAML['heading']({title: "Can I use resources which are not in my repository?", hash: "external-resources"})
+
+    %p
+      Yes!
+      There are a number of techniques to do this:
+
+    %ul
+      Circle supports
+      = succeed ',', ->
+        %code git submodule
+      and has advanced SSH key management to let you access multiple repositories from a single test suite.
+      From
+      %a{ href: "https://circleci.com/account/ssh"}
+        your accounts page
+      you can add a "user key" with one-click, allowing you access code from multiple repositories in your test suite.
+      Git submodules can be easily set up in your
+      %code circle.yml
+      file (see
+      = succeed ').', ->
+        %a{ href: "https://circleci.com/docs/configuration#checkout"}
+          example 1
+
+
+    %ul
+      Circle's VMs are connected to the internet. You can download them directly while setting up your project, using
+      %code curl
+      or
+      = succeed '.', ->
+        %code wget
