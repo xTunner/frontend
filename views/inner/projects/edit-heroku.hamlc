@@ -33,6 +33,7 @@
     deploys on this project to use
     = succeed "'s SSH key", ->
       %span{data-bind: "text: VM.current_user().login"}
+    Skipping this step will result in permission denied errors when deploying.
 
     %form.api
       %input.btn.btn-primary{type: "submit",

@@ -528,6 +528,20 @@
       A member of your project, possibly you, will need to register as that user.
       You can do this on your project's settings page on Circle.
 
+    %h3 Heroku with post-deployment steps
+    %p
+      If you want to deploy to Heroku, and you'd like to run commands before or after the deploy, you'll have to use the 'normal' deployment syntax
+
+    %pre
+      %code.bash<>
+        :preserves
+            deployment:
+              production:
+                branch: production
+                commands:
+                  - git push git@heroku.com:foo-bar-123.git
+                  - heroku run rake db:migrate
+
     %p
       We've only completed our first iteration of deployment.
       If we are currently not meeting your deployment needs, please let us know!
