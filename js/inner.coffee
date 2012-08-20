@@ -24,9 +24,11 @@ finishAjax = (event, attrName, buttonName) ->
 $(document).ajaxSuccess (ev, xhr, options) ->
   finishAjax(xhr.event, "data-success-text", "Saved")
 
-$(document).ajaxError (ev, xhr, status, errorThrown) ->
+$(document).ajaxError (ev, xhr, settings, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
-  if xhr.responseText.indexOf("<!DOCTYPE") is 0
+  if xhr.status == 401
+    notifyError "You've been logged out, log back in to continue."
+  else if xhr.responseText.indexOf("<!DOCTYPE") is 0
     notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
   else
     notifyError (xhr.responseText or xhr.statusText)
@@ -376,18 +378,17 @@ class Build extends Obj
     @start_time() and not @stop_time()
 
   shouldSubscribe: () =>
-    @isRunning() or @status() == "queued"
+    @isRunning() or @status() == "queued" or @status() == "scheduled"
 
   maybeSubscribe: () =>
     if @shouldSubscribe()
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
-      @build_channel.bind('newAction', (json) => @newAction json)
-      @build_channel.bind('updateAction', (json) => @updateAction json)
-      @build_channel.bind('appendAction', (json) => @appendAction json)
-      @build_channel.bind('updateObservables', (json) =>
-        @updateObservables(json))
+      @build_channel.bind('newAction', @newAction)
+      @build_channel.bind('updateAction', @updateAction)
+      @build_channel.bind('appendAction', @appendAction)
+      @build_channel.bind('updateObservables', @updateObservables)
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
@@ -1034,6 +1035,7 @@ class CircleViewModel extends Base
 
   loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
+    @builds.removeAll()
     $.getJSON "/api/v1/project/#{project_name}", (data) =>
       start_time = Date.now()
       @builds((new Build d for d in data))
@@ -1043,6 +1045,7 @@ class CircleViewModel extends Base
 
   loadBuild: (cx, username, project, build_num) =>
     project_name = "#{username}/#{project}"
+    @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       start_time = Date.now()
       @build(new Build data)
