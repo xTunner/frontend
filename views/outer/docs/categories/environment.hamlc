@@ -10,6 +10,11 @@
       = HAML['contact_us']()
       if some part of our environment is not suitable for you, and we will try to come up with a workaround.
 
+    %p
+      If any version is not listed here, SSH into our build boxes to check it manually (and
+      = HAML['contact_us']()
+      so we can update this doc.
+
 
     %h1.section
       %a#linux Base
