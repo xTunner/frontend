@@ -67,11 +67,13 @@ circle = $.sammy "body", ->
       # build a table of contents dynamically from all the pages. DRY.
       pages = [
                 "getting-started",
+                "manually",
                 "common-problems",
                 "configuration",
-                "manually",
+                "config-sample",
                 "environment",
                 "faq",
+# "notifications",
 #                "api"
               ]
       categories = {}
