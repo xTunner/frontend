@@ -90,7 +90,7 @@
     %div{data-bind: "if: messages().length"}
       = HAML['messages']()
     %div{data-bind: "ifnot: messages().length"}
-      = HAML['report_error']()
+      = HAML['report_error']({build: true})
 
     %div{data-bind: "foreach: steps"}
       %div{data-bind: "foreach: actions"}
@@ -119,7 +119,7 @@
             %b Output:
             %pre.output{data-bind: "html: log_output()"}
 
-          = HAML['report_error']()
+          = HAML['report_error']({build: false})
 
     %div{data-bind: "if: steps().length > 1"}
       = HAML['messages']()

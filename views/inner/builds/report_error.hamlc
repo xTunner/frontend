@@ -8,15 +8,20 @@
             %span{data-bind: "html: message"}
 
       .alert.alert-danger
-        Uh-oh, that didn't work. If you expected it to, read about
-        %a{href: "/docs/common-problems" } common causes
-        of test failure.
+        %b Error!
 
-        If you believe this test failure is Circle's fault,
-        please
+        = succeed ',', ->
+          %a{href: "/docs/common-problems" } Check out common problems
+
+        // TODO: show this on actionlogs too
+        - if @build
+          = succeed ',', ->
+            %a{ data-bind: "attr: {href: edit_link}" } tweak our test settings
+
+        or
         %span.label.label-important#white{data-bind: "click: report_build",
                                           title: "Report an error in how Circle ran this build"}
-          %a{href: "#"}<> report it
+          %a{href: "#"}<> report this issue
         and we'll investigate.
 
 

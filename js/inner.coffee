@@ -93,6 +93,11 @@ VcsUrlMixin = (obj) ->
   obj.project_path = komp ->
     "/gh/#{obj.project_name()}"
 
+  obj.edit_link = komp () =>
+    "#{obj.project_path()}/edit"
+
+
+
 ## Deprecated. Do not use for new classes.
 class Base extends Obj
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
@@ -475,9 +480,6 @@ class Project extends Obj
     super json
 
     VcsUrlMixin(@)
-
-    @edit_link = komp () =>
-      "#{@project_path()}/edit"
 
     @build_url = komp =>
       @vcs_url() + '/build'
