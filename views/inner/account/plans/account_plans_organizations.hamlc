@@ -12,7 +12,7 @@
     %label Tested organizations:
     %div.controls{data-bind: "foreach: organizations"}
       %label.checkbox
-        %input{type: "checkbox", data-bind: "checked: value"}
+        %input{type: "checkbox", data-bind: "checked: enabled"}
           %span{data-bind: "text: name"}
 
 
