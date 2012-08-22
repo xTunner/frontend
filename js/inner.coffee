@@ -748,7 +748,7 @@ class Billing extends Obj
     loadingOrganizations: false
 
     # new data
-    organizations: []
+    organizations: {}
     chosenPlan: null
     plans: []
     parallelism: "1"
@@ -888,19 +888,15 @@ class Billing extends Obj
     @loadingOrganizations(true)
     $.getJSON '/api/v1/user/organizations', (data) =>
       @loadingOrganizations(false)
-      @organizations(({name: k, value: v} for k,v of data))
+      @organizations(data)
 
   saveOrganizations: (data, event) =>
-    orgs = {}
-    for o in @organizations()
-      orgs[o.name] = o.value
-
     $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/user/organizations"
       data: JSON.stringify
-        organizations: orgs
+        organizations: @organizations()
       success: =>
         @advanceWizard(4)
 
