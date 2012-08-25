@@ -605,12 +605,14 @@ class User extends Obj
     herokuApiKeyInput: ""
     heroku_api_key: ""
     user_key_fingerprint: ""
+    email_provider: ""
+    selected_email: ""
+    basic_email_prefs: "smart"
 
   constructor: (json) ->
     super json,
       admin: false
       login: ""
-      basic_email_prefs: "all"
 
     @environment = window.renderContext.env
 
@@ -684,9 +686,22 @@ class User extends Obj
       type: "PUT"
       event: event
       url: "/api/v1/user/save-preferences"
-      data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
-    false # dont bubble the event up
+      data: JSON.stringify
+        basic_email_prefs: @basic_email_prefs()
+        selected_email: @selected_email()
+      success: (result) =>
+        @updateObservables(result)
+    false
 
+  save_basic_email_pref: (data, event) =>
+    @basic_email_prefs(event.currentTarget.defaultValue)
+    @save_preferences(data, event)
+    true
+
+  save_email_address: (data, event) =>
+    @selected_email(event.currentTarget.defaultValue)
+    @save_preferences(data, event)
+    true
 
 
 class Plan extends Obj

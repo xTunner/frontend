@@ -2,35 +2,32 @@
 
 .row
   .span7
-    %br
-    %h2 Email notifications
-
+    %form#email_address.form-horizontal.well
+      %legend
+        Email Address
+      %div{data-bind: "foreach: all_emails"}
+        %label.radio
+          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: VM.current_user().selected_email, click: VM.current_user().save_email_address"}
+          %span{data-bind: "text: $data"}
 
     %form.well
+      %legend
+        Email notifications
       %label.radio
-        %input{type: "radio", name: "email", value: "all", data-bind: "checked: basic_email_prefs"}
+        %input{type: "radio", name: "email_pref", value: "all", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
           %span Send an email for every build in all your followed projects
 
       %label.radio
-        %input{type: "radio", name: "email", value: "smart", data-bind: "checked: basic_email_prefs"}
+        %input{type: "radio", name: "email_pref", value: "smart", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
           %span Send an email for failing builds, and once when they're fixed
 
       %label.radio
-        %input{type: "radio", name: "email", value: "none", data-bind: "checked: basic_email_prefs"}
+        %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
           %span No email
 
-      %input.btn.btn-primary.btn-large{type: "submit",
-                                       value: "Save preference",
-                                       data-bind: "click: save_preferences",
-                                       data-loading-text: "Saving...",
-                                       data-success-text: "Saved"}
-
-
-
-    %br
-    %h2 Project preferences
-
-    .well
+    %form.well
+      %legend
+        Project preferences
       %p Projects can be individually configured, from a project's <b>edit</b> page.
 
       %p Instant message settings are per-project; edit a project to set them.
