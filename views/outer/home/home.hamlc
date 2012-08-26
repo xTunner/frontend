@@ -3,7 +3,7 @@
     %h2#mainHeading{style: "display: none"} Continuous Integration for Web Apps
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
 
-    %a.authGithub.kissAuthGithub#join{ href: @githubAuthURL, title: 'Join using GitHub' }
+    %a.authGithub.kissAuthGithub#join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
       Join using GitHub
 
     %p.footnote
@@ -41,7 +41,7 @@
       %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
 
       %footer
-        %cite 
+        %cite
           %a{ href: "http://zencoder.com/company/" } Brandon Arbini
           %a{ href: "http://zencoder.com/" } VP Eng at Zencoder.com
 
