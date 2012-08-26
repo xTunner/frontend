@@ -105,6 +105,26 @@ body {
    }
 }
 
+.action-source {
+   .border-radius;
+   float: right;
+   margin-right: 10px; // move back from the right edge
+
+   padding: 0px 2px; // padding, but without increasing the height
+   background-color: rgba(255, 255, 255, 0.2); // make slightly lighter
+
+   font-style: italic;
+   opacity: 0.7; // better than using grey
+   font-size: 15px;
+   font-weight: normal; // unbolden
+}
+
+.action-source-inner:hover {
+   border-bottom: 2px solid;
+   cursor: help;
+}
+
+
 .build-output  {
    .command {
       font-weight: bold;

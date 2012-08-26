@@ -110,6 +110,9 @@
 
                   %span{data-bind: "if: timedout"}
                     %b (TIMED OUT)
+                %span{data-bind: "if: source"}
+                  %span.action-source
+                    %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
           .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
 

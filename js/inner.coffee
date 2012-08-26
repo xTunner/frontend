@@ -117,6 +117,8 @@ class ActionLog extends Obj
     exit_code: null
     run_time_millis: null
     status: null
+    source: null
+    type: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
@@ -162,6 +164,20 @@ class ActionLog extends Obj
 
     @duration = komp =>
       Circle.time.as_duration(@run_time_millis())
+
+    @sourceText = komp =>
+      @source()
+
+    @sourceTitle = komp =>
+      switch @source()
+        when "template"
+          "Circle generated this command automatically"
+        when "cache"
+          "Circle caches some subdirectories to significantly speed up your tests"
+        when "config"
+          "You specified this command in your circle.yml file"
+        when "inference"
+          "Circle inferred this command from your source code and directory layout"
 
   toggle_minimize: =>
     if not @user_minimized?
@@ -217,7 +233,7 @@ class Build extends Obj
     branch: "unknown"
     previous: null
     retry_of: null
-    subject: null,
+    subject: null
 
   constructor: (json) ->
 
