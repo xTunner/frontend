@@ -639,7 +639,7 @@ class Project extends Obj
     console.log(user)
     $.ajax
       type: "POST"
-      url: "api/v1/project/#{@project_name()}/invite/#{user.login}"
+      url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
 
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
