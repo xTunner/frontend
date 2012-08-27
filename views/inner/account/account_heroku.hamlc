@@ -6,7 +6,7 @@
       Add your
       %a{href: "https://api.heroku.com/account"}
         Heroku API Key
-      to set up deployment with Heroku.
+      to set up deployment with Heroku. You'll also need to edit the project to set up an SSH key.
 
     %h3 Existing key
 
