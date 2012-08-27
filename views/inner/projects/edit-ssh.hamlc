@@ -1,8 +1,5 @@
 %h1 Setup SSH keys
-%p Clicking this will create a new SSH key, associate it with your account, and use it for
-  %strong
-    all
-  GitHub checkouts on this project.
+%p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
 
 %p Current GitHub user is
   %strong
