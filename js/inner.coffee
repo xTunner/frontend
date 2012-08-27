@@ -117,6 +117,8 @@ class ActionLog extends Obj
     exit_code: null
     run_time_millis: null
     status: null
+    source: null
+    type: null
     out: []
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
@@ -162,6 +164,20 @@ class ActionLog extends Obj
 
     @duration = komp =>
       Circle.time.as_duration(@run_time_millis())
+
+    @sourceText = komp =>
+      @source()
+
+    @sourceTitle = komp =>
+      switch @source()
+        when "template"
+          "Circle generated this command automatically"
+        when "cache"
+          "Circle caches some subdirectories to significantly speed up your tests"
+        when "config"
+          "You specified this command in your circle.yml file"
+        when "inference"
+          "Circle inferred this command from your source code and directory layout"
 
   toggle_minimize: =>
     if not @user_minimized?
@@ -217,7 +233,7 @@ class Build extends Obj
     branch: "unknown"
     previous: null
     retry_of: null
-    subject: null,
+    subject: null
 
   constructor: (json) ->
 
@@ -360,6 +376,16 @@ class Build extends Obj
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
 
+   # hack - how can an action know its type is different from the previous, when
+   # it doesn't even have access to the build
+  different_type: (action) =>
+    lastType = null
+    for s in @steps()
+      if s.actions()[0] == action
+        break
+      lastType = s.actions()[0].type()
+
+    not (lastType == action.type())
 
   urlForBuildNum: (num) =>
     "#{@project_path()}/#{num}"

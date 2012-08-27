@@ -97,6 +97,9 @@
 
         -# wrapper allows the header and detail be siblings, for the JS
         .wrapper.build-output
+          %div{data-bind: "if: $root.build().different_type($data)"}
+            .type-divider
+              %span{data-bind: "text: type"}
           .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
             .ah_wrapper
               .button{data-bind: "css: action_header_button_style"}
@@ -110,6 +113,9 @@
 
                   %span{data-bind: "if: timedout"}
                     %b (TIMED OUT)
+                %span{data-bind: "if: source"}
+                  %span.action-source
+                    %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
           .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
 

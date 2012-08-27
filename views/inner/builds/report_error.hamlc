@@ -13,10 +13,14 @@
         = succeed ',', ->
           %a{href: "/docs/common-problems" } Check out common problems
 
-        // TODO: show this on actionlogs too
+        or
         - if @build
           = succeed ',', ->
-            %a{ data-bind: "attr: {href: edit_link}" } tweak our test settings
+            %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
+
+        - else
+          = succeed ',', ->
+            %a{ data-bind: "attr: {href: VM.build().edit_link()}" } tweak your test settings
 
         or
         %span.label.label-important#white{data-bind: "click: report_build",

@@ -85,9 +85,9 @@
     %pre
       %code.no-highlight<>
         :preserve
-          /home/ubuntu/circle-1/app/models/action.rb:1:in `<top (required)>': superclass mismatch for class Action (TypeError)
-          from /home/ubuntu/circle1/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `require'
-          from /home/ubuntu/kera-25/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
+          /home/ubuntu/circle/app/models/action.rb:1:in `<top (required)>': superclass mismatch for class Action (TypeError)
+          from /home/ubuntu/circle/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `require'
+          from /home/ubuntu/circle/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
 
     %p
       This usually happens when a model and another class have the same name.
