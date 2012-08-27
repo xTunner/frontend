@@ -93,6 +93,11 @@ VcsUrlMixin = (obj) ->
   obj.project_path = komp ->
     "/gh/#{obj.project_name()}"
 
+  obj.edit_link = komp () =>
+    "#{obj.project_path()}/edit"
+
+
+
 ## Deprecated. Do not use for new classes.
 class Base extends Obj
   constructor: (json, defaults={}, nonObservables=[], observe=true) ->
@@ -478,9 +483,6 @@ class Project extends Obj
 
     VcsUrlMixin(@)
 
-    @edit_link = komp () =>
-      "#{@project_path()}/edit"
-
     @build_url = komp =>
       @vcs_url() + '/build'
 
@@ -624,12 +626,14 @@ class User extends Obj
     herokuApiKeyInput: ""
     heroku_api_key: ""
     user_key_fingerprint: ""
+    email_provider: ""
+    selected_email: ""
+    basic_email_prefs: "smart"
 
   constructor: (json) ->
     super json,
       admin: false
       login: ""
-      basic_email_prefs: "all"
 
     @environment = window.renderContext.env
 
@@ -703,9 +707,22 @@ class User extends Obj
       type: "PUT"
       event: event
       url: "/api/v1/user/save-preferences"
-      data: JSON.stringify {basic_email_prefs: @basic_email_prefs}
-    false # dont bubble the event up
+      data: JSON.stringify
+        basic_email_prefs: @basic_email_prefs()
+        selected_email: @selected_email()
+      success: (result) =>
+        @updateObservables(result)
+    false
 
+  save_basic_email_pref: (data, event) =>
+    @basic_email_prefs(event.currentTarget.defaultValue)
+    @save_preferences(data, event)
+    true
+
+  save_email_address: (data, event) =>
+    @selected_email(event.currentTarget.defaultValue)
+    @save_preferences(data, event)
+    true
 
 
 class Plan extends Obj
@@ -767,7 +784,7 @@ class Billing extends Obj
     loadingOrganizations: false
 
     # new data
-    organizations: []
+    organizations: {}
     chosenPlan: null
     plans: []
     parallelism: "1"
@@ -907,19 +924,15 @@ class Billing extends Obj
     @loadingOrganizations(true)
     $.getJSON '/api/v1/user/organizations', (data) =>
       @loadingOrganizations(false)
-      @organizations(({name: k, value: v} for k,v of data))
+      @organizations(data)
 
   saveOrganizations: (data, event) =>
-    orgs = {}
-    for o in @organizations()
-      orgs[o.name] = o.value
-
     $.ajax
       type: "PUT"
       event: event
       url: "/api/v1/user/organizations"
       data: JSON.stringify
-        organizations: orgs
+        organizations: @organizations()
       success: =>
         @advanceWizard(4)
 

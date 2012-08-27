@@ -9,7 +9,7 @@
     = HAML['account_heroku']({})
 
 %hr
-%h2 Step 2: Select a user whose Heroku key we'll use to deploy
+%h2 Step 2: Associate a Heroku SSH key with your account
 %p Current deploy user is
   %strong
     %span{data-bind: "if: heroku_deploy_user()"}

@@ -17,10 +17,12 @@
       for the first time, you can avoid annoying your colleagues by experimenting in a branch.
 
     %p
-      Here's a quick example of a
-      %code circle.yml
-      file.
-
+      For a quick sense of how to set up your
+      %code circle.yml file,
+      = succeed '.', ->
+        %a{ href: "/docs/config-sample" }
+          check out out complete example file
+      Otherwise, here's a quick exmaple:
 
     %pre
       %code.no-highlight<>
