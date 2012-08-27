@@ -34,8 +34,8 @@
 
       %li.nav-header
         Permissions
-      %li
-        %a{ href: "edit#collaborators" } Collaborators
+      -# %li
+      -#   %a{ href: "edit#collaborators" } Collaborators
       %li
         %a{ href: "edit#ssh" } SSH Keys
 
