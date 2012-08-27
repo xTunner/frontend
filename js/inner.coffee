@@ -376,6 +376,16 @@ class Build extends Obj
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
 
+   # hack - how can an action know its type is different from the previous, when
+   # it doesn't even have access to the build
+  different_type: (action) =>
+    lastType = null
+    for s in @steps()
+      if s.actions()[0] == action
+        break
+      lastType = s.actions()[0].type()
+
+    not (lastType == action.type())
 
   urlForBuildNum: (num) =>
     "#{@project_path()}/#{num}"
