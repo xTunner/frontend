@@ -774,9 +774,9 @@ class User extends Obj
   loadRepos: (org) =>
     @loadingOrganizations(true)
     if org.org
-      url = "/api/v1/user/org/#{org.name}/repos"
+      url = "/api/v1/user/org/#{org.login}/repos"
     else
-      url = "/api/v1/user/user/#{org.name}/repos"
+      url = "/api/v1/user/user/#{org.login}/repos"
 
     $.getJSON url, (data) =>
       @loadingOrganizations(false)
