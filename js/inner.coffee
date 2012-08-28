@@ -629,14 +629,12 @@ class Project extends Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/users"
       success: (result) =>
-        console.log(result)
         @users(result)
         @loading_users(false)
         true
     false
 
   invite_user: (user) =>
-    console.log(user)
     $.ajax
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
@@ -647,6 +645,13 @@ class Project extends Obj
 
 class User extends Obj
   observables: =>
+    organizations: []
+    collaboratorAccounts: []
+    loadingOrganizations: false
+    # the org we're currently viewing in add-projects
+    activeOrganization: null
+    # keyed on org/account name
+    repos: []
     tokens: []
     tokenLabel: ""
     herokuApiKeyInput: ""
@@ -750,6 +755,32 @@ class User extends Obj
     @save_preferences(data, event)
     true
 
+  loadOrganizations: () =>
+    @loadingOrganizations(true)
+    $.getJSON '/api/v1/user/organizations', (data) =>
+      @loadingOrganizations(false)
+      @organizations(data)
+
+  loadCollaboratorAccounts: () =>
+    @loadingOrganizations(true)
+    $.getJSON '/api/v1/user/collaborator-accounts', (data) =>
+      @collaboratorAccounts(data)
+      @loadingOrganizations(false)
+
+   setActiveOrganization: (org, event) =>
+     @activeOrganization(org.name)
+     @loadRepos(org)
+
+  loadRepos: (org) =>
+    @loadingOrganizations(true)
+    if org.org
+      url = "/api/v1/user/org/#{org.name}/repos"
+    else
+      url = "/api/v1/user/user/#{org.name}/repos"
+
+    $.getJSON url, (data) =>
+      @loadingOrganizations(false)
+      @repos(data)
 
 class Plan extends Obj
   constructor: ->
@@ -948,7 +979,7 @@ class Billing extends Obj
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
-    $.getJSON '/api/v1/user/organizations', (data) =>
+    $.getJSON '/api/v1/user/stripe-organizations', (data) =>
       @loadingOrganizations(false)
       @organizations(data)
 
@@ -1112,6 +1143,10 @@ class CircleViewModel extends Base
     @loadRecentBuilds()
     display "dashboard", {}
 
+  loadAddProjects: (cx) =>
+    @current_user().loadOrganizations()
+    @current_user().loadCollaboratorAccounts()
+    display "add_projects", {}
 
   loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
@@ -1246,13 +1281,12 @@ class CircleViewModel extends Base
 
 
 
-
-
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
     @get('/', (cx) => VM.loadDashboard(cx))
+    @get('/add-projects', (cx) => VM.loadAddProjects(cx))
     @get('/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
     @get('/account(.*)',
