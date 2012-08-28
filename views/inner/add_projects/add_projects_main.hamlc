@@ -1,0 +1,17 @@
+%table.well.table.table-condensed.table-striped
+  %thead
+  -# %tr
+  -#   %th Name
+  -#   %th Actions
+  %tbody.build-row{data-bind: "foreach: repos"}
+    %tr
+      %td{data-bind: "text: name"}
+      %td{style: "height: 25px, width: 40px"}
+        %span{data-bind: "if: admin"}
+          %button.btn.btn-primary
+            Add
+        %span{data-bind: "ifnot: admin"}
+          %button.btn.btn-disabled{data-title: "You are not admin"}
+            Add
+
+- $("table button.disabled").tooltip()
