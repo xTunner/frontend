@@ -381,13 +381,18 @@ class Build extends Obj
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
   different_type: (action) =>
-    lastType = null
+    last = null
+    breakLoop = false
     for s in @steps()
-      if s.actions()[0] == action
+      for a in s.actions()
+        if a == action
+          breakLoop = true # no nested breaks in CS
+          break
+        last = a
+      if breakLoop
         break
-      lastType = s.actions()[0].type()
 
-    not (lastType == action.type())
+    last? and not (last.type() == action.type())
 
   urlForBuildNum: (num) =>
     "#{@project_path()}/#{num}"
