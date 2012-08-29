@@ -33,6 +33,13 @@
         %a{ href: "edit#ssh" } SSH Keys
 
       %li.nav-header
+        Permissions
+      -# %li
+      -#   %a{ href: "edit#collaborators" } Collaborators
+      %li
+        %a{ href: "edit#ssh" } SSH Keys
+
+      %li.nav-header
         Continuous Deployment
       %li
         %a{ href: "edit#heroku" } Heroku settings

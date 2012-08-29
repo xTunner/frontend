@@ -506,6 +506,8 @@ class Project extends Obj
     github_user: null
     heroku_deploy_user: null
     followed: null
+    loading_users: false
+    users: []
 
   constructor: (json) ->
 
@@ -626,6 +628,25 @@ class Project extends Obj
         true
         @refresh()
     false
+
+  get_users: () =>
+    @loading_users(true)
+    $.ajax
+      type: "GET"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/users"
+      success: (result) =>
+        console.log(result)
+        @users(result)
+        @loading_users(false)
+        true
+    false
+
+  invite_user: (user) =>
+    console.log(user)
+    $.ajax
+      type: "POST"
+      url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
 
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
@@ -1131,6 +1152,7 @@ class CircleViewModel extends Base
     (@project().vcs_url() isnt "https://github.com/#{project_name}"))
       $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
         @project(new Project data)
+        @project().get_users()
 
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"
