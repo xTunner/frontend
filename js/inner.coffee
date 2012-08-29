@@ -178,6 +178,8 @@ class ActionLog extends Obj
           "You specified this command in your circle.yml file"
         when "inference"
           "Circle inferred this command from your source code and directory layout"
+        when "db"
+          "You specified this command on the project settings page"
 
   toggle_minimize: =>
     if not @user_minimized?
