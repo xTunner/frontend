@@ -482,8 +482,38 @@ class Build extends Obj
   update: (json) =>
     @status(json.status)
 
-class Project extends Obj
+class Repo extends Obj
+  ## A Repo comes from github, may or may not be in the DB yet
 
+  observables: =>
+    following: false
+
+  constructor: (json) ->
+    super json
+    VcsUrlMixin(@)
+
+    @canFollow = komp =>
+      not @following() and @admin
+
+  unfollow: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/unfollow"
+      success: (data) =>
+        @following(false)
+
+  follow: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/follow"
+      success: (data) =>
+        @following(true)
+
+
+class Project extends Obj
+  ## A project in the DB
   observables: =>
     setup: null
     dependencies: null
@@ -780,7 +810,7 @@ class User extends Obj
 
     $.getJSON url, (data) =>
       @loadingOrganizations(false)
-      @repos(data)
+      @repos((new Repo r for r in data))
 
 class Plan extends Obj
   constructor: ->
