@@ -153,8 +153,11 @@ class ActionLog extends Obj
       success: komp => @status() == "success"
       failed: komp => @status() == "failed"
 
-    @action_header_button_style =
-      @action_header_style
+    @action_header_button_style = komp =>
+      if @has_content()
+        @action_header_style
+      else
+        {}
 
     @action_log_style =
       minimize: @minimize
