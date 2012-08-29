@@ -768,7 +768,7 @@ class User extends Obj
       @loadingOrganizations(false)
 
    setActiveOrganization: (org, event) =>
-     @activeOrganization(org.name)
+     @activeOrganization(org.login)
      @loadRepos(org)
 
   loadRepos: (org) =>

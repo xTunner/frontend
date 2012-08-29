@@ -6,6 +6,10 @@
       = HAML['org_sidebar']({})
     .span6
       %h1 Projects
+      %div{data-bind: "ifnot: activeOrganization"}
+        .well
+          %p
+            Click on an organization to the left to get started
       %div{data-bind: "if: loadingOrganizations"}
         %img{src: "/img/ajax-loader.gif"}
       %div{data-bind: "ifnot: loadingOrganizations"}
