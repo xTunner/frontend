@@ -58,7 +58,7 @@
     %header
       %h2 All this power from one little button
 
-    %a.authGithub.kissAuthGithub{ href: @githubAuthURL, title: 'Join using GitHub' } Join using GitHub
+    %a.authGithub.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
 
 
     %ul
