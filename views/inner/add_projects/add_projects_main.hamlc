@@ -1,0 +1,22 @@
+%table.well.table.table-condensed.table-striped
+  %thead
+  -# %tr
+  -#   %th Name
+  -#   %th Actions
+  %tbody.build-row{data-bind: "foreach: repos"}
+    %tr
+      %td{data-bind: "text: name"}
+      %td{style: "height: 25px, width: 40px"}
+        %span{data-bind: "if: canFollow"}
+          %button.btn.btn-primary{data-bind: "click: follow"}
+            Add
+        %span{data-bind: "if: following"}
+          %button.btn{data-bind: "click: unfollow"}
+            Unfollow
+        -# %span{data-bind: "if: (!admin && !following)"}
+        -#   %button.btn.disabled{title: "You are not admin"}
+        -#     Add
+        -#   %button.btn{title: "Build the project once"}
+        -#     Test
+        -#   %button.btn{title: "Invite an admin to add the project"}
+        -#     Invite

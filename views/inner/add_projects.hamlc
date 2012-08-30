@@ -1,0 +1,16 @@
+= HAML['_topbar']({})
+
+.container-fluid{data-bind: "with: current_user"}
+  .row-fluid
+    .span2
+      = HAML['org_sidebar']({})
+    .span6
+      %h1 Projects
+      %div{data-bind: "ifnot: activeOrganization"}
+        .well
+          %p
+            Click on an organization to the left to get started
+      %div{data-bind: "if: loadingOrganizations"}
+        %img{src: "/img/ajax-loader.gif"}
+      %div{data-bind: "ifnot: loadingOrganizations"}
+        = HAML['add_projects_main']({})

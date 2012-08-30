@@ -2,14 +2,6 @@
 
 .row
   .span7
-    %form#email_address.form-horizontal.well
-      %legend
-        Email Address
-      %div{data-bind: "foreach: all_emails"}
-        %label.radio
-          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: VM.current_user().selected_email, click: VM.current_user().save_email_address"}
-          %span{data-bind: "text: $data"}
-
     %form.well
       %legend
         Email notifications
@@ -24,6 +16,14 @@
       %label.radio
         %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
           %span No email
+
+    %form#email_address.form-horizontal.well
+      %legend
+        Email Address
+      %div{data-bind: "foreach: all_emails"}
+        %label.radio
+          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: VM.current_user().selected_email, click: VM.current_user().save_email_address"}
+          %span{data-bind: "text: $data"}
 
     %form.well
       %legend

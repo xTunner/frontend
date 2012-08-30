@@ -492,8 +492,38 @@ class Build extends Obj
   update: (json) =>
     @status(json.status)
 
-class Project extends Obj
+class Repo extends Obj
+  ## A Repo comes from github, may or may not be in the DB yet
 
+  observables: =>
+    following: false
+
+  constructor: (json) ->
+    super json
+    VcsUrlMixin(@)
+
+    @canFollow = komp =>
+      not @following() and @admin
+
+  unfollow: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/unfollow"
+      success: (data) =>
+        @following(false)
+
+  follow: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/follow"
+      success: (data) =>
+        @following(true)
+
+
+class Project extends Obj
+  ## A project in the DB
   observables: =>
     setup: null
     dependencies: null
@@ -639,14 +669,12 @@ class Project extends Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/users"
       success: (result) =>
-        console.log(result)
         @users(result)
         @loading_users(false)
         true
     false
 
   invite_user: (user) =>
-    console.log(user)
     $.ajax
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
@@ -657,6 +685,13 @@ class Project extends Obj
 
 class User extends Obj
   observables: =>
+    organizations: []
+    collaboratorAccounts: []
+    loadingOrganizations: false
+    # the org we're currently viewing in add-projects
+    activeOrganization: null
+    # keyed on org/account name
+    repos: []
     tokens: []
     tokenLabel: ""
     herokuApiKeyInput: ""
@@ -760,6 +795,32 @@ class User extends Obj
     @save_preferences(data, event)
     true
 
+  loadOrganizations: () =>
+    @loadingOrganizations(true)
+    $.getJSON '/api/v1/user/organizations', (data) =>
+      @loadingOrganizations(false)
+      @organizations(data)
+
+  loadCollaboratorAccounts: () =>
+    @loadingOrganizations(true)
+    $.getJSON '/api/v1/user/collaborator-accounts', (data) =>
+      @collaboratorAccounts(data)
+      @loadingOrganizations(false)
+
+   setActiveOrganization: (org, event) =>
+     @activeOrganization(org.login)
+     @loadRepos(org)
+
+  loadRepos: (org) =>
+    @loadingOrganizations(true)
+    if org.org
+      url = "/api/v1/user/org/#{org.login}/repos"
+    else
+      url = "/api/v1/user/user/#{org.login}/repos"
+
+    $.getJSON url, (data) =>
+      @loadingOrganizations(false)
+      @repos((new Repo r for r in data))
 
 class Plan extends Obj
   constructor: ->
@@ -958,7 +1019,7 @@ class Billing extends Obj
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
-    $.getJSON '/api/v1/user/organizations', (data) =>
+    $.getJSON '/api/v1/user/stripe-organizations', (data) =>
       @loadingOrganizations(false)
       @organizations(data)
 
@@ -1122,6 +1183,10 @@ class CircleViewModel extends Base
     @loadRecentBuilds()
     display "dashboard", {}
 
+  loadAddProjects: (cx) =>
+    @current_user().loadOrganizations()
+    @current_user().loadCollaboratorAccounts()
+    display "add_projects", {}
 
   loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
@@ -1256,13 +1321,12 @@ class CircleViewModel extends Base
 
 
 
-
-
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', () ->
     @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
     @get('/', (cx) => VM.loadDashboard(cx))
+    @get('/add-projects', (cx) => VM.loadAddProjects(cx))
     @get('/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
     @get('/account(.*)',
