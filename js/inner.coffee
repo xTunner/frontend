@@ -666,7 +666,6 @@ class Project extends Obj
     @loading_users(true)
     $.ajax
       type: "GET"
-      event: event
       url: "/api/v1/project/#{@project_name()}/users"
       success: (result) =>
         @users(result)
