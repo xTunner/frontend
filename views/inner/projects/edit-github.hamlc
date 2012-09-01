@@ -1,0 +1,25 @@
+%h1 Setup GitHub User
+%p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
+
+%p Current GitHub user is
+  %strong
+    %span{data-bind: "if: github_user()"}
+      %span{data-bind: "text: github_user" }
+    %span{data-bind: "ifnot: github_user()"}
+      None
+
+%div{data-bind: "if: github_user() != VM.current_user().login"}
+  %form.api
+    %input.btn.btn-primary{type: "submit",
+                           value: "Set GitHub User to #{VM.current_user().login}",
+                           data-bind: "click: set_github_user",
+                           data-loading-text: "Saving...",
+                           data-success-text: "Saved"}
+
+%div{data-bind: "if: github_user() == VM.current_user().login"}
+  %form.api
+    %input.btn.btn-danger{type: "submit",
+                          value: "Remove GitHub User",
+                          data-bind: "click: clear_github_user",
+                          data-loading-text: "Saving...",
+                          data-success-text: "Saved"}

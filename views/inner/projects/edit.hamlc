@@ -28,16 +28,14 @@
       %li.divider
 
       %li.nav-header
-        SSH Keys
-      %li
-        %a{ href: "edit#ssh" } SSH Keys
-
-      %li.nav-header
         Permissions
       -# %li
       -#   %a{ href: "edit#collaborators" } Collaborators
+      -# %li
+      -#   %a{ href: "edit#ssh" } SSH Keys
       %li
-        %a{ href: "edit#ssh" } SSH Keys
+        %a{ href: "edit#github" } GitHub User
+
 
       %li.nav-header
         Continuous Deployment
