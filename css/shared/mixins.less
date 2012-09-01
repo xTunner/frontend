@@ -217,8 +217,9 @@
 // Saturation ----------------------------------------------------------------
 .saturate(@value, @class) {
   -webkit-filter: ~"saturate(@{value}%)";
+  @c: ".@{class}";
 
-  (~".@{class}") {
+  (@c) {
     &:after {
       display: block;
       .square(100%);
