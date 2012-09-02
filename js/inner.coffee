@@ -538,6 +538,7 @@ class Project extends Obj
     flowdock_api_token: null
     github_user: null
     heroku_deploy_user: null
+    ssh_keys: []
     followed: null
     loading_users: false
     users: []
@@ -659,6 +660,23 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/github-user"
       success: (result) =>
         true
+        @refresh()
+    false
+
+  save_ssh_key: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/ssh-key"
+      data: JSON.stringify
+        hostname: $("#hostname").val()
+        public_key: $("#publicKey").val()
+        private_key: $("#privateKey").val()
+      success: (result) =>
+        true
+        $("#hostname").val("")
+        $("#publicKey").val("")
+        $("#privateKey").val("")
         @refresh()
     false
 

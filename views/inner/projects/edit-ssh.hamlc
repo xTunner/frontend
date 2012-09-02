@@ -1,25 +1,26 @@
-%h1 Setup SSH keys
-%p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
+%h1 SSH keys
 
-%p Current GitHub user is
-  %strong
-    %span{data-bind: "if: github_user()"}
-      %span{data-bind: "text: github_user" }
-    %span{data-bind: "ifnot: github_user()"}
-      None
+%table.well.table.table-condensed
+  %thead
+    %tr
+      %th
+        Hostname
+      %th
+        Fingerprint
+  %tbody{data-bind: "foreach: ssh_keys"}
+    %tr
+      %td{data-bind: "text: hostname"}
+      %td{data-bind: "text: fingerprint"}
 
-%div{data-bind: "if: github_user() != VM.current_user().login"}
-  %form.api
-    %input.btn.btn-primary{type: "submit",
-                           value: "Set GitHub User to #{VM.current_user().login}",
-                           data-bind: "click: set_github_user",
-                           data-loading-text: "Saving...",
-                           data-success-text: "Saved"}
-
-%div{data-bind: "if: github_user() == VM.current_user().login"}
-  %form.api
-    %input.btn.btn-danger{type: "submit",
-                          value: "Remove GitHub User",
-                          data-bind: "click: clear_github_user",
-                          data-loading-text: "Saving...",
-                          data-success-text: "Saved"}
+%form.well
+  %label.control-label{for: "hostnameInput"}
+    Hostname
+  %input#hostname.input-medium{type: "text", placeholder: "Hostname"}
+  %label.control-label{for: "publicKey"}
+    Public Key
+  %input#publicKey.span4{type: "text"}
+  %label.control-label{for: "privateKey"}
+    Private Key
+  %textarea#privateKey.span4{type: "text", rows: 5}
+  %label
+    %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", data-loading-text: "Saving..", data-success-text: "Saved"}
