@@ -24,12 +24,12 @@
 
     %p
       From here, we'll assume you're manually setting up your tests.
-      More web applications have a standard set of steps that need to be run in order to be tested:
+      Most web applications have a standard set of steps that need to be run in order to be tested:
 
     %ul
-      %li Configure your test machine
+      %li Configure the test machine
       %li Checkout your code
-      %li Set up your dependencies
+      %li Set up your test dependencies
       %li Set up your test databases
       %li Run your tests
       %li (Optionally) deploy your code
@@ -52,14 +52,16 @@
         full reference for the
         %code circle.yml
         file
-      but you won't need that for now - we'll guide you through the first steps and you can check out the comprehensive docs later.
+      but you won't need that for now
+      &ndash;
+      we'll guide you through the first steps and you can check out the comprehensive docs later.
 
     %p
       Each section described above has a corresponding section in the
       %code circle.yml
-      file, with 3 subsections: "override", "pre", "post".
-      Each subsection should contain a list of bash commands for that phase ("override") or before the phase ("pre") or after it ("post").
-      If no "override" commands are provided, we'll automatically infer the commands you want for that phase.
+      file, with 3 subsections: <i>override</i>, <i>pre</i>, and <i>post</i>.
+      Each subsection should contain a list of bash commands for that phase (<i>override</i>) or before the phase (<i>pre</i>) or after it (<i>post</i>).
+      If no <i>override</i> commands are provided, we'll automatically infer the commands you want for that phase.
 
 
     = HAML['heading']({title: "Setting up your test machine", hash: "machine"})
@@ -76,7 +78,7 @@
       %code /etc/hosts
       contents, in the
       = succeed '.', ->
-        %a{href: "/docs/configuration#machine"}
+        %a{href: "/docs/configuration#machine"}<
           machine section of the
           %code circle.yml
           file
