@@ -673,11 +673,23 @@ class Project extends Obj
         public_key: $("#publicKey").val()
         private_key: $("#privateKey").val()
       success: (result) =>
-        true
         $("#hostname").val("")
         $("#publicKey").val("")
         $("#privateKey").val("")
         @refresh()
+        false
+    false
+
+  delete_ssh_key: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/ssh-key"
+      data: JSON.stringify
+        fingerprint: data.fingerprint
+      success: (result) =>
+        @refresh()
+        false
     false
 
   get_users: () =>

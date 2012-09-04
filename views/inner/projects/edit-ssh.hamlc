@@ -7,10 +7,14 @@
         Hostname
       %th
         Fingerprint
+      %th
   %tbody{data-bind: "foreach: ssh_keys"}
     %tr
       %td{data-bind: "text: hostname"}
       %td{data-bind: "text: fingerprint"}
+      %td
+        %button.btn{data-bind: "click: VM.project().delete_ssh_key"}
+          Delete
 
 %form.well
   %label.control-label{for: "hostnameInput"}
@@ -23,4 +27,4 @@
     Private Key
   %textarea#privateKey.span4{type: "text", rows: 5}
   %label
-    %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", data-loading-text: "Saving..", data-success-text: "Saved"}
+    %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", value: "Submit" data-loading-text: "Saving..", data-success-text: "Saved" data-failed-text: "Failed"}
