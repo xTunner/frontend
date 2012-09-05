@@ -506,6 +506,15 @@
       run. The deployment commands will only be run if the build is
       green.
 
+    %p
+
+      If deploying to your servers requires SSH access, you'll need to
+      upload the keys to Circle.  Edit the project in the UI, then
+      click the SSH keys button. Upload one or more SSH keys necessary
+      for deploying to your machines. If the hostname field is blank,
+      the key will be used for all hosts.
+
+
     %h3 Heroku
 
     %p
@@ -530,7 +539,7 @@
       A member of your project, possibly you, will need to register as that user.
       You can do this on your project's settings page on Circle.
 
-    %h3 Heroku with post-deployment steps
+    %h3 Heroku with pre or post-deployment steps
     %p
       If you want to deploy to Heroku, and you'd like to run commands before or after the deploy, you'll have to use the 'normal' deployment syntax
 
@@ -544,11 +553,6 @@
                   - git push git@heroku.com:foo-bar-123.git
                   - heroku run rake db:migrate
 
-    %p
-      We've only completed our first iteration of deployment.
-      If we are currently not meeting your deployment needs, please let us know!
-
-    = HAML['heading']({title: "Under construction", hash: "construction"})
 
     %p
       We are adding support for configuring every part of your build.
