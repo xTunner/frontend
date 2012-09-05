@@ -31,8 +31,8 @@
         Permissions
       -# %li
       -#   %a{ href: "edit#collaborators" } Collaborators
-      -# %li
-      -#   %a{ href: "edit#ssh" } SSH Keys
+      %li
+        %a{ href: "edit#ssh" } SSH Keys
       %li
         %a{ href: "edit#github" } GitHub User
 
