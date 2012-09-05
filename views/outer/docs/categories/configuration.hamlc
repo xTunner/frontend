@@ -483,8 +483,6 @@
       staging or production. Deployment commands are only run if the
       build was successful.
 
-
-    %h5 Example 1:
     %pre
       %code.bash<>
         :preserves
@@ -500,14 +498,34 @@
 
 
     %p
-      Deployment consists of multiple sections. The section must
+
+      Deployment consists of multiple sections. In this case, there
+      are two sections, one named 'production', and one named
+      'staging'. Section names must be unique. The section must
       contain a field named branch. There can be multiple sections,
       and the first one that matches the branch being built will be
-      run. The deployment commands will only be run if the build is
-      green.
+      run.
 
     %p
+      The deployment commands will only be run if the build is
+      green. A section can also list multiple branches
 
+    %pre
+      %code.bash<>
+        :preserves
+          deployment:
+            automerge:
+              branch: [dev_alice, dev_bob, dev_carol]
+              commands:
+                - ./merge_to_master.sh
+
+    %p
+      In this example, if a developer pushes to any of the branches listed, the script
+      %code merge_to_master
+      will be run.
+
+    %h4 SSH Keys
+    %p
       If deploying to your servers requires SSH access, you'll need to
       upload the keys to Circle.  Edit the project in the UI, then
       click the SSH keys button. Upload one or more SSH keys necessary
