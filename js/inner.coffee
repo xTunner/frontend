@@ -1347,6 +1347,10 @@ class CircleViewModel extends Base
   unsupportedRoute: (cx) =>
     throw("Unsupported route: " + cx.params.splat)
 
+  goDashboard: (data, event) =>
+    # signature so this can be used as knockout click handler
+    window.SammyApp.setLocation("/")
+
 
 
 
