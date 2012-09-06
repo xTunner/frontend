@@ -14,7 +14,7 @@
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
         %li
-          %a{ href: '/blog', title: 'Get a behind the scenes look at Circle' }
+          %a{ href: 'http://blog.circleci.com', title: 'Get a behind the scenes look at Circle' }
             Blog
         %li
           %a{ href: '/about', title: 'Learn more about Circle' }
