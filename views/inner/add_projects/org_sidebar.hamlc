@@ -1,23 +1,24 @@
-%table.table.well
-  %thead
-    %tr
-      %th{colspan: 2}
-        Organizations
+#org-sidebar
+  %table.table.well
+    %thead
+      %tr
+        %th{colspan: 2}
+          Organizations
 
-  %tbody.add-row{data-bind: "foreach: organizations"}
-    %tr
-      %td{style: "max-width: 25px"}
-        %img{height: 20, data-bind: "attr: {src: avatar_url}"}
-      %td{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
+    %tbody.add-row{data-bind: "foreach: organizations"}
+      %tr
+        %td.gravatar-td
+          %img{height: 20, data-bind: "attr: {src: avatar_url}"}
+        %td.orgname{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
 
-%table.table.well
-  %thead
-    %tr
-      %th{colspan: 2}
-        Personal
+  %table.table.well
+    %thead
+      %tr
+        %th{colspan: 2}
+          Personal
 
-  %tbody.add-row{data-bind: "foreach: collaboratorAccounts"}
-    %tr
-      %td{style: "max-width: 25px"}
-        %img{height: 20, data-bind: "attr: {src: avatar_url}"}
-      %td{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
+    %tbody.add-row{data-bind: "foreach: collaboratorAccounts"}
+      %tr
+        %td.gravatar-td
+          %img{height: 20, data-bind: "attr: {src: avatar_url}"}
+        %td.orgname{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}

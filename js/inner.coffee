@@ -505,6 +505,10 @@ class Repo extends Obj
     @canFollow = komp =>
       not @following() and @admin
 
+    @requiresInvite = komp =>
+      not @following() and not @admin
+
+
   unfollow: (data, event) =>
     $.ajax
       type: "POST"
