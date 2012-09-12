@@ -503,11 +503,10 @@ class Repo extends Obj
     VcsUrlMixin(@)
 
     @canFollow = komp =>
-      not @following() and @admin
+      not @following() and (@admin or @has_followers)
 
     @requiresInvite = komp =>
       not @following() and not @admin
-
 
   unfollow: (data, event) =>
     $.ajax
@@ -854,6 +853,7 @@ class User extends Obj
     $.getJSON url, (data) =>
       @loadingOrganizations(false)
       @repos((new Repo r for r in data))
+      $(".invite").popover()
 
 class Plan extends Obj
   constructor: ->
