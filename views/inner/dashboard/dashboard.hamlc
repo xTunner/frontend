@@ -1,7 +1,6 @@
 = HAML['_topbar']({})
 
 .container-fluid
-
   .row-fluid
     .span10
       = HAML['flashes']({})
@@ -37,12 +36,3 @@
     .span2
       = HAML['followed_sidebar']({})
       = HAML['action_sidebar']({})
-
-      .row{data-bind: "ifnot: has_followed_projects()"}
-        .offset4.span6
-          .alert-block.alert-info#first-use-message
-            %h2
-              Add your first project
-            %br
-            %p#first-use-text
-              To start Continuous Integration on your first app, click on the repository name on the left.

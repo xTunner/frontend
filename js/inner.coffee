@@ -88,7 +88,7 @@ VcsUrlMixin = (obj) ->
   obj.observables.vcs_url = obj.vcs_url
 
   obj.project_name = komp ->
-    obj.vcs_url().substring(19)
+    obj.vcs_url().substring(19).replace("/", '/\u200b')
 
   obj.project_path = komp ->
     "/gh/#{obj.project_name()}"
@@ -1169,13 +1169,6 @@ class CircleViewModel extends Base
       window.time_taken_projects = Date.now() - start_time
       if @first_login
         @first_login = false
-        # make sure users aren't seeing the blank page
-        setTimeout(@loadProjects, 1000)
-        setTimeout(@loadProjects, 4000)
-        setTimeout(@loadProjects, 7000)
-        setTimeout(@loadProjects, 15000)
-        setTimeout(@loadProjects, 30000)
-
 
   available_projects: () => komp =>
     (p for p in @projects() when not p.followed())

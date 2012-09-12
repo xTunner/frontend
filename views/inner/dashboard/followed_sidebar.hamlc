@@ -1,29 +1,29 @@
-%table.table-condensed.well.table-striped{cols: 3}
-  %thead
-    %tr
-      %th.sidebar-header{colspan: 3}
-        Followed Projects
+.row-fluid
+  %table#followed-sidebar.table-condensed.well.table-striped.dashboard-sidebar{cols: 3}
+    %thead
+      %tr
+        %th.sidebar-header{colspan: 3}
+          Followed Projects
+      %tr
+    / ko if: has_followed_projects()
+    %tbody{data-bind: "foreach: followed_projects()"}
+      %tr
+        %td.edit{colspan: 1}
+          %a{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+            %img{src: "/img/settings.png", height: 15, width: 15}
 
+        %td.project-name{colspan: 1}
+          %a{data-bind: "attr: { href: project_path }, text: project_name"}
 
-  / ko if: has_followed_projects()
-  %tbody{data-bind: "foreach: followed_projects()"}
-    %tr
-      %td
-        %a{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
-          %img{src: "/img/settings.png", height: 15, width: 15}
+        %td.build-num{colspan: 1}
+          %span.build_status{data-bind: "with: latest_build()"}
+            %span{data-bind: "attr: { class: style }"}
+              %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+    / /ko
 
-      %td.project-name
-        %a{data-bind: "attr: { href: project_path }, text: project_name"}
-
-      %td
-        %span.build_status{data-bind: "with: latest_build()"}
-          %span{data-bind: "attr: { class: style }"}
-            %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
-  / /ko
-
-  / ko ifnot: has_followed_projects()
-  %tbody
-    %tr
-      %td#none-message
-        None. Add a project below.
-  / /ko
+    / ko ifnot: has_followed_projects()
+    %tbody
+      %tr
+        %td#none-message
+          None. Add a project below.
+    / /ko
