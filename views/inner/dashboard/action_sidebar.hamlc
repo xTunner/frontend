@@ -1,0 +1,5 @@
+.well
+  %ul
+    %li
+      %a{href: "/add-projects"}
+        Add/Remove Projects

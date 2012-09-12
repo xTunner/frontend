@@ -3,14 +3,10 @@
 .container-fluid
 
   .row-fluid
-    .span2
-      = HAML['followed_sidebar']({})
-      = HAML['available_sidebar']({})
-
     .span10
       = HAML['flashes']({})
 
-      %div{data-bind: "if: has_followed_projects()"}
+      %div.span12.dashboard-main{data-bind: "if: has_followed_projects()"}
         .row
           .offset0.span8
             %h2#latest-build-header
@@ -38,6 +34,9 @@
         .row
           = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
 
+    .span2
+      = HAML['followed_sidebar']({})
+      = HAML['action_sidebar']({})
 
       .row{data-bind: "ifnot: has_followed_projects()"}
         .offset4.span6
