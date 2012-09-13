@@ -88,7 +88,10 @@ VcsUrlMixin = (obj) ->
   obj.observables.vcs_url = obj.vcs_url
 
   obj.project_name = komp ->
-    obj.vcs_url().substring(19).replace("/", '/\u200b')
+    obj.vcs_url().substring(19)
+
+  obj.project_display_name = komp ->
+    obj.project_name().replace("/", '/\u200b')
 
   obj.project_path = komp ->
     "/gh/#{obj.project_name()}"

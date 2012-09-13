@@ -13,7 +13,7 @@
             %img{src: "/img/settings.png", height: 15, width: 15}
 
         %td.project-name{colspan: 1}
-          %a{data-bind: "attr: { href: project_path }, text: project_name"}
+          %a{data-bind: "attr: { href: project_path }, text: project_display_name"}
 
         %td.build-num{colspan: 1}
           %span.build_status{data-bind: "with: latest_build()"}
