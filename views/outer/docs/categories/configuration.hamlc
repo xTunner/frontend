@@ -263,6 +263,25 @@
     %p
       Use this to add entries for /etc/hosts. This is useful if your tests connect to your webserver, at an established name, such as "circlehost".
 
+    %h3#environment
+      Environment Variables
+
+    %p
+      Sets environment variables for all commands in the build.
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            env:
+              foo: bar
+              baz: 123
+
+    %p
+      Circle uses a new shell for every command, so a standard "export
+      FOO=bar" won't work. If you only need to set an environment
+      variable for a single command, that is covered below.
+
     %h3#ruby-version
       Ruby version
 
