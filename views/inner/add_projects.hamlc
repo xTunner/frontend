@@ -6,7 +6,7 @@
       = HAML['org_sidebar']({})
     .row-fluid.span9
       %h1.span10
-        Projects
+        Add/Remove Repos
       .span2
         %button.btn.btn-success{-# style: "float: right",
                                 data-bind: "click: window.VM.goDashboard"}
