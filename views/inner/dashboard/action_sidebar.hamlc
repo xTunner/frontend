@@ -1,5 +1,5 @@
 .row-fluid
   %ul.span12.well
     %li
-      %a{href: "/add-projects"}
+      %a#add-projects{href: "/add-projects"}
         Add/Remove Projects

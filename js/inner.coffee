@@ -526,7 +526,11 @@ class Repo extends Obj
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
         @following(true)
-
+        if data.first_build
+          (new Build(data.first_build)).visit()
+        else
+          $('html, body').animate({ scrollTop: 0 }, 0);
+          VM.loadRecentBuilds()
 
 class Project extends Obj
   ## A project in the DB
