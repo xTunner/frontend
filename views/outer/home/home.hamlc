@@ -1,4 +1,4 @@
-#teaser
+>#teaser
   %section{ role: 'main' }
     %h2#mainHeading{style: "display: none"} Continuous Integration for Web Apps
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
@@ -29,12 +29,12 @@
 #testimonials
   %p.testimonial-header Some of our happy customers
 
-  %section
+  %section#customers
     .customer
-      %a.zencoder{ href: "#" } Zencoder<span></span>
+      %a.logo.zencoder{ href: "#" } Zencoder
 
     .customer
-      %a.storenvy{ href: "#" } Storenvy<span></span>
+      %a.logo.storenvy{ href: "#" } Storenvy
 
   %section.quotes
     %blockquote{ cite: "#" }
@@ -43,7 +43,7 @@
       %footer
         %cite
           %a{ href: "http://zencoder.com/company/" } Brandon Arbini
-          %a{ href: "http://zencoder.com/" } VP Eng at Zencoder.com
+          %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
 
     %blockquote{ cite: "#" }
       %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
@@ -62,9 +62,9 @@
 
 
     %ul
-      %li No fiddling with ssh keys
-      %li 14 day free trial
-      %li No credit card required
+      %li One-click setup
+      %li Lightning fast
+      %li Incredible Support
 
     %p
       Signing up with GitHub allows Circle to access your code so that we can run your tests.
