@@ -199,7 +199,7 @@ class ActionLog extends Obj
   log_output: =>
     return "" unless @out()
     x = for o in @out()
-      "<span class='#{o.type}'>#{@htmlEscape(o.message)}</span>"
+      "<p class='#{o.type}'><span></span>#{@htmlEscape(o.message)}</p>"
     x.join ""
 
   appendLog: (json) =>

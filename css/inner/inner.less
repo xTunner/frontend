@@ -43,16 +43,33 @@ h2 {
 // Test Styles
 pre {
   background: #032a37;
-  span.out {
-    padding-left: 13px;
-    background: url(../../../img/line-test-bubbles.png) no-repeat 0 -2px;
+  p.out {
+    // padding-left: 13px;
     // color: #869800; // Green
     color: #94A1A1;
+    span {
+      background-position: 0 0px;
+    }
   }
-  span.err {
-    padding-left: 13px;
-    background: url(../../../img/line-test-bubbles.png) no-repeat 0 -16px;
+  p.err {
+    // padding-left: 13px;
     color: #e83529;
+    span {
+      background-position: 0 -14px;
+    }
+  }
+  p {
+    position: relative;
+    padding-left: 13px;
+    margin: 0px;
+    span {
+      position: absolute;
+      left: 0px;
+      display: block;
+      width: 5px;
+      height: 14px;
+      background: url(../../../img/line-test-bubbles.png) no-repeat;
+    }
   }
 }
 
@@ -305,7 +322,7 @@ ul.space {
 
   .action_header {
     color: #eff2f6;
-    text-transform: capitalize;
+    // text-transform: capitalize;
     font-weight: bold;
     .text-shadow(0,-2px,0px, rgba(0,0,0, .8));
     .time {
