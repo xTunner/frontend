@@ -253,12 +253,15 @@ ul.space {
    margin-right: 10px; // move back from the right edge
 
    padding: 0px 2px; // padding, but without increasing the height
-   background-color: rgba(255, 255, 255, 0.2); // make slightly lighter
+   background: #fff;
+   // background-color: rgba(255, 255, 255, 0.2); // make slightly lighter
 
    font-style: italic;
-   opacity: 0.7; // better than using grey
+   // opacity: 0.7; // better than using grey
    font-size: 15px;
    font-weight: normal; // unbolden
+   color: #174278;
+   .text-shadow(0,-2px,0px, rgba(0,0,0, 0)); // Remove text shadow
 }
 
 .action-source-inner:hover {
@@ -334,13 +337,15 @@ ul.space {
       @yellow: #E0C91B;
 
       .button {
-         float: left; // put to the right of .command
-         .border-radius;
-         background-repeat: no-repeat;
-         background-position: center;
-         margin-right: 7px; // space between button and command
-         height: 30px; // the button has no size without this
-         width: 30px; // the button has no size without this
+        display: none;
+
+         // float: left; // put to the right of .command
+         // .border-radius;
+         // background-repeat: no-repeat;
+         // background-position: center;
+         // margin-right: 7px; // space between button and command
+         // height: 30px; // the button has no size without this
+         // width: 30px; // the button has no size without this
 
          &.success {
             &.contents { background-image: url("/img/green_minus.png"); }
