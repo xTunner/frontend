@@ -77,7 +77,7 @@
 
 
 
-    .row
+    .row.reposition
       %dl.offset1
 
         %dt Log
@@ -122,7 +122,7 @@
             %span{data-bind: "if: bash_command"}
               %b Command:
               %pre{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
-            %b Output:
+            Output:
             %pre.output{data-bind: "html: log_output()"}
 
           = HAML['report_error']({build: false})

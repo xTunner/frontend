@@ -32,6 +32,30 @@ body {
    padding-top: 40px;
 }
 
+// Basic Typography
+h1 {
+  color: #1c508b;
+}
+h2 {
+  color: #366aa4;
+}
+
+// Test Styles
+pre {
+  background: #032a37;
+  span.out {
+    padding-left: 13px;
+    background: url(../../../img/line-test-bubbles.png) no-repeat 0 -2px;
+    // color: #869800; // Green
+    color: #94A1A1;
+  }
+  span.err {
+    padding-left: 13px;
+    background: url(../../../img/line-test-bubbles.png) no-repeat 0 -16px;
+    color: #e83529;
+  }
+}
+
 // Top Bar
 .navbar-inner {
   background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
@@ -201,14 +225,26 @@ ul.space {
 
 
 .build-table {
+  position: absolute;
+  background: #EFF2F6;
+  border-top: 1px solid #D7DCE3;
+  border-bottom: 1px solid #D7DCE3;
+  width: 100%;
+  top: 83px;
+  color: #596e8a;
    dt {
       width: 100px;
       float: left;
+      color: #134374;
    }
 
    dd {
       display: block;
    }
+}
+
+.reposition {
+  margin-top: 100px;
 }
 
 .action-source {
@@ -244,7 +280,46 @@ ul.space {
    }
 }
 
+.build-output-active {
+  background: #d7dce3;
+  .action_header {
+    background: #1a3d64;
+    .text-shadow(0,-2px,0px, rgba(0,0,0, .8));
+  }
+}
 .build-output  {
+  background: #1a3d64;
+  border: 1px solid #132d49;
+  border-radius: 5px;
+  .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
+  margin-bottom: 15px;
+  // color: #4b6890;
+  color: #AEBDCB;
+  font-weight: normal;
+  &:hover {
+    background: #1e4571;
+  }
+
+  .action_header {
+    color: #eff2f6;
+    text-transform: capitalize;
+    font-weight: bold;
+    .text-shadow(0,-2px,0px, rgba(0,0,0, .8));
+    .time {
+      color: #7fa647;
+      font-weight: normal;
+      .text-shadow(0,-2px,0px, rgba(0,0,0, 0));
+    }
+  }
+
+  pre {
+    margin-top: 5px;
+  }
+  .detail {
+    border-top: 1px solid #132d49;
+    .box-shadow(inset 0px 1px 0 rgba(255,255,255, .2));
+    padding: 5px 10px;
+  }
    .command {
       font-weight: bold;
       font-size: 18px;
@@ -306,13 +381,13 @@ ul.space {
       font-size: 14px;
    }
 
-   .output > span.err {
-      background-color: #ffdddd;
-   }
+   // .output > span.err {
+   //    background-color: #ffdddd;
+   // }
 
-   .output > span.out {
-      background-color: #ddffdd;
-   }
+   // .output > span.out {
+   //    background-color: #ddffdd;
+   // }
 }
 
 
@@ -525,8 +600,4 @@ td.build_status {
     padding: 0px;
     padding-right: 2px;
   }
-}
-
-h1 {
-  color: #1c508b;
 }
