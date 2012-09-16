@@ -1,4 +1,4 @@
->#teaser
+#teaser
   %section{ role: 'main' }
     %h2#mainHeading{style: "display: none"} Continuous Integration for Web Apps
     %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
@@ -31,22 +31,22 @@
 
   %section#customers
     .customer
-      %a.logo.zencoder{ href: "#" } Zencoder
+      %a.stripe{ href: "#"} Stripe<span></span>
 
     .customer
       %a.logo.storenvy{ href: "#" } Storenvy
 
     .customer
-      %a.stripe{ href: "#"} Stripe<span></span>
+      %a.logo.zencoder{ href: "#" } Zencoder
 
   %section.quotes
     %blockquote{ cite: "#" }
-      %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
+      %p Circle has significantly improved our testing infrastructure: tests finish faster, we can add new projects rapidly, and CI happens from the get-go. I'm a huge fan.
 
       %footer
         %cite
-          %a{ href: "http://zencoder.com/company/" } Brandon Arbini
-          %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
+          %a{ href: "https://stripe.com/ "} John Collison
+          %a{ href: "https://stripe.com/" } CTO at Stripe.com
 
     %blockquote{ cite: "#" }
       %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
@@ -57,12 +57,12 @@
           %a{ href: "http://www.storenvy.com/" } CEO of Storenvy.com
 
     %blockquote{ cite: "#" }
-      %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
+      %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
 
       %footer
         %cite
-          %a{ href: "https://stripe.com/ "} Jon Crawford
-          %a{ href: "https://stripe.com/" } CEO of Stripe.com
+          %a{ href: "http://zencoder.com/company/" } Brandon Arbini
+          %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
 
 #power
   %section

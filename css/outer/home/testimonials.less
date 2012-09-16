@@ -57,7 +57,7 @@
 
   // Scrolled trigger styles
   &.scrolled {
-    @quoteHeightScrolled: 290px;
+    @quoteHeightScrolled: 370px;
 
     margin-bottom: @quoteHeightScrolled;
     .saturate(100, "logo");
@@ -82,9 +82,9 @@
 
   blockquote {
     position: relative;
-    width: 260px;
+    width: 298px;
     float: left;
-    margin: 30px 10px 10px 68px;
+    margin: 30px 18px 10px 10px;
     background: white;
     color: white;
     font-size: 13px;
@@ -95,10 +95,13 @@
     .opacity(0);
 
     &:first-child {
-      margin-left: 19px;
+      margin-left: 6px;
     }
     &:last-child {
-      margin-left: 48px;
+      margin-right: 0px;
+      a {
+        background: transparent;
+      }
     }
 
     &:after {
@@ -163,7 +166,7 @@
   .zencoder {
     background-position: 0 -443px;
     margin-top: 20px;
-    margin-left: 25px;
+    margin-left: 36px;
     width: 249px;
     height: 35px;
   }
@@ -171,15 +174,16 @@
   .storenvy {
     background-position: -262px -446px;
     margin-top: 15px;
-    margin-left: 80px;
+    margin-left: 47px;
     width: 177px;
     height: 59px;
   }
 
   .stripe {
     background: url("@{imgPath}/outer/home/stripe-logo.png") no-repeat;
-    height: 29px;
+    background-position: 0 -35px; // Comment to show blue toned stripe logo
+    height: 35px;
     margin-top: 24px;
-    margin-left: 75px;
+    margin-left: 91px;
   }
 }
