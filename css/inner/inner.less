@@ -13,6 +13,18 @@
    border-radius: @radius;
 }
 
+.box-shadow(@arguments) {
+    -webkit-box-shadow: @arguments;
+    -moz-box-shadow: @arguments;
+    box-shadow: @arguments;
+}
+
+.text-shadow(@size1, @size2, @size3, @color){
+    -webkit-text-shadow: @size1 @size2 @size3 @color;
+    text-shadow:-@size1 @size2 @size3 @color;
+}
+
+
 
 body {
    background:  url(../../../img/outer/bg_pattern.png);
@@ -20,6 +32,100 @@ body {
    padding-top: 40px;
 }
 
+// Top Bar
+.navbar-inner {
+  background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
+  border-top: 4px solid #134374;
+  padding-top: 1px;
+  height: 51px;
+  a.brand {
+    margin-left: 1px;
+    margin-top: 4px;
+    background: url(../../../img/circleci-top-logo.png) no-repeat;
+    width: 150px;
+    height: 41px;
+    text-indent: -9999px;
+  }
+  ul.nav {
+    margin-right: 0px;
+    li {
+      font-family: 'Open Sans', sans-serif;
+      border-right: 1px solid #214062;
+      cursor: pointer;
+      .box-shadow(inset 1px 0 0 rgba(80,113,154, 1));
+      &:first-child {
+        border-left: 1px solid #214062;
+      }
+      a {
+        height: 26px;
+        padding: 14px 10px 11px;
+        color: #fff;
+        .text-shadow(1px,-2px,0px, #18375c);
+      }
+      &:hover {
+        background: #134374;
+        .box-shadow(inset 1px 1px 0 rgba(58,92,128,1));
+      }
+      ul {
+        li {
+          border-left: 0px;
+          border-right: 0px;
+          .box-shadow(inset 1px 0 0 rgba(80,113,154, 0));
+          // border-bottom: 1px dashed #e5e5e5;
+          // &:hover {
+          //   border-color: #e5e5e5;
+          // }
+          a {
+            color: #1f4976;
+            .text-shadow(1px,-2px,0px, rgba(1,1,1, 0));
+            &:hover {
+              color: #455c78;
+              background: #d7dce3;
+            }
+          }
+        }
+        li.divider:hover {
+          background: #E5E5E5;
+        }
+      }
+    }
+
+    li.active {
+      a {
+        background: #0d2e50;
+        font-weight: bold;
+        &:hover {
+          background: #0d2e50;
+        }
+      }
+    }
+
+    li.dropdown {
+      border-left: 0px;
+      .box-shadow(~"inset 1px 0 0 rgba(80,113,154, 1), 1px 1px 0 rgba(80,113,154, 1)");
+      a.dropdown-toggle {
+        height: 25px;
+      }
+      &:hover {
+        .box-shadow(~"inset 1px 1px 0 rgba(58,92,128,1), 1px 1px 0 rgba(80,113,154, 1)");
+      }
+      .dropdown-menu {
+        li {
+
+          &:first-child {
+            border-left: 0px;
+          }
+          a {
+            padding: 8px 11px 0 11px;
+          }
+        }
+      }
+    }
+  }
+}
+ul.space {
+  height: 35px;
+}
 .sidebar-header {
    text-align: center;
 }
@@ -51,7 +157,7 @@ body {
 /* For developers, highlight the environment */
 .env-production { background-color: red; }
 .env-staging { background-color: yellow; }
-.env-development { background-color: blue; }
+// .env-development { background-color: blue; }
 .env-test { background-color: green; }
 
 
@@ -390,7 +496,16 @@ td.build_status {
   }
 }
 
+
 #org-sidebar {
+  th {
+    background: #d7dce3;
+    color: #455C78;
+  }
+  td {
+    background: #eff2f6;
+    color: #6e839e;
+  }
   .orgname {
     text-align: left;
   }
@@ -410,4 +525,8 @@ td.build_status {
     padding: 0px;
     padding-right: 2px;
   }
+}
+
+h1 {
+  color: #1c508b;
 }

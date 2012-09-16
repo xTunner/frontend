@@ -54,4 +54,4 @@
                 %a{data-bind: "attr: {href: VM.intercomUserLink}"}"} Find project on Intercom
 
 -# This is used to create the 25px space under the navigation bar. I know.
-%ul
+%ul.space

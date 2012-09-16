@@ -41,7 +41,7 @@
     height: 80px;
 
     .customer {
-      .column(6);
+      .column(4);
       .ir;
     }
 
@@ -78,7 +78,7 @@
 
   blockquote {
     position: relative;
-    width: 380px;
+    width: 260px;
     float: left;
     margin: 30px 10px 10px 68px;
     background: white;
@@ -87,6 +87,9 @@
     .border-radius();
     z-index: 500;
 
+    &:first-child {
+      margin-left: 19px;
+    }
     &:last-child {
       margin-left: 48px;
     }
@@ -126,7 +129,7 @@
   .zencoder {
     background-position: 0 -503px;
     margin-top: 20px;
-    margin-left: 140px;
+    margin-left: 25px;
     width: 249px;
     height: 35px;
 
@@ -149,5 +152,12 @@
       width: 177px;
       height: 59px;
     }
+  }
+
+  .stripe {
+    background: url("@{imgPath}/outer/home/stripe-logo.png") no-repeat;
+    height: 29px;
+    margin-top: 24px;
+    margin-left: 75px;
   }
 }
