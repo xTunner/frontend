@@ -40,8 +40,8 @@
               dev.mycompany.com: 127.0.0.1
 
             # Add some environmental variables
-            pre:
-              - echo 'export CIRCLE_ENV=test' >> ~./circlerc
+            env:
+              CIRCLE_ENV: test
 
           ## Customize checkout
           checkout:

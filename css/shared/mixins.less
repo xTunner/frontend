@@ -69,12 +69,12 @@
 // @import "_shared/animations/wiggle";
 // .animate (wiggle, 0.3x, ease-in-out);
 
-.animate (@name: wiggle, @duration: 1s, @function: ease,@delay: 0.2s, @mode: both) {
-  -webkit-animation: @name @duration @delay @function @mode;
-  -moz-animation: @name @duration @delay @function @mode;
-  -ms-animation: @name @duration @delay @function @mode;
-  -o-animation: @name @duration @delay @function @mode;
-  animation: @name @duration @delay @function @mode;
+.animate (@name: wiggle, @duration: 1s, @function: ease, @delay: 0.2s, @mode: both) {
+  -webkit-animation: @arguments;
+  -moz-animation: @arguments;
+  -ms-animation: @arguments;
+  -o-animation: @arguments;
+  animation: @arguments;
 }
 
 // Simple @font-face --------------------------------------------------------
@@ -212,4 +212,17 @@
   -moz-transform: rotate(@deg);
   -ms-transform: rotate(@deg);
   -o-transform: rotate(-@deg);
+}
+
+// Saturation ----------------------------------------------------------------
+.saturate(@value, @class) {
+  -webkit-filter: ~"saturate(@{value}%)";
+  @c: ".@{class}";
+
+  (@c) {
+    &:after {
+      display: block;
+      .square(100%);
+    }
+  }
 }

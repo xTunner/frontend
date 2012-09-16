@@ -1,11 +1,28 @@
-// Docs layout
-.article {
-  .topics {
-    padding: 0;
-    .column(3.1);
-  }
+.topics {
+  display: inline;
+  float: left;
+  width: 248px;
+  margin: 20px 0 10px 0;
+  background: white;
+  padding: 0;
+  border: 1px solid #E0E0E0;
+  border-right: none;
+  .border-radius(5px 0 0 5px);
+  .box-shadow(inset -2px 0px 16px -10px black);
 
+  li {
+    padding: 0 5px 0 10px;
+    list-style: none;
+
+    &:first-child {
+      padding-top: 20px;
+    }
+  }
+}
+
+.article {
   article {
     .column(8.1);
+    margin-left: 0;
   }
 }

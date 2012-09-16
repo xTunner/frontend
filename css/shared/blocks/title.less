@@ -1,16 +1,21 @@
 // Title --------------------------------------------------------------------
 
 #title {
-  height: 116px;
-  background: url("@{imgPath}/blocks/title/title_bg.png") repeat-x;
+  @titleHeight: 84px;
+
+  height: @titleHeight;
+  background: url("@{imgPath}/outer/home/teaser_bg_pattern.png");
+  -webkit-box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
 
   h1 {
     margin: 0;
     .container;
     color: #fff;
-    font-size: 42px;
-    line-height: 116px;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55);
+    font-size: 40px;
+    line-height: @titleHeight;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
   }
 
   &:after {

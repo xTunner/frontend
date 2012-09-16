@@ -135,10 +135,34 @@ circle = $.sammy "body", ->
       $.getScript "/assets/js/vendor/jquery.placeholder.js", =>
         $("input, textarea").placeholder()
 
+  waypoints = (trigger) =>
+    if !$.waypoints?
+      $.getScript "/assets/js/vendor/waypoints-1.1.7.min.js", =>
+        trigger()
 
-  home.lib = placeholder
+  sticky = (sidebar) =>
+    if !$.stickyMojo?
+      $.getScript "/assets/js/vendor/stickyMojo.js", =>
+        sidebar()
+
+  home.lib = =>
+    trigger = =>
+      $("#testimonials").waypoint ((event, direction) ->
+        $("#testimonials").addClass("scrolled")
+      ),
+        offset: "80%"
+    waypoints(trigger)
+    placeholder()
+
+  docs.lib = =>
+    sidebar = =>
+      $("ul.topics").stickyMojo
+        footerID: "#footer"
+        contentID: ".article article"
+    highlight()
+    sticky(sidebar)
+
   about.lib = placeholder
-  docs.lib = highlight
 
   # Google analytics
   @bind 'event-context-after', ->
