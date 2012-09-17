@@ -12,11 +12,7 @@
                                 data-bind: "click: window.VM.goDashboard"}
           Continue >>
     .row-fluid.span9
-      %div{data-bind: "ifnot: activeOrganization"}
-        .well
-          %p
-            Click on an organization to the left to get started
-      %div{data-bind: "if: loadingOrganizations"}
+      %div{data-bind: "if: showLoading"}
         %img{src: "/img/ajax-loader.gif"}
-      %div{data-bind: "ifnot: loadingOrganizations"}
+      %div{data-bind: "ifnot: showLoading"}
         = HAML['add_projects_main']({})

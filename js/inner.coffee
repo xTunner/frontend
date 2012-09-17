@@ -727,6 +727,7 @@ class User extends Obj
     organizations: []
     collaboratorAccounts: []
     loadingOrganizations: false
+    loadingRepos: false
     # the org we're currently viewing in add-projects
     activeOrganization: null
     # keyed on org/account name
@@ -763,6 +764,9 @@ class User extends Obj
       #not @paid and @days_left_in_trial < 0
       # need to figure "paid" out before we really show this
       false
+
+    @showLoading = komp =>
+      @loadingRepos() or @loadingOrganizations()
 
 
 
@@ -837,8 +841,10 @@ class User extends Obj
   loadOrganizations: () =>
     @loadingOrganizations(true)
     $.getJSON '/api/v1/user/organizations', (data) =>
-      @loadingOrganizations(false)
       @organizations(data)
+      @setActiveOrganization(data[0])
+      @loadingOrganizations(false)
+
 
   loadCollaboratorAccounts: () =>
     @loadingOrganizations(true)
@@ -851,16 +857,16 @@ class User extends Obj
      @loadRepos(org)
 
   loadRepos: (org) =>
-    @loadingOrganizations(true)
+    @loadingRepos(true)
     if org.org
       url = "/api/v1/user/org/#{org.login}/repos"
     else
       url = "/api/v1/user/user/#{org.login}/repos"
 
     $.getJSON url, (data) =>
-      @loadingOrganizations(false)
       @repos((new Repo r for r in data))
       $(".invite").popover()
+      @loadingRepos(false)
 
 class Plan extends Obj
   constructor: ->
