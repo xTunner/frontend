@@ -853,8 +853,9 @@ class User extends Obj
       @loadingOrganizations(false)
 
    setActiveOrganization: (org, event) =>
-     @activeOrganization(org.login)
-     @loadRepos(org)
+     if org
+       @activeOrganization(org.login)
+       @loadRepos(org)
 
   loadRepos: (org) =>
     @loadingRepos(true)
