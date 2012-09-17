@@ -278,7 +278,7 @@ ul.space {
    font-size: 15px;
    font-weight: normal; // unbolden
    color: #174278;
-   .text-shadow(0,-2px,0px, rgba(0,0,0, 0)); // Remove text shadow
+   .text-shadow(0,-1px,0px, rgba(0,0,0, 0)); // Remove text shadow
 }
 
 .action-source-inner:hover {
@@ -304,31 +304,27 @@ ul.space {
   background: #d7dce3;
   .action_header {
     background: #1a3d64;
-    .text-shadow(0,-2px,0px, rgba(0,0,0, .8));
+    .text-shadow(0,-1px,0px, rgba(0,0,0, .8));
   }
 }
 .build-output  {
-  background: #1a3d64;
-  border: 1px solid #132d49;
-  border-radius: 5px;
+  .border-radius;
+
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   // color: #4b6890;
   color: #AEBDCB;
   font-weight: normal;
-  &:hover {
-    background: #1e4571;
-  }
 
   .action_header {
     color: #eff2f6;
     // text-transform: capitalize;
     font-weight: bold;
-    .text-shadow(0,-2px,0px, rgba(0,0,0, .8));
+    .text-shadow(0,-1px,0px, rgba(0,0,0, .6));
     .time {
-      color: #7fa647;
+      color: black;
       font-weight: normal;
-      .text-shadow(0,-2px,0px, rgba(0,0,0, 0));
+      .text-shadow(0,-1px,0px, rgba(0,0,0, 0));
     }
   }
 
@@ -336,9 +332,16 @@ ul.space {
     margin-top: 5px;
   }
   .detail {
-    border-top: 1px solid #132d49;
+     background: #1a3d64;
+     border: 1px solid #132d49;
+     border-top: 1px solid #132d49;
     .box-shadow(inset 0px 1px 0 rgba(255,255,255, .2));
-    padding: 5px 10px;
+     margin-top: 5px;
+     padding: 5px 10px;
+     .bash-command {
+        color: #94A1A1;
+     }
+
   }
    .command {
       font-weight: bold;
@@ -347,22 +350,19 @@ ul.space {
 
    .ah_wrapper {
       overflow: hidden; // put the contents beside each other
-      margin: 4px 0px; // space between commands
 
       @green:  #57A957;
       @red: #EE5F5B;
       @yellow: #E0C91B;
 
       .button {
-        display: none;
-
-         // float: left; // put to the right of .command
-         // .border-radius;
-         // background-repeat: no-repeat;
-         // background-position: center;
-         // margin-right: 7px; // space between button and command
-         // height: 30px; // the button has no size without this
-         // width: 30px; // the button has no size without this
+         float: left; // put to the right of .command
+         .border-radius;
+         background-repeat: no-repeat;
+         background-position: center;
+         margin-right: 7px; // space between button and command
+         height: 30px; // the button has no size without this
+         width: 30px; // the button has no size without this
 
          &.success {
             &.contents { background-image: url("/img/green_minus.png"); }
