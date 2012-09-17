@@ -40,7 +40,7 @@
               dev.mycompany.com: 127.0.0.1
 
             # Add some environmental variables
-            env:
+            environment:
               CIRCLE_ENV: test
 
           ## Customize checkout

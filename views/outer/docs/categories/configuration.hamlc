@@ -273,7 +273,7 @@
       %code.no-highlight<>
         :preserve
           machine:
-            env:
+            environment:
               foo: bar
               baz: 123
 
