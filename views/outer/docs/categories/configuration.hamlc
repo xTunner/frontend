@@ -310,31 +310,25 @@
       %a{ href: "https://github.com/sstephenson/rbenv/" } rbenv
       , please let us know.
 
-    %p
-      You may use any version listed in
-      = succeed ".", ->
-        %code rvm list known
-      This includes:
-      %ul
-        %li
-          MRI Ruby versions, such as
-          %code 1.9.3
-        %li
-          Patchsets, such as
-          %code 1.9.3-p0
-        %li
-          Alternative implementations, such as
-          %code jruby-head
+    %h3#node-js-version
+      Node.js version
 
     %p
-      We install a
-      %a{href: "/docs/environment#ruby" } large number of Rubies
-      by default.
-      If you use a version which we do not have installed, we will install it during test time, which will slow down your tests.
-      Please
-      = HAML['contact_us']()
-      and we'll be happy to install your version so that it does not slow down your tests.
+      Choose the version of Node.js used for your tests, for example:
 
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            node:
+              version:
+                0.6.18
+
+    %p
+      Circle uses
+      %a{ href: "https://github.com/creationix/nvm" } NVM
+      to manage Node versions.
+      If you do not specify a version, we will use 0.8.2.
 
     = HAML['heading']({title: "Checking out your code from GitHub", hash: "checkout"})
 
