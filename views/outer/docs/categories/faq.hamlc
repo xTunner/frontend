@@ -155,3 +155,11 @@
       or
       = succeed '.', ->
         %code wget
+
+    = HAML['heading']({title: "Why can I not follow a project?", hash: "cant-follow"})
+    %p
+
+      GitHub requires admin permissions to add an SSH key to a
+      project, and to add the webhook that tells Circle when someone
+      pushes new code. If you're not an admin, invite a user with
+      permissions to Circle, and have them follow the project first.
