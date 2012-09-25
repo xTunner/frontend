@@ -111,6 +111,16 @@
         %li
           %code 1.8.7
         %li
+          %code 1.8.7-p302
+        %li
+          %code 1.8.7-p334
+        %li
+          %code 1.8.7-p358
+        %li
+          %code 1.8.7-p370
+        %li
+          %code ree-1.8.7-head
+        %li
           %code 1.9.2
         %li
           %code 1.9.2-p0
@@ -130,6 +140,8 @@
         %li
           %code 1.9.3-p125-perf
         %li
+          %code 1.9.3-p194
+        %li
           %code 1.9.3-p194-perf
         %li
           %code 1.9.3-p194-falcon
@@ -142,10 +154,11 @@
         %li
           %code ree-1.8.7-2010.02
         %li
+          %code ree-1.8.7-2011.02
+        %li
           %code ree-1.8.7-2011.03
         %li
-          %code ree-1.8.7-head
-
+          %code ree-1.8.7-2011.12
     %p
       By default we use
       %code Ruby 1.9.2-p290
