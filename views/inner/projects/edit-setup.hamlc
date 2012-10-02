@@ -50,6 +50,26 @@
           <code>configure</code>,
           <code>make</code>, etc.
 
+    %label{ for: "post-dependencies"}
+      %h4 Post-dependency commands
+    .row
+      .span5
+        %textarea.span5{name: "post-dependencies",
+                        rows: 7,
+                        placeholder: "Run extra commands after the normal setup",
+                        data-bind: "value: post_dependencies, valueUpdate: 'keyup'"}
+
+
+      .span4
+        %p
+          %b Post-dependency commands
+          run
+          %b after
+          our inferred commands for dependency installation.
+
+        %p
+          Use this to run commands that rely on the installed dependencies.
+
     .row
       .offset1
         %a.btn.btn-primary.btn-large{ href: "#tests" }

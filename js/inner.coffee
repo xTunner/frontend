@@ -537,6 +537,7 @@ class Project extends Obj
   observables: =>
     setup: null
     dependencies: null
+    post_dependencies: null
     test: null
     extra: null
     latest_build: null
@@ -564,7 +565,7 @@ class Project extends Obj
       @vcs_url() + '/build'
 
     @has_settings = komp =>
-      @setup() or @dependencies() or @test() or @extra()
+      @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
 
 
@@ -627,6 +628,7 @@ class Project extends Obj
       data: JSON.stringify
         setup: @setup()
         dependencies: @dependencies()
+        post_dependencies: @post_dependencies()
         test: @test()
         extra: @extra()
       success: (data) =>
