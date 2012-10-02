@@ -196,9 +196,25 @@ class ActionLog extends Obj
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
+  ## We put a little red or green dot next to lines that contain
+  ## stdout or stderr. Because that's a newline, we don't want to
+  ## newline on every single out(), just newline when we change from
+  ## out to err or vice versa. Therefore, merge out maps as long as
+  ## they're the same type.
+  merge_output: =>
+    merged = []
+    previous = null
+    for o in @out()
+      if previous and previous.type == o.type
+        previous.message += o.message
+      else
+        merged.push(o)
+        previous = o
+    return merged
+
   log_output: =>
     return "" unless @out()
-    x = for o in @out()
+    x = for o in @merge_output()
       "<p class='#{o.type}'><span></span>#{@htmlEscape(o.message)}</p>"
     x.join ""
 
