@@ -18,7 +18,7 @@
           run
           %b before
           our inferred commands. All commands are arbitrary bash
-          statements, and run on Ubuntu 11.04.
+          statements, and run on Ubuntu 12.04.
 
         %p
           Use this to install and setup unusual services, such
