@@ -630,6 +630,16 @@ td.build_status {
   }
 }
 
+// Custom Mixins
+// Transitions
+// NOTE: Included in Bootstrap 2.0
+.transition(@transition) {
+  -webkit-transition: @transition;
+     -moz-transition: @transition;
+       -o-transition: @transition;
+          transition: @transition;
+}
+
 // Full-width button
 // NOTE: Included in Bootstrap 2.0
 .btn-block {
