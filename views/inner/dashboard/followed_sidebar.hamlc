@@ -1,13 +1,16 @@
 %ul.nav.nav-list.well
   %li.nav-header
     Followed Projects
-  %ul{data-bind: "foreach: followed_projects()"}
-    %li
-      %a{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
-        %img{src: "/img/settings.png", height: 15, width: 15}
 
-      %a{data-bind: "attr: { href: project_path }, text: project_display_name"}
+  %li
+    %ul.nav-menu{data-bind: "foreach: followed_projects()"}
 
-      %span.build_status{data-bind: "with: latest_build()"}
-        %span{data-bind: "attr: { class: style }"}
-          %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+      %li.nav-menu-row
+        %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+          %i.icon-cog
+
+        %a.nav-menu-item{data-bind: "attr: { href: project_path }, text: project_display_name"}
+
+        %span.nav-menu-status.build_status{data-bind: "with: latest_build()"}
+          %span{data-bind: "attr: { class: style }"}
+            %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
