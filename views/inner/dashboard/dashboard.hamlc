@@ -2,7 +2,7 @@
 
 .container-fluid
   .row-fluid
-    .span-menu
+    .span-menu.menu-left
       = HAML['followed_sidebar']({})
       = HAML['action_sidebar']({})
 
