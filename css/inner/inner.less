@@ -661,15 +661,22 @@ td.build_status {
   & > .span-flex {
     width: auto;
     float: none;
+    padding-right: 270px;
+  }
+
+  .menu-left + .span-flex {
+    padding-right: 0;
     padding-left: 245px;
   }
 
   & > .span-menu {
-    float: left;
     width: 250px;
+    float: right;
   }
-}
 
+  .span-menu.menu-left  { float: left }
+
+}
 // Navigation Menu Object
 .nav-menu {
   margin-left: 0;
