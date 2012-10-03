@@ -1,5 +1,2 @@
-.row-fluid
-  %ul.span12.well
-    %li
-      %a#add-projects{href: "/add-projects"}
-        Add/Remove Projects
+%a.btn.btn-large.btn-block.btn-primary#add-projects{href: "/add-projects"}
+   Manage Projects
