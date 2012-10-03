@@ -645,3 +645,16 @@ td.build_status {
 .well + .btn-block {
   margin-top: 10px;
 }
+
+// Custom Scaffolding
+[class*="row"] {
+  & > .span-flex {
+    width: auto;
+  }
+
+  & > .span-menu {
+    float: left;
+    width: 240px;
+    margin-left: 20px
+  }
+}
