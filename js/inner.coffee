@@ -202,15 +202,6 @@ class ActionLog extends Obj
       "<p class='#{o.type}'><span></span>#{@htmlEscape(o.message)}</p>"
     x.join ""
 
-  appendLog: (json) =>
-    len = @out.length
-    last = @out[len - 1]
-    payload = json.out
-    if last.type == payload.type
-      last.message += payload.message
-    else
-      @out.push(payload)
-
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
@@ -463,7 +454,18 @@ class Build extends Obj
   appendAction: (json) =>
     # adds output to the action
     @fillActions(json.step, json.index)
-    @steps()[json.step].actions()[json.index].out.push(json.out)
+
+    # @steps()[json.step].actions()[json.index].out.push(json.out)
+    out = @steps()[json.step].actions()[json.index].out
+    len = out().length
+    last = out()[len - 1]
+    payload = json.out
+    if last? and last.type == payload.type
+      out.valueWillMutate()
+      last.message += payload.message
+      out.valueHasMutated()
+    else
+      out.push(payload)
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
@@ -968,8 +970,6 @@ class Billing extends Obj
       extra_p = Math.max(0, extra_p)
 
       plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
-
-
 
   selectPlan: (plan) =>
     if plan.price?
