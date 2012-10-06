@@ -1201,19 +1201,6 @@ class CircleViewModel extends Base
   has_followed_projects: () => komp =>
     @followed_projects()().length > 0
 
-  user_refresh_projects: (data, event) =>
-    @refreshing_projects true
-    $.ajax
-      url: "/api/v1/user/project-refresh"
-      type: "POST"
-      event: event
-      complete:
-        (jqXHR, text_status) =>
-          @refreshing_projects false
-      success:
-        (data) =>
-          @loadProjects()
-
   refresh_project_src: () => komp =>
     if @refreshing_projects()
       "/img/ajax-loader.gif"
