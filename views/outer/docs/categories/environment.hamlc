@@ -311,7 +311,9 @@
       %li
         %code riak 1.0.3
       %li
-        %code mongodb 2.0.5
+        %code mongodb 2.2.0
+      %li
+        %code cassandra 1.1.5
       %li
         %code mysql 5.5.24
       %li
