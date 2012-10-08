@@ -334,3 +334,13 @@
       %code circle_test
       available, and don't require any password.
       The other databases should not need any specific username or password, and should just work.
+
+    %p
+      Because of Cassandra's high memory usage, it is turned off by default. In your circle.yml, you can enable it by adding
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            services:
+              \- cassandra
