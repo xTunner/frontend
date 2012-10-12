@@ -517,7 +517,15 @@ class Repo extends Obj
       not @following() and (@admin or @has_followers)
 
     @requiresInvite = komp =>
-      not @following() and not @admin
+      not @following() and not @admin and not @has_followers
+
+    @displayName = komp =>
+      if @fork
+        @project_name()
+      else
+        @name
+
+
 
   unfollow: (data, event) =>
     $.ajax
