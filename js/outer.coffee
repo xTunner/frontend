@@ -152,7 +152,9 @@ circle = $.sammy "body", ->
     highlight()
     sidebar()
 
-  about.lib = placeholder
+  about.lib = =>
+    placeholder()
+
 
   # Google analytics
   @bind 'event-context-after', ->
@@ -182,6 +184,7 @@ circle = $.sammy "body", ->
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
   $.getScript("/assets/js/vendor/selectivizr-1.0.2.js")
+`!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");`
 
 # Run the application
 $ -> circle.run window.location.pathname.replace(/\/$/, '')
