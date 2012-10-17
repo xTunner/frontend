@@ -121,7 +121,7 @@ circle = $.sammy "body", ->
   privacy = new Page("privacy", "Privacy and Security")
   docs = new Docs("docs", "Documentation")
 
-  # Per-Page Libs
+  # Define Libs
   highlight = =>
     if !hljs?
       $.getScript "/assets/js/vendor/highlight.pack.js", =>
@@ -135,6 +135,18 @@ circle = $.sammy "body", ->
       $.getScript "/assets/js/vendor/jquery.placeholder.js", =>
         $("input, textarea").placeholder()
 
+  follow = =>
+    $("#twitter-follow-template-div").empty()
+    clone = $(".twitter-follow-template").clone()
+    clone.removeAttr "style" # unhide the clone
+    clone.attr "data-show-count", "false" 
+    clone.attr "class", "twitter-follow-button"
+    $("#twitter-follow-template-div").append clone
+
+    # reload twitter scripts to force them to run, converting a to iframe
+    $.getScript "http://platform.twitter.com/widgets.js"
+
+  # Per-Page Libs
   home.lib = =>
     trigger = =>
       $("#testimonials").waypoint ((event, direction) ->
@@ -143,8 +155,10 @@ circle = $.sammy "body", ->
         offset: "80%"
     trigger()
     placeholder()
+    follow()
 
   docs.lib = =>
+    follow()
     sidebar = =>
       $("ul.topics").stickyMojo
         footerID: "#footer"
@@ -154,7 +168,9 @@ circle = $.sammy "body", ->
 
   about.lib = =>
     placeholder()
+    follow()
 
+  # Twitter Follow
 
   # Google analytics
   @bind 'event-context-after', ->
@@ -184,7 +200,7 @@ circle = $.sammy "body", ->
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
   $.getScript("/assets/js/vendor/selectivizr-1.0.2.js")
-`!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");`
+# `!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");`
 
 # Run the application
 $ -> circle.run window.location.pathname.replace(/\/$/, '')
