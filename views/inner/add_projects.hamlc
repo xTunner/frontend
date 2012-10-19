@@ -8,8 +8,7 @@
       %h1.span10
         Add/Remove Repos
       .span2
-        %button.btn.btn-success{-# style: "float: right",
-                                data-bind: "click: window.VM.goDashboard"}
+        %button.btn.btn-success{data-bind: "click: window.VM.goDashboard"}
           Continue >>
     .row-fluid.span9
       %div{data-bind: "if: showLoading"}
