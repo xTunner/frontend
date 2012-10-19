@@ -1,15 +1,13 @@
 -if @flash
-  -# - @flashAnimation()
   #flash
     = @flash
 
-#head
-  %header
-    %h1#circle
-      %a{ href: '/', title: 'Go to the Circle homepage' }
+.navbar.navbar-fixed-top.navbar-inverse
+  .navbar-inner
+    .container
+      %a.brand{ href: '/', title: 'Go to the Circle homepage' }
         Circle
-    %nav
-      %ul
+      %ul.nav
         %li
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
