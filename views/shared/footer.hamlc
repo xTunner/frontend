@@ -29,6 +29,6 @@
           %a.ficon.em{ href: 'mailto:sayhi@circleci.com' }
             Email
         %li.twitter-follow
-          %a.twitter-follow-template{ style: "display:none;" href: "https://twitter.com/CircleCI" data-show-count: "false"}
+          %a.twitter-follow-template{ style: "display:none;" href: "//twitter.com/CircleCI" data-show-count: "false"}
             Follow @CircleCI
           #twitter-follow-template-div
