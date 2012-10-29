@@ -196,6 +196,8 @@
         %code 0.6.18
       %li
         %code 0.8.2
+      %li
+        %code 0.8.12
 
     %p
       Please
@@ -299,31 +301,37 @@
 
 
     %h1.section
-      %a#databases Databases
+      %a#databases Databases and Services
     %hr
 
     %p
-      We have the following databases automatically set up for your tests:
+      We have the following services automatically set up for your tests:
 
     %ul
       %li
         %code postgresql 9.1.4
-        (including postgres extensions)
+        (including postgis 2.0 extensions)
 
       %li
-        %code riak 1.0.3
+        %code mysql 5.5.24
       %li
         %code mongodb 2.2.0
       %li
-        %code cassandra 1.1.5
+        %code riak 1.0.3
       %li
-        %code mysql 5.5.24
+        %code cassandra 1.1.5
       %li
         %code redis 2.4.16
       %li
         %code memcache 1.4.13-0ubuntu2
       %li
         %code sphinx 0.9.9-release
+      %li
+        %code elasticsearch 0.19.10
+      %li
+        %code solr 4.0.0
+      %li
+        %code beanstalkd 1.4.6
 
     %p
       Both
@@ -338,7 +346,11 @@
       The other databases should not need any specific username or password, and should just work.
 
     %p
-      Because of Cassandra's high memory usage, it is turned off by default. In your circle.yml, you can enable it by adding
+      Several services are disabled by default because they're not
+      commonly used, or because of memory requirements. We try to
+      detect and automatically turn them on automatically, but in case
+      we fail (or don't have inference in your language), you can
+      enable them by adding to your circle.yml:
 
     %pre
       %code.no-highlight<>
@@ -346,3 +358,19 @@
           machine:
             services:
               \- cassandra
+
+    %p The list of services that can be enabled this way is
+
+    %ul
+      %li
+        %code cassandra
+      %li
+        %code elasticsearch
+      %li
+        %code rabbitmq-server
+      %li
+        %code solr
+      %li
+        %code riak
+      %li
+        %code beanstalkd
