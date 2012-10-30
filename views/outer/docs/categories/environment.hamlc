@@ -330,6 +330,8 @@
         %code solr 4.0.0
       %li
         %code beanstalkd 1.4.6
+      %li
+        %code couchbase 2.0.0-beta
 
     %p
       Both
@@ -372,3 +374,5 @@
         %code riak
       %li
         %code beanstalkd
+      %li
+        %code couchbase-server
