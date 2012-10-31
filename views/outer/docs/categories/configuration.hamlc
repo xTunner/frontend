@@ -218,7 +218,7 @@
         :preserve
           machine:
             timezone:
-              Americas/Los_Angeles
+              America/Los_Angeles
 
     %p
       Use this to override the machine's timezone, which is UTC by default.
