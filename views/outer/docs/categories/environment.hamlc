@@ -78,7 +78,7 @@
       This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
       You do not need to anything to set this up.
       We have
-      %code phantomjs 1.6.1 (development)
+      %code phantomjs 1.7.0
       and
       %code libwebkit (2.2.1-1ubuntu4)
       pre-installed,
