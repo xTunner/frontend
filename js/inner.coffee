@@ -990,7 +990,6 @@ class Billing extends Obj
 
   load: (hash="small") =>
     unless @loaded
-      $('.more-info').popover({html: true, placement: "below", live: true})
       @loadPlans()
       @loadPlanFeatures()
       @loadExistingPlans()
@@ -1115,6 +1114,9 @@ class Billing extends Obj
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>
       @planFeatures(data)
+      setTimeout(
+        -> $('.more-info').popover({html: true, placement: "bottom", trigger: "hover"}),
+        1000) # wait 1 second to fire this because races
 
 
 
