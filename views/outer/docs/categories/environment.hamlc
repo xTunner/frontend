@@ -146,6 +146,8 @@
         %li
           %code 1.9.3-p194-falcon
         %li
+          %code 1.9.3-p286
+        %li
           %code jruby-1.6.5
         %li
           %code jruby-1.6.6
