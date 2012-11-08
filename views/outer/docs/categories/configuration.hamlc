@@ -22,7 +22,7 @@
       = succeed '.', ->
         %a{ href: "/docs/config-sample" }
           check out out complete example file
-      Otherwise, here's a quick exmaple:
+      Otherwise, here's a quick example:
 
     %pre
       %code.no-highlight<>
