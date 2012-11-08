@@ -403,7 +403,7 @@
 
     %h2#wrong-groups (Ruby) Are you using the correct groups?
     %p
-      We only install gems that are in the
+      Bundler only requires gems that are in the
       %code :test
       group.
       This includes all gems that have no specified group, or that explicitly specify the
