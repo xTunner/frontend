@@ -14,10 +14,9 @@
           %button.btn.btn-small{data-bind: "click: unfollow"}
             Unfollow
         %span{data-bind: "if: requiresInvite"}
-          %button.btn.disabled.invite{title: "Requires Admin"
-                                      data-content: "You are not an admin of this project, so Circle can't set up this project."
-                                      data-placement: "left"}
-            Follow
+          %div.popover-container.invite{data-bind: "popover: {title: 'Requires Admin', content: '<p>GitHub requires admin permissions to add an SSH key to the project, which Circle needs to checkout code and subscribe to Github\\'s post-commit webhooks.</p> <p>If you are not admin on this project, have an admin follow it first.</p>', placement: 'in left', html: true}"}
+            %button.btn.btn-small.btn-danger.disabled
+              Follow
 
 -# #inviteForm.modal.hide.fade{data-bind: "with: window.VM.current_user().activeInvite"}
 -#   .modal-header

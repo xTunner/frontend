@@ -196,6 +196,13 @@ ul.space {
   tr:hover { background-color: #aaaaaa; }
 }
 
+.popover-container {
+	position: relative;
+	.popover.left {
+		margin-left: -1px; // prevent mouseing out of popover-container
+	}
+}
+
 .add-row {
   cursor: pointer;
   tr:hover { background-color: #aaaaaa; }
