@@ -251,6 +251,19 @@
       %a{ href: "/docs/environment#browsers" } Circle's program versions
       to see if this is the case.
 
+    = HAML['heading']({title: "Circle requires Admin permissions", hash: "requires-admin"})
+    %p
+
+      On the Manage Projects screen, Circle won't allow you to add a
+      project, because it requires admin permissions.
+
+    %p
+      The reason for this is GitHub requires admin permissions to add
+      an SSH key to the project, which Circle requires to checkout
+      code, and to add a webhook, so GitHub tells us each time you
+      commit new code. If you are not admin on a project you would
+      like to follow, you should have an admin follow the project
+      first, then you will be able to follow it.
 
     = HAML['heading']({title: "Circle uses the wrong Ruby version", hash: "wrong-ruby-version"})
     %p
