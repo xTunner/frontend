@@ -1,3 +1,0 @@
-This directory contains Bootstrap's less files from version 2.1.1. The aim is to customize variables.less. If upgrading the bootstrap version, be very careful around variables.less.
-
-Sadly, there is no better way to customize variables.less, AFAICT.
