@@ -39,19 +39,8 @@ circle = $.sammy "body", ->
   class Home extends Page
     render: (cx) =>
       super(cx)
-      abTimeoutFn = ->
-        renderContext.titleText = "Continuous Integration &nbsp; for Web Apps"
-        $("#mainHeading").css("display", "")
-
-      abtimeout = setTimeout(abTimeoutFn, 500)
-
       _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
-      _kmq.push( () ->
-        titleText = KM.ab("headerText", ["Continuous Integration &nbsp; for Web Apps", "Fast, Easy Continuous&nbsp;Integration"])
-        $("#mainHeading").html(titleText)
-        $("#mainHeading").css("display", "")
-        clearTimeout(abtimeout))
 
 
   # Doc
