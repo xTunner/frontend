@@ -1114,11 +1114,11 @@ class Billing extends Obj
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>
       @planFeatures(data)
-      setTimeout(
-        -> $('.more-info').popover({html: true, placement: "bottom", trigger: "hover"}),
-        1000) # wait 1 second to fire this because races
-
-
+      $('.more-info').popover
+        html: true
+        placement: "bottom"
+        trigger: "hover"
+        selector: ".more-info"
 
 
 display = (template, args) ->
