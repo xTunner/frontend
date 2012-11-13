@@ -884,7 +884,6 @@ class User extends Obj
 
     $.getJSON url, (data) =>
       @repos((new Repo r for r in data))
-      $(".invite").popover()
       @loadingRepos(false)
 
 class Plan extends Obj
