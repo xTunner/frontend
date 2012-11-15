@@ -3,18 +3,19 @@
 // Full width wrapper
 .testimonial-header {
   width: 100%;
-  position: absolute;
-  top: -55px; left: 0;
   font-family: 'Lato', sans-serif;
   font-weight: bold;
-  font-size: 16px;
-  color: @blueDark;
+  font-size: 28px;
+  color: #000;
   text-align: center;
   text-shadow: -1px 1px 0 white;
+  position: absolute;
+  top: -75px;
+
 }
 
 #testimonials {
-  @quoteHeight: 30px;
+  @quoteHeight: 370px;
 
   position: relative;
   margin-bottom: @quoteHeight;
@@ -23,7 +24,7 @@
   border-left: none;
   border-right: none;
   z-index: 100;
-  .saturate(10, "logo");
+  .saturate(100, "logo");
   .transition(~"margin 1.5s, -webkit-filter 2s");
 
   &:after {
@@ -55,22 +56,6 @@
     }
   }
 
-  // Scrolled trigger styles
-  &.scrolled {
-    @quoteHeightScrolled: 370px;
-
-    margin-bottom: @quoteHeightScrolled;
-    .saturate(100, "logo");
-
-    &:after {
-      height: @quoteHeightScrolled;
-    }
-
-    blockquote {
-      .opacity(100);
-    }
-  }
-
   // Quotes
   & > section.quotes {
     position: absolute;
@@ -92,7 +77,6 @@
     .box-shadow(0 0 6px rgba(0,0,0,0.2));
     .border-radius();
     z-index: 0;
-    .opacity(0);
 
     &:first-child {
       margin-left: 6px;
