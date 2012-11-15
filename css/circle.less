@@ -1,0 +1,25 @@
+@import "vendor/bootstrap/bootstrap";
+
+// Variables
+@imgPath: "../../img";
+
+// Navbar
+.navbar {
+  background: #134374;
+
+  .container {
+    height: 50px;
+  }
+}
+
+.navbar-inner {
+  margin-top: 4px;
+
+  .navbar-inverse & {
+    background-color: #4e7297;
+    background-image: url("@{imgPath}/navbar-texture.png");
+    background-position-y: 1px;
+    border-bottom: 1px solid #214062;
+    border-top: 1px solid #0d2e50;
+  }
+}
