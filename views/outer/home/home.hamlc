@@ -9,7 +9,7 @@
     %p.footnote
       %span#in-public-beta{style: "display: none"}
         Circle is currently in public beta!
-      %a#keeping-it-safe{style: "display: none", href: '/privacy' title: 'Privacy and Security' }
+      %a#keeping-it-safe{style: "display: none", href: '/privacy', title: 'Privacy and Security' }
         Learn about how we keep your code safe
 
     .screenshot CircleCI Screenshot

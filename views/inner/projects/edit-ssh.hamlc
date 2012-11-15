@@ -27,4 +27,4 @@
     Private Key
   %textarea#privateKey.span4{type: "text", rows: 5}
   %label
-    %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", value: "Submit" data-loading-text: "Saving..", data-success-text: "Saved" data-failed-text: "Failed"}
+    %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", value: "Submit", data-loading-text: "Saving..", data-success-text: "Saved", data-failed-text: "Failed"}
