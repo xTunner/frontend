@@ -2,14 +2,13 @@
   #flash
     = @flash
 
-.navbar.navbar-fixed-top.navbar-inverse
-  .navbar-inner
-    .container
-      %a.brand{ href: '/', title: 'Go to the Circle homepage' }
+#head
+  %header
+    %h1#circle
+      %a{ href: '/', title: 'Go to the Circle homepage' }
         Circle
-          %span
-            Ci
-      %ul.nav
+    %nav
+      %ul
         %li
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
