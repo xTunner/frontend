@@ -1,0 +1,44 @@
+%div
+  %h1 Change Parallel Builds for This Project
+  %div
+    .row-fluid
+      .span12
+        %p{data-bind: "ifnot: paying_user()"}
+          Before you can increase your parallelism, someone on your team needs to create an account.
+          Here there will be links to invite a member or convince the member to sign up.
+        %p
+          %h4
+            Your plan supports up to 
+            %span{data-bind: "text: paid_parallelism()"}
+            parallel builds.
+    .row-fluid
+      .span12
+        %p
+          = HAML['parallelism_button_group']({})          
+
+    .row-fluid
+      .span12
+        %p
+          You can increase your limit from the billing page, or contact {{person with credit card}}
+
+    .row-fluid
+      .span12
+        %h3 How Parallelizm Works
+        %ul
+          %li
+            Splits your tests and runs them on completely separate machines
+            %ul
+              %li
+                No shared memory, processes, or databases
+          %li
+            Currently supports Rspec, Cucumber, and Test:Unit
+            -# != surround '(', ')', ->
+            -#   %a{href: "#", data-bind: "click: VM.raiseIntercomDialog('Please add parallelization support for my framework')"}tell us to support your framework
+
+          %li
+            Dramatically reduces build time
+            %ul
+              %li
+                45 minute build plummeted to 18 minutes with 3x parallelization
+              %li
+                20 minute build dropped to 11 minutes with 2x parallelization

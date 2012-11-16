@@ -11,6 +11,11 @@
           Overview
       %li.divider
 
+      %li.nav-header
+        Tweaks
+      %li
+        %a{ href: "edit#parallel_builds" } Parallel Builds
+      %li.divider
 
       %li.nav-header
         Test commands
