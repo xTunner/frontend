@@ -569,6 +569,9 @@ class Project extends Obj
     followed: null
     loading_users: false
     users: []
+    paying_user: null
+    parallel: 1 #TODO: Load this from server
+    parallelism_options: [1..10]
 
   constructor: (json) ->
 
@@ -595,6 +598,8 @@ class Project extends Obj
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
 
+  paid_parallelism: =>
+    if @paying_user() then @paying_user().parallelism else 1
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -1268,6 +1273,7 @@ class CircleViewModel extends Base
 
     subpage = subpage[0].replace('#', '')
     subpage = subpage || "settings"
+
     $('#main').html(HAML['edit']({project: project_name}))
     $('#subpage').html(HAML['edit_' + subpage]({}))
     ko.applyBindings(VM)
