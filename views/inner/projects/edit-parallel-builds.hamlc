@@ -1,16 +1,21 @@
 %div
-  %h1 Change Parallel Builds for This Project
+  %h1 Change Build Speed
   %div
     .row-fluid
       .span12
-        %p{data-bind: "ifnot: paying_user()"}
-          Before you can increase your parallelism, someone on your team needs to create an account.
-          Here there will be links to invite a member or convince the member to sign up.
+        %div{data-bind: "ifnot: paying_user()"}
+          .alert.alert-warning
+            Before you can increase your speed, someone on your team needs to create an account.
+            %br
+            Here there will be links to invite a member or convince the member to sign up.
         %p
-          %h4
+          %h4{data-bind: "if: paid_parallelism() > 1"}
             Your plan supports up to 
             %span{data-bind: "text: paid_parallelism()"}
             parallel builds.
+        %p
+          %h4{data-bind: "ifnot: paid_parallelism() > 1"}
+            Your plan doesn't support parallelism
     .row-fluid
       .span12
         %p
