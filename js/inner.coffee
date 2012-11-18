@@ -1347,7 +1347,7 @@ class CircleViewModel extends Base
       return
 
     jq = intercomJQuery
-    jq("#IntercomDefaultWidget").click()
+    jq("#IntercomTab").click()
     unless jq('#IntercomNewMessageContainer').is(':visible')
       jq('.new_message').click()
     jq('#newMessageBody').focus()
