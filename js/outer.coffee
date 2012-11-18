@@ -112,7 +112,7 @@ circle = $.sammy "body", ->
   # Define Libs
   highlight = =>
     if !hljs?
-      $.getScript "/assets/js/vendor/highlight.pack.js", =>
+      $.getScript renderContext.assetsRoot + "/js/vendor/highlight.pack.js", =>
         $("pre code").each (i, e) => hljs.highlightBlock e
 
     else
@@ -120,7 +120,7 @@ circle = $.sammy "body", ->
 
   placeholder = =>
     if !Modernizr.input.placeholder
-      $.getScript "/assets/js/vendor/jquery.placeholder.js", =>
+      $.getScript renderContext.assetsRoot + "/js/vendor/jquery.placeholder.js", =>
         $("input, textarea").placeholder()
 
   follow = =>
@@ -187,7 +187,7 @@ circle = $.sammy "body", ->
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
-  $.getScript("/assets/js/vendor/selectivizr-1.0.2.js")
+  $.getScript(renderContext.assetsRoot + "/js/vendor/selectivizr-1.0.2.js")
 # `!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");`
 
 # Run the application
