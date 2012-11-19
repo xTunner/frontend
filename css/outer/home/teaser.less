@@ -1,12 +1,36 @@
 // Teaser ------------------------------------------------------------------
 
+// Github Authorize button
+.authGithub {
+  display: block;
+  border: 0;
+  text-indent: -999em;
+  overflow: hidden;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  text-align: left;
+  direction: ltr;
+  position: relative;
+  background: url("@{imgPath}/lg_home-sprite.png") no-repeat -16px -138px;
+  .size(84px,311px);
+
+  &:hover, &:focus {
+    background-position: -16px -244px;
+  }
+
+  &:active {
+    background-position: -16px -350px;
+    top: 3px;
+  }
+}
+
 // Full width wrapper
 #teaser {
-  background: url("@{imgPath}/outer/home/teaser_bg_pattern.png");
+  background: url("@{imgPath}/lg_home-teaser-bg.png");
   -webkit-box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
   -moz-box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
   box-shadow: inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15);
-  
+
   // Content container
   & > section {
     .container;
@@ -18,14 +42,24 @@
 
   // Screenshot
   .screenshot {
-    .ir;
+    display: block;
+    border: 0;
+    text-indent: -999em;
+    overflow: hidden;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    text-align: left;
+    direction: ltr;
     z-index: 1;
     width: 522px;
     height: 431px;
     position: absolute;
     bottom: 0;
     left: 31.5em;
-    background: url("@{imgPath}/outer/home/teaser_ss.png") no-repeat;
+    background: url("@{imgPath}/lg_home-teaser-bp.png") no-repeat;
+
+    .ie7 & { line-height: 0; }
+    br { display: none; }
   }
 
   // Text layout
@@ -44,7 +78,6 @@
   h3 {
     margin-top: .5em;
     font: 400 18px/30px "Open Sans", sans-serif;
-    min-height: 150px;
   }
 
   p {
