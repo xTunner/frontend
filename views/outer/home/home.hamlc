@@ -1,15 +1,17 @@
 #teaser
   %section{ role: 'main' }
-    %h2#mainHeading{style: "display: none"} Continuous Integration for Web Apps
-    %h3 Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
+    %h2#mainHeading Continuous Integration &nbsp; for Web Apps
+    %h3#hero-copy
+      Click one button to automatically set up testing for all your projects.
+      Circle runs your tests on each push, with literally no work on your part.
 
     %a.authGithub.kissAuthGithub#join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
       Join using GitHub
 
     %p.footnote
-      %span
+      %span#in-public-beta
         Circle is currently in public beta!
-      %a{ href: '/privacy' title: 'Privacy and Security' }
+      %a#keeping-it-safe{href: '/privacy', title: 'Privacy and Security' }
         Learn about how we keep your code safe
 
     .screenshot CircleCI Screenshot

@@ -1,6 +1,7 @@
-@import "../vendor/bootstrap.min.css";
+@fontAwesomePath: '../../../font/awesome';
 @import "../vendor/font-awesome.less";
-@fontAwesomePath: '../../../font/awesome/';
+@import "../vendor/old-intercom.less";
+@import "../../vendor/bootstrap/less/bootstrap.less";
 
 /* Bootstrap2 doesn't use the pretty colours for href labels, so switch back */
 .label-success[href], .badge-success[href] { background-color: #46A546; }
@@ -194,6 +195,13 @@ ul.space {
 .build-row {
   cursor: pointer;
   tr:hover { background-color: #aaaaaa; }
+}
+
+.popover-container {
+	position: relative;
+	.popover.left {
+		margin-left: -1px; // prevent mouseing out of popover-container
+	}
 }
 
 .add-row {

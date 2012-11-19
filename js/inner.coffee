@@ -884,7 +884,6 @@ class User extends Obj
 
     $.getJSON url, (data) =>
       @repos((new Repo r for r in data))
-      $(".invite").popover()
       @loadingRepos(false)
 
 class Plan extends Obj
@@ -991,7 +990,6 @@ class Billing extends Obj
 
   load: (hash="small") =>
     unless @loaded
-      $('.more-info').popover({html: true, placement: "below", live: true})
       @loadPlans()
       @loadPlanFeatures()
       @loadExistingPlans()
@@ -1116,8 +1114,11 @@ class Billing extends Obj
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>
       @planFeatures(data)
-
-
+      $('.more-info').popover
+        html: true
+        placement: "bottom"
+        trigger: "hover"
+        selector: ".more-info"
 
 
 display = (template, args) ->
@@ -1346,7 +1347,7 @@ class CircleViewModel extends Base
       return
 
     jq = intercomJQuery
-    jq("#IntercomDefaultWidget").click()
+    jq("#IntercomTab").click()
     unless jq('#IntercomNewMessageContainer').is(':visible')
       jq('.new_message').click()
     jq('#newMessageBody').focus()
