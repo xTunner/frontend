@@ -20,7 +20,7 @@
           %b instead of
           our inferred test commands. If our inferred commands are not to your liking, replace them here.
         %p
-          As usual, all commands are arbitrary bash, and run on Ubuntu 11.10.
+          As usual, all commands are arbitrary bash, and run on Ubuntu 12.04.
 
 
 
