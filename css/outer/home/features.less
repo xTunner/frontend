@@ -6,22 +6,12 @@
   z-index: 1;
   background: url("@{imgPath}/white-bg.png");
 
-  // Header
-  & > header {
-    .container;
-    padding: 10px 0;
-    text-shadow: 0 1px 0 rgba(255,255,255,1);
-
-    h2 {
-      font-size: 42px;
-      text-align: center;
-      color: @blueDarker;
-    }
-
-    p {
-
-    }
-  } // /Header
+  h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+    line-height: 27px;
+    letter-spacing: -1px;
+  }
 
   & > section {
     .container;
@@ -29,6 +19,7 @@
     padding-bottom: 65px;
   }
 }
+
 
 // Sections
 .tour {
@@ -38,6 +29,7 @@
   min-height: @ib-height;
   display: inline-block;
   vertical-align: top;
+  margin: 0;
   margin-left: 35px;
   position: relative;
   text-shadow: 0 1px 0 white;
