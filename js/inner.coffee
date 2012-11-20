@@ -534,6 +534,7 @@ class Repo extends Obj
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
         @following(false)
+        _kmq.push(['record', 'Removed A Repo']);
 
   follow: (data, event) =>
     $.ajax
@@ -541,6 +542,9 @@ class Repo extends Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
+        _kmq.push(['record', 'Added A Repo']);
+        if @first_login
+          _kmq.push(['record', 'Added A Project on First Login']);
         @following(true)
         if data.first_build
           (new Build(data.first_build)).visit()
@@ -606,6 +610,7 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
         @followed(data.followed)
+        _kmq.push(['record', 'Removed A Project']);
 
   follow: (data, event) =>
     $.ajax
@@ -613,6 +618,7 @@ class Project extends Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
+        _kmq.push(['record', 'Added A Project']);
         if data.first_build
           (new Build(data.first_build)).visit()
         else

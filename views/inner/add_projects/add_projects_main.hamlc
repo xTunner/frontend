@@ -8,10 +8,10 @@
       %td{data-bind: "text: displayName", style: "width: 90%"}
       %td
         %span{data-bind: "if: canFollow"}
-          %button.btn.btn-primary.btn-small{data-bind: "click: follow"}
+          %button.btn.btn-primary.btn-small{data-bind: "click: follow", data-loading-text:"Following..."}
             Follow
         %span{data-bind: "if: following"}
-          %button.btn.btn-small{data-bind: "click: unfollow"}
+          %button.btn.btn-small{data-bind: "click: unfollow", data-loading-text:"Unfollowing..."}
             Unfollow
         %span{data-bind: "if: requiresInvite"}
           %div.popover-container.invite{data-bind: "popover: {title: 'Requires Admin', content: '<p>GitHub requires admin permissions to add an SSH key to the project</p><br /> <p>If you are not admin on this project, have an admin follow it first.</p>', placement: 'in left', html: true}"}
