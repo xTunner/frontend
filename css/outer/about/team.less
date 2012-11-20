@@ -69,11 +69,22 @@
 
     // Sprites with hover states
     a {
-      .ir;
+      display: block;
+      border: 0;
+      text-indent: -999em;
+      overflow: hidden;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      text-align: left;
+      direction: ltr;
       margin-bottom: 5px;
       background-image: url("@{imgPath}/outer/about/sprite.png");
       background-repeat: no-repeat;
       .square(27px);
+
+      .ie7 & { line-height: 0; }
+
+      br { display: none; }
     }
 
     // Individual sprite positions
