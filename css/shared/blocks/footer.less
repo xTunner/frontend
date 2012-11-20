@@ -38,7 +38,13 @@
 
   // Social media icons
   .ficon {
-    .ir;
+    border: 0;
+    text-indent: -999em;
+    overflow: hidden;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    text-align: left;
+    direction: ltr;
     background: url("@{imgPath}/blocks/sprite.png") no-repeat;
     display: inline-block;
     position: relative;
@@ -47,6 +53,10 @@
     .opacity(50);
     .transition(all 350ms ease-out);
     *display: block;
+
+    .ie7 & { line-height: 0; }
+
+    br { display: none; }
   }
 
   // Twitter Follow
