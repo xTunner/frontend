@@ -1,24 +1,30 @@
-#org-sidebar
-  %table.table.well
-    %thead
-      %tr
-        %th{colspan: 2}
-          Organizations
+#org-sidebar.nav.nav-list.affix
+  %li.nav-header
+    Organizations
 
-    %tbody.add-row{data-bind: "foreach: organizations"}
-      %tr
-        %td.gravatar-td
-          %img{height: 20, data-bind: "attr: {src: avatar_url}"}
-        %td.orgname{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
+  :plain
+    <!-- ko foreach: organizations -->
 
-  %table.table.well
-    %thead
-      %tr
-        %th{colspan: 2}
-          Personal
+  %li
+    %a{data-bind: "click: VM.current_user().setActiveOrganization"}
+      %img{height: 25, data-bind: "attr: {src: avatar_url}"}
+      %.orgname{data-bind: "text: login"}
+      %i.icon-chevron-right
 
-    %tbody.add-row{data-bind: "foreach: collaboratorAccounts"}
-      %tr
-        %td.gravatar-td
-          %img{height: 20, data-bind: "attr: {src: avatar_url}"}
-        %td.orgname{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
+  :plain
+    <!-- /ko -->
+
+  %li.nav-header
+    Personal
+
+  :plain
+    <!-- ko foreach: collaboratorAccounts -->
+
+  %li
+    %a{data-bind: "click: VM.current_user().setActiveOrganization"}
+      %img{height: 25, data-bind: "attr: {src: avatar_url}"}
+      %.orgname{data-bind: "text: login"}
+      %i.icon-chevron-right
+
+  :plain
+    <!-- /ko -->

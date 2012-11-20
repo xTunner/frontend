@@ -11,7 +11,7 @@
 
       %label.radio
         %input{type: "radio", name: "email_pref", value: "smart", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
-          %span Send an email for failing builds, and once when they're fixed
+          %span Send an email for branches you've pushed to when builds fail, and once they're fixed
 
       %label.radio
         %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
