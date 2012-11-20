@@ -33,6 +33,12 @@ body {
    background:  url(../../../img/outer/bg_pattern.png);
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
    padding-top: 40px;
+   min-width: 640px;
+}
+
+#app {
+	// Fix for the intercom help button obscuring text
+	padding-bottom:40px;
 }
 
 // Basic Typography
@@ -609,20 +615,51 @@ td.build_status {
 
 
 #org-sidebar {
-  th {
+  background: #eff2f6;
+  color: #6e839e;
+    
+  .nav-header {
     background: #d7dce3;
     color: #455C78;
   }
-  td {
-    background: #eff2f6;
-    color: #6e839e;
+  li {
+    cursor: pointer;
+    
+    clear: both;
+    	a {
+	    	height: 25px;
+	    	width: 100%;
+	    	display: block;
+	    	padding: 10px 10px;
+    	}
+    	&.active {
+	    	
+    	}
   }
   .orgname {
-    text-align: left;
+  	.pull-left;
+  	padding-top: 3px;
+  	overflow: hidden;
+  	margin-left: 3%;
+  	width: 70%;
   }
-  .gravatar-td {
+  img {
+    .pull-left;
     width: 25px;
+    height: 25px;
   }
+  i {
+    width: 5%;
+    margin-right: 0;
+    padding-top: 5px;
+    .pull-right;
+  }
+}
+
+.followToggleWrapper {
+	button {
+		.pull-right;
+	}
 }
 
 #followed-sidebar{
