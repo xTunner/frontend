@@ -54,7 +54,22 @@
 @baseFontSize:          15px;
 @headingsFontFamily:    "Lato", sans-serif;
 
+// Mixins
+// -------------------------
+.saturate(@value, @class) {
+  -webkit-filter: ~"saturate(@{value}%)";
+  @c: ".@{class}";
+
+  (@c) {
+    &:after {
+      display: block;
+      .square(100%);
+    }
+  }
+}
+
 // Navbar
+// -------------------------
 .navbar {
   background: #134374;
 
@@ -81,6 +96,7 @@
 @import "shared/blocks/header";
 @import "outer/home/teaser";
 @import "outer/home/features";
+@import "outer/home/testimonials";
 
 // Bootstrap utilities
 // -------------------------
