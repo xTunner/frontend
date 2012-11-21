@@ -613,6 +613,7 @@ class Repo extends Obj
       success: (data) =>
         @following(false)
         _kmq.push(['record', 'Removed A Repo']);
+        _gaq.push(['_trackEvent', 'Repos', 'Remove']);
 
   follow: (data, event) =>
     $.ajax
@@ -621,8 +622,10 @@ class Repo extends Obj
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
         _kmq.push(['record', 'Added A Repo']);
+        _gaq.push(['_trackEvent', 'Repos', 'Add']);
         if @first_login
           _kmq.push(['record', 'Added A Project on First Login']);
+          _gaq.push(['_trackEvent', 'Repos', 'Added on First Login']);
         @following(true)
         if data.first_build
           (new Build(data.first_build)).visit()
@@ -689,6 +692,7 @@ class Project extends Obj
       success: (data) =>
         @followed(data.followed)
         _kmq.push(['record', 'Removed A Project']);
+        _gaq.push(['_trackEvent', 'Projects', 'Remove']);
 
   follow: (data, event) =>
     $.ajax
@@ -697,6 +701,7 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
         _kmq.push(['record', 'Added A Project']);
+        _gaq.push(['_trackEvent', 'Projects', 'Add']);
         if data.first_build
           (new Build(data.first_build)).visit()
         else
@@ -1310,6 +1315,7 @@ class CircleViewModel extends Base
     @loadProjects()
     @loadRecentBuilds()
     display "dashboard", {}
+    _gaq.push(['_trackPageview', '/dashboard']);
 
   loadAddProjects: (cx) =>
     @current_user().loadOrganizations()
