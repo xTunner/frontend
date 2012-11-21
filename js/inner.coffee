@@ -277,7 +277,7 @@ class ActionLog extends Obj
   log_output: =>
     return "" unless @out()
     x = for o in @out()
-      "<p class='#{o.type}'><span></span>#{ansiToHtml(@htmlEscape(o.message))}</p>"
+      "<p class='#{o.type}'><span class="bubble"></span>#{ansiToHtml(@htmlEscape(o.message))}</p>"
     x.join ""
 
   report_build: () =>
