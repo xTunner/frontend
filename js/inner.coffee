@@ -1456,35 +1456,35 @@ class CircleViewModel extends Base
 
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', () ->
-    @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
+    @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
-    @get('/', (cx) => VM.loadDashboard(cx))
-    @get('/add-projects', (cx) => VM.loadAddProjects(cx))
-    @get('/gh/:username/:project/edit(.*)',
+    @get('^/', (cx) => VM.loadDashboard(cx))
+    @get('^/add-projects', (cx) => VM.loadAddProjects(cx))
+    @get('^/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
-    @get('/account(.*)',
+    @get('^/account(.*)',
       (cx) -> VM.loadAccountPage(cx, cx.params.splat))
-    @get('/gh/:username/:project/:build_num',
+    @get('^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
-    @get('/gh/:username/:project',
+    @get('^/gh/:username/:project',
       (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
 
-    @get('/logout', (cx) -> VM.logout(cx))
+    @get('^/logout', (cx) -> VM.logout(cx))
 
-    @get('/admin', (cx) -> VM.loadAdminPage cx)
-    @get('/admin/users', (cx) -> VM.loadAdminPage cx, "users")
-    @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
-    @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
-    @get('/docs(.*)', (cx) -> # go to the outer app
+    @get('^/admin', (cx) -> VM.loadAdminPage cx)
+    @get('^/admin/users', (cx) -> VM.loadAdminPage cx, "users")
+    @get('^/admin/projects', (cx) -> VM.loadAdminProjects cx)
+    @get('^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
+    @get('^/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
+    @get('^/docs(.*)', (cx) -> # go to the outer app
       SammyApp.unload()
       window.location = cx.path)
 
-    @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
+    @get('^(.*)', (cx) -> VM.unsupportedRoute(cx))
 
     # dont show an error when posting
-    @post '/logout', -> true
-    @post '/admin/switch-user', -> true
+    @post '^/logout', -> true
+    @post '^/admin/switch-user', -> true
 
     # Google analytics
     @bind 'event-context-after', ->
