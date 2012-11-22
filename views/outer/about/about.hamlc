@@ -79,5 +79,5 @@
         %li.telephone (415) 341 - 2432
 
         %li.address
-          %a{ href: 'http://g.co/maps/p29yr', target: '_blank' }
-            149 9th Street<br>San Francisco CA 94103
+          %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
+            325 9th Street<br>San Francisco CA 94103
