@@ -1314,8 +1314,8 @@ class CircleViewModel extends Base
   loadDashboard: (cx) =>
     @loadProjects()
     @loadRecentBuilds()
+    _gaq.push(['_trackPageview', '/dashboard'])
     display "dashboard", {}
-    _gaq.push(['_trackPageview', '/dashboard']);
 
   loadAddProjects: (cx) =>
     @current_user().loadOrganizations()
