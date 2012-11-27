@@ -153,6 +153,7 @@
       %li <b>timeout</b>: If a command runs this many seconds without output, kill it. Defaults to 180s.
       %li <b>pwd</b>: Run your commands using this value as its current working directory. By default, commands are run in the checkout directory, named after your project name.
       %li <b>environment</b>: A hash creating a list of environmental variables set for this command.
+      %li <b>parallel</b>: If true, run this command in parallel across all build VMs.
 
     %p For example:
 
