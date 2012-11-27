@@ -262,7 +262,6 @@ ul.space {
 
 
 .build-table {
-  position: absolute;
   background: #EFF2F6;
   border-top: 1px solid #D7DCE3;
   border-bottom: 1px solid #D7DCE3;
@@ -273,11 +272,19 @@ ul.space {
       width: 100px;
       float: left;
       color: #134374;
+      text-align: right;
+      margin-right: 10px;
+   }
+   
+   p.reponame {
+	   font-weight: bold;
    }
 
    dd {
       display: block;
    }
+   
+   padding-right: 40px;
 }
 
 .reposition {
@@ -770,4 +777,16 @@ td.build_status {
     color: #777;
     text-decoration: none;
   }
+}
+
+#build-log-container {
+	#build-log-header {
+		clear: both;
+	}
+}
+
+#inviteForm {
+	input {
+		width: 270px;
+	}
 }

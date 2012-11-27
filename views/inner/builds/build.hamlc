@@ -1,15 +1,13 @@
 = HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num})})
 
 
-.container-fluid
+.container-fluid#build-log-container
 
   = HAML['flashes']({})
 
   %div{data-bind: "with: build"}
 
-
-
-    .row.build-table
+    .row.build-table#build-log-header
 
       %dl.offset1.span4
 
@@ -77,10 +75,10 @@
 
 
 
-    .row.reposition
+    .row
       %dl.offset1
 
-        %dt Log
+        %dt Commit Log
         %dd
           %span{data-bind: "if: body"}
             %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
