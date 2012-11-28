@@ -41,6 +41,7 @@ circle = $.sammy "body", ->
       super(cx)
       _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
+      runAllTests()
 
 
   # Doc
