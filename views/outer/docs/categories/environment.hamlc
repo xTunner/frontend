@@ -229,12 +229,12 @@
     %p
       We use
       = succeed ",", ->
-        %code python 2.7.2+
+        %code python 2.7.3
       and packages can be installed using
       %code pip 1.0
       and
       = succeed ".", ->
-        %code virtualenv 1.6.4
+        %code virtualenv 1.7.1.2
 
     %p
       Please
@@ -268,7 +268,7 @@
       We have Java installed, along with ant and maven.
     %ul
       %li
-        %code java 1.6.0_24 (IcedTea 1.11pre)
+        %code java 1.7.0_07
       %li
         %code ant 1.8.2
       %li
