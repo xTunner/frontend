@@ -10,7 +10,7 @@
             Here there will be links to invite a member or convince the member to sign up.
         %p
           %h4{data-bind: "if: paid_parallelism() > 1"}
-            Your plan supports up to 
+            Your plan supports up to
             %span{data-bind: "text: paid_parallelism()"}
             parallel builds.
         %p
@@ -19,7 +19,9 @@
     .row-fluid
       .span12
         %p
-          = HAML['parallelism_button_group']({})          
+          %form.select-project-parallelization{data-bind: "foreach: $root.project().parallelism_options"}
+            %label{data-bind: "css: {disabled: $data > $root.project().paid_parallelism(), selected: $data == $root.project().parallel()}, text: $data, attr: { for: $root.project().parallel_input_id($data)}"}
+            %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().parallel, disable: $data > $root.project().paid_parallelism(), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
 
     .row-fluid
       .span12
