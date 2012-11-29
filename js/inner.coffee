@@ -564,6 +564,13 @@ class Build extends Obj
         (new Build(data)).visit()
     false
 
+  cancel_build: (data, event) =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/cancel"
+      type: "POST"
+      event: event
+    false
+
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
