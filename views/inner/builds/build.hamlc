@@ -115,15 +115,16 @@
                   %span.action-source
                     %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
-          .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
+          .detail-wrapper{data-bind: "if: has_content"}
+            .detail{data-bind: "css: action_log_style, visible: !minimize()"}
 
-            %span{data-bind: "if: bash_command"}
-              Command:
-              %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
-            Output:
-            %pre.output{data-bind: "html: log_output()"}
+              %span{data-bind: "if: bash_command"}
+                Command:
+                %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+              Output:
+              %pre.output{data-bind: "html: log_output()"}
 
-          = HAML['report_error']({build: false})
+            = HAML['report_error']({build: false})
 
     %div{data-bind: "if: steps().length > 1"}
       = HAML['messages']()
