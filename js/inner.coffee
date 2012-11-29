@@ -569,8 +569,8 @@ class Project extends Obj
     followed: null
     loading_users: false
     users: []
-    paying_user: null
-    parallel: 1 #TODO: Load this from server
+    paying_user: null #TODO: Load this lazily
+    parallel: "2" #TODO: Load this from server
     parallelism_options: [1..10]
 
   constructor: (json) ->
@@ -744,6 +744,19 @@ class Project extends Obj
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
       @updateObservables(data)
+
+  set_parallelism: (data, event) =>
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/settings"
+      data: JSON.stringify
+        parallel: @parallel()
+
+    true # TODO: make this reflect what is happening on the server
+
+  parallel_input_id: (num) =>
+    "parallel_input_#{num}"
 
 class User extends Obj
   observables: =>
