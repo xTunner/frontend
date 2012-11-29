@@ -1,0 +1,26 @@
+@import "../../vendor/bootstrap/less/mixins.less";
+
+.select-project-parallelization {
+	input {
+		float: left;
+		margin-left: -25px;
+		margin-top: 15px;
+		opacity: 0;
+	}
+	label {
+		float: left;
+		background-color: red;
+		width: 30px;
+		height: 30px;
+		margin: 5px;
+		text-align: center;
+		line-height: 30px;
+		.border-radius(5px);
+	}
+	label.selected {
+		border: 3px solid blue
+	}
+	label.disabled {
+		background-color: orange;
+	}
+}
