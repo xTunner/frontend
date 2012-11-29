@@ -268,14 +268,17 @@
       We have Java installed, along with ant and maven.
     %ul
       %li
-        %code java 1.7.0_07
+        %code oracle JDK 7 (default)
       %li
         %code ant 1.8.2
       %li
         %code maven 2.2.1 (rdebian-6)
 
     %p
-      Other JVM-based languages should also work, so long as they use maven.
+      Open JDK 6 and 7 are also available, through the circle.yml file.
+
+    %p
+      Other JVM-based languages should also work.
       Circle has
       = succeed ",", ->
         %a{href: "#clojure"} special support for Clojure
