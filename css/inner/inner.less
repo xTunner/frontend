@@ -271,19 +271,22 @@ ul.space {
    dt {
       width: 100px;
       float: left;
+      display: block;
+      clear: left;
       color: #134374;
       text-align: right;
       margin-right: 10px;
    }
-   
+
    p.reponame {
 	   font-weight: bold;
    }
 
    dd {
+      float: left;
       display: block;
    }
-   
+
    padding-right: 40px;
 }
 
@@ -624,14 +627,14 @@ td.build_status {
 #org-sidebar {
   background: #eff2f6;
   color: #6e839e;
-    
+
   .nav-header {
     background: #d7dce3;
     color: #455C78;
   }
   li {
     cursor: pointer;
-    
+
     clear: both;
     	a {
 	    	height: 25px;
@@ -640,7 +643,7 @@ td.build_status {
 	    	padding: 10px 15px;
     	}
     	&.active {
-	    	
+
     	}
   }
   .orgname {
