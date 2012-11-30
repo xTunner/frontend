@@ -917,10 +917,10 @@ class User extends Obj
       @collaboratorAccounts(data)
       @loadingOrganizations(false)
 
-   setActiveOrganization: (org, event) =>
-     if org
-       @activeOrganization(org.login)
-       @loadRepos(org)
+  setActiveOrganization: (org, event) =>
+    if org
+      @activeOrganization(org.login)
+      @loadRepos(org)
 
   loadRepos: (org) =>
     @loadingRepos(true)
