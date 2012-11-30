@@ -833,8 +833,6 @@ class User extends Obj
     @showLoading = komp =>
       @loadingRepos() or @loadingOrganizations()
 
-
-
   create_token: (data, event) =>
     $.ajax
       type: "POST"
@@ -1016,19 +1014,37 @@ class Billing extends Obj
     @wizardCompleted = komp =>
       @wizardStep() > 4
 
-  calculateCost: (plan, concurrency, parallelism) ->
+  parallelism_option_text: (plan, p) =>
+    "#{p}-way ($#{@parallelism_cost(plan, p)})"
+
+  concurrency_option_text: (plan, c) =>
+    "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(plan, c)})"
+
+  raw_parallelism_cost: (p) ->
+    if p == 1
+      0
+    else
+      Math.round(log2(p) * 99)
+
+  parallelism_cost: (plan, p) =>
+    @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism)
+
+  concurrency_cost: (plan, c) ->
+    if plan.concurrency == "Unlimited"
+      0
+    else
+      (c - plan.concurrency) * 49
+
+  calculateCost: (plan, concurrency, parallelism) =>
     unless plan
       0
     else
-      c = concurrency or 0
-      extra_c = Math.max(0, c - 1)
+      c = concurrency or plan.concurrency
+      p = parallelism or plan.min_parallelism
 
-      p = parallelism or 1
-      p = Math.max(p, 2)
-      extra_p = (log2 p) - 1
-      extra_p = Math.max(0, extra_p)
-
-      plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
+      # Enterprise plan doesn't have price,
+      # but it's okay because they won't use the wizard
+      plan.price + @parallelism_cost(plan, p) + @concurrency_cost(plan, c)
 
   selectPlan: (plan) =>
     if plan.price?
