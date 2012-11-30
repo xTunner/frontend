@@ -1,5 +1,12 @@
 window.observableCount = 0
 
+window.addCommas = (num) ->
+  num_str = num.toString()
+  i = num_str.length % 3
+  prefix = num_str.substr(0, i) + if i > 0 and num_str.length > 3 then "," else ""
+  suffix = num_str.substr(i).replace(/(\d{3})(?=\d)/g, "$1" + ",")
+  prefix + suffix
+
 log2 = (v) ->
   Math.log(v) / Math.log(2)
 
@@ -570,8 +577,8 @@ class Project extends Obj
     loading_users: false
     users: []
     paying_user: null #TODO: Load this lazily
-    parallel: "2" #TODO: Load this from server
-    parallelism_options: [1..10]
+    parallel: 2 #TODO: Load this from server
+    #focused_parallel: @parallel
 
   constructor: (json) ->
 
@@ -586,7 +593,7 @@ class Project extends Obj
     @has_settings = komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
-
+    @focused_parallel = ko.observable @parallel()
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
@@ -600,6 +607,16 @@ class Project extends Obj
 
   paid_parallelism: =>
     if @paying_user() then @paying_user().parallelism else 1
+
+  # load_paying_user: =>
+  #   if not @paying_user()?
+  #     $.ajax
+  #       type: "GET"
+  #       url: "/api/v1/project/#{@project_name()}/paying_user"
+  #       success: (result)
+  #         @paying_user(new User(result))
+  #         true
+
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -742,10 +759,12 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
 
   refresh: () =>
+    @paying_user(null)
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
       @updateObservables(data)
 
   set_parallelism: (data, event) =>
+    @focused_parallel(@parallel())
     $.ajax
       type: "PUT"
       event: event
@@ -757,6 +776,16 @@ class Project extends Obj
 
   parallel_input_id: (num) =>
     "parallel_input_#{num}"
+
+  parallel_focus_in: (place) =>
+    if @focusTimeout? then clearTimeout(@focusTimeout)
+    @focused_parallel(place)
+
+  parallel_focus_out: (place) =>
+    if @focusTimeout? then clearTimeout(@focusTimeout)
+    @focusTimeout = window.setTimeout =>
+      @focused_parallel(@parallel())
+    , 200
 
 class User extends Obj
   observables: =>
@@ -904,9 +933,16 @@ class User extends Obj
       @repos((new Repo r for r in data))
       @loadingRepos(false)
 
+  isPaying: () =>
+    @plan?
+
 class Plan extends Obj
   constructor: ->
     super
+
+    @parallelism_options = ko.observableArray([@min_parallelism..@max_parallelism])
+
+    @concurrency_options = ko.observableArray([1..20])
 
     @allowsParallelism = komp =>
       @max_parallelism > 1
@@ -945,8 +981,6 @@ class Plan extends Obj
     if feature.name?
       result[feature.name] = true
     result
-
-
 
 class Billing extends Obj
   observables: =>
@@ -1159,7 +1193,9 @@ class CircleViewModel extends Base
     @error_message = ko.observable(null)
     @first_login = true;
     @refreshing_projects = ko.observable(false);
-    observableCount += 8
+    @max_possible_parallelism = ko.observable(64);
+    @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
+    observableCount += 8 # are we still doing this?
 
     @setupPusher()
 

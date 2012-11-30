@@ -1,5 +1,5 @@
 %div
-  %h1 Change Build Speed
+  %h1 Change Build Speed For This Project
   %div
     .row-fluid
       .span12
@@ -17,16 +17,39 @@
           %h4{data-bind: "ifnot: paid_parallelism() > 1"}
             Your plan doesn't support parallelism
     .row-fluid
-      .span12
+      .span7
         %p
-          %form.select-project-parallelization{data-bind: "foreach: $root.project().parallelism_options"}
-            %label{data-bind: "css: {disabled: $data > $root.project().paid_parallelism(), selected: $data == $root.project().parallel()}, text: $data, attr: { for: $root.project().parallel_input_id($data)}"}
-            %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().parallel, disable: $data > $root.project().paid_parallelism(), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
+          %form.select-project-parallelization{data-bind: "foreach: $root.parallelism_options"}
+            %label{data-bind: "css: {disabled: $data > $root.project().paid_parallelism(), selected: $data == $root.project().parallel()}, attr: { for: $root.project().parallel_input_id($data)}, event: {mouseover: $root.project().parallel_focus_in}"}
+              != succeed "x", ->
+                %span{data-bind: "text: $data"}
+              %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().parallel, disable: $data > $root.project().paid_parallelism(), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
+            / ko if: $data % 8 == 0
+            %br{style: "clear: both"}
+            / /ko
+      .span5.well
+        %span{data-bind: "if: focused_parallel() == 1"}
+          At 1x build speed, all of your tests will run sequentially on the same machine.
+        %p{data-bind: "if: focused_parallel() > 1"}
+          Split your builds across
+          %span{data-bind: "text: focused_parallel"}
+          separate machines to run your tests
+          %span{data-bind: "text: focused_parallel"}
+          times as fast.
+        %p{data-bind: "if: focused_parallel() > paid_parallelism()"}
+          %a{href: "#parallel_builds"}
+            Upgrade to
+            != succeed "x", ->
+              %span{data-bind: "text: focused_parallel"}
+          for only
+          %span{data-bind: "text: "$" + addCommas(50 * (focused_parallel() - paid_parallelism()))"}
+          more per month.
 
     .row-fluid
       .span12
         %p
-          You can increase your limit from the billing page, or contact {{person with credit card}}
+          You can increase your limit from the billing page, or bug
+          %span{data-bind: "text: paying_user().login"}
 
     .row-fluid
       .span12
@@ -46,6 +69,6 @@
             Dramatically reduces build time
             %ul
               %li
-                45 minute build plummeted to 18 minutes with 3x parallelization
+                45 minute build fell to 18 minutes with 3x parallelization
               %li
                 20 minute build dropped to 11 minutes with 2x parallelization
