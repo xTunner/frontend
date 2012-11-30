@@ -2,10 +2,7 @@
 
 .select-project-parallelization {
 	input {
-		float: left;
-		margin-left: -25px;
-		margin-top: 15px;
-		opacity: 0;
+		display: none
 	}
 	label {
 		float: left;
@@ -16,11 +13,17 @@
 		text-align: center;
 		line-height: 30px;
 		.border-radius(5px);
+		border: 3px solid rgba(0,0,0,0);
+		cursor: pointer;
+	}
+	label:hover {
+		border: 3px solid green;
 	}
 	label.selected {
-		border: 3px solid blue
+		border: 3px solid blue;
 	}
 	label.disabled {
-		background-color: orange;
+		background-color: lightgray;
+		cursor: default;
 	}
 }
