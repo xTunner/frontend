@@ -3,7 +3,7 @@
   "./vendor/modernizr-2.6.1.js"
   "./vendor/waypoints-1.1.7.min.js"
   "./vendor/stickyMojo.js"
-  "../views/shared/"
-  "../views/outer/"
+  "./../views/shared/"
+  "./../views/outer/"
   "./outer.coffee"
 ]

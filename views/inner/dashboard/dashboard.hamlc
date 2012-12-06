@@ -8,6 +8,11 @@
 
     .span-flex
       = HAML['flashes']({})
+      
+      %div.dashboard-main{data-bind: "ifnot: has_followed_projects()"}
+        %h1 You don't have any projects in CircleCI!
+        %p Why don't you add a repository or two on
+          %a{href: "/add-projects"} the Manage Projects page?
 
       %div.dashboard-main{data-bind: "if: has_followed_projects()"}
         %h1
@@ -15,7 +20,7 @@
         .offset4
           %b#invite-your-friends
             Send this link to your colleagues:
-            %a{href: "https://circleci.com/?join=dont-test-alone" }
+            %a#invite-friends-link{href: "https://circleci.com/?join=dont-test-alone" }
               https://circleci.com/?join=dont-test-alone
         .offset5#days-in-trial{data-bind: "with: current_user"}
           %b{data-bind: "if: in_trial"}

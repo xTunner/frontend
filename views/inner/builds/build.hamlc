@@ -1,15 +1,13 @@
 = HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num})})
 
 
-.container-fluid
+.container-fluid#build-log-container
 
   = HAML['flashes']({})
 
   %div{data-bind: "with: build"}
 
-
-
-    .row.build-table
+    .row.build-table#build-log-header
 
       %dl.offset1.span4
 
@@ -73,14 +71,20 @@
                                 data-loading-text: "Triggering...",
                                 data-success-text: "Triggered"}
             SSH
+          %span{data-bind: "if: can_cancel()"}
+            %button.btn.btn-primary{data-bind: "click: cancel_build",
+                                    title: "Cancel the build immediately",
+                                    data-loading-text: "Canceling...",
+                                    data-success-text: "Canceled"}
+              Cancel
 
 
 
 
-    .row.reposition
+    .row
       %dl.offset1
 
-        %dt Log
+        %dt Commit Log
         %dd
           %span{data-bind: "if: body"}
             %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
@@ -117,15 +121,16 @@
                   %span.action-source
                     %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
-          .detail{data-bind: "if: has_content, css: action_log_style, visible: !minimize()"}
+          .detail-wrapper{data-bind: "if: has_content"}
+            .detail{data-bind: "css: action_log_style, visible: !minimize()"}
 
-            %span{data-bind: "if: bash_command"}
-              Command:
-              %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
-            Output:
-            %pre.output{data-bind: "html: log_output()"}
+              %span{data-bind: "if: bash_command"}
+                Command:
+                %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+              Output:
+              %pre.output{data-bind: "html: log_output()"}
 
-          = HAML['report_error']({build: false})
+            = HAML['report_error']({build: false})
 
     %div{data-bind: "if: steps().length > 1"}
       = HAML['messages']()

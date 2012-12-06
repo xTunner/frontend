@@ -1,4 +1,4 @@
-@fontAwesomePath: '../../../font/awesome/';
+@fontAwesomePath: '../../../font/awesome';
 @import "../vendor/font-awesome.less";
 @import "../vendor/old-intercom.less";
 @import "../../vendor/bootstrap/less/bootstrap.less";
@@ -34,6 +34,12 @@ body {
    background:  url(../../../img/outer/bg_pattern.png);
    /* Move the content so the Bootstrap topbar doesn't sit over it*/
    padding-top: 40px;
+   min-width: 640px;
+}
+
+#app {
+	// Fix for the intercom help button obscuring text
+	padding-bottom:40px;
 }
 
 // Basic Typography
@@ -66,7 +72,7 @@ pre {
     position: relative;
     padding-left: 13px;
     margin: 0px;
-    span {
+    span.bubble {
       position: absolute;
       left: 0px;
       display: block;
@@ -257,7 +263,6 @@ ul.space {
 
 
 .build-table {
-  position: absolute;
   background: #EFF2F6;
   border-top: 1px solid #D7DCE3;
   border-bottom: 1px solid #D7DCE3;
@@ -267,12 +272,23 @@ ul.space {
    dt {
       width: 100px;
       float: left;
+      display: block;
+      clear: left;
       color: #134374;
+      text-align: right;
+      margin-right: 10px;
+   }
+
+   p.reponame {
+	   font-weight: bold;
    }
 
    dd {
+      float: left;
       display: block;
    }
+
+   padding-right: 40px;
 }
 
 .reposition {
@@ -610,20 +626,51 @@ td.build_status {
 
 
 #org-sidebar {
-  th {
+  background: #eff2f6;
+  color: #6e839e;
+
+  .nav-header {
     background: #d7dce3;
     color: #455C78;
   }
-  td {
-    background: #eff2f6;
-    color: #6e839e;
+  li {
+    cursor: pointer;
+
+    clear: both;
+    	a {
+	    	height: 25px;
+	    	width: 100%;
+	    	display: block;
+	    	padding: 10px 15px;
+    	}
+    	&.active {
+
+    	}
   }
   .orgname {
-    text-align: left;
+  	.pull-left;
+  	padding-top: 3px;
+  	overflow: hidden;
+  	margin-left: 3%;
+  	width: 70%;
   }
-  .gravatar-td {
+  img {
+    .pull-left;
     width: 25px;
+    height: 25px;
   }
+  i {
+    width: 5%;
+    margin-right: 0;
+    padding-top: 5px;
+    .pull-right;
+  }
+}
+
+.followToggleWrapper {
+	button {
+		.pull-right;
+	}
 }
 
 #followed-sidebar{
@@ -734,4 +781,16 @@ td.build_status {
     color: #777;
     text-decoration: none;
   }
+}
+
+#build-log-container {
+	#build-log-header {
+		clear: both;
+	}
+}
+
+#inviteForm {
+	input {
+		width: 270px;
+	}
 }

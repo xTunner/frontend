@@ -265,6 +265,26 @@
       like to follow, you should have an admin follow the project
       first, then you will be able to follow it.
 
+    = HAML['heading']({title: "OOM Killer ran", hash: "oom"})
+    %p
+      Your build contains a message that says the Linux Out-of-Memory
+      killer ran.
+
+    %p
+      The reason for this is your builds run in a VM with 2GB of
+      available RAM. If you go over that limit, Linux kills a process,
+      somewhat arbitrarily.
+
+    %p
+      Unfortunately, there's no good way for us to know which process
+      was killed. While testing, it's commonly your application, or
+      DB, or web browser.
+
+    %p
+      Hitting the RAM limit is typically a bug. If your tests actually
+      need more than 2GB of RAM, please contact us.
+
+
     = HAML['heading']({title: "Circle uses the wrong Ruby version", hash: "wrong-ruby-version"})
     %p
       We infer your Ruby version from your .rvmrc.

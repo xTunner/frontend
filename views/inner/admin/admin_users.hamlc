@@ -11,6 +11,6 @@
       %td{data-bind: "text: sign_in_count"}
       %td{data-bind: "text: created_at"}
       %td
-        %form{data-bind: "", action: "/admin/switch-user", method: "post", data-bind: "submit: switch_user"}
+        %form{data-bind: "", action: "/admin/switch-user", method: "post"}
           %input{type: "hidden", name: "login", data-bind: "attr: {value: login}"}
           %input.btn.primary{type: "submit", value: "Switch user"}

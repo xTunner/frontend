@@ -1,16 +1,17 @@
 #teaser
   %section{ role: 'main' }
-    %h2#mainHeading Continuous Integration &nbsp; for Web Apps
-    %h3#hero-copy{style: "visibility: hidden"} Click one button to automatically set up testing for all your projects. Circle runs your tests on each push, with literally no work on your part.
+    %h2#mainHeading Continuous Integration with the push of a button
+    %h3#hero-copy
+      CircleCI gives you all the benefits of continuous integration with none of the headaches of maintaining it. Don't take our word for it &mdash; our free 14-day trial will prove it.
 
     %a.authGithub.kissAuthGithub#join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
       Join using GitHub
 
     %p.footnote
-      %span#in-public-beta{style: "visibility: hidden"}
-        Circle is currently in public beta!
-      %a#keeping-it-safe{style: "visibility: hidden", href: '/privacy', title: 'Privacy and Security' }
-        Learn about how we keep your code safe
+      %span#in-public-beta
+        14-day free trial.
+      %a#keeping-it-safe{href: '/privacy', title: 'Privacy and Security' }
+        CircleCI keeps your code safe. Learn how.
 
     .screenshot CircleCI Screenshot
 
