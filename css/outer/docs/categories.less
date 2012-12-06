@@ -1,18 +1,51 @@
 // Categories view
+#content > .categories {
+  .container;
+  padding-top: 0;
+  padding-bottom: 60px;
+}
 
-.topics {
-  ul {
-    height: 0;
-    overflow: hidden;
+.categories {
+  ul { padding-left: 0; }
+
+  li { list-style: none; }
+
+  a {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #1E598F;
+    // #gradient > .vertical(#115EA6, #0F5391);
+    color: white;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55);
+    .border-radius(5px);
+    .clearfix;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #1D476F;
+    }
   }
 
-  .expand {
-    height: auto;
+  i { font-size: 48px; }
+
+  hgroup {
+    float: right;
+    width: 90%;
   }
 
-  li > ul {
-    list-style: none;
+  h2 {
+    font-size: 20px;
+    margin: 0;
+    padding-top: 7px;
+    line-height: 24px;
   }
 
-  i { color: #0F5391; }
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: normal;
+    padding-top: 5px;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.35);
+  }
 }
