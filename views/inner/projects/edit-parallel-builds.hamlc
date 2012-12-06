@@ -34,8 +34,9 @@
           times faster.
 
         %p{data-bind: "ifnot: paying_user"}
-          %a{href: '/account/plans'}
-            Select a plan to increase your build speed
+          .alert.alert-warning
+            %a{href: '/account/plans'}
+              Select a plan to increase your maximum build speed
         / ko if: paying_user
         %div{data-bind: "if: show_parallel_upgrade_plan_p"}
           .alert.alert-warning
@@ -61,8 +62,7 @@
                   != succeed "x", ->
                     %span{data-bind: "text: focused_parallel"}
                   for
-                  != precede "$", ->
-                    %span{data-bind: "text: focused_parallel_cost_increase"}
+                  %span{data-bind: "money: focused_parallel_cost_increase"}
               more per month.
             %p{data-bind: "ifnot: current_user_is_paying_user_p"}
               Send
