@@ -10,26 +10,6 @@
         / ko foreach: chosenPlan().concurrency_options
         %option{data-bind: "value: $data, text: $root.billing().concurrency_option_text($root.billing().chosenPlan(), $data)"}
         / /ko
-        -# %option{value: 1} 1 build at a time
-        -# %option{value: 2} 2 builds at a time
-        -# %option{value: 3} 3 builds at a time
-        -# %option{value: 4} 4 builds at a time
-        -# %option{value: 5} 5 builds at a time
-        -# %option{value: 6} 6 builds at a time
-        -# %option{value: 7} 7 builds at a time
-        -# %option{value: 8} 8 builds at a time
-        -# %option{value: 9} 9 builds at a time
-        -# %option{value: 10} 10 builds at a time
-        -# %option{value: 11} 11 builds at a time
-        -# %option{value: 12} 12 builds at a time
-        -# %option{value: 13} 13 builds at a time
-        -# %option{value: 14} 14 builds at a time
-        -# %option{value: 15} 15 builds at a time
-        -# %option{value: 16} 16 builds at a time
-        -# %option{value: 17} 17 builds at a time
-        -# %option{value: 18} 18 builds at a time
-        -# %option{value: 19} 19 builds at a time
-        -# %option{value: 20} 20 builds at a time
 
     %span.help-block
       You'll need more concurrent builds if you:
