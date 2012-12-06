@@ -28,7 +28,7 @@
 
         %p{data-bind: "ifnot: paying_user"}
           %a{href: '/account/plans'}
-            Select a plan to increase parallelism
+            Select a plan to increase your build speed
         / ko if: paying_user
         %div{data-bind: "if: show_parallel_upgrade_plan_p"}
           .alert.alert-warning
