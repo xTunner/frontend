@@ -570,8 +570,9 @@ class Project extends Obj
     loading_users: false
     users: []
     paying_user: null #TODO: Load this lazily
-    parallel: 2 #TODO: Load this from server
-    #focused_parallel: @parallel
+    parallel: 1
+    loaded_paying_user: false
+    trial_parallelism: null
 
   constructor: (json) ->
 
@@ -580,13 +581,72 @@ class Project extends Obj
 
     VcsUrlMixin(@)
 
+    # Make sure @parallel remains an integer
+    @editParallel = komp
+      read: ->
+        @parallel()
+      write: (val) ->
+        @parallel(parseInt(val))
+      owner: @
+
     @build_url = komp =>
       @vcs_url() + '/build'
 
     @has_settings = komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
+    # TODO: maybe this should return null if there are no plans
+    #       should also probably load plans
+    @plan = komp =>
+      if @paying_user()? and @paying_user().plan
+        plans = VM.billing().plans().filter (p) =>
+          p.id is @paying_user().plan_id()
+        p = plans[0]
+        p.max_parallelism = 8
+        new Plan plans[0]
+      else
+        new Plan
+
+    # Allows for user parallelism to trump the plan's max_parallelism
+    @plan_max_speed = komp =>
+      if @plan().max_parallelism?
+        Math.max(@plan().max_parallelism, @max_parallelism())
+
+    @max_parallelism = komp =>
+      if @paying_user()? then @paying_user().parallelism() else @trial_parallelism()
+
     @focused_parallel = ko.observable @parallel()
+
+    @can_select_parallel = komp =>
+      if @paying_user()?
+        @focused_parallel() <= @max_parallelism()
+      else
+        false
+
+    @current_user_is_paying_user_p = komp =>
+      if @paying_user()?
+        @paying_user.login == VM.current_user().login
+      else
+        false
+
+    @parallel_label_style = (num) =>
+      disabled: komp =>
+        # weirdly sends num as string when num is same as parallel
+        parseInt(num) > @max_parallelism()
+      selected: komp =>
+        parseInt(num) is @parallel()
+
+    @paying_user_ident = komp =>
+      if @paying_user()? then @paying_user().login
+
+    @show_parallel_upgrade_plan_p = komp =>
+      @paying_user()? and @plan_max_speed() < @focused_parallel()
+
+    @show_parallel_upgrade_speed_p = komp =>
+      @paying_user()? and (@max_parallelism() < @focused_parallel() <= @plan_max_speed())
+
+    @focused_parallel_cost_increase = komp =>
+      VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
@@ -798,6 +858,8 @@ class User extends Obj
     email_provider: ""
     selected_email: ""
     basic_email_prefs: "smart"
+    plan: null
+    parallelism: 1
 
   constructor: (json) ->
     super json,
@@ -825,6 +887,9 @@ class User extends Obj
 
     @showLoading = komp =>
       @loadingRepos() or @loadingOrganizations()
+
+    @plan_id = komp =>
+      @plan()
 
   create_token: (data, event) =>
     $.ajax
@@ -1202,7 +1267,7 @@ class CircleViewModel extends Base
     @error_message = ko.observable(null)
     @first_login = true;
     @refreshing_projects = ko.observable(false);
-    @max_possible_parallelism = ko.observable(64);
+    @max_possible_parallelism = ko.observable(24);
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
     observableCount += 8 # are we still doing this?
 
@@ -1322,15 +1387,22 @@ class CircleViewModel extends Base
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
 
+    subpage = subpage[0].replace('#', '')
+    subpage = subpage || "settings"
+
     # if we're already on this page, dont reload
     if (not @project() or
     (@project().vcs_url() isnt "https://github.com/#{project_name}"))
       $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
         @project(new Project data)
         @project().get_users()
+        if subpage is "parallel_builds"
+          @project().load_paying_user()
+          @billing().load()
 
-    subpage = subpage[0].replace('#', '')
-    subpage = subpage || "settings"
+    else if subpage is "parallel_builds"
+      @project().load_paying_user()
+      @billing().load()
 
     $('#main').html(HAML['edit']({project: project_name}))
     $('#subpage').html(HAML['edit_' + subpage]({}))
