@@ -71,7 +71,7 @@
                                 data-loading-text: "Triggering...",
                                 data-success-text: "Triggered"}
             SSH
-          %div{data-bind: "ifnot: outcome"}
+          %span{data-bind: "if: can_cancel()"}
             %button.btn.btn-primary{data-bind: "click: cancel_build",
                                     title: "Cancel the build immediately",
                                     data-loading-text: "Canceling...",

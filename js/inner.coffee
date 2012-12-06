@@ -413,6 +413,20 @@ class Build extends Obj
           else
             "unknown"
 
+    @can_cancel = komp =>
+      if @status() == "canceled"
+        false
+      else
+        switch @lifecycle()
+          when "running"
+            true
+          when "queued"
+            true
+          when "scheduled"
+            true
+          else
+            false
+
     @pretty_start_time = komp =>
       if @start_time()
         Circle.time.as_time_since(@start_time())
