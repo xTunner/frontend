@@ -3,72 +3,108 @@
   %div
     .row-fluid
       .span12
-        %div{data-bind: "ifnot: paying_user()"}
-          .alert.alert-warning
-            Before you can increase your speed, someone on your team needs to create an account.
-            %br
-            Here there will be links to invite a member or convince the member to sign up.
-        %p
-          %h4{data-bind: "if: paid_parallelism() > 1"}
-            Your plan supports up to
-            %span{data-bind: "text: paid_parallelism()"}
-            parallel builds.
-        %p
-          %h4{data-bind: "ifnot: paid_parallelism() > 1"}
-            Your plan doesn't support parallelism
-    .row-fluid
-      .span7
         %p
           %form.select-project-parallelization{data-bind: "foreach: $root.parallelism_options"}
-            %label{data-bind: "css: {disabled: $data > $root.project().paid_parallelism(), selected: $data == $root.project().parallel()}, attr: { for: $root.project().parallel_input_id($data)}, event: {mouseover: $root.project().parallel_focus_in}"}
+            %label{data-bind: "css: $root.project().parallel_label_style($data), attr: { for: $root.project().parallel_input_id($data)}, event: {mouseover: $root.project().parallel_focus_in}"}
               != succeed "x", ->
                 %span{data-bind: "text: $data"}
-              %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().parallel, disable: $data > $root.project().paid_parallelism(), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
-            / ko if: $data % 8 == 0
+              %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().editParallel, disable: $root.project().disable_parallel_input($data), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
+            / ko if: $data % 12 == 0
             %br{style: "clear: both"}
             / /ko
-      .span5.well
+    .row-fluid{style: "min-height: 180px"}
+      .span10.well.focused-label{data-bind: "css: speed_description_style"}
         %span{data-bind: "if: focused_parallel() == 1"}
           At 1x build speed, all of your tests will run sequentially on the same machine.
         %p{data-bind: "if: focused_parallel() > 1"}
-          Split your builds across
-          %span{data-bind: "text: focused_parallel"}
-          separate machines to run your tests
-          %span{data-bind: "text: focused_parallel"}
-          times as fast.
-        %p{data-bind: "if: focused_parallel() > paid_parallelism()"}
-          %a{href: "#parallel_builds"}
-            Upgrade to
-            != succeed "x", ->
+          %strong
+            != succeed 'x', ->
               %span{data-bind: "text: focused_parallel"}
-          for only
-          %span{data-bind: "text: "$" + addCommas(50 * (focused_parallel() - paid_parallelism()))"}
-          more per month.
+          runs your tests in parallel across
+          %strong{data-bind: "text: focused_parallel"}
+          machines to finish your build
+          %strong{data-bind: "text: focused_parallel"}
+          times faster.
+
+        %p{data-bind: "ifnot: paying_user"}
+          %a{href: '/account/plans'}
+            Select a plan to increase parallelism
+        / ko if: paying_user
+        %div{data-bind: "if: show_parallel_upgrade_plan_p"}
+          .alert.alert-warning
+            Your plan's max speed is only
+            != succeed ".", ->
+              %strong{data-bind: "text: plan_max_speed"}
+            %p{data-bind: "if: current_user_is_paying_user_p"}
+              %a{href: "/account/plans#edit"}
+                Upgrade your plan to unlock more speed.
+            %p{data-bind: "ifnot: current_user_is_paying_user_p"}
+              Send
+              %span{data-bind: "text: paying_user_ident"}
+              to
+              %a{href: "/account/plans#edit"}
+                https://circleci.com/account/plans#edit
+              to upgrade your plan.
+        %div{data-bind: "if: show_parallel_upgrade_speed_p"}
+          .alert.alert-warning
+            %p{data-bind: "if: current_user_is_paying_user_p"}
+              %a{href: "/account/plans#speed"}
+                Increase your speed to
+                %strong
+                  != succeed "x", ->
+                    %span{data-bind: "text: focused_parallel"}
+                  for
+                  != precede "$", ->
+                    %span{data-bind: "text: focused_parallel_cost_increase"}
+              more per month.
+            %p{data-bind: "ifnot: current_user_is_paying_user_p"}
+              Send
+              %span{data-bind: "text: paying_user_ident"}
+              to
+              %a{href: "/account/plans#speed"}
+                https://circleci.com/account/plans#speed
+              to increase your speed to
+              %strong
+                != succeed "x", ->
+                  %span{data-bind: "text: focused_parallel"}
+                for
+                %span{data-bind: "money: focused_parallel_cost_increase"}<
+
+              more per month.
+
+        / /ko
 
     .row-fluid
       .span12
-        %p
-          You can increase your limit from the billing page, or bug
-          %span{data-bind: "text: paying_user().login"}
-
-    .row-fluid
-      .span12
-        %h3 How Parallelizm Works
+        %h3 How "Build Speed" Works
         %ul
           %li
-            Splits your tests and runs them on completely separate machines
+            We run your tests in parallel on completely separate machines
             %ul
               %li
                 No shared memory, processes, or databases
           %li
             Currently supports Rspec, Cucumber, and Test:Unit
-            -# != surround '(', ')', ->
-            -#   %a{href: "#", data-bind: "click: VM.raiseIntercomDialog('Please add parallelization support for my framework')"}tell us to support your framework
-
           %li
             Dramatically reduces build time
             %ul
               %li
-                45 minute build fell to 18 minutes with 3x parallelization
+                45 minute build fell to 18 minutes with 3x build speed
               %li
-                20 minute build dropped to 11 minutes with 2x parallelization
+                20 minute build dropped to 11 minutes with 2x build speed
+
+    .row-fluid
+      .span10
+        %h3 Things our customers say about parallel builds
+        %p
+          %blockquote{ cite: "#" }
+            %p
+              The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop.
+              %strong
+                The parallelization just works - we didn't have to tweak anything.
+              Amazing service.
+
+            %small
+              %cite
+                %a{ href: "http://zencoder.com/company/" } Brandon Arbini
+                %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
