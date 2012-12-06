@@ -12,6 +12,13 @@
             / ko if: $data % 12 == 0
             %br{style: "clear: both"}
             / /ko
+    .row-fluid{data-bind: "if: latest_build() && changed_parallel_settings()"}
+      .span10
+        %form{method: "post", action: "/circumvent-sammy", data-bind: "submit: $root.mockFormSubmit(retry_latest_build)"}
+          %button.btn.btn-success
+            Retry your latest build at
+            != succeed "x", ->
+              %span{data-bind: "text: parallel"}
     .row-fluid{style: "min-height: 180px"}
       .span10.well.focused-label{data-bind: "css: speed_description_style"}
         %span{data-bind: "if: focused_parallel() == 1"}

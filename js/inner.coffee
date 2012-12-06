@@ -679,6 +679,7 @@ class Project extends Obj
     parallel: 1
     loaded_paying_user: false
     trial_parallelism: null
+    changed_parallel_settings: null
 
   constructor: (json) ->
 
@@ -763,6 +764,9 @@ class Project extends Obj
       1
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
+
+  retry_latest_build: =>
+    @latest_build().retry_build()
 
   speed_description_style: =>
     'selected-label': @focused_parallel() == @parallel()
@@ -935,6 +939,8 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/settings"
       data: JSON.stringify
         parallel: @parallel()
+      success: =>
+        @changed_parallel_settings(true)
       error: (data) =>
         @refresh()
         @load_paying_user()
@@ -1622,8 +1628,13 @@ class CircleViewModel extends Base
     # signature so this can be used as knockout click handler
     window.SammyApp.setLocation("/")
 
-
-
+  # use in ko submit binding, expects button to submit form
+  mockFormSubmit: (cb) =>
+    (formEl) =>
+      $formEl = $(formEl)
+      $formEl.find('button').addClass 'disabled'
+      if cb? then cb.call()
+      false
 
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', () ->
@@ -1654,6 +1665,7 @@ window.SammyApp = Sammy '#app', () ->
     @get('^(.*)', (cx) -> VM.unsupportedRoute(cx))
 
     # dont show an error when posting
+    @post '^/circumvent-sammy', (cx) -> true
     @post '^/logout', -> true
     @post '^/admin/switch-user', -> true
 
