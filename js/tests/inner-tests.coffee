@@ -1,8 +1,25 @@
 j = jasmine.getEnv()
 t = TestTargets # combat coffeescript scope
 
-testBilling = (c, p, $, e) ->
-  @expect((new t.Billing()).calculateCost({price: $}, c, p)).toEqual e
+plans =
+  p14:
+    max_parallelism: 1
+    min_parallelism: 1
+    price: 19
+    concurrency: 1
+  p15:
+    max_parallelism: 1
+    min_parallelism: 1
+    price: 49
+    concurrency: 1
+  p16:
+    max_parallelism: 8
+    min_parallelism: 2
+    price: 149
+    concurrency: 1
+
+testBilling = (plan, c, p, e) ->
+  @expect((new t.Billing()).calculateCost(plan, c, p)).toEqual e
 
 j.describe "calculateCost", ->
   j.it "should be correct for log2", ->
@@ -12,19 +29,19 @@ j.describe "calculateCost", ->
     @expect(t.log2 3).toEqual 1.5849625007211563
 
   j.it "should be the same as on the server", ->
-    testBilling(1, 1, 19, 19)
-    testBilling(1, 1, 49, 49)
-    testBilling(1, 2, 149, 149)
-    testBilling(0, 0, 19, 19)
-    testBilling(0, 0, 49, 49)
-    testBilling(0, 0, 149, 149)
-    testBilling(2, 1, 19, 68)
-    testBilling(4, 1, 49, 196)
-    testBilling(4, 1, 149, 296)
-    testBilling(4, 2, 149, 296)
-    testBilling(4, 4, 149, 395)
-    testBilling(4, 8, 149, 494)
-    testBilling(4, 5, 149, 427)
+    testBilling(plans.p14, 1, 1, 19)
+    testBilling(plans.p15, 1, 1, 49)
+    testBilling(plans.p16, 1, 2, 149)
+    testBilling(plans.p14, 0, 0, 19)
+    testBilling(plans.p15, 0, 0, 49)
+    testBilling(plans.p16, 0, 0, 149)
+    testBilling(plans.p14, 2, 1, 68)
+    testBilling(plans.p15, 4, 1, 196)
+    testBilling(plans.p16, 4, 1, 296)
+    testBilling(plans.p16, 4, 2, 296)
+    testBilling(plans.p16, 4, 4, 395)
+    testBilling(plans.p16, 4, 8, 494)
+    testBilling(plans.p16, 4, 5, 427)
 
 j.describe "ansiToHtml", ->
   j.it "shouldn't screw up simple text", ->
@@ -64,4 +81,3 @@ j.describe "ansiToHtml", ->
     @expect(t.ansiToHtml "\u001b[1Mfoo").toEqual "<span>foo</span>"
     # no blinking
     @expect(t.ansiToHtml "\u001b[5mfoo").toEqual "<span>foo</span>"
-
