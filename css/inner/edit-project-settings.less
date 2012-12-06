@@ -1,12 +1,19 @@
 @import "../../vendor/bootstrap/less/mixins.less";
+@import "../shared/variables.less";
+
+@selected-border-color: @redLight;
+@focused-border-color: @redLight;
+@active-color: @greenLight;
+@disabled-color: @grayLight;
 
 .select-project-parallelization {
+	line-height: 1px;
 	input {
 		display: none
 	}
 	label {
 		float: left;
-		background-color: red;
+		background-color: @active-color;
 		width: 30px;
 		height: 30px;
 		margin: 5px;
@@ -17,13 +24,22 @@
 		cursor: pointer;
 	}
 	label:hover {
-		border: 3px solid green;
+		border: 3px dashed @focused-border-color;
 	}
 	label.selected {
-		border: 3px solid blue;
+		border: 3px solid @selected-border-color;
 	}
 	label.disabled {
-		background-color: lightgray;
+		background-color: @disabled-color;
 		cursor: default;
+	}
+	label.disabled:hover {
+		border: 3px solid rgba(0,0,0,0);
+	}
+	well.focused-label {
+		border: 1px solid @focused-border-color;
+	}
+	well.selected-label {
+		border: 1px solid @selected-border-color;
 	}
 }
