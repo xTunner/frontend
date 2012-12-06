@@ -1,12 +1,5 @@
 window.observableCount = 0
 
-window.addCommas = (num) ->
-  num_str = num.toString()
-  i = num_str.length % 3
-  prefix = num_str.substr(0, i) + if i > 0 and num_str.length > 3 then "," else ""
-  suffix = num_str.substr(i).replace(/(\d{3})(?=\d)/g, "$1" + ",")
-  prefix + suffix
-
 log2 = (v) ->
   Math.log(v) / Math.log(2)
 
