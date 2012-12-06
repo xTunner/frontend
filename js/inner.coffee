@@ -658,18 +658,20 @@ class Project extends Obj
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
 
-  paid_parallelism: =>
-    if @paying_user() then @paying_user().parallelism else 1
+  speed_description_style: =>
+    'selected-label': @focused_parallel() == @parallel()
 
-  # load_paying_user: =>
-  #   if not @paying_user()?
-  #     $.ajax
-  #       type: "GET"
-  #       url: "/api/v1/project/#{@project_name()}/paying_user"
-  #       success: (result)
-  #         @paying_user(new User(result))
-  #         true
+  disable_parallel_input: (num) =>
+    num > @max_parallelism()
 
+  load_paying_user: =>
+    $.ajax
+      type: "GET"
+      url: "/api/v1/project/#{@project_name()}/paying_user"
+      success: (result) =>
+        if result?
+          @paying_user(new User(result))
+          @loaded_paying_user(true)
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -812,7 +814,6 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
 
   refresh: () =>
-    @paying_user(null)
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
       @updateObservables(data)
 
@@ -824,7 +825,9 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/settings"
       data: JSON.stringify
         parallel: @parallel()
-
+      error: (data) =>
+        @refresh()
+        @load_paying_user()
     true # TODO: make this reflect what is happening on the server
 
   parallel_input_id: (num) =>
@@ -1086,6 +1089,10 @@ class Billing extends Obj
 
   parallelism_cost: (plan, p) =>
     @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism)
+
+  # p2 > p1
+  parallelism_cost_difference: (plan, p1, p2) =>
+    @parallelism_cost(plan, p2) - @parallelism_cost(plan, p1)
 
   concurrency_cost: (plan, c) ->
     if plan.concurrency == "Unlimited"
