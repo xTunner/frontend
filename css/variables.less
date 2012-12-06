@@ -1,3 +1,11 @@
+/*
+ * This is Circle's adaptation of the bootstrap variables.less file. It should be used anywhere that variables.less is.
+ *
+ * To keep this easy to upgrade with new versions of bootstrap, add the
+ * circle-overridden value directly below the value, and mark it as being from
+ * circle.
+ */
+
 //
 // Variables
 // --------------------------------------------------
@@ -13,6 +21,8 @@
 @grayDark:              #333;
 @gray:                  #555;
 @grayLight:             #999;
+@gray:                  #777; // circle
+@grayLight:             #ccc; // circle
 @grayLighter:           #eee;
 @white:                 #fff;
 
@@ -21,6 +31,11 @@
 // -------------------------
 @blue:                  #049cdb;
 @blueDark:              #0064cd;
+@blueDarker:            #1b4f8a; // circle
+@blueDark:              #366aa4; // circle
+@blue:                  #586e8a; // circle
+@blueLight:             #d7dce3; // circle
+@blueLighter:           #eff2f6; // circle
 @green:                 #46a546;
 @red:                   #9d261d;
 @yellow:                #ffc40d;
@@ -39,6 +54,8 @@
 // -------------------------
 @linkColor:             #08c;
 @linkColorHover:        darken(@linkColor, 15%);
+@linkColor:               @blueDark; // circle
+@linkColorHover:          @blueDarker; // circle
 
 
 // Typography
