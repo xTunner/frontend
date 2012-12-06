@@ -168,8 +168,8 @@ circle = $.sammy "body", ->
 
   # Airbrake
   @bind 'error', (e, data) ->
-    if data? and data.error? and window.Hoptoad?
-      window.Hoptoad.notify data.error
+    if data? and data.error? and window.Airbrake?
+      window.Airbrake.captureException data.error
 
   # Kissmetrics
   if renderContext.showJoinLink
