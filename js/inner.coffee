@@ -1198,7 +1198,7 @@ class Billing extends Obj
       Math.round(log2(p) * 99)
 
   parallelism_cost: (plan, p) =>
-    @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism)
+    Math.max(0, @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism))
 
   # p2 > p1
   parallelism_cost_difference: (plan, p1, p2) =>
@@ -1208,7 +1208,7 @@ class Billing extends Obj
     if plan.concurrency == "Unlimited"
       0
     else
-      (c - plan.concurrency) * 49
+      Math.max(0, (c - plan.concurrency) * 49)
 
   calculateCost: (plan, concurrency, parallelism) =>
     unless plan
