@@ -6,9 +6,9 @@
       Other pushes will queue up waiting to be tested.
 
     %form
-      %select.span3{data-bind: "value: concurrency"}
+      %select.span3{data-bind: "value: editConcurrency"}
         / ko foreach: chosenPlan().concurrency_options
-        %option{data-bind: "value: $data, text: $root.billing().concurrency_option_text($root.billing().chosenPlan(), $data)"}
+        %option{data-bind: "value: $data, text: $root.billing().concurrency_option_text($root.billing().chosenPlan(), $data), checked: $root.billing().concurrency"}
         / /ko
 
     %span.help-block
@@ -29,9 +29,9 @@
       %b Your plan does not support parallelism.
 
     %form
-      %select.span2{data-bind: "value: parallelism, enable: chosenPlan().allowsParallelism"}
+      %select.span2{data-bind: "value: editParallelism, enable: chosenPlan().allowsParallelism"}
         / ko foreach: chosenPlan().parallelism_options
-        %option{data-bind: "value: $data, text: $root.billing().parallelism_option_text($root.billing().chosenPlan(), $data)"}
+        %option{data-bind: "value: $data, text: $root.billing().parallelism_option_text($root.billing().chosenPlan(), $data), checked: $root.billing().parallelism"}
         / /ko
 
     %span.help-inline

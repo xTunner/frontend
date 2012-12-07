@@ -1175,8 +1175,8 @@ class Billing extends Obj
     organizations: {}
     chosenPlan: null
     plans: []
-    parallelism: "1"
-    concurrency: "1"
+    parallelism: 1
+    concurrency: 1
 
   constructor: ->
     super
@@ -1190,6 +1190,21 @@ class Billing extends Obj
 
     @wizardCompleted = komp =>
       @wizardStep() > 4
+
+    # Make sure @parallelism remains a number
+    @editParallelism = komp
+      read: ->
+        @parallelism()
+      write: (val) ->
+        if val? then @parallelism(parseInt(val))
+      owner: @
+
+    @editConcurrency = komp
+      read: ->
+        @concurrency()
+      write: (val) ->
+        if val? then @concurrency(parseInt(val))
+      owner: @
 
   parallelism_option_text: (plan, p) =>
     "#{p}-way ($#{@parallelism_cost(plan, p)})"
