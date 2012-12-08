@@ -8,7 +8,7 @@
   %li
     %a{data-bind: "click: VM.current_user().setActiveOrganization"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
-      %.orgname{data-bind: "text: login"}
+      %div.orgname{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
       %i.icon-chevron-right
 
   :plain
@@ -23,7 +23,7 @@
   %li
     %a{data-bind: "click: VM.current_user().setActiveOrganization"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
-      %.orgname{data-bind: "text: login"}
+      %div.orgname{data-bind: "text: login, click: VM.current_user().setActiveOrganization"}
       %i.icon-chevron-right
 
   :plain

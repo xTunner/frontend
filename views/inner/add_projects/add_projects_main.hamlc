@@ -1,37 +1,26 @@
 %table#add-projects-main.well.table.table-striped.table-hover
   %thead
-  -# %tr
-  -#   %th Name
-  -#   %th Actions
   %tbody.build-row{data-bind: "foreach: repos"}
     %tr
       %td{data-bind: "text: displayName", style: "width: 90%"}
       %td
         %span{data-bind: "if: canFollow"}
-          %button.btn.btn-primary.btn-small{data-bind: "click: follow"}
+          %a.btn.btn-primary.btn-small{data-bind: "click: follow", data-loading-text:"Following..."}
             Follow
         %span{data-bind: "if: following"}
-          %button.btn.btn-small{data-bind: "click: unfollow"}
+          %a.btn.btn-small{data-bind: "click: unfollow", data-loading-text:"Unfollowing..."}
             Unfollow
         %span{data-bind: "if: requiresInvite"}
-          %div.popover-container.invite{data-bind: "popover: {title: 'Requires Admin', content: '<p>GitHub requires admin permissions to add an SSH key to the project</p><br /> <p>If you are not admin on this project, have an admin follow it first.</p>', placement: 'in left', html: true}"}
-            %button.btn.btn-small.btn-danger.disabled
-              Follow
+          %a.btn.btn-small.btn-danger{data-toggle: "modal", data-target: "#inviteForm"}
+            Follow
 
--# #inviteForm.modal.hide.fade{data-bind: "with: window.VM.current_user().activeInvite"}
--#   .modal-header
--#     %button.close{data-dismiss: "close"}
--#       x
--#     %h3
--#       Invite
--#   .modal-body
--#     %p
--#       You are not an admin of
--#       = succeed ",", ->
--#         %strong{data-bind: "text: project_name"}
--#       so you will need to invite an admin to set up the project.
--#     %form
--#       %label
--#         Email
--#       %input{type: "text"}
--#       %input.btn{type: "submit"}
+#inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+    %h3#inviteFormLabel This Requires An Administrator
+  .modal-body
+    %p For security purposes, you cannot add this project to Circle unless you are an adminstrator of the GitHub project. Invite your admin(s) by sending them this link:
+      %p.pull-right
+        %input{type: "text", value: "https://circleci.com/?join=dont-test-alone"}
+  .modal-footer
+    %button.btn.btn-primary{"aria-hidden" => "true", "data-dismiss" => "modal"} Got it

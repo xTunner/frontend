@@ -41,6 +41,7 @@ circle = $.sammy "body", ->
       super(cx)
       _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
+      _gaq.push(['_trackPageview', '/homepage'])
 
   # Doc
   class Docs extends Page
@@ -167,8 +168,8 @@ circle = $.sammy "body", ->
 
   # Airbrake
   @bind 'error', (e, data) ->
-    if data? and data.error? and window.Hoptoad?
-      window.Hoptoad.notify data.error
+    if data? and data.error? and window.Airbrake?
+      window.Airbrake.captureException data.error
 
   # Kissmetrics
   if renderContext.showJoinLink
@@ -190,5 +191,11 @@ if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
   $.getScript(renderContext.assetsRoot + "/js/vendor/selectivizr-1.0.2.js")
 # `!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");`
 
+
 # Run the application
-$ -> circle.run window.location.pathname.replace(/\/$/, '')
+$ ->
+  circle.run window.location.pathname.replace(/\/$/, '')
+  setTimeout(  # give KM a short window to run
+    ->
+      window.too_late_for_kissmetrics = true
+    , 20)

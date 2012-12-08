@@ -60,6 +60,84 @@ komp = (args...) =>
   observableCount += 1
   ko.computed args...
 
+ansiToHtml = (str) ->
+  # http://en.wikipedia.org/wiki/ANSI_escape_code
+  start   = 0
+  current = str
+  output  = ""
+
+  style =
+    color: null
+    italic: false
+    bold: false
+
+    reset: () ->
+      @color = null
+      @italic = false
+      @bold = false
+
+    add: (n) ->
+      switch parseInt(n)
+        when 0 then @reset()
+        when 1 then @bold = true
+        when 3 then @italic = true
+        when 22 then @bold = false
+        when 23 then @italic = false
+        when 30 then @color = "black"
+        when 31 then @color = "red"
+        when 32 then @color = "green"
+        when 33 then @color = "yellow"
+        when 34 then @color = "blue"
+        when 35 then @color = "magenta"
+        when 36 then @color = "cyan"
+        when 37 then @color = "white"
+        when 39 then @color = null
+
+    openSpan: () ->
+      styles = []
+      if @color?
+        styles.push("color: #{@color}")
+      if @italic
+        styles.push("font-style: italic")
+      if @bold
+        styles.push("font-weight: bold")
+
+      s = "<span"
+      if styles.length > 0
+        s += " style='" + styles.join("; ") + "'"
+      s += ">"
+
+    applyTo: (content) ->
+      if content
+        @openSpan() + content + "</span>"
+      else
+        ""
+
+  # loop over escape sequences
+  while (escape_start = current.indexOf('\u001B[')) != -1
+    # append everything up to the start of the escape sequence to the output
+    output += style.applyTo(current.slice(0, escape_start))
+
+    # find the end of the escape sequence -- a single letter
+    rest = current.slice(escape_start + 2)
+    escape_end = rest.search(/[A-Za-z]/)
+
+    # point "current" at first character after the end of the escape sequence
+    current = rest.slice(escape_end + 1)
+
+    # only actually deal with 'm' escapes
+    if rest.charAt(escape_end) == 'm'
+      escape_sequence = rest.slice(0, escape_end)
+      if escape_sequence == ''
+        # \esc[m is equivalent to \esc[0m
+        style.reset()
+      else
+        escape_codes = escape_sequence.split(';')
+        style.add esc for esc in escape_codes
+
+  output += style.applyTo(current)
+  output
+
 class Obj
   constructor: (json={}, defaults={}) ->
     for k,v of @observables()
@@ -199,7 +277,7 @@ class ActionLog extends Obj
   log_output: =>
     return "" unless @out()
     x = for o in @out()
-      "<p class='#{o.type}'><span></span>#{@htmlEscape(o.message)}</p>"
+      "<p class='#{o.type}'><span class='bubble'></span>#{ansiToHtml(@htmlEscape(o.message))}</p>"
     x.join ""
 
   report_build: () =>
@@ -334,6 +412,20 @@ class Build extends Obj
             @job_name
           else
             "unknown"
+
+    @can_cancel = komp =>
+      if @status() == "canceled"
+        false
+      else
+        switch @lifecycle()
+          when "running"
+            true
+          when "queued"
+            true
+          when "scheduled"
+            true
+          else
+            false
 
     @pretty_start_time = komp =>
       if @start_time()
@@ -486,6 +578,13 @@ class Build extends Obj
         (new Build(data)).visit()
     false
 
+  cancel_build: (data, event) =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/cancel"
+      type: "POST"
+      event: event
+    false
+
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
@@ -534,6 +633,8 @@ class Repo extends Obj
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
         @following(false)
+        _kmq.push(['record', 'Removed A Repo']);
+        _gaq.push(['_trackEvent', 'Repos', 'Remove']);
 
   follow: (data, event) =>
     $.ajax
@@ -541,6 +642,11 @@ class Repo extends Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
+        _kmq.push(['record', 'Added A Repo']);
+        _gaq.push(['_trackEvent', 'Repos', 'Add']);
+        if @first_login
+          _kmq.push(['record', 'Added A Project on First Login']);
+          _gaq.push(['_trackEvent', 'Repos', 'Added on First Login']);
         @following(true)
         if data.first_build
           (new Build(data.first_build)).visit()
@@ -606,6 +712,8 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
         @followed(data.followed)
+        _kmq.push(['record', 'Removed A Project']);
+        _gaq.push(['_trackEvent', 'Projects', 'Remove']);
 
   follow: (data, event) =>
     $.ajax
@@ -613,6 +721,8 @@ class Project extends Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
+        _kmq.push(['record', 'Added A Project']);
+        _gaq.push(['_trackEvent', 'Projects', 'Add']);
         if data.first_build
           (new Build(data.first_build)).visit()
         else
@@ -1225,6 +1335,8 @@ class CircleViewModel extends Base
   loadDashboard: (cx) =>
     @loadProjects()
     @loadRecentBuilds()
+    if window._gaq? # we dont use ga in test mode
+      _gaq.push(['_trackPageview', '/dashboard'])
     display "dashboard", {}
 
   loadAddProjects: (cx) =>
@@ -1339,6 +1451,7 @@ class CircleViewModel extends Base
     window.TestTargets =
       log2: log2
       Billing: Billing
+      ansiToHtml: ansiToHtml
     $.getScript "/assets/js/tests/inner-tests.js.dieter"
 
   raiseIntercomDialog: (message) =>
@@ -1371,35 +1484,35 @@ class CircleViewModel extends Base
 
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', () ->
-    @get('/tests/inner', (cx) -> VM.loadJasmineTests(cx))
+    @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
-    @get('/', (cx) => VM.loadDashboard(cx))
-    @get('/add-projects', (cx) => VM.loadAddProjects(cx))
-    @get('/gh/:username/:project/edit(.*)',
+    @get('^/', (cx) => VM.loadDashboard(cx))
+    @get('^/add-projects', (cx) => VM.loadAddProjects(cx))
+    @get('^/gh/:username/:project/edit(.*)',
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
-    @get('/account(.*)',
+    @get('^/account(.*)',
       (cx) -> VM.loadAccountPage(cx, cx.params.splat))
-    @get('/gh/:username/:project/:build_num',
+    @get('^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
-    @get('/gh/:username/:project',
+    @get('^/gh/:username/:project',
       (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
 
-    @get('/logout', (cx) -> VM.logout(cx))
+    @get('^/logout', (cx) -> VM.logout(cx))
 
-    @get('/admin', (cx) -> VM.loadAdminPage cx)
-    @get('/admin/users', (cx) -> VM.loadAdminPage cx, "users")
-    @get('/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get('/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
-    @get('/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
-    @get('/docs(.*)', (cx) -> # go to the outer app
+    @get('^/admin', (cx) -> VM.loadAdminPage cx)
+    @get('^/admin/users', (cx) -> VM.loadAdminPage cx, "users")
+    @get('^/admin/projects', (cx) -> VM.loadAdminProjects cx)
+    @get('^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
+    @get('^/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
+    @get('^/docs(.*)', (cx) -> # go to the outer app
       SammyApp.unload()
       window.location = cx.path)
 
-    @get('(.*)', (cx) -> VM.unsupportedRoute(cx))
+    @get('^(.*)', (cx) -> VM.unsupportedRoute(cx))
 
     # dont show an error when posting
-    @post '/logout', -> true
-    @post '/admin/switch-user', -> true
+    @post '^/logout', -> true
+    @post '^/admin/switch-user', -> true
 
     # Google analytics
     @bind 'event-context-after', ->

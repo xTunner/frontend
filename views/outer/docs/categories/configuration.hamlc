@@ -153,6 +153,7 @@
       %li <b>timeout</b>: If a command runs this many seconds without output, kill it. Defaults to 180s.
       %li <b>pwd</b>: Run your commands using this value as its current working directory. By default, commands are run in the checkout directory, named after your project name.
       %li <b>environment</b>: A hash creating a list of environmental variables set for this command.
+      %li <b>parallel</b>: If true, run this command in parallel across all build VMs.
 
     %p For example:
 
@@ -285,8 +286,7 @@
         :preserve
           machine:
             ruby:
-              version:
-                1.9.3-p0-falcon
+              version: 1.9.3-p0-falcon
 
     %p
       Circle uses
@@ -313,14 +313,40 @@
         :preserve
           machine:
             node:
-              version:
-                0.6.18
+              version: 0.6.18
 
     %p
       Circle uses
       %a{ href: "https://github.com/creationix/nvm" } NVM
       to manage Node versions.
-      If you do not specify a version, we will use 0.8.2.
+
+      If you do not specify a version, we will use 0.8.2. Note that
+      recent versions of NVM support selecting versions through
+      package.json. If your version of NVM supports this, we recommend
+      you use it.
+
+    %h3#java-version
+      Java version
+
+    %p
+      Choose the version of Java used for your tests, for example:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            java:
+              version: openjdk7
+
+    %p
+      The allowed versions are
+      %ul
+        %li
+          %code oraclejdk7 (default)
+        %li
+          %code openjdk7
+        %li
+          %code openjdk6
 
     = HAML['heading']({title: "Checking out your code from GitHub", hash: "checkout"})
 

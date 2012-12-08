@@ -229,12 +229,12 @@
     %p
       We use
       = succeed ",", ->
-        %code python 2.7.2+
+        %code python 2.7.3
       and packages can be installed using
       %code pip 1.0
       and
       = succeed ".", ->
-        %code virtualenv 1.6.4
+        %code virtualenv 1.7.1.2
 
     %p
       Please
@@ -268,14 +268,17 @@
       We have Java installed, along with ant and maven.
     %ul
       %li
-        %code java 1.6.0_24 (IcedTea 1.11pre)
+        %code oracle JDK 7 (default)
       %li
         %code ant 1.8.2
       %li
         %code maven 2.2.1 (rdebian-6)
 
     %p
-      Other JVM-based languages should also work, so long as they use maven.
+      Open JDK 6 and 7 are also available, through the circle.yml file.
+
+    %p
+      Other JVM-based languages should also work.
       Circle has
       = succeed ",", ->
         %a{href: "#clojure"} special support for Clojure

@@ -49,9 +49,10 @@
 
 %p For example:
   %pre<>
-    :preserve
-      deployment:
-        staging:
-          branch: master
-          heroku:
-            appname: foo-bar-123
+    %p.out
+      :preserve
+        deployment:
+          staging:
+            branch: master
+            heroku:
+              appname: foo-bar-123
