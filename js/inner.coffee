@@ -1115,7 +1115,7 @@ class Plan extends Obj
   constructor: ->
     super
 
-    @parallelism_options = ko.observableArray([@min_parallelism..@max_parallelism])
+    @parallelism_options = ko.observableArray([1..@max_parallelism])
 
     @concurrency_options = ko.observableArray([1..20])
 
