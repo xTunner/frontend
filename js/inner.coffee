@@ -675,7 +675,7 @@ class Project extends Obj
     followed: null
     loading_users: false
     users: []
-    paying_user: null #TODO: Load this lazily
+    paying_user: null
     parallel: 1
     loaded_paying_user: false
     trial_parallelism: null
@@ -732,7 +732,7 @@ class Project extends Obj
 
     @current_user_is_paying_user_p = komp =>
       if @paying_user()?
-        @paying_user.login == VM.current_user().login
+        @paying_user().login is VM.current_user().login
       else
         false
 
@@ -944,7 +944,7 @@ class Project extends Obj
       error: (data) =>
         @refresh()
         @load_paying_user()
-    true # TODO: make this reflect what is happening on the server
+    true
 
   parallel_input_id: (num) =>
     "parallel_input_#{num}"
