@@ -752,8 +752,13 @@ class Project extends Obj
     @show_parallel_upgrade_speed_p = komp =>
       @paying_user()? and (@max_parallelism() < @focused_parallel() <= @plan_max_speed())
 
+    @show_retry_latest_build_p = komp =>
+      @latest_build() && @latest_build().retry_build && @changed_parallel_settings()
+
     @focused_parallel_cost_increase = komp =>
       VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
+
+
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
