@@ -1,6 +1,6 @@
 = HAML['_topbar']({})
 
-.container-fluid
+.container-fluid#dashboard
   .row-fluid
     .span-menu.menu-left
       = HAML['followed_sidebar']({})
