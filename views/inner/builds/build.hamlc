@@ -78,16 +78,13 @@
                                     data-success-text: "Canceled"}
               Cancel
 
-
-
-
     .row
       %dl.offset1
 
         %dt Commit Log
         %dd
           %span{data-bind: "if: body"}
-            %a{href: '#', data-bind: "text: subject, attr: { title: body }"}
+            %a{href: '#', data-bind: "text: subject, jQueryExt: {type: 'tooltip', options: {title: body}}"}"}
           %span{data-bind: "ifnot: body"}
             %span{data-bind: "text: subject"}
 

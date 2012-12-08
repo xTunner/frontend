@@ -8,6 +8,16 @@ ko.bindingHandlers.slider =
     options = valueAccessor()
     $(el).slider(options)
 
+# Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
+# Example usage:
+#   %a{href: "#", data-bind: "jQueryExtension: {type: 'tooltip', options: {title: myObservable}}"}
+ko.bindingHandlers.jQueryExt =
+  init: (el, valueAccessor) =>
+    options = valueAccessor().options
+    type = valueAccessor().type
+    $el = $(el)
+    $el[type].call($el, options)
+
 # Add helper that was minified
 ieVersion = () ->
   version = 3

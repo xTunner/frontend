@@ -70,7 +70,7 @@
                                                                     data-bind: "click: stripeUpdate",
                                                                     data-loading-text: "Charging",
                                                                     data-failed-text: "Denied",
-                                                                    data-success-text: "Success"}}
+                                                                    data-success-text: "Success"}
             Confirm
 
 
