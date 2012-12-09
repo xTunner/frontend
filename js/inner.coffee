@@ -1224,7 +1224,8 @@ class Billing extends Obj
       Math.round(log2(p) * 99)
 
   parallelism_cost: (plan, p) =>
-    Math.max(0, @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism))
+    Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
+    #Math.max(0, @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism))
 
   # p2 > p1
   parallelism_cost_difference: (plan, p1, p2) =>
@@ -1234,18 +1235,21 @@ class Billing extends Obj
     if plan.concurrency == "Unlimited"
       0
     else
-      Math.max(0, (c - plan.concurrency) * 49)
+      Math.max(0, @calculateCost(plan, c) - @calculateCost(plan))
 
-  calculateCost: (plan, concurrency, parallelism) =>
+  calculateCost: (plan, concurrency, parallelism) ->
     unless plan
       0
     else
-      c = concurrency or plan.concurrency
-      p = parallelism or plan.min_parallelism
+      c = concurrency or 0
+      extra_c = Math.max(0, c - 1)
 
-      # Enterprise plan doesn't have price,
-      # but it's okay because they won't use the wizard
-      plan.price + @parallelism_cost(plan, p) + @concurrency_cost(plan, c)
+      p = parallelism or 1
+      p = Math.max(p, 2)
+      extra_p = (log2 p) - 1
+      extra_p = Math.max(0, extra_p)
+
+      plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
 
   selectPlan: (plan) =>
     if plan.price?
