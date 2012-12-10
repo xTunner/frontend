@@ -675,6 +675,11 @@ class Project extends Obj
     followed: null
     loading_users: false
     users: []
+    paying_user: null
+    parallel: 1
+    loaded_paying_user: false
+    trial_parallelism: null
+    changed_parallel_settings: null
 
   constructor: (json) ->
 
@@ -683,11 +688,75 @@ class Project extends Obj
 
     VcsUrlMixin(@)
 
+    # Make sure @parallel remains an integer
+    @editParallel = komp
+      read: ->
+        @parallel()
+      write: (val) ->
+        @parallel(parseInt(val))
+      owner: @
+
     @build_url = komp =>
       @vcs_url() + '/build'
 
     @has_settings = komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
+
+    # TODO: maybe this should return null if there are no plans
+    #       should also probably load plans
+    @plan = komp =>
+      if @paying_user()? and @paying_user().plan
+        plans = VM.billing().plans().filter (p) =>
+          p.id is @paying_user().plan_id()
+        p = plans[0]
+        p.max_parallelism = 8
+        new Plan plans[0]
+      else
+        new Plan
+
+    # Allows for user parallelism to trump the plan's max_parallelism
+    @plan_max_speed = komp =>
+      if @plan().max_parallelism?
+        Math.max(@plan().max_parallelism, @max_parallelism())
+
+    @max_parallelism = komp =>
+      if @paying_user()? then @paying_user().parallelism() else @trial_parallelism()
+
+    @focused_parallel = ko.observable @parallel()
+
+    @can_select_parallel = komp =>
+      if @paying_user()?
+        @focused_parallel() <= @max_parallelism()
+      else
+        false
+
+    @current_user_is_paying_user_p = komp =>
+      if @paying_user()?
+        @paying_user().login is VM.current_user().login
+      else
+        false
+
+    @parallel_label_style = (num) =>
+      disabled: komp =>
+        # weirdly sends num as string when num is same as parallel
+        parseInt(num) > @max_parallelism()
+      selected: komp =>
+        parseInt(num) is @parallel()
+
+    @paying_user_ident = komp =>
+      if @paying_user()? then @paying_user().login
+
+    @show_parallel_upgrade_plan_p = komp =>
+      @paying_user()? and @plan_max_speed() < @focused_parallel()
+
+    @show_parallel_upgrade_speed_p = komp =>
+      @paying_user()? and (@max_parallelism() < @focused_parallel() <= @plan_max_speed())
+
+    @show_retry_latest_build_p = komp =>
+      @latest_build() && @latest_build().retry_build && @changed_parallel_settings()
+
+    @focused_parallel_cost_increase = komp =>
+      VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
 
 
 
@@ -701,6 +770,23 @@ class Project extends Obj
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
 
+  retry_latest_build: =>
+    @latest_build().retry_build()
+
+  speed_description_style: =>
+    'selected-label': @focused_parallel() == @parallel()
+
+  disable_parallel_input: (num) =>
+    num > @max_parallelism()
+
+  load_paying_user: =>
+    $.ajax
+      type: "GET"
+      url: "/api/v1/project/#{@project_name()}/paying_user"
+      success: (result) =>
+        if result?
+          @paying_user(new User(result))
+          @loaded_paying_user(true)
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -850,6 +936,34 @@ class Project extends Obj
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
       @updateObservables(data)
 
+  set_parallelism: (data, event) =>
+    @focused_parallel(@parallel())
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/settings"
+      data: JSON.stringify
+        parallel: @parallel()
+      success: =>
+        @changed_parallel_settings(true)
+      error: (data) =>
+        @refresh()
+        @load_paying_user()
+    true
+
+  parallel_input_id: (num) =>
+    "parallel_input_#{num}"
+
+  parallel_focus_in: (place) =>
+    if @focusTimeout? then clearTimeout(@focusTimeout)
+    @focused_parallel(place)
+
+  parallel_focus_out: (place) =>
+    if @focusTimeout? then clearTimeout(@focusTimeout)
+    @focusTimeout = window.setTimeout =>
+      @focused_parallel(@parallel())
+    , 200
+
 class User extends Obj
   observables: =>
     organizations: []
@@ -868,6 +982,8 @@ class User extends Obj
     email_provider: ""
     selected_email: ""
     basic_email_prefs: "smart"
+    plan: null
+    parallelism: 1
 
   constructor: (json) ->
     super json,
@@ -896,7 +1012,8 @@ class User extends Obj
     @showLoading = komp =>
       @loadingRepos() or @loadingOrganizations()
 
-
+    @plan_id = komp =>
+      @plan()
 
   create_token: (data, event) =>
     $.ajax
@@ -980,10 +1097,10 @@ class User extends Obj
       @collaboratorAccounts(data)
       @loadingOrganizations(false)
 
-   setActiveOrganization: (org, event) =>
-     if org
-       @activeOrganization(org.login)
-       @loadRepos(org)
+  setActiveOrganization: (org, event) =>
+    if org
+      @activeOrganization(org.login)
+      @loadRepos(org)
 
   loadRepos: (org) =>
     @loadingRepos(true)
@@ -996,9 +1113,16 @@ class User extends Obj
       @repos((new Repo r for r in data))
       @loadingRepos(false)
 
+  isPaying: () =>
+    @plan?
+
 class Plan extends Obj
   constructor: ->
     super
+
+    @parallelism_options = ko.observableArray([1..@max_parallelism])
+
+    @concurrency_options = ko.observableArray([1..20])
 
     @allowsParallelism = komp =>
       @max_parallelism > 1
@@ -1038,8 +1162,6 @@ class Plan extends Obj
       result[feature.name] = true
     result
 
-
-
 class Billing extends Obj
   observables: =>
     stripeToken: null
@@ -1058,8 +1180,8 @@ class Billing extends Obj
     organizations: {}
     chosenPlan: null
     plans: []
-    parallelism: "1"
-    concurrency: "1"
+    parallelism: 1
+    concurrency: 1
 
   constructor: ->
     super
@@ -1073,6 +1195,47 @@ class Billing extends Obj
 
     @wizardCompleted = komp =>
       @wizardStep() > 4
+
+    # Make sure @parallelism remains a number
+    @editParallelism = komp
+      read: ->
+        @parallelism()
+      write: (val) ->
+        if val? then @parallelism(parseInt(val))
+      owner: @
+
+    @editConcurrency = komp
+      read: ->
+        @concurrency()
+      write: (val) ->
+        if val? then @concurrency(parseInt(val))
+      owner: @
+
+  parallelism_option_text: (plan, p) =>
+    "#{p}-way ($#{@parallelism_cost(plan, p)})"
+
+  concurrency_option_text: (plan, c) =>
+    "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(plan, c)})"
+
+  raw_parallelism_cost: (p) ->
+    if p == 1
+      0
+    else
+      Math.round(log2(p) * 99)
+
+  parallelism_cost: (plan, p) =>
+    Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
+    #Math.max(0, @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism))
+
+  # p2 > p1
+  parallelism_cost_difference: (plan, p1, p2) =>
+    @parallelism_cost(plan, p2) - @parallelism_cost(plan, p1)
+
+  concurrency_cost: (plan, c) ->
+    if plan.concurrency == "Unlimited"
+      0
+    else
+      Math.max(0, @calculateCost(plan, c) - @calculateCost(plan))
 
   calculateCost: (plan, concurrency, parallelism) ->
     unless plan
@@ -1251,7 +1414,9 @@ class CircleViewModel extends Base
     @error_message = ko.observable(null)
     @first_login = true;
     @refreshing_projects = ko.observable(false);
-    observableCount += 8
+    @max_possible_parallelism = ko.observable(24);
+    @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
+    observableCount += 8 # are we still doing this?
 
     @setupPusher()
 
@@ -1371,15 +1536,23 @@ class CircleViewModel extends Base
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
 
+    subpage = subpage[0].replace('#', '')
+    subpage = subpage || "settings"
+
     # if we're already on this page, dont reload
     if (not @project() or
     (@project().vcs_url() isnt "https://github.com/#{project_name}"))
       $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
         @project(new Project data)
         @project().get_users()
+        if subpage is "parallel_builds"
+          @project().load_paying_user()
+          @billing().load()
 
-    subpage = subpage[0].replace('#', '')
-    subpage = subpage || "settings"
+    else if subpage is "parallel_builds"
+      @project().load_paying_user()
+      @billing().load()
+
     $('#main').html(HAML['edit']({project: project_name}))
     $('#subpage').html(HAML['edit_' + subpage]({}))
     ko.applyBindings(VM)
@@ -1479,8 +1652,13 @@ class CircleViewModel extends Base
     # signature so this can be used as knockout click handler
     window.SammyApp.setLocation("/")
 
-
-
+  # use in ko submit binding, expects button to submit form
+  mockFormSubmit: (cb) =>
+    (formEl) =>
+      $formEl = $(formEl)
+      $formEl.find('button').addClass 'disabled'
+      if cb? then cb.call()
+      false
 
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', () ->
@@ -1511,6 +1689,7 @@ window.SammyApp = Sammy '#app', () ->
     @get('^(.*)', (cx) -> VM.unsupportedRoute(cx))
 
     # dont show an error when posting
+    @post '^/circumvent-sammy', (cx) -> true
     @post '^/logout', -> true
     @post '^/admin/switch-user', -> true
 
