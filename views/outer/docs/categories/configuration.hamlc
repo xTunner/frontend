@@ -384,7 +384,6 @@
     %p
       Most web programming languages and frameworks have some form of dependency specification, including Ruby's bundler, Node.js' npm and Python's pip.
       Circle runs these commands to automatically fetch dependencies.
-      (Currently, we only do this automatically for Ruby and Clojure - we expect to add other languages this week).
 
     %p
       We support the standard sections:
