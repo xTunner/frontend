@@ -1120,7 +1120,13 @@ class Plan extends Obj
   constructor: ->
     super
 
-    @parallelism_options = ko.observableArray([1..@max_parallelism])
+    # Temporary limit so that users don't "block all builds forever"
+    @max_purchasable_parallelism  = komp =>
+      Math.min(4, @max_parallelism)
+
+    # Change max_purchasable_parallelism to @max_parallelism when we can
+    # do unlimited parallelism
+    @parallelism_options = ko.observableArray([1..@max_purchasable_parallelism()])
 
     @concurrency_options = ko.observableArray([1..20])
 
