@@ -96,7 +96,7 @@ circle = $.sammy "body", ->
         $("body").append HAML['docs']({categories: @categories()})
         $("body").append HAML['footer'](renderContext)
       else
-        $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
+        $("body").attr("id","docs-page").html(HAML['header'](renderContext))
         $("body").append(HAML['title'](renderContext))
         $("#title h1").text("Documentation")
         $("body").append("<div id='content'><section class='article'></section></div>")
