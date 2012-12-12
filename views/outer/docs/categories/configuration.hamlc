@@ -384,7 +384,6 @@
     %p
       Most web programming languages and frameworks have some form of dependency specification, including Ruby's bundler, Node.js' npm and Python's pip.
       Circle runs these commands to automatically fetch dependencies.
-      (Currently, we only do this automatically for Ruby and Clojure - we expect to add other languages this week).
 
     %p
       We support the standard sections:
@@ -413,6 +412,23 @@
             pre:
               - gem uninstall bundler
               - gem install bundler --pre
+
+    %h4 Bundler flags
+
+    %p
+      There is an additional section for Bundler, the dependency management program for Ruby
+
+    %ul
+      %li <b>without</b>: a list of dependency groups to be excluded from bundle install
+
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            bundler:
+              without: [production, osx]
+
+
 
     = HAML['heading']({title: "Database setup", hash: "database"})
 

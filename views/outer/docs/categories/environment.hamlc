@@ -51,13 +51,25 @@
     %p
       The following environmental variables are set by default:
 
-      %ul
-        %li
+      %dl
+        %dt
           %code CIRCLECI=true
-        %li
+        %dt
           %code CI=true
-        %li
+        %dt
           %code DISPLAY=:99
+        %dt
+          %code CIRCLE_BRANCH
+        %dd
+          The name of the branch being tested, such as 'master'
+        %dt
+          %code CIRCLE_SHA1
+        %dd
+          The SHA1 of the commit being tested
+        %dt
+          %code CIRCLE_BUILD_NUM
+        %dd
+          The build number, same as in circleci.com/gh/foo/bar/123
 
     %p
       You can use the
