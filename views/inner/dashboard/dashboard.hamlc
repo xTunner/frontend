@@ -17,11 +17,8 @@
       %div.dashboard-main{data-bind: "if: has_followed_projects()"}
         %h1
           Latest builds for your projects
-        .offset4
-          %b#invite-your-friends
-            Send this link to your colleagues:
-            %a#invite-friends-link{href: "https://circleci.com/?join=dont-test-alone" }
-              https://circleci.com/?join=dont-test-alone
+            %a.btn{data-toggle: "modal", data-target: "#inviteForm"}
+              Invite Collaborators
         .offset5#days-in-trial{data-bind: "with: current_user"}
           %b{data-bind: "if: in_trial"}
             You have
@@ -38,3 +35,14 @@
               Re-enable your tests.
 
         = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+        
+#inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+    %h3#inviteFormLabel Invite Your Colleagues
+  .modal-body
+    %p To invite your friends, colleagues, and collaborators to Circle, just send them this link:
+      %p.pull-right
+        %input{type: "text", value: "https://circleci.com/?join=dont-test-alone"}
+  .modal-footer
+    %button.btn.btn-primary{"aria-hidden" => "true", "data-dismiss" => "modal"} Got it
