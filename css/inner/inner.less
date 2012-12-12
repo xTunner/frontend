@@ -89,6 +89,7 @@ pre {
   border-top: 4px solid #134374;
   padding-top: 1px;
   height: 51px;
+  min-width: 500px;
   a.brand {
     margin-left: 1px;
     margin-top: 4px;
@@ -808,4 +809,14 @@ td.build_status {
 			margin-top: -.5em;
 		}
 	}
+}
+
+// Retina prettyness
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+  .navbar-inner {
+	  a.brand {
+	    background: url(../../../img/circleci-top-logo@2x.png) no-repeat;
+	    background-size: 150px 41px;
+	  }
+  }
 }
