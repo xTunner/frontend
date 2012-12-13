@@ -46,24 +46,40 @@ ko.bindingHandlers.ab_test =
       console.log "Chose #{option} for test '#{test}', anyway"
 
     if not ab_tests[test].chosen_p?
-      i = randInt(ab_tests[test].options.length)
-      choice = ab_tests[test].options[i]
-      ab_tests[test].chosen_p = true
-      ab_tests[test].choice = choice
+      console.log "No option is chosen for '#{test}', we'll try again in a bit"
+      circle_log_time()
+      window.setTimeout () ->
+        ab_tests = viewModel.ab_tests()
+        if not ab_tests[test].chosen_p?
+          i = randInt(ab_tests[test].options.length)
+          choice = ab_tests[test].options[i]
+          ab_tests[test].chosen_p = true
+          ab_tests[test].choice = choice
 
-      viewModel.ab_tests(ab_tests)
+          viewModel.ab_tests(ab_tests)
 
-      console.log "Too late for test '#{test}' from KM, selected #{choice}"
+          console.log "Too late for test '#{test}' from KM, selected #{choice}"
+          circle_log_time()
 
-      # send the choice manually to KissMetrics
-      # I don't think this actually works, waiting for KM to email me (dwwoelfel)
-      kmq_choice = {}
-      kmq_choice[test] = choice
-      _kmq.push(["set", kmq_choice])
+          # send the choice manually to KissMetrics
+          # I don't think this actually works, waiting for KM to email me (dwwoelfel)
+          kmq_choice = {}
+          kmq_choice[test] = choice
+          _kmq.push(["set", kmq_choice])
+
+        display_p = ab_tests[test].choice is option
+
+        console.log("Displaying #{option} for test '#{test}':", display_p)
+
+        if display_p then $(el).css('display', '')
+
+      , 100
+
 
     display_p = ab_tests[test].choice is option
 
     console.log("Displaying #{option} for test '#{test}':", display_p)
+    circle_log_time()
 
     if not display_p then $(el).css('display', 'none')
 
