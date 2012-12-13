@@ -107,7 +107,7 @@ setMoneyContent = (element, textContent) ->
     element.textContent = value
 
   if (ieVersion >= 9)
-    element.style.display = element.style.display;
+    element.style.display = element.style.display
 
 ko.bindingHandlers.money =
   update: (el, valueAccessor) =>
