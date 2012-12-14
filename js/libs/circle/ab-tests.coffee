@@ -1,24 +1,36 @@
-# Make sure _ab_test_definitions is defined. Either define it here,
+# Make sure _ab_test_definitions is defined. Either define it in this file,
 # or define it window._ab_test_definitions. Format is 'test-name': [options...]
 #
-# Example:
+# Example test defs:
 # _ab_test_definitions =
-#   'daniel-test': ['option1', 'option2']
+#   'daniel-test': [true, false]
 #   'daniel-test-2': ['option1', 'option2', 'option3']
 #
 # Caveats:
 #   Don't set null as an option.
-#   You can't change the options, you need to define a new test
+#   You can't change the options once they're set, you need to define a new test
+#   You shouldn't have another global variable named AB
 #
 # Example usage in view:
 #   %p{href: "#", data-bind: "ab_test: {test: 'Show beta text', option: true}"}
-#     This is the text that will show up if option is set to true by KissMetrics!
+#     This is the paragraph that will show up if option is set to true
 #   %p{href: "#", data-bind: "ab_test: {test: 'Show beta text', option: false}"}
-#     This is the text that will show up if option is set to false by KissMetrics!
+#     This is the paragraph that will show up if option is set to false
+#
+#   Or, if you prefer not to use built-in knockout bindings:
+#     %p{href: "#", data-bind: "if: AB.daniel_test == true"}
+#       This is the text that will show up if option is set to true
+#     %p{href: "#", data-bind: "if: AB.daniel_test == false"}
+#       This is the text that will show up if option is set to false
+#
+# Note that the ab_test binding adds display:none to non-matching test options
+# This may be desirable or undesirable depending on your use case
 
-## Add your A/B tests here
+exports = this
+
+## Define your A/B tests here
 _ab_test_definitions =
-  daniel_test_2: [true, false]
+  day_vs_week: ['day', 'week']
 
 cookie_prefix = "ab_test_"
 $.cookie.json = true
@@ -31,10 +43,11 @@ randInt = (n) ->
 class ABTestViewModel
   constructor: () ->
     # defs don't need to be an observable, but we may want to do
-    # inference in the future. Better to set it up now
+    # inference in the future. Better to set it up now.
     @test_definitions = ko.observable(_ab_test_definitions)
 
     # @ab_tests is an object with format {'test_name': "chosen_option", ...}
+    # Again, no need to be observable yet
     @ab_tests = ko.observable({})
 
     @setup_tests()
@@ -65,7 +78,10 @@ class ABTestViewModel
     i = randInt(options.length)
     @set_option(test_name, options[i])
 
-window.CircleABTestVM = new ABTestViewModel
+CircleABTestVM = new ABTestViewModel
+
+# Global variable
+exports.AB = CircleABTestVM.ab_tests()
 
 ko.bindingHandlers.ab_test =
   init: (el, valueAccessor) =>
@@ -73,7 +89,7 @@ ko.bindingHandlers.ab_test =
     option = valueAccessor().option
 
     try
-      ab_tests = window.CircleABTestVM.ab_tests()
+      ab_tests = AB
 
       display_p = ab_tests[test] is option
 
