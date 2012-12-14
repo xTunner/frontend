@@ -2,7 +2,7 @@
   "./vendor/knockout-2.1.0.js"
   "./vendor/sammy-0.7.1-patched.js"
   "./vendor/moment-1.6.2.min.js"
-
+  "./vendor/jquery.cookie.js"
   ;; use the order from the Makefile build task
   ;; prefix "../" paths with "./", because that makes the dieter regexes slightly less retarded, and avoids triggering a file-ordering bug
   "./../vendor/bootstrap/js/bootstrap-transition.js"
