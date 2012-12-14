@@ -20,6 +20,7 @@
 
   "./libs/circle/time.coffee"
   "./libs/circle/custom-bindings.coffee"
+  "./libs/circle/ab-tests.coffee"
   "./../views/inner/"
   "./inner.coffee"
 ]
