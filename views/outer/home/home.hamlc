@@ -8,8 +8,10 @@
       Join using GitHub
 
     %p.footnote
-      %span#in-public-beta
+      %span#in-public-beta{data-bind: "if: AB.day_vs_week == 'day'"}
         14-day free trial.
+      %span#in-public-beta{data-bind: "if: AB.day_vs_week == 'week'"}
+        2 week free trial.
       %a#keeping-it-safe{href: '/privacy', title: 'Privacy and Security' }
         CircleCI keeps your code safe. Learn how.
 
