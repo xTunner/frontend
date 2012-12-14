@@ -8,80 +8,7 @@ ko.bindingHandlers.slider =
     options = valueAccessor()
     $(el).slider(options)
 
-# returns random integer in range [0, n)
-randInt = (n) ->
-  Math.floor(Math.random() * n)
-
-# The a/b tests should be an observable on viewModel called ab_tests()
-# If an ab_test hasn't been chosen, it will set a random value and send it to
-# Kissmetrics
-# Example usage:
-#   %p{href: "#", data-bind: "ab_test: {test: 'Show beta text', option: true}"}
-#     This is the text that will show up if option is set to true by KissMetrics!
-#   %p{href: "#", data-bind: "ab_test: {test: 'Show beta text', option: false}"}
-#     This is the text that will show up if option is set to false by KissMetrics!
-ko.bindingHandlers.ab_test =
-  init: (el, valueAccessor, allBindingsAccessor, viewModel, bindingContext) =>
-    test = valueAccessor().test
-    option = valueAccessor().option
-
-    if viewModel.ab_tests?
-      ab_tests = viewModel.ab_tests()
-    else
-      console.log 'ab_tests is not defined on the viewModel!'
-      ab_tests = {}
-
-
-    # set default option to first one if the a/b test isn't defined in
-    # ab-test-definitions.js
-    if not ab_tests[test]?
-      console.log "No A/B test definitions for '#{test}'!"
-
-      ab_tests[test] =
-        options: [option]
-        chosen_p: true
-        choice: option
-      viewModel.ab_tests(ab_tests)
-
-      console.log "Chose #{option} for test '#{test}', anyway"
-
-    if not ab_tests[test].chosen_p?
-      console.log "No option is chosen for '#{test}', we'll try again in a bit"
-      circle_log_time()
-      window.setTimeout () ->
-        ab_tests = viewModel.ab_tests()
-        if not ab_tests[test].chosen_p?
-          i = randInt(ab_tests[test].options.length)
-          choice = ab_tests[test].options[i]
-          ab_tests[test].chosen_p = true
-          ab_tests[test].choice = choice
-
-          viewModel.ab_tests(ab_tests)
-
-          console.log "Too late for test '#{test}' from KM, selected #{choice}"
-          circle_log_time()
-
-          # send the choice manually to KissMetrics
-          # I don't think this actually works, waiting for KM to email me (dwwoelfel)
-          kmq_choice = {}
-          kmq_choice[test] = choice
-          _kmq.push(["set", kmq_choice])
-
-        display_p = ab_tests[test].choice is option
-
-        console.log("Displaying #{option} for test '#{test}':", display_p)
-
-        if display_p then $(el).css('display', '')
-
-      , 100
-
-
-    display_p = ab_tests[test].choice is option
-
-    console.log("Displaying #{option} for test '#{test}':", display_p)
-    circle_log_time()
-
-    if not display_p then $(el).css('display', 'none')
+# If you're looking for ko.bindingHandlers.ab_test, it's in lib/ab-tests.coffee
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 # Example usage:
@@ -92,6 +19,8 @@ ko.bindingHandlers.jQueryExt =
     type = valueAccessor().type
     $el = $(el)
     $el[type].call($el, options)
+
+## Money custom binding
 
 # Add helper that was minified
 ieVersion = () ->
@@ -109,7 +38,7 @@ addCommas = (num) ->
   suffix = num_str.substr(i).replace(/(\d{3})(?=\d)/g, "$1" + ",")
   prefix + suffix
 
-
+# Copy of setTextContent in ko's utils
 setMoneyContent = (element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)
   if not value?

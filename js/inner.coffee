@@ -1422,10 +1422,7 @@ class CircleViewModel extends Base
     @refreshing_projects = ko.observable(false);
     @max_possible_parallelism = ko.observable(24);
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
-    @ab_tests = ko.observable(window.circle_ab_tests)
     observableCount += 8 # are we still doing this?
-
-    @setup_ab_tests_sync()
 
     @setupPusher()
 
@@ -1439,13 +1436,6 @@ class CircleViewModel extends Base
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
-  setup_ab_tests_sync: () =>
-    $(document).bind "circle_ab_tests_updated", =>
-      @ab_tests(window.circle_ab_tests)
-
-    # This may do something weird. No infinite loops, but maybe race conditions
-    @ab_tests.subscribe (newValue) ->
-      window.circle_ab_tests = newValue
 
   setupPusher: () =>
     key = switch renderContext.env
