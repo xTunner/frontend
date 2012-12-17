@@ -1408,6 +1408,7 @@ display = (template, args) ->
 class CircleViewModel extends Base
   constructor: ->
     observableCount = 0
+    @ab = (new ABTests(ab_test_definitions)).ab_tests
     @current_user = ko.observable(new User window.renderContext.current_user)
     @build = ko.observable()
     @builds = ko.observableArray()
