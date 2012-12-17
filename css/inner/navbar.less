@@ -9,6 +9,7 @@
   border-top: 4px solid #134374;
   padding-top: 1px;
   height: 51px;
+  min-width: 500px;
   a.brand {
     margin-left: 1px;
     margin-top: 4px;
@@ -89,12 +90,22 @@
             border-left: 0px;
           }
           a {
-            padding: 8px 11px 0 11px;
+            padding: 4px 11px 4px 11px;
           }
         }
       }
 
       .caret { margin-top: 11px }
     }
+  }
+}
+
+// Retina prettyness
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+  .navbar-inner {
+	  a.brand {
+	    background: url(../../../img/circleci-top-logo@2x.png) no-repeat;
+	    background-size: 150px 41px;
+	  }
   }
 }

@@ -71,7 +71,7 @@
       %h2 All this power from one little button
       %h3 Plans start at $19 per month, and every plan includes unlimited builds.
 
-    %a.authGithub.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
+    %a.authGithub.kissAuthGithub#second-join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
 
 
     %ul
