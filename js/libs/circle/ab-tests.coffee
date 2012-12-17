@@ -13,6 +13,8 @@
 
 exports = this
 
+$.cookie.json = true
+
 randInt = (n) ->
   Math.floor(Math.random() * n)
 
@@ -41,7 +43,6 @@ class exports.ABTests
     $.cookie @cookie_prefix + test_name, value,
       expires: 365
       path: "/"
-      json: true
 
     kmq_choice = {}
     kmq_choice[test_name] = value
