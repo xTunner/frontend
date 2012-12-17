@@ -317,6 +317,7 @@ class Build extends Obj
     previous: null
     retry_of: null
     subject: null
+    parallel: null
 
   constructor: (json) ->
 
@@ -679,7 +680,7 @@ class Project extends Obj
     parallel: 1
     loaded_paying_user: false
     trial_parallelism: null
-    changed_parallel_settings: null
+    retried_build: null
 
   constructor: (json) ->
 
@@ -751,9 +752,6 @@ class Project extends Obj
 
     @show_parallel_upgrade_speed_p = komp =>
       @paying_user()? and (@max_parallelism() < @focused_parallel() <= @plan_max_speed())
-
-    @show_retry_latest_build_p = komp =>
-      @latest_build() && @latest_build().retry_build && @changed_parallel_settings()
 
     @focused_parallel_cost_increase = komp =>
       VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
@@ -944,8 +942,8 @@ class Project extends Obj
       url: "/api/v1/project/#{@project_name()}/settings"
       data: JSON.stringify
         parallel: @parallel()
-      success: =>
-        @changed_parallel_settings(true)
+      success: (data) =>
+        @retried_build(new Build(data))
       error: (data) =>
         @refresh()
         @load_paying_user()
