@@ -12,7 +12,7 @@ class CircleViewModel
   constructor: ->
     @ab = (new ABTests(ab_test_definitions)).ab_tests
 
-window.VM = new CircleViewModel
+window.CircleVM = new CircleViewModel
 
 circle = $.sammy "body", ->
 
@@ -32,7 +32,7 @@ circle = $.sammy "body", ->
       # Fetch page-specific libraries
       @lib() if @lib?
 
-      ko.applyBindings(VM)
+      ko.applyBindings(CircleVM)
 
     render: (cx) =>
       $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
