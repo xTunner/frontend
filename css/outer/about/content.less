@@ -1,8 +1,8 @@
 // Content --------------------------------------------------------------------
 
-#content {
+#about-page > #content, #privacy-page > #content, #docs-page > #content {
   position: relative;
-  background: url("@{imgPath}/outer/bg_pattern.png");
+  background: url("@{imgPath}/white-bg.png");
 
   & > section {
     padding-top: 50px;
@@ -11,13 +11,13 @@
 
   & > .about {
     padding-top: 100px;
-    background: url("@{imgPath}/outer/about/sf_watermark.png") no-repeat top right;
+    background: url("@{imgPath}/lg_about-watermark.png") no-repeat top right;
   }
 
   hr {
-    border-style: dashed;
-    border-color: @grayLight;
     margin-bottom: 45px;
+    border: 0;
+    border-top: 1px dashed @grayLight;
   }
 
   h1 {
@@ -41,7 +41,7 @@
   }
 
   h1 + p {
-    color: @link;
+    color: @blueDark;
     font-weight: 300;
   }
 

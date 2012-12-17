@@ -58,7 +58,7 @@
 
 
       %div{data-bind: "ifnot: followed"}
-        .followa-align
+        .follow-align
           %button.btn.btn-primary.btn-large{ data-bind: 'click: follow' }
             Follow
         %p

@@ -2,16 +2,15 @@
 
 // Full width wrapper
 .testimonial-header {
+  margin: 1em 0;
   width: 100%;
   font-family: 'Lato', sans-serif;
   font-weight: bold;
   font-size: 28px;
   color: #000;
   text-align: center;
-  text-shadow: -1px 1px 0 white;
   position: absolute;
   top: -75px;
-
 }
 
 #testimonials {
@@ -24,8 +23,6 @@
   border-left: none;
   border-right: none;
   z-index: 100;
-  .saturate(100, "logo");
-  .transition(~"margin 1.5s, -webkit-filter 2s");
 
   &:after {
     content: '';
@@ -45,14 +42,28 @@
 
     .customer {
       .column(4);
-      .ir;
+        display: block;
+        border: 0;
+        text-indent: -999em;
+        overflow: hidden;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        text-align: left;
+        direction: ltr;
+
+        .ie7 & { line-height: 0; }
+
+        br { display: none; }
     }
 
     a {
       display: block;
       visibility: visible;
       position: relative;
-      background: url("@{imgPath}/outer/home/home_sprite.png") no-repeat;
+      background: url("@{imgPath}/lg_home-sprite.png") no-repeat;
+    }
+    a:hover {
+      text-decoration: none;
     }
   }
 
@@ -69,14 +80,23 @@
     position: relative;
     width: 298px;
     float: left;
+    font-size: 13px;
     margin: 30px 18px 10px 10px;
     background: white;
     color: white;
-    font-size: 13px;
+    border: none;
+    padding: 0;
     .transition(opacity 2.5s);
     .box-shadow(0 0 6px rgba(0,0,0,0.2));
-    .border-radius();
+    .border-radius(5px);
     z-index: 0;
+
+    p {
+      margin: 1em 0;
+      font-size: 13px;
+      color: #444;
+      font-weight: 400;
+    }
 
     &:first-child {
       margin-left: 6px;
@@ -91,7 +111,7 @@
     &:after {
       content: "▲";
       position: absolute;
-      top: -23px;
+      top: -17px;
       right: 50%;
       font-size: 25px;
       text-shadow: 0px -2px 3px rgba(0,0,0,0.15);
@@ -164,7 +184,7 @@
   }
 
   .stripe {
-    background: url("@{imgPath}/outer/home/stripe-logo.png") no-repeat;
+    background: url("@{imgPath}/lg_home-stripe.png") no-repeat;
     background-position: 0 -35px; // Comment to show blue toned stripe logo
     height: 35px;
     margin-top: 24px;

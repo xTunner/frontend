@@ -8,7 +8,7 @@
 
   figcaption {
     .column(9);
-    background-image: url("@{imgPath}/outer/about/dividers.png");
+    background-image: url("@{imgPath}/lg_about-dividers.png");
     background-repeat: no-repeat;
     background-position: 10px 5px;
     height: 280px;
@@ -18,6 +18,8 @@
     & > div {
       margin-top: 5px;
     }
+
+    .note { margin: 1em 0;}
 
     .note, & > div { margin-left: 50px; }
   }
@@ -50,7 +52,7 @@
   .visual {
     .column(3);
     float: left;
-    background: url("@{imgPath}/outer/about/sprite.png") no-repeat -9px 0;
+    background: url("@{imgPath}/lg_about-sprite.png") no-repeat -9px 0;
     height: 215px;
     .transition(250ms all ease-in);
     z-index: 1;
@@ -69,11 +71,22 @@
 
     // Sprites with hover states
     a {
-      .ir;
+      display: block;
+      border: 0;
+      text-indent: -999em;
+      overflow: hidden;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      text-align: left;
+      direction: ltr;
       margin-bottom: 5px;
-      background-image: url("@{imgPath}/outer/about/sprite.png");
+      background-image: url("@{imgPath}/lg_about-sprite.png");
       background-repeat: no-repeat;
       .square(27px);
+
+      .ie7 & { line-height: 0; }
+
+      br { display: none; }
     }
 
     // Individual sprite positions

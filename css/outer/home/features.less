@@ -4,24 +4,14 @@
 #features {
   position: relative;
   z-index: 1;
-  background: url("@{imgPath}/bg_pattern.png");
+  background: url("@{imgPath}/white-bg.png");
 
-  // Header
-  & > header {
-    .container;
-    padding: 10px 0;
-    text-shadow: 0 1px 0 rgba(255,255,255,1);
-
-    h2 {
-      font-size: 42px;
-      text-align: center;
-      color: @blueDarker;
-    }
-
-    p {
-
-    }
-  } // /Header
+  h2 {
+    font-size: 1.5em;
+    margin: 0;
+    line-height: 27px;
+    letter-spacing: 1px;
+  }
 
   & > section {
     .container;
@@ -30,6 +20,7 @@
   }
 }
 
+
 // Sections
 .tour {
   @ib-height: 160px;
@@ -37,6 +28,7 @@
   min-height: @ib-height;
   display: inline-block;
   vertical-align: top;
+  margin: 0;
   margin-left: 35px;
   position: relative;
   text-shadow: 0 1px 0 white;
@@ -47,7 +39,7 @@
   i {
     position: absolute;
     font-size: 35px;
-    top: -4px;
+    top: 7px;
     left: -25px;
     color: #2F5F9E;
     z-index: 1;

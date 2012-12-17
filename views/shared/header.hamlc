@@ -1,5 +1,4 @@
 -if @flash
-  -# - @flashAnimation()
   #flash
     = @flash
 

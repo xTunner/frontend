@@ -7,7 +7,8 @@
     %li
       %i{ class: c.icon }
       %a{ href: c.url }
-        = c.title
+        %span.title<>
+          = c.title
         %i{ class: @class }
       %ul{ class: @expand }
         - for s in c.sections

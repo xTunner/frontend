@@ -49,7 +49,7 @@
       %footer
         %cite
           %a{ href: "https://stripe.com/ "} John Collison
-          %a{ href: "https://stripe.com/" } CTO at Stripe.com
+          %a{ href: "https://stripe.com/" } Founder of Stripe
 
     %blockquote{ cite: "#" }
       %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
@@ -57,7 +57,7 @@
       %footer
         %cite
           %a{ href: "http://www.storenvy.com/about/team/ "} Jon Crawford
-          %a{ href: "http://www.storenvy.com/" } CEO of Storenvy.com
+          %a{ href: "http://www.storenvy.com/" } CEO of Storenvy
 
     %blockquote{ cite: "#" }
       %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
@@ -65,7 +65,7 @@
       %footer
         %cite
           %a{ href: "http://zencoder.com/company/" } Brandon Arbini
-          %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
+          %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder
 
 #power
   %section
@@ -73,7 +73,7 @@
       %h2 All this power from one little button
       %h3 Plans start at $19 per month, and every plan includes unlimited builds.
 
-    %a.authGithub.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
+    %a.authGithub.kissAuthGithub#second-join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
 
 
     %ul

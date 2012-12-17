@@ -1,0 +1,48 @@
+.topics {
+
+  display: inline;
+  float: left;
+  width: 248px;
+  margin: 20px 0 10px 0;
+  background: white;
+  padding: 0;
+  border: 1px solid #E0E0E0;
+  border-right: none;
+  .border-radius(5px 0 0 5px);
+  .box-shadow(inset -2px 0px 16px -10px black);
+
+  ul {
+    height: 0;
+    overflow: hidden;
+  }
+
+  .expand {
+    height: auto;
+  }
+
+
+  li {
+    padding: 0 5px 4px 10px;
+    list-style: none;
+
+    &:first-child {
+      padding-top: 10px;
+    }
+
+    &:last-child {
+      padding-bottom: 20px;
+    }
+
+  }
+  li > ul {
+    list-style: none;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .icon-chevron-down, .icon-chevron-up {
+    text-decoration: none;
+  }
+}

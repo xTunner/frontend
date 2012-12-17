@@ -73,13 +73,14 @@
 
         / /ko
 
-    .row-fluid{data-bind: "if: show_retry_latest_build_p"}
+    .row-fluid{data-bind: "if: retried_build"}
       .span10
-        %form{method: "post", action: "/circumvent-sammy", data-bind: "submit: $root.mockFormSubmit(retry_latest_build)"}
-          %button.btn.btn-success
-            Retry your latest build at
-            != succeed "x", ->
-              %span{data-bind: "text: parallel"}
+        %a.btn.btn-success{type: "submit",
+                           name: "submit",
+                           data-bind: "click: retried_build().visit"}
+          View your latest build running at
+          != succeed "x", ->
+            %span{data-bind: "text: retried_build().parallel"}
 
     .row-fluid
       .span12

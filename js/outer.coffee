@@ -39,7 +39,9 @@ circle = $.sammy "body", ->
   class Home extends Page
     render: (cx) =>
       super(cx)
+      _kmq.push(['trackClickOnOutboundLink', '#join', 'hero join link clicked'])
       _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
+      _kmq.push(['trackClickOnOutboundLink', '#second-join', 'footer join link clicked'])
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
       _gaq.push(['_trackPageview', '/homepage'])
 
@@ -96,7 +98,7 @@ circle = $.sammy "body", ->
         $("body").append HAML['docs']({categories: @categories()})
         $("body").append HAML['footer'](renderContext)
       else
-        $("body").attr("id","#{@name}-page").html(HAML['header'](renderContext))
+        $("body").attr("id","docs-page").html(HAML['header'](renderContext))
         $("body").append(HAML['title'](renderContext))
         $("#title h1").text("Documentation")
         $("body").append("<div id='content'><section class='article'></section></div>")

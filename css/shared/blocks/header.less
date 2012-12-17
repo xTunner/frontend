@@ -4,7 +4,7 @@
 #head {
   height: 65px;
   border-top: 5px solid #105AAF;
-  background: url("@{imgPath}/blocks/header/header-bg.png") repeat-x;
+  background: url("@{imgPath}/lg_header-bg.png") repeat-x;
 
   // Content container
   & > header {
@@ -17,11 +17,22 @@
     margin: 9px 0;
 
     a {
-      .ir;
+      display: block;
+      border: 0;
+      text-indent: -999em;
+      overflow: hidden;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      text-align: left;
+      direction: ltr;
       width: 182px;
       height: 48px;
       margin: 0;
-      background: url("@{imgPath}/blocks/sprite.png") no-repeat -2px 0;
+      background: url("@{imgPath}/lg_sprite.png") no-repeat -2px 0;
+
+      .ie7 & { line-height: 0; }
+
+      br { display: none; } 
     }
   } // /Logo
 

@@ -7,9 +7,9 @@
 
   %div{data-bind: "with: build"}
 
-    .row.build-table#build-log-header
+    .row-fluid.build-table#build-log-header
 
-      %dl.offset1.span4
+      %dl.span4
 
         %dt Revision
         %dd
@@ -34,7 +34,7 @@
           %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
         / /ko
 
-      %dl.offset1.span4
+      %dl.span4
 
         %dt Status
         %dd.build_status
@@ -47,7 +47,7 @@
         %dd{data-bind: "text: duration"}
 
 
-      %dl.offset1.span4
+      %dl.span4
 
         %dt Branch
         %dd{data-bind: "text: branch"}

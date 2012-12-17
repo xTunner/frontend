@@ -1,0 +1,209 @@
+.build-row {
+  cursor: pointer;
+  tr:hover { background-color: #aaaaaa; }
+}
+
+#build-messages {
+   text-align: center;
+   font-weight: strong;
+}
+
+.build-table {
+  background: #EFF2F6;
+  border-top: 1px solid #D7DCE3;
+  border-bottom: 1px solid #D7DCE3;
+  width: 100%;
+  top: 83px;
+  color: #596e8a;
+   dt {
+      width: 100px;
+      float: left;
+      display: block;
+      clear: left;
+      color: #134374;
+      text-align: right;
+      margin-right: 10px;
+   }
+
+   p.reponame {
+	   font-weight: bold;
+   }
+
+   dd {
+      float: left;
+      display: block;
+   }
+
+   padding-right: 40px;
+}
+
+.action-source {
+   .border-radius;
+   float: right;
+   margin-right: 10px; // move back from the right edge
+
+   padding: 0px 2px; // padding, but without increasing the height
+   background: #fff;
+   // background-color: rgba(255, 255, 255, 0.2); // make slightly lighter
+
+   font-style: italic;
+   // opacity: 0.7; // better than using grey
+   font-size: 15px;
+   font-weight: normal; // unbolden
+   color: #174278;
+   .text-shadow(0,-1px,0px, rgba(0,0,0, 0)); // Remove text shadow
+}
+
+.action-source-inner:hover {
+   border-bottom: 2px solid;
+   cursor: help;
+}
+
+.type-divider {
+   text-align: center;
+   border-bottom: 1px solid #777;
+   line-height:0.1em;
+   margin: 15px 0 7px;
+
+   span {
+      background: url("../../../img/outer/bg_pattern.png");
+      color: #777;
+      font-size: 16px;
+      padding: 0 10px;
+   }
+}
+
+.build-output-active {
+  background: #d7dce3;
+  .action_header {
+    background: #1a3d64;
+    .text-shadow(0,-1px,0px, rgba(0,0,0, .8));
+  }
+}
+.build-output  {
+  .border-radius;
+
+  .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
+  margin-bottom: 5px;
+  // color: #4b6890;
+  color: #AEBDCB;
+  font-weight: normal;
+
+  .action_header {
+    color: #eff2f6;
+    // text-transform: capitalize;
+    font-weight: bold;
+    .text-shadow(0,-1px,0px, rgba(0,0,0, .6));
+    .time {
+      color: black;
+      font-weight: normal;
+      .text-shadow(0,-1px,0px, rgba(0,0,0, 0));
+    }
+  }
+
+  pre {
+    margin-top: 5px;
+  }
+  .detail {
+     background: #1a3d64;
+     border: 1px solid #132d49;
+     border-top: 1px solid #132d49;
+    .box-shadow(inset 0px 1px 0 rgba(255,255,255, .2));
+     margin-top: 5px;
+     padding: 5px 10px;
+     .bash-command {
+        color: #94A1A1;
+     }
+
+  }
+   .command {
+      font-weight: bold;
+      font-size: 18px;
+   }
+
+   .ah_wrapper {
+      overflow: hidden; // put the contents beside each other
+
+      @green:  #57A957;
+      @red: #EE5F5B;
+      @yellow: #E0C91B;
+
+      .button {
+         float: left; // put to the right of .command
+         .border-radius;
+         background-repeat: no-repeat;
+         background-position: center;
+         margin-right: 7px; // space between button and command
+         height: 30px; // the button has no size without this
+         width: 30px; // the button has no size without this
+
+         &.success {
+            &.contents { background-image: url("/img/green_minus.png"); }
+            &.contents.minimize { background-image: url("/img/green_plus.png"); }
+         }
+
+         &.failed {
+            &.contents { background-image: url("/img/red_minus.png"); }
+            &.contents.minimize { background-image: url("/img/red_plus.png"); }
+         }
+
+         &.timedout {
+            &.contents { background-image: url("/img/red_minus.png"); }
+            &.contents.minimize { background-image: url("/img/red_plus.png"); }
+         }
+
+         &.running {
+            &.contents { background-image: url("/img/green_minus.png"); }
+            &.contents.minimize { background-image: url("/img/green_plus.png"); }
+         }
+
+      }
+
+      .success { background-color: @green; }
+      .failed { background-color: @red; }
+      .running { background-color: @yellow; }
+      .timedout { background-color: @red; }
+
+      .command {
+         overflow: hidden; // put to the left of .button
+         padding: 5px 0 5px 20px;
+         .border-radius;
+      }
+   }
+
+
+   .time {
+      font-size: 14px;
+   }
+}
+
+.dont_build {
+  .build_log {
+    text-decoration: line-through;
+  }
+
+  .not_run_message {
+    text-align: center;
+  }
+}
+
+td.build_status {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.build_status {
+  text-transform: uppercase;
+}
+
+#build-log-header {
+	dt, dd {
+		padding: 3px 0 3px 0;
+	}
+}
+
+#build-log-container {
+	#build-log-header {
+		clear: both;
+	}
+}
