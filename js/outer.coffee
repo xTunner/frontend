@@ -8,6 +8,12 @@ queryParams = () ->
 
 window.queryParams = queryParams
 
+class CircleViewModel
+  constructor: ->
+    @ab = (new ABTests(ab_test_definitions)).ab_tests
+
+window.VM = new CircleViewModel
+
 circle = $.sammy "body", ->
 
   # Page
@@ -25,6 +31,8 @@ circle = $.sammy "body", ->
 
       # Fetch page-specific libraries
       @lib() if @lib?
+
+      ko.applyBindings(VM)
 
     render: (cx) =>
       $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
