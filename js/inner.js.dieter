@@ -22,5 +22,6 @@
   "./libs/circle/custom-bindings.coffee"
   "./libs/circle/ab-tests.coffee"
   "./../views/inner/"
+  "./ab_test_definitions.coffee"
   "./inner.coffee"
 ]
