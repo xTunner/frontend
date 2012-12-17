@@ -7,7 +7,8 @@
   "./vendor/jquery.cookie.js"  
   "./../views/shared/"
   "./../views/outer/"
+  "./libs/circle/ab-tests.coffee"
+  "./ab_test_definitions.coffee"
   "./outer.coffee"
   "./libs/circle/custom-bindings.coffee"
-  "./libs/circle/ab-tests.coffee"
 ]
