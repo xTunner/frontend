@@ -1134,12 +1134,6 @@ class Plan extends Obj
     @projectsTitle = komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
 
-    @projectsContent = komp =>
-      "We'll test up to #{@projects} private repositories."
-
-    @minParallelismContent = komp =>
-      "Run your tests at #{@min_parallelism}x the speed."
-
     @minParallelismDescription = komp =>
       "#{@min_parallelism}x"
 
@@ -1393,6 +1387,9 @@ class Billing extends Obj
       @planFeatures(data)
       $('html').popover
         html: true
+        delay: 0
+        # this will break when we change bootstraps! take the new template from bootstrap.js
+        template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
         placement: "bottom"
         trigger: "hover"
         selector: ".more-info"
