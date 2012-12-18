@@ -162,6 +162,14 @@ circle = $.sammy "body", ->
     placeholder()
     follow()
 
+  pricing.lib = =>
+    $('html').popover
+      html: true
+      placement: "top"
+      trigger: "hover"
+      selector: ".more-info"
+
+
   # Twitter Follow
 
   # Google analytics
