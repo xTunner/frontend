@@ -1391,7 +1391,7 @@ class Billing extends Obj
   loadPlanFeatures: () =>
     $.getJSON '/api/v1/user/plan-features', (data) =>
       @planFeatures(data)
-      $('.more-info').popover
+      $('html').popover
         html: true
         placement: "bottom"
         trigger: "hover"
