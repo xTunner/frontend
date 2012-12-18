@@ -79,6 +79,6 @@
     %p
       We also sell Circle for installation behind your firewall.
       Contact
-      %a{href: "enterprise@circleci.com"}
+      %a{href: "mailto:enterprise@circleci.com"}
         enterprise@circleci.com
       for details.
