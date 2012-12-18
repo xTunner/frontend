@@ -16,41 +16,41 @@
             %tr.name
               %th.title
               / ko foreach: plans
-              %th.title{"data-bind" => "text: name"} Solo
-              %th.title{"data-bind" => "text: name"} Startup
-              %th.title{"data-bind" => "text: name"} Small business
-              %th.title{"data-bind" => "text: name"} Enterprise
+              %th.title{"data-bind": "text: name"} Solo
+              %th.title{"data-bind": "text: name"} Startup
+              %th.title{"data-bind": "text: name"} Small business
+              %th.title{"data-bind": "text: name"} Enterprise
               / /ko
           %tbody
             %tr.reason
               %td.title
               / ko foreach: plans
-              %td{"data-bind" => "text: why"} For tiny teams
-              %td{"data-bind" => "text: why"} For growing teams
-              %td{"data-bind" => "text: why"} For established teams
-              %td{"data-bind" => "text: why"} Enterprisy features
+              %td{"data-bind": "text: why"} For tiny teams
+              %td{"data-bind": "text: why"} For growing teams
+              %td{"data-bind": "text: why"} For established teams
+              %td{"data-bind": "text: why"} Enterprisy features
               / /ko
             %tr.price
               %td.title
               / ko foreach: plans
               %td
-                %button.btn.btn-large.btn-success{"data-bind" => "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Switch plan $19/mo
+                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Switch plan $19/mo
               %td
-                %button.btn.btn-large.btn-success{"data-bind" => "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Switch plan $49/mo
+                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Switch plan $49/mo
               %td
-                %button.btn.btn-large.btn-success{"data-bind" => "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Your current plan
+                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Your current plan
               %td
-                %button.btn.btn-large.btn-success{"data-bind" => "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Contact us for pricing
+                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Contact us for pricing
               / /ko
             %tr.projects
               %td.title Private Repositories
               / ko foreach: plans
-              %td.more-info{"data-bind" => "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content" => "We'll test up to 1 private repositories.", :title => "1 project"} 1
-              %td.more-info{"data-bind" => "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content" => "We'll test up to 10 private repositories.", :title => "10 projects"} 10
-              %td.more-info{"data-bind" => "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content" => "We'll test up to 40 private repositories.", :title => "40 projects"} 40
-              %td.more-info{"data-bind" => "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content" => "We'll test up to Unlimited private repositories.", :title => "Unlimited projects"} Unlimited
+              %td.more-info{"data-bind": "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content": "We'll test up to 1 private repositories.", title: "1 project"} 1
+              %td.more-info{"data-bind": "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content": "We'll test up to 10 private repositories.", title: "10 projects"} 10
+              %td.more-info{"data-bind": "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content": "We'll test up to 40 private repositories.", title: "40 projects"} 40
+              %td.more-info{"data-bind": "text: projects, attr: {title: projectsTitle, 'data-content': projectsContent}", "data-content": "We'll test up to Unlimited private repositories.", title: "Unlimited projects"} Unlimited
               / /ko
-            %tr.collaborators.more-info{"data-content" => "We'll test code for all your collaborators - anyone with GitHub access to your organization's projects.", :title => "Unlimited Collaborators"}
+            %tr.collaborators.more-info{"data-content": "We'll test code for all your collaborators - anyone with GitHub access to your organization's projects.", title: "Unlimited Collaborators"}
               %td.title Collaborators
               / ko foreach: plans
               %td Unlimited
@@ -58,150 +58,150 @@
               %td Unlimited
               %td Unlimited
               / /ko
-            %tr.concurrency.more-info{"data-content" => "Number of pushes that will be tested at the same time. The rest will be queued. If you need more, you can buy them later at $49 per concurrent push.", :title => "Concurrent builds"}
+            %tr.concurrency.more-info{"data-content": "Number of pushes that will be tested at the same time. The rest will be queued. If you need more, you can buy them later at $49 per concurrent push.", title: "Concurrent builds"}
               %td.title Concurrent builds
               / ko foreach: plans
               %td.more-info
-                %span{"data-bind" => "text: concurrency"}> 1
+                %span{"data-bind": "text: concurrency"}> 1
                 *
               %td.more-info
-                %span{"data-bind" => "text: concurrency"}> 1
+                %span{"data-bind": "text: concurrency"}> 1
                 *
               %td.more-info
-                %span{"data-bind" => "text: concurrency"}> 1
+                %span{"data-bind": "text: concurrency"}> 1
                 *
               %td.more-info
-                %span{"data-bind" => "text: concurrency"}> Unlimited
+                %span{"data-bind": "text: concurrency"}> Unlimited
                 *
               / /ko
             %tr.more-info.parallelism
               %td.title Included parallelization
               / ko foreach: plans
-              %td.more-info{"data-bind" => "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content" => "Run your tests at 1x the speed.", :title => "Included parallelization"} 1x
-              %td.more-info{"data-bind" => "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content" => "Run your tests at 1x the speed.", :title => "Included parallelization"} 1x
-              %td.more-info{"data-bind" => "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content" => "Run your tests at 2x the speed.", :title => "Included parallelization"} 2x
-              %td.more-info{"data-bind" => "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content" => "Run your tests at 8x the speed.", :title => "Included parallelization"} 8x
+              %td.more-info{"data-bind": "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content": "Run your tests at 1x the speed.", title: "Included parallelization"} 1x
+              %td.more-info{"data-bind": "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content": "Run your tests at 1x the speed.", title: "Included parallelization"} 1x
+              %td.more-info{"data-bind": "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content": "Run your tests at 2x the speed.", title: "Included parallelization"} 2x
+              %td.more-info{"data-bind": "text: minParallelismDescription, attr: {'data-content': minParallelismContent}", "data-content": "Run your tests at 8x the speed.", title: "Included parallelization"} 8x
               / /ko
-            %tr.available-parallelism.more-info{"data-content" => "Automatically run your tests up to 64x faster", :title => "Automatic parallelization"}
+            %tr.available-parallelism.more-info{"data-content": "Automatically run your tests up to 64x faster", title: "Automatic parallelization"}
               %td.title Available parallelization
               / ko foreach: plans
-              %td.more-info{"data-bind" => "text: maxParallelismDescription"} up to 1x
-              %td.more-info{"data-bind" => "text: maxParallelismDescription"} up to 1x
-              %td.more-info{"data-bind" => "text: maxParallelismDescription"} up to 8x
-              %td.more-info{"data-bind" => "text: maxParallelismDescription"} up to 64x
+              %td.more-info{"data-bind": "text: maxParallelismDescription"} up to 1x
+              %td.more-info{"data-bind": "text: maxParallelismDescription"} up to 1x
+              %td.more-info{"data-bind": "text: maxParallelismDescription"} up to 8x
+              %td.more-info{"data-bind": "text: maxParallelismDescription"} up to 64x
               / /ko
             / ko foreach: planFeatures
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "You email us your question, we email you back. Simple as that.", :title => "Email support"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Email support
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "You email us your question, we email you back. Simple as that.", title: "Email support"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Email support
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "We respond to support requests immediately, every day (yes, on weekends yes, on holidays).\nMost requests are responded to within the hour, 99% are responded to in 12 hours.\nWe're also available for live chat support.", :title => "Immediate support"}
-              %td.title.fast-support{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Immediate support
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "We respond to support requests immediately, every day (yes, on weekends yes, on holidays).\nMost requests are responded to within the hour, 99% are responded to in 12 hours.\nWe're also available for live chat support.", title: "Immediate support"}
+              %td.title.fast-support{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Immediate support
               / ko foreach: $parent.plans
-              %td.fast-support{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.fast-support{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.fast-support{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.fast-support{"data-bind" => "css: featureAvailable($parent)"}
+              %td.fast-support{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.fast-support{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.fast-support{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.fast-support{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "Our phone number is +1 415 341 2432.\nNo-one ever calls because our email support is so good.\nBut in theory, if you called, we'd answer.\nTry it.", :title => "Phone Support"}
-              %td.title.phone{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Phone Support
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Our phone number is +1 415 341 2432.\nNo-one ever calls because our email support is so good.\nBut in theory, if you called, we'd answer.\nTry it.", title: "Phone Support"}
+              %td.title.phone{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Phone Support
               / ko foreach: $parent.plans
-              %td.phone{"data-bind" => "css: featureAvailable($parent)"}
-              %td.phone{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.phone{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.phone{"data-bind" => "css: featureAvailable($parent)"}
+              %td.phone{"data-bind": "css: featureAvailable($parent)"}
+              %td.phone{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.phone{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.phone{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "Naturally we never look at your code.\nWe also have a great security policy, which gives us no rights whatsoever to your code.\nHowever, if you would prefer that we sign your custom NDA, we'd be happy to.", :title => "Custom NDA"}
-              %td.title.nda{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Custom NDA
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Naturally we never look at your code.\nWe also have a great security policy, which gives us no rights whatsoever to your code.\nHowever, if you would prefer that we sign your custom NDA, we'd be happy to.", title: "Custom NDA"}
+              %td.title.nda{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Custom NDA
               / ko foreach: $parent.plans
-              %td.nda{"data-bind" => "css: featureAvailable($parent)"}
-              %td.nda{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.nda{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.nda{"data-bind" => "css: featureAvailable($parent)"}
+              %td.nda{"data-bind": "css: featureAvailable($parent)"}
+              %td.nda{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.nda{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.nda{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "Circle is available for installation behind your firewall, to work with your local GitHub install.", :title => "Behind-the-firewall installation"}
-              %td.title.firewall{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Behind-the-firewall installation
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Circle is available for installation behind your firewall, to work with your local GitHub install.", title: "Behind-the-firewall installation"}
+              %td.title.firewall{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Behind-the-firewall installation
               / ko foreach: $parent.plans
-              %td.firewall{"data-bind" => "css: featureAvailable($parent)"}
-              %td.firewall{"data-bind" => "css: featureAvailable($parent)"}
-              %td.firewall{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick.firewall{"data-bind" => "css: featureAvailable($parent)"}
+              %td.firewall{"data-bind": "css: featureAvailable($parent)"}
+              %td.firewall{"data-bind": "css: featureAvailable($parent)"}
+              %td.firewall{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick.firewall{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "Our pricing is the same every month, no matter how often you push.\nThere are no charges for using machine time.", :title => "Predictable pricing"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Predictable pricing
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Our pricing is the same every month, no matter how often you push.\nThere are no charges for using machine time.", title: "Predictable pricing"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Predictable pricing
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "There's no limit to how often you can push.\nYou queue them up, we'll knock 'em down.", :title => "Unlimited builds"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Unlimited builds
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "There's no limit to how often you can push.\nYou queue them up, we'll knock 'em down.", title: "Unlimited builds"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Unlimited builds
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "Great testing means using Circle as much as possible.\nYou don't want to weigh good testing against possible charges or monthly fees.\nSo we have no limit, no per-hour cost, no overages.\nJust simple, predictable pricing.", :title => "Unlimited build time"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Unlimited build time
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Great testing means using Circle as much as possible.\nYou don't want to weigh good testing against possible charges or monthly fees.\nSo we have no limit, no per-hour cost, no overages.\nJust simple, predictable pricing.", title: "Unlimited build time"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Unlimited build time
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "We have the fastest test infrastructure around.\nRunning on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test service.", :title => "Lightning fast hardware"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Lightning fast hardware
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "We have the fastest test infrastructure around.\nRunning on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test service.", title: "Lightning fast hardware"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Lightning fast hardware
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "We've tuned every part of our test framework for incredibly fast tests, from our tuned kernel settings, to our caches, to our auto-scaling architecture, you won't wait for anything.", :title => "Incredible test optimizations"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Incredible test optimizations
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "We've tuned every part of our test framework for incredibly fast tests, from our tuned kernel settings, to our caches, to our auto-scaling architecture, you won't wait for anything.", title: "Incredible test optimizations"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Incredible test optimizations
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "If your tests work, deploy straight to staging, production, or a QA server.\nCurrently supporting Heroku, with support for Capistrano, Fabric, custom commands and other PaaSs coming soon.\nLet us know what you need.", :title => "Continuous Deployment"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Continuous Deployment
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "If your tests work, deploy straight to staging, production, or a QA server.\nCurrently supporting Heroku, with support for Capistrano, Fabric, custom commands and other PaaSs coming soon.\nLet us know what you need.", title: "Continuous Deployment"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Continuous Deployment
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "You can literally set up your tests in 20 seconds.\nThat's less than the time it takes to find the Jenkins download link, and a lot less than the time to requisition a server to host it on.\nWe support every test suite, database, library, and language you need (Linux stacks only for now)", :title => "One-click setup"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} One-click setup
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "You can literally set up your tests in 20 seconds.\nThat's less than the time it takes to find the Jenkins download link, and a lot less than the time to requisition a server to host it on.\nWe support every test suite, database, library, and language you need (Linux stacks only for now)", title: "One-click setup"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} One-click setup
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "You don't care what John did in his feature branch, but you care what gets pushed to master.\nWho cares if the tests pass yet again, you only want notifications when they fail.\nCircle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire and more.", :title => "Personalized notifications"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Personalized notifications
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "You don't care what John did in his feature branch, but you care what gets pushed to master.\nWho cares if the tests pass yet again, you only want notifications when they fail.\nCircle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire and more.", title: "Personalized notifications"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Personalized notifications
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind" => "attr: {title: headline, 'data-content': detail}", "data-content" => "When your tests are broken, we help you get them fixed.\nWe automatically warn you about common mistakes, and document how to fix them.\nWe provide all the information you need to reproduce an error locally.\nAnd if you still can't reproduce it, you can SSH into our VMs to debug it yourself.", :title => "Debug with ease"}
-              %td.title{"data-bind" => "text: headline, attr: {class: 'title ' + name}"} Debug with ease
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "When your tests are broken, we help you get them fixed.\nWe automatically warn you about common mistakes, and document how to fix them.\nWe provide all the information you need to reproduce an error locally.\nAnd if you still can't reproduce it, you can SSH into our VMs to debug it yourself.", title: "Debug with ease"}
+              %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Debug with ease
               / ko foreach: $parent.plans
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
-              %td.tick{"data-bind" => "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
+              %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
             / /ko
     %br/
@@ -265,6 +265,6 @@
         %p
           We also sell Circle for installation behind your firewall.
           Contact
-          %a{:href => "enterprise@circleci.com"}
+          %a{href: "mailto:enterprise@circleci.com"}
             enterprise@circleci.com
           for details.
