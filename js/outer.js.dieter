@@ -3,6 +3,23 @@
   "./vendor/modernizr-2.6.1.js"
   "./vendor/waypoints-1.1.7.min.js"
   "./vendor/stickyMojo.js"
+
+  ;; use the order from the Makefile build task
+  ;; prefix "../" paths with "./", because that makes the dieter regexes slightly less retarded, and avoids triggering a file-ordering bug
+  "./../vendor/bootstrap/js/bootstrap-transition.js"
+  "./../vendor/bootstrap/js/bootstrap-alert.js"
+  "./../vendor/bootstrap/js/bootstrap-button.js"
+  "./../vendor/bootstrap/js/bootstrap-carousel.js"
+  "./../vendor/bootstrap/js/bootstrap-collapse.js"
+  "./../vendor/bootstrap/js/bootstrap-dropdown.js"
+  "./../vendor/bootstrap/js/bootstrap-modal.js"
+  "./../vendor/bootstrap/js/bootstrap-tooltip.js"
+  "./../vendor/bootstrap/js/bootstrap-popover.js"
+  "./../vendor/bootstrap/js/bootstrap-scrollspy.js"
+  "./../vendor/bootstrap/js/bootstrap-tab.js"
+  "./../vendor/bootstrap/js/bootstrap-typeahead.js"
+
+
   "./../views/shared/"
   "./../views/outer/"
   "./outer.coffee"
