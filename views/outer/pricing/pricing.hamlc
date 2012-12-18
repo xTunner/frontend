@@ -211,7 +211,7 @@
       .offset0.span7
         %h3 Who is included in my plan?
         %p
-          On the next page you'll choose organizations you'd like to include in your plan.
+          Your plan covers any number of GitHub organization or personal accounts.
           All pushes to those organizations will be tested, and will count against your concurrent and priority-builds.
         %h3 I'd like more parallelism or concurrency?
         %p
