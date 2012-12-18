@@ -103,7 +103,7 @@
       environmental variable has already been set.
 
     %p
-      Selenium-based tests are able to use Chrome stable channel (Chrome 19.0 as of Aug 1, 2012), and Firefox 14.0.1.
+      Selenium-based tests are able to use Chrome stable channel (Chrome 19.0 as of Aug 1, 2012), and Firefox 17.0.1.
 
 
     %h1.section
