@@ -439,7 +439,11 @@ class Build extends Obj
       if @build_time_millis()?
         Circle.time.as_duration(@build_time_millis())
       else
-        "still running"
+        if @status() == "canceled"
+          # build was canceled from the queue
+          "canceled"
+        else
+          "still running"
 
     @branch_in_words = komp =>
       return "(unknown)" unless @branch()
