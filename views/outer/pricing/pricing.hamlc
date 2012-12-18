@@ -1,8 +1,8 @@
 #title
   %h1 Plans and Pricing
 
-#content.row-fluid.offset1
-  #new-plans.span10
+#content.row
+  #new-plans.offset1
     .row-fluid
       .span12
         %table.plan
