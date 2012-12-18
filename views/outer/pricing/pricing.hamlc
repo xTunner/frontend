@@ -1,4 +1,7 @@
-#hash
+#title
+  %h1 Plans and Pricing
+
+#content.offset1
   #new-plans{"data-bind" => "with: $root.billing"}
     .row-fluid
       .span12
