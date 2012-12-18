@@ -110,6 +110,7 @@ circle = $.sammy "body", ->
   home = new Home("home", "Continuous Integration made easy")
   about = new Page("about", "About Us")
   privacy = new Page("privacy", "Privacy and Security")
+  pricing = new Page("pricing", "Plans and Pricing")
   docs = new Docs("docs", "Documentation")
 
   # Define Libs
@@ -181,6 +182,7 @@ circle = $.sammy "body", ->
   @get "/docs(.*)", (cx) -> docs.display(cx)
   @get "/about.*", (cx) -> about.display(cx)
   @get "/privacy.*", (cx) -> privacy.display(cx)
+  @get "/pricing.*", (cx) -> pricing.display(cx)
   @get "/", (cx) -> home.display(cx)
   @get("/gh/.*", (cx) =>
     @unload()
