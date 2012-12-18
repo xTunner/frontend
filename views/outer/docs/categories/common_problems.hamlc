@@ -492,7 +492,7 @@
 
     %p
       Update to a new version of the selenium-webdriver gem in your Gemfile, if possible to the latest version.
-      While some Circle users have had success with 2.5, others have had to update to 2.21 or 2.22.
+      There are known issues with using anything older than version 2.27.0 of this gem.
       Updating to the
       %a{href: "http://rubygems.org/gems/selenium-webdriver"}
         latest revision
