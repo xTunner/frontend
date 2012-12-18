@@ -29,7 +29,7 @@
           / /ko
 
 
-        %tr.projects.more-info{data-content: "Plans are only limited by the number of projects you want to test, not the number you have in GitHub. Forks are only counted once."}
+        %tr.projects.more-info{title: "Private Repositories", data-content: "Plans are only limited by the number of private repositories you want to test, not the number you have in GitHub. Forks are only counted once."}
           %td.title Private Repositories
           / ko foreach: plans
           %td{data-bind: "text: projects"}
@@ -54,14 +54,14 @@
           / /ko
 
         %tr.available-parallelism.more-info{title: "Automatic parallelization",
-                                            data-content: "Automatically run your tests up to 64x faster"}
+                                            data-content: "Automatically run your tests up to 64x faster."}
           %td.title Available parallelization
           / ko foreach: plans
           %td{data-bind: "text: maxParallelismDescription"}
           / /ko
 
         %tr.parallelism.more-info{title: "Included parallelization",
-                                  data-content: "Larger plans include more parallelism"}
+                                  data-content: "Larger plans include more parallelism."}
           %td.title Included parallelization
           / ko foreach: plans
           %td{data-bind: "text: minParallelismDescription"}
