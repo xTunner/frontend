@@ -149,7 +149,7 @@
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Great testing means using Circle as much as possible.\nYou don't want to weigh good testing against possible charges or monthly fees.\nSo we have no limit, no per-hour cost, no overages.\nJust simple, predictable pricing.", :title: "Unlimited build time"}
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "Great testing means using Circle as much as possible.\nYou don't want to weigh good testing against possible charges or monthly fees.\nSo we have no limit, no per-hour cost, no overages.\nJust simple, predictable pricing.", title: "Unlimited build time"}
               %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Unlimited build time
               / ko foreach: $parent.plans
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
@@ -157,7 +157,7 @@
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "We have the fastest test infrastructure around.\nRunning on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test service.", :title: "Lightning fast hardware"}
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "We have the fastest test infrastructure around.\nRunning on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test service.", title: "Lightning fast hardware"}
               %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Lightning fast hardware
               / ko foreach: $parent.plans
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
@@ -173,7 +173,7 @@
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "If your tests work, deploy straight to staging, production, or a QA server.\nCurrently supporting Heroku, with support for Capistrano, Fabric, custom commands and other PaaSs coming soon.\nLet us know what you need.", :title: "Continuous Deployment"}
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "If your tests work, deploy straight to staging, production, or a QA server.\nCurrently supporting Heroku, with support for Capistrano, Fabric, custom commands and other PaaSs coming soon.\nLet us know what you need.", title: "Continuous Deployment"}
               %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Continuous Deployment
               / ko foreach: $parent.plans
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
@@ -181,7 +181,7 @@
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "You can literally set up your tests in 20 seconds.\nThat's less than the time it takes to find the Jenkins download link, and a lot less than the time to requisition a server to host it on.\nWe support every test suite, database, library, and language you need (Linux stacks only for now)", :title: "One-click setup"}
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "You can literally set up your tests in 20 seconds.\nThat's less than the time it takes to find the Jenkins download link, and a lot less than the time to requisition a server to host it on.\nWe support every test suite, database, library, and language you need (Linux stacks only for now)", title: "One-click setup"}
               %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} One-click setup
               / ko foreach: $parent.plans
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
@@ -197,7 +197,7 @@
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
               / /ko
-            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "When your tests are broken, we help you get them fixed.\nWe automatically warn you about common mistakes, and document how to fix them.\nWe provide all the information you need to reproduce an error locally.\nAnd if you still can't reproduce it, you can SSH into our VMs to debug it yourself.", :title: "Debug with ease"}
+            %tr.features.more-info{"data-bind": "attr: {title: headline, 'data-content': detail}", "data-content": "When your tests are broken, we help you get them fixed.\nWe automatically warn you about common mistakes, and document how to fix them.\nWe provide all the information you need to reproduce an error locally.\nAnd if you still can't reproduce it, you can SSH into our VMs to debug it yourself.", title: "Debug with ease"}
               %td.title{"data-bind": "text: headline, attr: {class: 'title ' + name}"} Debug with ease
               / ko foreach: $parent.plans
               %td.tick{"data-bind": "css: featureAvailable($parent)"}
