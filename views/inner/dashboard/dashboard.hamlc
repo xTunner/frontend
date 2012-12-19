@@ -39,7 +39,7 @@
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
   .modal-header
-    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
     %h3#inviteFormLabel Invite Your Colleagues
   .modal-body
     %p To invite your friends, colleagues, and collaborators to Circle, just send them this link:
