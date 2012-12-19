@@ -30,19 +30,33 @@
               %td{"data-bind": "text: why"} For tiny teams
               %td{"data-bind": "text: why"} For growing teams
               %td{"data-bind": "text: why"} For established teams
-              %td{"data-bind": "text: why"} Enterprisy features
+              %td{"data-bind": "text: why"} Enterprisey features
               / /ko
+
+            %tr.reason
+              %td.title
+              / ko foreach: plans
+              %td{"data-bind": "text: why"} $19 / month
+              %td{"data-bind": "text: why"} $49 / month
+              %td{"data-bind": "text: why"} $149 / month
+              %td{"data-bind": "text: why"} Contact us for pricing
+
             %tr.price
               %td.title
               / ko foreach: plans
               %td
-                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Switch plan $19/mo
+                %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
+                  Start your 14 day free trial
               %td
-                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Switch plan $49/mo
+                %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
+                  Start your 14 day free trial
               %td
-                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Your current plan
+                %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
+                  Start your 14 day free trial
               %td
-                %button.btn.btn-large.btn-success{"data-bind": "text: pricingDescription, click: function () { $parent.selectPlan($data) }"} Contact us for pricing
+                %a.btn.btn-large.btn-success{href: "mailto:enterprise@circleci.com"}
+                  Contact us
+
               / /ko
             %tr.more-info.projects{"data-content": "Plans are only limited by the number of private repositories you want to test, not the number you have in GitHub. Forks are only counted once.", "data-original-title": "Private Repositories"}
               %td.title Private Repositories
