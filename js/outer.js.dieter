@@ -1,7 +1,7 @@
 [
   "./../components/knockout/build/output/knockout-latest.js"
   "./vendor/sammy-0.7.1-patched.js"
-  "./vendor/modernizr-2.6.1.js"
+  "./../components/modernizer/modernizr.js"
   "./vendor/waypoints-1.1.7.min.js"
   "./vendor/stickyMojo.js"
   "./vendor/jquery.cookie.js"
