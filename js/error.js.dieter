@@ -1,4 +1,5 @@
 [
+  "../components/jquery/jquery.js"
   "../views/error/error.hamlc"
   "../views/shared/header.hamlc"
   "../views/shared/footer.hamlc"
