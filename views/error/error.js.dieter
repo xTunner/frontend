@@ -2,6 +2,6 @@
   "./error.hamlc"
   "../shared/header.hamlc"
   "../shared/footer.hamlc"
-  "../../js/vendor/modernizr-2.5.3.js"
+  "../../components/modernizer/modernizr.js"
   "../../js/error.coffee"
 ]
