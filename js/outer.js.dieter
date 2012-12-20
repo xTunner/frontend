@@ -1,8 +1,10 @@
 [
+  "./vendor/knockout-2.1.0.js"
   "./vendor/sammy-0.7.1-patched.js"
   "./vendor/modernizr-2.6.1.js"
   "./vendor/waypoints-1.1.7.min.js"
   "./vendor/stickyMojo.js"
+  "./vendor/jquery.cookie.js"
 
   ;; use the order from the Makefile build task
   ;; prefix "../" paths with "./", because that makes the dieter regexes slightly less retarded, and avoids triggering a file-ordering bug
@@ -19,8 +21,10 @@
   "./../vendor/bootstrap/js/bootstrap-tab.js"
   "./../vendor/bootstrap/js/bootstrap-typeahead.js"
 
-
   "./../views/shared/"
   "./../views/outer/"
+  "./libs/circle/ab-tests.coffee"
+  "./ab_test_definitions.coffee"
   "./outer.coffee"
+  "./libs/circle/custom-bindings.coffee"
 ]

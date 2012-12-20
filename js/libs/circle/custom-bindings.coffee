@@ -8,6 +8,8 @@ ko.bindingHandlers.slider =
     options = valueAccessor()
     $(el).slider(options)
 
+# If you're looking for ko.bindingHandlers.ab_test, it's in lib/ab-tests.coffee
+
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 # Example usage:
 #   %a{href: "#", data-bind: "jQueryExtension: {type: 'tooltip', options: {title: myObservable}}"}
@@ -17,6 +19,8 @@ ko.bindingHandlers.jQueryExt =
     type = valueAccessor().type
     $el = $(el)
     $el[type].call($el, options)
+
+## Money custom binding
 
 # Add helper that was minified
 ieVersion = () ->
@@ -34,7 +38,7 @@ addCommas = (num) ->
   suffix = num_str.substr(i).replace(/(\d{3})(?=\d)/g, "$1" + ",")
   prefix + suffix
 
-
+# Copy of setTextContent in ko's utils
 setMoneyContent = (element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)
   if not value?
@@ -48,7 +52,7 @@ setMoneyContent = (element, textContent) ->
     element.textContent = value
 
   if (ieVersion >= 9)
-    element.style.display = element.style.display;
+    element.style.display = element.style.display
 
 ko.bindingHandlers.money =
   update: (el, valueAccessor) =>

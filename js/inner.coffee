@@ -439,7 +439,11 @@ class Build extends Obj
       if @build_time_millis()?
         Circle.time.as_duration(@build_time_millis())
       else
-        "still running"
+        if @status() == "canceled"
+          # build was canceled from the queue
+          "canceled"
+        else
+          "still running"
 
     @branch_in_words = komp =>
       return "(unknown)" unless @branch()
@@ -1403,6 +1407,7 @@ display = (template, args) ->
 class CircleViewModel extends Base
   constructor: ->
     observableCount = 0
+    @ab = (new ABTests(ab_test_definitions)).ab_tests
     @current_user = ko.observable(new User window.renderContext.current_user)
     @build = ko.observable()
     @builds = ko.observableArray()
@@ -1430,6 +1435,7 @@ class CircleViewModel extends Base
           "&filters%5B0%5D%5Battr%5D=custom_data.pr-followed" +
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
+
 
   setupPusher: () =>
     key = switch renderContext.env
