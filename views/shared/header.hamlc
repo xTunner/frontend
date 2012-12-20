@@ -19,8 +19,8 @@
           %a{ href: '/about', title: 'Learn more about Circle' }
             About
         %li
-          %a{ href: '/about#contact', title: 'Get in contact with Circle' }
-            Contact
+          %a{ href: '/pricing', title: 'View our plans and pricing' }
+            Pricing
         %li
           %a{ href: '/docs', title: 'Documentation for Circle'}
             Docs
