@@ -3,7 +3,7 @@
   "./vendor/sammy-0.7.1-patched.js"
   "./../components/modernizer/modernizr.js"
   "./vendor/stickyMojo.js"
-  "./vendor/jquery.cookie.js"
+  "../components/jquery.cookie/jquery.cookie.js"
   "./../views/shared/"
   "./../views/outer/"
   "./libs/circle/ab-tests.coffee"
