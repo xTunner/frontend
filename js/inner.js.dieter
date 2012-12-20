@@ -1,7 +1,7 @@
 [
-  "./../components/knockout/build/output/knockout-latest.js"
+  "../components/knockout/build/output/knockout-latest.js"
   "./vendor/sammy-0.7.1-patched.js"
-  "./vendor/moment-1.6.2.min.js"
+  "../components/moment/moment.js"
   "./vendor/jquery.cookie.js"
 
   ;; use the order from the Makefile build task
