@@ -1,5 +1,5 @@
 [
-  "../vendor/jasmine-1.1.0.js"
+  "../../vendor/jasmine-1.1.0.js"
   "prepare-test-runner.coffee"
   "inner-tests.coffee"
   "process-test-results.coffee"
