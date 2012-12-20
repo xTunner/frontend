@@ -229,11 +229,6 @@
         %p
           Your plan covers any number of GitHub organization or personal accounts.
           All pushes to those organizations will be tested, and will count against your concurrent and priority-builds.
-        %h3 I'd like more parallelism or concurrency?
-        %p
-          You can add more parallelism or concurrency later.
-          Parallelism costs $99 to double the speed (eg from 2x to 4x, or 4x to 8x).
-          Concurrency is $49 per extra concurrent build.
         %h3 How much concurrency do I need?
         %p
           This very much depends on the team size, frequency of pushing, and the length of your test suite.
@@ -259,6 +254,12 @@
           With Circle, you'll never have to buy machines, install plugins, refactor the test suite for speed, or spend any time on your test infrastructure.
           With Circle, you don't need to worry about your tools - just focus on the product and leave the tools to us.
       .offset1.span7
+        %h3 I'd like more parallelism or concurrency?
+        %p
+          You can add more parallelism or concurrency later.
+          Parallelism costs $99 to double the speed (eg from 2x to 4x, or 4x to 8x).
+          Concurrency is $49 per extra concurrent build.
+
         %h3 How does parallelism work? Isn't that error-prone?
         %p
           Most parallelism libraries are aimed at running on single machines, and so can be error-prone.
