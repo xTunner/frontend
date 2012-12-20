@@ -5,6 +5,7 @@
   "./vendor/waypoints-1.1.7.min.js"
   "./vendor/stickyMojo.js"
   "./vendor/jquery.cookie.js"  
+  "./vendor/md5.js"
   "./../views/shared/"
   "./../views/outer/"
   "./libs/circle/ab-tests.coffee"
