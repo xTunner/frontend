@@ -8,7 +8,7 @@
     .env-test { background-color: green; }
 
     background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
-    border-top: 4px solid #134374;
+    border-top: 4px solid @blueVeryDark;
     padding-top: 1px;
     height: 51px;
     min-width: 500px;
@@ -32,16 +32,15 @@
           border-left: 1px solid #214062;
         }
         a {
-          height: 26px;
-          line-height: 24px;
-          vertical-align: middle;
+          line-height: 24px; // keeps this nav from overflowing the box
+          font-size: 15px;
           padding: 14px 10px 11px;
           color: #fff;
           .text-shadow(1px,-2px,0px, #1B3E69);
         }
         &:hover {
-          background: #134374;
-          .box-shadow(inset 1px 1px 0 rgba(58,92,128,1));
+          background: @blueVeryDark;
+
         }
         ul {
           li {
@@ -69,10 +68,10 @@
 
       li.active {
         a {
-          background: #0d2e50;
+          background: @blueBasicallyNavy;
           font-weight: 400;
           &:hover {
-            background: #0d2e50;
+            background: @blueBasicallyNavy;
           }
         }
       }
