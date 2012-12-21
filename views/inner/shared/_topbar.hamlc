@@ -2,7 +2,6 @@
   .navbar.navbar-fixed-top
     .navbar-inner
       %a.brand{href: "/"}
-        Circle
 
       = (@crumbs or "")
 
