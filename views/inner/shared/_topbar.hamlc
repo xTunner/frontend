@@ -1,52 +1,53 @@
-.navbar.navbar-fixed-top
-  .navbar-inner
-    %a.brand{href: "/"}
-      Circle
+#topbar
+  .navbar.navbar-fixed-top
+    .navbar-inner
+      %a.brand{href: "/"}
+        Circle
 
-    = (@crumbs or "")
+      = (@crumbs or "")
 
-    %ul.nav.pull-right{data-bind: "with: current_user"}
-      %li{data-bind: "if: showEnvironment"}
-        %a{data-bind: "text: environment, css: environmentColor"}
+      %ul.nav.pull-right{data-bind: "with: current_user"}
+        %li{data-bind: "if: showEnvironment"}
+          %a{data-bind: "text: environment, css: environmentColor"}
 
-      %li.dropdown
-        %a.dropdown-toggle{data-toggle: "dropdown"}
-          %span{data-bind: "text: login"}
-          %b.caret
+        %li.dropdown
+          %a.dropdown-toggle{data-toggle: "dropdown"}
+            %span{data-bind: "text: login"}
+            %b.caret
 
-        %ul.dropdown-menu
-          %li
-            %a{href: '/account'}
-              Settings
+          %ul.dropdown-menu
+            %li
+              %a{href: '/account'}
+                Settings
 
-          %li
-            %a#logout-link{href: '/logout'}
-              Logout
-
-
-          %li.divider
-          %li
-            %a{href: "/docs", target: "_blank"}
-              Documentation
-
-          %li
-            %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
-              Support
-
-          %li
-            %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
-              Chat support
+            %li
+              %a#logout-link{href: '/logout'}
+                Logout
 
 
-          %div{data-bind: "if: admin"}
             %li.divider
             %li
-              %a{href: "/admin"} Admin
+              %a{href: "/docs", target: "_blank"}
+                Documentation
+
             %li
-              %a{href: "/admin/users"} Users
+              %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
+                Support
+
             %li
-              %a{href: "/admin/recent-builds"} Recent builds
-            %li
-              %a{href: "/admin/projects"} Projects
-            %li
-              %a{data-bind: "attr: {href: VM.intercomUserLink}"} Find project on Intercom
+              %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+                Chat support
+
+
+            %div{data-bind: "if: admin"}
+              %li.divider
+              %li
+                %a{href: "/admin"} Admin
+              %li
+                %a{href: "/admin/users"} Users
+              %li
+                %a{href: "/admin/recent-builds"} Recent builds
+              %li
+                %a{href: "/admin/projects"} Projects
+              %li
+                %a{data-bind: "attr: {href: VM.intercomUserLink}"} Find project on Intercom
