@@ -1,5 +1,8 @@
 #topbar {
   .navbar-inner {
+    @navDarkestBlue: #0d2e50;
+    @navDarkBlue:  #134374;
+
 
     /* For developers, highlight the environment */
     .env-production { background-color: red; }
@@ -8,7 +11,7 @@
     .env-test { background-color: green; }
 
     background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
-    border-top: 4px solid @blueVeryDark;
+    border-top: 4px solid @navDarkBlue;
     padding-top: 1px;
     height: 51px;
     min-width: 500px;
@@ -37,7 +40,7 @@
           .text-shadow(1px,-2px,0px, #1B3E69);
         }
         &:hover {
-          background: @blueVeryDark;
+          background: @navDarkBlue;
 
         }
         ul {
@@ -45,10 +48,6 @@
             border-left: 0px;
             border-right: 0px;
             .box-shadow(inset 1px 0 0 rgba(80,113,154, 0));
-            // border-bottom: 1px dashed #e5e5e5;
-            // &:hover {
-            //   border-color: #e5e5e5;
-            // }
             a {
               color: #1f4976;
               .text-shadow(1px,-2px,0px, rgba(1,1,1, 0));
@@ -66,10 +65,10 @@
 
       li.active {
         a {
-          background: @blueBasicallyNavy;
+          background: @navDarkestBlue;
           font-weight: 400;
           &:hover {
-            background: @blueBasicallyNavy;
+            background: @navDarkestBlue;
           }
         }
       }
