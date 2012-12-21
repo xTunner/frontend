@@ -26,7 +26,7 @@
                                data-loading-text: "Creating...",
                                data-success-text: "Created"}
 
-  %span.span8.offset2
+  %span.span8.offset1
 
     %h3 About user keys
     %p
