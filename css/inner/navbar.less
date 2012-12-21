@@ -37,35 +37,25 @@
           color: white;
           .text-shadow(1px,-2px,0px, #1B3E69);
         }
-        &:hover {
-          background: @navDarkBlue;
-        }
+        &:hover { background: @navDarkBlue; }
 
         // selected navbar element
         &.active a {
           background: @navDarkestBlue;
           font-weight: 400;
-          &:hover {
-            background: @navDarkestBlue;
-          }
         }
 
-
-        // dropdown menu
+        // dropdown menu elements
         .dropdown-menu {
-          li {
-            a {
-              color: #1f4976;
-              .text-shadow(1px,-2px,0px, rgba(1,1,1, 0));
-              &:hover {
-                color: #455c78;
-                background: #d7dce3;
-              }
+          li a {
+            color: #1f4976;
+            .text-shadow(1px,-2px,0px, rgba(1,1,1, 0));
+            &:hover {
+              color: #455c78;
+              background: #d7dce3;
             }
           }
-          li.divider:hover {
-            background: #E5E5E5;
-          }
+          li.divider:hover { background: #E5E5E5; }
         }
       }
 
