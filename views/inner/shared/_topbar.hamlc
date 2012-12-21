@@ -6,9 +6,8 @@
     = (@crumbs or "")
 
     %ul.nav.pull-right{data-bind: "with: current_user"}
-      %ul.nav{data-bind: "if: showEnvironment"}
-        %li.development
-          %a{data-bind: "text: environment, css: environmentColor"}
+      %li{data-bind: "if: showEnvironment"}
+        %a{data-bind: "text: environment, css: environmentColor"}
 
       %li.dropdown
         %a.dropdown-toggle{data-toggle: "dropdown"}
