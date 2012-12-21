@@ -58,61 +58,41 @@ circle = $.sammy "body", ->
     filename: (cx) =>
       name = cx.params.splat[0]
       if name
-        name.replace('/', '').replace('-', '_').replace(/#.*/, '')
+        name.replace(/^\//, '').replace(/\//g, '_').replace(/#.*/, '')
       else
         "docs"
 
     categories: (cx) =>
-      # build a table of contents dynamically from all the pages. DRY.
-      pages = [
-                "getting-started",
-                "manually",
-                "common-problems",
-                "configuration",
-                "config-sample",
-                "environment",
-                "faq",
-# "notifications",
-#                "api"
-              ]
       categories = {}
-      for p in pages
-        slug = p.replace("-", "_")
-        template = HAML[slug]()
-        node = $(template)
-        title = node.find('.title > h1').text().trim()
-        subtitle = node.find('.title > h4').text().trim()
-        icon = node.find('.title > h1 > i').attr('class')
-        section_nodes = node.find('.doc > .section > a')
-        sections = []
-        for s in section_nodes
-          sections.push
-            title: $(s).text().trim()
-            hash: $(s).attr("id")
-        categories[p] =
-          url: "/docs/#{p}"
-          slug: slug
-          title: title
-          subtitle: subtitle
-          icon: icon
-          sections: sections
-      categories
+      for slug of HAML
+        try
+          node = $(window.HAML[slug]())
+        catch error
+          ## meaning: can't be rendered without context. Should never be true of docs!
+          node = null
 
+        if node
+          rootCategory = node.find('.article-title h1 span.rootCategory').text().trim()
+          if rootCategory
+            ## back up from slug -> URI fragment
+            uriFragment = slug.replace(rootCategory + "-", rootCategory + "/")
+
+            categories[rootCategory] ?= []
+            categories[rootCategory].push({
+              url: "/docs/#{uriFragment}",
+              slug: slug,
+              title: node.find('.article-title h1 span.title').text().trim()
+            })
+      categories
 
     render: (cx) =>
       name = @filename cx
-      if name == 'docs'
-        $("body").attr("id","docs-page").html HAML['header'](renderContext)
-        $("body").append HAML['docs']({categories: @categories()})
-        $("body").append HAML['footer'](renderContext)
-      else
-        $("body").attr("id","docs-page").html(HAML['header'](renderContext))
-        $("body").append(HAML['title'](renderContext))
-        $("#title h1").text("Documentation")
-        $("body").append("<div id='content'><section class='article'></section></div>")
-        $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
-        $("body").append(HAML['footer'](renderContext))
-
+      $("body").attr("id","docs-page").html(HAML['header'](renderContext))
+      $("body").append(HAML['title'](renderContext))
+      $("#title h1").text("Documentation")
+      $("body").append("<div id='content'><section class='article'></section></div>")
+      $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
+      $("body").append(HAML['footer'](renderContext))
 
   # Pages
   home = new Home("home", "Continuous Integration made easy")
@@ -197,16 +177,16 @@ circle = $.sammy "body", ->
     _kmq.push(['record', "showed join link"])
 
   # Navigation
-  @get "/docs(.*)", (cx) -> docs.display(cx)
-  @get "/about.*", (cx) -> about.display(cx)
-  @get "/privacy.*", (cx) -> privacy.display(cx)
-  @get "/pricing.*", (cx) -> pricing.display(cx)
-  @get "/", (cx) -> home.display(cx)
-  @get("/gh/.*", (cx) =>
+  @get "^/docs(.*)", (cx) -> docs.display(cx)
+  @get "^/about.*", (cx) -> about.display(cx)
+  @get "^/privacy.*", (cx) -> privacy.display(cx)
+  @get "^/pricing.*", (cx) -> pricing.display(cx)
+  @get "^/$", (cx) -> home.display(cx)
+  @get("^/gh/.*", (cx) =>
     @unload()
     window.location = cx.path)
-  @post "/notify", -> true # allow to propagate
-  @post "/about/contact", -> true # allow to propagate
+  @post "^/notify", -> true # allow to propagate
+  @post "^/about/contact", -> true # allow to propagate
 
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9

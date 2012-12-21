@@ -1,0 +1,6 @@
+%article
+  = HAML['article_title']({rootCategory: "continuous_deployment", title: "Continuous Deployment with Heroku"})
+
+  .doc
+    %p
+      blah blah

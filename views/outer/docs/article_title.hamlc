@@ -1,0 +1,10 @@
+.article-title
+  %h1
+    - if @rootCategory
+      %span{class: "rootCategory", style: "display: none"}= @rootCategory
+    %span{class: "title"}= @title
+  %p
+    Last Updated:
+    = @lastUpdated
+  %h4= @subtitle
+  %hr
