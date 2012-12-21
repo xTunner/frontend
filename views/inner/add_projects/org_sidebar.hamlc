@@ -1,4 +1,4 @@
-#org-sidebar.nav.nav-list.affix
+#org-sidebar.nav.nav-list.affix.span3
   %li.nav-header
     Organizations
 

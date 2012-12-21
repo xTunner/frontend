@@ -4,13 +4,14 @@
   .row-fluid
     .span3
       = HAML['org_sidebar']({})
-    .row-fluid.span9
-      %h1
-        Manage Repos
-        %button.btn.btn-success.pull-right{data-bind: "click: window.VM.goDashboard"}
-          Done Managing Repos &rarr;
-    .row-fluid.span9
-      %div{data-bind: "if: showLoading"}
-        %img{src: "/img/ajax-loader.gif"}
-      %div{data-bind: "ifnot: showLoading"}
-        = HAML['add_projects_main']({})
+    .span9
+      .row-fluid
+        %h1
+          Manage Repos
+          %button.btn.btn-success.pull-right{data-bind: "click: window.VM.goDashboard"}
+            Done Managing Repos &rarr;
+      .row-fluid
+        %div{data-bind: "if: showLoading"}
+          %img{src: "/img/ajax-loader.gif"}
+        %div{data-bind: "ifnot: showLoading"}
+          = HAML['add_projects_main']({})
