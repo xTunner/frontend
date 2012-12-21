@@ -7,10 +7,10 @@
 
       %ul.nav.pull-right{data-bind: "with: current_user"}
         %li{data-bind: "if: showEnvironment"}
-          %a{data-bind: "text: environment, css: environmentColor"}
+          %a{data-bind: "text: environment, css: environmentColor", href: "#"}
 
         %li.dropdown
-          %a.dropdown-toggle{data-toggle: "dropdown"}
+          %a.dropdown-toggle{data-toggle: "dropdown", href: "#"}
             %span{data-bind: "text: login"}
             %b.caret
 
