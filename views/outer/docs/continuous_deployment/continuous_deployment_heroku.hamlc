@@ -1,7 +1,10 @@
 %article
-  = subcategory_of "continuous_deployment"
-  = HAML['article_title']({title: "Continuous Deployment with Heroku"})
+  - @subcategory_of = "continuous_deployment"
+
+  = HAML['article_title']({title: "Continuous Deployment to Heroku", subtitle: "", icon: "icon-cogs"})
 
   .doc
     %p
-      blah blah
+      This is an introductory article about continuous deployment to Heroku.
+
+    = HAML['article_list']({tags: ['heroku'], find_articles_by_tag: @find_articles_by_tag})

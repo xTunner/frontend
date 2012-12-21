@@ -1,0 +1,12 @@
+%article_list
+  %p
+    - if @find_articles_by_tag
+      - for tag in @tags
+        - articles = @find_articles_by_tag(tag)
+        - if articles
+          %p
+            These are articles about
+            = tag
+            :
+          - for article in articles
+            %a{ href: "#{article.url}" } = article.title

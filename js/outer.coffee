@@ -14,18 +14,6 @@ class CircleViewModel
 
 window.CircleVM = new CircleViewModel
 
-subcategory_of = (rootCategory) ->
-  # simple, but kind of hacky, implementation
-  "<span class='rootCategory' style='display: none;'>" + rootCategory + "</span>"
-
-window.subcategory_of = subcategory_of
-
-article_tag = (tag) ->
-  # simple but hacky again
-  "<span class='article_tag' style='display: none;'>" + tag + "</span>"
-
-window.article_tag = article_tag
-
 circle = $.sammy "body", ->
 
   # Page
@@ -74,28 +62,62 @@ circle = $.sammy "body", ->
       else
         "docs"
 
+    article_info: (slug, subcategory_of = null) =>
+      if subcategory_of
+        uriFragment = slug.replace(subcategory_of + "_", subcategory_of + "/")
+      else
+        uriFragment = slug
+      node = $(window.HAML[slug]())
+      {
+        url: "/docs/#{uriFragment}",
+        slug: slug,
+        title: node.find('.title > h1').text().trim()
+        subtitle: node.find('.title > h4').text().trim()
+        icon: node.find('.title > h1 > i').attr('class')
+      }
+
     categories: (cx) =>
       categories = {}
       for slug of HAML
+        subcategory_of = null
+
         try
-          node = $(window.HAML[slug]())
+          ## a bit of a hack: subcategory templates are expected to *write* into their context,
+          ## and here we read what's written.
+          context = {}
+          window.HAML[slug](context)
+          subcategory_of = context['subcategory_of']
         catch error
-          ## meaning: can't be rendered without context. Should never be true of docs!
-          node = null
+          ## meaning: can't be rendered without more context. Should never be true of docs!
+          subcategory_of = null
 
-        if node
-          rootCategory = node.find('.rootCategory').text().trim()
-          if rootCategory
-            ## back up from slug -> URI fragment
-            uriFragment = slug.replace(rootCategory + "_", rootCategory + "/")
+        if subcategory_of
+          ## back up from slug -> URI fragment
+          uriFragment = slug.replace(subcategory_of + "_", subcategory_of + "/")
 
-            categories[rootCategory] ?= []
-            categories[rootCategory].push({
-              url: "/docs/#{uriFragment}",
-              slug: slug,
-              title: node.find('.article-title h1 span.title').text().trim()
-            })
+          categories[subcategory_of] ?= []
+          categories[subcategory_of].push(@article_info(slug, subcategory_of))
       categories
+
+    find_articles_by_tag: (tag) =>
+      articles = []
+      for slug of HAML
+        article_tags = null
+
+        try
+          ## a bit of a hack: tagged article templates are expected to *write* into their context,
+          ## and here we read what's written.
+          context = {}
+          window.HAML[slug](context)
+          article_tags = context['article_tags']
+        catch error
+          ## meaning: can't be rendered without more context. Should never be true of docs!
+          article_tags = null
+
+        if article_tags
+          if tag in article_tags
+            articles.push(@article_info slug)
+      articles
 
     render: (cx) =>
       name = @filename cx
@@ -103,7 +125,9 @@ circle = $.sammy "body", ->
       $("body").append(HAML['title'](renderContext))
       $("#title h1").text("Documentation")
       $("body").append("<div id='content'><section class='article'></section></div>")
-      $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
+      $(".article")
+        .append(HAML['categories']({categories: @categories(), page: name}))
+        .append(HAML[name]({find_articles_by_tag: @find_articles_by_tag})) ## XXX: merge w/renderContext?
       $("body").append(HAML['footer'](renderContext))
 
   # Pages

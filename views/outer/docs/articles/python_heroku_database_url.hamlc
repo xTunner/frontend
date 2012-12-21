@@ -1,7 +1,10 @@
 %article
-  = article_tag "heroku"
-  = article_tag "python"
-  = HAML['article_title']({title: "Using DATABASE_URL to Configure Your Django App"})
+
+  - @article_tags = ['heroku', 'python']
+
+  = HAML['article_title']({title: "Using DATABASE_URL to Configure Your Django App", subtitle: "", icon: "icon-cogs"})
+
   .doc
     %p
-      something something DATABASE_URL yadda
+      This is an article about setting DATABASE_URL to simplify configuration of a Heroku-hosted
+      django app on Circle.
