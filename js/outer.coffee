@@ -14,6 +14,18 @@ class CircleViewModel
 
 window.CircleVM = new CircleViewModel
 
+subcategory_of = (rootCategory) ->
+  # simple, but kind of hacky, implementation
+  "<span class='rootCategory' style='display: none;'>" + rootCategory + "</span>"
+
+window.subcategory_of = subcategory_of
+
+article_tag = (tag) ->
+  # simple but hacky again
+  "<span class='article_tag' style='display: none;'>" + tag + "</span>"
+
+window.article_tag = article_tag
+
 circle = $.sammy "body", ->
 
   # Page
@@ -72,10 +84,10 @@ circle = $.sammy "body", ->
           node = null
 
         if node
-          rootCategory = node.find('.article-title h1 span.rootCategory').text().trim()
+          rootCategory = node.find('.rootCategory').text().trim()
           if rootCategory
             ## back up from slug -> URI fragment
-            uriFragment = slug.replace(rootCategory + "-", rootCategory + "/")
+            uriFragment = slug.replace(rootCategory + "_", rootCategory + "/")
 
             categories[rootCategory] ?= []
             categories[rootCategory].push({

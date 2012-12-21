@@ -1,0 +1,7 @@
+%article
+  = article_tag "heroku"
+  = article_tag "python"
+  = HAML['article_title']({title: "Using DATABASE_URL to Configure Your Django App"})
+  .doc
+    %p
+      something something DATABASE_URL yadda

@@ -1,5 +1,6 @@
 %article
-  = HAML['article_title']({rootCategory: "continuous_deployment", title: "Continuous Deployment with Heroku"})
+  = subcategory_of "continuous_deployment"
+  = HAML['article_title']({title: "Continuous Deployment with Heroku"})
 
   .doc
     %p

@@ -1,0 +1,7 @@
+%article
+  = subcategory_of "languages"
+  = HAML['article_title']({title: "Python"})
+
+  .doc
+    %p
+      significant whitespace, yo
