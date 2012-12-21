@@ -1,5 +1,5 @@
 %article
-  = HAML['article_title']({title: "Documentation"})
+  = HAML['article_title']({title: "Documentation", subtitle: "", icon: "icon-cogs"})
 
   .doc
     How can we help you?
