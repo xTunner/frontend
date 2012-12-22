@@ -61,13 +61,13 @@
 
               %td
                 %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
-                  Start your 14 day free trial
+                  Start your 14-day free trial
               %td
                 %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
-                  Start your 14 day free trial
+                  Start your 14-day free trial
               %td
                 %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
-                  Start your 14 day free trial
+                  Start your 14-day free trial
               %td
                 %a.btn.btn-large.btn-success{href: "mailto:enterprise@circleci.com"}
                   Contact us
