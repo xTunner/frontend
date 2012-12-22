@@ -1,6 +1,6 @@
 [
   "../components/jquery/jquery.js"
-  "./vendor/md5.js"
+  "../vendor/md5.js"
   "../components/knockout/build/output/knockout-latest.js"
   "../components/sammy/lib/sammy.js"
   "../components/modernizr/modernizr.js"
