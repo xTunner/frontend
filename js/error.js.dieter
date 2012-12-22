@@ -1,8 +1,8 @@
 [
-  "../components/jquery/jquery.js"
+  "../../components/jquery/jquery.js"
   "../views/error/error.hamlc"
   "../views/shared/header.hamlc"
   "../views/shared/footer.hamlc"
-  "../components/modernizer/modernizr.js"
+  "../../components/modernizer/modernizr.js"
   "./error.coffee"
 ]
