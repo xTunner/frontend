@@ -1,5 +1,5 @@
 %article
-  = HAML['article_title']({icon: "icon-list-alt", title: 'FAQ', lastUpdated: "Aug 1, 2012", subtitle: "Frequently asked questions, and questions which should be asked more frequently"})
+  = HAML['article_title']({icon: "icon-question-sign", title: 'FAQ', lastUpdated: "Aug 1, 2012", subtitle: "Frequently asked questions, and questions which should be asked more frequently"})
 
   .doc
 
