@@ -202,7 +202,7 @@
               %td.tick
               %td.tick
 
-            %tr.features.more-info{"data-content": "If your tests work, deploy straight to staging, production, or a QA server.\nCurrently supporting Heroku, with support for Capistrano, Fabric, custom commands and other PaaSs coming soon.\nLet us know what you need.", title: "Continuous Deployment"}
+            %tr.features.more-info{"data-content": "If your tests work, deploy straight to staging, production, or a QA server.\nDeploy anywhere, including Heroku, DotCloud, EngineYard, etc, or using Capistrano, Fabric or custom commands.", title: "Continuous Deployment"}
               %td.title Continuous Deployment
 
               %td.tick
@@ -218,7 +218,7 @@
               %td.tick
               %td.tick
 
-            %tr.features.more-info{"data-content": "You don't care what John did in his feature branch, but you care what gets pushed to master.\nWho cares if the tests pass yet again, you only want notifications when they fail.\nCircle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire and more.", "data-original-title": "Personalized notifications"}
+            %tr.features.more-info{"data-content": "You don't care what John did in his feature branch, but you care what gets pushed to master.\nWho cares if the tests pass yet again, you only want notifications when they fail.\nCircle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, Flowdock, or using webhooks.", "data-original-title": "Personalized notifications"}
               %td.title Personalized notifications
 
               %td.tick
