@@ -1117,7 +1117,7 @@ class User extends Obj
   isPaying: () =>
     @plan?
 
-class window.Plan extends Obj
+class Plan extends Obj
   constructor: ->
     super
 
@@ -1383,7 +1383,6 @@ class Billing extends Obj
 
   loadPlans: () =>
     $.getJSON '/api/v1/user/plans', (data) =>
-      window.data = data
       @plans((new Plan(d) for d in data))
 
   loadPlanFeatures: () =>
