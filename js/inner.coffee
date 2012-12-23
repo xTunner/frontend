@@ -1424,7 +1424,7 @@ class CircleViewModel extends Base
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
     observableCount += 8 # are we still doing this?
 
-    #@setupPusher()
+    @setupPusher()
 
     @intercomUserLink = komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
