@@ -714,7 +714,6 @@ class Project extends Obj
         plans = VM.billing().plans().filter (p) =>
           p.id is @paying_user().plan_id()
         p = plans[0]
-        p.max_parallelism = 8
         new Plan plans[0]
       else
         new Plan
@@ -1118,7 +1117,7 @@ class User extends Obj
   isPaying: () =>
     @plan?
 
-class Plan extends Obj
+class window.Plan extends Obj
   constructor: ->
     super
 
@@ -1384,6 +1383,7 @@ class Billing extends Obj
 
   loadPlans: () =>
     $.getJSON '/api/v1/user/plans', (data) =>
+      window.data = data
       @plans((new Plan(d) for d in data))
 
   loadPlanFeatures: () =>
@@ -1424,7 +1424,7 @@ class CircleViewModel extends Base
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
     observableCount += 8 # are we still doing this?
 
-    @setupPusher()
+    #@setupPusher()
 
     @intercomUserLink = komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
