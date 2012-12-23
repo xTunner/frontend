@@ -10,8 +10,8 @@
   "../vendor/md5.js"
   "../vendor/stickyMojo.js"
 
-  "./../views/shared/"
-  "./../views/outer/"
+  "../views/shared/"
+  "../views/outer/"
 
   "./libs/circle/custom-bindings.coffee"
   "./libs/circle/ab-tests.coffee"
