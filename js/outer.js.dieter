@@ -12,6 +12,7 @@
 
   "../views/shared/"
   "../views/outer/"
+  "../views/error/"
 
   "./libs/circle/custom-bindings.coffee"
   "./libs/circle/ab-tests.coffee"
