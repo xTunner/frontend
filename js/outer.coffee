@@ -217,7 +217,3 @@ if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
 # Run the application
 $ ->
   circle.run window.location.pathname.replace(/\/$/, '')
-  setTimeout(  # give KM a short window to run
-    ->
-      window.too_late_for_kissmetrics = true
-    , 20)
