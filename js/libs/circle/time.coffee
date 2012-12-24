@@ -1,5 +1,4 @@
-@Circle = {} unless @Circle
-@Circle.time =
+@CI.time =
   yesterday: () =>
     moment(Date.now()).subtract("days", 1).sod()
 
