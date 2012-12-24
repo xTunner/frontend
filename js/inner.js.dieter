@@ -1,5 +1,7 @@
 [
+  "../../components/modernizr/modernizr.js"
   "../../components/jquery/jquery.js"
+  "../../components/jquery-waypoints/waypoints.js"
   "../../components/jquery.cookie/jquery.cookie.js"
   "../../components/knockout/build/output/knockout-latest.js"
   "../../components/sammy/lib/sammy.js"
@@ -8,13 +10,17 @@
   "./bootstrap.js.dieter"
 
   "../vendor/md5.js"
+  "../vendor/stickyMojo.js"
 
   "./../views/inner/"
+  "../views/shared/"
+  "../views/outer/"
+  "../views/error/"
 
   "./libs/circle/time.coffee"
   "./libs/circle/custom-bindings.coffee"
   "./libs/circle/ab-tests.coffee"
-
   "./ab_test_definitions.coffee"
+
   "./inner.coffee"
 ]
