@@ -83,7 +83,7 @@
       and by removing Circle's <i>Deploy Keys</i> and <i>Service Hooks</i> from your repositories' <i>Admin</i> pages.
 
     %p
-      While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" -- Circle gets permission to access all of a user's repositories or none of them.
+      While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" &mdash; Circle gets permission to access all of a user's repositories or none of them.
       We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term.
       Please
       %a{href: "https://github.com/contact"} contact GitHub
