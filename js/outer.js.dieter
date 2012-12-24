@@ -18,6 +18,7 @@
   "../views/outer/"
   "../views/error/"
 
+  "./libs/circle/module_setup.coffee"
   "./libs/circle/time.coffee"
   "./libs/circle/custom-bindings.coffee"
   "./libs/circle/ab-tests.coffee"
