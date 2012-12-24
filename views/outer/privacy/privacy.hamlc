@@ -196,7 +196,6 @@
         %li
           %a{href: "https://kissmetrics.com"} KissMetrics
           is used for SaaS marketing, including A/B testing, funnel tracking, and other conversion-rate optimization techniques.
-
           See
           %a{href: "http://www.kissmetrics.com/user-privacy"} KissMetrics' privacy policy
           for more detail.
@@ -213,6 +212,9 @@
     #changelog#privacy-changelog
       %h3 Change log:
       %ul
+        %li
+          %b Dec 22, 2012:
+          Include KissMetrics and their privacy policy. Expand Intercom discussion.
         %li
           %b March 26, 2012:
           Initial version.
