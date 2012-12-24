@@ -121,9 +121,7 @@ circle = $.sammy "body", ->
       $("pre code").each (i, e) => hljs.highlightBlock e
 
   placeholder = =>
-    if !Modernizr.input.placeholder
-      $.getScript renderContext.assetsRoot + "/js/vendor/jquery.placeholder.js", =>
-        $("input, textarea").placeholder()
+    $("input, textarea").placeholder()
 
   follow = =>
     $("#twitter-follow-template-div").empty()
