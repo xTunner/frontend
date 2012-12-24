@@ -1,13 +1,3 @@
-queryParams = () ->
-  res = {}
-  params = window.location.search.substring(1).split("&")
-  for p in params
-    [k,v] = p.split("=")
-    res[k] = v
-  res
-
-window.queryParams = queryParams
-
 class CircleViewModel
   constructor: ->
     @ab = (new ABTests(ab_test_definitions)).ab_tests
