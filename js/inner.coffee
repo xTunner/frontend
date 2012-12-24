@@ -1,5 +1,3 @@
-window.observableCount = 0
-
 log2 = (v) ->
   Math.log(v) / Math.log(2)
 
@@ -57,7 +55,6 @@ ko.observableArray["fn"].setIndex = (index, newItem) ->
   result
 
 komp = (args...) =>
-  observableCount += 1
   ko.computed args...
 
 ansiToHtml = (str) ->
@@ -149,7 +146,6 @@ class Obj
   observables: () => {}
 
   observable: (obj) ->
-    observableCount += 1
     if $.isArray obj
       ko.observableArray obj
     else
@@ -1404,7 +1400,6 @@ display = (template, args) ->
 
 class CircleViewModel extends Base
   constructor: ->
-    observableCount = 0
     @ab = (new ABTests(ab_test_definitions)).ab_tests
     @current_user = ko.observable(new User window.renderContext.current_user)
     @build = ko.observable()
@@ -1420,7 +1415,6 @@ class CircleViewModel extends Base
     @refreshing_projects = ko.observable(false);
     @max_possible_parallelism = ko.observable(24);
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
-    observableCount += 8 # are we still doing this?
 
     @setupPusher()
 
