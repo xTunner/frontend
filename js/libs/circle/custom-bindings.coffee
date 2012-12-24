@@ -8,7 +8,6 @@ ko.bindingHandlers.slider =
     options = valueAccessor()
     $(el).slider(options)
 
-# If you're looking for ko.bindingHandlers.ab_test, it's in lib/ab-tests.coffee
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 # Example usage:
