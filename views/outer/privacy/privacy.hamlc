@@ -32,7 +32,8 @@
       in their repositories.
 
     %p
-      Currently, only the founders have the ability to check out your code, though senior employees will in the future.
+      Currently, only key employees have the ability to check out your code, including the founders and senior engineers.
+      All of these employees are located in the US.
       To reiterate, we would only do so in response to a support request, with explicit permission.
       Contractors will never be given access to customer code.
 
@@ -131,6 +132,9 @@
       #changelog#security-changelog
         %h3 Change log:
         %ul
+          %li
+            %b Dec 22, 2012:
+            We now have employees.
           %li
             %b July 3, 2012:
             Clarified that only tested project are analyzed.
