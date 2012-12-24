@@ -179,11 +179,26 @@
           for a detailed discussion of how they may access this.
 
         %li
-          %a{href: "https://intercom.io"} Intercom
-          provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
-          Intercom uses this information in order to provide their service, but does not share it otherwise.
+          %p
+            %a{href: "https://intercom.io"} Intercom
+            provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
+            Intercom uses this information in order to provide their service, but does not share it otherwise.
+            See
+            %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
+            for more detail.
+
+          %p
+            We also use Intercom for our support system, including the friendly "Help" button used throughout Circle, and all support via the site goes through Intercom. To avoid this, you may contact us directly through any medium on the
+            = succeed ".", ->
+              %a{href: "/about#contact"} contact page
+
+
+        %li
+          %a{href: "https://kissmetrics.com"} KissMetrics
+          is used for SaaS marketing, including A/B testing, funnel tracking, and other conversion-rate optimization techniques.
+
           See
-          %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
+          %a{href: "http://www.kissmetrics.com/user-privacy"} KissMetrics' privacy policy
           for more detail.
 
         %li
@@ -195,9 +210,9 @@
           discusses how they use this information.
 
 
-      #changelog#privacy-changelog
-        %h3 Change log:
-        %ul
-          %li
-            %b March 26, 2012:
-            Initial version.
+    #changelog#privacy-changelog
+      %h3 Change log:
+      %ul
+        %li
+          %b March 26, 2012:
+          Initial version.
