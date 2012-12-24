@@ -168,6 +168,7 @@ circle = $.sammy "body", ->
       delay: 0
       trigger: "hover"
       selector: ".more-info"
+    follow()
 
 
   # Twitter Follow
