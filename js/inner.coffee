@@ -1386,16 +1386,15 @@ class Billing extends Obj
       @plans((new Plan(d) for d in data))
 
   loadPlanFeatures: () =>
-    $.getJSON '/api/v1/user/plan-features', (data) =>
-      @planFeatures(data)
-      $('html').popover
-        html: true
-        delay: 0
-        # this will break when we change bootstraps! take the new template from bootstrap.js
-        template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>'
-        placement: "bottom"
-        trigger: "hover"
-        selector: ".more-info"
+    @planFeatures(renderContext.pricingFeatures)
+    $('html').popover
+      html: true
+      delay: 0
+      # this will break when we change bootstraps! take the new template from bootstrap.js
+      template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>'
+      placement: "bottom"
+      trigger: "hover"
+      selector: ".more-info"
 
 
 display = (template, args) ->
