@@ -2,7 +2,7 @@
 #   You can't change the options once they're set, you need to define a new test
 #
 # Example setup in viewModel:
-#   @ab = new(ABTests({daniel_test: ["option1", "option2"]})).ab_tests
+#   @ab = new(CI.ABTests({daniel_test: ["option1", "option2"]})).ab_tests
 #
 # Example usage in view:
 #   %p{href: "#", data-bind: "if: ab().daniel_test == true"}
@@ -10,14 +10,11 @@
 #   %p{href: "#", data-bind: "if: ab().daniel_test == false"}
 #     This is the text that will show up if option is set to false
 
-exports = this
-
 randInt = (n) ->
   Math.floor(Math.random() * n)
 
-class exports.ABTests
-  constructor: (test_definitions, options) ->
-    options or= {}
+CI.ABTests = class ABTests
+  constructor: (test_definitions, options={}) ->
 
     @cookie_name = options.cookie_name || "ab_test_user_seed"
 

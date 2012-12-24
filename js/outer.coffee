@@ -1,6 +1,6 @@
 class CircleViewModel
   constructor: ->
-    @ab = (new ABTests(ab_test_definitions)).ab_tests
+    @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
 
 window.CircleVM = new CircleViewModel
 
