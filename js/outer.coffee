@@ -113,12 +113,9 @@ circle = $.sammy "body", ->
 
   # Define Libs
   highlight = =>
-    if !hljs?
-      $.getScript renderContext.assetsRoot + "/js/vendor/highlight.pack.js", =>
-        $("pre code").each (i, e) => hljs.highlightBlock e
-
-    else
-      $("pre code").each (i, e) => hljs.highlightBlock e
+    # Not happy with how this looks (esp since it doesnt support yaml). Rethinking.
+    #$("pre code").each (i, e) =>
+    #  hljs.highlightBlock e
 
   placeholder = =>
     $("input, textarea").placeholder()
