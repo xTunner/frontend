@@ -1,4 +1,4 @@
-@CI.time =
+CI.time =
   yesterday: () =>
     moment(Date.now()).subtract("days", 1).sod()
 
@@ -6,7 +6,7 @@
   as_time_since: (time_string) =>
     date = moment(time_string)
     now = moment(Date.now())
-    yesterday = @Circle.time.yesterday()
+    yesterday = CI.time.yesterday()
 
     days = now.diff date, "days"
     hours = now.diff date, "hours"

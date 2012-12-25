@@ -243,7 +243,7 @@ class ActionLog extends Obj
       "#{@start_time()} to #{@end_time()}"
 
     @duration = komp =>
-      @CI.time.as_duration(@run_time_millis())
+      CI.time.as_duration(@run_time_millis())
 
     @sourceText = komp =>
       @source()
@@ -426,14 +426,14 @@ class Build extends Obj
 
     @pretty_start_time = komp =>
       if @start_time()
-        @CI.time.as_time_since(@start_time())
+        CI.time.as_time_since(@start_time())
 
     @previous_build = komp =>
       @previous()? and @previous().build_num
 
     @duration = komp () =>
       if @build_time_millis()?
-        @CI.time.as_duration(@build_time_millis())
+        CI.time.as_duration(@build_time_millis())
       else
         if @status() == "canceled"
           # build was canceled from the queue
