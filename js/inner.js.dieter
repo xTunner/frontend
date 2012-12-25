@@ -18,10 +18,10 @@
   "../views/outer/"
   "../views/error/"
 
-  "./libs/circle/module_setup.coffee"
-  "./libs/circle/time.coffee"
-  "./libs/circle/custom-bindings.coffee"
-  "./libs/circle/ab-tests.coffee"
+  "./libs/module_setup.coffee"
+  "./libs/time.coffee"
+  "./libs/custom-bindings.coffee"
+  "./libs/ab-tests.coffee"
   "./ab_test_definitions.coffee"
 
   "./inner.coffee"
