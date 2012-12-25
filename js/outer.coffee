@@ -1,8 +1,8 @@
-class CircleViewModel
+class OuterViewModel
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
 
-window.CircleVM = new CircleViewModel
+window.OuterVM = new OuterViewModel
 
 circle = $.sammy "body", ->
 
@@ -22,7 +22,7 @@ circle = $.sammy "body", ->
       # Fetch page-specific libraries
       @lib() if @lib?
 
-      ko.applyBindings(CircleVM)
+      ko.applyBindings(OuterVM)
 
     render: (cx) =>
       $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
