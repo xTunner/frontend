@@ -248,8 +248,6 @@ circle = $.sammy "body", ->
       $("body").append HAML['footer'](renderContext)
 
 
->>>>>>> master
-
 # Global polyfills
 if $.browser.msie and $.browser.version > 6 and $.browser.version < 9
   $.getScript(renderContext.assetsRoot + "/js/vendor/selectivizr-1.0.2.js")
