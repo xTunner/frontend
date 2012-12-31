@@ -1,5 +1,5 @@
 %article
-  = HAML['article_title']({icon: "icon-list-alt", title: 'Sample circle.yml file', lastUpdated: "Aug 18, 2012", subtitle: "Avoid reading docs by copying from our example"})
+  = HAML['article_title']({icon: "icon-file", title: 'Sample circle.yml file', lastUpdated: "Aug 18, 2012", subtitle: "Avoid reading docs by copying from our example"})
 
   .doc
     = HAML['heading']({title: "Overview", hash: "overview"})

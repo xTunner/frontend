@@ -714,7 +714,6 @@ class Project extends Obj
         plans = VM.billing().plans().filter (p) =>
           p.id is @paying_user().plan_id()
         p = plans[0]
-        p.max_parallelism = 8
         new Plan plans[0]
       else
         new Plan
@@ -1393,7 +1392,7 @@ class Billing extends Obj
         html: true
         delay: 0
         # this will break when we change bootstraps! take the new template from bootstrap.js
-        template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+        template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>'
         placement: "bottom"
         trigger: "hover"
         selector: ".more-info"

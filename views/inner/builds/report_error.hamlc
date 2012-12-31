@@ -33,7 +33,7 @@
   .row
     .offset2.span12
       .alert.alert-danger
-        Looks like we had a bug in our infrastructure.
+        Looks like we had a bug in our infrastructure, or that of our providers (generally Github or AWS).
         We should have automatically retried this build.
         We've been alerted of the issue and are almost certainly looking into it, please
         = HAML['contact_us_inner']()

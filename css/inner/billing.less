@@ -5,7 +5,15 @@
   font-size: 14px;
   line-height: 18px;
 
- // for the FAQ
+  // 14 day free trial button
+  a.btn {
+    width: 160px;
+    font-weight: bold;
+    line-height: 22px;
+    padding: 5px 14px 7px 14px;
+  }
+
+  // for the FAQ
   h2 { color: #366AA4; }
   h3 { line-height: 36px; }
   h2, h3 {
@@ -98,8 +106,6 @@
       border-bottom: 0px;
    }
 
-   tr { border-bottom: 1px solid hsla(214, 28%, 95%, 0.3) }
-
    tr.name > td {
       padding: 10px;
       font-size: 36px;
@@ -139,12 +145,11 @@
 
 // Customize bootstrap
 .billing-popover {
-  .popover-inner {
-    width: 500px;
-  }
+  width: 450px;
   .popover-title {
+    padding-top: 4px;
+    padding-bottom: 4px;
     background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
-    font-weight: normal;
     color: white;
   }
 }
