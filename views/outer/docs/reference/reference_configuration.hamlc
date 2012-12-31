@@ -1,4 +1,6 @@
 %article
+  - @subcategory_of = "reference"
+
   = HAML['article_title']({icon: "icon-book", title: 'Configuring Circle', lastUpdated: "Aug 1, 2012", subtitle: "Tweak almost any setting you need"})
 
   .doc
