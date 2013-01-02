@@ -1,0 +1,7 @@
+%article
+  - @subcategory_of = "troubleshooting"
+
+  = HAML['article_title']({title: "Ruby", subtitle: "", icon: "icon-cogs"})
+
+  .doc
+    = HAML['article_list']({tags: ['ruby'], find_articles_by_tag: @find_articles_by_tag})

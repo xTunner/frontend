@@ -1,0 +1,12 @@
+%article
+  - @article_tags = ['common_problems']
+
+  = HAML['article_title']({title: "Circle uses the wrong Ruby version"})
+
+  .doc
+    %p
+      We infer your Ruby version from your .rvmrc.
+      If you don't have a .rvmrc file, we'll use Ruby 1.9.2 or 1.8.7, whichever we think is best.
+      You can
+      %a{href: "/docs/configuration#ruby-version"} control the version
+      if we got it wrong.

@@ -626,3 +626,5 @@
       If you need to tweak something that isn't currently possible, please
       = HAML["contact_us"]()
       and we'll figure something out.
+
+    = HAML['article_list']({tags: ['config_sample'], find_articles_by_tag: @find_articles_by_tag})

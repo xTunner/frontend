@@ -1,10 +1,7 @@
 %article
-  - @subcategory_of = "languages"
+  - @subcategory_of = "troubleshooting"
 
   = HAML['article_title']({title: "Python", subtitle: "", icon: "icon-cogs"})
 
   .doc
-    %p
-      This is an article about using Python with CircleCI.
-
     = HAML['article_list']({tags: ['python'], find_articles_by_tag: @find_articles_by_tag})
