@@ -55,6 +55,75 @@ circle = $.sammy "body", ->
 
   # Doc
   class Docs extends Page
+    rewrite_old_name: (name) =>
+      console.log name
+      switch name
+        when "/configuration" then "/reference/configuration"
+        when "/configuration#overview" then "/reference/configuration#overview"
+        when "/configuration#phases" then "/reference/configuration#phases"
+        when "/configuration#machine" then "/reference/configuration#machine"
+        when "/configuration#checkout" then "/reference/configuration#checkout"
+        when "/configuration#dependencies" then "/reference/configuration#dependencies"
+        when "/configuration#database" then "/reference/configuration#database"
+        when "/configuration#test" then "/reference/configuration#test"
+        when "/configuration#notify" then "/reference/configuration#notify"
+        when "/configuration#deployment" then "/reference/configuration#deployment"
+
+        when "/config-sample" then "/config_sample"
+        when "/config-sample#overview" then "/config_sample#overview"
+        when "/config-sample#sample" then "/config_sample#sample"
+
+        when "/common-problems" then "/troubleshooting/common_problems"
+        when "/common-problems#intro" then "/troubleshooting/common_problems"
+        when "/common-problems#file-ordering" then "/file_ordering"
+        when "/common-problems#missing-log-dir" then "/missing_log_dir"
+        when "/common-problems#missing-file" then "/missing_file"
+        when "/common-problems#time-day" then "/time_day"
+        when "/common-problems#time-seconds" then "/time_seconds"
+        when "/common-problems#requires-admin" then "/requires_admin"
+        when "/common-problems#oom" then "/oom"
+        when "/common-problems#wrong-ruby-version" then "/wrong_ruby_version"
+        when "/common-problems#dont-run" then "/dont_run"
+        when "/common-problems#git-bundle-install" then "/git_bundle_install"
+        when "/common-problems#git-pip-install" then "/git_pip_install"
+        when "/common-problems#wrong-commands" then "/wrong_commands"
+        when "/common-problems#bundler-latest" then "/bundler_latest"
+        when "/common-problems#capybara-timeout" then "/capybara_timeout"
+        when "/common-problems#clojure-12" then "/clojure_12"
+
+        when "/environment" then "/reference/environment"
+        when "/environment#linux" then "/reference/environment#linux"
+        when "/environment#env-vars" then "/reference/environment#env-vars"
+        when "/environment#browsers" then "/reference/environment#browsers"
+        when "/environment#languages" then "/reference/environment#languages"
+        when "/environment#databases" then "/reference/environment#databases"
+
+        when "/faq" then "/troubleshooting/common_problems"
+        when "/faq#permissions" then "/permissions"
+        when "/faq#what-happens" then "/what_happens"
+        when "/faq#look-at-code" then "/look_at_code"
+        when "/faq#parallelism" then "/parallelism"
+        when "/faq#versions" then "/reference/environment"
+        when "/faq#external-resources" then "/external_resources"
+        when "/faq#cant-follow" then "/cant_follow"
+
+        when "/manually" then "/getting_started/manually"
+        when "/manually#standard" then "/getting_started/manually#standard"
+        when "/manually#overview" then "/getting_started/manually#overview"
+        when "/manually#circle-yml" then "/getting_started/manually#circle-yml"
+        when "/manually#machine" then "/getting_started/manually#machine"
+        when "/manually#checkout" then "/getting_started/manually#checkout"
+        when "/manually#dependencies" then "/getting_started/manually#dependencies"
+        when "/manually#databases" then "/getting_started/manually#databases"
+        when "/manually#tests" then "/getting_started/manually#tests"
+        when "/manually#next" then "/getting_started/manually#next"
+
+        when "/getting-started" then "/getting_started/general"
+        when "/getting-started#overview" then "/getting_started/general#overview"
+        when "/getting-started#what-next" then "/getting_started/general#what-next"
+
+        else false
+
     filename: (cx) =>
       name = cx.params.splat[0]
       if name
@@ -120,6 +189,9 @@ circle = $.sammy "body", ->
       articles
 
     render: (cx) =>
+      rewrite = @rewrite_old_name cx.params.splat[0]
+      if rewrite
+        return cx.redirect "/docs" + rewrite
       name = @filename cx
       $("body").attr("id","docs-page").html(HAML['header'](renderContext))
       $("body").append(HAML['title'](renderContext))
