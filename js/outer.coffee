@@ -131,42 +131,15 @@ circle = $.sammy "body", ->
       else
         "docs"
 
-    article_info: (slug, subcategory_of = null) =>
-      if subcategory_of
-        uriFragment = slug.replace(subcategory_of + "_", subcategory_of + "/")
-      else
-        uriFragment = slug
+    article_info: (slug) =>
       node = $(window.HAML[slug]())
       {
-        url: "/docs/#{uriFragment}",
+        url: "/docs/#{slug}",
         slug: slug,
         title: node.find('.title > h1').text().trim()
         subtitle: node.find('.title > h4').text().trim()
         icon: node.find('.title > h1 > i').attr('class')
       }
-
-    categories: (cx) =>
-      categories = {}
-      for slug of HAML
-        subcategory_of = null
-
-        try
-          ## a bit of a hack: subcategory templates are expected to *write* into their context,
-          ## and here we read what's written.
-          context = {}
-          window.HAML[slug](context)
-          subcategory_of = context['subcategory_of']
-        catch error
-          ## meaning: can't be rendered without more context. Should never be true of docs!
-          subcategory_of = null
-
-        if subcategory_of
-          ## back up from slug -> URI fragment
-          uriFragment = slug.replace(subcategory_of + "_", subcategory_of + "/")
-
-          categories[subcategory_of] ?= []
-          categories[subcategory_of].push(@article_info(slug, subcategory_of))
-      categories
 
     find_articles_by_tag: (tag) =>
       articles = []
@@ -187,6 +160,25 @@ circle = $.sammy "body", ->
           if tag in article_tags
             articles.push(@article_info slug)
       articles
+
+    categories: (cx) =>
+      categories = {}
+      for slug of HAML
+        category = null
+        
+        try
+          ## a bit of a hack: category templates are expected to *write* into their context,
+          ## and here we read what's written.
+          context = {}
+          window.HAML[slug](context)
+          category = context['category']
+        catch error
+          ## meaning: can't be rendered without more context. Should never be true of docs!
+          category = null
+
+        if category
+          categories[category] = @find_articles_by_tag(category)
+      categories
 
     render: (cx) =>
       rewrite = @rewrite_old_name cx.params.splat[0]

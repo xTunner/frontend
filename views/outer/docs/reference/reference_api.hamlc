@@ -1,5 +1,5 @@
 %article
-  - # @subcategory_of = "reference"
+  - # @article_tags = [ "reference" ]
 
   = HAML['article_title']({icon: "icon-lock", title: 'The Circle REST API', lastUpdated: "Aug 23, 2012", subtitle: "Embrace and Extend"})
 

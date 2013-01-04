@@ -1,5 +1,5 @@
 %article
-  - @subcategory_of = "troubleshooting"
+  - @article_tags = [ "troubleshooting" ]
 
   = HAML['article_title']({title: "Clojure", subtitle: "", icon: "icon-cogs"})
 
