@@ -127,14 +127,15 @@ circle = $.sammy "body", ->
     filename: (cx) =>
       name = cx.params.splat[0]
       if name
-        name.replace(/^\//, '').replace(/\//g, '_').replace(/#.*/, '')
+        name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
       else
         "docs"
 
     article_info: (slug) =>
       node = $(window.HAML[slug]())
+      uriFragment = slug.replace(/_/g, '-')
       {
-        url: "/docs/#{slug}",
+        url: "/docs/#{uriFragment}",
         slug: slug,
         title: node.find('.title > h1').text().trim()
         subtitle: node.find('.title > h4').text().trim()
