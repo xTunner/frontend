@@ -14,13 +14,3 @@
         %span.nav-menu-status.build_status{data-bind: "with: latest_build()"}
           %span{data-bind: "attr: { class: style }"}
             %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
-        %ul{data-bind: "foreach: {data: branch_names(), as: 'branch'}"}
-          %li
-            %span{data-bind: "text: decodeURIComponent(branch)"}
-            %ul{data-bind: "foreach: {data: project.branches()[branch.replace(/-/g, '_')].recent_builds, as: 'build'}"}
-              %li
-                %a{data-bind: "attr: {href: project.project_path() + '/' + build.build_num}"}
-                  Build
-                  %span{data-bind: "text: build.build_num"}
-                %span{data-bind: "css: project.build_label(build.outcome)"}
-                  %span{data-bind: "text: build.outcome || 'unknown'"}
