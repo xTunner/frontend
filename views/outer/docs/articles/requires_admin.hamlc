@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['common_problems', 'github']
 
-  = HAML['article_title']({title: "Circle requires Admin permissions"})
+  = HAML['article_title']({title: "Circle requires Admin permissions", icon: "icon-key"})
 
   .doc
     %p

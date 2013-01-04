@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['faq']
 
-  = HAML['article_title']({title: "Can I test projects with unusual requirements?"})
+  = HAML['article_title']({title: "Can I test projects with unusual requirements?", icon: "icon-beaker"})
 
   .doc
     %p

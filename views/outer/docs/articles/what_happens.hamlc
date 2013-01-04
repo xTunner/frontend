@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['faq', 'github']
 
-  = HAML['article_title']({title: "What happens when you add a project?"})
+  = HAML['article_title']({title: "What happens when you add a project?", icon: "icon-cogs"})
 
   .doc
     %p

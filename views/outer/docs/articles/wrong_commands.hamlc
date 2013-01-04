@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['common_problems', 'ruby']
 
-  = HAML['article_title']({title: "Circle is running the wrong commands"})
+  = HAML['article_title']({title: "Circle is running the wrong commands", icon: "icon-minus-sign"})
 
   .doc
     %p

@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['common_problems', 'ruby']
 
-  = HAML['article_title']({title: "Do you need the latest version of Bundler"})
+  = HAML['article_title']({title: "Do you need the latest version of Bundler", icon: "icon-download"})
 
   .doc
     %p

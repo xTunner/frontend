@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['faq']
 
-  = HAML['article_title']({title: "Does Circle look at my code?"})
+  = HAML['article_title']({title: "Does Circle look at my code?", icon: "icon-warning-sign"})
 
   .doc
     %p
