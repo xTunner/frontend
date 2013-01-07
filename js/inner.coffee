@@ -685,6 +685,8 @@ class Project extends Obj
     loaded_paying_user: false
     trial_parallelism: null
     retried_build: null
+    branch_names: []
+    branches: []
 
   constructor: (json) ->
 
@@ -692,6 +694,19 @@ class Project extends Obj
     super json
 
     VcsUrlMixin(@)
+
+    @build_label = (outcome) ->
+      style =
+        label: true
+        build_status: true
+      if outcome in ["failed", "timedout", "no_tests"]
+        style["label-important"] = true
+      else if outcome in ["infrastructure_fail", "killed", "not_run", null]
+        style["label-warning"] = true
+      else if outcome is "success"
+        style["label-success"] = true
+
+      style
 
     # Make sure @parallel remains an integer
     @editParallel = komp

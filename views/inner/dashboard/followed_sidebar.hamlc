@@ -3,7 +3,7 @@
     Followed Projects
 
   %li
-    %ul.nav-menu{data-bind: "foreach: followed_projects()"}
+    %ul.nav-menu{data-bind: "foreach: {data: followed_projects(), as: 'project'}"}
 
       %li.nav-menu-row
         %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
