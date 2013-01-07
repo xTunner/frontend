@@ -1,9 +1,12 @@
-%article_list
-  %p
-    - if @find_articles_by_tag
+- if @find_articles_by_tag
+  .article_list
+    %h4
+      Related Articles
+    %hr
+    %ul
       - for tag in @tags
         - articles = @find_articles_by_tag(tag)
         - if articles
           - for article in articles
-            %p
+            %li
               %a{ href: "#{article.url}" } = article.title

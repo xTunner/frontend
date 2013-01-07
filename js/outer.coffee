@@ -27,7 +27,7 @@ circle = $.sammy "body", ->
       @render(cx)
 
       # Land at the right anchor on the page
-      @scroll window.location.hash
+      # @scroll window.location.hash
 
       # Fetch page-specific libraries
       @lib() if @lib?
