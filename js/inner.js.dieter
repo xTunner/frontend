@@ -25,6 +25,7 @@
   "libs/math.coffee"
   "libs/custom-bindings.coffee"
   "libs/ab-tests.coffee"
+  "inner/"
   "ab_test_definitions.coffee"
 
   "inner.coffee"

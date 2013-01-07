@@ -1,59 +1,6 @@
 CI.ajax.init()
 
-komp = (args...) =>
-  ko.computed args...
-
-
-class Obj
-  constructor: (json={}, defaults={}) ->
-    for k,v of @observables()
-      @[k] = @observable(v)
-
-    for k,v of $.extend {}, defaults, json
-      if @observables().hasOwnProperty(k) then @[k](v) else @[k] = v
-
-  observables: () => {}
-
-  observable: (obj) ->
-    if $.isArray obj
-      ko.observableArray obj
-    else
-      ko.observable obj
-
-  updateObservables: (obj) =>
-    for k,v of obj
-      if @observables().hasOwnProperty(k)
-        @[k](v)
-
-VcsUrlMixin = (obj) ->
-  obj.vcs_url = ko.observable(if obj.vcs_url then obj.vcs_url else "")
-
-  obj.observables.vcs_url = obj.vcs_url
-
-  obj.project_name = komp ->
-    obj.vcs_url().substring(19)
-
-  obj.project_display_name = komp ->
-    obj.project_name().replace("/", '/\u200b')
-
-  obj.project_path = komp ->
-    "/gh/#{obj.project_name()}"
-
-  obj.edit_link = komp () =>
-    "#{obj.project_path()}/edit"
-
-
-
-## Deprecated. Do not use for new classes.
-class Base extends Obj
-  constructor: (json, defaults={}, nonObservables=[], observe=true) ->
-    for k,v of $.extend {}, defaults, json
-      if observe and nonObservables.indexOf(k) == -1
-        @[k] = @observable(v)
-      else
-        @[k] = v
-
-class ActionLog extends Obj
+class ActionLog extends CI.inner.Obj
   observables: =>
     name: null
     bash_command: null
@@ -71,35 +18,35 @@ class ActionLog extends Obj
   constructor: (json) ->
     super json
 
-    @success = komp =>
+    @success = @komp =>
       @status() == "success"
 
-    @failed = komp => @status() == "failed" or @status() == "timedout"
-    @infrastructure_fail = komp => @status() == "infrastructure_fail"
+    @failed = @komp => @status() == "failed" or @status() == "timedout"
+    @infrastructure_fail = @komp => @status() == "infrastructure_fail"
 
     # Expand failing actions
-    @minimize = komp =>
+    @minimize = @komp =>
       if @user_minimized()?
         @user_minimized()
       else
         @success()
 
-    @visible = komp =>
+    @visible = @komp =>
       not @minimize()
 
-    @has_content = komp =>
+    @has_content = @komp =>
       (@out()? and @out().length > 0) or @bash_command()
 
     @action_header_style =
       # knockout CSS requires a boolean observable for each of these
       minimize: @minimize
       contents: @has_content
-      running: komp => @status() == "running"
-      timedout: komp => @status() == "timedout"
-      success: komp => @status() == "success"
-      failed: komp => @status() == "failed"
+      running: @komp => @status() == "running"
+      timedout: @komp => @status() == "timedout"
+      success: @komp => @status() == "success"
+      failed: @komp => @status() == "failed"
 
-    @action_header_button_style = komp =>
+    @action_header_button_style = @komp =>
       if @has_content()
         @action_header_style
       else
@@ -108,16 +55,16 @@ class ActionLog extends Obj
     @action_log_style =
       minimize: @minimize
 
-    @start_to_end_string = komp =>
+    @start_to_end_string = @komp =>
       "#{@start_time()} to #{@end_time()}"
 
-    @duration = komp =>
+    @duration = @komp =>
       CI.time.as_duration(@run_time_millis())
 
-    @sourceText = komp =>
+    @sourceText = @komp =>
       @source()
 
-    @sourceTitle = komp =>
+    @sourceTitle = @komp =>
       switch @source()
         when "template"
           "Circle generated this command automatically"
@@ -148,7 +95,7 @@ class ActionLog extends Obj
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
-class Step extends Obj
+class Step extends CI.inner.Obj
 
   observables: =>
     actions: []
@@ -157,7 +104,7 @@ class Step extends Obj
     json.actions = if json.actions? then (new ActionLog(j) for j in json.actions) else []
     super json
 
-class Build extends Obj
+class Build extends CI.inner.Obj
   observables: =>
     messages: []
     build_time_millis: null
@@ -190,12 +137,12 @@ class Build extends Obj
 
     super(json)
 
-    VcsUrlMixin(@)
+    CI.inner.VcsUrlMixin(@)
 
-    @url = komp =>
+    @url = @komp =>
       @urlForBuildNum @build_num
 
-    @important_style = komp =>
+    @important_style = @komp =>
       switch @status()
         when "failed"
           true
@@ -206,7 +153,7 @@ class Build extends Obj
         else
           false
 
-    @warning_style = komp =>
+    @warning_style = @komp =>
       switch @status()
         when "infrastructure_fail"
           true
@@ -217,14 +164,14 @@ class Build extends Obj
         else
           false
 
-    @success_style = komp =>
+    @success_style = @komp =>
       switch @outcome()
         when "success"
           true
         else
           false
 
-    @info_style = komp =>
+    @info_style = @komp =>
       switch @status()
         when "running"
           true
@@ -240,7 +187,7 @@ class Build extends Obj
       label: true
       build_status: true
 
-    @status_words = komp => switch @status()
+    @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "circle bug"
       when "timedout"
@@ -254,7 +201,7 @@ class Build extends Obj
       else
         @status()
 
-    @why_in_words = komp =>
+    @why_in_words = @komp =>
       switch @why
         when "github"
           "GitHub push by #{@user.login}"
@@ -279,7 +226,7 @@ class Build extends Obj
           else
             "unknown"
 
-    @can_cancel = komp =>
+    @can_cancel = @komp =>
       if @status() == "canceled"
         false
       else
@@ -293,14 +240,14 @@ class Build extends Obj
           else
             false
 
-    @pretty_start_time = komp =>
+    @pretty_start_time = @komp =>
       if @start_time()
         CI.time.as_time_since(@start_time())
 
-    @previous_build = komp =>
+    @previous_build = @komp =>
       @previous()? and @previous().build_num
 
-    @duration = komp () =>
+    @duration = @komp () =>
       if @build_time_millis()?
         CI.time.as_duration(@build_time_millis())
       else
@@ -310,36 +257,36 @@ class Build extends Obj
         else
           "still running"
 
-    @branch_in_words = komp =>
+    @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
 
       b = @branch()
       b = b.replace(/^remotes\/origin\//, "")
       "(#{b})"
 
-    @github_url = komp =>
+    @github_url = @komp =>
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
 
-    @github_revision = komp =>
+    @github_revision = @komp =>
       return unless @vcs_revision
       @vcs_revision.substring 0, 7
 
-    @author = komp =>
+    @author = @komp =>
       @author_name() or @author_email()
 
-    @committer = komp =>
+    @committer = @komp =>
       @committer_name() or @committer_email()
 
-    @committer_mailto = komp =>
+    @committer_mailto = @komp =>
       if @committer_email()
         "mailto:#{@committer_email}"
 
-    @author_mailto = komp =>
+    @author_mailto = @komp =>
       if @committer_email()
         "mailto:#{@committer_email()}"
 
-    @author_isnt_committer = komp =>
+    @author_isnt_committer = @komp =>
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
 
@@ -472,7 +419,7 @@ class Build extends Obj
   update: (json) =>
     @status(json.status)
 
-class Repo extends Obj
+class Repo extends CI.inner.Obj
   ## A Repo comes from github, may or may not be in the DB yet
 
   observables: =>
@@ -480,15 +427,15 @@ class Repo extends Obj
 
   constructor: (json) ->
     super json
-    VcsUrlMixin(@)
+    CI.inner.VcsUrlMixin(@)
 
-    @canFollow = komp =>
+    @canFollow = @komp =>
       not @following() and (@admin or @has_followers)
 
-    @requiresInvite = komp =>
+    @requiresInvite = @komp =>
       not @following() and not @admin and not @has_followers
 
-    @displayName = komp =>
+    @displayName = @komp =>
       if @fork
         @project_name()
       else
@@ -524,7 +471,7 @@ class Repo extends Obj
           $('html, body').animate({ scrollTop: 0 }, 0);
           VM.loadRecentBuilds()
 
-class Project extends Obj
+class Project extends CI.inner.Obj
   ## A project in the DB
   observables: =>
     setup: null
@@ -556,25 +503,25 @@ class Project extends Obj
     json.latest_build = (new Build(json.latest_build)) if json.latest_build
     super json
 
-    VcsUrlMixin(@)
+    CI.inner.VcsUrlMixin(@)
 
     # Make sure @parallel remains an integer
-    @editParallel = komp
+    @editParallel = @komp
       read: ->
         @parallel()
       write: (val) ->
         @parallel(parseInt(val))
       owner: @
 
-    @build_url = komp =>
+    @build_url = @komp =>
       @vcs_url() + '/build'
 
-    @has_settings = komp =>
+    @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
     # TODO: maybe this should return null if there are no plans
     #       should also probably load plans
-    @plan = komp =>
+    @plan = @komp =>
       if @paying_user()? and @paying_user().plan
         plans = VM.billing().plans().filter (p) =>
           p.id is @paying_user().plan_id()
@@ -584,44 +531,44 @@ class Project extends Obj
         new Plan
 
     # Allows for user parallelism to trump the plan's max_parallelism
-    @plan_max_speed = komp =>
+    @plan_max_speed = @komp =>
       if @plan().max_parallelism?
         Math.max(@plan().max_parallelism, @max_parallelism())
 
-    @max_parallelism = komp =>
+    @max_parallelism = @komp =>
       if @paying_user()? then @paying_user().parallelism() else @trial_parallelism()
 
     @focused_parallel = ko.observable @parallel()
 
-    @can_select_parallel = komp =>
+    @can_select_parallel = @komp =>
       if @paying_user()?
         @focused_parallel() <= @max_parallelism()
       else
         false
 
-    @current_user_is_paying_user_p = komp =>
+    @current_user_is_paying_user_p = @komp =>
       if @paying_user()?
         @paying_user().login is VM.current_user().login
       else
         false
 
     @parallel_label_style = (num) =>
-      disabled: komp =>
+      disabled: @komp =>
         # weirdly sends num as string when num is same as parallel
         parseInt(num) > @max_parallelism()
-      selected: komp =>
+      selected: @komp =>
         parseInt(num) is @parallel()
 
-    @paying_user_ident = komp =>
+    @paying_user_ident = @komp =>
       if @paying_user()? then @paying_user().login
 
-    @show_parallel_upgrade_plan_p = komp =>
+    @show_parallel_upgrade_plan_p = @komp =>
       @paying_user()? and @plan_max_speed() < @focused_parallel()
 
-    @show_parallel_upgrade_speed_p = komp =>
+    @show_parallel_upgrade_speed_p = @komp =>
       @paying_user()? and (@max_parallelism() < @focused_parallel() <= @plan_max_speed())
 
-    @focused_parallel_cost_increase = komp =>
+    @focused_parallel_cost_increase = @komp =>
       VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
 
 
@@ -830,7 +777,7 @@ class Project extends Obj
       @focused_parallel(@parallel())
     , 200
 
-class User extends Obj
+class User extends CI.inner.Obj
   observables: =>
     organizations: []
     collaboratorAccounts: []
@@ -858,27 +805,27 @@ class User extends Obj
 
     @environment = window.renderContext.env
 
-    @showEnvironment = komp =>
+    @showEnvironment = @komp =>
       @admin || (@environment is "staging") || (@environment is "development")
 
-    @environmentColor = komp =>
+    @environmentColor = @komp =>
       result = {}
       result["env-" + @environment] = true
       result
 
-    @in_trial = komp =>
+    @in_trial = @komp =>
       # not @paid and @days_left_in_trial >= 0
       false
 
-    @trial_over = komp =>
+    @trial_over = @komp =>
       #not @paid and @days_left_in_trial < 0
       # need to figure "paid" out before we really show this
       false
 
-    @showLoading = komp =>
+    @showLoading = @komp =>
       @loadingRepos() or @loadingOrganizations()
 
-    @plan_id = komp =>
+    @plan_id = @komp =>
       @plan()
 
   create_token: (data, event) =>
@@ -982,12 +929,12 @@ class User extends Obj
   isPaying: () =>
     @plan?
 
-class Plan extends Obj
+class Plan extends CI.inner.Obj
   constructor: ->
     super
 
     # Temporary limit so that users don't "block all builds forever"
-    @max_purchasable_parallelism  = komp =>
+    @max_purchasable_parallelism  = @komp =>
       Math.min(4, @max_parallelism)
 
     # Change max_purchasable_parallelism to @max_parallelism when we can
@@ -996,19 +943,19 @@ class Plan extends Obj
 
     @concurrency_options = ko.observableArray([1..20])
 
-    @allowsParallelism = komp =>
+    @allowsParallelism = @komp =>
       @max_parallelism > 1
 
-    @projectsTitle = komp =>
+    @projectsTitle = @komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
 
-    @minParallelismDescription = komp =>
+    @minParallelismDescription = @komp =>
       "#{@min_parallelism}x"
 
-    @maxParallelismDescription = komp =>
+    @maxParallelismDescription = @komp =>
       "up to #{@max_parallelism}x"
 
-    @pricingDescription = komp =>
+    @pricingDescription = @komp =>
       if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id
         "Your current plan"
       else
@@ -1028,7 +975,7 @@ class Plan extends Obj
       result[feature.name] = true
     result
 
-class Billing extends Obj
+class Billing extends CI.inner.Obj
   observables: =>
     stripeToken: null
     cardInfo: null
@@ -1052,25 +999,25 @@ class Billing extends Obj
   constructor: ->
     super
 
-    @total = komp =>
+    @total = @komp =>
       @calculateCost(@chosenPlan(), parseInt(@concurrency()), parseInt(@parallelism()))
 
-    @savedCardNumber = komp =>
+    @savedCardNumber = @komp =>
       return "" unless @cardInfo()
       "************" + @cardInfo().last4
 
-    @wizardCompleted = komp =>
+    @wizardCompleted = @komp =>
       @wizardStep() > 4
 
     # Make sure @parallelism remains a number
-    @editParallelism = komp
+    @editParallelism = @komp
       read: ->
         @parallelism()
       write: (val) ->
         if val? then @parallelism(parseInt(val))
       owner: @
 
-    @editConcurrency = komp
+    @editConcurrency = @komp
       read: ->
         @concurrency()
       write: (val) ->
@@ -1267,7 +1214,7 @@ display = (template, args) ->
   ko.applyBindings(VM)
 
 
-class CircleViewModel extends Base
+class CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @current_user = ko.observable(new User window.renderContext.current_user)
@@ -1287,7 +1234,7 @@ class CircleViewModel extends Base
 
     @setupPusher()
 
-    @intercomUserLink = komp =>
+    @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
       if path
@@ -1344,16 +1291,16 @@ class CircleViewModel extends Base
       if @first_login
         @first_login = false
 
-  available_projects: () => komp =>
+  available_projects: () => @komp =>
     (p for p in @projects() when not p.followed())
 
-  followed_projects: () => komp =>
+  followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
-  has_followed_projects: () => komp =>
+  has_followed_projects: () => @komp =>
     @followed_projects()().length > 0
 
-  refresh_project_src: () => komp =>
+  refresh_project_src: () => @komp =>
     if @refreshing_projects()
       "/img/ajax-loader.gif"
     else
