@@ -39,9 +39,10 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       success: (data) =>
         _kmq.push(['record', 'Added A Repo']);
         _gaq.push(['_trackEvent', 'Repos', 'Add']);
-        if @first_login
-          _kmq.push(['record', 'Added A Project on First Login']);
-          _gaq.push(['_trackEvent', 'Repos', 'Added on First Login']);
+# TODO: this doesn't do what you think
+#        if @first_login
+#          _kmq.push(['record', 'Added A Project on First Login']);
+#          _gaq.push(['_trackEvent', 'Repos', 'Added on First Login']);
         @following(true)
         if data.first_build
           (new CI.inner.Build(data.first_build)).visit()

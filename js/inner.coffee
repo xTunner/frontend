@@ -18,7 +18,6 @@ class CircleViewModel extends CI.inner.Obj
     @build_state = ko.observable()
     @admin = ko.observable()
     @error_message = ko.observable(null)
-    @first_login = true;
     @refreshing_projects = ko.observable(false);
     @max_possible_parallelism = ko.observable(24);
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
@@ -73,14 +72,9 @@ class CircleViewModel extends CI.inner.Obj
 
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
-      start_time = Date.now()
       projects = (new CI.inner.Project d for d in data)
       projects.sort CI.inner.Project.sidebarSort
-
       @projects(projects)
-      window.time_taken_projects = Date.now() - start_time
-      if @first_login
-        @first_login = false
 
   available_projects: () => @komp =>
     (p for p in @projects() when not p.followed())
@@ -99,9 +93,7 @@ class CircleViewModel extends CI.inner.Obj
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
-      start_time = Date.now()
       @recent_builds((new CI.inner.Build d for d in data))
-      window.time_taken_recent_builds = Date.now() - start_time
 
   loadDashboard: (cx) =>
     @loadProjects()
@@ -119,9 +111,7 @@ class CircleViewModel extends CI.inner.Obj
     project_name = "#{username}/#{project}"
     @builds.removeAll()
     $.getJSON "/api/v1/project/#{project_name}", (data) =>
-      start_time = Date.now()
       @builds((new CI.inner.Build d for d in data))
-      window.time_taken_project = Date.now() - start_time
     display "project", {project: project_name}
 
 
@@ -129,11 +119,9 @@ class CircleViewModel extends CI.inner.Obj
     project_name = "#{username}/#{project}"
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
-      start_time = Date.now()
       @build(new CI.inner.Build data)
       @build().maybeSubscribe()
 
-      window.time_taken_build = Date.now() - start_time
 
 
     display "build", {project: project_name, build_num: build_num}
