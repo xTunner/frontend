@@ -9,5 +9,5 @@
       %td
         %a{data-bind: "text: login"}
       %td{style: "width: 40px"}
-        %button.btn.btn-primary{type: "submit", data-bind: "click: VM.project().invite_user"}
+        %button.btn.btn-primary{type: "submit", data-bind: "click: $root.project().invite_user"}
           Invite

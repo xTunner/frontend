@@ -13,7 +13,7 @@
       %td{data-bind: "text: hostname"}
       %td{data-bind: "text: fingerprint"}
       %td
-        %button.btn{data-bind: "click: VM.project().delete_ssh_key"}
+        %button.btn{data-bind: "click: $root.project().delete_ssh_key"}
           Delete
 
 %form.well

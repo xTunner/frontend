@@ -8,7 +8,7 @@
       .row-fluid
         %h1
           Manage Repos
-          %button.btn.btn-success.pull-right{data-bind: "click: window.VM.goDashboard"}
+          %button.btn.btn-success.pull-right{data-bind: "click: $root.goDashboard"}
             Done Managing Repos &rarr;
       .row-fluid
         %div{data-bind: "if: showLoading"}

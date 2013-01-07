@@ -8,15 +8,15 @@
     %span{data-bind: "ifnot: github_user()"}
       None
 
-%div{data-bind: "if: github_user() != VM.current_user().login"}
+%div{data-bind: "if: github_user() != $root.current_user().login"}
   %form.api
     %input.btn.btn-primary{type: "submit",
-                           value: "Set GitHub User to #{VM.current_user().login}",
+                           value: "Set GitHub User to #{$root.current_user().login}",
                            data-bind: "click: set_github_user",
                            data-loading-text: "Saving...",
                            data-success-text: "Saved"}
 
-%div{data-bind: "if: github_user() == VM.current_user().login"}
+%div{data-bind: "if: github_user() == $root.current_user().login"}
   %form.api
     %input.btn.btn-danger{type: "submit",
                           value: "Remove GitHub User",
