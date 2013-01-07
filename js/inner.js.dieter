@@ -18,7 +18,7 @@
   "../views/outer/"
   "../views/error/"
 
-  "libs/module_setup.coffee" ; must be loaded first
+  "module_setup.coffee"
   "libs/time.coffee"
   "libs/ajax.coffee"
   "libs/terminal.coffee"
