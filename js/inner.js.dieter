@@ -18,8 +18,9 @@
   "../views/outer/"
   "../views/error/"
 
-  "./libs/module_setup.coffee"
+  "./libs/module_setup.coffee" ; must be loaded first
   "./libs/time.coffee"
+  "./libs/math.coffee"
   "./libs/custom-bindings.coffee"
   "./libs/ab-tests.coffee"
   "./ab_test_definitions.coffee"

@@ -10,9 +10,6 @@
 #   %p{href: "#", data-bind: "if: ab().daniel_test == false"}
 #     This is the text that will show up if option is set to false
 
-randInt = (n) ->
-  Math.floor(Math.random() * n)
-
 CI.ABTests = class ABTests
   constructor: (test_definitions, options={}) ->
 

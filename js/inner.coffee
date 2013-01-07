@@ -1,6 +1,3 @@
-log2 = (v) ->
-  Math.log(v) / Math.log(2)
-
 textVal = (elem, val) ->
   "Takes a jquery element and gets or sets either val() or text(), depending on what's appropriate for this element type (ie input vs button vs a, etc)"
   if elem.is("input")
@@ -1218,7 +1215,7 @@ class Billing extends Obj
     if p == 1
       0
     else
-      Math.round(log2(p) * 99)
+      Math.round(CI.math.log2(p) * 99)
 
   parallelism_cost: (plan, p) =>
     Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
@@ -1243,7 +1240,7 @@ class Billing extends Obj
 
       p = parallelism or 1
       p = Math.max(p, 2)
-      extra_p = (log2 p) - 1
+      extra_p = (CI.math.log2 p) - 1
       extra_p = Math.max(0, extra_p)
 
       plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
