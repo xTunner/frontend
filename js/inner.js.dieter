@@ -13,20 +13,11 @@
   "../vendor/md5.js"
   "../vendor/stickyMojo.js"
 
-  "../views/inner/"
-  "../views/shared/"
-  "../views/outer/"
-  "../views/error/"
-
   "module_setup.coffee"
-  "libs/time.coffee"
-  "libs/ajax.coffee"
-  "libs/terminal.coffee"
-  "libs/math.coffee"
-  "libs/custom-bindings.coffee"
-  "libs/ab-tests.coffee"
+  "../views/"
+  "libs/"
   "inner/"
-  "ab_test_definitions.coffee"
 
+  "ab_test_definitions.coffee"
   "inner.coffee"
 ]
