@@ -1,7 +1,9 @@
 %ul.topics
   - for rootCategory, categories of @categories
     %li{class: "expand"}
-      = HAML[rootCategory]()
+      %h4
+        = HAML[rootCategory]()
+      %hr
       %ul{class: "expand"}
         - for c in categories
           - @class = if c.slug == @page then "icon-chevron-down" else "icon-chevron-up"
