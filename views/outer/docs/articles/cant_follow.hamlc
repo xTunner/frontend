@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['faq', 'github']
+  - @article_tags = ['github_privacy']
 
   = HAML['article_title']({title: "Why can I not follow a project?", icon: "icon-key"})
 

@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['common_problems', 'troubleshooting']
+  - @article_tags = ['troubleshooting']
 
   = HAML['article_title']({title: "OOM Killer ran", icon: "icon-screenshot"})
 

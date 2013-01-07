@@ -56,7 +56,6 @@ circle = $.sammy "body", ->
   # Doc
   class Docs extends Page
     rewrite_old_name: (name) =>
-      console.log name
       switch name
         when "/common-problems" then "/troubleshooting-common-problems"
         when "/common-problems#intro" then "/troubleshooting-common-problems"

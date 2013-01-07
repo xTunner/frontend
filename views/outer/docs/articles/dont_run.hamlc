@@ -1,7 +1,7 @@
 %article
-  - @article_tags = ['common_problems']
+  - @article_tags = ['how_to']
 
-  = HAML['article_title']({title: "Code which should not run on your CI server", icon: "icon-minus-sign"})
+  = HAML['article_title']({title: "Skip code which should not run on your CI server", icon: "icon-minus-sign"})
 
   .doc
     %p

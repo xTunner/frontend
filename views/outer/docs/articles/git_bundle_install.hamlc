@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['common_problems', 'ruby']
+  - @article_tags = ['ruby']
 
   = HAML['article_title']({title: "Git errors during a bundle install", icon: "icon-key"})
 

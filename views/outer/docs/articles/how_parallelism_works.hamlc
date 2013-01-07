@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['faq', 'parallelism']
+  - @article_tags = ['parallelism']
 
   = HAML['article_title']({title: "Does parallelism really work?", icon: "icon-cogs"})
 

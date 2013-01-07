@@ -1,11 +1,10 @@
 %article
-  - @article_tags = ['faq']
+  - @article_tags = ['how_to']
 
-  = HAML['article_title']({title: "Can I use resources which are not in my repository?", icon: "icon-cloud"})
+  = HAML['article_title']({title: "Use resources which are not in your repository", icon: "icon-cloud"})
 
   .doc
     %p
-      Yes!
       There are a number of techniques to do this:
 
     %ul

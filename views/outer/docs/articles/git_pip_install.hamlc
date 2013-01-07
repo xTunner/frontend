@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['common_problems', 'python']
+  - @article_tags = ['python']
 
   = HAML['article_title']({title: "Git errors during pip install", icon: "icon-key"})
 
