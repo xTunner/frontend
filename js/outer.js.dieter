@@ -8,7 +8,7 @@
   "../../components/sammy/lib/sammy.js"
   "../../components/moment/moment.js"
 
-  "./bootstrap.js.dieter"
+  "bootstrap.js.dieter"
 
   "../vendor/md5.js"
   "../vendor/stickyMojo.js"
@@ -18,11 +18,11 @@
   "../views/outer/"
   "../views/error/"
 
-  "./libs/module_setup.coffee"
-  "./libs/time.coffee"
-  "./libs/custom-bindings.coffee"
-  "./libs/ab-tests.coffee"
-  "./ab_test_definitions.coffee"
+  "libs/module_setup.coffee"
+  "libs/time.coffee"
+  "libs/custom-bindings.coffee"
+  "libs/ab-tests.coffee"
+  "ab_test_definitions.coffee"
 
-  "./outer.coffee"
+  "outer.coffee"
 ]
