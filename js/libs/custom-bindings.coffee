@@ -56,3 +56,9 @@ setMoneyContent = (element, textContent) ->
 ko.bindingHandlers.money =
   update: (el, valueAccessor) =>
     setMoneyContent(el, valueAccessor())
+
+ko.observableArray["fn"].setIndex = (index, newItem) ->
+  @valueWillMutate()
+  result = @()[index] = newItem
+  @valueHasMutated()
+  result

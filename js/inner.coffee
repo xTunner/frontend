@@ -1,11 +1,5 @@
 CI.ajax.init()
 
-ko.observableArray["fn"].setIndex = (index, newItem) ->
-  @valueWillMutate()
-  result = @()[index] = newItem
-  @valueHasMutated()
-  result
-
 komp = (args...) =>
   ko.computed args...
 
