@@ -31,6 +31,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     super json
 
     CI.inner.VcsUrlMixin(@)
+    @parallelism_options = [1..24]
 
     # Make sure @parallel remains an integer
     @editParallel = @komp

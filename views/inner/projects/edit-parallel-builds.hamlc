@@ -4,7 +4,7 @@
     .row-fluid{style: "min-height: 250px"}
       .span5
         %p
-          %form.select-project-parallelization{data-bind: "foreach: $root.parallelism_options"}
+          %form.select-project-parallelization{data-bind: "foreach: parallelism_options"}
             %label{data-bind: "css: $root.project().parallel_label_style($data), attr: { for: $root.project().parallel_input_id($data)}, event: {mouseover: $root.project().parallel_focus_in}"}
               != succeed "x", ->
                 %span{data-bind: "text: $data"}

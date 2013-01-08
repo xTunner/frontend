@@ -8,21 +8,21 @@ display = (template, args) ->
 class CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
-    @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
     @build = ko.observable()
     @builds = ko.observableArray()
     @project = ko.observable()
     @projects = ko.observableArray()
-    @billing = ko.observable(new CI.inner.Billing)
     @recent_builds = ko.observableArray()
     @build_state = ko.observable()
     @admin = ko.observable()
-    @error_message = ko.observable(null)
     @refreshing_projects = ko.observable(false);
-    @max_possible_parallelism = ko.observable(24);
-    @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
-    @pusher = new CI.Pusher(@current_user().login)
 
+
+    @billing = ko.observable(new CI.inner.Billing)
+
+    @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
+    @pusher = new CI.Pusher(@current_user().login)
+    @error_message = ko.observable(null)
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
