@@ -103,6 +103,33 @@ SammyApp = $.sammy "body", ->
         $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
         $("body").append(HAML['footer'](renderContext))
 
+  class Error extends Page
+    render: (cx) =>
+      error = renderContext.status
+      url = renderContext.githubPrivateAuthURL
+      titles =
+        401: "Login required"
+        404: "Page not found"
+        500: "Internal server error"
+
+      messages =
+        401: "<a href=\"#{url}\">You must <b>log in</b> to view this page.</a>"
+        404: "We're sorry, but that page doesn't exist."
+        500: "We're sorry, but something broke."
+
+      title = titles[error] or "Something unexpected happened"
+      message = messages[error] or "Something completely unexpected happened"
+
+      # Set the title
+      document.title = "Circle - " + title
+
+      # Display page
+      $("body").attr("id","error").html HAML['header'](renderContext)
+      $("body").append HAML['error'](title: title, error: renderContext.status, message: message)
+      $('body > div').wrapAll('<div id="wrap"/>');
+      $("body").append HAML['footer'](renderContext)
+
+
 
   # Pages
   home = new Home("home", "Continuous Integration made easy")
@@ -110,6 +137,7 @@ SammyApp = $.sammy "body", ->
   privacy = new Page("privacy", "Privacy and Security")
   pricing = new Page("pricing", "Plans and Pricing")
   docs = new Docs("docs", "Documentation")
+  error = new Error("error", "Error")
 
   placeholder = =>
     $("input, textarea").placeholder()
@@ -152,8 +180,9 @@ SammyApp = $.sammy "body", ->
       selector: ".more-info"
     follow()
 
+  error.lib = =>
+    follow()
 
-  # Twitter Follow
 
   # Google analytics
   @bind 'event-context-after', ->
@@ -180,29 +209,7 @@ SammyApp = $.sammy "body", ->
   @post "/about/contact", -> true # allow to propagate
   @get "/.*", (cx) -> # catch-all for error pages
     if renderContext.status
-      error = renderContext.status
-      url = renderContext.githubPrivateAuthURL
-      titles =
-        401: "Login required"
-        404: "Page not found"
-        500: "Internal server error"
-
-      messages =
-        401: "<a href=\"#{url}\">You must <b>log in</b> to view this page.</a>"
-        404: "We're sorry, but that page doesn't exist."
-        500: "We're sorry, but something broke."
-
-      title = titles[error] or "Something unexpected happened"
-      message = messages[error] or "Something completely unexpected happened"
-
-      # Set the title
-      document.title = "Circle - " + title
-
-      # Display page
-      $("body").attr("id","error").html HAML['header'](renderContext)
-      $("body").append HAML['error'](title: title, error: renderContext.status, message: message)
-      $('body > div').wrapAll('<div id="wrap"/>');
-      $("body").append HAML['footer'](renderContext)
+      error.display(cx)
 
 
 # Run the application
