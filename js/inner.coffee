@@ -80,10 +80,12 @@ class CircleViewModel extends CI.inner.Obj
       _gaq.push(['_trackPageview', '/dashboard'])
     display "dashboard", {}
 
+
   loadAddProjects: (cx) =>
     @current_user().loadOrganizations()
     @current_user().loadCollaboratorAccounts()
     display "add_projects", {}
+
 
   loadProject: (cx, username, project) =>
     project_name = "#{username}/#{project}"
@@ -99,9 +101,6 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
       @build().maybeSubscribe()
-
-
-
     display "build", {project: project_name, build_num: build_num}
 
 
