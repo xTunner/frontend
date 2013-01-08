@@ -111,12 +111,6 @@ SammyApp = $.sammy "body", ->
   pricing = new Page("pricing", "Plans and Pricing")
   docs = new Docs("docs", "Documentation")
 
-  # Define Libs
-  highlight = =>
-    # Not happy with how this looks (esp since it doesnt support yaml). Rethinking.
-    #$("pre code").each (i, e) =>
-    #  hljs.highlightBlock e
-
   placeholder = =>
     $("input, textarea").placeholder()
 
@@ -133,12 +127,6 @@ SammyApp = $.sammy "body", ->
 
   # Per-Page Libs
   home.lib = =>
-    trigger = =>
-      $("#testimonials").waypoint ((event, direction) ->
-        $("#testimonials").addClass("scrolled")
-      ),
-        offset: "80%"
-    trigger()
     placeholder()
     follow()
 
@@ -148,7 +136,6 @@ SammyApp = $.sammy "body", ->
       $("ul.topics").stickyMojo
         footerID: "#footer"
         contentID: ".article article"
-    highlight()
     sidebar()
 
   about.lib = =>
