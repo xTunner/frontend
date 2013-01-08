@@ -1,0 +1,22 @@
+CI.Pusher = class Pusher
+  constructor: (@login) ->
+    key = switch window.renderContext.env
+      when "production" then "6465e45f8c4a30a2a653"
+      else "3f8cb51e8a23a178f974"
+
+    @pusher = new window.Pusher(key, { encrypted: true})
+
+    window.Pusher.channel_auth_endpoint = "/auth/pusher"
+
+    @userSubscribePrivateChannel()
+    @pusherSetupBindings()
+
+
+  userSubscribePrivateChannel: () =>
+    channel_name = "private-" + @login
+    @user_channel = @pusher.subscribe(channel_name)
+    @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+
+  pusherSetupBindings: () =>
+    @user_channel.bind "call", (data) =>
+      this[data.fn].apply(this, data.args)

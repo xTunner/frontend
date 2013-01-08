@@ -21,8 +21,7 @@ class CircleViewModel extends CI.inner.Obj
     @refreshing_projects = ko.observable(false);
     @max_possible_parallelism = ko.observable(24);
     @parallelism_options = ko.observableArray([1..@max_possible_parallelism()])
-
-    @setupPusher()
+    @pusher = new CI.Pusher(@current_user().login)
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -34,27 +33,6 @@ class CircleViewModel extends CI.inner.Obj
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
-
-  setupPusher: () =>
-    key = switch renderContext.env
-      when "production" then "6465e45f8c4a30a2a653"
-      else "3f8cb51e8a23a178f974"
-
-    @pusher = new Pusher(key, { encrypted: true})
-
-    Pusher.channel_auth_endpoint = "/auth/pusher"
-
-    @userSubscribePrivateChannel()
-    @pusherSetupBindings()
-
-  userSubscribePrivateChannel: () =>
-    channel_name = "private-" + @current_user().login
-    @user_channel = @pusher.subscribe(channel_name)
-    @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
-
-  pusherSetupBindings: () =>
-    @user_channel.bind "call", (data) =>
-      this[data.fn].apply(this, data.args)
 
   testCall: (arg) =>
     alert(arg)
@@ -255,7 +233,7 @@ class CircleViewModel extends CI.inner.Obj
       false
 
 window.VM = new CircleViewModel()
-window.SammyApp = Sammy '#app', () ->
+window.SammyApp = Sammy '#app', (n) ->
     @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
     @get('^/', (cx) => VM.loadDashboard(cx))
