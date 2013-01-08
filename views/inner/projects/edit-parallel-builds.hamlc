@@ -24,8 +24,7 @@
 
         %div{data-bind: "ifnot: paying_user"}
           .alert.alert-warning
-            %a{href: '/account/plans'}
-              Select a plan
+            %a{href: '/account/plans'} Select a plan
             to increase your maximum build speed
         / ko if: paying_user
         %div{data-bind: "if: show_parallel_upgrade_plan_p"}
@@ -34,21 +33,18 @@
             != succeed ".", ->
               %strong{data-bind: "text: plan_max_speed"}
             %span{data-bind: "if: current_user_is_paying_user_p"}
-              %a{href: "/account/plans#edit"}
-                Upgrade your plan
+              %a{href: "/account/plans#edit"} Upgrade your plan
               to unlock more speed.
             %span{data-bind: "ifnot: current_user_is_paying_user_p"}
               Send
               %span{data-bind: "text: paying_user_ident"}
               to
-              %a{href: "/account/plans#edit"}
-                https://circleci.com/account/plans#edit
+              %a{href: "/account/plans#edit"} https://circleci.com/account/plans#edit
               to upgrade your plan.
         %div{data-bind: "if: show_parallel_upgrade_speed_p"}
           .alert.alert-warning
             %p{data-bind: "if: current_user_is_paying_user_p"}
-              %a{href: "/account/plans#speed"}
-                Increase your speed
+              %a{href: "/account/plans#speed"} Increase your speed
               to
               %strong
                 != succeed "x", ->
@@ -60,8 +56,7 @@
               Send
               %span{data-bind: "text: paying_user_ident"}
               to
-              %a{href: "/account/plans#speed"}
-                https://circleci.com/account/plans#speed
+              %a{href: "/account/plans#speed"} https://circleci.com/account/plans#speed
               to increase your speed to
               %strong
                 != succeed "x", ->
