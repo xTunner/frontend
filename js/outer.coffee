@@ -4,7 +4,7 @@ class OuterViewModel
 
 window.OuterVM = new OuterViewModel
 
-circle = $.sammy "body", ->
+SammyApp = $.sammy "body", ->
 
   # Page
   class Page
@@ -220,4 +220,4 @@ circle = $.sammy "body", ->
 
 # Run the application
 $ ->
-  circle.run window.location.pathname.replace(/\/$/, '')
+  SammyApp.run window.location.pathname.replace(/\/$/, '')
