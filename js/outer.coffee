@@ -6,35 +6,7 @@ window.OuterVM = new OuterViewModel
 
 SammyApp = $.sammy "body", ->
 
-  # Page
-  class Page
-    constructor: (@name, @title) ->
-
-    display: (cx) =>
-      document.title = "Circle - " + @title
-
-      # Render content
-      @render(cx)
-
-      # Land at the right anchor on the page
-      @scroll window.location.hash
-
-      # Fetch page-specific libraries
-      @lib() if @lib?
-
-      ko.applyBindings(OuterVM)
-
-    render: (cx) =>
-      $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
-      $("body").append HAML[@name](renderContext)
-      $("body").append HAML['footer'](renderContext)
-
-    scroll: (hash) =>
-      if hash == '' or hash == '#' then hash = "body"
-      $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
-
-
-  class Home extends Page
+  class Home extends CI.outer.Page
     render: (cx) =>
       super(cx)
       _kmq.push(['trackClickOnOutboundLink', '#join', 'hero join link clicked'])
@@ -43,101 +15,14 @@ SammyApp = $.sammy "body", ->
       _kmq.push(['trackSubmit', '#beta', 'beta form submitted'])
       _gaq.push(['_trackPageview', '/homepage'])
 
-  # Doc
-  class Docs extends Page
-    filename: (cx) =>
-      name = cx.params.splat[0]
-      if name
-        name.replace('/', '').replace('-', '_').replace(/#.*/, '')
-      else
-        "docs"
-
-    categories: (cx) =>
-      # build a table of contents dynamically from all the pages. DRY.
-      pages = [
-                "getting-started",
-                "manually",
-                "common-problems",
-                "configuration",
-                "config-sample",
-                "environment",
-                "faq",
-# "notifications",
-#                "api"
-              ]
-      categories = {}
-      for p in pages
-        slug = p.replace("-", "_")
-        template = HAML[slug]()
-        node = $(template)
-        title = node.find('.title > h1').text().trim()
-        subtitle = node.find('.title > h4').text().trim()
-        icon = node.find('.title > h1 > i').attr('class')
-        section_nodes = node.find('.doc > .section > a')
-        sections = []
-        for s in section_nodes
-          sections.push
-            title: $(s).text().trim()
-            hash: $(s).attr("id")
-        categories[p] =
-          url: "/docs/#{p}"
-          slug: slug
-          title: title
-          subtitle: subtitle
-          icon: icon
-          sections: sections
-      categories
-
-
-    render: (cx) =>
-      name = @filename cx
-      if name == 'docs'
-        $("body").attr("id","docs-page").html HAML['header'](renderContext)
-        $("body").append HAML['docs']({categories: @categories()})
-        $("body").append HAML['footer'](renderContext)
-      else
-        $("body").attr("id","docs-page").html(HAML['header'](renderContext))
-        $("body").append(HAML['title'](renderContext))
-        $("#title h1").text("Documentation")
-        $("body").append("<div id='content'><section class='article'></section></div>")
-        $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
-        $("body").append(HAML['footer'](renderContext))
-
-  class Error extends Page
-    render: (cx) =>
-      error = renderContext.status
-      url = renderContext.githubPrivateAuthURL
-      titles =
-        401: "Login required"
-        404: "Page not found"
-        500: "Internal server error"
-
-      messages =
-        401: "<a href=\"#{url}\">You must <b>log in</b> to view this page.</a>"
-        404: "We're sorry, but that page doesn't exist."
-        500: "We're sorry, but something broke."
-
-      title = titles[error] or "Something unexpected happened"
-      message = messages[error] or "Something completely unexpected happened"
-
-      # Set the title
-      document.title = "Circle - " + title
-
-      # Display page
-      $("body").attr("id","error").html HAML['header'](renderContext)
-      $("body").append HAML['error'](title: title, error: renderContext.status, message: message)
-      $('body > div').wrapAll('<div id="wrap"/>');
-      $("body").append HAML['footer'](renderContext)
-
-
 
   # Pages
   home = new Home("home", "Continuous Integration made easy")
-  about = new Page("about", "About Us")
-  privacy = new Page("privacy", "Privacy and Security")
-  pricing = new Page("pricing", "Plans and Pricing")
-  docs = new Docs("docs", "Documentation")
-  error = new Error("error", "Error")
+  about = new CI.outer.Page("about", "About Us")
+  privacy = new CI.outer.Page("privacy", "Privacy and Security")
+  pricing = new CI.outer.Page("pricing", "Plans and Pricing")
+  docs = new CI.outer.Docs("docs", "Documentation")
+  error = new CI.outer.Error("error", "Error")
 
   placeholder = =>
     $("input, textarea").placeholder()
