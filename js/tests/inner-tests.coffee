@@ -81,3 +81,10 @@ j.describe "ansiToHtml", ->
     @expect(t.ansiToHtml "\u001b[1Mfoo").toEqual "<span>foo</span>"
     # no blinking
     @expect(t.ansiToHtml "\u001b[5mfoo").toEqual "<span>foo</span>"
+
+
+j.describe "githubAuthURL", ->
+  j.it "should be the expect values", ->
+    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=383faf01b98ac355f183&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252F&scope=user%2Crepo"
+
+    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=383faf01b98ac355f183&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252F&scope="
