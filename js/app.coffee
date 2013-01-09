@@ -291,7 +291,7 @@ window.SammyApp = Sammy 'body', (n) ->
 
     @bind 'error', (e, data) ->
       if data? and data.error? and window.Airbrake?
-        window.Airbrake.captureException data.error
+        window.notifyError data
 
 
 $(document).ready () ->
