@@ -289,6 +289,10 @@ window.SammyApp = Sammy 'body', (n) ->
       if window._gaq? # we dont use ga in test mode
         window._gaq.push @path
 
+    @bind 'error', (e, data) ->
+      if data? and data.error? and window.Airbrake?
+        window.Airbrake.captureException data.error
+
 
 $(document).ready () ->
   path = window.location.pathname
