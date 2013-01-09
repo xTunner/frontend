@@ -1,6 +1,6 @@
 CI.outer.Error = class Error extends CI.outer.Page
   render: (cx) =>
-    error = renderContext.status
+    error = renderContext.status or 404
     url = renderContext.githubPrivateAuthURL
     titles =
       401: "Login required"

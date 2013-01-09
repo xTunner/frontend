@@ -7,7 +7,12 @@ display = (template, args) ->
 
 class CircleViewModel extends CI.inner.Obj
   constructor: ->
+
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
+    @error_message = ko.observable(null)
+
+    # inner
+    @login = window.renderContext.current_user
     @build = ko.observable()
     @builds = ko.observableArray()
     @project = ko.observable()
@@ -17,12 +22,12 @@ class CircleViewModel extends CI.inner.Obj
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false);
 
+    if @login
+      @billing = ko.observable(new CI.inner.Billing)
+      @current_user = ko.observable(new CI.inner.User @login)
+      @pusher = new CI.Pusher @login
+      _kmq.push ['identify', @login]
 
-    @billing = ko.observable(new CI.inner.Billing)
-
-    @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
-    @pusher = new CI.Pusher(@current_user().login)
-    @error_message = ko.observable(null)
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
@@ -32,6 +37,14 @@ class CircleViewModel extends CI.inner.Obj
           "&filters%5B0%5D%5Battr%5D=custom_data.pr-followed" +
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
+
+    # outer
+    @home = new CI.outer.Home("home", "Continuous Integration made easy")
+    @about = new CI.outer.Page("about", "About Us")
+    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
+    @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
+    @docs = new CI.outer.Docs("docs", "Documentation")
+    @error = new CI.outer.Error("error", "Error")
 
 
   testCall: (arg) =>
@@ -235,34 +248,44 @@ window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', (n) ->
     @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
-    @get('^/', (cx) => VM.loadDashboard(cx))
-    @get('^/add-projects', (cx) => VM.loadAddProjects(cx))
-    @get('^/gh/:username/:project/edit(.*)',
-      (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat)
-    @get('^/account(.*)',
-      (cx) -> VM.loadAccountPage(cx, cx.params.splat))
-    @get('^/gh/:username/:project/:build_num',
-      (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num)
+    if VM.login
+      @get '^/', (cx) => VM.loadDashboard(cx)
+    else
+      @get "^/", (cx) => VM.home.display(cx)
+
+    @get '^/add-projects', (cx) => VM.loadAddProjects cx
+    @get '^/gh/:username/:project/edit(.*)',
+      (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+    @get '^/account(.*)',
+      (cx) -> VM.loadAccountPage cx, cx.params.splat
+    @get '^/gh/:username/:project/:build_num',
+      (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
     @get('^/gh/:username/:project',
-      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project)
+      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project
 
-    @get('^/logout', (cx) -> VM.logout(cx))
+    @get '^/logout', (cx) -> VM.logout cx
 
-    @get('^/admin', (cx) -> VM.loadAdminPage cx)
-    @get('^/admin/users', (cx) -> VM.loadAdminPage cx, "users")
-    @get('^/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get('^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx)
-    @get('^/admin/build-state', (cx) -> VM.loadAdminBuildState cx)
-    @get('^/docs(.*)', (cx) -> # go to the outer app
-      SammyApp.unload()
-      window.location = cx.path)
+    @get '^/admin', (cx) -> VM.loadAdminPage cx
+    @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
+    @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
+    @get '^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx
+    @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
-    @get('^(.*)', (cx) -> VM.unsupportedRoute(cx))
+    # outer
+    @get "/docs(.*)", (cx) => VM.docs.display(cx)
+    @get "/about.*", (cx) => VM.about.display(cx)
+    @get "/privacy.*", (cx) => VM.privacy.display(cx)
+    @get "/pricing.*", (cx) => VM.pricing.display(cx)
 
-    # dont show an error when posting
-    @post '^/circumvent-sammy', (cx) -> true
+    @get '^(.*)', (cx) => VM.error.display(cx)
+
+    # valid posts, allow to propegate
     @post '^/logout', -> true
     @post '^/admin/switch-user', -> true
+    @post "/notify", -> true # allow to propagate
+    @post "/about/contact", -> true # allow to propagate
+
+    @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
 
     # Google analytics
     @bind 'event-context-after', ->
@@ -270,9 +293,7 @@ window.SammyApp = Sammy '#app', (n) ->
         window._gaq.push @path
 
 
-
-
-
 $(document).ready () ->
-  SammyApp.run window.location.pathname.replace(/(.+)\/$/, "$1")
-  _kmq.push(['identify', VM.current_user().login])
+  path = window.location.pathname
+  path = path.replace(/\/$/, '') # remove trailing slash
+  SammyApp.run path
