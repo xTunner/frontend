@@ -11,9 +11,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       footerID: "#footer"
       contentID: ".article article"
 
-  lib: () =>
-    @sidebar()
-
   categories: (cx) =>
     # build a table of contents dynamically from all the pages. DRY.
     pages = [
@@ -64,3 +61,4 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       $("body").append("<div id='content'><section class='article'></section></div>")
       $(".article").append(HAML['categories']({categories: @categories(), page: name})).append(HAML[name](renderContext))
       $("body").append(HAML['footer'](renderContext))
+      @sidebar()
