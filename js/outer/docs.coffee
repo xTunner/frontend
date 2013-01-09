@@ -6,6 +6,14 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     else
       "docs"
 
+  sidebar: () =>
+    $("ul.topics").stickyMojo
+      footerID: "#footer"
+      contentID: ".article article"
+
+  lib: () =>
+    @sidebar()
+
   categories: (cx) =>
     # build a table of contents dynamically from all the pages. DRY.
     pages = [
