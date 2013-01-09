@@ -17,6 +17,7 @@
   "../views/"
   "libs/"
   "inner/"
+  "outer/"
 
   "ab_test_definitions.coffee"
   "inner.coffee"

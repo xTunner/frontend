@@ -16,6 +16,7 @@
   "module_setup.coffee"
   "../views/"
   "libs/"
+  "inner/"
   "outer/"
 
   "ab_test_definitions.coffee"
