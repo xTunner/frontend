@@ -20,5 +20,5 @@
   "outer/"
 
   "ab_test_definitions.coffee"
-  "inner.coffee"
+  "app.coffee"
 ]
