@@ -282,7 +282,6 @@ window.SammyApp = Sammy '#app', (n) ->
     # valid posts, allow to propegate
     @post '^/logout', -> true
     @post '^/admin/switch-user', -> true
-    @post "/notify", -> true # allow to propagate
     @post "/about/contact", -> true # allow to propagate
 
     @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
