@@ -13,8 +13,6 @@ class OuterViewModel
 
 window.VM = new OuterViewModel
 
-
-
 SammyApp = $.sammy "body", ->
 
   # Google analytics
