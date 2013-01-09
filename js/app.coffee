@@ -271,17 +271,17 @@ window.SammyApp = Sammy '#app', (n) ->
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
     # outer
-    @get "/docs(.*)", (cx) => VM.docs.display(cx)
-    @get "/about.*", (cx) => VM.about.display(cx)
-    @get "/privacy.*", (cx) => VM.privacy.display(cx)
-    @get "/pricing.*", (cx) => VM.pricing.display(cx)
+    @get "^/docs(.*)", (cx) => VM.docs.display(cx)
+    @get "^/about.*", (cx) => VM.about.display(cx)
+    @get "^/privacy.*", (cx) => VM.privacy.display(cx)
+    @get "^/pricing.*", (cx) => VM.pricing.display(cx)
 
     @get '^(.*)', (cx) => VM.error.display(cx)
 
     # valid posts, allow to propegate
     @post '^/logout', -> true
     @post '^/admin/switch-user', -> true
-    @post "/about/contact", -> true # allow to propagate
+    @post "^/about/contact", -> true # allow to propagate
 
     @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
 
