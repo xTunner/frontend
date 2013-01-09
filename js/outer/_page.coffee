@@ -18,13 +18,16 @@ CI.outer.Page = class Page
     ko.applyBindings(VM)
 
   render: (cx) =>
-    $("body").attr("id","#{@name}-page").html HAML['header'](renderContext)
-    $("body").append HAML[@name](renderContext)
-    $("body").append HAML['footer'](renderContext)
+    $('#IntercomTab').text "" # clear the intercom tab
+    $('body').attr("id", "#{@name}-page")
+    $("#main").html HAML['header'](renderContext)
+    $("#main").append HAML[@name](renderContext)
+    $("#main").append HAML['footer'](renderContext)
 
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"
-    $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
+    if $(hash).offset()
+      $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
   placeholder: () =>
     $("input, textarea").placeholder()

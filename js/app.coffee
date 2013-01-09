@@ -7,7 +7,6 @@ display = (template, args) ->
 
 class CircleViewModel extends CI.inner.Obj
   constructor: ->
-
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
 
@@ -244,7 +243,7 @@ class CircleViewModel extends CI.inner.Obj
       false
 
 window.VM = new CircleViewModel()
-window.SammyApp = Sammy '#app', (n) ->
+window.SammyApp = Sammy 'body', (n) ->
     @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
     if VM.current_user
