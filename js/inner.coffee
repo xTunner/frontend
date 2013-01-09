@@ -12,7 +12,6 @@ class CircleViewModel extends CI.inner.Obj
     @error_message = ko.observable(null)
 
     # inner
-    @login = window.renderContext.current_user
     @build = ko.observable()
     @builds = ko.observableArray()
     @project = ko.observable()
@@ -22,11 +21,11 @@ class CircleViewModel extends CI.inner.Obj
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false);
 
-    if @login
+    if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
-      @current_user = ko.observable(new CI.inner.User @login)
-      @pusher = new CI.Pusher @login
-      _kmq.push ['identify', @login]
+      @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
+      @pusher = new CI.Pusher @current_user().login
+      _kmq.push ['identify', @current_user().login]
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -248,7 +247,7 @@ window.VM = new CircleViewModel()
 window.SammyApp = Sammy '#app', (n) ->
     @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
-    if VM.login
+    if VM.current_user
       @get '^/', (cx) => VM.loadDashboard(cx)
     else
       @get "^/", (cx) => VM.home.display(cx)
