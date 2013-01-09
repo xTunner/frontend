@@ -16,8 +16,6 @@
   "module_setup.coffee"
   "../views/"
   "libs/"
-
-  "outer/page.coffee" ; inherited from so comes first, but ok if redefined later
   "outer/"
 
   "ab_test_definitions.coffee"
