@@ -57,8 +57,8 @@ circle = $.sammy "body", ->
   class Docs extends Page
     rewrite_old_name: (name) =>
       switch name
-        when "/common-problems" then "/troubleshooting-common-problems"
-        when "/common-problems#intro" then "/troubleshooting-common-problems"
+        when "/common-problems" then ""
+        when "/common-problems#intro" then ""
         when "/common-problems#file-ordering" then "/file-ordering"
         when "/common-problems#missing-log-dir" then "/missing-log-dir"
         when "/common-problems#missing-file" then "/missing-file"
@@ -75,7 +75,7 @@ circle = $.sammy "body", ->
         when "/common-problems#capybara-timeout" then "/capybara-timeout"
         when "/common-problems#clojure-12" then "/clojure-12"
 
-        when "/faq" then "/troubleshooting-common-problems"
+        when "/faq" then ""
         when "/faq#permissions" then "/permissions"
         when "/faq#what-happens" then "/what-happens"
         when "/faq#look-at-code" then "/look-at_code"
@@ -145,7 +145,7 @@ circle = $.sammy "body", ->
 
     render: (cx) =>
       rewrite = @rewrite_old_name cx.params.splat[0]
-      if rewrite
+      if rewrite != false
         return cx.redirect "/docs" + rewrite
       name = @filename cx
       $("body").attr("id","docs-page").html(HAML['header'](renderContext))
