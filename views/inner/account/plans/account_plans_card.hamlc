@@ -61,7 +61,7 @@
                                   size: 4,
                                   style: "width: auto;",
                                   disabled: true,
-                                  data-bind: "value: cardInfo().exp_year"}}
+                                  data-bind: "value: cardInfo().exp_year"}
           %br
           .alert-block#warning
             %p
