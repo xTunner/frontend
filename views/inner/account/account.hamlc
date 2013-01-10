@@ -27,6 +27,6 @@
         Close account
 
 .row{data-bind: "with: current_user"}
+  = HAML['flashes']({})
   .offset1
-    = HAML['flashes']({})
     #subpage
