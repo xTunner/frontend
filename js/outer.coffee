@@ -12,10 +12,41 @@ class CircleViewModel
   constructor: ->
     @ab = (new ABTests(ab_test_definitions)).ab_tests
 
+    @show_suggestions = ko.observable(false)
+    @query_suggestions = ko.observableArray([])
+    @query_results = ko.observableArray([])
+    @query = ko.observable("")
+    @query.subscribe (value) =>
+      @show_suggestions true
+      $.ajax
+        url: "/autocomplete-articles"
+        type: "GET"
+        data:
+          query: value
+        success: (autocomplete) =>
+          @query_suggestions autocomplete.suggestions
+
+  searchArticles: (vm, event) ->
+    @show_suggestions false
+    $.ajax
+      url: "/search-articles"
+      type: "GET"
+      data:
+        query: @query
+      success: (results) =>
+        console.log results
+        @query_results results.results
+    event.preventDefault()
+    event.stopPropagation()
+    false
+
+  clickSuggestion: (suggestion, event) =>
+    @query suggestion
+    @searchArticles this, event
+
 window.CircleVM = new CircleViewModel
 
 circle = $.sammy "body", ->
-
   # Page
   class Page
     constructor: (@name, @title) ->

@@ -2,4 +2,17 @@
   = HAML['article_title']({title: "Documentation", subtitle: "", icon: "icon-cogs"})
 
   .doc
-    How can we help you?
+    %form{ action: "", data-bind: "event: { submit: searchArticles }" }
+      %input{ type: 'text', name: 'query', data-bind: "text: query", data-bind: "value: query, valueUpdate: 'afterkeydown'"}
+
+      %div{data-bind: "if: show_suggestions"}
+        %ul{data-bind: "foreach: query_suggestions"}
+          %li
+            %a{data-bind: "click: $parent.clickSuggestion"}
+              %span{data-bind: "text: $data"}
+
+      %ul{data-bind: "foreach: query_results"}
+        %li
+          %a{data-bind: "attr: { href: url }"}
+            %span{data-bind: "text: title"}
+          %div{data-bind: "text: snippet_text"}
