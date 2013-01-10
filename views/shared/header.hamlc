@@ -25,5 +25,5 @@
           %a{ href: '/docs', title: 'Documentation for Circle'}
             Docs
         %li
-          %a#login{ href: @githubPrivateAuthURL, title: 'Log in to Circle' }
+          %a#login{ href: CI.github.authUrl(), title: 'Log in to Circle' }
             Login
