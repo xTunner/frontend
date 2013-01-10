@@ -201,12 +201,6 @@ class CircleViewModel extends CI.inner.Obj
 
 
   loadJasmineTests: (cx) =>
-    # Run the tests within the local scope, so we can use the scope chain to
-    # access classes and values throughout this file.
-    window.TestTargets =
-      log2: CI.math.log2
-      Billing: CI.inner.Billing
-      ansiToHtml: CI.terminal.ansiToHtml
     $.getScript "/assets/js/tests/inner-tests.js.dieter"
 
   raiseIntercomDialog: (message) =>

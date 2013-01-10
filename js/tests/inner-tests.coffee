@@ -1,5 +1,4 @@
 j = jasmine.getEnv()
-t = TestTargets # combat coffeescript scope
 
 plans =
   p14:
@@ -19,14 +18,15 @@ plans =
     concurrency: 1
 
 testBilling = (plan, c, p, e) ->
-  @expect((new t.Billing()).calculateCost(plan, c, p)).toEqual e
+  @expect((new CI.inner.Billing()).calculateCost(plan, c, p)).toEqual e
 
 j.describe "calculateCost", ->
   j.it "should be correct for log2", ->
-    @expect(t.log2 2).toEqual 1
-    @expect(t.log2 4).toEqual 2
-    @expect(t.log2 8).toEqual 3
-    @expect(t.log2 3).toEqual 1.5849625007211563
+    m = CI.math
+    @expect(m.log2 2).toEqual 1
+    @expect(m.log2 4).toEqual 2
+    @expect(m.log2 8).toEqual 3
+    @expect(m.log2 3).toEqual 1.5849625007211563
 
   j.it "should be the same as on the server", ->
     testBilling(plans.p14, 1, 1, 19)
@@ -44,6 +44,7 @@ j.describe "calculateCost", ->
     testBilling(plans.p16, 4, 5, 427)
 
 j.describe "ansiToHtml", ->
+  t = CI.terminal
   j.it "shouldn't screw up simple text", ->
     @expect(t.ansiToHtml "").toEqual ""
     @expect(t.ansiToHtml "foo").toEqual "<span>foo</span>"
@@ -85,6 +86,6 @@ j.describe "ansiToHtml", ->
 
 j.describe "githubAuthURL", ->
   j.it "should be the expect values", ->
-    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=383faf01b98ac355f183&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252F&scope=user%2Crepo"
+    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=383faf01b98ac355f183&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope=user%2Crepo"
 
-    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=383faf01b98ac355f183&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252F&scope="
+    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=383faf01b98ac355f183&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope="
