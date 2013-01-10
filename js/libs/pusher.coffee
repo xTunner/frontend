@@ -9,7 +9,7 @@ CI.Pusher = class Pusher
     window.Pusher.channel_auth_endpoint = "/auth/pusher"
 
     @userSubscribePrivateChannel()
-    @pusherSetupBindings()
+    @setupBindings()
 
 
   userSubscribePrivateChannel: () =>
@@ -17,6 +17,11 @@ CI.Pusher = class Pusher
     @user_channel = @pusher.subscribe(channel_name)
     @user_channel.bind('pusher:subscription_error', (status) -> notifyError status)
 
-  pusherSetupBindings: () =>
+  subscribe: (args...) =>
+    @pusher.subscribe.apply @pusher, args
+
+
+
+  setupBindings: () =>
     @user_channel.bind "call", (data) =>
       this[data.fn].apply(this, data.args)
