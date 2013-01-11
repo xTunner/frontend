@@ -1,18 +1,25 @@
 %article
-  = HAML['article_title']({title: "Documentation", subtitle: "", icon: "icon-cogs"})
+  = HAML['article_title']({title: "Documentation", subtitle: "", icon: "icon-search"})
 
   .doc
-    %form{ action: "", data-bind: "event: { submit: searchArticles }" }
-      %input{ type: 'text', name: 'query', data-bind: "text: query", data-bind: "value: query, valueUpdate: 'afterkeydown'"}
+    %h4
+      What can we help you with?
 
-      %div{data-bind: "if: show_suggestions"}
-        %ul{data-bind: "foreach: query_suggestions"}
+    %form.form-search{ action: "", data-bind: "event: { submit: searchArticles }" }
+      %input.search-query.input-xxlarge#query{ type: 'text', name: 'query' }
+
+    %div{data-bind: "if: query_results_query"}
+      %div{data-bind: "ifnot: query_results().length"}
+        No articles found matching
+        "
+        %span{data-bind: "text: query_results_query"}>
+        "
+      %div{data-bind: "if: query_results().length"}
+        Articles matching
+        "
+        %span{data-bind: "text: query_results_query"}>
+        "
+        %ul.query_results{data-bind: "foreach: query_results"}
           %li
-            %a{data-bind: "click: $parent.clickSuggestion"}
-              %span{data-bind: "text: $data"}
-
-      %ul{data-bind: "foreach: query_results"}
-        %li
-          %a{data-bind: "attr: { href: url }"}
-            %span{data-bind: "text: title"}
-          %div{data-bind: "text: snippet_text"}
+            %a{data-bind: "attr: { href: url }"}
+              %span{data-bind: "text: title"}

@@ -11,38 +11,31 @@ window.queryParams = queryParams
 class CircleViewModel
   constructor: ->
     @ab = (new ABTests(ab_test_definitions)).ab_tests
-
-    @show_suggestions = ko.observable(false)
-    @query_suggestions = ko.observableArray([])
+    @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
-    @query = ko.observable("")
-    @query.subscribe (value) =>
-      @show_suggestions true
-      $.ajax
-        url: "/autocomplete-articles"
-        type: "GET"
-        data:
-          query: value
-        success: (autocomplete) =>
-          @query_suggestions autocomplete.suggestions
 
   searchArticles: (vm, event) ->
-    @show_suggestions false
     $.ajax
       url: "/search-articles"
       type: "GET"
       data:
-        query: @query
+        query: $("#query").val()
       success: (results) =>
-        console.log results
         @query_results results.results
+        @query_results_query results.query
     event.preventDefault()
     event.stopPropagation()
     false
 
-  clickSuggestion: (suggestion, event) =>
-    @query suggestion
-    @searchArticles this, event
+  suggestArticles: (query, process) =>
+    $.ajax
+      url: "/autocomplete-articles"
+      type: "GET"
+      data:
+        query: query
+      success: (autocomplete) =>
+        process autocomplete.suggestions
+    null
 
 window.CircleVM = new CircleViewModel
 
@@ -187,6 +180,9 @@ circle = $.sammy "body", ->
         .append(HAML['categories']({categories: @categories(), page: name}))
         .append(HAML[name]({find_articles_by_tag: @find_articles_by_tag})) ## XXX: merge w/renderContext?
       $("body").append(HAML['footer'](renderContext))
+      $("#query").typeahead {
+        'source': window.CircleVM.suggestArticles
+      }
 
   # Pages
   home = new Home("home", "Continuous Integration made easy")
