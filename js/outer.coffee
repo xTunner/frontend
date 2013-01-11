@@ -234,7 +234,7 @@ circle = $.sammy "body", ->
         footerID: "#footer"
         contentID: ".article article"
     highlight()
-    sidebar()
+    # sidebar()
 
   about.lib = =>
     placeholder()
