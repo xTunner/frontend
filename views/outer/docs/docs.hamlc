@@ -1,20 +1,29 @@
-#title
-  %h1 Documentation
+%article
+  = HAML['article_title']({title: "Documentation", subtitle: "", icon: "icon-search"})
 
-#content
-  %section.doc-title
-    %h1 How can we help you?
+  .doc
+    %h4
+      What can we help you with?
 
-    %hr
+    %form.form-search{ action: "", data-bind: "event: { submit: searchArticles }" }
+      %input.search-query.input-xxlarge#query{ type: 'text', name: 'query' }
 
-  %section.categories
-    - for k,c of @categories
-      %ul
-        %li
-          %a{ href: c.url }
-            %i{ class: c.icon }
-            %hgroup
-              %h2= c.title
-              %h3= c.subtitle
-
-    %aside.status
+    %div{data-bind: "if: query_results_query"}
+      .article_list
+        %div{data-bind: "ifnot: query_results().length"}
+          %h4
+            No articles found matching
+            "
+            %span{data-bind: "text: query_results_query"}>
+            "
+        %div{data-bind: "if: query_results().length"}
+          %h4
+            Articles matching
+            "
+            %span{data-bind: "text: query_results_query"}>
+            "
+          %hr
+          %ul.query_results{data-bind: "foreach: query_results"}
+            %li
+              %a{data-bind: "attr: { href: url }"}
+                %span{data-bind: "text: title"}

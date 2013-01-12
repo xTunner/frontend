@@ -1,0 +1,7 @@
+%article
+  - @article_tags = [ "troubleshooting" ]
+
+  = HAML['article_title']({title: "Filesystem Layout Problems", subtitle: "", icon: "icon-hdd"})
+
+  .doc
+    = HAML['article_list']({tags: ['filesystem'], find_articles_by_tag: @find_articles_by_tag})

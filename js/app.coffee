@@ -43,7 +43,31 @@ class CircleViewModel extends CI.inner.Obj
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
+    @query_results_query = ko.observable(null)
+    @query_results = ko.observableArray([])
 
+  searchArticles: (vm, event) ->
+    $.ajax
+      url: "/search-articles"
+      type: "GET"
+      data:
+        query: $("#query").val()
+      success: (results) =>
+        @query_results results.results
+        @query_results_query results.query
+    event.preventDefault()
+    event.stopPropagation()
+    false
+
+  suggestArticles: (query, process) =>
+    $.ajax
+      url: "/autocomplete-articles"
+      type: "GET"
+      data:
+        query: query
+      success: (autocomplete) =>
+        process autocomplete.suggestions
+    null
 
   testCall: (arg) =>
     alert(arg)

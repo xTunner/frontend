@@ -1,0 +1,19 @@
+%article
+  - @article_tags = ['gettingstarted']
+
+  = HAML['article_title']({title: "Can I test projects with unusual requirements?", icon: "icon-beaker"})
+
+  .doc
+    %p
+      Circle is completely configurable.
+      While we have a very simple setup for projects that follow established conventions, we also support many variations on the theme.
+
+    %ul
+      %li
+        We support
+        %a{href: "/docs/configuration#subdirectory"} running tests from a subdirectory of your repository.
+
+      %li
+        You can completely
+        %a{href: "/docs/configuration"} override every single step of your tests
+        with custom settings, or minor tweaks.
