@@ -93,6 +93,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
+
+
 class Step extends CI.inner.Obj
 
   observables: =>
