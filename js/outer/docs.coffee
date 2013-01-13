@@ -88,6 +88,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       categories
 
     render: (cx) =>
+      # TODO title
+      $('#IntercomTab').text "" # clear the intercom tab
       rewrite = @rewrite_old_name cx.params.splat[0]
       if rewrite != false
         return cx.redirect "/docs" + rewrite
