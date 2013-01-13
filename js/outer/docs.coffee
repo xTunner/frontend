@@ -92,14 +92,15 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       if rewrite != false
         return cx.redirect "/docs" + rewrite
       name = @filename cx
-      $("body").attr("id","docs-page").html(HAML['header'](renderContext))
-      $("body").append(HAML['title'](renderContext))
+      $("body").attr("id","docs-page")
+      $('#main').html(HAML['header'](renderContext))
+      $("#main").append HAML['title'](renderContext)
       $("#title h1").text("Documentation")
-      $("body").append("<div id='content'><section class='article'></section></div>")
+      $("#main").append("<div id='content'><section class='article'></section></div>")
       $(".article")
         .append(HAML['categories']({categories: @categories(), page: name}))
         .append(HAML[name]({find_articles_by_tag: @find_articles_by_tag})) ## XXX: merge w/renderContext?
-      $("body").append(HAML['footer'](renderContext))
+      $("#main").append(HAML['footer'](renderContext))
       $("#query").typeahead {
         'source': window.VM.suggestArticles
       }
