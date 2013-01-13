@@ -19,7 +19,9 @@ CI.outer.Error = class Error extends CI.outer.Page
     document.title = "Circle - " + title
 
     # Display page
-    $("body").attr("id","error").html HAML['header'](renderContext)
-    $("body").append HAML['error'](title: title, error: renderContext.status, message: message)
-    $('body > div').wrapAll('<div id="wrap"/>');
-    $("body").append HAML['footer'](renderContext)
+    $('#IntercomTab').text ""
+    $("body").attr("id","error")
+    $('#main').html HAML['header'](renderContext)
+    $("#main").append HAML['error'](title: title, error: renderContext.status, message: message)
+    $('#main > div').wrapAll "<div id='wrap' />" # this is the only page on which we want a sticky footer
+    $("#main").append HAML['footer'](renderContext)
