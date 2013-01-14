@@ -1,8 +1,8 @@
 CI.outer.Page = class Page
-  constructor: (@name, @title) ->
+  constructor: (@name, @_title) ->
 
   display: (cx) =>
-    @setTitle()
+    @setPageTitle(cx)
 
     # Render content
     @clearIntercom()
@@ -35,12 +35,11 @@ CI.outer.Page = class Page
     if $(hash).offset()
       $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
 
+  title: =>
+    @_title
 
-  setTitle: =>
-    title = @title
-    if $.isFunction title
-      title = title()
-    document.title = "Circle - " + title
+  setPageTitle: (cx) =>
+    document.title = "Circle - " + @title(cx)
 
   clearIntercom: =>
     $('#IntercomTab').text "" # clear the intercom tab

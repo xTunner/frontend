@@ -68,6 +68,9 @@ CI.outer.Docs = class Docs extends CI.outer.Page
           articles.push(@article_info slug)
     articles
 
+  title: (cx) =>
+    "Documentation"
+
   categories: (cx) =>
     categories = {}
     for slug of HAML
