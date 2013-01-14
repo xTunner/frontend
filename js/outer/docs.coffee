@@ -90,6 +90,10 @@ CI.outer.Docs = class Docs extends CI.outer.Page
   title: (cx) =>
     "Documentation"
 
+  lib: =>
+    $("#query").typeahead
+      'source': window.VM.suggestArticles
+
   render: (cx) =>
     rewrite = @rewrite_old_name cx.params.splat[0]
     if rewrite != false
@@ -105,6 +109,3 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       .append(HAML['categories']({categories: @categories(), page: name}))
       .append(HAML[name]({find_articles_by_tag: @find_articles_by_tag})) ## XXX: merge w/renderContext?
     $("#main").append(HAML['footer'](renderContext))
-    $("#query").typeahead {
-      'source': window.VM.suggestArticles
-    }
