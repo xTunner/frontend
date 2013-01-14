@@ -68,9 +68,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
           articles.push(@article_info slug)
     articles
 
-  title: (cx) =>
-    "Documentation"
-
   categories: (cx) =>
     categories = {}
     for slug of HAML
@@ -90,14 +87,16 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         categories[category] = @find_articles_by_tag(category)
     categories
 
+  title: (cx) =>
+    "Documentation"
+
   render: (cx) =>
-    # TODO title
-    $('#IntercomTab').text "" # clear the intercom tab
     rewrite = @rewrite_old_name cx.params.splat[0]
     if rewrite != false
       return cx.redirect "/docs" + rewrite
+
     name = @filename cx
-    $("body").attr("id","docs-page")
+    $("body").attr("id","docs-page").addClass 'outer'
     $('#main').html(HAML['header'](renderContext))
     $("#main").append HAML['title'](renderContext)
     $("#title h1").text("Documentation")

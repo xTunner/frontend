@@ -23,7 +23,7 @@ CI.outer.Page = class Page
 
   render: (cx) =>
     params = $.extend renderContext, @viewContext()
-    $('body').attr("id", "#{@name}-page")
+    $('body').attr("id", "#{@name}-page").addClass 'outer'
     $("#main").html HAML['header'](params)
     $("#main").append HAML[@name](params)
     if @useStickyFooter? and @useStickyFooter

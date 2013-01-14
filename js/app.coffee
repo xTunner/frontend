@@ -1,6 +1,7 @@
 CI.ajax.init()
 
 display = (template, args) ->
+  $('body').addClass 'inner'
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
 
