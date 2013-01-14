@@ -35,7 +35,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     if name
       name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
     else
-      "docs"
+      "front_page"
 
   article_info: (slug) =>
     node = $(window.HAML[slug]())
