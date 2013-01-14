@@ -31,11 +31,9 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       else false
 
   filename: (cx) =>
-    name = cx.params.splat[0]
-    if name
-      name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
-    else
-      "front_page"
+    name = cx.params.splat[0] or "front-page"
+    name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
+
 
   article_info: (slug) =>
     node = $(window.HAML[slug]())
