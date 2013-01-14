@@ -18,11 +18,11 @@ CI.outer.Page = class Page
 
     ko.applyBindings(VM)
 
-  viewContext: =>
+  viewContext: (cx) =>
     {}
 
   render: (cx) =>
-    params = $.extend renderContext, @viewContext()
+    params = $.extend renderContext, @viewContext(cx)
     $('body').attr("id", "#{@name}-page").addClass 'outer'
     $("#main").html HAML['header'](params)
     $("#main").append HAML[@name](params)

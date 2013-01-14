@@ -1,4 +1,8 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
+  constructor: ->
+    @name = "docs"
+    @_title = "Documentation"
+
   rewrite_old_name: (name) =>
     switch name
       when "/common-problems" then ""
@@ -85,25 +89,18 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         categories[category] = @find_articles_by_tag(category)
     categories
 
-  title: (cx) =>
-    "Documentation"
-
   lib: =>
     $("#query").typeahead
       'source': window.VM.suggestArticles
+
+  viewContext: (cx) =>
+    categories: @categories()
+    find_articles_by_tag: @find_articles_by_tag # not a function call
+    pagename: @filename cx
 
   render: (cx) =>
     rewrite = @rewrite_old_name cx.params.splat[0]
     if rewrite != false
       return cx.redirect "/docs" + rewrite
 
-    name = @filename cx
-    $("body").attr("id","docs-page").addClass 'outer'
-    $('#main').html(HAML['header'](renderContext))
-    $("#main").append HAML['title'](renderContext)
-    $("#title h1").text("Documentation")
-    $("#main").append("<div id='content'><section class='article'></section></div>")
-    $(".article")
-      .append(HAML['categories']({categories: @categories(), page: name}))
-      .append(HAML[name]({find_articles_by_tag: @find_articles_by_tag})) ## XXX: merge w/renderContext?
-    $("#main").append(HAML['footer'](renderContext))
+    super cx
