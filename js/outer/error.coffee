@@ -1,9 +1,9 @@
 CI.outer.Error = class Error extends CI.outer.Page
   constructor: ->
+    @name = "error"
     @status = renderContext.status
     @url = renderContext.githubPrivateAuthURL
     @useStickyFooter = true
-    @name = "error"
 
   title: =>
     titles =
