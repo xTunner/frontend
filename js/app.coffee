@@ -260,14 +260,36 @@ class CircleViewModel extends CI.inner.Obj
       if cb? then cb.call()
       false
 
+  loadRootPage: (cx) =>
+    if VM.current_user
+      VM.loadDashboard cx
+    else
+      VM.home.display cx
+
+  # For error pages, we are passed the status from the server, stored in renderContext.
+  # Because that will remain true when we navigate in-app, we need to make all links cause
+  # a page reload, by running SammyApp.unload(). However, the first time this is run is
+  # actually before Sammy 0.7.2 loads the click handlers, so unload doesn't help. To combat
+  # this, we disable sammy after a second, by which time the handlers must surely have run.
+  maybeRouteErrorPage: (cx) =>
+    if renderContext.status
+      @error.display(cx)
+      setInterval( =>
+        window.SammyApp.unload()
+      , 1000)
+      return false
+
+    return true
+
+
+
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
-    @get('^/tests/inner', (cx) -> VM.loadJasmineTests(cx))
 
-    if VM.current_user
-      @get '^/', (cx) => VM.loadDashboard(cx)
-    else
-      @get "^/", (cx) => VM.home.display(cx)
+    @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
+    @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
+
+    @get '^/', (cx) => VM.loadRootPage(cx)
 
     @get '^/add-projects', (cx) => VM.loadAddProjects cx
     @get '^/gh/:username/:project/edit(.*)',
