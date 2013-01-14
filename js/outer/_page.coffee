@@ -1,10 +1,20 @@
 CI.outer.Page = class Page
   constructor: (@name, @title) ->
 
+  setTitle: =>
+    title = @title
+    if $.isFunction title
+      title = title()
+    document.title = "Circle - " + title
+
+  clearIntercom: =>
+    $('#IntercomTab').text "" # clear the intercom tab
+
   display: (cx) =>
-    document.title = "Circle - " + @title
+    @setTitle()
 
     # Render content
+    @clearIntercom()
     @render(cx)
 
     # Land at the right anchor on the page
@@ -17,12 +27,17 @@ CI.outer.Page = class Page
 
     ko.applyBindings(VM)
 
+  viewContext: =>
+    {}
+
   render: (cx) =>
-    $('#IntercomTab').text "" # clear the intercom tab
+    params = $.extend renderContext, @viewContext()
     $('body').attr("id", "#{@name}-page")
-    $("#main").html HAML['header'](renderContext)
-    $("#main").append HAML[@name](renderContext)
-    $("#main").append HAML['footer'](renderContext)
+    $("#main").html HAML['header'](params)
+    $("#main").append HAML[@name](params)
+    if @useStickyFooter? and @useStickyFooter
+      $('#main > div').wrapAll "<div id='wrap' />"
+    $("#main").append HAML['footer'](params)
 
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"
