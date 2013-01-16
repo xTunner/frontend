@@ -367,7 +367,7 @@
     %p
       Several services are disabled by default because they're not
       commonly used, or because of memory requirements. We try to
-      detect and automatically turn them on automatically, but in case
+      detect and enable them automatically, but in case
       we fail (or don't have inference in your language), you can
       enable them by adding to your circle.yml:
 
