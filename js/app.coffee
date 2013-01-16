@@ -1,7 +1,9 @@
 CI.ajax.init()
 
+setOuter = =>
+  $('html').removeClass('outer').addClass('inner')
 display = (template, args) ->
-  $('body').addClass 'inner'
+  setOuter()
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
 
@@ -160,6 +162,7 @@ class CircleViewModel extends CI.inner.Obj
       @project().load_paying_user()
       @billing().load()
 
+    setOuter()
     $('#main').html(HAML['edit']({project: project_name}))
     $('#subpage').html(HAML['edit_' + subpage]({}))
     ko.applyBindings(VM)
@@ -175,6 +178,8 @@ class CircleViewModel extends CI.inner.Obj
 
     if subpage.indexOf("plans") == 0
       @billing().load()
+
+    setOuter()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage]({}))
     $("##{subpage}").addClass('active')
@@ -185,6 +190,7 @@ class CircleViewModel extends CI.inner.Obj
 
 
   renderAdminPage: (subpage) =>
+    setOuter()
     $('#main').html(HAML['admin']({}))
     if subpage
       $('#subpage').html(HAML['admin_' + subpage]())
