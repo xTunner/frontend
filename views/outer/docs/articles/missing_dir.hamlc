@@ -7,6 +7,8 @@
     %p
       Rails expects certain directories to be present in your app, including
       %code log/
+      ,
+      %code tmp/
       and occasionally others.
       If they are not in your repository, your tests will fail (though they ran fine locally because you created the directory a long time ago).
     %p
