@@ -430,7 +430,20 @@
             bundler:
               without: [production, osx]
 
+    %h4 Custom Cache Directories
 
+    %p
+      Circle makes an effort to cache dependencies between builds. For common layouts, this
+      optimization will "just work". For uncommon cases, the <b>cache_directories</b> section
+      can list any additional directories you'd like cached between builds:
+
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            cache_directories:
+              - "custom_1"
+              - "custom_2"
 
     = HAML['heading']({title: "Database setup", hash: "database"})
 
