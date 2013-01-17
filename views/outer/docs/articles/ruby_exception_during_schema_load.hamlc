@@ -67,21 +67,22 @@
     %h2 Identifying the Source
     %p
       If you have this problem, how do you figure out what line is responsible? By reading the stacktrace!
-    %pre<>
-      :preserve
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/connection_adapters/postgresql_adapter.rb:1151:in `async_exec'
-        ...
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/base.rb:482:in `initialize'
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/factory_girl-4.1.0/lib/factory_girl/decorator/new_constructor.rb:9:in `new'
-        ...
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/factory_girl-4.1.0/lib/factory_girl/factory_runner.rb:23:in `block in run'
-        ...
-        /home/ubuntu/FooBar/spec/factories.rb:3:in `&lttop (required)&gt'
-        ...
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/railties-3.2.6/lib/rails/railtie/configurable.rb:30:in `method_missing'
-        /home/ubuntu/FooBar/config/environment.rb:5:in `&lttop (required)&gt'
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `require'
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
+    %pre
+      %code<>
+        :preserve
+          vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/connection_adapters/postgresql_adapter.rb:1151:in `async_exec'
+          ...
+          vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/base.rb:482:in `initialize'
+          vendor/bundle/ruby/1.9.1/gems/factory_girl-4.1.0/lib/factory_girl/decorator/new_constructor.rb:9:in `new'
+          ...
+          vendor/bundle/ruby/1.9.1/gems/factory_girl-4.1.0/lib/factory_girl/factory_runner.rb:23:in `block in run'
+          ...
+          spec/factories.rb:3:in `&lttop (required)&gt'
+          ...
+          vendor/bundle/ruby/1.9.1/gems/railties-3.2.6/lib/rails/railtie/configurable.rb:30:in `method_missing'
+          config/environment.rb:5:in `&lttop (required)&gt'
+          vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `require'
+          vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
 
     %p
       Here, we can see that config/environment.rb loads, which then
