@@ -1,3 +1,8 @@
+// The <html> tags in the css won't be matched, because they are not wrapped by
+// .outer and .inner. This manifests as breaking the "wrap" tag. Really don't
+// understand why, but this fixes it.
+html { height: 100%; }
+
 .outer {
   @import "outer/outer.less";
 }
