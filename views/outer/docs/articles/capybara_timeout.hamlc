@@ -5,7 +5,7 @@
 
   .doc
     %p
-      This is an issue with the selenium-webdriver gem,
+      This is an issue with the selenium-webdriver gem.
       As Firefox updates to newer revisions, the interface used by selenium-webdriver can break.
       Fortunately, the fix is pretty easy.
 

@@ -111,7 +111,7 @@
     = HAML['heading']({title: "Setting up your dependencies", hash: "dependencies"})
     %p
       In all likelihood, you'll have a list of libraries and dependencies that your app requires.
-      We automatically detect Ruby's Gemfile, Python's Requirements.txt, Clojure's project.clj and Node's package.json, and run the appropriate commands to install the dependencies.
+      We automatically detect Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj and Node's package.json, and run the appropriate commands to install the dependencies.
       You should add an "override" command to install your commands here instead:
 
     %pre

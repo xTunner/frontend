@@ -22,7 +22,7 @@
       %li
         We immediately check your code out onto our machines, infer your settings, and run your first build.
       %li
-        Our inference algorithms looks through your dependencies, Gems, libraries and code to figure out how to run your tests.
+        Our inference algorithms look through your dependencies, Gems, libraries and code to figure out how to run your tests.
         For example, we might find that you have a standard Rails project using Postgres, with specs and features, so we'll run:
         %ol
           %li

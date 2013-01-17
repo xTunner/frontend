@@ -87,7 +87,7 @@
 
     %p
       These <i>test-ordering</i> bugs typically manifest as tests which sometimes pass and sometimes fail.
-      This distinguished them from <i>application loading-order</i> bugs because the application actually loads and starts running tests.
+      This distinguishes them from <i>application loading-order</i> bugs because the application actually loads and starts running tests.
 
     %p
       The fix here is to remove the test inter-dependencies.

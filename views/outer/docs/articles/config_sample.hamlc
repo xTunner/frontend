@@ -29,7 +29,7 @@
           machine:
 
             timezone:
-              America/Los_Angeles # Set the timezeone
+              America/Los_Angeles # Set the timezone
 
             # Version of ruby to use
             ruby:
@@ -59,7 +59,7 @@
 
             override:
               - bundle install: # note ':' here
-                  timeout: 180 # fail if test have no output for 3 minutes
+                  timeout: 180 # fail if command has no output for 3 minutes
 
           ## Customize database setup
           database:

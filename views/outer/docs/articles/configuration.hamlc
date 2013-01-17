@@ -7,7 +7,7 @@
     = HAML['heading']({title: "Overview", hash: "overview"})
 
     %p
-      If you want to tweak your Circle settings in any way, the most straight-forward way to do it is to use the
+      If you want to tweak your Circle settings in any way, the most straightforward way to do it is to use the
       %code circle.yml
       file.
       This is simply a YAML file which you place in your git repo's root directory.
@@ -44,9 +44,9 @@
       = succeed ",", ->
         %a{ href: "#timezone" }<
           time zone
-      and chooses a
+      chooses a
       %a{href: "#ruby-version"} Ruby version
-      and patchset.
+      and patchset,
       and adds a
       %a{href: "#post-test"} custom test command
       to run after the rest of your commands.
@@ -71,9 +71,9 @@
 
 
 
-    %h2 Complex behaviour
+    %h2 Complex behavior
     %p
-      Circle allows quite complex behaviour, if you need it.
+      Circle allows quite complex behavior, if you need it.
       You can override almost anything, and we make it as simple as possible.
       That said, if you find yourself relying on this section a lot, please
       = HAML['contact_us']()
@@ -89,7 +89,7 @@
       = succeed ',', ->
         %a{ href: "/docs/configuration#notify"} notifications
       each structure represents a
-      %em phases
+      %em phase
       of running your tests:
 
     %ol
@@ -100,7 +100,7 @@
       -#%li <b>compile</b>: compiling your code or assets (if necessary)
       %li <b>test</b>: running your tests
       -#%li <b>artifact</b>: uploading your artifacts for distribution
-      -#%li <b>deploy</b>: deploying your code to your web servers
+      %li <b>deployment</b>: deploying your code to your web servers
 
     %p
       Most projects won't need to specify anything for most of the phases.
@@ -190,7 +190,7 @@
 
 
     %p
-      Although override does noting, the standard pre and post sections are supported.
+      Although override does nothing, the standard pre and post sections are supported.
       For example, installing <code>elasticsearch</code>:
 
     %pre
@@ -206,7 +206,7 @@
       Timezone
 
     %p
-      Set the machine's timezone, for example:
+      Set the machine's time zone, for example:
 
     %pre
       %code.no-highlight<>
@@ -216,7 +216,7 @@
               America/Los_Angeles
 
     %p
-      Use this to override the machine's timezone, which is UTC by default.
+      Use this to override the machine's time zone, which is UTC by default.
       This overwrites
       %code /etc/timezone
       and then restarts all databases and services which rely on it.
@@ -570,7 +570,7 @@
 
     %p
       In this example, if a developer pushes to any of the branches listed, the script
-      %code merge_to_master
+      %code merge_to_master.sh
       will be run.
 
     %h4 SSH Keys
@@ -586,7 +586,7 @@
 
     %p
       We also have first-class support for deploying to Heroku.
-      Specify the add you'd like to
+      Specify the app you'd like to
       %code git push
       to under <code>appname</code>.
       Upon a successful build, we'll automatically deploy to the app in the section which matches the push, if there is one.
