@@ -59,34 +59,41 @@
         %li calling class methods on ActiveRecord code during rails configuration
         %li requiring test code (such as spec/factories.rb) at file scope
 
-      You should only require test code when in the test environment,
-      and code that refers to models should be moved into
+      You should only require test code running tests (not while
+      loading config/environment.rb), and code that instantiates
+      models or calls class methods on models should be moved into
       initializers. As a happy side-effect, your rails boot time
       should decrease!
 
     %h2 Identifying the Source
     %p
       If you have this problem, how do you figure out what line is responsible? By reading the stacktrace!
-    %pre
+    %pre.stacktrace
       %code<>
-        :preserve
-          vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/connection_adapters/postgresql_adapter.rb:1151:in `async_exec'
-          ...
-          vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/base.rb:482:in `initialize'
+        .muted<>
+          \.../activerecord-3.2.6/lib/active_record/connection_adapters/postgresql_adapter.rb:1151:in `async_exec'
+          %br/
+          \.../activerecord-3.2.6/lib/active_record/base.rb:482:in `initialize'
+          %br/
           vendor/bundle/ruby/1.9.1/gems/factory_girl-4.1.0/lib/factory_girl/decorator/new_constructor.rb:9:in `new'
-          ...
+          %br/
           vendor/bundle/ruby/1.9.1/gems/factory_girl-4.1.0/lib/factory_girl/factory_runner.rb:23:in `block in run'
-          ...
-          spec/factories.rb:3:in `&lttop (required)&gt'
-          ...
+          %br/
+          .important<>
+            spec/factories.rb:3:in `&lttop (required)&gt'
+          %br/
           vendor/bundle/ruby/1.9.1/gems/railties-3.2.6/lib/rails/railtie/configurable.rb:30:in `method_missing'
-          config/environment.rb:5:in `&lttop (required)&gt'
+          %br/
+          .important<>
+            config/environment.rb:5:in `&lttop (required)&gt'
+          %br/
           vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `require'
+          %br/
           vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
 
     %p
       Here, we can see that config/environment.rb loads, which then
-      requires spec/factories.rb, which loads activerecord. The
-      solution then, is to refactor the code in such a way that
-      spec/factories.rb isn't loaded unless the app is actually
-      started.
+      requires spec/factories.rb, which loads factorygirl, which loads
+      activerecord. The solution then, is to refactor the code in such
+      a way that spec/factories.rb isn't loaded unless tests are
+      actually run.
