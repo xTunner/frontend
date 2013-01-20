@@ -22,7 +22,7 @@
         Email Address
       %div{data-bind: "foreach: all_emails"}
         %label.radio
-          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: VM.current_user().selected_email, click: VM.current_user().save_email_address"}
+          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
           %span{data-bind: "text: $data"}
 
     %form.well

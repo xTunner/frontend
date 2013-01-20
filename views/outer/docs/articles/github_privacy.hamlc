@@ -1,0 +1,7 @@
+%article
+  - @article_tags = ['privacy_security']
+
+  = HAML['article_title']({title: "Github Integration", subtitle: "", icon: "icon-key"})
+
+  .doc
+    = HAML['article_list']({tags: ['github_privacy'], find_articles_by_tag: @find_articles_by_tag})

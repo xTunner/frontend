@@ -1,6 +1,6 @@
 %h2 Step 1: Set your personal Heroku API key
 
-%div{data-bind: "with: VM.current_user"}
+%div{data-bind: "with: $root.current_user"}
   %p{data-bind: "if: heroku_api_key"}
     Your Heroku key is entered. Great!
   %p{data-bind: "text: heroku_api_key"}
@@ -17,7 +17,7 @@
     %span{data-bind: "ifnot: heroku_deploy_user()"}
       None
 
-%div{data-bind: "if: heroku_deploy_user() == VM.current_user().login"}
+%div{data-bind: "if: heroku_deploy_user() == $root.current_user().login"}
   %form.api
     %input.btn.btn-danger{type: "submit",
                           value: "Remove Heroku Deploy User",
@@ -26,13 +26,13 @@
                           data-success-text: "Saved"}
 
 
-%div{data-bind: "if: heroku_deploy_user() != VM.current_user().login"}
+%div{data-bind: "if: heroku_deploy_user() != $root.current_user().login"}
   %p Clicking this will cause
     %strong
       all
     deploys on this project to use
     = succeed "'s SSH key", ->
-      %span{data-bind: "text: VM.current_user().login"}
+      %span{data-bind: "text: $root.current_user().login"}
     Skipping this step will result in permission denied errors when deploying.
 
     %form.api

@@ -20,7 +20,7 @@
 
         - else
           = succeed ',', ->
-            %a{ data-bind: "attr: {href: VM.build().edit_link()}" } tweak your test settings
+            %a{ data-bind: "attr: {href: $root.build().edit_link()}" } tweak your test settings
 
         or
         %span.label.label-important#white{data-bind: "click: report_build",

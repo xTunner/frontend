@@ -1,0 +1,29 @@
+%article
+  = HAML['article_title']({title: "Documentation", subtitle: "", icon: "icon-search"})
+
+  .doc
+    %h4
+      What can we help you with?
+
+    %form.form-search{ action: "", data-bind: "event: { submit: searchArticles }" }
+      %input.search-query.input-xxlarge#query{ type: 'text', name: 'query' }
+
+    %div{data-bind: "if: query_results_query"}
+      .article_list
+        %div{data-bind: "ifnot: query_results().length"}
+          %h4
+            No articles found matching
+            "
+            %span{data-bind: "text: query_results_query"}>
+            "
+        %div{data-bind: "if: query_results().length"}
+          %h4
+            Articles matching
+            "
+            %span{data-bind: "text: query_results_query"}>
+            "
+          %hr
+          %ul.query_results{data-bind: "foreach: query_results"}
+            %li
+              %a{data-bind: "attr: { href: url }"}
+                %span{data-bind: "text: title"}

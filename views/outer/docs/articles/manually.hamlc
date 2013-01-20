@@ -1,0 +1,172 @@
+%article
+  - @article_tags = [ "gettingstarted" ]
+
+  = HAML['article_title']({icon: "icon-list-alt", title: "Setting your build up manually", lastUpdated: "Aug 13, 2012", subtitle: "Step by step instructions"})
+
+  .doc
+    %p
+      Circle is designed to automatically set up your tests.
+      However, if you have an unusual setup, or work in a platform which has no idiomatic way to set up your project, you'll need to set it up manually.
+      Fortunately, this is very simple to do, and usually can be completed in 20 minutes by following this guide.
+
+    = HAML['heading']({title: "Standard projects not inferred", hash: "standard"})
+
+    %p
+      If you have a standard project, and we didn't set it up, it is most commonly because the project is in a subdirectory.
+      This is easy to fix: just add an empty file called <code>circle.yml</code>, and we'll pick it up and run your tests from there.
+      If you need to configure your project, you can
+      = succeed '.', ->
+        %a{ href: "/docs/configuration"}
+          add your settings to the
+          %code circle.yml
+          file in the standard way
+
+
+    = HAML['heading']({title: "Anatomy of testing a web app", hash: "overview"})
+
+    %p
+      From here, we'll assume you're manually setting up your tests.
+      Most web applications have a standard set of steps that need to be run in order to be tested:
+
+    %ul
+      %li Configure the test machine
+      %li Checkout your code
+      %li Set up your test dependencies
+      %li Set up your test databases
+      %li Run your tests
+      %li (Optionally) deploy your code
+
+    %p
+      You'll basically be listing bash commands for each step, and each command will be run in order.
+      Failing commands (those with a non-zero exit code) will cause the whole process to stop, and you'll receive a notification.
+
+
+    = HAML['heading']({title: "The circle.yml file", hash: "circle-yml"})
+    %p
+      The first configuration step is to add an empty
+      %code circle.yml
+      file to the root directory of your repository.
+      We recommend adding this on a branch the first time, so you don't piss off your team mates.
+
+    %p
+      We have provided a
+      %a{ href: "/docs/configuration"}
+        full reference for the
+        %code circle.yml
+        file
+      but you won't need that for now
+      &ndash;
+      we'll guide you through the first steps and you can check out the comprehensive docs later.
+
+    %p
+      Each section described above has a corresponding section in the
+      %code circle.yml
+      file, with 3 subsections: <i>override</i>, <i>pre</i>, and <i>post</i>.
+      Each subsection should contain a list of bash commands for that phase (<i>override</i>) or before the phase (<i>pre</i>) or after it (<i>post</i>).
+      If no <i>override</i> commands are provided, we'll automatically infer the commands you want for that phase.
+
+
+    = HAML['heading']({title: "Setting up your test machine", hash: "machine"})
+    %p
+      For the most part, there is nothing to do to set up the test machine.
+      We have already installed the most common libraries, languages, browsers and databases that you'll need.
+      See
+      %a{ href: "/docs/environment" } the Circle environment
+      for a comprehensive list of what we have installed.
+      If you need anything else installed, we can do that very quickly (we don't provide root access however, for security reasons).
+
+    %p
+      You can also tweak some common settings, such as the timezone, language version used, and
+      %code /etc/hosts
+      contents, in the
+      = succeed '.', ->
+        %a{href: "/docs/configuration#machine"}<
+          machine section of the
+          %code circle.yml
+          file
+
+
+    = HAML['heading']({title: "Checking code out", hash: "checkout"})
+    %p
+      Circle will check out your code from your GitHub repository for you.
+      Currently, we don't check out submodules, so you may need to add a command for this yourself, like so:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          checkout:
+            post:
+              \- git submodule update --init
+
+    %p
+      If you have any files in your repositories which need to be moved, this is also a good time to do it:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          checkout:
+            post:
+              \- cp ./ci-server/config.yml ./app-server/config.yml
+
+    = HAML['heading']({title: "Setting up your dependencies", hash: "dependencies"})
+    %p
+      In all likelihood, you'll have a list of libraries and dependencies that your app requires.
+      We automatically detect Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj and Node's package.json, and run the appropriate commands to install the dependencies.
+      You should add an "override" command to install your commands here instead:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          checkout:
+            post:
+              \- python ./install-packages
+
+    = HAML['heading']({title: "Setting up your test databases", hash: "databases"})
+    %p
+      We have already installed
+      %a{ href: "/docs/environment#databases"} most databases that you'll need
+      on our virtual machine.
+
+    %p
+      In this step, you'll want to create your database, load it with your schema, and possibly preload it with data.
+      If you use MySQL or Postgres, you can use the
+      %code circle_test
+      database and the
+      %code ubuntu
+      user, if you do not want to create the database yourself.
+      There is no password required on any database.
+
+
+    = HAML['heading']({title: "Running your tests", hash: "tests"})
+    %p
+      Now that everything is prepared, you'll want to run your tests.
+      Add your test commands to the
+      %code circle.yml
+      file.
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          test:
+            override:
+              \- php ./test-suite/run.php --unit-tests
+
+    %p
+      Depending on how you structured your tests, you may need to start your application server first:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          test:
+            override:
+              \- php ./app/run-server.php --daemon
+              \- php ./test-suite/run.php --unit-tests
+
+    = HAML['heading']({title: "Next steps", hash: "next"})
+    %p
+      Once you've gotten your tests set up, you may find that they fail.
+      We have collected a
+      %a{href: "/docs/common-problems"} list of common problems and their solutions
+      which should help you debug your issues.
+      We also have an SSH feature which runs your tests while allowing you to SSH in.
+      This is very useful for debugging, and also for poking at our virtual machines to understand them better.

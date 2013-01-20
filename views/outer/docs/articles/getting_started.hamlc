@@ -1,0 +1,79 @@
+%article
+  - @article_tags = [ "gettingstarted" ]
+
+  = HAML['article_title']({icon: "icon-play", title: "Getting started with Circle", lastUpdated: "Aug 1, 2012", subtitle: "An overview of Circle"})
+
+  .doc
+    = HAML['heading']({title: "Overview", hash: "overview"})
+
+    %p Setting up Circle for your project should be a matter of 3 mouse clicks:
+    %ol
+      %li Sign up to Circle,
+      %li Give Circle permission to access GitHub on your behalf,
+      %li Click on a project
+
+    %p
+      It really is that easy, in about 90% of cases.
+
+    %p
+      The reason it's so easy is that we automatically infer your settings from your code.
+      We expect you have a project which roughly follows best practices for your platform.
+      If you do, your tests will be up and running in mere moments.
+
+      Add
+      your
+      %a{ href: "/" } first project
+      now!
+
+    %p<>
+      = surround "(", ")", ->
+        %b> Related: &nbsp;
+        %a.related{href: "/docs/faq#what-happens"}<
+          What happens when you add a project?
+
+
+    %h2 When the magic doesn't work?
+
+    %p
+      Of course, life is not always sunshine and daisies.
+      Sometimes your tests will fail, or we won't infer your custom setup, or our inference won't be aware of your test suite.
+
+    %ul
+      %li
+        If we didn't run an important step or omitted some tests,
+        %a{ href: "/docs/configuration"}
+          add a
+          %code.inline circle.yml
+          file
+        to tweak your test run.
+
+      %li
+        If we didn't infer anything, you can still
+        = succeed '.', ->
+          %a{ href: "/docs/manually"}
+            set your project up manually
+
+      %li
+        Sometimes, your tests won't work on our server, even though they work locally.
+        Read our list of
+        %a{ href: "/docs/common-problems"} common problems
+        and their solutions.
+
+
+    = HAML['heading']({title: "What next?", hash: "what-next"})
+
+    %h2 Add your colleagues
+    %p
+      Testing is no fun if you're the only one playing.
+      Circle is designed around the idea of every person having their own account.
+      You can invite your colleagues by sending them the original invite code you used
+      = surround "(", ").", ->
+        %a{href: "mailto:sayhi@circleci.com"}<>
+          ask us if you lost your code or haven't got on yet
+
+    %h2 Add more projects
+    %p
+      Even if you only commit to a project once a month, or if the project is just started, adding it to Circle will help keep it working.
+      Add them from the
+      = succeed ".", ->
+        %a{ href: "/"} dashboard

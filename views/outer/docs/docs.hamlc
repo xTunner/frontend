@@ -1,20 +1,8 @@
 #title
-  %h1 Documentation
+  %h1
+    Documentation
 
 #content
-  %section.doc-title
-    %h1 How can we help you?
-
-    %hr
-
-  %section.categories
-    - for k,c of @categories
-      %ul
-        %li
-          %a{ href: c.url }
-            %i{ class: c.icon }
-            %hgroup
-              %h2= c.title
-              %h3= c.subtitle
-
-    %aside.status
+  %section.article
+    = HAML['categories']({categories: @categories, page: @pagename})
+    = HAML[@pagename](find_articles_by_tag: @find_articles_by_tag)

@@ -1,1 +1,1 @@
-%a{href: "#", data-bind: "click: VM.raiseIntercomDialog"} contact us
+%a{href: "#", data-bind: "click: $root.raiseIntercomDialog"} contact us

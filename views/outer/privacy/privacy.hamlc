@@ -32,7 +32,8 @@
       in their repositories.
 
     %p
-      Currently, only the founders have the ability to check out your code, though senior employees will in the future.
+      Currently, only key employees have the ability to check out your code, including the founders and senior engineers.
+      All of these employees are located in the US.
       To reiterate, we would only do so in response to a support request, with explicit permission.
       Contractors will never be given access to customer code.
 
@@ -83,7 +84,7 @@
       and by removing Circle's <i>Deploy Keys</i> and <i>Service Hooks</i> from your repositories' <i>Admin</i> pages.
 
     %p
-      While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" -- Circle gets permission to access all of a user's repositories or none of them.
+      While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" &mdash; Circle gets permission to access all of a user's repositories or none of them.
       We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term.
       Please
       %a{href: "https://github.com/contact"} contact GitHub
@@ -132,6 +133,9 @@
         %h3 Change log:
         %ul
           %li
+            %b Dec 22, 2012:
+            We now have employees.
+          %li
             %b July 3, 2012:
             Clarified that only tested project are analyzed.
           %li
@@ -179,11 +183,25 @@
           for a detailed discussion of how they may access this.
 
         %li
-          %a{href: "https://intercom.io"} Intercom
-          provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
-          Intercom uses this information in order to provide their service, but does not share it otherwise.
+          %p
+            %a{href: "https://intercom.io"} Intercom
+            provides our CRM, and we provide them with your email address, real name, join date, and some custom data.
+            Intercom uses this information in order to provide their service, but does not share it otherwise.
+            See
+            %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
+            for more detail.
+
+          %p
+            We also use Intercom for our support system, including the friendly "Help" button used throughout Circle, and all support via the site goes through Intercom. To avoid this, you may contact us directly through any medium on the
+            = succeed ".", ->
+              %a{href: "/about#contact"} contact page
+
+
+        %li
+          %a{href: "https://kissmetrics.com"} KissMetrics
+          is used for SaaS marketing, including A/B testing, funnel tracking, and other conversion-rate optimization techniques.
           See
-          %a{href: "http://docs.intercom.io/privacy.html"} Intercom's privacy policy
+          %a{href: "http://www.kissmetrics.com/user-privacy"} KissMetrics' privacy policy
           for more detail.
 
         %li
@@ -195,9 +213,12 @@
           discusses how they use this information.
 
 
-      #changelog#privacy-changelog
-        %h3 Change log:
-        %ul
-          %li
-            %b March 26, 2012:
-            Initial version.
+    #changelog#privacy-changelog
+      %h3 Change log:
+      %ul
+        %li
+          %b Dec 22, 2012:
+          Include KissMetrics and their privacy policy. Expand Intercom discussion.
+        %li
+          %b March 26, 2012:
+          Initial version.

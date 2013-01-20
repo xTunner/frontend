@@ -5,17 +5,15 @@ Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmai
 */
 
 pre code {
-  display: block;
-  padding: 0.5em;
-  background: #002b36 url(../img/solarized-dark-pattern.png);
-  .box-shadow(inset 0px 0px 12px hsla(192, 100%, 5%, 0.7));
-  color: #839496;
+  display: block; padding: 0.5em;
+  background: #002b36; color: #839496;
 }
 
 pre .comment,
 pre .template_comment,
 pre .diff .header,
 pre .doctype,
+pre .pi,
 pre .lisp .string,
 pre .javadoc {
   color: #586e75;
@@ -23,13 +21,13 @@ pre .javadoc {
 }
 
 pre .keyword,
-pre .css .rule .keyword,
 pre .winutils,
-pre .javascript .title,
 pre .method,
 pre .addition,
 pre .css .tag,
-pre .lisp .title {
+pre .request,
+pre .status,
+pre .nginx .title {
   color: #859900;
 }
 
@@ -46,47 +44,38 @@ pre .hexcolor {
 
 pre .title,
 pre .localvars,
-pre .function .title,
 pre .chunk,
 pre .decorator,
-pre .builtin,
 pre .built_in,
-pre .lisp .title,
 pre .identifier,
-pre .title .keymethods,
+pre .vhdl .literal,
 pre .id {
   color: #268bd2;
 }
 
-pre .tag .title,
-pre .rules .property,
-pre .django .tag .keyword {
-  font-weight: bold;
-}
-
 pre .attribute,
 pre .variable,
-pre .instancevar,
 pre .lisp .body,
 pre .smalltalk .number,
 pre .constant,
 pre .class .title,
 pre .parent,
-pre .haskell .label {
+pre .haskell .type {
   color: #b58900;
 }
 
 pre .preprocessor,
-pre .pi,
+pre .preprocessor .keyword,
 pre .shebang,
 pre .symbol,
+pre .symbol .string,
 pre .diff .change,
 pre .special,
-pre .keymethods,
 pre .attr_selector,
 pre .important,
 pre .subst,
-pre .cdata {
+pre .cdata,
+pre .clojure .title {
   color: #cb4b16;
 }
 
@@ -96,17 +85,4 @@ pre .deletion {
 
 pre .tex .formula {
   background: #073642;
-}
-
-.summary {
-  /* Reset code style */
-  code {
-    border: none;
-    padding: 10px 15px;
-  }
-
-  pre {
-    padding: 0;
-    border-color: #586e75;
-  }
 }

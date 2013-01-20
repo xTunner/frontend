@@ -30,7 +30,7 @@
                 Documentation
 
             %li
-              %a{href: "#", data-bind: "click: VM.raiseIntercomDialog"}
+              %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
                 Support
 
             %li
@@ -48,5 +48,5 @@
                 %a{href: "/admin/recent-builds"} Recent builds
               %li
                 %a{href: "/admin/projects"} Projects
-              %li
-                %a{data-bind: "attr: {href: VM.intercomUserLink}"} Find project on Intercom
+              -# %li
+              -#   %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom

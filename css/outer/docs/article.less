@@ -1,5 +1,5 @@
 // Article view
-#docs-page > #content .title {
+#docs-page #content .title {
   position: relative;
 
   & > h1 {
@@ -36,7 +36,7 @@
   }
 }
 
-#docs-page > #content {
+#docs-page #content {
   article {
     background: white;
     margin-bottom: 50px;
@@ -158,6 +158,22 @@
       }
 
       i { padding-left: 5px; }
+    }
+
+    img {
+      background: #F5F9FD;
+      padding: 15px 10px;
+    }
+    pre.stacktrace {
+      code {
+        overflow: auto;
+        white-space: nowrap;
+        .important{
+          display: inline;
+        }
+        .unimportant{
+        }
+      }
     }
 
     table {

@@ -1,0 +1,10 @@
+.title
+  %h1= @title
+    %i{class: @icon}
+  - if @lastUpdated
+    %p
+      Last Updated:
+      = @lastUpdated
+  - if @subtitle
+    %h4= @subtitle
+  %hr

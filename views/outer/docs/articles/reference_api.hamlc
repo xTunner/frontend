@@ -1,0 +1,155 @@
+%article
+  - # @article_tags = [ "reference" ]
+
+  = HAML['article_title']({icon: "icon-lock", title: 'The Circle REST API', lastUpdated: "Aug 23, 2012", subtitle: "Embrace and Extend"})
+
+  .doc
+    = HAML['heading']({title: "The Circle API", hash: "intro"})
+    %p
+      The Circle API is a RESTy, fully-featured API that allows you to do almost anything in Circle.
+      You can access all information and trigger all actions.
+      The only thing we don't provide access to is billing functions, which must be done from the Circle web UI.
+
+    = HAML['heading']({title: "Getting started", hash: "getting-started"})
+    %ol
+      %li
+        Add an API token from your
+        = succeed '.', ->
+          %a{ href: "https://circleci.com/account/api"} account dashboard
+
+      %li
+        To test it, call the API using <code>curl</code>:
+        %pre
+          %code.bash<>
+            :preserve
+              $ curl https://circleci.com/api/v1/me?circle-token=TOKEN -H "Accept: application/json"
+
+      %li
+        You should see a response like the following:
+        %pre
+          %code.no-highlight<>
+            :preserve
+              {
+                "user_key_fingerprint" : null,
+                "days_left_in_trial" : -238,
+                "plan" : "p16",
+                "trial_end" : "2011-12-28T22:02:15Z",
+                "tokens" : [ {
+                  "label" : "CCMenu",
+                  "token" : "TOKEN",
+                  "time" : "2012-05-27T05:26:21Z"
+                } ],
+                "basic_email_prefs" : "smart",
+                "admin" : true,
+                "login" : "pbiggar"
+              }
+
+    = HAML['heading']({title: "Making calls", hash: "calling"})
+    %p
+      All API calls are made in the same way, by making standard HTTP calls, using JSON, a content-type, and your API token.
+      All Circle API endpoints begin in
+      <code>"https://circleci.com/api/v1/"</code>.
+
+    %h2 Authentication
+    %p
+      To authenticate, add an API token using your
+      = succeed '.', ->
+        %a{ href: "https://circleci.com/account/api"} account dashboard
+      To use the API token, add it to the
+      %code circle-token
+      query param, like so:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          curl https://circleci.com/api/v1/me?circle-token=TOKEN
+
+    %h2 Accept header
+    %p
+      If you specify no accept header, we'll return human-readable JSON with comments.
+      If you prefer to receive compact JSON with no whitespace or comments, add the <code>"application/json" Accept header</code>.
+      Using <code>curl</code>:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          curl https://circleci.com/api/v1/me?circle-token=TOKEN -H "Accept: application/json"
+
+
+    = HAML['heading']({title: "User", hash: "user"})
+    %p
+      Provides information about the signed in user.
+      You can also &nbsp;
+      = succeed '.', ->
+        %a{href: "https://circleci.com/api/v1/me?circle-token=TOKEN"}<>
+          view this information in the browser
+
+    %h4 Example call
+    %pre
+      %code.no-highlight<>
+        :preserve
+          curl https://circleci.com/api/v1/me?circle-token=TOKEN
+
+    %h4 Example response
+    %pre
+      %code.no-highlight<>
+        :preserve
+          {
+            "basic_email_prefs" : "smart", // can be "smart", "none" or "all"
+            "login" : "pbiggar" // your github username
+          }
+
+
+
+    = HAML['heading']({title: "Projects", hash: "projects"})
+    %p
+      Circle projects correspond to GitHub repositories.
+      Read a list of builds for a project
+
+
+
+    %h2
+    -# (def api1-project "/api/v1/project/:username/:project")
+
+    %h4 Example call
+    %pre
+      %code.no-highlight<>
+        :preserve
+          curl https://circleci.com/api/v1/me?circle-token=TOKEN
+
+    %h4 Example response
+    %pre
+      %code.no-highlight<>
+        :preserve
+          {
+            "basic_email_prefs" : "smart", // can be "smart", "none" or "all"
+            "login" : "pbiggar" // your github username
+          }
+
+
+
+-# TODO now
+
+-# (def api1-recent-builds "/api/v1/recent-builds")
+-# (def api1-build "/api/v1/project/:username/:project/:build_num")
+-# (def api1-retry-build "/api/v1/project/:username/:project/:build_num/retry")
+-# (def api1-ssh-build "/api/v1/project/:username/:project/:build_num/ssh")
+
+
+-# TODO soon
+-# (def api1-projects "/api/v1/projects")
+
+
+
+-# maybe later
+-# (def api1-invite "/api/v1/account/invite")
+-# (def api1-organizations "/api/v1/user/organizations")
+-# (def api1-create-token "/api/v1/user/create-token")
+-# (def api1-user-key "/api/v1/user/ssh-key")
+-# (def api1-user-heroku-apikey "/api/v1/user/heroku-key")
+-# (def api1-project-settings "/api/v1/project/:username/:project/settings")
+-# (def api1-save-preferences "/api/v1/user/save-preferences")
+-# (def api1-project-follow "/api/v1/project/:username/:project/follow")
+-# (def api1-project-unfollow "/api/v1/project/:username/:project/unfollow")
+-# (def api1-project-heroku-deploy-user "/api/v1/project/:username/:project/heroku-deploy-user")
+-# (def api1-project-github-user "/api/v1/project/:username/:project/github-user")

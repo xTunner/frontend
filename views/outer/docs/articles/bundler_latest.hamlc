@@ -1,0 +1,21 @@
+%article
+  - @article_tags = ['ruby']
+
+  = HAML['article_title']({title: "Do you need the latest version of Bundler?", icon: "icon-download"})
+
+  .doc
+    %p
+      If you use Heroku, you probably already use the latest version of bundler.
+      Circle uses a slightly older version, but can be easily set to upgrade to the latest version.
+      Just add the following to your
+      %a{href: "/docs/configuration"}
+        circle.yml
+      file.
+
+    %pre
+      %code.bash<>
+        :preserves
+          dependencies:
+            pre:
+              - gem uninstall bundler
+              - gem install bundler --pre

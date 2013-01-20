@@ -1,0 +1,62 @@
+// Bootstrap
+// -------------------------
+@import "bootstrap-variables.less";
+@import "../shared/bootstrap-files.less";
+
+// FontAwesome
+// -------------------------
+@import "../../vendor/font-awesome/less/font-awesome.less";
+@fontAwesomePath: "../vendor/font-awesome/font";
+
+// Image path helper
+// -------------------------
+@imgPath: "../../img";
+
+// Navbar
+// -------------------------
+.navbar {
+  background: #134374;
+
+  .container {
+    height: 50px;
+  }
+}
+
+.navbar-inner {
+  margin-top: 4px;
+
+  .navbar-inverse & {
+    background-color: #4e7297;
+    background-image: url("@{imgPath}/navbar-texture.png");
+    background-position-y: 1px;
+    border-bottom: 1px solid #214062;
+    border-top: 1px solid #0d2e50;
+  }
+}
+
+html { height: 100%; }
+
+// Legacy imports
+// -------------------------
+@import "../shared/grid";
+@import "../shared/blocks/header";
+@import "../shared/blocks/footer";
+@import "../shared/blocks/title";
+@import "../shared/blocks/flash";
+@import "../shared/blocks/wrap";
+@import "../shared/blocks/content";
+@import "../shared/syntax/solarized_light";
+@import "home/teaser";
+@import "home/features";
+@import "home/testimonials";
+@import "home/power";
+@import "about/team";
+@import "about/contact";
+@import "privacy/privacy.less";
+@import "docs/article.less";
+@import "docs/categories.less";
+@import "docs/topics.less";
+@import "docs/related.less";
+@import "error/error.less";
+@import "../shared/functions.less";
+@import "../inner/billing.less";
