@@ -19,5 +19,5 @@
           %li{data-bind: "visible: project.show_branch_p(branch_name)"}
             %span{style: "padding-left: 15px"} &#8970;
             %a{data-bind: "attr: {href: project.branch_path(branch_name)}, text: project.format_branch_name(branch_name)"}
-            %span.pull-right{data-bind: "foreach: {data: project.latest_branch_builds(branch_name), as: 'build'}"}
+            %span.pull-right{data-bind: "foreach: {data: project.latest_branch_build(branch_name), as: 'build'}"}
               %a.build_status{data-bind: "attr: {href: project.build_path(build_num)}, text: build_num, css: style"}
