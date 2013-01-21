@@ -89,13 +89,23 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   selectPlan: (plan) =>
     if plan.price?
+      @oldPlan(@chosenPlan())
       @chosenPlan(plan)
       if @wizardCompleted()
-        SammyApp.setLocation "/account/plans#card"
+        $("#confirmForm").modal({keyboard: false})
       else
         @advanceWizard(2)
     else
       VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
+
+
+  cancelUpdate: (data, event) =>
+    $('#confirmForm').modal('hide')
+    @chosenPlan(@oldPlan())
+
+  doUpdate: (data, event) =>
+    @stripeUpdate(data, event)
+    $('#confirmForm').modal('hide')
 
   load: (hash="small") =>
     unless @loaded

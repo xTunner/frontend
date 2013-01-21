@@ -76,3 +76,26 @@
           %td{data-bind: "css: featureAvailable($parent)"}
           / /ko
         / /ko
+
+
+#confirmForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "conformFormLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", data-bind: "click: cancelUpdate"} &times;
+    %h3#confirmFormLabel
+      Change your plan
+  .modal-body
+    %p
+      Your old total was
+      = precede '$', ->
+        = succeed '.', ->
+          %span{data-bind: "text: oldTotal"}<>
+    %p
+      Your new total is
+      = precede '$', ->
+        = succeed '.', ->
+          %span{data-bind: "text: total"}<>
+  .modal-footer
+    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: cancelUpdate"}
+      Cancel
+    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: doUpdate"}
+      Confirm plan change
