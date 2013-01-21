@@ -11,13 +11,13 @@
 
         %a.nav-menu-item{data-bind: "attr: { href: project_path }, text: project_display_name"}
 
-        %span.nav-menu-status.build_status{data-bind: "with: latest_build()"}
+        %span.nav-menu-status.build_status.pull-right{data-bind: "with: latest_build()"}
           %span{data-bind: "attr: { class: style }"}
             %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
 
         %ul.unstyled{data-bind: "foreach: {data: project.branch_names(), as: 'branch_name'}"}
-          %li{data-bind: "visible: project.show_branch_p(branch_name)"}
+          %li{data-bind: "visible: project.show_branch_p(branch_name)", style: "clear: both"}
             %span{style: "padding-left: 15px"} &#8970;
             %a{data-bind: "attr: {href: project.branch_path(branch_name)}, text: project.format_branch_name(branch_name)"}
-            %span.pull-right{data-bind: "foreach: {data: project.latest_branch_build(branch_name), as: 'build'}"}
+            %span.pull-right{data-bind: "with: project.latest_branch_build(branch_name)"}
               %a.build_status{data-bind: "attr: {href: project.build_path(build_num)}, text: build_num, css: style"}

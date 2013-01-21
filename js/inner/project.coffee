@@ -118,8 +118,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
         false
 
     @latest_branch_build = (branch_name) =>
-      if @branches()[branch_name]
-        new CI.inner.Build(b) for b in (@branches()[branch_name].recent_builds or [])[0..0]
+      if @branches()[branch_name] and @branches()[branch_name].recent_builds
+        new CI.inner.Build(@branches()[branch_name].recent_builds[0])
 
     @build_path = (build_num) =>
       @project_path() + "/" + build_num
