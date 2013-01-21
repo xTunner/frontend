@@ -11,7 +11,7 @@
 
       .dashboard-main
         %div{data-bind: "ifnot: project_builds_have_been_loaded"}
-          %img{src: "#{renderContext.assetsRoot}/img/ajax-loader.gif"}
+          %i{class: "icon-refresh icon-spin"}
         %div{data-bind: "if: project_builds_have_been_loaded"}
           = HAML['builds']({builds: "builds", mention_project: false, pagination: false})
 
