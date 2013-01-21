@@ -1,10 +1,19 @@
 = HAML['_topbar']({crumbs: HAML['topbar_project']({project: @project})})
 
-.container-fluid
+.container-fluid#dashboard
+  .row-fluid
+    .span-menu.menu-left
+      = HAML['followed_sidebar']({})
+      = HAML['action_sidebar']({})
 
-  = HAML['flashes']({})
+    .span-flex
+      = HAML['flashes']({})
 
-  = HAML['builds']({builds: "builds", mention_project: false, pagination: false})
+      .dashboard-main
+        %div{data-bind: "ifnot: project_builds_have_been_loaded"}
+          %img{src: "#{renderContext.assetsRoot}/img/ajax-loader.gif"}
+        %div{data-bind: "if: project_builds_have_been_loaded"}
+          = HAML['builds']({builds: "builds", mention_project: false, pagination: false})
 
 -# .running-jobs
 -#   = javascript_include_tag "https://d3dy5gmtp8yhk7.cloudfront.net/1.11/pusher.min.js"

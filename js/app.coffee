@@ -22,6 +22,7 @@ class CircleViewModel extends CI.inner.Obj
     @build_state = ko.observable()
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false);
+    @project_builds_have_been_loaded = ko.observable(false);
 
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
@@ -125,12 +126,21 @@ class CircleViewModel extends CI.inner.Obj
     display "add_projects", {}
 
 
-  loadProject: (cx, username, project) =>
+  loadProject: (cx, username, project, branch) =>
+    if @projects().length is 0 then @loadProjects()
+
     project_name = "#{username}/#{project}"
+    path = "/api/v1/project/#{project_name}"
+    path += "/tree/#{encodeURIComponent(branch)}" if branch?
+
     @builds.removeAll()
-    $.getJSON "/api/v1/project/#{project_name}", (data) =>
+    @project_builds_have_been_loaded(false)
+    $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
-    display "project", {project: project_name}
+      @project_builds_have_been_loaded(true)
+    display "project",
+      project: project_name
+      branch: branch
 
 
   loadBuild: (cx, username, project, build_num) =>
@@ -303,6 +313,8 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
+    @get '^/gh/:username/:project/tree/:branch',
+      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
     @get '^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
     @get('^/gh/:username/:project',

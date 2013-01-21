@@ -50,6 +50,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
+    ## Parallelism
+
     # TODO: maybe this should return null if there are no plans
     #       should also probably load plans
     @plan = @komp =>
