@@ -24,8 +24,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loaded_paying_user: false
     trial_parallelism: null
     retried_build: null
-    branch_names: []
-    branches: []
+    branches: null
+    default_branch: null
 
   constructor: (json) ->
 
@@ -115,7 +115,28 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @focused_parallel_cost_increase = @komp =>
       VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
 
+    ## Sidebar
+    @branch_names = @komp =>
+      names = (k for own k, v of @branches())
+      names.sort()
 
+    @show_branch_p = (branch_name) =>
+      if branch_name is @default_branch()
+        true
+      else if @branches()[branch_name] and @branches()[branch_name].pusher_logins
+        VM.current_user().login in @branches()[branch_name].pusher_logins
+      else
+        false
+
+    @latest_branch_build = (branch_name) =>
+      if @branches()[branch_name]
+        new CI.inner.Build(b) for b in (@branches()[branch_name].recent_builds or [])[0..0]
+
+    @build_path = (build_num) =>
+      @project_path() + "/" + build_num
+
+    @branch_path = (branch_name) =>
+      "#{@project_path()}/tree/#{branch_name}"
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
