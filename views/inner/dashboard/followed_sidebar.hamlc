@@ -3,9 +3,9 @@
     Followed Projects
 
   %li
-    %ul.nav-menu{data-bind: "foreach: {data: followed_projects(), as: 'project'}"}
+    %ul.unstyled{data-bind: "foreach: {data: followed_projects(), as: 'project'}"}
 
-      %li.nav-menu-row
+      %li
         %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
           %i.icon-cog
 
@@ -14,3 +14,10 @@
         %span.nav-menu-status.build_status{data-bind: "with: latest_build()"}
           %span{data-bind: "attr: { class: style }"}
             %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+
+        %ul.unstyled{data-bind: "foreach: {data: project.branch_names(), as: 'branch_name'}"}
+          %li{data-bind: "visible: project.show_branch_p(branch_name)"}
+            %span{style: "padding-left: 15px"} &#8970;
+            %a{data-bind: "attr: {href: project.branch_path(branch_name)}, text: project.format_branch_name(branch_name)"}
+            %span.pull-right{data-bind: "foreach: {data: project.latest_branch_builds(branch_name), as: 'build'}"}
+              %a.build_status{data-bind: "attr: {href: project.build_path(build_num)}, text: build_num, css: style"}
