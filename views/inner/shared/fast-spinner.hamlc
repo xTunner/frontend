@@ -1,0 +1,2 @@
+%span{class: "icon-spin"}
+  %i{class: "icon-refresh icon-spin"}
