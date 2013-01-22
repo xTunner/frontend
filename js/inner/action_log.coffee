@@ -19,7 +19,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     @success = @komp =>
       @status() == "success"
 
-    @failed = @komp => @status() == "failed" or @status() == "timedout"
+    @failed = @komp => @status() == "failed" or @status() == "timedout" or @status() == "cancelled"
     @infrastructure_fail = @komp => @status() == "infrastructure_fail"
 
     # Expand failing actions
@@ -43,6 +43,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       timedout: @komp => @status() == "timedout"
       success: @komp => @status() == "success"
       failed: @komp => @status() == "failed"
+      cancelled: @komp => @status() == "cancelled"
 
     @action_header_button_style = @komp =>
       if @has_content()
