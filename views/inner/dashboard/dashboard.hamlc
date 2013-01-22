@@ -10,10 +10,15 @@
       = HAML['flashes']({})
 
       .dashboard-main
-        %div{data-bind: "ifnot: projects_have_been_loaded"}
-          %img{src: "#{renderContext.assetsRoot}/img/ajax-loader.gif"}
+        %div{data-bind: "ifnot: recent_builds_have_been_loaded"}
+          .centered-spinner
+            %span{data-bind: "if: VM.turbo_mode"}
+              %div{style: "margin-top: 100px"}
+                = HAML['turbo_spinner']()
+            %span{data-bind: "ifnot: VM.turbo_mode"}
+              = HAML['fast_spinner']()
 
-        %div{data-bind: "if: projects_have_been_loaded"}
+        %div{data-bind: "if: recent_builds_have_been_loaded"}
 
           %div{data-bind: "if: has_no_followed_projects()"}
             %h1 You don't have any projects in CircleCI!

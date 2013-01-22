@@ -12,6 +12,7 @@ class CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
+    @turbo_mode = ko.observable(false)
 
     # inner
     @build = ko.observable()
@@ -21,9 +22,10 @@ class CircleViewModel extends CI.inner.Obj
     @recent_builds = ko.observableArray()
     @build_state = ko.observable()
     @admin = ko.observable()
-    @refreshing_projects = ko.observable(false);
+    @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
-    @project_builds_have_been_loaded = ko.observable(false);
+    @recent_builds_have_been_loaded = ko.observable(false)
+    @project_builds_have_been_loaded = ko.observable(false)
 
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
@@ -92,8 +94,8 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON '/api/v1/projects', (data) =>
       projects = (new CI.inner.Project d for d in data)
       projects.sort CI.inner.Project.sidebarSort
-      @projects_have_been_loaded(true)
       @projects(projects)
+      @projects_have_been_loaded(true)
 
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
@@ -112,6 +114,7 @@ class CircleViewModel extends CI.inner.Obj
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
+      @recent_builds_have_been_loaded(true)
       @recent_builds((new CI.inner.Build d for d in data))
 
   loadDashboard: (cx) =>

@@ -1,6 +1,8 @@
 %ul.nav.nav-list.well
   %li.nav-header
     Followed Projects
+    %span{data-bind: "ifnot: projects_have_been_loaded", class: "icon-spin"}
+      = HAML['fast_spinner']()
 
   %li
     %ul.unstyled{data-bind: "foreach: {data: followed_projects(), as: 'project'}"}
