@@ -12,11 +12,7 @@
       .dashboard-main
         %div{data-bind: "ifnot: recent_builds_have_been_loaded"}
           .centered-spinner
-            %span{data-bind: "if: VM.turbo_mode"}
-              %div{style: "margin-top: 100px"}
-                = HAML['turbo_spinner']()
-            %span{data-bind: "ifnot: VM.turbo_mode"}
-              = HAML['fast_spinner']()
+            = HAML['fast_spinner']()
 
         %div{data-bind: "if: recent_builds_have_been_loaded"}
 
