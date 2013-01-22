@@ -141,8 +141,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
     if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?
       new CI.inner.Build @branches()[@default_branch()].recent_builds[0]
 
-  format_branch_name: (name) =>
-    decodeURIComponent(name)
+  format_branch_name: (name, len) =>
+    decoded_name = decodeURIComponent(name)
+    if len?
+      CI.stringHelpers.trimMiddle(decoded_name, len)
+    else
+      decoded_name
 
   retry_latest_build: =>
     @latest_build().retry_build()
