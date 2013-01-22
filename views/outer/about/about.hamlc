@@ -41,7 +41,7 @@
           .visual
             -# If photo has not been defined for user, use .visual bg image
             - if user.photo
-              %img.photo{ src: "img/team-#{user.photo}-tb.jpg" }
+              %img.photo{ src: "#{renderContext.assetsRoot}/img/team-#{user.photo}-tb.jpg" }
 
   %section.contact
     %a{name: 'contact'}

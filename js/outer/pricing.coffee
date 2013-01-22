@@ -7,3 +7,5 @@ CI.outer.Pricing = class Pricing extends CI.outer.Page
       delay: 0
       trigger: "hover"
       selector: ".more-info"
+  lib: () =>
+    @popover()

@@ -18,14 +18,14 @@
           %a{ href: "https://circleci.com/account/api"} account dashboard
 
       %li
-        Call the API using Curl:
+        To test it, call the API using <code>curl</code>:
         %pre
           %code.bash<>
             :preserve
               $ curl https://circleci.com/api/v1/me?circle-token=TOKEN -H "Accept: application/json"
 
       %li
-        See the response:
+        You should see a response like the following:
         %pre
           %code.no-highlight<>
             :preserve

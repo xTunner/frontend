@@ -16,7 +16,7 @@
       Near the upper right corner of each build page, you'll find a
       blue 'SSH' button:
 
-    %img{src: "/img/docs/ssh-build-button.png"}
+    %img{src: "#{renderContext.assetsRoot}/img/docs/ssh-build-button.png"}
 
     %p
       Clicking this button will start a new build with remote SSH
@@ -24,12 +24,12 @@
       see a section labeled 'Enable SSH'. Inside this section,
       you will find the host and port information:
 
-    %img{src: "/img/docs/ssh-build-details.png"}
+    %img{src: "#{renderContext.assetsRoot}/img/docs/ssh-build-details.png"}
 
     %p
       Now you can ssh to the running build (using the same ssh key
       that you use for GitHub) to perform whatever troubleshooting
-      you need to. 
+      you need to.
       %b
         Your build commands will run as usual.
 
@@ -39,7 +39,7 @@
       port information.
 
     %p
-      The build VM will remain available for 
+      The build VM will remain available for
       %b
         15 minutes after the build finishes running
       and then automatically shut down. (Or you can cancel it.)

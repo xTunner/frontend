@@ -22,6 +22,7 @@ class CircleViewModel extends CI.inner.Obj
     @build_state = ko.observable()
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false);
+    @projects_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false);
 
     if window.renderContext.current_user
@@ -91,16 +92,17 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON '/api/v1/projects', (data) =>
       projects = (new CI.inner.Project d for d in data)
       projects.sort CI.inner.Project.sidebarSort
+      @projects_have_been_loaded(true)
       @projects(projects)
-
-  available_projects: () => @komp =>
-    (p for p in @projects() when not p.followed())
 
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
 
   has_followed_projects: () => @komp =>
     @followed_projects()().length > 0
+
+  has_no_followed_projects: () => @komp =>
+    @followed_projects()().length == 0
 
   refresh_project_src: () => @komp =>
     if @refreshing_projects()

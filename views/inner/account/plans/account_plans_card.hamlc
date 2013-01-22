@@ -3,7 +3,7 @@
     .row
       .offset4.span5
         %form#payment-form
-          %img.cards{src: "/img/creditcards.png", title: "credit card logos"}
+          %img.cards{src: "#{renderContext.assetsRoot}/img/creditcards.png", title: "credit card logos"}
           %label Card Number
           %input.card-number{type: "text",
                                size: "20",
@@ -42,7 +42,7 @@
     .row
       .offset0.span5
         %form#payment-form
-          %img.cards{src: "/img/creditcards.png", title: "credit card logos"}
+          %img.cards{src: "#{renderContext.assetsRoot}/img/creditcards.png", title: "credit card logos"}
           %label Card Number
           %input.card-number{type: "text",
                              size: "20",
@@ -61,7 +61,7 @@
                                   size: 4,
                                   style: "width: auto;",
                                   disabled: true,
-                                  data-bind: "value: cardInfo().exp_year"}}
+                                  data-bind: "value: cardInfo().exp_year"}
           %br
           .alert-block#warning
             %p
