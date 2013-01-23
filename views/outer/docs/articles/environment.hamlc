@@ -388,8 +388,6 @@
       %li
         %code rabbitmq-server
       %li
-        %code solr
-      %li
         %code riak
       %li
         %code beanstalkd

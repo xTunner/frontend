@@ -18,6 +18,7 @@ CI.github =
     scope = scope.join ","
     scope = encodeURIComponent(scope)
 
-    redirect = "#{window.location.origin}/auth/github?return-to=#{destination}"
+    l = window.location
+    redirect = "#{l.protocol}//#{l.host}/auth/github?return-to=#{destination}"
     redirect = encodeURIComponent(redirect)
     "#{path}?client_id=#{client_id}&redirect_uri=#{redirect}&scope=#{scope}"
