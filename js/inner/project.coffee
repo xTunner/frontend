@@ -117,6 +117,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         false
 
+    @branch_names_to_show = @komp =>
+      @branch_names().filter (name) =>
+        @show_branch_p(name)
+
     @latest_branch_build = (branch_name) =>
       if @branches()[branch_name] and @branches()[branch_name].recent_builds
         new CI.inner.Build(@branches()[branch_name].recent_builds[0])
@@ -126,6 +130,14 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @branch_path = (branch_name) =>
       "#{@project_path()}/tree/#{branch_name}"
+
+    @active_style = (project_name, branch) =>
+      if VM.selected().project_name is project_name
+        if VM.selected().branch
+          if branch is VM.selected().branch
+            {selected: true}
+        else if not branch
+          {selected: true}
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?

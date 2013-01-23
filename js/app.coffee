@@ -26,6 +26,7 @@ class CircleViewModel extends CI.inner.Obj
     @projects_have_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
+    @selected = ko.observable({})
 
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
@@ -137,6 +138,10 @@ class CircleViewModel extends CI.inner.Obj
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
+
+    @selected
+      project_name: project_name,
+      branch: branch
 
     @builds.removeAll()
     @project_builds_have_been_loaded(false)

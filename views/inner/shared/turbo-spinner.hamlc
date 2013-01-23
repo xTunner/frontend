@@ -1,7 +1,7 @@
-%i{class: "icon-refresh icon-spin"}
-  %i{class: "icon-refresh icon-spin"}
-    %i{class: "icon-refresh icon-spin"}
-      %i{class: "icon-refresh icon-spin"}
-        %i{class: "icon-refresh icon-spin"}
-          %i{class: "icon-refresh icon-spin"}
-            %i{class: "icon-refresh icon-spin"}
+%i.icon-refresh.icon-spin
+  %i.icon-refresh.icon-spin
+    %i.icon-refresh.icon-spin
+      %i.icon-refresh.icon-spin
+        %i.icon-refresh.icon-spin
+          %i.icon-refresh.icon-spin
+            %i.icon-refresh.icon-spin
