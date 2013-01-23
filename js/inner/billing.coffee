@@ -249,12 +249,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         @advanceWizard(5)
 
   loadExistingCard: () =>
-    $.getJSON '/api/v1/user/pay/card', (data) =>
-      @cardInfo data.card
+    $.getJSON '/api/v1/user/pay/card', (card) =>
+      @cardInfo card
 
   loadInvoices: () =>
-    $.getJSON '/api/v1/user/pay/invoices', (data) =>
-      @invoices data.invoices
+    $.getJSON '/api/v1/user/pay/invoices', (card) =>
+      @invoices card
 
 
   loadPlans: () =>
