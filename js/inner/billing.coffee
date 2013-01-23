@@ -2,6 +2,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   observables: =>
     stripeToken: null
     cardInfo: null
+    invoices: []
 
     # old data
     oldPlan: null
@@ -97,14 +98,50 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     else
       VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
 
+  cancelUpdate: (data, event) =>
+    $('#confirmForm').modal('hide')
+    @chosenPlan(@oldPlan())
+
+  doUpdate: (data, event) =>
+    @recordStripeTransaction event, null
+    $('#confirmForm').modal('hide')
+
+  ajaxUpdateCard: (event, token) =>
+    $.put
+      url: "/api/v1/user/pay/card"
+      event: event
+      data: JSON.stringify
+        token: token
+
+  getCardInfo: (event, token) =>
+    $.get
+      url: "/api/v1/user/pay/card"
+
+  updateCard: (data, event) =>
+    StripeCheckout.open
+      key: @stripeKey()
+      name: 'CircleCi',
+      panelLabel: 'Update card',
+      token: (token) => @ajaxUpdateCard(token.id, event)
+
+
   load: (hash="small") =>
     unless @loaded
       @loadPlans()
       @loadPlanFeatures()
+      @loadExistingCard()
+      @loadInvoices()
       @loadExistingPlans()
       @loadOrganizations()
       @loadStripe()
       @loaded = true
+
+
+  stripeKey: () =>
+    switch renderContext.env
+      when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
+      else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
+
 
   stripeSubmit: (data, event) ->
     number = $('.card-number').val()
@@ -127,10 +164,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       event.preventDefault()
       return false
 
-    key = switch renderContext.env
-      when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
-      else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
-    Stripe.setPublishableKey(key)
+    Stripe.setPublishableKey(@stripeKey())
 
     # disable the submit button to prevent repeated clicks
     button = $('.submit-button')
@@ -150,9 +184,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     # prevent the form from submitting with the default action
     return false;
-
-  stripeUpdate: (data, event) ->
-    @recordStripeTransaction event, null
 
   recordStripeTransaction: (event, stripeInfo) =>
     $.ajax(
@@ -176,10 +207,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadStripe: () =>
     $.getScript "https://js.stripe.com/v1/"
+    $.getScript "https://checkout.stripe.com/v2/checkout.js"
 
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>
-      @cardInfo(data.card_info)
       @oldTotal(data.amount / 100)
       @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
       @concurrency(data.concurrency or 1)
@@ -214,6 +245,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @oldTotal(@total())
         @advanceWizard(5)
+
+  loadExistingCard: () =>
+    $.getJSON '/api/v1/user/pay/card', (data) =>
+      @cardInfo data.card
+
+  loadInvoices: () =>
+    $.getJSON '/api/v1/user/pay/invoices', (data) =>
+      @invoices data.invoices
 
 
   loadPlans: () =>
