@@ -125,6 +125,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       if @branches()[branch_name] and @branches()[branch_name].recent_builds
         new CI.inner.Build(@branches()[branch_name].recent_builds[0])
 
+    @recent_branch_builds = (branch_name) =>
+      if @branches()[branch_name] and @branches()[branch_name].recent_builds
+        new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
+
     @build_path = (build_num) =>
       @project_path() + "/" + build_num
 
@@ -134,7 +138,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @active_style = (project_name, branch) =>
       if VM.selected().project_name is project_name
         if VM.selected().branch
-          if branch is VM.selected().branch
+          if decodeURIComponent(branch) is VM.selected().branch
             {selected: true}
         else if not branch
           {selected: true}

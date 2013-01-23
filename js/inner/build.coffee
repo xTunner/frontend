@@ -183,6 +183,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @author_isnt_committer = @komp =>
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
+    @tooltip_title = @komp =>
+      @status_words() + ": " + @build_num
+
 
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
