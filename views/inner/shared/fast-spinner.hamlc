@@ -1,4 +1,1 @@
-%span{style: "display:none", data-bind: "visible: VM.turbo_mode()"}
-  = HAML['turbo_spinner']()
-%span.icon-spin{data-bind: "visible: !VM.turbo_mode()"}
-  %i.icon-refresh.icon-spin
+%i.icon-refresh.icon-spin
