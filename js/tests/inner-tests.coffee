@@ -96,4 +96,4 @@ j.describe "CI.stringHelpers.trimMiddle", ->
   j.it "should make long strings short", ->
     twenty = "01234567890123456789"
     @expect(CI.stringHelpers.trimMiddle(twenty, 10).length).toEqual 10
-    @expect(CI.stringHelpers.trimMiddle(twenty, 10)).toEqual "0123...6789"
+    @expect(CI.stringHelpers.trimMiddle(twenty, 10)).toEqual "012...6789"
