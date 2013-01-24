@@ -1,0 +1,9 @@
+$ git log -2\n
+commit 63ce74221ff899955dd6258020d6cb9accede893
+Author: Daniel Woelfel &lt;daniel@circleci.com&gt;
+Date:   Wed Jan 23 16:48:25 2013 -0800
+\n    fix misspelling [ci skip]
+\ncommit 463147193b2fe561cfb12a9787434dd726390fcd
+Author: Daniel Woelfel &lt;daniel@circleci.com&gt;
+Date:   Wed Jan 23 16:30:24 2013 -0800
+\n    add "Skip a build" doc
