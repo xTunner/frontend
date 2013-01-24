@@ -283,6 +283,15 @@ CI.inner.Build = class Build extends CI.inner.Obj
         (new CI.inner.Build(data)).visit()
     false
 
+  clear_cache_and_retry_build: (data, event) =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/build-cache"
+      type: "DELETE"
+      event: event
+      success: (data) =>
+        @retry_build data, event
+    false
+
   ssh_build: (data, event) =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/ssh"
