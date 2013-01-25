@@ -110,6 +110,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       names.sort()
 
     @show_branch_p = (branch_name) =>
+      return true
       if branch_name is @default_branch()
         true
       else if @branches()[branch_name] and @branches()[branch_name].pusher_logins
