@@ -126,8 +126,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
         new CI.inner.Build(@branches()[branch_name].recent_builds[0])
 
     @recent_branch_builds = (branch_name) =>
-      if @branches()[branch_name] and @branches()[branch_name].recent_builds
+      builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
         new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
+      if builds then builds.reverse()
 
     @build_path = (build_num) =>
       @project_path() + "/" + build_num
