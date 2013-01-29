@@ -366,4 +366,5 @@ window.SammyApp = Sammy 'body', (n) ->
 $(document).ready () ->
   path = window.location.pathname
   path = path.replace(/\/$/, '') # remove trailing slash
+  path or= "/"
   SammyApp.run path
