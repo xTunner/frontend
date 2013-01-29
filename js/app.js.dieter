@@ -1,4 +1,5 @@
 [
+  "../../components/console-polyfill/index.js"
   "../../components/modernizr/modernizr.js"
   "../../components/jquery/jquery.js"
   "../../components/jquery-waypoints/waypoints.js"
