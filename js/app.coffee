@@ -115,8 +115,8 @@ class CircleViewModel extends CI.inner.Obj
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
-      @recent_builds_have_been_loaded(true)
       @recent_builds((new CI.inner.Build d for d in data))
+      @recent_builds_have_been_loaded(true)
 
   loadDashboard: (cx) =>
     @loadProjects()
