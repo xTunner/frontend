@@ -1,3 +1,23 @@
+CI.inner.Invoice = class Invoice extends CI.inner.Obj
+  total: =>
+    "$#{@amount_due / 100}"
+
+  zeroize: (val) =>
+    if val < 10
+      "0" + val
+    else
+      val
+
+  as_string: (timestamp) =>
+    m = moment.unix(timestamp).utc()
+    "#{m.year()}/#{@zeroize(m.month()+1)}/#{@zeroize(m.date())}"
+
+  time_period: =>
+    "#{@as_string(@period_start)} - #{@as_string(@period_end)}"
+
+  invoice_date: =>
+    "#{@as_string(@date)}"
+
 CI.inner.Billing = class Billing extends CI.inner.Obj
   observables: =>
     stripeToken: null
@@ -108,22 +128,23 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     $('#confirmForm').modal('hide')
 
   ajaxUpdateCard: (event, token) =>
-    $.put
+    $.ajax
+      type: "PUT"
       url: "/api/v1/user/pay/card"
       event: event
       data: JSON.stringify
         token: token
+      success: =>
+        @loadExistingCard()
 
-  getCardInfo: (event, token) =>
-    $.get
-      url: "/api/v1/user/pay/card"
 
   updateCard: (data, event) =>
     StripeCheckout.open
       key: @stripeKey()
       name: 'CircleCi',
       panelLabel: 'Update card',
-      token: (token) => @ajaxUpdateCard(token.id, event)
+      token: (token) =>
+        @ajaxUpdateCard(event, token.id)
 
 
 
@@ -253,8 +274,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @cardInfo card
 
   loadInvoices: () =>
-    $.getJSON '/api/v1/user/pay/invoices', (card) =>
-      @invoices card
+    $.getJSON '/api/v1/user/pay/invoices', (invoices) =>
+      if invoices
+        @invoices(new Invoice(i) for i in invoices)
 
 
   loadPlans: () =>

@@ -86,6 +86,37 @@ j.describe "ansiToHtml", ->
 
 j.describe "githubAuthURL", ->
   j.it "should be the expect values", ->
-    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8081%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope=user%2Crepo"
+    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope=user%2Crepo"
 
-    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8081%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope="
+    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope="
+
+
+
+j.describe "plans page", ->
+  j.describe "invoice list", ->
+    it "should work", ->
+      i = new CI.inner.Invoice
+        amount_due: 14900
+        currency: "usd"
+        date:         1358984466
+        paid: true
+        period_start: 1358831737 # numbers chosen to be close to the date boundary
+        period_end:   1358984466
+      @expect(i.time_period()).toEqual "2013/01/22 - 2013/01/23"
+      @expect(i.invoice_date()).toEqual "2013/01/23"
+
+  j.describe "card info", ->
+    it "should work", ->
+      b = new CI.inner.Billing()
+      b.cardInfo
+        cvc_check: "pass"
+        exp_month: 10
+        exp_year: 2013
+        last4: "4242"
+        name: "John Smith"
+        type: "Visa"
+      VM.billing(b)
+      dom = $('<div></div>').html(HAML['account_plans_card']())
+      ko.applyBindings(VM, dom[0])
+      text = dom.text().split(/\s+/).join(' ')
+      @expect(text).toMatch(/.*Your credit card \(a Visa in the name of John Smith, ending in 4242, expiring on 10\/2013\), is on file with our payment provider.*/)

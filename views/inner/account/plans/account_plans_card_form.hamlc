@@ -1,0 +1,36 @@
+.row
+  .offset4.span5
+
+    %form#payment-form
+      %img.cards{src: "#{renderContext.assetsRoot}/img/creditcards.png", title: "credit card logos"}
+      %label Card Number
+      %input.card-number{type: "text",
+                           size: "20",
+                           autocomplete: "off"}
+      %br
+      %label CVC
+      %input.card-cvc{type: "text",
+                      size: 4,
+                      style: "width: auto;"}
+      %br
+      %label Expiration (MM/YYYY)
+      %input.card-expiry-month{type: "text",
+                                 size: 2,
+                                 style: "width: auto;"}
+      %span /
+      %input.card-expiry-year{type: "text",
+                              size: 4,
+                              style: "width: auto;"}
+      %br
+      %button.btn.btn-primary.btn-large.submit-button#charge-button{type: "submit",
+                                                              data-bind: "click: stripeSubmit",
+                                                              data-loading-text: "Charging",
+                                                              data-failed-text: "Denied",
+                                                              data-success-text: "Success"}
+        Charge
+
+  .offset5.span5
+    %h2
+      Total: $
+      %span{data-bind: "text: total"}<>
+      &nbsp;\/ month

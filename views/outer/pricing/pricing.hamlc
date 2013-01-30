@@ -19,7 +19,7 @@
   %h1 Plans and Pricing
 
 #content.row
-  #new-plans.offset1
+  #plans-table.offset1
     .row-fluid
       .span12
         %table.plan

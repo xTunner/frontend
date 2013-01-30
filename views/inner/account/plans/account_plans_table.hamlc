@@ -1,4 +1,4 @@
-.row-fluid
+.row-fluid#plans-table
   .span12
     %table.plan
       %colgroup

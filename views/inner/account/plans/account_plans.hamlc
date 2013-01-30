@@ -1,4 +1,4 @@
-#new-plans{data-bind: "with: $root.billing"}
+#billing{data-bind: "with: $root.billing"}
 
   .paid{data-bind: "if: wizardCompleted"}
     = HAML['account_plans_view']()

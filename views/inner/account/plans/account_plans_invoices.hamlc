@@ -1,0 +1,14 @@
+.row
+  .span8
+    %h3 Invoices
+    %table.table-striped.table.table-bordered
+      %theader
+        %tr
+          %th Invoice date
+          %th Time period covered
+          %th Total
+      %tbody{data-bind: "foreach: invoices"}
+        %tr
+          %td{data-bind: "text: invoice_date()"}
+          %td{data-bind: "text: time_period()"}
+          %td{data-bind: "text: total()"}
