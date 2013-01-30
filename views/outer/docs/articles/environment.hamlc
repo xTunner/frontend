@@ -346,7 +346,7 @@
       %li
         %code elasticsearch 0.19.10
       %li
-        %code solr 4.0.0
+        %code solr 4.1.0
       %li
         %code beanstalkd 1.4.6
       %li
