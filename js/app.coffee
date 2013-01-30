@@ -156,9 +156,11 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @project_builds_have_been_loaded(true)
-    display "project",
-      project: project_name
-      branch: branch
+
+    if not refresh
+      display "project",
+        project: project_name
+        branch: branch
 
 
   loadBuild: (cx, username, project, build_num) =>
