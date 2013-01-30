@@ -60,7 +60,7 @@ class CircleViewModel extends CI.inner.Obj
     VM.loadProjects()
     sel = VM.selected()
     if sel.project_name
-      VM.loadProject(sel.username, sel.project, sel.branch)
+      VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
       VM.loadRecentBuilds()
 
@@ -142,15 +142,17 @@ class CircleViewModel extends CI.inner.Obj
     display "add_projects", {}
 
 
-  loadProject: (username, project, branch) =>
+  loadProject: (username, project, branch, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @builds.removeAll()
-    @project_builds_have_been_loaded(false)
+    if not refresh
+      @builds.removeAll()
+      @project_builds_have_been_loaded(false)
+
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @project_builds_have_been_loaded(true)
@@ -350,7 +352,7 @@ window.SammyApp = Sammy 'body', (n) ->
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
 
-        VM.loadProject cx, cx.params.username, cx.params.project
+        VM.loadProject cx.params.username, cx.params.project
 
     @get '^/logout', (cx) -> VM.logout cx
 
