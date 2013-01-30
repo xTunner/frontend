@@ -54,6 +54,16 @@ class CircleViewModel extends CI.inner.Obj
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
+  # Project dashboard will eventually be merged into regular dashboard,
+  # and this name will be more correct
+  refreshDashboard: () =>
+    VM.loadProjects()
+    sel = VM.selected()
+    if sel.project_name
+      VM.loadProject(sel.username, sel.project, sel.branch)
+    else
+      VM.loadRecentBuilds()
+
   searchArticles: (vm, event) ->
     $.ajax
       url: "/search-articles"
@@ -138,10 +148,6 @@ class CircleViewModel extends CI.inner.Obj
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
-
-    # @selected
-    #   project_name: project_name,
-    #   branch: branch
 
     @builds.removeAll()
     @project_builds_have_been_loaded(false)
@@ -328,15 +334,20 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/gh/:username/:project/tree/:branch',
       (cx) ->
         VM.selected
+          username: cx.params.username
+          project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
           branch: cx.params.branch
 
         VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
+
     @get '^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
     @get('^/gh/:username/:project',
       (cx) ->
         VM.selected
+          username: cx.params.username
+          project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
 
         VM.loadProject cx, cx.params.username, cx.params.project
