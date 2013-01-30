@@ -26,7 +26,7 @@ class CircleViewModel extends CI.inner.Obj
     @projects_have_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
-    @selected = ko.observable({})
+    @selected = ko.observable({}) # Tracks what the dashboard is showing
 
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
@@ -139,9 +139,9 @@ class CircleViewModel extends CI.inner.Obj
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @selected
-      project_name: project_name,
-      branch: branch
+    # @selected
+    #   project_name: project_name,
+    #   branch: branch
 
     @builds.removeAll()
     @project_builds_have_been_loaded(false)
@@ -316,7 +316,9 @@ window.SammyApp = Sammy 'body', (n) ->
     @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
     @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
-    @get '^/', (cx) => VM.loadRootPage(cx)
+    @get '^/', (cx) =>
+      VM.selected({})
+      VM.loadRootPage(cx)
 
     @get '^/add-projects', (cx) => VM.loadAddProjects cx
     @get '^/gh/:username/:project/edit(.*)',
@@ -324,11 +326,20 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
     @get '^/gh/:username/:project/tree/:branch',
-      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
+      (cx) ->
+        VM.selected
+          project_name: "#{cx.params.username}/#{cx.params.project}"
+          branch: cx.params.branch
+
+        VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
     @get '^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
     @get('^/gh/:username/:project',
-      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project
+      (cx) ->
+        VM.selected
+          project_name: "#{cx.params.username}/#{cx.params.project}"
+
+        VM.loadProject cx, cx.params.username, cx.params.project
 
     @get '^/logout', (cx) -> VM.logout cx
 
