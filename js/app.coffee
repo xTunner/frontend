@@ -142,7 +142,7 @@ class CircleViewModel extends CI.inner.Obj
     display "add_projects", {}
 
 
-  loadProject: (cx, username, project, branch) =>
+  loadProject: (username, project, branch) =>
     if @projects().length is 0 then @loadProjects()
 
     project_name = "#{username}/#{project}"
@@ -339,7 +339,7 @@ window.SammyApp = Sammy 'body', (n) ->
           project_name: "#{cx.params.username}/#{cx.params.project}"
           branch: cx.params.branch
 
-        VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
+        VM.loadProject cx.params.username, cx.params.project, cx.params.branch
 
     @get '^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
