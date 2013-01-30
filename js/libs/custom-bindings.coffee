@@ -57,6 +57,27 @@ ko.bindingHandlers.money =
   update: (el, valueAccessor) =>
     setMoneyContent(el, valueAccessor())
 
+setLeadingZeroContent = (element, textContent) ->
+  value = ko.utils.unwrapObservable(textContent)
+  if not value?
+    value = ""
+  else if value >= 0 and value < 10
+    value = "0#{value}"
+
+  if 'innerText' in element
+    element.innerText = value
+  else
+    element.textContent = value
+
+  if (ieVersion >= 9)
+    element.style.display = element.style.display
+
+ko.bindingHandlers.leadingZero =
+  update: (el, valueAccessor) =>
+    setLeadingZeroContent(el, valueAccessor())
+
+
+
 ko.observableArray["fn"].setIndex = (index, newItem) ->
   @valueWillMutate()
   result = @()[index] = newItem
