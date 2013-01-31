@@ -103,22 +103,6 @@ j.describe "plans page", ->
       @expect(i.time_period()).toEqual "2013/01/22 - 2013/01/23"
       @expect(i.invoice_date()).toEqual "2013/01/23"
 
-  j.describe "card info", ->
-    it "should work", ->
-      b = new CI.inner.Billing()
-      b.cardInfo
-        cvc_check: "pass"
-        exp_month: 10
-        exp_year: 2013
-        last4: "4242"
-        name: "John Smith"
-        type: "Visa"
-      VM.billing(b)
-      dom = $('<div></div>').html(HAML['account_plans_card']())
-      ko.applyBindings(VM, dom[0])
-      text = dom.text().split(/\s+/).join(' ')
-      @expect(text).toMatch(/.*Your credit card \(a Visa in the name of John Smith, ending in 4242, expiring on 10\/2013\), is on file with our payment provider.*/)
-
 j.describe "CI.stringHelpers.trimMiddle", ->
   j.it "should not make strings longer", ->
     @expect(CI.stringHelpers.trimMiddle("four", 2)).toEqual "four"
