@@ -26,7 +26,7 @@ class CircleViewModel extends CI.inner.Obj
     @projects_have_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
-    @selected = ko.observable({})
+    @selected = ko.observable({}) # Tracks what the dashboard is showing
 
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
@@ -53,6 +53,16 @@ class CircleViewModel extends CI.inner.Obj
     @error = new CI.outer.Error("error", "Error")
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
+
+  # Project dashboard will eventually be merged into regular dashboard,
+  # and this name will be more correct
+  refreshDashboard: () =>
+    VM.loadProjects()
+    sel = VM.selected()
+    if sel.project_name
+      VM.loadProject(sel.username, sel.project, sel.branch, true)
+    else
+      VM.loadRecentBuilds()
 
   searchArticles: (vm, event) ->
     $.ajax
@@ -132,25 +142,25 @@ class CircleViewModel extends CI.inner.Obj
     display "add_projects", {}
 
 
-  loadProject: (cx, username, project, branch) =>
+  loadProject: (username, project, branch, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @selected
-      project_name: project_name,
-      branch: branch
+    if not refresh
+      @builds.removeAll()
+      @project_builds_have_been_loaded(false)
 
-    @builds.removeAll()
-    @project_builds_have_been_loaded(false)
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @project_builds_have_been_loaded(true)
-    display "project",
-      project: project_name
-      branch: branch
+
+    if not refresh
+      display "project",
+        project: project_name
+        branch: branch
 
 
   loadBuild: (cx, username, project, build_num) =>
@@ -316,7 +326,9 @@ window.SammyApp = Sammy 'body', (n) ->
     @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
     @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
-    @get '^/', (cx) => VM.loadRootPage(cx)
+    @get '^/', (cx) =>
+      VM.selected({})
+      VM.loadRootPage(cx)
 
     @get '^/add-projects', (cx) => VM.loadAddProjects cx
     @get '^/gh/:username/:project/edit(.*)',
@@ -324,11 +336,25 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
     @get '^/gh/:username/:project/tree/:branch',
-      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
+      (cx) ->
+        VM.selected
+          username: cx.params.username
+          project: cx.params.project
+          project_name: "#{cx.params.username}/#{cx.params.project}"
+          branch: cx.params.branch
+
+        VM.loadProject cx.params.username, cx.params.project, cx.params.branch
+
     @get '^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
     @get('^/gh/:username/:project',
-      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project
+      (cx) ->
+        VM.selected
+          username: cx.params.username
+          project: cx.params.project
+          project_name: "#{cx.params.username}/#{cx.params.project}"
+
+        VM.loadProject cx.params.username, cx.params.project
 
     @get '^/logout', (cx) -> VM.logout cx
 
