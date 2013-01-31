@@ -1,16 +1,23 @@
 %ul.nav.nav-list.well
   %li.nav-header
     Followed Projects
+    %span{data-bind: "ifnot: projects_have_been_loaded"}
+      = HAML['fast_spinner']()
 
-  %li
-    %ul.nav-menu{data-bind: "foreach: {data: followed_projects(), as: 'project'}"}
+  / ko foreach: {data: followed_projects(), as: 'project'}
+  %li.nav-menu-row{data-bind: "css: project.active_style(project.project_name())"}
+    %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+      %i.icon-cog
 
-      %li.nav-menu-row
-        %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
-          %i.icon-cog
+    %a.nav-menu-item{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 30)"}
 
-        %a.nav-menu-item{data-bind: "attr: { href: project_path }, text: project_display_name"}
+  / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
+  %li.branch-item.nav-menu-row{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
 
-        %span.nav-menu-status.build_status{data-bind: "with: latest_build()"}
-          %span{data-bind: "attr: { class: style }"}
-            %a{data-bind: "attr: { href: url }, text: build_num, css: style"}
+    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23)"}
+
+    %span{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
+      %a.build_status.build_dot{data-bind: "attr: {href: project.build_path(build_num)}, css: style, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"} &nbsp;
+
+  / /ko
+  / /ko

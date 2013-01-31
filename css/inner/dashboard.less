@@ -56,12 +56,41 @@
       }
    }
 
+   .selected {
+     background-color: #eee;
+   }
+
+   .branch-item {
+     line-height: 80%;
+
+     .branch-name {
+       width: 160px;
+       margin-left: 20px;
+     }
+
+     .tooltip {
+       text-transform: capitalize;
+       opacity: 1;
+       .tooltip-arrow {
+         border-top-color: @blueDark;
+       }
+       .tooltip-inner {
+         background-color: @blueDark;
+       }
+     }
+   }
+
    .nav-menu-item {
-      &:hover {
-         color: #555;
-         text-decoration: none;
-         text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
-      }
+     padding-left: 0;
+     padding-right: 0;
+     margin-left: 0;
+     margin-right: 0;
+     &:hover {
+       color: #555;
+       text-decoration: none;
+       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+       background-clip: content-box;
+     }
    }
 
    [class*="nav-menu-"] {

@@ -78,7 +78,7 @@
             %span{data-bind: "text: retried_build().parallel"}
 
     .row-fluid
-      .span12
+      .span8
         %h3 How "Build Speed" Works
         %ul
           %li
@@ -87,14 +87,18 @@
               %li
                 No shared memory, processes, or databases
           %li
-            Currently supports Rspec, Cucumber, and Test:Unit
-          %li
             Dramatically reduces build time
             %ul
               %li
                 45 minute build fell to 18 minutes with 3x build speed
               %li
                 20 minute build dropped to 11 minutes with 2x build speed
+          %li
+            Automatic setup for Rspec, Cucumber, Test::Unit
+          %li
+            Manual setup required if you've overridden the test command, or are using another test framework. See our doc
+            %a{href: '/docs/parallel-manual-setup'} Parallelism Manual Setup
+
 
     .row-fluid
       .span10

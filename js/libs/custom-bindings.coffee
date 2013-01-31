@@ -11,7 +11,7 @@ ko.bindingHandlers.slider =
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 # Example usage:
-#   %a{href: "#", data-bind: "jQueryExtension: {type: 'tooltip', options: {title: myObservable}}"}
+#   %a{href: "#", data-bind: "jQueryExt: {type: 'tooltip', options: {title: myObservable}}"}
 ko.bindingHandlers.jQueryExt =
   init: (el, valueAccessor) =>
     options = valueAccessor().options

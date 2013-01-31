@@ -89,3 +89,11 @@ j.describe "githubAuthURL", ->
     @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8081%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope=user%2Crepo"
 
     @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8081%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope="
+
+j.describe "CI.stringHelpers.trimMiddle", ->
+  j.it "should not make strings longer", ->
+    @expect(CI.stringHelpers.trimMiddle("four", 2)).toEqual "four"
+  j.it "should make long strings short", ->
+    twenty = "01234567890123456789"
+    @expect(CI.stringHelpers.trimMiddle(twenty, 10).length).toEqual 10
+    @expect(CI.stringHelpers.trimMiddle(twenty, 10)).toEqual "012...6789"

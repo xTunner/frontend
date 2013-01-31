@@ -1,4 +1,5 @@
 [
+  "../vendor/console-shim.js"
   "../../components/modernizr/modernizr.js"
   "../../components/jquery/jquery.js"
   "../../components/jquery-waypoints/waypoints.js"
