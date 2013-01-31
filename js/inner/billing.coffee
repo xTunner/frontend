@@ -51,7 +51,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       "************" + @cardInfo().last4
 
     @wizardCompleted = @komp =>
-      @wizardStep() > 4
+      @wizardStep() > 3
 
     # Make sure @parallelism remains a number
     @editParallelism = @komp
@@ -108,14 +108,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
       plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
 
-  selectPlan: (plan) =>
+  selectPlan: (plan, event) =>
     if plan.price?
-      @oldPlan(@chosenPlan())
-      @chosenPlan(plan)
       if @wizardCompleted()
+        @oldPlan(@chosenPlan())
+        @chosenPlan(plan)
         $("#confirmForm").modal({keyboard: false})
       else
-        @advanceWizard(2)
+        @createCard(plan, event)
     else
       VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
 
@@ -127,15 +127,26 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @recordStripeTransaction event, null
     $('#confirmForm').modal('hide')
 
-  ajaxUpdateCard: (event, token) =>
+  ajaxSetCard: (event, token, type) =>
     $.ajax
-      type: "PUT"
+      type: type
       url: "/api/v1/user/pay/card"
       event: event
       data: JSON.stringify
         token: token
       success: =>
         @loadExistingCard()
+
+  createCard: (plan, event) =>
+    StripeCheckout.open
+      key: @stripeKey()
+      name: 'CircleCi',
+      panelLabel: 'Add card',
+      description: "#{plan.name} plan"
+      price: 100 * plan.price
+      token: (token) =>
+        @chosenPlan(plan)
+        @recordStripeTransaction event, token
 
 
   updateCard: (data, event) =>
@@ -144,8 +155,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       name: 'CircleCi',
       panelLabel: 'Update card',
       token: (token) =>
-        @ajaxUpdateCard(event, token.id)
-
+        @ajaxSetCard(event, token.id, "PUT")
 
 
   load: (hash="small") =>
@@ -166,47 +176,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
 
 
-  stripeSubmit: (data, event) ->
-    number = $('.card-number').val()
-    cvc = $('.card-cvc').val()
-    exp_month = $('.card-expiry-month').val()
-    exp_year = $('.card-expiry-year').val()
-
-    unless Stripe.validateCardNumber number
-      notifyError "Invalid credit card number, please try again."
-      event.preventDefault()
-      return false
-
-    unless Stripe.validateExpiry exp_month, exp_year
-      notifyError "Invalid expiry date, please try again."
-      event.preventDefault()
-      return false
-
-    unless Stripe.validateCVC cvc
-      notifyError "Invalid CVC, please try again."
-      event.preventDefault()
-      return false
-
-    Stripe.setPublishableKey(@stripeKey())
-
-    # disable the submit button to prevent repeated clicks
-    button = $('.submit-button')
-    button.addClass "disabled"
-
-    Stripe.createToken {
-      number: number,
-      cvc: cvc,
-      exp_month: exp_month,
-      exp_year: exp_year
-    }, (status, response) =>
-      if response.error
-        button.removeClass "disabled"
-        notifyError response.error.message
-      else
-        @recordStripeTransaction event, response # TODO: add the plan
-
-    # prevent the form from submitting with the default action
-    return false;
 
   recordStripeTransaction: (event, stripeInfo) =>
     $.ajax(
@@ -220,12 +189,15 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: () =>
         @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
-        @advanceWizard(3)
+        @advanceWizard()
     )
     false
 
-  advanceWizard: (new_step) =>
-    @wizardStep(Math.max(new_step, @wizardStep() + 1))
+  advanceWizard: =>
+    @wizardStep(@wizardStep() + 1)
+
+  closeWizard: =>
+    @wizardStep(4)
 
 
   loadStripe: () =>
@@ -239,7 +211,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @concurrency(data.concurrency or 1)
       @parallelism(data.parallelism or 1)
       if @chosenPlan()
-        @advanceWizard(5)
+        @closeWizard()
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
@@ -255,7 +227,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify
         organizations: @organizations()
       success: =>
-        @advanceWizard(4)
+        @advanceWizard()
 
   saveParallelism: (data, event) =>
     $.ajax
@@ -267,7 +239,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         concurrency: @concurrency()
       success: (data) =>
         @oldTotal(@total())
-        @advanceWizard(5)
+        @closeWizard()
 
   loadExistingCard: () =>
     $.getJSON '/api/v1/user/pay/card', (card) =>

@@ -3,10 +3,7 @@
     = HAML['account_plans_edit']()
 
   %div{data-bind: "if: wizardStep() == 2"}
-    = HAML['account_plans_card']()
-
-  %div{data-bind: "if: wizardStep() == 3"}
     = HAML['account_plans_organizations']()
 
-  %div{data-bind: "if: wizardStep() == 4"}
+  %div{data-bind: "if: wizardStep() == 3"}
     = HAML['account_plans_speed']()

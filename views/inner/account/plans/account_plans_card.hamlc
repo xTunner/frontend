@@ -1,6 +1,2 @@
-.div{data-bind: "ifnot: cardInfo"}
-  = HAML['account_plans_card_form']()
-
-.div{data-bind: "if: cardInfo"}
-  = HAML['account_plans_update_card']()
-  = HAML['account_plans_invoices']()
+= HAML['account_plans_update_card']()
+= HAML['account_plans_invoices']()
