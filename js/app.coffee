@@ -12,6 +12,7 @@ class CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
+    @turbo_mode = ko.observable(false)
 
     # inner
     @build = ko.observable()
@@ -21,8 +22,11 @@ class CircleViewModel extends CI.inner.Obj
     @recent_builds = ko.observableArray()
     @build_state = ko.observable()
     @admin = ko.observable()
-    @refreshing_projects = ko.observable(false);
+    @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
+    @recent_builds_have_been_loaded = ko.observable(false)
+    @project_builds_have_been_loaded = ko.observable(false)
+    @selected = ko.observable({})
 
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
@@ -91,8 +95,8 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON '/api/v1/projects', (data) =>
       projects = (new CI.inner.Project d for d in data)
       projects.sort CI.inner.Project.sidebarSort
-      @projects_have_been_loaded(true)
       @projects(projects)
+      @projects_have_been_loaded(true)
 
   followed_projects: () => @komp =>
     (p for p in @projects() when p.followed())
@@ -112,6 +116,7 @@ class CircleViewModel extends CI.inner.Obj
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
       @recent_builds((new CI.inner.Build d for d in data))
+      @recent_builds_have_been_loaded(true)
 
   loadDashboard: (cx) =>
     @loadProjects()
@@ -127,12 +132,25 @@ class CircleViewModel extends CI.inner.Obj
     display "add_projects", {}
 
 
-  loadProject: (cx, username, project) =>
+  loadProject: (cx, username, project, branch) =>
+    if @projects().length is 0 then @loadProjects()
+
     project_name = "#{username}/#{project}"
+    path = "/api/v1/project/#{project_name}"
+    path += "/tree/#{encodeURIComponent(branch)}" if branch?
+
+    @selected
+      project_name: project_name,
+      branch: branch
+
     @builds.removeAll()
-    $.getJSON "/api/v1/project/#{project_name}", (data) =>
+    @project_builds_have_been_loaded(false)
+    $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
-    display "project", {project: project_name}
+      @project_builds_have_been_loaded(true)
+    display "project",
+      project: project_name
+      branch: branch
 
 
   loadBuild: (cx, username, project, build_num) =>
@@ -305,6 +323,8 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
+    @get '^/gh/:username/:project/tree/:branch',
+      (cx) -> VM.loadProject cx, cx.params.username, cx.params.project, cx.params.branch
     @get '^/gh/:username/:project/:build_num',
       (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
     @get('^/gh/:username/:project',
@@ -346,4 +366,5 @@ window.SammyApp = Sammy 'body', (n) ->
 $(document).ready () ->
   path = window.location.pathname
   path = path.replace(/\/$/, '') # remove trailing slash
+  path or= "/"
   SammyApp.run path

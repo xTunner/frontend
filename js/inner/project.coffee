@@ -24,29 +24,16 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loaded_paying_user: false
     trial_parallelism: null
     retried_build: null
-    branch_names: []
-    branches: []
+    branches: null
+    default_branch: null
 
   constructor: (json) ->
 
-    json.latest_build = (new CI.inner.Build(json.latest_build)) if json.latest_build
     super json
 
+    @latest_build(@compute_latest_build())
+
     CI.inner.VcsUrlMixin(@)
-
-    @build_label = (outcome) ->
-      style =
-        label: true
-        build_status: true
-      if outcome in ["failed", "timedout", "no_tests"]
-        style["label-important"] = true
-      else if outcome in ["infrastructure_fail", "killed", "not_run", null]
-        style["label-warning"] = true
-      else if outcome is "success"
-        style["label-success"] = true
-
-      style
-
 
     @parallelism_options = [1..24]
     # Make sure @parallel remains an integer
@@ -62,6 +49,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
+
+    ## Parallelism
 
     # TODO: maybe this should return null if there are no plans
     #       should also probably load plans
@@ -115,7 +104,45 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @focused_parallel_cost_increase = @komp =>
       VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
 
+    ## Sidebar
+    @branch_names = @komp =>
+      names = (k for own k, v of @branches())
+      names.sort()
 
+    @show_branch_p = (branch_name) =>
+      if branch_name is @default_branch()
+        true
+      else if @branches()[branch_name] and @branches()[branch_name].pusher_logins
+        VM.current_user().login in @branches()[branch_name].pusher_logins
+      else
+        false
+
+    @branch_names_to_show = @komp =>
+      @branch_names().filter (name) =>
+        @show_branch_p(name)
+
+    @latest_branch_build = (branch_name) =>
+      if @branches()[branch_name] and @branches()[branch_name].recent_builds
+        new CI.inner.Build(@branches()[branch_name].recent_builds[0])
+
+    @recent_branch_builds = (branch_name) =>
+      builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
+        new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
+      if builds then builds.reverse()
+
+    @build_path = (build_num) =>
+      @project_path() + "/" + build_num
+
+    @branch_path = (branch_name) =>
+      "#{@project_path()}/tree/#{branch_name}"
+
+    @active_style = (project_name, branch) =>
+      if VM.selected().project_name is project_name
+        if VM.selected().branch
+          if decodeURIComponent(branch) is VM.selected().branch
+            {selected: true}
+        else if not branch
+          {selected: true}
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
@@ -126,6 +153,17 @@ CI.inner.Project = class Project extends CI.inner.Obj
       1
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
+
+  compute_latest_build: () =>
+    if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?
+      new CI.inner.Build @branches()[@default_branch()].recent_builds[0]
+
+  format_branch_name: (name, len) =>
+    decoded_name = decodeURIComponent(name)
+    if len?
+      CI.stringHelpers.trimMiddle(decoded_name, len)
+    else
+      decoded_name
 
   retry_latest_build: =>
     @latest_build().retry_build()

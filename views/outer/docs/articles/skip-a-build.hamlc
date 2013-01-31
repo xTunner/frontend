@@ -1,0 +1,14 @@
+%article
+  - @article_tags = ['how_to']
+  = HAML['article_title']({title: "Skip a build", icon: "icon-minus-sign"})
+  .doc
+    %p
+      Circle supports the <code>[ci skip]</code> standard for ignoring builds.
+    %p
+      Circle won't run the build if we find <code>[ci skip]</code> anywhere in the commit message of the head commit. You can use the handy retry button on the build page if you decide that you want to run the build after all.
+    %h2 Example
+    %p
+      If Daniel pushes his last two commits now, Circle won't run tests for that push:
+    %pre{style: "padding: 10px;"} = HAML['sample_skip_commit']()
+    %p
+      Note that if the commits were in the opposite order, then the push would have been built.

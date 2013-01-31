@@ -7,4 +7,4 @@
       = @lastUpdated
   - if @subtitle
     %h4= @subtitle
-  %hr
+%hr

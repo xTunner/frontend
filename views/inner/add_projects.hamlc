@@ -12,6 +12,7 @@
             Done Managing Repos &rarr;
       .row-fluid
         %div{data-bind: "if: showLoading"}
-          %img{src: "#{renderContext.assetsRoot}/img/ajax-loader.gif"}
+          .centered-spinner
+            = HAML['fast_spinner']()
         %div{data-bind: "ifnot: showLoading"}
           = HAML['add_projects_main']({})

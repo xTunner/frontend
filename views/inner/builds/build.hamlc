@@ -61,11 +61,19 @@
                                  title: "Report an error in how Circle ran this build"}
             Report...
 
-          %button.btn.btn-primary{data-bind: "click: retry_build",
-                              title: "Rerun the same version of the tests",
-                              data-loading-text: "Triggering...",
-                              data-success-text: "Triggered"}
-            Retry
+          %div.btn-group
+            %button.btn.btn-primary{data-bind: "click: retry_build",
+                                title: "Rerun the same version of the tests",
+                                data-loading-text: "Triggering...",
+                                data-success-text: "Triggered"}
+              Retry
+            %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
+                  Clear Cache &amp; Retry
+
           %button.btn.btn-primary{data-bind: "click: ssh_build",
                                 title: "Rerun the tests, with SSH into the VM",
                                 data-loading-text: "Triggering...",
