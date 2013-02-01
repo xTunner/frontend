@@ -51,7 +51,10 @@
     %hr
 
     %p
-      The following environmental variables are set by default:
+      See
+      %a{ href: "/docs/environment-variables" } this doc
+      for a thorough list of all available environment variables. Here are some of the most
+      useful ones:
 
       %dl
         %dt
@@ -78,7 +81,7 @@
       %code CI
       and
       %code CIRCLECI
-      environmental variables in your program, if you need to make specific changes to you application.
+      environmental variables in your program, if you need to have CI-specific behavior in you application.
       Naturally, this is not recommended in principle, but it can occasionally be useful in practice.
 
     %h1.section
