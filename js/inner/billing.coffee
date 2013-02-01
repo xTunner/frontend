@@ -178,6 +178,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
 
   recordStripeTransaction: (event, stripeInfo) =>
+    $('button').attr('disabled','disabled') # disable other buttons during payment
     $.ajax(
       url: "/api/v1/user/pay"
       event: event
@@ -187,8 +188,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         plan: @chosenPlan().id
 
       success: () =>
+        $('button').removeAttr('disabled') # payment done, reenable buttons
         @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
+
+        # just to be sure
+        @loadExistingCard()
+        @loadInvoices()
+
         @advanceWizard()
     )
     false
