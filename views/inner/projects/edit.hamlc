@@ -14,7 +14,7 @@
       %li.nav-header
         Tweaks
       %li
-        %a{ href: "edit#parallel_builds" } Build Speed
+        %a{ href: "edit#parallel-builds" } Build Speed
       %li.divider
 
       %li.nav-header

@@ -175,7 +175,7 @@ class CircleViewModel extends CI.inner.Obj
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
 
-    subpage = subpage[0].replace('#', '')
+    subpage = subpage[0].replace('#', '').replace('-', '_')
     subpage = subpage || "settings"
 
     # if we're already on this page, dont reload
