@@ -19,8 +19,8 @@
   %h1 Plans and Pricing
 
 #content.row
-  #plans-table.offset1
-    .row-fluid
+  #billing.offset1
+    .row-fluid#plans-table
       .span12
         %table.plan
           %colgroup
