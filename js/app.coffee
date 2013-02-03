@@ -46,7 +46,7 @@ class CircleViewModel extends CI.inner.Obj
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration made easy")
-    @about = new CI.outer.Page("about", "About Us")
+    @about = new CI.outer.About("about", "About Us")
     @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
     @docs = new CI.outer.Docs("docs", "Documentation")
