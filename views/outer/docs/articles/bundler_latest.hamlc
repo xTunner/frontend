@@ -1,12 +1,12 @@
 %article
   - @article_tags = ['ruby']
 
-  = HAML['article_title']({title: "Do you need the latest version of Bundler?", icon: "icon-download"})
+  = HAML['article_title']({title: "Do you need the latest version of Bundler?", icon: "icon-download", lastUpdated: "Feb 3, 2013"})
 
   .doc
     %p
-      If you use Heroku, you probably already use the latest version of bundler.
-      Circle uses a slightly older version, but can be easily set to upgrade to the latest version.
+      Circle typically tracks the latest stable version of bundler.
+      Your project may oocasionally need to use a pre-release version, which is easy to add to your build.
       Just add the following to your
       %a{href: "/docs/configuration"}
         circle.yml
