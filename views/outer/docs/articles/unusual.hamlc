@@ -17,3 +17,8 @@
         You can completely
         %a{href: "/docs/configuration"} override every single step of your tests
         with custom settings, or minor tweaks.
+
+      %li
+        Though you'll rarely need it, you can tweak your code to
+        %a{href: "/docs/dont-run"} avoid certain behaviours
+        during your CI builds.

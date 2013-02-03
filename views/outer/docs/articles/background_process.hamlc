@@ -1,15 +1,16 @@
 %article
   - @article_tags = [ 'how_to' ]
 
-  = HAML['article_title']({icon: "icon-wrench", title: "Start a Background Process From circle.yml"})
+  = HAML['article_title']({icon: "icon-wrench", title: "Start a Background Process From circle.yml", subtitle: "Detach without races or hanging", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p
-      Starting a background process from 
+      Starting a background process from
       %a{ href: "/docs/configuration" }
         circle.yml
       is entirely possible, but doing it in a way that behaves reliably may not be
-      obvious. Learn from our experience: don't just add
+      obvious.
+      Learn from our experience: don't just add
       %code &amp;
       to the end of your command line! Wrap it up like this, instead:
 
