@@ -28,7 +28,7 @@
     %p<>
       = surround "(", ")", ->
         %b> Related: &nbsp;
-        %a.related{href: "/docs/faq#what-happens"}<
+        %a.related{href: "/docs/what-happens"}<
           What happens when you add a project?
 
 
