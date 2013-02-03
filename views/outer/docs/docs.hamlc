@@ -1,6 +1,6 @@
 #title
   %h1
-    Documentation
+    %a{href: "/docs"} Documentation
 
 #content
   %section.article
