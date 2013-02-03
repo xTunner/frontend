@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['parallelism']
 
-  = HAML['article_title']({title: "Manually Setting Up Parallelism", icon: "icon-cogs", lastUpdated: "Feb 2, 2013"})
+  = HAML['article_title']({title: "Manually Setting Up Parallelism", icon: "icon-cogs", lastUpdated: "Feb 2, 2013", subtitle: "Partition your tests across N boxes"})
 
   .doc
     %p

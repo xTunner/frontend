@@ -1,11 +1,10 @@
 %article
   - @article_tags = ['github_privacy']
 
-  = HAML['article_title']({title: "Circle requires Admin permissions", icon: "icon-key"})
+  = HAML['article_title']({title: "Circle requires Admin permissions", icon: "icon-key", lastUpdated: "Feb 3, 2013"})
 
   .doc
     %p
-
       On the Manage Projects screen, Circle won't allow you to add a
       project, because it requires admin permissions.
 

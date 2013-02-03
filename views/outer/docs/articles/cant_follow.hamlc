@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['github_privacy']
 
-  = HAML['article_title']({title: "Why can I not follow a project?", icon: "icon-key"})
+  = HAML['article_title']({title: "Why can I not follow a project?", icon: "icon-key", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p

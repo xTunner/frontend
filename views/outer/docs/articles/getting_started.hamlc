@@ -65,11 +65,10 @@
     %h2 Add your colleagues
     %p
       Testing is no fun if you're the only one playing.
-      Circle is designed around the idea of every person having their own account.
-      You can invite your colleagues by sending them the original invite code you used
-      = surround "(", ").", ->
-        %a{href: "mailto:sayhi@circleci.com"}<>
-          ask us if you lost your code or haven't got on yet
+      Circle is designed around the idea of each person having their own account, so that you gets the most precise notifications and most relevent information.
+
+    %p
+      To add your colleagues, simply ask them to join Circle - we use GitHub permissions for all projects, so if they have access to your project on GitHub, they'll have it on Circle too.
 
     %h2 Add more projects
     %p

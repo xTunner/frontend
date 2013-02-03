@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['time_date']
 
-  = HAML['article_title']({title: "Time-based results are a few seconds off", icon: "icon-time"})
+  = HAML['article_title']({title: "Time-based results are a few seconds off", icon: "icon-time", lastUpdated: "Feb 3, 2013"})
 
   .doc
     %p

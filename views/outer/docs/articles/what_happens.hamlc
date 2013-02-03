@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['github_privacy']
 
-  = HAML['article_title']({title: "What happens when you add a project?", icon: "icon-cogs"})
+  = HAML['article_title']({title: "What happens when you add a project?", icon: "icon-cogs", lastUpdated: "Feb 3, 2013"})
 
   .doc
     %p
@@ -25,14 +25,10 @@
         Our inference algorithms look through your dependencies, Gems, libraries and code to figure out how to run your tests.
         For example, we might find that you have a standard Rails project using Postgres, with specs and features, so we'll run:
         %ol
-          %li
-            bundle install
-          %li
-            bundle exec rake db:schema:load
-          %li
-            bundle exec rspec spec
-          %li
-            bundle exec cucumber
+          %li bundle install
+          %li bundle exec rake db:schema:load
+          %li bundle exec rspec spec
+          %li bundle exec cucumber
       %li
         We run your tests on a clean virtual machine every time.
         This means that your code isn't accessible to other users, and that we run your tests freshly each time you push.
