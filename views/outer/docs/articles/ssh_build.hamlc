@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['troubleshooting']
 
-  = HAML['article_title']({title: "SSH Access to Builds", icon: "icon-signin"})
+  = HAML['article_title']({title: "SSH Access to Builds", icon: "icon-signin", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p

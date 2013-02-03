@@ -1,7 +1,7 @@
 %article
   - @article_tags = [ "troubleshooting" ]
 
-  = HAML['article_title']({title: "Clojure", subtitle: "", icon: "icon-cogs"})
+  = HAML['article_title']({title: "Clojure", subtitle: "", icon: "icon-cogs", lastUpdated: "Feb 2, 2013"})
 
   .doc
     = HAML['article_list']({tags: ['clojure'], find_articles_by_tag: @find_articles_by_tag})

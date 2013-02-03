@@ -1,6 +1,6 @@
 %article
   - @article_tags = ['how_to']
-  = HAML['article_title']({title: "Skip a build", icon: "icon-minus-sign"})
+  = HAML['article_title']({title: "Skip a build", icon: "icon-minus-sign", lastUpdated: "Feb 2, 2013"})
   .doc
     %p
       Circle supports the <code>[ci skip]</code> standard for ignoring builds.

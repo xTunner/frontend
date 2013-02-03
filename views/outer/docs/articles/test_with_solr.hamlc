@@ -1,7 +1,7 @@
 %article
   - @article_tags = [ 'how_to' ]
 
-  = HAML['article_title']({icon: "icon-wrench", title: "Test With Solr"})
+  = HAML['article_title']({icon: "icon-wrench", title: "Test With Solr", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p
@@ -25,7 +25,7 @@
     %h2 The Hard Way
 
     %p
-      Even if we aren't able to do things automatically, 
+      Even if we aren't able to do things automatically,
       %code solr 4.1.0
       is installed on your build system. It will need to be configured with your
       schema.xml, and booted via
@@ -55,7 +55,7 @@
           Copy your configuration (schema.xml at least, and solrconfig.xml if you need it)
           into place.
         %li
-          Launch solr as a 
+          Launch solr as a
           = succeed '.', ->
             %a{ href: "/docs/background-process" }
               background process

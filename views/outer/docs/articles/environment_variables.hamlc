@@ -1,7 +1,7 @@
 %article
   - @article_tags = [ 'reference' ]
 
-  = HAML['article_title']({icon: "icon-book", title: "Environment Variables"})
+  = HAML['article_title']({icon: "icon-book", title: "Environment Variables", lastUpdated: "Feb 2, 2013"})
 
   .doc
 
@@ -94,7 +94,7 @@
       You can of course set your own environment variables, too! The only gotcha is that each
       command runs in its own shell, so just adding an
       %code export FOO=bar
-      command won't work, and we offer a couple of different mechanisms. Our 
+      command won't work, and we offer a couple of different mechanisms. Our
       %a{ href: "/docs/config-sample" }
         sample config file
       demonstrates setting environment variables globally and per-command, and the

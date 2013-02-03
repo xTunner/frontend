@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['troubleshooting']
 
-  = HAML['article_title']({title: "File-ordering bugs manifest on Linux systems", icon: "icon-random"})
+  = HAML['article_title']({title: "File-ordering bugs manifest on Linux systems", icon: "icon-random", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p

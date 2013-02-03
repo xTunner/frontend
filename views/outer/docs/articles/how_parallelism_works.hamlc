@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['parallelism']
 
-  = HAML['article_title']({title: "Does parallelism really work?", icon: "icon-cogs"})
+  = HAML['article_title']({title: "Does parallelism really work?", icon: "icon-cogs", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p

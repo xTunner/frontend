@@ -1,7 +1,7 @@
 %article
   - @article_tags = [ 'how_to', 'deployment' ]
 
-  = HAML['article_title']({icon: "icon-cloud-upload", title: "Continuous Deployment to Google App Engine", lastUpdated: "Feb 2, 2013"})
+  = HAML['article_title']({icon: "icon-cloud-upload", title: "Continuous Deployment to Google App Engine", lastUpdated: "Feb 2, 2013", subtitle: ""})
 
   .doc
     %p

@@ -1,7 +1,7 @@
 %article
   - @article_tags = [ 'reference' ]
 
-  = HAML['article_title']({icon: "icon-exchange", title: "Polling Project Status Using CCMenu, CCTray, etc."})
+  = HAML['article_title']({icon: "icon-exchange", title: "Polling Project Status Using CCMenu, CCTray, etc.", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p
@@ -18,7 +18,7 @@
       It should be possible to use any of these tools to poll your CircleCI builds, by
       configuring them with a URL of the form:
 
-      %code 
+      %code
         https://circleci.com/cc.xml?circle-token=:circle-token
 
     %p
