@@ -42,13 +42,18 @@ CI.outer.Docs = class Docs extends CI.outer.Page
   article_info: (slug) =>
     node = $(window.HAML[slug]())
     uriFragment = slug.replace(/_/g, '-')
-    {
+    result =
       url: "/docs/#{uriFragment}",
       slug: slug,
       title: node.find('.title > h1').text().trim()
       subtitle: node.find('.title > h4').text().trim()
-      icon: node.find('.title > h1 > i').attr('class')
-    }
+      lastupdated: node.find('.title > .lastupdated').text().trim()
+      icon: node.find('.title > i').attr('class')
+    console.warn "#{uriFragment} must have a subtitle" unless result.subtitle
+    console.warn "#{uriFragment} must have an icon" unless result.icon
+    console.warn "#{uriFragment} must have a title" unless result.title
+    console.warn "#{uriFragment} must have a lastupdated" unless result.lastupdated
+    result
 
   find_articles_by_tag: (tag) =>
     articles = []
