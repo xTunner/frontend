@@ -4,4 +4,4 @@
 exports = this
 
 exports.ab_test_definitions =
-  show_keeping_code_safe: [true, false]
+  quick_setup_or_trial: ["14-day free trial.", "Run your first test with 3 clicks."]

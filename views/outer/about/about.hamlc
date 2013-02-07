@@ -81,3 +81,9 @@
         %li.address
           %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
             325 9th Street<br>San Francisco CA 94103
+
+      %p Press Inquiries:
+
+      %ul
+        %li.email
+          %a{ href: 'mailto:press@circleci.com' } press@circleci.com
