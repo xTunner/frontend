@@ -10,7 +10,7 @@
     %hr
 
     %p
-      %a{ href: "#security-changelog" } Last modified: July 3, 2012
+      %a{ href: "#security-changelog" } Last modified: Feb 8, 2013
 
 
     %h3 Code security
@@ -99,7 +99,7 @@
       We do not currently have a button to delete your account, but we will be adding one soon.
       If you need your account canceled and your data deleted, please contact us at
       = succeed '.', ->
-        %a{href: "mailto:security@circleci.com"} security@circleci.com
+        %a{href: "mailto:sayhi@circleci.com"} sayhi@circleci.com
 
       To remove Circle's access to your GitHub account, you can remove it via your
       = succeed '.', ->
@@ -120,6 +120,26 @@
       We constantly audit the data that is provided to them to ensure that this could not be used to gain access to your account or your code.
 
 
+    %h3 Disclosure
+    %p
+      If you have found a vulnerability in CircleCi, please contact our security team by email at
+      = succeed '.', ->
+        %a{href: "mailto:security@circleci.com"} security@circleci.com
+      We will do everything in our power to respond and fix the problem immediately.
+      If possible, please encrypt your message using
+      %a{href: "/circleci-security.pub"}<
+        our security team's GPG key
+
+      (ID: 0xC3D1C4F6, fingerprint: B5BB 2E59 534D 89CD F9BA  45D1 0EEA E040 C3D1 C4F6).
+
+    %p
+      Upon discovering a vulnerability, we ask that you act in a way to protect our users' data:
+      %ul
+        %li inform us as soon as possible,
+        %li test against fake data and accounts, not our users' private data (please ask if you'd like a free account to work on this),
+        %li work with us to close the vulnerability before disclosing it to others.
+
+
     %h3 Feedback
     %p
       We take security incredibly seriously.
@@ -129,9 +149,15 @@
       We will act immediately to deal with the issue.
 
 
+
+
+
       #changelog#security-changelog
         %h3 Change log:
         %ul
+          %li
+            %b Feb 8, 2013:
+            Add disclosure section and GPG key.
           %li
             %b Dec 22, 2012:
             We now have employees.
