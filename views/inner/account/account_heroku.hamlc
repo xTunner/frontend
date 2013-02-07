@@ -10,10 +10,10 @@
 
     %h3 Existing key
 
-    %p{data-bind: "if: heroku_api_key"}
-      %span{data-bind: "text: heroku_api_key"}
-
     .well
+      %p{data-bind: "if: heroku_api_key"}
+        %span{data-bind: "text: heroku_api_key"}
+
       %p{data-bind: "ifnot: heroku_api_key"}
         No existing key
 
