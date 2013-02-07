@@ -9,9 +9,8 @@
         Join using GitHub
 
       %p.footnote
-        %span
-          14-day free trial.
-        %a{data-bind: "if: ab().show_keeping_code_safe", href: '/privacy', title: 'Privacy and Security' }
+        %span{data-bind: "text: VM.ab().quick_setup_or_trial"}
+        %a{href: '/privacy', title: 'Privacy and Security' }
           CircleCI keeps your code safe. Learn how.
 
       .screenshot CircleCI Screenshot
