@@ -1,4 +1,4 @@
-# Setup AJAZ calls according to our preferences
+# Setup AJAX calls according to our preferences
 
 
 textVal = (elem, val) ->
