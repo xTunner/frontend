@@ -236,6 +236,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('updateAction', @updateAction)
       @build_channel.bind('appendAction', @appendAction)
       @build_channel.bind('updateObservables', @updateObservables)
+      @build_channel.bind('maybeAddMessage', @maybeAddMessage)
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
@@ -272,6 +273,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
       out.valueHasMutated()
     else
       out.push(payload)
+
+  maybeAddMessages: (json) =>
+    existing = (message.message for message in @messages())
+    (@messages.push(msg) if msg.message not in existing) for msg in json
 
   # TODO: CSRF protection
   retry_build: (data, event) =>
