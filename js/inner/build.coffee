@@ -236,7 +236,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('updateAction', @updateAction)
       @build_channel.bind('appendAction', @appendAction)
       @build_channel.bind('updateObservables', @updateObservables)
-      @build_channel.bind('maybeAddMessage', @maybeAddMessage)
+      @build_channel.bind('maybeAddMessages', @maybeAddMessages)
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
