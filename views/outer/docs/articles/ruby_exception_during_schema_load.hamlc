@@ -39,24 +39,25 @@
     %h2
       Understanding ActiveRecord Introspection
     %p
-      Most of the magic that ActiveRecord provides comes from
-      examining the database tables. Obviously, if your database
-      hasn't been created yet, things are not going to work well.
+      ActiveRecord works by introspecting the database schema.
+      ActiveRecord models rely on the schema being already loaded in the database to work.
+
     %p
-      On Circle, every build runs in a clean VM, so at the start of
-      the build, your rails database doesn't exist yet.
+      This error occurs because ActiveRecord models are being used before the
+      schema is loaded. On Circle, every build runs in a clean VM, so at the
+      start of the build, your database doesn't exist yet.
 
     %h2
       The Solution
     %p
       The solution is to make sure that
-      %b
-        no ActiveRecord models are loaded during rake db:schema:load
+      = succeed '.', ->
+        %b no ActiveRecord models are loaded during rake db:schema:load
 
       There are many ways to trigger this bug, but the two most common are
       %ul
-        %li calling class methods on ActiveRecord code during rails configuration
-        %li requiring test code (such as spec/factories.rb) at file scope
+        %li calling class methods on ActiveRecord code during rails configuration,
+        %li requiring test code (such as spec/factories.rb) at file scope.
 
       You should only require test code running tests (not while
       loading config/environment.rb), and code that instantiates
@@ -91,8 +92,24 @@
           vendor/bundle/ruby/1.9.1/gems/activesupport-3.2.6/lib/active_support/dependencies.rb:251:in `block in require'
 
     %p
-      Here, we can see that config/environment.rb loads, which then
-      requires spec/factories.rb, which loads factorygirl, which loads
-      activerecord. The solution then, is to refactor the code in such
+      Here, we can see that
+      %code config/environment.rb
+      loads, which then
+      requires
+      = succeed ',', ->
+        %code spec/factories.rb
+        which loads
+      = succeed ',', ->
+        %code FactoryGirl
+      which loads
+      = succeed '.', ->
+        %code ActiveRecord
+      The solution then, is to refactor the code in such
       a way that spec/factories.rb isn't loaded unless tests are
       actually run.
+
+    %p
+      The idiomatic way to do this is by putting that code in
+      = succeed ',', ->
+        %a{href: "http://guides.rubyonrails.org/configuring.html#using-initializer-files"} initializer files
+      which are only run once the complete application is loaded.
