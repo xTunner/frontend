@@ -6,36 +6,35 @@
   .doc
     %p
       If your build fails during the
-      %code
-        rake db:schema:create db:schema:load
+      %code rake db:schema:create db:schema:load
       step, there is usually a straightforward fix.
 
     %h2 Identifying the problem
     %p
       Usually, this error looks like
-    %pre<>
-      :preserve>
-        ** Invoke db:create (first_time)
-        ** Invoke db:load_config (first_time)
-        ** Execute db:load_config
-        ** Invoke rails_env (first_time)
-        ** Execute rails_env
-        ** Execute db:create
-        ** Invoke db:schema:load (first_time)
-        ** Invoke environment (first_time)
-        ** Execute environment
-        rake aborted!
-        PG::Error: ERROR:  relation "users" does not exist
-        LINE 4:              WHERE a.foo = '"users"'::regclass
-                                      ^
-        SELECT a.attname, format_type(a.atttypid, a.atttypmod), d.adsrc, a.attnotnull
-              FROM pg_attribute a LEFT JOIN pg_attrdef d
-                ON a.attrelid = d.adrelid AND a.attnum = d.adnum
-             WHERE a.attrelid = '"users"'::regclass
-               AND a.attnum > 0 AND NOT a.attisdropped
-             ORDER BY a.attnum
-        /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/connection_adapters/postgresql_adapter.rb:1151:in `async_exec'
-
+    %pre
+      %code.no-highlight<>
+        :preserve
+          ** Invoke db:create (first_time)
+          ** Invoke db:load_config (first_time)
+          ** Execute db:load_config
+          ** Invoke rails_env (first_time)
+          ** Execute rails_env
+          ** Execute db:create
+          ** Invoke db:schema:load (first_time)
+          ** Invoke environment (first_time)
+          ** Execute environment
+          rake aborted!
+          PG::Error: ERROR:  relation "users" does not exist
+          LINE 4:              WHERE a.foo = '"users"'::regclass
+                                        ^
+          SELECT a.attname, format_type(a.atttypid, a.atttypmod), d.adsrc, a.attnotnull
+                FROM pg_attribute a LEFT JOIN pg_attrdef d
+                  ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+               WHERE a.attrelid = '"users"'::regclass
+                 AND a.attnum > 0 AND NOT a.attisdropped
+               ORDER BY a.attnum
+          /home/ubuntu/FooBar/vendor/bundle/ruby/1.9.1/gems/activerecord-3.2.6/lib/active_record/connection_adapters/postgresql_adapter.rb:1151:in `async_exec'
 
     %h2
       Understanding ActiveRecord Introspection
