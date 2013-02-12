@@ -86,8 +86,8 @@ j.describe "ansiToHtml", ->
 
 j.describe "githubAuthURL", ->
   j.it "should be the expect values", ->
-    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8081%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope=user%2Crepo"
-    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8081%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope="
+    @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope=user%2Crepo"
+    @expect(CI.github.authUrl([])).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner&scope="
 
 
 j.describe "plans page", ->
