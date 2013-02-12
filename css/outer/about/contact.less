@@ -102,7 +102,7 @@
 
 
   // Contact items list
-  aside {
+  aside.info {
     .column(5);
     font-size: 24px;
     font-weight: 300;
@@ -121,24 +121,14 @@
 
     // Icons
     li {
-      background-image: url("@{imgPath}/lg_about-sprite.png");
-      background-repeat: no-repeat;
       color: @blueDark;
       font-size: 18px;
       list-style: none;
       margin: 15px 0;
-      padding-left: 40px;
       line-height: 22px;
+      i {
+        color: @blueDarker;
+      }
     }
-
-    .email      { background-position: -283px 4px; }
-    .twitter    { background-position: -283px -23px; }
-    .telephone  { background-position: -283px -55px; }
-    .address    { background-position: -283px -87px; }
-
-    .email:hover      { background-position: -283px -145px; }
-    .twitter:hover    { background-position: -283px -172px; }
-    .telephone:hover  { background-position: -283px -204px; }
-    .address:hover    { background-position: -283px -236px; }
   }
 }
