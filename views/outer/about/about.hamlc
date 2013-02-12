@@ -96,4 +96,5 @@
 
       %ul
         %li.email
+          %i.icon-envelope-alt
           %a{ href: 'mailto:press@circleci.com' } press@circleci.com
