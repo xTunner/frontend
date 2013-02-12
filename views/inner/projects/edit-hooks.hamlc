@@ -36,6 +36,8 @@
         To get your API token, visit your company Campfire, then click "My info".
         You should end up at
         https://YOURSUBDOMAIN.campfirenow.com/member/edit.
+        Note that if you use your personal API token, campfire won't show the notifications
+        to you!
 
 
   %legend Add Flowdock
