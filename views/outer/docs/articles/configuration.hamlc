@@ -476,12 +476,13 @@
       Additionally, the following options are allowed:
 
     %ul
-      %li <b>minitest_globs</b>: a list of file globs. By default, when using parallelization, Circle
-      will run all tests in the test/unit, test/integration and
-      test/functional directories. Setting this option will replace the
-      standard directories with your own. This is only needed when using
-      parallelization with Minitest, and you have additional or non-standard
-      test directories.
+      %li
+        <b>minitest_globs</b>: a list of file globs. By default, when using parallelization, Circle
+        will run all tests in the test/unit, test/integration and
+        test/functional directories. Setting this option will replace the
+        standard directories with your own. This is only needed when using
+        parallelization with Minitest, and you have additional or non-standard
+        test directories.
 
     %h5 Example 1: Running spinach after RSpec:
 
