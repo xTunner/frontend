@@ -92,7 +92,7 @@
               %strong I'm a huge fan.
               %span.mark-end "
             %span.avatar
-              %img{:src => assetPath("img/outer/home/john-collison.png")}
+              %img{:src => assetPath("img/outer/home/john-collison-2.png")}
             %strong.name
               John Collison
             %i
@@ -106,7 +106,7 @@
               is a big timesaver.
               %span.mark-end "
             %span.avatar
-              %img{:src => assetPath("img/outer/home/jon-crawford.png")}
+              %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
             %strong.name
               Jon Crawford
             %i
