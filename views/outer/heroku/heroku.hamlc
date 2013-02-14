@@ -1,0 +1,87 @@
+#content
+  #teaser
+    %section{ role: 'main' }
+      %h2#mainHeading Continuous Integration with the push of a button
+
+      %a.authGithub.kissAuthGithub#join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
+        Join using GitHub
+      %br
+
+      %h3#hero-copy
+        CircleCI gives you all the benefits of continuous integration with none of the headaches of maintaining it. Don't take our word for it &mdash; our free 14-day trial will prove it.
+
+      %p.footnote
+        %span{data-bind: "text: VM.ab().quick_setup_or_trial"}
+        %a{href: '/privacy', title: 'Privacy and Security' }
+          CircleCI keeps your code safe. Learn how.
+
+      .screenshot CircleCI Screenshot
+
+  #features
+    %section
+      - for feature in @features
+        %figure.tour
+          %i{ class: "#{feature.icon}" }
+
+          %figcaption
+            %h2= feature.headline
+
+            %p= feature.teaser
+
+
+  #testimonials
+    %p.testimonial-header Some of our happy customers
+
+    %section#customers
+      .customer
+        %a.stripe{ href: "#"} Stripe<span></span>
+
+      .customer
+        %a.logo.storenvy{ href: "#" } Storenvy
+
+      .customer
+        %a.logo.zencoder{ href: "#" } Zencoder
+
+    %section.quotes
+      %blockquote{ cite: "#" }
+        %p Circle has significantly improved our testing infrastructure: tests finish faster, we can add new projects rapidly, and CI happens from the get-go. I'm a huge fan.
+
+        %footer
+          %cite
+            %a{ href: "https://stripe.com/ "} John Collison
+            %a{ href: "https://stripe.com/" } Founder of Stripe
+
+      %blockquote{ cite: "#" }
+        %p It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered.  And the fact that we don't have to admin the server ourselves is a big timesaver.
+
+        %footer
+          %cite
+            %a{ href: "http://www.storenvy.com/about/team/ "} Jon Crawford
+            %a{ href: "http://www.storenvy.com/" } CEO of Storenvy
+
+      %blockquote{ cite: "#" }
+        %p The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.
+
+        %footer
+          %cite
+            %a{ href: "http://zencoder.com/company/" } Brandon Arbini
+            %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder
+
+  #power
+    %section
+      %header
+        %h2 All this power from one little button
+        %h3 Plans start at $19 per month, and every plan includes unlimited builds.
+
+      %a.authGithub.kissAuthGithub#second-join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
+
+
+      %ul
+        %li One-click setup
+        %li Lightning fast
+        %li Incredible Support
+
+      %p
+        Signing up with GitHub allows Circle to access your code so that we can run your tests.
+        We also add post-commit hooks and ssh keys so that you don't have to.
+        No human ever looks at your code without your express permission, and everything can be revoked from within GitHub or by asking us.
