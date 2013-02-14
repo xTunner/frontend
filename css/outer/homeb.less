@@ -1,69 +1,7 @@
-body.homeb {
-  padding: 0;
-  margin: 0;
-  border-top: 5px solid #0041a4;
-  .masthead {
-    padding: 20px 0 25px 0;
-    border-bottom: 1px solid #999;
-    border-bottom: 1px solid #428eff;
-    position: relative;
-    background: #0066ff;
-    border: 0;
-    background-image: url(images/concentric-bg-7.png);
-    background-position: center -355px;
-    background-repeat: no-repeat;
-    height: 30px;
-  }
-  .masthead .container-fluid {
-    padding: 0;
-  }
-  .masthead-center {
-    height: 1px;
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 100%;
-    overflow: visible;
-    text-align: center;
-  }
-  .brand img {
-    width: 120px;
-  }
-  .brand span {
-    display: none;
-  }
-  .masthead .container {
-    margin-bottom: 0;
-    z-index: 20;
-    position: relative;
-  }
-  .masthead .nav a {
-    font-size: 14px;
-    line-height: 22px;
-    padding: 5px 7px;
-    margin: 0px 9px;
-    border-radius: 4px;
-    color: #7fc1ff;
-  }
-  .masthead .nav-pills li a:hover {
-    background: transparent;
-    color: white;
-    border: 1px soild white;
-  }
+body#home-page {
   .jumbotron {
-    background: #428eff;
-    background: #1a3968;
-    background: #0066ff;
-    color: white;
-    background: white;
-    background: #ffffff;
-    color: black;
     margin: 0;
     padding: 0;
-    background: #0066ff;
-    color: white;
-    background-position: center -450px;
-    background-repeat: no-repeat;
     background: #ffffff;
     color: #333;
   }
@@ -117,17 +55,12 @@ body.homeb {
   }
   .introtron {
     margin: 0;
-    padding: 50px 0 100px 0;
-    background: #0066ff;
-    background-image: url(images/concentric-bg-3.png);
-    background-position: center -605px;
-    background-repeat: no-repeat;
+    padding: 50px 0 220px 0;
     font-family: 'Source Sans Pro', sans-serif;
     background: #ffffff;
     font-size: 18px;
     line-height: 28px;
-    background: #eeeeee;
-    background: #0066ff url(images/concentric-bg-3.png) no-repeat center center;
+    background: #0066ff url("@{imgPath}/outer/home/concentric-bg-3.png") no-repeat center -100px;
   }
   .introinclude {
     background: #ffffff;
@@ -145,8 +78,8 @@ body.homeb {
     margin: 10px 0 15px 0;
     font-weight: 300;
     text-align: center;
-    line-height: 42px;
-    font-size: 32px;
+    line-height: 52px;
+    font-size: 42px;
     color: #333333;
   }
   .introtron h5 i {
@@ -183,7 +116,7 @@ body.homeb {
     font-size: 22px;
     line-height: 32px;
     list-style-type: none;
-    background: url('images/bullet-orange.png') no-repeat 8px 11px;
+    background: url('@{imgPath}/outer/home/bullet-orange.png') no-repeat 8px 11px;
     font-weight: normal;
     list-style-position: outside;
     padding-left: 30px;
@@ -242,8 +175,8 @@ body.homeb {
   .benefits h5 {
     text-align: center;
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 32px;
     line-height: 52px;
+    font-size: 42px;
     font-weight: 300;
     color: #333333;
     text-transform: uppercase;
@@ -305,7 +238,7 @@ body.homeb {
     position: absolute;
     width: 18px;
     height: 18px;
-    background: transparent url('images/quote-arrow.png') no-repeat left top;
+    background: transparent url('@{imgPath}/outer/home/quote-arrow.png') no-repeat left top;
     bottom: -18px;
     left: 72px;
     z-index: 10;
@@ -355,7 +288,7 @@ body.homeb {
   }
   .how-it-works {
     background: #ffffff;
-    padding: 15px 0 25px 0;
+    padding: 10px 0 0 0;
   }
   .how-it-works h6 {
     font-family: 'Source Sans Pro', sans-serif;
@@ -388,7 +321,7 @@ body.homeb {
     position: absolute;
     width: 43px;
     height: 31px;
-    background: transparent url('images/right-arrow-grey.png') no-repeat left top;
+    background: transparent url('@{imgPath}/outer/home/right-arrow-grey.png') no-repeat left top;
     top: 70px;
     right: -31px;
     z-index: 10;
@@ -420,7 +353,7 @@ body.homeb {
   .benefits {
     background: #ff8400;
     padding: 75px 0;
-    background: #dddddd url('images/stacked_circles.png') repeat left top;
+    background: #dddddd url('@{imgPath}/outer/home/stacked_circles.png') repeat left top;
     border-bottom: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
   }
@@ -531,7 +464,7 @@ body.homeb {
     margin: 0 0 15px 0;
   }
   .technotron img {
-    margin: 2px 2px;
+    margin: 2px 4px;
   }
   .btn-action {
     background-color: #ec7702 ;
