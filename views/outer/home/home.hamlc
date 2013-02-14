@@ -14,7 +14,7 @@
       .row
         .span4
           %p.center.with-arrow
-            %img{:src => "img/outer/home/octocat.png"}
+            %img{:src => assetPath("img/outer/home/octocat.png")}
           %h6
             %span 1
             Push new code to GitHub
@@ -22,7 +22,7 @@
             %strong You set a repo to be tested on each push.
         .span4
           %p.center.with-arrow
-            %img{:src => "img/outer/home/test-output.png"}
+            %img{:src => assetPath("img/outer/home/test-output.png")}
           %h6
             %span 2
             CircleCi runs your tests
@@ -30,7 +30,7 @@
             %strong Your tests are run on our hosted platform.
         .span4
           %p.center
-            %img{:src => "img/outer/home/continuous-deployment-icon.png"}
+            %img{:src => assetPath("img/outer/home/continuous-deployment-icon.png")}
           %h6
             %span 3
             Deploy to your servers
@@ -59,19 +59,19 @@
           %h6
             If it runs on Linux, it runs on CircleCi.
           %p.center
-            %img{:src => "img/outer/home/tech/rails.png", :width => "50"}
-            %img{:src => "img/outer/home/tech/nodejs.png", :width => "100"}
-            %img{:src => "img/outer/home/tech/php.png", :width => "60"}
-            %img{:src => "img/outer/home/tech/python.png", :width => "60"}
-            %img{:src => "img/outer/home/tech/javascript.png", :width => "40"}
-            %img{:src => "img/outer/home/tech/java.png", :width => "60"}
-            %img{:src => "img/outer/home/tech/django-logo-negative.png", :width => "70"}
-            %img{:src => "img/outer/home/tech/postgres.png", :width => "90"}
-            %img{:src => "img/outer/home/tech/mysql.png", :width => "80"}
-            %img{:src => "img/outer/home/tech/redis.png", :width => "40"}
-            %img{:src => "img/outer/home/tech/mongodb.png", :width => "100"}
-            %img{:src => "img/outer/home/tech/chrome.png", :width => "50"}
-            %img{:src => "img/outer/home/tech/firefox.png", :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/rails.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/nodejs.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/php.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/python.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/javascript.png"), :width => "40"}
+            %img{:src => assetPath("img/outer/home/tech/java.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/django-logo-negative.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/postgres.png"), :width => "90"}
+            %img{:src => assetPath("img/outer/home/tech/mysql.png"), :width => "80"}
+            %img{:src => assetPath("img/outer/home/tech/redis.png"), :width => "40"}
+            %img{:src => assetPath("img/outer/home/tech/mongodb.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/chrome.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/firefox.png"), :width => "50"}
   .customer-list
     .container-fluid
       .row-fluid
@@ -79,7 +79,7 @@
           %h5
             A Few Happy CircleCi Customers
           %p.center
-            %img{:src => "img/outer/home/logos_homepage_temp.png"}
+            %img{:src => assetPath("img/outer/home/logos_homepage_temp.png")}
   .customer-quotes
     .container
       .row
@@ -92,7 +92,7 @@
               %strong I'm a huge fan.
               %span.mark-end "
             %span.avatar
-              %img{:src => "img/outer/home/john-collison.png"}
+              %img{:src => assetPath("img/outer/home/john-collison.png")}
             %strong.name
               John Collison
             %i
@@ -106,7 +106,7 @@
               is a big timesaver.
               %span.mark-end "
             %span.avatar
-              %img{:src => "img/outer/home/jon-crawford.png"}
+              %img{:src => assetPath("img/outer/home/jon-crawford.png")}
             %strong.name
               Jon Crawford
             %i
@@ -120,7 +120,7 @@
               %strong CircleCi is the best.
               %span.mark-end "
             %span.avatar
-              %img{:src => "img/outer/home/james-lindenbaum.png"}
+              %img{:src => assetPath("img/outer/home/james-lindenbaum.png")}
             %strong.name
               James Lindenbaum
             %i
@@ -137,7 +137,7 @@
               we didn't have to tweak anything. Amazing service.
               %span.mark-end "
             %span.avatar
-              %img{:src => "img/outer/home/brandon-arbini.png"}
+              %img{:src => assetPath("img/outer/home/brandon-arbini.png")}
             %strong.name
               Brandon Arbini
             %i

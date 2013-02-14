@@ -6,7 +6,7 @@
     %header.masthead.clearfix
       .masthead-center
         %a.brand{href: '/', title: 'Go to the Circle homepage'}
-          %img{:src => "img/outer/home/circle-ci-logo-europa-transparent-mid-white.png"}
+          %img{:src => assetPath("img/outer/home/circle-ci-logo-europa-transparent-mid-white.png")}
           %span CircleCi
       .container
         %nav
