@@ -45,11 +45,11 @@
               %strong
                 %i Free 14 Day Trial.
             %p.center
-              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: CI.github.authUrl() } RUN YOUR TESTS
+              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL } RUN YOUR TESTS
             %p.center
               %i
                 CircleCI keeps your code safe.
-                %a{href:"/privacy" title:"Privacy and Security"} Learn how.
+                %a{href:"/privacy", title:"Privacy and Security"} Learn how.
   .technotron
     .container-fluid
       .row-fluid
@@ -72,6 +72,10 @@
             %img{:src => assetPath("img/outer/home/tech/mongodb.png"), :width => "100"}
             %img{:src => assetPath("img/outer/home/tech/chrome.png"), :width => "50"}
             %img{:src => assetPath("img/outer/home/tech/firefox.png"), :width => "50"}
+          %p.center
+            Looking for more?&nbsp;&nbsp;
+            %a{href:"/technologies", title:"View CircleCi's Supported Technologies"}
+              View all CircleCi supported technologies
   .customer-list
     .container-fluid
       .row-fluid
@@ -213,7 +217,7 @@
               %li Choose a GitHub repository.
               %li Watch your tests run faster than ever.
             %p.center
-              %a#second-join.btn.btn-jumbo.btn-action.kissAuthGithub{ href: CI.github.authUrl() } RUN YOUR TESTS
+              %a#second-join.btn.btn-jumbo.btn-action.kissAuthGithub{ href: @githubPrivateAuthURL } RUN YOUR TESTS
             %p.center
               %i
                 CircleCI keeps your code safe.
