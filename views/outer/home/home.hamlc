@@ -115,20 +115,6 @@
               Jon Crawford
             %i
               CEO of Storenvy
-        .span6
-          .customer-quote.clearfix
-            %p
-            %blockquote
-              %span.mark-start "
-              I have looked at eleven CI services and
-              %strong CircleCi is the best.
-              %span.mark-end "
-            %span.avatar
-              %img{:src => assetPath("img/outer/home/james-lindenbaum.png")}
-            %strong.name
-              James Lindenbaum
-            %i
-              Founder of Heroku
           .customer-quote
             %p
             %blockquote
