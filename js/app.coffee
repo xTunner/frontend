@@ -47,6 +47,7 @@ class CircleViewModel extends CI.inner.Obj
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration made easy")
     @about = new CI.outer.About("about", "About Us")
+    @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
     @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
     @docs = new CI.outer.Docs("docs", "Documentation")
@@ -368,6 +369,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/docs(.*)", (cx) => VM.docs.display(cx)
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
+    @get "^/technologies.*", (cx) => VM.technologies.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
 
     @get '^(.*)', (cx) => VM.error.display(cx)
