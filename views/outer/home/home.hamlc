@@ -44,7 +44,7 @@
             %strong
               %i Free 14 Day Trial.
           %p.center
-            %a.btn.btn-action.btn-jumbo.kissAuthGithub{ href: CI.github.authUrl() } RUN YOUR TESTS
+            %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: CI.github.authUrl() } RUN YOUR TESTS
           %p.center
             %i
               CircleCI keeps your code safe.
@@ -212,7 +212,7 @@
             %li Choose a GitHub repository.
             %li Watch your tests run faster than ever.
           %p.center
-            %a.btn.btn-jumbo.btn-action.kissAuthGithub{ href: CI.github.authUrl() } RUN YOUR TESTS
+            %a#second-join.btn.btn-jumbo.btn-action.kissAuthGithub{ href: CI.github.authUrl() } RUN YOUR TESTS
           %p.center
             %i
               CircleCI keeps your code safe.
