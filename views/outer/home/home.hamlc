@@ -58,7 +58,7 @@
             Technology Support
           %h6
             If it runs on Linux, it runs on CircleCi.
-          %p.center
+          %p.center.technolist
             %img{:src => assetPath("img/outer/home/tech/rails.png"), :width => "50"}
             %img{:src => assetPath("img/outer/home/tech/nodejs.png"), :width => "100"}
             %img{:src => assetPath("img/outer/home/tech/php.png"), :width => "60"}
@@ -72,10 +72,56 @@
             %img{:src => assetPath("img/outer/home/tech/mongodb.png"), :width => "100"}
             %img{:src => assetPath("img/outer/home/tech/chrome.png"), :width => "50"}
             %img{:src => assetPath("img/outer/home/tech/firefox.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/webkit.png"), :width => "50"}
+            %br
+            %img{:src => assetPath("img/outer/home/tech/cassandra.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/elastic_search.png"), :width => "80"}
+            %img{:src => assetPath("img/outer/home/tech/solr.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/lucene.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/memcached.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/riak.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/couchdb.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/neo4j.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/sqlite.png"), :width => "80"}
+            %img{:src => assetPath("img/outer/home/tech/thriftdb.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/sphinx.png"), :width => "80"}
+            %img{:src => assetPath("img/outer/home/tech/rabbitmq.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/couchbase.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/beanstalkd.png"), :width => "70"}
+            %br
+            %img{:src => assetPath("img/outer/home/tech/groovy.png"), :width => "80"}
+            %img{:src => assetPath("img/outer/home/tech/go.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/dart.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/scala.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/clojure.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/erlang.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/perl.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/c.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/haskell.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/mono.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/casperjs.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/phantomjs.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/selenium.png"), :width => "70"}
+            %br
+            %img{:src => assetPath("img/outer/home/tech/heroku.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/dotcloud.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/engine_yard.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/appfog.png"), :width => "50"}
+            %img{:src => assetPath("img/outer/home/tech/nodejitsu.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/joyent.png"), :width => "70"}
+            %img{:src => assetPath("img/outer/home/tech/aws.png"), :width => "120"}
+            %img{:src => assetPath("img/outer/home/tech/rackspace.png"), :width => "100"}
+            %img{:src => assetPath("img/outer/home/tech/fabric.png"), :width => "60"}
+            %img{:src => assetPath("img/outer/home/tech/capistrano.png"), :width => "100"}
+          %h6
+            %strong And many more...
           %p.center
-            Looking for more?&nbsp;&nbsp;
-            %a{href:"/technologies", title:"View CircleCi's Supported Technologies"}
-              View all CircleCi supported technologies
+            CircleCi supports too many technologies to list
+            %br
+            If any technology you need is missing, we will add it for you.
+            %br
+            %strong Looking for your testing framework?
+            %i CircleCi supports any and all testing frameworks.
   .customer-list
     .container-fluid
       .row-fluid
@@ -83,11 +129,11 @@
           %h5
             A Few Happy CircleCi Customers
           %p.center
-            %img{:src => assetPath("img/outer/home/logos_homepage_temp.png")}
+            %img{:src => assetPath("img/outer/home/logos_homepage_2.png")}
   .customer-quotes
     .container
       .row
-        .span6
+        .span6.offset3
           .customer-quote.clearfix
             %p
             %blockquote
