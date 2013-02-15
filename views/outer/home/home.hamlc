@@ -116,7 +116,7 @@
           %h6
             %strong And many more...
           %p.center
-            CircleCi supports too many technologies to list
+            CircleCi supports too many technologies to list.
             %br
             If any technology you need is missing, we will add it for you.
             %br
