@@ -45,7 +45,12 @@
               %strong
                 %i Free 14 Day Trial.
             %p.center
-              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL } RUN YOUR TESTS
+              %span{data-bind: "if: VM.ab().github_warning_modal"}
+                %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
+                  RUN YOUR TESTS
+              %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
+                %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'RUN YOUR TESTS' }
+                  RUN YOUR TESTS
             %p.center
               %i
                 CircleCI keeps your code safe.
@@ -249,7 +254,12 @@
               %li Choose a GitHub repository.
               %li Watch your tests run faster than ever.
             %p.center
-              %a#second-join.btn.btn-jumbo.btn-action.kissAuthGithub{ href: @githubPrivateAuthURL } RUN YOUR TESTS
+              %span{data-bind: "if: VM.ab().github_warning_modal"}
+                %a#second-join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
+                  RUN YOUR TESTS
+              %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
+                %a#second-join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'RUN YOUR TESTS' }
+                  RUN YOUR TESTS
             %p.center
               %i
                 CircleCI keeps your code safe.
@@ -266,10 +276,12 @@
         %h2#mainHeading Continuous Integration with the push of a button
         %h3#hero-copy
           CircleCI gives you all the benefits of continuous integration with none of the headaches of maintaining it. Don't take our word for it &mdash; our free 14-day trial will prove it.
-
-        %a.authGithub.kissAuthGithub#join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
-          Join using GitHub
-
+        %span{data-bind: "if: VM.ab().github_warning_modal"}
+          %a.authGithub.kissAuthGithub#join{ data-toggle: "modal", data-target: "#githubModal", title: 'Join using GitHub' }
+            Join using GitHub
+        %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
+          %a.authGithub.kissAuthGithub#join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
+            Join using GitHub
         %p.footnote
           %span{data-bind: "text: VM.ab().quick_setup_or_trial"}
           %a{href: '/privacy', title: 'Privacy and Security' }
@@ -332,10 +344,12 @@
         %header
           %h2 All this power from one little button
           %h3 Plans start at $19 per month, and every plan includes unlimited builds.
-
-        %a.authGithub.kissAuthGithub#second-join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' } Join using GitHub
-
-
+        %span{data-bind: "if: VM.ab().github_warning_modal"}
+          %a.authGithub.kissAuthGithub#second-join{ data-toggle: "modal", data-target: "#githubModal", title: 'Join using GitHub' }
+            Join using GitHub
+        %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
+          %a.authGithub.kissAuthGithub#second-join{ href: @githubPrivateAuthURL, title: 'Join using GitHub' }
+            Join using GitHub
         %ul
           %li One-click setup
           %li Lightning fast
@@ -345,3 +359,23 @@
           Signing up with GitHub allows Circle to access your code so that we can run your tests.
           We also add post-commit hooks and ssh keys so that you don't have to.
           No human ever looks at your code without your express permission, and everything can be revoked from within GitHub or by asking us.
+
+#githubModal.modal.hide.fade
+  .modal-header{style:'text-align: center'}
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+    %h3 GitHub Authentication
+  .modal-body
+    %p
+      <strong>You will now be sent to GitHub</strong> to authorize your credentials.
+      %br
+      This is necessary so that CircleCi can run your tests.
+      %br
+      %a.why_authenticate_github_link{ href:"#", onclick:'$(".why_authenticate_github_modal").slideDown();'}
+        Why is this necessary?
+    %div.hide.why_authenticate_github_modal{style:'text-align:left;'}
+      %p
+        To run your tests we need to check out your code from GitHub. When you sign up for Circle you tell GitHub that you are authorizing us to check out your private repositories. You may revoke this permission at any time through your GitHub application settings page and by removing Circle's Deploy Keys and Service Hooks from your repositories' Admin pages.
+      %p
+        While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" — Circle gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
+  .modal-footer{style:'text-align: center'}
+    %a.btn..btn-danger.btn-action.btn-large.btn-jumbo{ href: @githubPrivateAuthURL } Authorize on GitHub
