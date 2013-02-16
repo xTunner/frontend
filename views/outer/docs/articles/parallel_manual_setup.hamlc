@@ -13,23 +13,27 @@
     %h2 Circle Env Vars
     %p
       The environment variables
-      %code
-        CIRCLE_NODE_INDEX
+      %code CIRCLE_NODE_INDEX
       and
-      %code
-        CIRCLE_NODE_TOTAL
+      %code CIRCLE_NODE_TOTAL
 
       are exported. Your test runner should choose to run a subset
       of your tests, on each node.
 
     %h2 A simple example
+
+    %p
+      If you want to run the two commands
+      %code rake spec
+      and
+      %code npm test
+      in parallel, you can use a bash case statement:
     %pre
       %code<>
         :preserve<>
           test:
             override:
-              - [ $CIRCLE_NODE_INDEX == 0 ] && bundle exec rake spec:core
-              - [ $CIRCLE_NODE_INDEX == 1 ] && bundle exec rake spec:integration
+              - case $CIRCLE_NODE_INDEX in 0) rake spec ;; 1) npm test ;; esac
 
     %p
       Obviously, this is slightly limited because it's hard-coded to
