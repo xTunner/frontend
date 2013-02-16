@@ -10,6 +10,7 @@ exports.ab_test_definitions =
     quick_setup_or_trial: ["14-day free trial.", "Run your first test with 3 clicks."]
     new_landing_page: [false, true] # in the views, a is false, b is true
     github_warning_modal: [true, false]
+    show_add_repos_blank_slate: [true, false] # true shows the show_add_repos_blank_slate div, false hides it
   overrides:
     [
       override_p: ->
