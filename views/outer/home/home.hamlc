@@ -135,10 +135,11 @@
             A Few Happy CircleCi Customers
           %p.center
             %img{:src => assetPath("img/outer/home/logos_homepage_2.png")}
+          %br
   .customer-quotes
     .container
       .row
-        .span6.offset3
+        .span8.offset2
           .customer-quote.clearfix
             %p
             %blockquote
@@ -173,7 +174,6 @@
               The thing that sold us on CircleCi was the speed.
               %strong Tests run really really fast
               We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop.
-              %br
               %strong Parallelization just works
               we didn't have to tweak anything. Amazing service.
               %span.mark-end "
