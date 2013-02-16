@@ -7,7 +7,7 @@
     .span9
       .row-fluid
         %h1
-          Manage Repos
+          Your Repositories
           %button.btn.btn-success.pull-right{data-bind: "click: $root.goDashboard"}
             Done Managing Repos &rarr;
       .row-fluid
