@@ -2,12 +2,12 @@
 #   You can't change the options once they're set, you need to define a new test
 #
 # Example setup in viewModel:
-#   @ab = new(CI.ABTests({daniel_test: ["option1", "option2"]})).ab_tests
+#   @ab = new(CI.ABTests({daniel_test: [true, false]})).ab_tests
 #
 # Example usage in view:
-#   %p{href: "#", data-bind: "if: ab().daniel_test == true"}
+#   %p{href: "#", data-bind: "if: ab().daniel_test"}
 #     This is the text that will show up if option is set to true
-#   %p{href: "#", data-bind: "if: ab().daniel_test == false"}
+#   %p{href: "#", data-bind: "if: ab().daniel_test"}
 #     This is the text that will show up if option is set to false
 
 CI.ABTests = class ABTests
@@ -41,7 +41,7 @@ CI.ABTests = class ABTests
 
       value = options[@option_index(@user_seed, name, options)]
 
-      tests[name] = value
+      tests[name] = ko.observable(value)
 
       console.log "Set (or reseting) A/B test '#{name}' to value '#{value}'"
 
