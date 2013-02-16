@@ -319,8 +319,6 @@ class CircleViewModel extends CI.inner.Obj
 
     return true
 
-
-
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
@@ -395,4 +393,9 @@ $(document).ready () ->
   path = window.location.pathname
   path = path.replace(/\/$/, '') # remove trailing slash
   path or= "/"
+
+  if window.circleEnvironment is 'development'
+    CI.maybeOverrideABTests(window.location.search, VM.ab)
+    path = path + window.location.search
+
   SammyApp.run path
