@@ -2,12 +2,13 @@
   %div{data-bind: "if: VM.ab().show_add_repos_blank_slate"}
     .add_repos_blank_slate
       %h3
-        Get started by adding your first repo!
+        Welcome to CircleCi
       %p
-        CircleCi helps you monitor test status and develop software in fluid way.<br />
-        The first step is to choose a GitHub organization ( your company ) or a GitHub username in the left hand column on this page, then choose a repository to follow with CircleCi.
+        Choose a GitHub organization ( your company ) or a GitHub username on the left side of this page.
         <br/>
-        %strong Add your first repo to get started.
+        Then choose a repository to follow with CircleCi. Repos you choose to follow will have their tests run by CircleCi.
+        <br/>
+        %strong Follow a repo to get started.
 %table#add-projects-main.well.table.table-striped.table-hover
   %thead
   %tbody.build-row{data-bind: "foreach: repos"}
