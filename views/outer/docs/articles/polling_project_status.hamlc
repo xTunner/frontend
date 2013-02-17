@@ -65,6 +65,14 @@
             %a{ href: "https://addons.mozilla.org/en-US/firefox/addon/cruisecontrol-monitor/" } CruiseControl Monitor
           a Firefox plugin.
 
+    %h3
+      Notes
+
+    %p
+      If you're using CCMenu, you may have to append
+      %code &ccmenu=cc.xml
+      (or anything that ends with xml) to the end of your url.
+
     %p
       If you run into trouble configuring these, or are using a different tool not on this list,
       please
