@@ -63,61 +63,8 @@
             Technology Support
           %h6
             If it runs on Linux, it runs on CircleCi.
-          %p.center.technolist
-            %img{:src => assetPath("img/outer/home/tech/rails.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/nodejs.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/php.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/python.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/javascript.png"), :width => "40"}
-            %img{:src => assetPath("img/outer/home/tech/java.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/django-logo-negative.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/postgres.png"), :width => "90"}
-            %img{:src => assetPath("img/outer/home/tech/mysql.png"), :width => "80"}
-            %img{:src => assetPath("img/outer/home/tech/redis.png"), :width => "40"}
-            %img{:src => assetPath("img/outer/home/tech/mongodb.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/chrome.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/firefox.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/webkit.png"), :width => "50"}
-            %br
-            %img{:src => assetPath("img/outer/home/tech/cassandra.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/elastic_search.png"), :width => "80"}
-            %img{:src => assetPath("img/outer/home/tech/solr.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/lucene.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/memcached.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/riak.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/couchdb.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/neo4j.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/sqlite.png"), :width => "80"}
-            %img{:src => assetPath("img/outer/home/tech/thriftdb.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/sphinx.png"), :width => "80"}
-            %img{:src => assetPath("img/outer/home/tech/rabbitmq.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/couchbase.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/beanstalkd.png"), :width => "70"}
-            %br
-            %img{:src => assetPath("img/outer/home/tech/groovy.png"), :width => "80"}
-            %img{:src => assetPath("img/outer/home/tech/go.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/dart.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/scala.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/clojure.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/erlang.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/perl.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/c.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/haskell.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/mono.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/casperjs.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/phantomjs.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/selenium.png"), :width => "70"}
-            %br
-            %img{:src => assetPath("img/outer/home/tech/heroku.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/dotcloud.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/engine_yard.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/appfog.png"), :width => "50"}
-            %img{:src => assetPath("img/outer/home/tech/nodejitsu.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/joyent.png"), :width => "70"}
-            %img{:src => assetPath("img/outer/home/tech/aws.png"), :width => "120"}
-            %img{:src => assetPath("img/outer/home/tech/rackspace.png"), :width => "100"}
-            %img{:src => assetPath("img/outer/home/tech/fabric.png"), :width => "60"}
-            %img{:src => assetPath("img/outer/home/tech/capistrano.png"), :width => "100"}
+          %p.center
+            %img{:src => assetPath("img/techs.jpg")}
           %h6
             %strong And many more...
           %p.center
