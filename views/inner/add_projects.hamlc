@@ -7,9 +7,9 @@
     .span9
       .row-fluid
         %h1
-          Manage Repos
-          %button.btn.btn-success.pull-right{data-bind: "click: $root.goDashboard"}
-            Done Managing Repos &rarr;
+          Your Repositories
+          %button.btn.btn-success.btn-large.pull-right{data-bind: "click: $root.goDashboard"}
+            Your Recent Builds
       .row-fluid
         %div{data-bind: "if: showLoading"}
           .centered-spinner

@@ -1,0 +1,38 @@
+- @technologies = [ { name: 'Ruby', shortname: 'ruby', type: 'language' },{ name: 'JavaScript', shortname: 'javascript', type: 'language' },{ name: 'Node.js', shortname: 'nodejs', type: 'frameworks' }, { name: 'Haskell', shortname: 'haskell', type: 'language' }, { name: 'Python', shortname: 'python', type: 'language' }, { name: 'C', shortname: 'c', type: 'language' }, { name: 'C++', shortname: 'c++', type: 'language' },   { name: 'PHP', shortname: 'php', type: 'language' }, { name: 'Perl', shortname: 'perl', type: 'language' }, { name: 'Erlang', shortname: 'erlang', type: 'language' }, { name: 'Clojure', shortname: 'clojure', type: 'language' }, { name: 'Scala', shortname: 'scala', type: 'language' }, { name: 'Java', shortname: 'java', type: 'language' }, { name: 'D', shortname: 'd', type: 'language' }, { name: 'Dart', shortname: 'dart', type: 'language' }, { name: 'Go', shortname: 'go', type: 'language' }, { name: 'Rails', shortname: 'rails', type: 'framework' }, { name: 'Sinatra', shortname: 'sinatra', type: 'framework' }, { name: 'Django', shortname: 'django', type: 'framework' }, { name: 'Play', shortname: 'play', type: 'framework' }, { name: 'Noir', shortname: 'noir', type: 'framework' }, { name: 'Zend', shortname: 'zend', type: 'framework' }, { name: 'Symfony', shortname: 'symfony', type: 'framework' }, { name: 'Code Igniter', shortname: 'code_igniter', type: 'framework' }, { name: 'Cake PHP', shortname: 'cake_php', type: 'framework' }, { name: 'Lithium', shortname: 'lithium', type: 'framework' }, { name: 'Groovy', shortname: 'groovy', type: 'framework' }, { name: 'MySQL', shortname: 'mysql', type: 'database' }, { name: 'PostgreSQL', shortname: 'postgres', type: 'database' }, { name: 'MongoDB', shortname: 'mongodb', type: 'database' }, { name: 'Redis', shortname: 'redis', type: 'database' }, { name: 'Memcached', shortname: 'memcached', type: 'database' }, { name: 'CouchDB', shortname: 'couchdb', type: 'database' }, { name: 'Couchbase', shortname: 'couchbase', type: 'database' }, { name: 'Solr', shortname: 'solr', type: 'database' }, { name: 'Elastic Search', shortname: 'elastic_search', type: 'database' }, { name: 'Lucene', shortname: 'lucene', type: 'database' }, { name: 'Cassandra', shortname: 'cassandra', type: 'database' }, { name: 'Riak', shortname: 'riak', type: 'database' }, { name: 'Neo4j', shortname: 'neo4j', type: 'database' }, { name: 'SQLite', shortname: 'sqlite', type: 'database' }, { name: 'Heroku', shortname: 'heroku', type: 'deployment' }, { name: 'dotCloud', shortname: 'dotcloud', type: 'deployment' }, { name: 'App Engine', shortname: 'app_engine', type: 'deployment' }, { name: 'AppFog', shortname: 'appfog', type: 'deployment' }, { name: 'Capistrano', shortname: 'capistrano', type: 'deployment' }, { name: 'Fabric', shortname: 'fabric', type: 'deployment' }, { name: 'Engine Yard', shortname: 'engine_yard', type: 'deployment' }, { name: 'Nodejitsu', shortname: 'nodejitsu', type: 'deployment' }, { name: 'Force.com', shortname: 'force_dot_com', type: 'deployment' }, { name: 'Rackspace', shortname: 'rackspace', type: 'deployment' }, { name: 'WebHooks', shortname: 'webhooks', type: 'deployment' }, { name: 'AWS', shortname: 'aws', type: 'deployment' }, { name: 'test-unit', shortname: 'test_unit', type: 'testing_library' }, { name: 'RSpec', shortname: 'rspec', type: 'testing_library' }, { name: 'Cucumber', shortname: 'cucumber', type: 'testing_library' }, { name: 'Jasmine', shortname: 'jasmine', type: 'testing_library' }, { name: 'Nose', shortname: 'nose', type: 'testing_library' }, { name: 'Mocha', shortname: 'mocha', type: 'testing_library' }, { name: 'Spinach', shortname: 'spinach', type: 'testing_library' }, { name: 'Konacha', shortname: 'konacha', type: 'testing_library' }, { name: 'Capybara', shortname: 'capybara', type: 'testing_library' }, { name: 'JUnit', shortname: 'junit', type: 'testing_library' }, { name: 'Selenium', shortname: 'selenium', type: 'browser_testing_tool' }, { name: 'PhantomJS', shortname: 'phantomjs', type: 'browser_testing_tool' }, { name: 'CasperJS', shortname: 'casperjs', type: 'browser_testing_tool' }, { name: 'Chrome', shortname: 'chrome', type: 'browser_testing_tool' }, { name: 'Firefox', shortname: 'firefox', type: 'browser_testing_tool' } ]
+.technologies
+  #title
+    %h1 CircleCi Supported Technololgies
+
+  #content.container-fluid
+    .row-fluid
+      .span12
+        %h4 If it runs on Linux, CircleCi supports it.
+        %h5 Langauges
+        %ul.tech_list.languages
+          - for tech in @technologies
+            - if tech.type == 'language'
+              %li.tech
+                %a{ class: "#{tech.shortname} #{tech.type}" }
+                  %img{ src: "/img/outer/home/tech/#{tech.shortname}.png" }
+                  %span
+                    = tech.name
+        %h5
+          Frameworks
+        %ul.tech_list.frameworks
+          - for tech in @technologies
+            - if tech.type == 'framework'
+              %li.tech
+                %a{ class: "#{tech.shortname} #{tech.type}" }
+                  %img{ src: "/img/outer/home/tech/#{tech.shortname}.png" }
+                  %span
+                    = tech.name
+        %h5
+          Databases
+        %ul.tech_list.databases
+          - for tech in @technologies
+            - if tech.type == 'database'
+              %li.tech
+                %a{ class: "#{tech.shortname} #{tech.type}" }
+                  %img{ src: "/img/outer/home/tech/#{tech.shortname}.png" }
+                  %span
+                    = tech.name

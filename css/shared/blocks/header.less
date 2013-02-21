@@ -1,7 +1,65 @@
 // Header --------------------------------------------------------------------
+.masthead {
+  padding: 20px 0 25px 0;
+  position: relative;
+  background: #0066ff;
+  border: 0;
+  background-image: url("@{imgPath}/outer/home/concentric-bg-7.png");
+  background-position: center -355px;
+  background-repeat: no-repeat;
+  height: 30px;
+}
+.masthead .container-fluid {
+  padding: 0;
+}
+.masthead-center {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 120px;
+  height: 50px;
+  margin: 0 auto;
+  z-index: 50;
+}
+.brand {
+  display: block;
+  width: 120px;
+  height: 50px;
+  top: 20px;
+  left: -60px;
+  position: relative;
+}
+.brand img {
+  width: 120px;
+}
+.brand span {
+  display: none;
+}
+.masthead .container {
+  margin-bottom: 0;
+  z-index: 20;
+  position: relative;
+}
+.masthead .nav a {
+  font-size: 14px;
+  line-height: 22px;
+  padding: 5px 7px;
+  margin: 0px 10px;
+  border-radius: 4px;
+  color: #7fc1ff;
+}
+.masthead .nav-pills li a:hover {
+  background: transparent;
+  color: white;
+  border: 1px soild white;
+}
+
+#head.b {
+  border-top:  5px solid #0041a4;
+}
 
 // Full width wrapper
-#head {
+#head.a {
   height: 65px;
   border-top: 5px solid #105AAF;
   background: url("@{imgPath}/lg_header-bg.png") repeat-x;

@@ -68,16 +68,10 @@
        margin-left: 20px;
      }
 
-     .tooltip {
-       text-transform: capitalize;
-       opacity: 1;
-       .tooltip-arrow {
-         border-top-color: @blueDark;
-       }
-       .tooltip-inner {
-         background-color: @blueDark;
-       }
-     }
+   }
+
+   .default {
+     font-weight: bold;
    }
 
    .nav-menu-item {
@@ -113,6 +107,34 @@
          color: #777;
          text-decoration: none;
       }
+   }
+
+   .toggle-show-branches {
+     a {
+       margin-top: 4px;
+       cursor: pointer;
+     }
+     i {
+         margin-left: -3px;
+         color: #999;
+         font-size: 18px;
+         .transition(color 600ms);
+      }
+
+      i:hover {
+         color: #777;
+         text-decoration: none;
+      }
+   }
+   .tooltip {
+     text-transform: capitalize;
+     opacity: 1;
+     .tooltip-arrow {
+       border-top-color: @blueDark;
+     }
+     .tooltip-inner {
+       background-color: @blueDark;
+     }
    }
 }
 

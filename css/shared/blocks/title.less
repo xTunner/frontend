@@ -2,37 +2,23 @@
 
 #title {
   @titleHeight: 84px;
-
-  height: @titleHeight;
-  background: url("@{imgPath}/lg_home-teaser-bg.png");
-  .box-shadow("inset 0px 5px 5px rgba(0, 0, 0, 0.15), inset 0px -5px 5px rgba(0, 0, 0, 0.15)");
+  background: #FAFAFA;
+  background: rgba(0, 0, 0, 0.02);
 
   h1, h1 > a {
-    margin: 0;
     .container;
-    color: #fff;
+    color: #333;
     font-size: 40px;
     line-height: @titleHeight;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
     text-decoration: none;
+    text-align: center;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    text-align: center;
+    font-size: 58px;
+    line-height: 68px;
+    padding: 20px 0 10px 0;
+    width: 100%;
   }
 
-  &:after {
-    content: '';
-    @startColor: rgba(0,0,0,0.06);
-    @endColor: rgba(0,0,0,0);
-    background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
-    background-image: -ms-linear-gradient(top, @startColor, @endColor); // IE10
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
-    background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
-    background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
-    background-image: linear-gradient(top, @startColor, @endColor); // The standard
-    background-repeat: repeat-x;
-    background-color: transparent;
-    display: block;
-    height: 50px;
-    width: 100%;
-    z-index: 10;
-    position: absolute;
-  }
 }
