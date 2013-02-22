@@ -94,10 +94,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         categories[category] = @find_articles_by_tag(category)
     categories
 
-  lib: =>
-    $("#query").typeahead
-      'source': window.VM.suggestArticles
-
   viewContext: (cx) =>
     categories: @categories()
     find_articles_by_tag: @find_articles_by_tag # not a function call

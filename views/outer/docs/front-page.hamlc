@@ -6,8 +6,7 @@
       What can we help you with?
 
     %form.form-search{ action: "", data-bind: "event: { submit: searchArticles }" }
-      %input.search-query.input-xxlarge#query{ type: 'text', name: 'query' }
-
+      %input.search-query.input-xxlarge#query{ type: 'text', name: 'query', data-bind: "jQueryExt: {type: 'typeahead', options: { source: VM.suggestArticles, updater: VM.performDocSearch}}" }
     %div{data-bind: "if: query_results_query"}
       .article_list
         %div{data-bind: "ifnot: query_results().length"}

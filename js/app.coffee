@@ -65,15 +65,19 @@ class CircleViewModel extends CI.inner.Obj
     else
       VM.loadRecentBuilds()
 
-  searchArticles: (vm, event) ->
+  performDocSearch: (query) =>
     $.ajax
       url: "/search-articles"
       type: "GET"
       data:
-        query: $("#query").val()
+        query: query
       success: (results) =>
         @query_results results.results
         @query_results_query results.query
+    query
+
+  searchArticles: (vm, event) =>
+    @performDocSearch($("#query").val())
     event.preventDefault()
     event.stopPropagation()
     false
