@@ -1,0 +1,2 @@
+%form.form-search{ method: "ko", action: "", data-bind: "submit: searchArticles" }
+  %input.search-query{placeholder: 'Search', type: 'text', name: 'query', data-bind: "jQueryExt: {type: 'typeahead', options: { source: VM.suggestArticles, updater: VM.performDocSearch}}" }

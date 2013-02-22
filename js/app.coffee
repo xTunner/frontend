@@ -72,15 +72,14 @@ class CircleViewModel extends CI.inner.Obj
       data:
         query: query
       success: (results) =>
+        window.SammyApp.setLocation("/docs")
         @query_results results.results
         @query_results_query results.query
-    query
+    null
 
-  searchArticles: (vm, event) =>
-    @performDocSearch($("#query").val())
-    event.preventDefault()
-    event.stopPropagation()
-    false
+  searchArticles: (form) =>
+    @performDocSearch($(form).find('.search-query').val())
+    return false
 
   suggestArticles: (query, process) =>
     $.ajax
@@ -326,6 +325,10 @@ class CircleViewModel extends CI.inner.Obj
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
+    # ignore forms with method ko, useful when using the knockout submit binding
+    @route 'ko', '.*', ->
+      false
+
     @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
     @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
@@ -400,6 +403,5 @@ $(document).ready () ->
 
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
-    path = path + window.location.search
 
   SammyApp.run path
