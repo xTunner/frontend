@@ -27,13 +27,13 @@ class CircleViewModel extends CI.inner.Obj
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
     @selected = ko.observable({}) # Tracks what the dashboard is showing
-
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
-
+            
+  
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
@@ -324,7 +324,6 @@ class CircleViewModel extends CI.inner.Obj
 
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
-
     @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
     @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
@@ -401,3 +400,6 @@ $(document).ready () ->
   path = path.replace(/\/$/, '') # remove trailing slash
   path or= "/"
   SammyApp.run path
+#  if window.renderContext.heroku?               
+#    alert(window.renderContext.heroku_nav_bar)
+#    $("#heroku").append( window.renderContext.heroku_nav_bar)         
