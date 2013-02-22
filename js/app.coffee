@@ -75,7 +75,7 @@ class CircleViewModel extends CI.inner.Obj
         window.SammyApp.setLocation("/docs")
         @query_results results.results
         @query_results_query results.query
-    null
+    query
 
   searchArticles: (form) =>
     @performDocSearch($(form).find('.search-query').val())
