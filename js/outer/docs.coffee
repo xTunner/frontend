@@ -1,7 +1,6 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
-    @_title = "Documentation"
 
   rewrite_old_name: (name) =>
     switch name
@@ -98,6 +97,9 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     categories: @categories()
     find_articles_by_tag: @find_articles_by_tag # not a function call
     pagename: @filename cx
+
+  title: (cx) =>
+    @article_info(@filename(cx)).title
 
   render: (cx) =>
     rewrite = @rewrite_old_name cx.params.splat[0]
