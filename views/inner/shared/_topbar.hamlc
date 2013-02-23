@@ -1,7 +1,5 @@
-#heroku
-#heroku2
 #topbar
-  .navbar.navbar-fixed-top
+  .navbar
     .navbar-inner
       %a.brand{href: "/"}
 
