@@ -2,7 +2,7 @@ body#home-page {
   .jumbotron {
     margin: 0;
     padding: 0;
-    background: #f6f6ef;
+    background: #fff;
     color: #333;
   }
   .jumbotron * {
@@ -12,16 +12,16 @@ body#home-page {
   }
   .jumbotron h1 {
     font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 400;
+    font-weight: 600;
     text-align: center;
-    font-size: 58px;
-    line-height: 68px;
+    font-size: 62px;
+    line-height: 72px;
     margin: 20px 0 15px 0;
     text-shadow: 0px 1px 1px #ffffff;
   }
   .jumbotron h2 {
     text-align: center;
-    font: italic 400 22px/32px 'Source Sans Pro', sans-serif;
+    font: italic 400 20px/34px 'Source Sans Pro', sans-serif;
     color: #555555;
   }
   .jumbotron h2 span {
@@ -36,6 +36,8 @@ body#home-page {
     font-size: 18px;
     text-align: center;
     margin-right: 4px;
+    position: relative;
+    top: -2px;
   }
   .jumbotron h2 span.label {
     font-size: 16px;
@@ -169,6 +171,20 @@ body#home-page {
     background: #eeeeee;
     padding: 20px 0 0 0;
     border-top: 1px solid #cccccc;
+    position: relative;
+    margin-top: 50px;
+  }
+  .customer-list .container-fluid::before {
+    display:block;
+    content:'';
+    position:absolute;
+    width:300px;
+    height:52px;
+    background-image: url('@{imgPath}/outer/home/callouts-01.png');
+    background-repeat: no-repeat;
+    background-position: 0 -50px;
+    top: -60px;
+    left: 37%;
   }
   .customer-list h5,
   .how-it-works h5,
@@ -191,7 +207,7 @@ body#home-page {
     border-bottom: 1px solid #cccccc;
   }
   .customer-quote {
-    margin: 0 0 42px 0;
+    margin: 0 0 20px 0;
     padding: 0;
     position: relative;
     font-family: 'Source Sans Pro', sans-serif;
@@ -208,8 +224,8 @@ body#home-page {
     box-shadow: 0px 1px 3px #777777;
     border: 0;
     position: relative;
-    font-size: 22px;
-    line-height: 32px;
+    font-size: 16px;
+    line-height: 22px;
     font-style: italic;
     font-weight: 400;
     color: #555555;
@@ -220,15 +236,15 @@ body#home-page {
   .customer-quote blockquote .mark-start {
     position: absolute;
     color: #bbbbbb;
-    top: 22px;
-    left: 8px;
+    top: 24px;
+    left: 12px;
     font-size: 42px;
   }
   .customer-quote blockquote .mark-end {
     position: relative;
     color: #cccccc;
     font-size: 42px;
-    top: 10px;
+    top: 14px;
     left: -4px;
     line-height: 0;
   }
@@ -287,15 +303,35 @@ body#home-page {
     color: #444;
   }
   .how-it-works {
-    background: #f6f6ef;
-    padding: 10px 0 0 0;
+    background: #ffffff;
+    padding: 30px 0 40px 0;
+    position: relative;
+  }
+  .how-it-works .container {
+    position: relative;
+    overflow: visible;
+  }
+  .how-it-works .container::before {
+    display:block;
+    content:'';
+    position:absolute;
+    width:175px;
+    height:50px;
+    background-image: url('@{imgPath}/outer/home/callouts-01.png');
+    background-repeat: no-repeat;
+    background-position: -25px 0;
+    top: 0;
+    left: -80px;
   }
   .how-it-works h6 {
     font-family: 'Source Sans Pro', sans-serif;
-    text-align: center;
-    font-size: 24px;
-    line-height: 34px;
+    text-align: left;
+    font-size: 22px;
+    line-height: 32px;
     font-weight: 600;
+    padding-left: 70px;
+    padding-right: 40px;
+    position: relative;
   }
   .how-it-works h6 span {
     color: #333333;
@@ -304,12 +340,12 @@ body#home-page {
     text-align: center;
     border-radius: 100px;
     text-shadow: 0 1px 1px #ffffff;
-    background-color: #ffd91b;
-    padding: 2px 9px 4px 10px;
-    line-height: 0;
-    margin-right: 5px;
-    position: relative;
-    top: -2px;
+    background-color: #ffdf23;
+    display: block;
+    height: 30px;
+    width: 30px;
+    left: 30px;
+    position: absolute;
   }
   .how-it-works .with-arrow {
     position: relative;
@@ -350,7 +386,7 @@ body#home-page {
     font-weight: normal;
   }
   .benefits {
-    padding: 75px 0;
+    padding: 20px 0;
     background: #efede4 url('@{imgPath}/outer/home/stacked_circles.png') repeat left top;
     border-bottom: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
@@ -367,40 +403,41 @@ body#home-page {
     margin: 10px 0 30px 0;
   }
   .benefits h6 {
-    font-size: 32px;
-    line-height: 42px;
+    font-size: 22px;
+    line-height: 32px;
     font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 400;
+    font-weight: 600;
   }
   .benefits .section-content {
-    width: 70%;
-    float: right;
+    width: 65%;
+    float: left;
   }
   .benefits .section-content p {
-    font-size: 18px;
-    line-height: 28px;
+    font-size: 15px;
+    line-height: 22px;
     color: #333333;
-  }
-  .benefits .section-content.pull-right {
+    margin-top: -5px;
   }
   .benefits .section-graphic {
-    font-size: 100px;
+    width: 32%;
+    font-size: 40px;
     color: black;
     display: block;
-    width: 26%;
     float: left;
     margin: 15px 0 0 2px;
     text-align: center;
   }
   .benefits .section-graphic i {
-    font-size: 100px;
+    font-size: 40px;
     color: white;
     display: block;
     margin: 0 auto;
-    padding: 22px 24px 19px;
-    width: 110px;
-    height: 110px;
+    padding: 14px 14px 14px !important;
+    width: 40px;
+    height: 40px;
     border-radius: 80px;
+    text-shadow: none !important;
+    border-bottom: none !important;
   }
   .benefits .quick-setup .section-graphic i {
     background-color: #0065d7;
@@ -441,25 +478,39 @@ body#home-page {
     text-shadow: 0 -5px 1px #555555;
     padding: 24px 24px 16px 24px;
   }
+  .benefits .automatic-parallelization .section-graphic i {
+    background-color: #ff5400;
+    border-bottom: 10px solid #555555;
+    text-shadow: 0 -5px 1px #555555;
+  }
+  .benefits .continuous-deployment .section-graphic i {
+    background-color: #329700;
+    border-bottom: 10px solid #555555;
+    text-shadow: 0 -5px 1px #555555;
+  }
+  .benefits .more-to-come .section-graphic i {
+    background-color: #f6d200;
+    border-bottom: 10px solid #555555;
+    text-shadow: 0 -5px 1px #555555;
+  }
   .technotron {
-    border-top: 1px solid #cccccc;
-    padding: 20px 0 60px 0;
+    padding: 50px 0 80px 0;
   }
   .technotron h5 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 600;
     text-align: center;
-    font-size: 32px;
-    line-height: 42px;
+    font-size: 42px;
+    line-height: 52px;
     margin: 20px 0 5px 0;
   }
   .technotron h6 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 300;
     text-align: center;
-    font-size: 22px;
-    line-height: 32px;
-    margin: 0 0 15px 0;
+    font-size: 32px;
+    line-height: 42px;
+    margin: 0 0 25px 0;
   }
   .technotron img {
     margin: 2px 4px;

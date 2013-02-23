@@ -4,11 +4,9 @@
       .row-fluid
         .span12
           %h1
-            Continuous Integration for web apps.
+            Powerful CI without the pain.
           %h2
-            %span
-              TL;DR:
-            CircleCi gives you the power of CI without the pain of setup and maintenance.
+            <span>TL;DR</span> CircleCI gives web app developers powerful Continuous Integration with easy setup and zero maintenance.
   .how-it-works
     .container
       .row
@@ -17,44 +15,69 @@
             %img{:src => assetPath("img/outer/home/octocat.png")}
           %h6
             %span 1
-            Push new code to GitHub
-          %p
-            %strong You set a repo to be tested on each push.
+            Push your new code to GitHub
         .span4
           %p.center.with-arrow
             %img{:src => assetPath("img/outer/home/test-output.png")}
           %h6
             %span 2
-            CircleCi runs your tests
-          %p
-            %strong Your tests are run on our hosted platform.
+            Your tests run on our hosted platform
         .span4
           %p.center
             %img{:src => assetPath("img/outer/home/continuous-deployment-icon.png")}
           %h6
             %span 3
-            Deploy to your servers
-          %p
-            %strong Optionally deploy to production.
-      .row
+            Deploy green builds to your servers
+  .customer-list
+    .container-fluid
+      .row-fluid
         .span12
-          .ctabox
-            %p.center
-              Plans start at <i>$19 per month</i><br />
-              All plans include a
-              %strong
-                %i Free 14 Day Trial.
-            %p.center
-              %span{data-bind: "if: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
-                  RUN YOUR TESTS
-              %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'RUN YOUR TESTS' }
-                  RUN YOUR TESTS
-            %p.center
-              %i
-                CircleCI keeps your code safe.
-                %a{href:"/privacy", title:"Privacy and Security"} Learn how.
+          %p.center
+            %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
+  .customer-quotes
+    .container-fluid
+      .row-fluid
+        .span4
+          .customer-quote.clearfix
+            %p
+            %blockquote
+              %span.mark-start "
+              CircleCi has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and CI happens from the get-go.
+              %strong I'm a huge fan.
+              %span.mark-end "
+            %span.avatar
+              %img{:src => assetPath("img/outer/home/john-collison-2.png")}
+            %strong.name
+              John Collison
+            %i
+              Founder of Stripe
+        .span4
+          .customer-quote
+            %p
+            %blockquote
+              %span.mark-start "
+              It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.<strong>The first time it happened, my team cheered</strong>. The fact that we don't have to admin the server ourselves
+              is a big timesaver.
+              %span.mark-end "
+            %span.avatar
+              %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
+            %strong.name
+              Jon Crawford
+            %i
+              CEO of Storenvy
+        .span4
+          .customer-quote
+            %p
+            %blockquote
+              %span.mark-start "
+              CircleCI was super simple to set up and we started reaping the benefits immediately. CircleCI lets us ship code quickly and confidently. <strong>CircleCI's customer support is outstanding.</strong> We get quick, thorough answers to all our questions.
+              %span.mark-end "
+            %span.avatar
+              %img{:src => assetPath("img/outer/home/aaron-suggs.jpg")}
+            %strong.name
+              Aaron Suggs
+            %i
+              Operations Engineer at Kickstarter
   .technotron
     .container-fluid
       .row-fluid
@@ -74,125 +97,95 @@
             %br
             %strong Looking for your testing framework?
             %i CircleCi supports any and all testing frameworks.
-  .customer-list
-    .container-fluid
-      .row-fluid
-        .span12
-          %h5
-            A Few Happy CircleCi Customers
-          %p.center
-            %img{:src => assetPath("img/outer/home/logos_homepage_2.png")}
-          %br
-  .customer-quotes
-    .container
-      .row
-        .span8.offset2
-          .customer-quote.clearfix
-            %p
-            %blockquote
-              %span.mark-start "
-              CircleCi has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and CI happens from the get-go.
-              %strong I'm a huge fan.
-              %span.mark-end "
-            %span.avatar
-              %img{:src => assetPath("img/outer/home/john-collison-2.png")}
-            %strong.name
-              John Collison
-            %i
-              Founder of Stripe
-          .customer-quote
-            %p
-            %blockquote
-              %span.mark-start "
-              It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. The first time it happened, my team cheered. The fact that
-              %strong we don't have to admin the server ourselves
-              is a big timesaver.
-              %span.mark-end "
-            %span.avatar
-              %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
-            %strong.name
-              Jon Crawford
-            %i
-              CEO of Storenvy
-          .customer-quote
-            %p
-            %blockquote
-              %span.mark-start "
-              The thing that sold us on CircleCi was the speed.
-              %strong Tests run really really fast
-              We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop.
-              %strong Parallelization just works
-              we didn't have to tweak anything. Amazing service.
-              %span.mark-end "
-            %span.avatar
-              %img{:src => assetPath("img/outer/home/brandon-arbini.png")}
-            %strong.name
-              Brandon Arbini
-            %i
-              VP of Product &amp; Engineering at Zencoder
+
   .benefits
     .container-fluid
       .row-fluid
-        .span8.offset2
-          %h5 Six Reasons To Love CircleCi
-          .section.quick-setup.clearfix
-            .section-content
-              %h6 1. Quick Setup
-              %p
-                %strong Set up your CI server in 20 seconds
-                , not two days. With one click CircleCi detects test settings for a wide range of web apps, and set them up automatically on our servers.
-            .section-graphic
-              %i.icon-magic
-          .section.fast-tests.clearfix
-            .section-content
-              %h6 2. Fast Tests
-              %p
-                Your productivity relies on fast test results. CircleCI runs your tests
-                %strong faster than your Macbook Pro
-                EC2, your local server, or any other service.
-            .section-graphic
-              %i.icon-bolt
-          .section.deep-customization.clearfix
-            .section-content
-              %h6 3. Deep Customization
-              %p
-                Real applications often deviate slightly from standard configurations, so CircleCI does too. Our configuration is so flexible that it's easy to
-                %strong tweak almost anything
-                you need.
-            .section-graphic
-              %i.icon-beaker
-          .section.debug-with-ease.clearfix
-            .section-content
-              %h6 4. Debug with Ease
-              %p
-                When your tests are broken, we help you get them fixed. We auto-detect errors, have great support, and even allow you to
-                %strong SSH into our machines
-                to test manually.
-            .section-graphic
-              %i.icon-cog
-          .section.smart-notifications.clearfix
-            .section-content
-              %h6 5. Smart Notifications
-              %p
-                CircleCI intelligently notifies you via email, Hipchat, Campfire and more. You won't be flooded with useless notifications about other people's builds and passing tests,
-                %strong we only notify you when it matters.
-            .section-graphic
-              %i.icon-bullhorn
-          .section.incredible-support.clearfix
-            .section-content
-              %h6 6. Loving support
-              %p
-                We respond to support requests as soon as possible, every day. Most requests get a response responded to
-                %strong within an hour.
-                No-one ever waits more than 12 hours for a response.
-            .section-graphic
-              %i.icon-heart
+        .span12
+          %h5 Features
+      .row-fluid
+        .span4.section.quick-setup.clearfix
+          .section-graphic
+            %i.icon-magic
+          .section-content
+            %h6 Quick Setup
+            %p
+              %strong Set up your CI server in 20 seconds
+              , not two days. With one click CircleCi detects test settings for a wide range of web apps, and set them up automatically on our servers.
+        .span4.section.fast-tests.clearfix
+          .section-graphic
+            %i.icon-bolt
+          .section-content
+            %h6 Fast Tests
+            %p
+              Your productivity relies on fast test results. CircleCI runs your tests
+              %strong faster than your Macbook Pro
+              EC2, your local server, or any other service.
+
+        .span4.section.deep-customization.clearfix
+          .section-graphic
+            %i.icon-beaker
+          .section-content
+            %h6 Deep Customization
+            %p
+              Real applications often deviate slightly from standard configurations, so CircleCI does too. Our configuration is so flexible that it's easy to
+              %strong tweak almost anything
+              you need.
+      .row-fluid
+        .span4.section.debug-with-ease.clearfix
+          .section-graphic
+            %i.icon-cog
+          .section-content
+            %h6 Debug with Ease
+            %p
+              When your tests are broken, we help you get them fixed. We auto-detect errors, have great support, and even allow you to
+              %strong SSH into our machines
+              to test manually.
+        .span4.section.smart-notifications.clearfix
+          .section-graphic
+            %i.icon-bullhorn
+          .section-content
+            %h6 Smart Notifications
+            %p
+              CircleCI intelligently notifies you via email, Hipchat, Campfire and more. You won't be flooded with useless notifications about other people's builds and passing tests,
+              %strong we only notify you when it matters.
+        .span4.section.incredible-support.clearfix
+          .section-graphic
+            %i.icon-heart
+          .section-content
+            %h6 Loving support
+            %p
+              We respond to support requests as soon as possible, every day. Most requests get a response responded to
+              %strong within an hour.
+              No-one ever waits more than 12 hours for a response.
+      .row-fluid
+        .span4.section.automatic-parallelization.clearfix
+          .section-graphic
+            %i.icon-fullscreen
+          .section-content
+            %h6 Automatic Parallelization
+            %p
+              We can automatically parallelize your tests across multiple machines. <strong>With up to 16-way parallelization</strong>, your test turn-around time can be massively reduced.
+        .span4.section.continuous-deployment.clearfix
+          .section-graphic
+            %i.icon-refresh
+          .section-content
+            %h6 Continuous Deployment
+            %p
+              <strong>Get code to your customers faster.</strong> CircleCI can be setup to deploy your app when tests pass. You can configure branch-specific conditions, SSH key management and complete support for your hosting environment using custom commands, auto-merging, and uploading packages.
+        .span4.section.more-to-come.clearfix
+          .section-graphic
+            %i.icon-lightbulb
+          .section-content
+            %h6 More to come.
+            %p
+              At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know.
   .introtron
     .container
       .row
         .span6.offset3
           .ctabox
-            %h5 Getting Started
+            %h5 Get Started Now
             %hr
             %p.center
               %strong Set up your CI service in 20 seconds.
