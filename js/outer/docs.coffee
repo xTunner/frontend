@@ -99,11 +99,17 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     pagename: @filename cx
 
   title: (cx) =>
-    @article_info(@filename(cx)).title
+    try
+      @article_info(@filename(cx)).title
+    catch e
+      null
 
   render: (cx) =>
-    rewrite = @rewrite_old_name cx.params.splat[0]
-    if rewrite != false
-      return cx.redirect "/docs" + rewrite
+    try
+      rewrite = @rewrite_old_name cx.params.splat[0]
+      if rewrite != false
+        return cx.redirect "/docs" + rewrite
 
-    super cx
+      super cx
+    catch e
+      return cx.redirect "/docs"
