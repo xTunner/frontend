@@ -1,0 +1,22 @@
+- data = @api_data[@url]
+%p
+  = data.description
+
+%h4 Method
+%p
+  = data.method
+
+%h4 Example call
+%pre
+  %code.no-highlight<>
+    - curl_args = if not (data.method is "GET") then "-X #{data.method} " else ""
+    = "curl #{curl_args}https://circleci.com/api/v1/#{@url}?circle-token=:token"
+
+%h4 Example response
+%pre
+  %code.no-highlight<>
+    = data.response
+
+- if @try_it?
+  %p
+    %a{href: "https://circleci.com/api/v1/#{@url}"} Try it in your browser
