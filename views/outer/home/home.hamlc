@@ -151,15 +151,17 @@
                     %img{src: assetPath("img/outer/home/tech/redis.png"),width:"50"}
                     %img{src: assetPath("img/outer/home/tech/riak.png"),width:"60"}
                     %img{src: assetPath("img/outer/home/tech/sqlite.png"),width:"75"}
-                    %img{src: assetPath("img/outer/home/tech/couchdb.png"),width:"60"}
                     %img{src: assetPath("img/outer/home/tech/memcached.png"),width:"60"}
-                    %img{src: assetPath("img/outer/home/tech/thriftdb.png"),width:"70"}
-                    %img{src: assetPath("img/outer/home/tech/neo4j.png"),width:"80"}
-                    %img{src: assetPath("img/outer/home/tech/cassandra.png"),width:"80"}
                     %img{src: assetPath("img/outer/home/tech/elastic_search.png"),width:"70"}
+                    %img{src: assetPath("img/outer/home/tech/couchdb.png"),width:"60"}
+                    %img{src: assetPath("img/outer/home/tech/cassandra.png"),width:"80"}
                     %img{src: assetPath("img/outer/home/tech/solr.png"),width:"60"}
+                    %img{src: assetPath("img/outer/home/tech/couchbase.png"),width:"60"}
                     %img{src: assetPath("img/outer/home/tech/lucene.png"),width:"100"}
                     %img{src: assetPath("img/outer/home/tech/sphinx.png"),width:"80"}
+                    %img{src: assetPath("img/outer/home/tech/neo4j.png"),width:"80"}
+                    %img{src: assetPath("img/outer/home/tech/thriftdb.png"),width:"70"}
+
                 .span6
                   %h3 Databases
                   %p
