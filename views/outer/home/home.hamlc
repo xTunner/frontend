@@ -45,6 +45,7 @@
               CircleCi has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and CI happens from the get-go.
               %strong I'm a huge fan.
               %span.mark-end "
+              %br
             %span.avatar
               %img{:src => assetPath("img/outer/home/john-collison-2.png")}
             %strong.name
