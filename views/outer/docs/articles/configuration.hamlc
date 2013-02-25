@@ -378,13 +378,7 @@
         :preserves
           checkout:
             post:
-              - mv config/database.ci.yml config/database.yml
               - mv config/.app.yml config/app.yml
-
-          # Override the database setup commands, so we don't replace your database.yml
-          database:
-            override:
-              - bundle exec rake db:create db:schema:load --trace
 
     = HAML['heading']({title: "Project-specific dependencies", hash: "dependencies"})
 
@@ -463,6 +457,20 @@
       %li <b>pre</b>: a list of commands run before setting up databases
       %li <b>override</b>: a list of commands run instead of Circle's inferred database setup commands
       %li <b>post</b>: a list of commands run after setting up databases.
+
+    %p
+      If our inferred database.yml isn't working for you, then you can override our setup commands. Please
+      = HAML["contact_us"]()
+      if you do, so that we can improve our inference.
+
+    %p
+      %pre
+        %code.bash<>
+          :preserves
+            database:
+              override:
+                - mv config/database.ci.yml config/database.yml
+                - bundle exec rake db:create db:schema:load --trace
 
 
     = HAML['heading']({title: "Running your tests", hash: "test"})
