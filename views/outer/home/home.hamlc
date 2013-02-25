@@ -219,7 +219,7 @@
 
 #githubModal.modal.hide.fade
   .modal-header{style:'text-align: center'}
-    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ?
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
     %h3 GitHub Authentication
   .modal-body
     %p
