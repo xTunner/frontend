@@ -381,6 +381,11 @@
               - mv config/database.ci.yml config/database.yml
               - mv config/.app.yml config/app.yml
 
+          # Override the database setup commands, so we don't replace your database.yml
+          database:
+            override:
+              - bundle exec rake db:create db:schema:load --trace
+
     = HAML['heading']({title: "Project-specific dependencies", hash: "dependencies"})
 
     %p
