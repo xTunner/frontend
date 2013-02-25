@@ -230,7 +230,7 @@
                 .span6
                   %h3 Deployment
                   %p
-                    Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or - for you autoscalers - by auto-merging to another branch, or packaging code up to S3.
+                    Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or &ndash; for you autoscalers &ndash; by auto-merging to another branch, or packaging code up to S3.
             %div#custom.tab-pane
               .row
                 .span8.offset2
