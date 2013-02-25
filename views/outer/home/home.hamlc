@@ -208,11 +208,12 @@
                     %img{src: assetPath("img/outer/home/tech/engine_yard.png"),width:"40"}
                     %img{src: assetPath("img/outer/home/tech/appfog.png"),width:"40"}
                     %img{src: assetPath("img/outer/home/tech/nodejitsu.png"),width:"70"}
-                    %img{src: assetPath("img/outer/home/tech/joyent.png"),width:"90"}
+                    %br
+                    %img{src: assetPath("img/outer/home/tech/capistrano.png"),width:"100"}
+                    %img{src: assetPath("img/outer/home/tech/fabric.png"),width:"70"}
                     %img{src: assetPath("img/outer/home/tech/aws.png"),width:"100"}
                     %img{src: assetPath("img/outer/home/tech/rackspace.png"),width:"100"}
-                    %img{src: assetPath("img/outer/home/tech/fabric.png"),width:"70"}
-                    %img{src: assetPath("img/outer/home/tech/capistrano.png"),width:"100"}
+                    %img{src: assetPath("img/outer/home/tech/joyent.png"),width:"90"}
                 .span6
                   %h3 Deployment
                   %p
