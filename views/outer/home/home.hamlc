@@ -285,14 +285,14 @@
       .row
         .span6.offset3
           .ctabox
-            %h5 Get Started Now
+            %h5 Get Started
             %hr
             %p.center
               %strong Set up your CI service in 20 seconds.
             %ol
-              %li Click the button below.
               %li Choose a GitHub repository.
               %li Watch your tests run faster than ever.
+              %li Get your team into the flow.
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
                 %a#second-join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
