@@ -109,9 +109,9 @@
     .container-fluid
       .row-fluid
         .span12
-          %h5
+          %h2
             Technology Support
-          %h6
+          %h3
             We test your stack
           %ul#tech-tabs.nav.nav-tabs
             %li.active
@@ -151,7 +151,7 @@
                     -# %img{src: assetPath("img/outer/home/tech/nodejs.png"),width:"120"}
                     -# %img{src: assetPath("img/outer/home/tech/django.png"),width:"40"}
                 .span6
-                  %h3 Languages
+                  %h4 Languages
                   %p
                     CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages.
             %div#databases.tab-pane
@@ -176,7 +176,7 @@
                     -# %img{src: assetPath("img/outer/home/tech/sphinx.png"),width:"80"}
                     -# %img{src: assetPath("img/outer/home/tech/thriftdb.png"),width:"70"}
                 .span6
-                  %h3 Databases
+                  %h4 Databases
                   %p
                     If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use. Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away.
             %div#queues.tab-pane
@@ -188,7 +188,7 @@
                     -# %img{src: assetPath("img/outer/home/tech/beanstalkd.png"),width:"120"}
                     -# %img{src: assetPath("img/outer/home/tech/resque.png"),width:"90"}
                 .span6
-                  %h3 Queues
+                  %h4 Queues
                   %p
                     If need to test against queues, we have them installed on our boxes. We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need.
             %div#browsers.tab-pane
@@ -205,13 +205,13 @@
                     -# %img{src: assetPath("img/outer/home/tech/casperjs.png"),width:"60"}
                     -# %img{src: assetPath("img/outer/home/tech/capybara.jpg"),width:"130"}
                 .span6
-                  %h3 Browsers
+                  %h4 Browser Testing
                   %p
-                    We support integration testing your apps against a range of browsers. We have latest Chrome, Firefox and webkit installed using <span class="monospace">xvfb</span>, as well as PhantomJS and CasperJS. Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber.
+                    We support continuous integration testing in your apps against a wide range of browsers. We have latest Chrome, Firefox and webkit installed using <span class="monospace">xvfb</span>, as well as PhantomJS and CasperJS. Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber.
             %div#libraries.tab-pane
               .row
                 .span8.offset2
-                  %h3 Libraries
+                  %h4 Libraries
                   %p
                     We run a recent version Ubuntu and have installed all of the libraries you need for development. We have common libs like <span class="monospace">libxml2</span>, uncommon ones like <span class="monospace">libblas</span>, and downright rare libraries like <span class="monospace">libavahi-compat-libdnssd-dev</span>. As new important libraries come out its trivial for us to add them for you.
             %div#deployment.tab-pane
@@ -230,21 +230,21 @@
                     -# %img{src: assetPath("img/outer/home/tech/rackspace.png"),width:"100"}
                     -# %img{src: assetPath("img/outer/home/tech/joyent.png"),width:"90"}
                 .span6
-                  %h3 Deployment
+                  %h4 Continuous Deployment
                   %p
-                    Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or &ndash; for you autoscalers &ndash; by auto-merging to another branch, or packaging code up to S3.
+                    Continuous Deployment means that you can your fresh code to production fast and with no fear. Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or &ndash; for you autoscalers &ndash; by auto-merging to another branch, or packaging code up to S3.
             %div#custom.tab-pane
               .row
                 .span8.offset2
-                  %h3 Custom Technology Support
+                  %h4 Custom Technology Support
                   %p
                     Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use <span class="monospace">npm</span> in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environmental variables, timeouts, packages, databases, commands, etc, are all trivial to set up.
   .benefits
     .container-fluid
       .row-fluid
         .span12
-          %h4 Features &amp; Benefits
-          %h5 A professional continuous integration setup for your team today, tomorrow and beyond.
+          %h2 Features &amp; Benefits
+          %h3 A professional continuous integration setup for your team today, tomorrow and beyond.
       .row-fluid
         .span4.section.quick-setup.clearfix
           .section-graphic
