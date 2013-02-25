@@ -289,7 +289,7 @@
             %h5 Get Started
             %hr
             %p.center
-              %strong Set up your CI service in 20 seconds.
+              %strong Set up your CI in 20 seconds.
             %ol
               %li Choose a GitHub repository.
               %li Watch your tests run faster than ever.
