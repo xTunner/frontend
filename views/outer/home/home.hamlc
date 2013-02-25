@@ -42,7 +42,7 @@
               %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
                 RUN YOUR TESTS
             %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'RUN YOUR TESTS' }
+              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS' }
                 RUN YOUR TESTS
           %p.center
             %i
@@ -325,7 +325,7 @@
                 %a#second-join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
                   RUN YOUR TESTS
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-                %a#second-join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'RUN YOUR TESTS' }
+                %a#second-join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS' }
                   RUN YOUR TESTS
             %p.center
               %i
@@ -355,7 +355,7 @@
       %p
         While CircleCI allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" CircleCI gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
   .modal-footer{style:'text-align: center'}
-    %a.btn..btn-danger.btn-action.btn-large.btn-jumbo{ href: @githubPrivateAuthURL } Authorize on GitHub
+    %a.btn..btn-danger.btn-action.btn-large.btn-jumbo{ href: CI.github.authUrl() } Authorize on GitHub
 
 %map{name: "customer-logo-image-map"}
   %area{shape: "rect", coords: "5,10,157,67", href: "http://www.storenvy.com/"}
