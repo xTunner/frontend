@@ -26,8 +26,8 @@
               Docs
       %p.cta
         %span{data-bind: "if: VM.ab().github_warning_modal"}
-          %a#join.kissAuthGithub.header_signup_button{ data-toggle: "modal", data-target: "#githubModal", title: 'Sign up with Github' }
+          %a#login.kissAuthGithub.header_signup_button{ data-toggle: "modal", data-target: "#githubModal", title: 'Sign up with Github' }
             Sign in with GitHub
         %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-          %a#join.kissAuthGithub.header_signup_button{  href: CI.github.authUrl(), title: 'Sign up with Github' }
+          %a#login.kissAuthGithub.header_signup_button{  href: CI.github.authUrl(), title: 'Sign up with Github' }
             Sign in with GitHub
