@@ -21,7 +21,7 @@
             %img{:src => assetPath("img/outer/home/test-output-2.jpg")}
           %h6
             %span 2
-            Your tests run on the CircleCi platform
+            Your tests run on the CircleCI platform
         .span4
           %p.center
             %img{:src => assetPath("img/outer/home/deploy-icon.jpg")}
@@ -42,7 +42,7 @@
             %p
             %blockquote
               %span.mark-start "
-              CircleCi has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and CI happens from the get-go.
+              CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and CI happens from the get-go.
               %strong I'm a huge fan.
               %span.mark-end "
               %br
@@ -319,14 +319,14 @@
     %p
       <strong>You will now be sent to GitHub</strong> to authorize your credentials.
       %br
-      This is necessary so that CircleCi can run your tests.
+      This is necessary so that CircleCI can run your tests.
       %br
       %a.why_authenticate_github_link{ href:"#", onclick:'$(".why_authenticate_github_modal").slideDown();'}
         Why is this necessary?
     %div.hide.why_authenticate_github_modal{style:'text-align:left;'}
       %p
-        To run your tests we need to check out your code from GitHub. When you sign up for Circle you tell GitHub that you are authorizing us to check out your private repositories. You may revoke this permission at any time through your GitHub application settings page and by removing Circle's Deploy Keys and Service Hooks from your repositories' Admin pages.
+        To run your tests we need to check out your code from GitHub. When you sign up for CircleCI you tell GitHub that you are authorizing us to check out your private repositories. You may revoke this permission at any time through your GitHub application settings page and by removing CircleCI's Deploy Keys and Service Hooks from your repositories' Admin pages.
       %p
-        While Circle allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" Circle gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
+        While CircleCI allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" CircleCI gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
   .modal-footer{style:'text-align: center'}
     %a.btn..btn-danger.btn-action.btn-large.btn-jumbo{ href: @githubPrivateAuthURL } Authorize on GitHub
