@@ -70,7 +70,8 @@
             %strong.name
               John Collison
             %i
-              Founder of Stripe
+              Founder of
+              %b Stripe
         .span4
           .customer-quote
             %p
@@ -85,7 +86,8 @@
             %strong.name
               Jon Crawford
             %i
-              CEO of Storenvy
+              CEO of
+              %b Storenvy
         .span4
           .customer-quote
             %p
@@ -99,7 +101,8 @@
             %strong.name
               Aaron Suggs
             %i
-              Operations Engineer at Kickstarter
+              Operations Engineer at
+              %b Kickstarter
   .technotron
     .container-fluid
       .row-fluid
