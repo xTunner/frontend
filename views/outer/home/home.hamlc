@@ -172,7 +172,7 @@
           .section-content
             %h6 Continuous Deployment
             %p
-              <strong>Get code to your customers faster.</strong> CircleCI can be setup to deploy your app when tests pass. You can configure branch-specific conditions, SSH key management and complete support for your hosting environment using custom commands, auto-merging, and uploading packages.
+              <strong>Get code to your customers faster</strong>, as soon as the tests pass. CircleCI supports branch-specific deployments, SSH key management and supports any hosting environment using custom commands, auto-merging, and uploading packages.
         .span4.section.more-to-come.clearfix
           .section-graphic
             %i.icon-lightbulb
