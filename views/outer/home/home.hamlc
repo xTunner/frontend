@@ -86,7 +86,7 @@
           %h5
             Technology Support
           %h6
-            If it runs on Linux, it runs on CircleCi.
+            If it runs on Linux, it runs on CircleCI.
           %ul#tech-tabs.nav.nav-tabs
             %li.active
               %a{data-toggle:"tab",data-target:"#languages"}

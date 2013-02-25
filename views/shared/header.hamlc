@@ -24,14 +24,11 @@
           %li
             %a{ href: '/docs', title: 'CircleCi Documentation'}
               Docs
-          %li
-            %a#login{ href: CI.github.authUrl(), title: 'Log in to Circle' }
-              Login
       %p.cta
-        Plans start at $19 per month - All plans include a Free 14 Day Trial.
+        <!-- Plans start at $19 per month - All plans include a Free 14 Day Trial. -->
         %span{data-bind: "if: VM.ab().github_warning_modal"}
-          %a#join.kissAuthGithub.header_signup_button{ data-toggle: "modal", data-target: "#githubModal", title: 'Signup with Github' }
-            Signup with Github
+          %a#join.kissAuthGithub.header_signup_button{ data-toggle: "modal", data-target: "#githubModal", title: 'Sign up with Github' }
+            Sign in with GitHub
         %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-          %a#join.kissAuthGithub.header_signup_button{  href: @githubPrivateAuthURL, title: '#githubModal' }
-            Signup with Github
+          %a#join.kissAuthGithub.header_signup_button{  href: @githubPrivateAuthURL, title: 'Sign up with Github' }
+            Sign in with GitHub
