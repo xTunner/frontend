@@ -212,8 +212,8 @@
           .section-content
             %h6 Quick Setup
             %p
-              %strong Set up your CI server in 20 seconds
-              , not two days. With one click CircleCi detects test settings for a wide range of web apps, and set them up automatically on our servers.
+              <strong>Set up your CI in 20 seconds</strong>,
+              not two days. With one click CircleCI detects test settings for a wide range of web apps, and set them up automatically on our servers.
         .span4.section.fast-tests.clearfix
           .section-graphic
             %i.icon-bolt
@@ -221,7 +221,7 @@
             %h6 Fast Tests
             %p
               Your productivity relies on fast test results. CircleCI runs your tests
-              %strong faster than your Macbook Pro
+              <strong>faster than your Macbook Pro</strong>,
               EC2, your local server, or any other service.
         .span4.section.deep-customization.clearfix
           .section-graphic
