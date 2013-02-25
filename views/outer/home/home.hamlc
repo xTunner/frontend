@@ -6,7 +6,7 @@
           %h1
             Ship better code, faster.
           %h2
-            <span>TL;DR</span> CircleCI gives web app developers powerful Continuous Integration with easy setup and maintenance.
+            <span>TL;DR</span> CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
   .how-it-works
     .container
       .row
