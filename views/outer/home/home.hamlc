@@ -3,9 +3,9 @@
     .container-fluid
       .row-fluid
         .span12
-          %h1
+          %h6
             Ship better code, faster.
-          %h2
+          %h1
             <span>TL;DR</span> CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
   .how-it-works
     .container
