@@ -304,7 +304,7 @@
           .section-content
             %h6 Automatic Parallelization
             %p
-              We can automatically parallelize your tests across multiple machines. <strong>With up to 16-way parallelization</strong>, your test turn-around time can be massively reduced.
+              We can automatically parallelize your tests across multiple machines. <strong>With up to 4-way parallelization</strong>, your test turn-around time can be massively reduced.
         .span4.section.continuous-deployment.clearfix
           .section-graphic
             %i.icon-refresh
