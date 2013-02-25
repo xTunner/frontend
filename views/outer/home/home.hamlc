@@ -33,10 +33,7 @@
       .span12
         .ctabox
           %p.center
-            Plans start at <i>$19 per month</i><br />
-            All plans include a
-            %strong
-              %i Free 14 Day Trial.
+            Plans start at $19 per month. All plans include a free 14 day trial.
           %p.center
             %span{data-bind: "if: VM.ab().github_warning_modal"}
               %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
