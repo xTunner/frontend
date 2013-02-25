@@ -191,7 +191,7 @@
                     %img{src: assetPath("img/outer/home/tech/fabric.png"),width:"70"}
                     %img{src: assetPath("img/outer/home/tech/capistrano.png"),width:"100"}
                 .span6
-                  %h3 Browsers
+                  %h3 Deployment
                   %p
                     Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or - for you autoscalers - by auto-merging to another branch, or packaging code up to S3.
             %div#custom.tab-pane
