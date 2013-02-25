@@ -11,20 +11,20 @@
     .container
       .row
         .span4
-          %p.center.with-arrow
+          %p.center
             %img{:src => assetPath("img/outer/home/octocat.png")}
           %h6
             %span 1
             Push your new code to GitHub
         .span4
-          %p.center.with-arrow
-            %img{:src => assetPath("img/outer/home/test-output.png")}
+          %p.center
+            %img{:src => assetPath("img/outer/home/test-output-2.jpg")}
           %h6
             %span 2
             Your tests run on the CircleCi platform
         .span4
           %p.center
-            %img{:src => assetPath("img/outer/home/continuous-deployment-icon.png")}
+            %img{:src => assetPath("img/outer/home/deploy-icon.jpg")}
           %h6
             %span 3
             Deploy green builds to your servers
