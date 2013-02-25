@@ -28,6 +28,26 @@
           %h6
             %span 3
             Deploy green builds to your servers
+  .main-cta
+    .container
+      .span12
+        .ctabox
+          %p.center
+            Plans start at <i>$19 per month</i><br />
+            All plans include a
+            %strong
+              %i Free 14 Day Trial.
+          %p.center
+            %span{data-bind: "if: VM.ab().github_warning_modal"}
+              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
+                RUN YOUR TESTS
+            %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
+              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: @githubPrivateAuthURL, title: 'RUN YOUR TESTS' }
+                RUN YOUR TESTS
+          %p.center
+            %i
+              CircleCI keeps your code safe.
+              %a{href:"/privacy", title:"Privacy and Security"} Learn how.
   .customer-list
     .container-fluid
       .row-fluid
@@ -205,7 +225,8 @@
     .container-fluid
       .row-fluid
         .span12
-          %h5 Features
+          %h4 Features &amp; Benefits
+          %h5 A professional CI setup for your team today, tomorrow and beyond.
       .row-fluid
         .span4.section.quick-setup.clearfix
           .section-graphic

@@ -164,26 +164,25 @@ body#home-page {
   }
   .customer-list {
     background: #eeeeee;
-    padding: 20px 0 0 0;
+    padding: 62px 0 0 0;
     border-top: 1px solid #cccccc;
     position: relative;
-    margin-top: 50px;
+    margin-top: 10px;
   }
   .customer-list .container-fluid::before {
     display:block;
     content:'';
     position:absolute;
     width:300px;
-    height:52px;
+    height:42px;
     background-image: url('@{imgPath}/outer/home/callouts-01.png');
     background-repeat: no-repeat;
-    background-position: 0 -50px;
-    top: -60px;
+    background-position: 0 -62px;
+    top: 20px;
     left: 37%;
   }
   .customer-list h5,
-  .how-it-works h5,
-  .benefits h5 {
+  .how-it-works h5 {
     text-align: center;
     font-family: 'Source Sans Pro', sans-serif;
     line-height: 52px;
@@ -297,9 +296,18 @@ body#home-page {
     font-weight: 600;
     color: #444;
   }
+  .main-cta .ctabox {
+    border-top: 1px solid #cccccc;
+    padding: 20px 0;
+    font-size: 18px;
+    line-height: 32px;
+  }
+  .main-cta .ctabox .btn {
+    margin: 10px;
+  }
   .how-it-works {
     background: #ffffff;
-    padding: 35px 0 55px 0;
+    padding: 25px 0 35px 0;
     position: relative;
   }
   .how-it-works .container {
@@ -506,7 +514,8 @@ body#home-page {
       line-height: 28px;
     } 
   }
-  .technotron h5 {
+  .technotron h5,
+  .benefits h4 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 600;
     text-align: center;
@@ -514,7 +523,8 @@ body#home-page {
     line-height: 52px;
     margin: 20px 0 5px 0;
   }
-  .technotron h6 {
+  .technotron h6,
+  .benefits h5 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 300;
     text-align: center;
@@ -533,17 +543,17 @@ body#home-page {
     line-height: 8px;
   }
   .btn-action {
-    background-color: #ec7702 ;
+    background-color: #ff6d02 ;
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ec7702");
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ec7702));
-    background-image: -moz-linear-gradient(top, #feb401, #ec7702);
-    background-image: -ms-linear-gradient(top, #feb401, #ec7702);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ff6d02");
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ff6d02));
+    background-image: -moz-linear-gradient(top, #feb401, #ff6d02);
+    background-image: -ms-linear-gradient(top, #feb401, #ff6d02);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #feb401), color-stop(100%, #ec7702));
-    background-image: -webkit-linear-gradient(top, #feb401, #ec7702);
-    background-image: -o-linear-gradient(top, #fe8800, #ec7702);
-    background-image: linear-gradient(#fe8800, #ec7702);
-    border-color: #feb401 #ffa405 #ff9c00;
+    background-image: -webkit-linear-gradient(top, #feb401, #ff6d02);
+    background-image: -o-linear-gradient(top, #fe8800, #ff6d02);
+    background-image: linear-gradient(#fe8800, #ff6d02);
+    border-color: #feb401 #ffa405 #ff6d02;
     color: #ffffff ;
     text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
     -webkit-font-smoothing: antialiased;
@@ -552,7 +562,7 @@ body#home-page {
     font-size: 22px;
     line-height: 32px;
     border-radius: 32px;
-    padding: 6px 24px;
+    padding: 6px 24px 9px 24px;
     font-weight: bold;
   }
 }
