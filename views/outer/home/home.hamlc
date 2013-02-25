@@ -62,7 +62,7 @@
             %p
             %blockquote
               %span.mark-start "
-              CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and CI happens from the get-go.
+              CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go.
               %strong I'm a huge fan.
               %span.mark-end "
               %br
@@ -244,7 +244,7 @@
       .row-fluid
         .span12
           %h4 Features &amp; Benefits
-          %h5 A professional CI setup for your team today, tomorrow and beyond.
+          %h5 A professional continuous integration setup for your team today, tomorrow and beyond.
       .row-fluid
         .span4.section.quick-setup.clearfix
           .section-graphic
@@ -252,7 +252,7 @@
           .section-content
             %h6 Quick Setup
             %p
-              <strong>Set up your CI in 20 seconds</strong>,
+              <strong>Set up your continuous integration in 20 seconds</strong>,
               not two days. With one click CircleCI detects test settings for a wide range of web apps, and set them up automatically on our servers.
         .span4.section.fast-tests.clearfix
           .section-graphic
@@ -329,7 +329,7 @@
             %h5 Get Started
             %hr
             %p.center
-              %strong Set up your CI in 20 seconds.
+              %strong Set up your continuous integration in 20 seconds.
             %ol
               %li Choose a GitHub repository.
               %li Watch your tests run faster than ever.
