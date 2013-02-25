@@ -2,10 +2,8 @@ body#home-page {
   .jumbotron {
     margin: 0;
     padding: 0;
-    background: #fff;
-    color: #333;
-  }
-  .jumbotron * {
+    background: #ffffff;
+    color: #333333;
   }
   .jumbotron .container-fluid {
     padding: 0;
@@ -14,15 +12,16 @@ body#home-page {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 600;
     text-align: center;
-    font-size: 62px;
-    line-height: 72px;
+    font-size: 92px;
+    line-height: 102px;
     margin: 20px 0 15px 0;
     text-shadow: 0px 1px 1px #ffffff;
+    letter-spacing: -2px;
   }
   .jumbotron h2 {
     text-align: center;
-    font: italic 400 20px/34px 'Source Sans Pro', sans-serif;
-    color: #555555;
+    font: 400 22px/44px 'Source Sans Pro', sans-serif;
+    color: #555;
   }
   .jumbotron h2 span {
     color: #ffc137;
@@ -131,15 +130,11 @@ body#home-page {
     margin-left: 7px;
     color: #0a8dfe;
   }
-
   .introtron li a {
     text-decoration: underline;
   }
   .introtron .btn {
     margin: 10px 0;
-  }
-  .how-it-works .ctabox {
-    padding: 15px 0 25px;
   }
   .introtron .ctabox {
     background: #ffffff;
@@ -288,7 +283,7 @@ body#home-page {
   }
   .customer-quote i {
     display: block;
-    font-size: 22px;
+    font-size: 18px;
     line-height: 32px;
     color: #999999;
     font-weight: 400;
@@ -304,7 +299,7 @@ body#home-page {
   }
   .how-it-works {
     background: #ffffff;
-    padding: 30px 0 40px 0;
+    padding: 35px 0 55px 0;
     position: relative;
   }
   .how-it-works .container {
@@ -330,12 +325,13 @@ body#home-page {
     line-height: 32px;
     font-weight: 600;
     padding-left: 70px;
-    padding-right: 40px;
+    padding-right: 30px;
     position: relative;
   }
   .how-it-works h6 span {
     color: #333333;
     font-size: 18px;
+    line-height: 30px;
     font-weight: 600;
     text-align: center;
     border-radius: 100px;
@@ -495,6 +491,20 @@ body#home-page {
   }
   .technotron {
     padding: 50px 0 80px 0;
+    .nav-tabs {
+      text-align: center;
+    }
+    .nav-tabs li {
+      float: none;
+      display: inline-block;
+    }
+    .nav-tabs li a {
+      cursor: hand;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 28px;
+    } 
   }
   .technotron h5 {
     font-family: 'Source Sans Pro', sans-serif;
@@ -513,7 +523,11 @@ body#home-page {
     margin: 0 0 25px 0;
   }
   .technotron img {
-    margin: 2px 4px;
+    margin: 6px 8px;
+  }
+  .technotron .tab-pane p {
+    font-size: 16px;
+    line-height: 26px;
   }
   .technolist {
     line-height: 8px;
