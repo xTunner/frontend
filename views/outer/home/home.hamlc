@@ -151,7 +151,7 @@
                 .span6
                   %h3 Languages
                   %p
-                    CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages
+                    CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages.
             %div#databases.tab-pane
               .row
                 .span6
