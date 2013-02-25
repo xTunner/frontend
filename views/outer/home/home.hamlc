@@ -53,7 +53,7 @@
       .row-fluid
         .span12
           %p.center
-            %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
+            %img{:src => assetPath("img/outer/home/circleci-customer-logos.png"), usemap: "#customer-logo-image-map"}
   .customer-quotes
     .container-fluid
       .row-fluid
@@ -356,3 +356,11 @@
         While CircleCI allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" CircleCI gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
   .modal-footer{style:'text-align: center'}
     %a.btn..btn-danger.btn-action.btn-large.btn-jumbo{ href: @githubPrivateAuthURL } Authorize on GitHub
+
+%map{name: "customer-logo-image-map"}
+  %area{shape: "rect", coords: "5,10,157,67", href: "http://www.storenvy.com/"}
+  %area{shape: "rect", coords: "198,10,376,67", href: "https://www.mongohq.com/"}
+  %area{shape: "rect", coords: "416,9,558,74", href: "https://www.tapjoy.com/"}
+  %area{shape: "rect", coords: "592,15,813,63", href: "http://www.kickstarter.com/"}
+  %area{shape: "rect", coords: "850,0,985,74", href: "http://www.redbullsoundselect.com/"}
+  %area{shape: "rect", coords: "1030,9,1145,62", href: "https://stripe.com/"}
