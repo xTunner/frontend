@@ -5,10 +5,10 @@
   %section.about
 
     .story
-      %p In 2011, Paul & Allen got frustrated with the state of testing and decided to solve the problem.
-      %p Circle was born to make sure every developer has state of the art testing without a dev tools department.
+      %p In 2011, Paul & Allen got frustrated with the state of software testing and decided to solve the problem.
+      %p CircleCI was founded with the mission of giving every developer state of the art automated testing and continuous integration tools.
 
-    %h1 Meet the Circle team
+    %h1 Meet the CircleCI Team
     -#%p Donec purus risus, pharetra in condimentum dapibus ante
     %hr
 
