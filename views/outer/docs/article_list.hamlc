@@ -1,8 +1,9 @@
 - if @find_articles_by_tag
   .article_list
-    %h4
-      Related Articles
-    %hr
+    - unless @no_heading
+      %h4
+        Related Articles
+      %hr
     %ul
       - for tag in @tags
         - articles = @find_articles_by_tag(tag)

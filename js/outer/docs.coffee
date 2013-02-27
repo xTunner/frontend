@@ -4,7 +4,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   rewrite_old_name: (name) =>
     switch name
-      when "/common-problems" then ""
       when "/common-problems#intro" then ""
       when "/common-problems#file-ordering" then "/file-ordering"
       when "/common-problems#missing-log-dir" then "/missing-log-dir"
