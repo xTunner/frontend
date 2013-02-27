@@ -40,7 +40,7 @@ CI.outer.Page = class Page
     @_title
 
   setPageTitle: (cx) =>
-    document.title = "Circle - " + @title(cx)
+    document.title = @title(cx) + " - CircleCI"
 
   clearIntercom: =>
     $('#IntercomTab').text "" # clear the intercom tab

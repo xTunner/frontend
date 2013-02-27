@@ -1,11 +1,9 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
-    @_title = "Documentation"
 
   rewrite_old_name: (name) =>
     switch name
-      when "/common-problems" then ""
       when "/common-problems#intro" then ""
       when "/common-problems#file-ordering" then "/file-ordering"
       when "/common-problems#missing-log-dir" then "/missing-log-dir"
@@ -94,18 +92,23 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         categories[category] = @find_articles_by_tag(category)
     categories
 
-  lib: =>
-    $("#query").typeahead
-      'source': window.VM.suggestArticles
-
   viewContext: (cx) =>
     categories: @categories()
     find_articles_by_tag: @find_articles_by_tag # not a function call
     pagename: @filename cx
 
-  render: (cx) =>
-    rewrite = @rewrite_old_name cx.params.splat[0]
-    if rewrite != false
-      return cx.redirect "/docs" + rewrite
+  title: (cx) =>
+    try
+      @article_info(@filename(cx)).title
+    catch e
+      null
 
-    super cx
+  render: (cx) =>
+    try
+      rewrite = @rewrite_old_name cx.params.splat[0]
+      if rewrite != false
+        return cx.redirect "/docs" + rewrite
+
+      super cx
+    catch e
+      return cx.redirect "/docs"

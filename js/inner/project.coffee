@@ -26,6 +26,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     retried_build: null
     branches: null
     default_branch: null
+    show_all_branches: false
 
   constructor: (json) ->
 
@@ -109,7 +110,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       names = (k for own k, v of @branches())
       names.sort()
 
-    @show_branch_p = (branch_name) =>
+    @personal_branch_p = (branch_name) =>
       if branch_name is @default_branch()
         true
       else if @branches()[branch_name] and @branches()[branch_name].pusher_logins
@@ -117,9 +118,21 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         false
 
-    @branch_names_to_show = @komp =>
+    @personal_branches = () =>
       @branch_names().filter (name) =>
-        @show_branch_p(name)
+        @personal_branch_p(name)
+
+    @branch_names_to_show = @komp =>
+      if @show_all_branches()
+        @branch_names()
+      else
+        @personal_branches()
+
+    @show_toggle_branches = @komp =>
+      not (@branch_names().toString() is @personal_branches().toString())
+
+    @toggle_show_all_branches = () =>
+      @show_all_branches(!@show_all_branches())
 
     @latest_branch_build = (branch_name) =>
       if @branches()[branch_name] and @branches()[branch_name].recent_builds

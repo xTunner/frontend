@@ -2,12 +2,12 @@
 #   You can't change the options once they're set, you need to define a new test
 #
 # Example setup in viewModel:
-#   @ab = new(CI.ABTests({daniel_test: ["option1", "option2"]})).ab_tests
+#   @ab = new(CI.ABTests({options: {daniel_test: [true, false]}})).ab_tests
 #
 # Example usage in view:
-#   %p{href: "#", data-bind: "if: ab().daniel_test == true"}
+#   %p{href: "#", data-bind: "if: ab().daniel_test"}
 #     This is the text that will show up if option is set to true
-#   %p{href: "#", data-bind: "if: ab().daniel_test == false"}
+#   %p{href: "#", data-bind: "if: ab().daniel_test"}
 #     This is the text that will show up if option is set to false
 
 CI.ABTests = class ABTests
@@ -27,6 +27,10 @@ CI.ABTests = class ABTests
 
     @setup_tests()
 
+    @apply_overrides()
+
+    @notify_kissmetrics()
+
   get_user_seed: =>
     if not $.cookie(@cookie_name)?
       $.cookie(@cookie_name, Math.random(), {expires: 365, path: "/"})
@@ -37,13 +41,27 @@ CI.ABTests = class ABTests
 
   setup_tests: () =>
     tests = {}
-    for name, options of @test_definitions()
+    for own name, options of @test_definitions().options
 
       value = options[@option_index(@user_seed, name, options)]
 
-      tests[name] = value
+      tests[name] = ko.observable(value)
 
       console.log "Set (or reseting) A/B test '#{name}' to value '#{value}'"
 
     @ab_tests(tests)
-    _kmq.push ["set", tests]
+
+  apply_overrides: () =>
+    for override in @test_definitions().overrides
+      if override.override_p()
+        for own name, value of override.options
+          if @ab_tests()[name]
+            console.log "Overriding A/B test '#{name}' with value '#{value}'"
+            @ab_tests()[name](value)
+
+
+  notify_kissmetrics: () =>
+    unpacked_tests = {}
+    unpacked_tests[k] = v() for own k, v of @ab_tests()
+
+    _kmq.push ["set", unpacked_tests]

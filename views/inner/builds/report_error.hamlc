@@ -1,6 +1,6 @@
 %span{data-bind: "if: failed() && !infrastructure_fail()"}
-  .row
-    .offset2.span12
+  .row-fluid
+    .offset2.span8
 
       %span{data-bind: "if: messages.length"}
         .alert.alert-danger
@@ -30,7 +30,7 @@
 
 
 %span{data-bind: "if: infrastructure_fail()"}
-  .row
+  .row-fluid
     .offset2.span12
       .alert.alert-danger
         Looks like we had a bug in our infrastructure, or that of our providers (generally Github or AWS).

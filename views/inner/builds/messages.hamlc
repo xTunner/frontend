@@ -1,3 +1,3 @@
-.row{data-bind: "if: messages().length"}
-  .offset3.span9#build-messages{data-bind: "foreach: messages"}
+.row-fluid{data-bind: "if: messages().length"}
+  .offset2.span8#build-messages{data-bind: "foreach: messages"}
     .alert.alert-info{data-bind: "html: message"}

@@ -60,13 +60,13 @@
               %td.title
 
               %td
-                %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
+                %a.btn.btn-large.btn-success{href: CI.github.authUrl()}
                   Start your 14-day free trial
               %td
-                %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
+                %a.btn.btn-large.btn-success{href: CI.github.authUrl()}
                   Start your 14-day free trial
               %td
-                %a.btn.btn-large.btn-success{href: @githubPrivateAuthURL}
+                %a.btn.btn-large.btn-success{href: CI.github.authUrl()}
                   Start your 14-day free trial
               %td
                 %a.btn.btn-large.btn-success{href: "mailto:enterprise@circleci.com"}

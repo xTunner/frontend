@@ -47,6 +47,7 @@ class CircleViewModel extends CI.inner.Obj
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration made easy")
     @about = new CI.outer.About("about", "About Us")
+    @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
     @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
     @heroku = new CI.outer.Heroku("heroku", "Welcome from Heroku")
@@ -66,18 +67,21 @@ class CircleViewModel extends CI.inner.Obj
     else
       VM.loadRecentBuilds()
 
-  searchArticles: (vm, event) ->
+  performDocSearch: (query) =>
     $.ajax
       url: "/search-articles"
       type: "GET"
       data:
-        query: $("#query").val()
+        query: query
       success: (results) =>
+        window.SammyApp.setLocation("/docs")
         @query_results results.results
         @query_results_query results.query
-    event.preventDefault()
-    event.stopPropagation()
-    false
+    query
+
+  searchArticles: (form) =>
+    @performDocSearch($(form).find('.search-query').val())
+    return false
 
   suggestArticles: (query, process) =>
     $.ajax
@@ -320,10 +324,13 @@ class CircleViewModel extends CI.inner.Obj
 
     return true
 
-
-
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
+
+    # ignore forms with method ko, useful when using the knockout submit binding
+    @route 'ko', '.*', ->
+      false
+
     @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
     @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
@@ -369,12 +376,15 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/docs(.*)", (cx) => VM.docs.display(cx)
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
+    @get "^/technologies.*", (cx) => VM.technologies.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
     @get "^/heroku", (cx) => VM.heroku.display(cx)
     @get "^/heroku/account", (cx) => VM.heroku_account.display(cx)
     @post "^/heroku/resources", -> true
 
 
+
+    @get '^/api/.*', (cx) => true
 
     @get '^(.*)', (cx) => VM.error.display(cx)
 
@@ -399,6 +409,10 @@ $(document).ready () ->
   path = window.location.pathname
   path = path.replace(/\/$/, '') # remove trailing slash
   path or= "/"
+
+  if window.circleEnvironment is 'development'
+    CI.maybeOverrideABTests(window.location.search, VM.ab)
+
   SammyApp.run path
 #  if window.renderContext.heroku?               
 #    alert(window.renderContext.heroku_nav_bar)

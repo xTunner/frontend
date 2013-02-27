@@ -108,7 +108,11 @@
       environmental variable has already been set.
 
     %p
-      Selenium-based tests are able to use Chrome stable channel (Chrome 19.0 as of Aug 1, 2012), and Firefox 17.0.1.
+      Selenium-based tests are able to use Chrome stable channel (Chrome 25.0 as of Feb 26, 2013), and Firefox 19.
+
+    %p
+      %span.label.label-info Help
+      %a{href: '/docs/browser-debugging'}Check out our browser debugging docs.
 
 
     %h1.section
@@ -126,30 +130,40 @@
 
       %ul
         %li
-          %code 1.8.7
-        %li
           %code 1.8.7-p302
         %li
           %code 1.8.7-p334
+        %li
+          %code 1.8.7-p352
+        %li
+          %code 1.8.7-p357
         %li
           %code 1.8.7-p358
         %li
           %code 1.8.7-p370
         %li
-          %code ree-1.8.7-head
+          %code 1.8.7-p371
         %li
-          %code 1.9.2
+          %code ree-1.8.7-2011.02
+        %li
+          %code ree-1.8.7-2011.03
+        %li
+          %code ree-1.8.7-2011.12
+        %li
+          %code ree-1.8.7-2012.02
         %li
           %code 1.9.2-p0
           (should be avoided due to security problems)
+        %li
+          %code 1.9.2-p136
         %li
           %code 1.9.2-p180
         %li
           %code 1.9.2-p290
         %li
-          %code 1.9.3-p0-falcon
+          %code 1.9.2-p320
         %li
-          %code 1.9.3
+          %code 1.9.3-p0-falcon
         %li
           %code 1.9.3-p0
         %li
@@ -165,29 +179,32 @@
         %li
           %code 1.9.3-p286
         %li
+          %code 1.9.3-p327
+        %li
+          %code 1.9.3-p362
+        %li
+          %code 1.9.3-p374
+        %li
+          %code 1.9.3-p385
+        %li
+          %code 1.9.3-p327-falcon
+        %li
           %code jruby-1.6.5
         %li
           %code jruby-1.6.6
         %li
-          %code ree
-        %li
-          %code ree-1.8.7-2010.02
-        %li
-          %code ree-1.8.7-2011.02
-        %li
-          %code ree-1.8.7-2011.03
-        %li
-          %code ree-1.8.7-2011.12
+          %code jruby-1.7.0
+
     %p
       By default we use
-      %code Ruby 1.9.2-p290
+      %code Ruby 1.9.3-p194
       unless we detect that you need Ruby 1.8.7, in which case we'll use
       %code Ruby 1.8.7-p358.
       This is installed via
       RVM (stable).
 
     %p
-      We also have a number of Ruby commands pre-installed if you need to use them directly. They are installed using RVM 1.9.2-p290.
+      We also have a number of Ruby commands pre-installed if you need to use them directly. They are installed using RVM 1.9.3-p194.
 
     %ul
       %li

@@ -136,6 +136,14 @@
       user, if you do not want to create the database yourself.
       There is no password required on any database.
 
+    %p
+      %pre
+        %code.no-highlight<>
+          :preserve
+            database:
+              override:
+                - mysql -u ubuntu circle_test < my-database-setup.sql
+
 
     = HAML['heading']({title: "Running your tests", hash: "tests"})
     %p

@@ -9,12 +9,19 @@
     %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
       %i.icon-cog
 
-    %a.nav-menu-item{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 30)"}
+    %a.nav-menu-item{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 25)"}
+
+    %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
+      %a.pull-right{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, jQueryExt: {type: 'tooltip', options: {animation: false}}"}
+        %span{data-bind: "if: show_all_branches"}
+          %i.icon-caret-down
+        %span{data-bind: "ifnot: show_all_branches"}
+          %i.icon-caret-right
 
   / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
   %li.branch-item.nav-menu-row{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
 
-    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23)"}
+    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
 
     %span{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
       %a.build_status.build_dot{data-bind: "attr: {href: project.build_path(build_num)}, css: style, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"} &nbsp;

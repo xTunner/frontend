@@ -1,29 +1,29 @@
 -if @flash
   #flash
     = @flash
-
+%div
 #head
-  %header
-    %h1#circle
-      %a{ href: '/', title: 'Go to the Circle homepage' }
-        Circle
-    %nav
-      %ul
-        %li
-          %a{ href: '/', title: 'Go to the Circle homepage' }
-            Home
-        %li
-          %a{ href: 'http://blog.circleci.com', title: 'Get a behind the scenes look at Circle' }
-            Blog
-        %li
-          %a{ href: '/about', title: 'Learn more about Circle' }
-            About
-        %li
-          %a{ href: '/pricing', title: 'View our plans and pricing' }
-            Pricing
-        %li
-          %a{ href: '/docs', title: 'Documentation for Circle'}
-            Docs
-        %li
-          %a#login{ href: CI.github.authUrl(), title: 'Log in to Circle' }
-            Login
+  %header.masthead.clearfix
+    .container
+      %a.brand{href: '/', title: 'Go to the CircleCI homepage'}
+        %span CircleCI
+      %nav
+        %ul.nav.nav-pills.pull-left
+          %li
+            %a{ href: '/', title: 'Go to the Circle homepage' }
+              Home
+          %li
+            %a{ href: 'http://blog.circleci.com', title: 'Read the CircleCi Blog' }
+              Blog
+          %li
+            %a{ href: '/about', title: 'Learn more about CircleCi' }
+              About
+          %li
+            %a{ href: '/pricing', title: 'CircleCi Plans and Pricing' }
+              Pricing
+          %li
+            %a{ href: '/docs', title: 'CircleCi Documentation'}
+              Docs
+      %p.cta
+        %a#login.kissAuthGithub.header_signup_button{ href: CI.github.authUrl(), title: 'Sign up with Github' }
+          Sign in with GitHub

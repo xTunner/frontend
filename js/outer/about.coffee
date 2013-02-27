@@ -32,7 +32,8 @@ CI.outer.About = class About extends CI.outer.Page
             "David drank the automated testing kool-aid years ago. After introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle to do the same on a much larger scale."]
     ,
       name: "Jenneviere Villegas"
-      visible: false
+      photo: "jenneviere"
+      visible: true
       role: "Operations"
       github: "jenneviere"
       twitter: "jenneviere"

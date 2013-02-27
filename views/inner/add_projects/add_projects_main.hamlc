@@ -1,3 +1,14 @@
+%div{data-bind: "ifnot: repos().length"}
+  %div{data-bind: "if: VM.ab().show_add_repos_blank_slate"}
+    .add_repos_blank_slate
+      %h3
+        Welcome to CircleCi
+      %p
+        Choose a GitHub organization ( your company ) or a GitHub username on the left side of this page.
+        <br/>
+        Then choose a repository to follow with CircleCi. Repos you choose to follow will have their tests run by CircleCi.
+        <br/>
+        %strong Follow a repo to get started.
 %table#add-projects-main.well.table.table-striped.table-hover
   %thead
   %tbody.build-row{data-bind: "foreach: repos"}
