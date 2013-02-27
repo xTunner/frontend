@@ -377,6 +377,8 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/technologies.*", (cx) => VM.technologies.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
 
+    @get '^/api/.*', (cx) => true
+
     @get '^(.*)', (cx) => VM.error.display(cx)
 
     # valid posts, allow to propegate
