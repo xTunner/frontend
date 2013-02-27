@@ -12,4 +12,4 @@
             - @class = if c.slug == @page then "icon-chevron-down" else "icon-chevron-up"
             - @expand = if c.slug == @page then "expand"
             %li
-              %a{ href: "#{c.url}" } = c.title
+              %a{ href: "#{c.url}" } = c.title_with_child_count

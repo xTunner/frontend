@@ -41,10 +41,12 @@ CI.outer.Docs = class Docs extends CI.outer.Page
   article_info: (slug) =>
     node = $(window.HAML[slug]())
     uriFragment = slug.replace(/_/g, '-')
+    title = node.find('.title > h1').text().trim()
     result =
       url: "/docs/#{uriFragment}",
       slug: slug,
-      title: node.find('.title > h1').text().trim()
+      title: title
+      title_with_child_count: @title_with_child_count(slug, title)
       subtitle: node.find('.title > h4').text().trim()
       lastupdated: node.find('.title > .lastupdated').text().trim()
       icon: node.find('.title > i').attr('class')
@@ -53,6 +55,12 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     console.warn "#{uriFragment} must have a title" unless result.title
     console.warn "#{uriFragment} must have a lastupdated" unless result.lastupdated
     result
+
+  find_articles_by_tags: (tags) =>
+    articles = []
+    for tag in tags
+      articles = articles.concat(@find_articles_by_tag(tag))
+    $.unique articles
 
   find_articles_by_tag: (tag) =>
     articles = []
@@ -73,6 +81,24 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         if tag in article_tags
           articles.push(@article_info slug)
     articles
+
+  title_with_child_count: (slug, title) ->
+    count = @find_child_articles(slug)?.length
+    if count
+      title + " (#{count})"
+    else
+      title
+
+  find_child_articles: (slug) ->
+    try
+      context = {}
+      window.HAML[slug](context)
+      tags = context['child_article_tags']
+    catch error
+      child_articles = null
+    if tags?.length
+      child_articles = @find_articles_by_tags(tags)
+    child_articles
 
   categories: (cx) =>
     categories = {}
