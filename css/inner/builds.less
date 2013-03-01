@@ -219,3 +219,36 @@ td.build_status {
 		clear: both;
 	}
 }
+
+.success { color: @green; }
+.fixed { color: @green; }
+.failed { color: @red; }
+.running { color: @yellow; }
+.timedout { color: @red; }
+
+.build-circles {
+  font-size: 5px;
+
+  a:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  i.build-circle {
+    margin: 0;
+    width: 1em;
+  }
+
+}
+
+.branch-item:hover {
+  .build-circles {
+    font-size: 10px;
+    margin-left: -5em;
+    z-index: 100;
+  }
+}
+
+.branch-name {
+  float: left;
+}

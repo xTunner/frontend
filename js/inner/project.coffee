@@ -140,7 +140,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @recent_branch_builds = (branch_name) =>
       builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
-        new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
+        new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds
       if builds then builds.reverse()
 
     @build_path = (build_num) =>
