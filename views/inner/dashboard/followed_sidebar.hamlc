@@ -21,9 +21,9 @@
   / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
   %li.branch-item.nav-menu-row{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
 
-    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
+    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: 'asdffdsaasdffdsaadssafass', css: {default: branch_name == project.default_branch()}"}
 
-    %div.pull-right.build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
+    .pull-right.build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
       %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"}
         %i.icon-circle.build-circle{data-bind: "css: status"}
 
