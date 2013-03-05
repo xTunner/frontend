@@ -50,8 +50,7 @@ class CircleViewModel extends CI.inner.Obj
     @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
     @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
-    @heroku = new CI.outer.Heroku("heroku", "Welcome from Heroku")
-    @heroku_account = new CI.outer.HerokuAccount("heroku_account", "Heroku Dashboard")  
+
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
     @query_results_query = ko.observable(null)
@@ -378,8 +377,6 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
     @get "^/technologies.*", (cx) => VM.technologies.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
-    @get "^/heroku", (cx) => VM.heroku.display(cx)
-    @get "^/heroku/account", (cx) => VM.heroku_account.display(cx)
     @post "^/heroku/resources", -> true
 
 
@@ -414,6 +411,3 @@ $(document).ready () ->
     CI.maybeOverrideABTests(window.location.search, VM.ab)
 
   SammyApp.run path
-#  if window.renderContext.heroku?               
-#    alert(window.renderContext.heroku_nav_bar)
-#    $("#heroku").append( window.renderContext.heroku_nav_bar)         
