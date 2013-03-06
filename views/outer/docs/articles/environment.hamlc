@@ -413,3 +413,5 @@
         %code beanstalkd
       %li
         %code couchbase-server
+      %li
+        %code neo4j
