@@ -191,16 +191,15 @@
 
     %p
       Although override does nothing, the standard pre and post sections are supported.
-      For example, installing <code>elasticsearch</code>:
+      For example, installing <code>phantomjs</code>:
 
     %pre
       %code.no-highlight<>
         :preserve
           machine:
             pre:
-              - curl -k -L -o elasticsearch-0.19.0.tar.gz http://github.com/downloads/elasticsearch/elasticsearch/elasticsearch-0.19.0.tar.gz
-              - tar -zxvf elasticsearch-0.19.0.tar.gz
-              - ./elasticsearch-0.19.0/bin/elasticsearch || [ $? -eq 1 ]
+              - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
+              - tar -jxvf phantomjs.tar.bz2
 
     %h3#timezone
       Timezone
