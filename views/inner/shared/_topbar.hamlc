@@ -1,5 +1,5 @@
 #topbar
-  .navbar.navbar-fixed-top
+  .navbar
     .navbar-inner
       %a.brand{href: "/"}
 

@@ -27,13 +27,13 @@ class CircleViewModel extends CI.inner.Obj
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
     @selected = ko.observable({}) # Tracks what the dashboard is showing
-
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
-
+            
+  
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
@@ -50,6 +50,7 @@ class CircleViewModel extends CI.inner.Obj
     @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
     @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
+
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
     @query_results_query = ko.observable(null)
@@ -376,6 +377,9 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
     @get "^/technologies.*", (cx) => VM.technologies.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
+    @post "^/heroku/resources", -> true
+
+
 
     @get '^/api/.*', (cx) => true
 
