@@ -379,9 +379,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
     @post "^/heroku/resources", -> true
 
-
-
-    @get '^/api/.*', (cx) => true
+    @get '^/api/.*', (cx) => false
 
     @get '^(.*)', (cx) => VM.error.display(cx)
 
