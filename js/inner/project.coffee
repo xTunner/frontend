@@ -134,14 +134,22 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @toggle_show_all_branches = () =>
       @show_all_branches(!@show_all_branches())
 
+    @sorted_builds = (branch_name) =>
+      if @branches()[branch_name]
+        recent = @branches()[branch_name].recent_builds or []
+        running = @branches()[branch_name].running_builds or []
+        recent.concat(running).sort(@buildSort)
+      else
+        []
+
     @latest_branch_build = (branch_name) =>
-      if @branches()[branch_name] and @branches()[branch_name].recent_builds
-        new CI.inner.Build(@branches()[branch_name].recent_builds[0])
+      build = @sorted_builds(branch_name)[0]
+      if build
+        new CI.inner.Build(build)
 
     @recent_branch_builds = (branch_name) =>
-      builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
-        new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds
-      if builds then builds.reverse()
+      builds = @sorted_builds(branch_name).reverse()[0..4]
+      new CI.inner.Build(b) for b in builds
 
     @build_path = (build_num) =>
       @project_path() + "/" + build_num
@@ -166,6 +174,35 @@ CI.inner.Project = class Project extends CI.inner.Obj
       1
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
+
+  @buildTimeSort: (l, r) ->
+    if !l.pushed_at and !r.pushed_at
+      0
+    else if !l.pushed_at
+      1
+    else if !r.pushed_at
+      -1
+    else if new Date(l.pushed_at) > new Date(r.pushed_at)
+      -1
+    else if new Date(l.pushed_at) < new Date(r.pushed_at)
+      1
+    else
+      0
+
+  @buildNumSort: (l, r) ->
+    if l.build_num > r.build_num
+      -1
+    else if l.build_num < r.build_num
+      1
+    else
+      0
+
+  @buildSort: (l, r) ->
+    time_sort = @buildTimeSort(l, r)
+    if time_sort is 0
+      @buildNumSort(l, r)
+    else
+      time_sort
 
   compute_latest_build: () =>
     if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?
