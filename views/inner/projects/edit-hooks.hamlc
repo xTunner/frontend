@@ -14,11 +14,6 @@
   / /ko
 
   .control-group
-    %label.control-label{for: "hipchat-notify"} Show popups
-    .controls
-      %input.span1#hipchat-popup{ type: "checkbox", data-bind: "checked: hipchat_notify" }
-
-  .control-group
     %label.control-label{for: "hipchat-token"} API token
     .controls
       %input.span4#hipchat-token{ type: "text", data-bind: "value: hipchat_api_token" }
