@@ -81,6 +81,12 @@ CI.inner.Build = class Build extends CI.inner.Obj
       label: true
       build_status: true
 
+    @status_icon_class =
+      "icon-ok": @success_style
+      "icon-remove": (@important_style || @warning_style)
+      "icon-repeat": @info_style
+      "icon-spin": @info_style
+
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "circle bug"
