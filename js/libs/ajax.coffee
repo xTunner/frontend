@@ -12,7 +12,7 @@ finishAjax = (event, attrName, buttonName) ->
   if event
     t = $(event.currentTarget)
     done = t.attr(attrName) or buttonName
-    if not t.prop("type").toLowerCase() in ["radio", "checkbox"]
+    if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
       textVal t, done
 
     func = () =>
@@ -40,7 +40,7 @@ $(document).ajaxSend (ev, xhr, options) ->
     # change to loading text
     loading = t.attr("data-loading-text") or "..."
     xhr.event.savedText = textVal t
-    if not t.prop("type").toLowerCase() in ["radio", "checkbox"]
+    if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
       textVal t, loading
 
 
