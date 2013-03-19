@@ -7,6 +7,11 @@
 
   %div{data-bind: "ifnot: heroku_api_key"}
     = HAML['account_heroku']({})
+  %div{data-bind: "if: heroku_api_key"}
+    %p
+      You can edit your Heroku key from your
+      != succeed '.', ->
+        %a{href: "/account/heroku"} account page
 
 %hr
 %h2 Step 2: Associate a Heroku SSH key with your account
