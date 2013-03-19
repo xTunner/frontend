@@ -6,12 +6,10 @@
     .controls
       %input.span4#hipchat-room{ type: "text", data-bind: "value: hipchat_room" }
 
-  / ko ifnot: window.circleEnvironment == "production"
   .control-group
     %label.control-label{for: "hipchat-notify"} Show popups
     .controls
       %input.span1#hipchat-notify{ type: "checkbox", data-bind: "checked: hipchat_notify" }
-  / /ko
 
   .control-group
     %label.control-label{for: "hipchat-token"} API token
