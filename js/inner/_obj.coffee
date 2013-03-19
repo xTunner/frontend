@@ -5,6 +5,8 @@ CI.inner.Obj = class Obj
 
     for k,v of $.extend {}, defaults, json
       if @observables().hasOwnProperty(k) then @[k](v) else @[k] = v
+      
+    @from_heroku = ko.observable(window.renderContext.from_heroku)        
 
   observables: () => {}
 

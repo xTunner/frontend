@@ -13,6 +13,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
+    @from_heroku = ko.observable(window.renderContext.from_heroku)        
 
     # inner
     @build = ko.observable()
@@ -377,6 +378,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
     @get "^/technologies.*", (cx) => VM.technologies.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
+
     @post "^/heroku/resources", -> true
 
     @get '^/api/.*', (cx) => false

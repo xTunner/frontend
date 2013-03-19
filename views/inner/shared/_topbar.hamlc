@@ -23,10 +23,9 @@
               %a{href: '/account'}
                 Settings
 
-            %li
-              %a#logout-link{href: '/logout'}
-                Logout
-
+            %li{ data-bind: "ifnot: from_heroku" }
+              %a#logout-link{ href: '/logout'}
+                Logouts
 
             %li.divider
             %li

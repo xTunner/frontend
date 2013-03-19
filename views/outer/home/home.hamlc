@@ -1,4 +1,22 @@
-%div
+%div{ data-bind:"if: from_heroku" }
+  .main-cta
+    .container
+      .span12
+        .ctabox.heroku-cta-box
+          %p.center
+            Welcome Heroku User.
+          %p.center 
+            Sign up with your Github credentials to get started
+          %p.center
+            %span
+              %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
+                RUN YOUR TESTS
+            %span
+          %p.center
+            %span
+              You are seconds away from awesome
+
+%div{ data-bind:"ifnot: from_heroku" }
   .jumbotron
     .container-fluid
       .row-fluid
