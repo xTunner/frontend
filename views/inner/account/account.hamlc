@@ -18,7 +18,7 @@
       %a{href: '/account/heroku'}
         Heroku
 
-    %li{ data-bind:"ifnot: from_heroku" }#plans
+    %li#plans{ data-bind:"ifnot: from_heroku" }
       %a{href: '/account/plans'}
         Plans
 
