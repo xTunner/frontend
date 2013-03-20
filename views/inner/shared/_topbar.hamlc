@@ -25,7 +25,7 @@
 
             %li{ data-bind: "ifnot: from_heroku" }
               %a#logout-link{ href: '/logout'}
-                Logouts
+                Logout
 
             %li.divider
             %li
