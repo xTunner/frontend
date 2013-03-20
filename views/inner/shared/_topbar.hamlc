@@ -23,7 +23,7 @@
               %a{href: '/account'}
                 Settings
 
-            %li{ data-bind: "ifnot: from_heroku" }
+            %li{ data-bind: "ifnot: VM.from_heroku" }
               %a#logout-link{ href: '/logout'}
                 Logout
 
