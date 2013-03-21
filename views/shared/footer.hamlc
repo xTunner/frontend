@@ -22,7 +22,7 @@
         %li
           %a{ href: '/about#contact', title: 'Contact us in more ways' }
             Contact
-        %li
+        %li{ data-bind:"ifnot: from_heroku" }
           %a{ href: '/pricing', title: 'See our plans and prices' }
             Pricing
         %li
