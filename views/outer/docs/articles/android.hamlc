@@ -8,7 +8,13 @@
 
     %p
       CircleCI support testing Android applications. The SDK is
-      already installed on the VM. To save space, we don't download
+      already installed on the VM at
+
+      %code
+        \/usr\/local\/android-sdk-linux
+
+    %p
+      To save space, we don't download
       every android version, so you'll need to specify the versions
       you use:
 
