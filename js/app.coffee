@@ -13,7 +13,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
-    @from_heroku = ko.observable(window.renderContext.from_heroku)        
+    @from_heroku = ko.observable(window.renderContext.from_heroku)
 
     # inner
     @build = ko.observable()
@@ -33,8 +33,8 @@ class CircleViewModel extends CI.inner.Obj
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
-            
-  
+
+
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
@@ -46,7 +46,7 @@ class CircleViewModel extends CI.inner.Obj
           path[1]
 
     # outer
-    @home = new CI.outer.Home("home", "Continuous Integration made easy")
+    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
     @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
     @privacy = new CI.outer.Page("privacy", "Privacy and Security")
