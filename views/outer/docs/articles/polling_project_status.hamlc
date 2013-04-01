@@ -22,7 +22,9 @@
         https://circleci.com/cc.xml?circle-token=:circle-token
 
     %p
-      Or, if you only care about a subset of your projects, you can use per-project URLs:
+      Or, if you only care about a subset of your projects, you can use per-project URLs.
+      Just substitute the github username (or organization) and project name into a URL of
+      this form:
 
       %code
         https://circleci.com/gh/:username/:projectname.cc.xml?circle-token=:circle-token
