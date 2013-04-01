@@ -478,11 +478,8 @@
         :preserves
           dependencies:
             cache_directories:
-              - "custom_1"
-              - "custom_2"
-
-    %p
-      Note that cache directories are relative to the checkout dir, and absolute paths do not work.
+              - "custom_1"   # relative to the build directory
+              - "~/custom_2" # relative to the user's home directory
 
     = HAML['heading']({title: "Database setup", hash: "database"})
 
