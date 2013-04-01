@@ -23,11 +23,11 @@
 
     %p
       Or, if you only care about a subset of your projects, you can use per-project URLs.
-      Just substitute the github username (or organization) and project name into a URL of
+      Just substitute the github username (or organization) and repo name into a URL of
       this form:
 
       %code
-        https://circleci.com/gh/:username/:projectname.cc.xml?circle-token=:circle-token
+        https://circleci.com/gh/:owner/:repo.cc.xml?circle-token=:circle-token
 
     %p
       You can generate or retrieve API tokens for use with these URLs from your
