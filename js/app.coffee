@@ -48,12 +48,13 @@ class CircleViewModel extends CI.inner.Obj
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
-    @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
-    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
-
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
+
+    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
+
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
@@ -376,7 +377,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/docs(.*)", (cx) => VM.docs.display(cx)
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
-    @get "^/technologies.*", (cx) => VM.technologies.display(cx)
+    @get "^/jobs.*", (cx) => VM.jobs.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
 
     @post "^/heroku/resources", -> true

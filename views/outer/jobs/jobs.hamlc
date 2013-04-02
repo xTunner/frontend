@@ -1,0 +1,212 @@
+#title
+  %h1 Come work at CircleCI
+
+#content
+  %section.jobs#watermark
+
+    .story
+      %p
+        Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
+      %p
+        We're looking for great designers and developers.
+
+    %h1 Our hiring thesis
+    %p
+      We believe in hiring smart, independent people who thrive in a flat transparent culture.
+      You'll have the ability to see everything that goes on, and will be expected to make the right decision about what to work on in order to achieve our goals.
+      Everybody we hire is very technical (often meaning hiring engineers to do non-engineering jobs).
+      We hire a mixture of very experienced folks (look at our <a href="/about">bios</a>, and bright raw talent.
+
+    %h2 Who are we hiring?
+    %p
+      We are currently hiring:
+      %ul
+        %li TODO: is what we want explained here
+        %li designers,
+        %li frontend developers,
+        %li backend developers.
+    %p
+      We're looking to hire 5 people spanning these roles as soon as possible.
+
+    %h2 Why work for CircleCI?
+    %p
+      First, a quick intro to the company.
+      We're 5 people: 3 developers, one developer who wishes he were still allowed write code, and one business operations.
+      CircleCI is at the growth stage of its life: we've found "product-market fit" (we have a product that we know lots of people want and will pay for), and are focussing on growing our customer base and filling out the gaps in our product.
+      We're not yet profitable, but make money and are growing rapidly with over year's worth of funding in the bank.
+      Its not certain we'll succeed yet, but its a fairly safe bet as early stage startups go.
+
+    %h3 Culture
+    %p
+      Our culture is engineering-driven.
+      Our customers and our founders are engineers, and most of our employees will be too.
+      We are inspired by companies like Stripe, GitHub, and
+      <a href="http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html">Fog Creek</a>,
+      by <a href="TODO">Valve and their handbook</a>.
+
+    %p
+      We have a flat organization.
+      There are no managers, no org-chart and no hierarchy, and we plan to keep it that way for as long as possible.
+      By keeping communication open and transparent, we believe everybody is able to make good decsisions about the best thing to work on.
+
+    %p
+      We have a very strong focus on productivity, and on shipping code.
+      This means you'll have a lot of days where you finish the day with the happy glow of having achieved something.
+      We ship often, and shape our work lives around enabling that.
+
+    %p
+      We spend a lot of time talking to customers.
+      We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too.
+      This means you'll probably spend at least one day per week listening to and fixing their problems.
+      We refer to that day as "support", but really think of it as "customer development".
+
+    %h3 Young company
+    %p
+      At a small growing company, your work has a disproportiate affect.
+      As well as making the lives of our customers better, it also sets a precedent for everyone who works for us in the future.
+      You get to affect both the product and the company culture.
+      Your opinions matter and are listened to, and that's why we hire you.
+
+    %h3 Lots to Learn
+    %p
+      We try to hire really really high caliber people.
+      We look for the very experienced, or the very talented (and generally both)!
+      If you work at CircleCI, you know that you won't be on the team with slouches or slackers, or folks who will hold you back.
+      Only hardcore hackers who you'll hold in high esteem.
+      That means there's lot to learn, and we hope to learn lots from you too.
+
+    %h3 For designers:
+    %p
+      This sounds very engineering focussed, and it is, so we want to include a special pitch about why you'll love being a designer at CircleCI.
+    %p
+      pitch for why you sould work with us, including high level of responsibility, great team, a huge focus on design, good experience. Everybody talks to the customer, including you. Ability to learn a lot more about the tech stack. Incredibly smart team. Get to work on other cool shit like tshirts, branding, messaging, logos.
+
+    %h2
+      Where?
+    %p
+      We hire both local and remote folks.
+    %dl
+      %dt Local
+      %dd
+        We have lovely office in the dodgy end of SOMA in San Francisco, near Heroku, Twitter, Zynga, Pinterest, Atlassian, and many other startups.
+        (We'll also do visa work for non-Ameicans already in the US or who can work in the US immediately)
+      %dt Remote
+      %dd
+        We have an asynchronous culture that is well suited to remote-working.
+        We hire remote folks so long as they're based in the US.
+        We'll also consider non-US folks who come with a personal referal.
+
+
+    %h2 Who should apply?
+    %p
+      We have noticed that the following correlate with the people that we want to hire.
+      This is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory).
+
+    %p
+      people who supremely care about developer productivity
+    %p
+      great communicators
+    %p
+      a working knowledge of the writings of patio11 or other dev-marketers, and ability to discuss different types of conversion rate optimization, customer lifecycle marketing, virality, and other "growth hacks". Experience a serious plus.
+
+
+
+    %p
+      For backend:
+    %ul
+      %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, amazing coding chops (those having left coding behind them - this isn't the company for you, unfortunately), probably with 8-10 years of experience
+      %li young (TODO), raw, talent, who can crank out code
+      %li people who know many languages, including post-college experience of functional ones (ML, Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
+      %li people who have built or scaled large distributed systems
+
+    %p
+      For frontend:
+    %ul
+      %li knowledge of common HTML5 implementation strategies
+      %li experience with HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc. Jquery knowledge assumed)
+      %li experience with data visualization, including d3 or processing
+      %li experience designing "flows" in complex stateful apps
+      %li experience building fat JS apps
+      %li good UX sensibilities
+      %li preferred if you arent awful at visual design so that prototypes can be shipped and iterated on
+      %li backend knowledge not required, but we expect that you're not helpless if a change requires trivial backend changes
+
+    %p
+      For designers:
+    %ul
+      %li
+        ability to relate to our customers, who are typically software developers.
+        Designers who did a CS degree, hang out with developers, have worked a lot with developers, built developer-facing tools, etc.
+      %li
+        A requirement for designers is that you can implement your own stuff.
+        We need to ship quickly, so you need to be able to turn designs into CSS and HTML.
+      %li
+        Deep javascript experience is not required, but you'll need to roughly know your way around and change things if required.
+      %li
+        a willingness to learn about backend code and tech
+      %li
+        ship often, "done is better than perfect", willingness to iterate instead of waiting for the perfect design
+      %li
+        no divas
+      %li
+        interest and experience in branding and messaging
+
+    %p
+      We do have some requirements as well:
+    %ul
+      %li (for backend devs) having worked on a significant project that wasn't in java, javascript, ruby or php.
+      %li good conversationist, and pleasant people - we'll be spending the next few years together after all
+      %li being easy to work with, if you're hard to work with, difficult to make conversation with, are grumpy or arrogant
+      %li if you don't work well with others, are a diva, or don't value other people
+      %li that you never use the words "ninja", "pirate", or "rockstar".
+
+
+    %h2
+      Benefits
+    %ul
+      %li
+        get to shape the company
+      %li
+        smart colleagues
+      %li
+        great product and customers
+      %li
+        competitive salary and equity (we can't afford to win bidding wars, but refuse to under pay because "you get to work at a startup")
+      %li
+        health care
+      %li
+        catered lunch (for SF-based candidates, obviously)
+      %li
+        regular paid trips to San Francisco (for remote candidates)
+      %li
+        absolute minimum of bullshit (like filling out forms, bearocracy, etc)
+      %li
+        a feeling of satusfaction when you ship code
+      %li
+        whatever machine you want: we tend to go for the latest macbook pros with cinema displays, but whatever you need
+      %li
+        company trips
+      %i
+        going to conferences
+
+
+
+    %h2 the application process
+
+    %h2 How to apply
+
+    %p
+      Send an email to jobs@circleci.com.
+      Include either a resume or your linkedin with a discussion of what you did at those companies.
+      Esp the technologies you've used in the past.
+
+    %p
+      More important is to personalize it.
+      Pitch us as to why you're interested in working at CircleCI, why your skillset applies, which of the  and why we'd be interested in working with you. If you have questions about these or don't fully know the answer, do drop us a line and we can think about it together.
+
+
+  %h2 Recruiters
+  %p
+    No recruiters, thank you.
+    I'm sure you're nice people, but we don't value your service, and don't feel you do it well.
+    Please do not contact us - we mark all recruiter mail as spam.
