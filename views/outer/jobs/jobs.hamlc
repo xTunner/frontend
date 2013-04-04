@@ -1,30 +1,39 @@
 #title
-  %h1 Come work at CircleCI
+  %h1 We are hiring!
 
 #content
   %section.jobs#watermark
 
     .story
       %p
-        Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
-      %p
         We're looking for great designers and developers.
 
+      %p
+        Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
+
     %h1 Our hiring thesis
+
     %p
-      We believe in hiring smart, independent people who thrive in a flat transparent culture.
+      We believe in hiring smart, independent people who thrive working in a flat transparent culture with similar people.
       You'll have the ability to see everything that goes on, and will be expected to make the right decision about what to work on in order to achieve our goals.
-      Everybody we hire is very technical (often meaning hiring engineers to do non-engineering jobs).
+      Everybody we hire is very technical (our non-technical jobs tend to be handled by engineers too).
       We hire a mixture of very experienced folks (look at our <a href="/about">bios</a>, and bright raw talent.
 
     %h2 Who are we hiring?
     %p
-      We are currently hiring:
+      We are currently hiring developers and designers who can make our company and product better.
+      We currently looking for the following skills:
       %ul
-        %li TODO: is what we want explained here
-        %li designers,
-        %li frontend developers,
-        %li backend developers.
+        %li visual design/photoshop/wireframing
+        %li frontend UX
+        %li implementing designs in CSS
+        %li marketing/copy editing
+        %li A/B testing
+        %li
+
+        %li designers, to do visual design, UX/UI, and code HTML/CSS,
+        %li frontend developers, for our fat JS client,
+        %li backend developers, for our API, build platform, and infrastructure management.
     %p
       We're looking to hire 5 people spanning these roles as soon as possible.
 
@@ -59,6 +68,14 @@
       We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too.
       This means you'll probably spend at least one day per week listening to and fixing their problems.
       We refer to that day as "support", but really think of it as "customer development".
+
+    %h3 Cool tech
+    %p
+      Our backend is written in Clojure.
+      Everything from dev-ops to package management to serving our REST API is all done in Clojure.
+      Clojure isn't just a fancy new language, its the most productive, powerful and elegant language I've ever used.
+      Our frontend is a fat JS app written in HamlC, CoffeeScript, and Less.
+
 
     %h3 Young company
     %p
