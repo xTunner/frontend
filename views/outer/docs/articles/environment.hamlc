@@ -362,7 +362,7 @@
       %li
         %code riak 1.0.3
       %li
-        %code cassandra 1.1.5
+        %code cassandra 1.2.2
       %li
         %code redis 2.4.16
       %li
