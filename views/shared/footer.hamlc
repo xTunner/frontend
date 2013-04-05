@@ -7,7 +7,7 @@
         %li
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
-        %li
+        -#%li
           %a{ href: 'http://status.circleci.com', title: 'Go to the Status page' }
             Status
         %li
