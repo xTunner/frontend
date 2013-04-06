@@ -123,4 +123,5 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
       super cx
     catch e
+      # TODO: go to 404 page
       return cx.redirect "/docs"
