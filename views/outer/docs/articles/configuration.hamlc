@@ -22,8 +22,8 @@
       For a quick sense of how to set up your
       %code circle.yml file,
       = succeed '.', ->
-        %a{ href: "/docs/config-sample" }
-          check out out complete example file
+        %a{href: "/docs/config-sample"} check out out complete example file
+
       Otherwise, here's a quick example:
 
     %pre
