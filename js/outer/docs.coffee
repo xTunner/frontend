@@ -101,7 +101,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     if count
       title + " (#{count})"
     else
-        title
+      title
 
   viewContext: (cx) =>
     categories: @categories
