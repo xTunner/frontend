@@ -1,5 +1,7 @@
 %article
-  - @article_tags = [ "troubleshooting", "browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11" ]
+  - @article_tags = [ "troubleshooting" ]
+  -# add these as tags, once tags actually start to mean "tags":
+  -# "browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11"
 
   = HAML['article_title']({icon: "icon-globe", title: 'Browser Debugging', lastUpdated: "Feb 18, 2013", subtitle: "How to remotely debug your integration tests"})
 
