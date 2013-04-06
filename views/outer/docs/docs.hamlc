@@ -4,5 +4,5 @@
 
 #content
   %section.article
-    = HAML['categories']({categories: @categories, page: @pagename})
+    = HAML['categories']({categories: @categories, page: @pagename, tags: @tags})
     = HAML[@pagename](@)

@@ -66,12 +66,12 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       for t in a.article_tags
         @tags[t] or= []
         @tags[t].push a
-        if @categories[t]?
-          @categories[t].articles.push a
 
 
     for _, c of @categories
-      c.title_with_child_count = @title_with_child_count(c.title, c.articles.length)
+      c.title_with_child_count = @title_with_child_count(c.title, @tags[c.slug]?.length)
+    for _, a of @articles
+      a.title_with_child_count = @title_with_child_count(a.title, @tags[a.slug]?.length)
 
 
   article_info: (slug, node, context) =>
@@ -94,7 +94,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
   category_info: (slug, node, context) =>
     result =
       category: context['category']
-      articles: []
       slug: slug
 
   title_with_child_count: (title, count) ->
