@@ -1,7 +1,7 @@
 %article
   - @article_tags = ['timeout']
 
-  = HAML['article_title']({title: "\"unable to obtain stable firefox connection in 60 seconds\"", icon: "icon-download"})
+  = HAML['article_title']({title: "\"unable to obtain stable firefox connection in 60 seconds\"", icon: "icon-download", lastUpdated: "Feb 2, 2013"})
 
   .doc
     %p
