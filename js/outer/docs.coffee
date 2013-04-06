@@ -1,6 +1,10 @@
+# eagerly produce docs, fetching tags, and then reuse
+#
+
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
+    @initialize()
 
   rewrite_old_name: (name) =>
     switch name
@@ -37,96 +41,78 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     name = cx.params.splat[0] or "front-page"
     name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
 
+  initialize: =>
+    @articles = {}
+    @categories = {}
+    @tags = {}
 
-  article_info: (slug) =>
-    node = $(window.HAML[slug]())
+    # process all HAML templates, and pick the articles and categories based on
+    # their contents (they write into the context, and we check for that)
+    for slug of HAML
+      try
+        # extract the metadata, which is actually in the file, writing into the context
+        context = {}
+        node = $(window.HAML[slug](context))
+        if context.article_tags
+          @articles[slug] = @article_info(slug, node, context)
+        if context.category
+          @categories[slug] = @category_info(slug, node, context)
+      catch error
+        console.log "error generating #{slug}: #{error}"
+        ## meaning: can't be rendered without more context. Should never be true of docs!
+
+    # iterate through the articles, and update the categories
+    for _, a of @articles
+      for t in a.tags
+        @tags[t] or= []
+        @tags[t].push a
+        if @categories[t]?
+          @categories[t].articles.push a
+
+
+    for _, c of @categories
+      c.title_with_child_count = @title_with_child_count(c.title, c.articles.length)
+
+
+  article_info: (slug, node, context) =>
     uriFragment = slug.replace(/_/g, '-')
     title = node.find('.title > h1').text().trim()
+    tags = context.article_tags or []
     result =
-      url: "/docs/#{uriFragment}",
-      slug: slug,
+      url: "/docs/#{uriFragment}"
+      slug: slug
       title: title
-      title_with_child_count: @title_with_child_count(slug, title)
+      tags: tags
       subtitle: node.find('.title > h4').text().trim()
       lastupdated: node.find('.title > .lastupdated').text().trim()
       icon: node.find('.title > i').attr('class')
-    console.warn "#{uriFragment} must have a subtitle" unless result.subtitle
+    #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
     console.warn "#{uriFragment} must have an icon" unless result.icon
     console.warn "#{uriFragment} must have a title" unless result.title
     console.warn "#{uriFragment} must have a lastupdated" unless result.lastupdated
     result
 
-  find_articles_by_tags: (tags) =>
-    articles = []
-    for tag in tags
-      articles = articles.concat(@find_articles_by_tag(tag))
-    $.unique articles
+  category_info: (slug, node, context) =>
+    result =
+      category: context['category']
+      articles: []
+      slug: slug
 
-  find_articles_by_tag: (tag) =>
-    articles = []
-    for slug of HAML
-      article_tags = null
-
-      try
-        ## a bit of a hack: tagged article templates are expected to *write* into their context,
-        ## and here we read what's written.
-        context = {}
-        window.HAML[slug](context)
-        article_tags = context['article_tags']
-      catch error
-        ## meaning: can't be rendered without more context. Should never be true of docs!
-        article_tags = null
-
-      if article_tags
-        if tag in article_tags
-          articles.push(@article_info slug)
-    articles
-
-  title_with_child_count: (slug, title) ->
-    count = @find_child_articles(slug)?.length
+  title_with_child_count: (title, count) ->
     if count
       title + " (#{count})"
     else
-      title
-
-  find_child_articles: (slug) ->
-    try
-      context = {}
-      window.HAML[slug](context)
-      tags = context['child_article_tags']
-    catch error
-      child_articles = null
-    if tags?.length
-      child_articles = @find_articles_by_tags(tags)
-    child_articles
-
-  categories: (cx) =>
-    categories = {}
-    for slug of HAML
-      category = null
-
-      try
-        ## a bit of a hack: category templates are expected to *write* into their context,
-        ## and here we read what's written.
-        context = {}
-        window.HAML[slug](context)
-        category = context['category']
-      catch error
-        ## meaning: can't be rendered without more context. Should never be true of docs!
-        category = null
-
-      if category
-        categories[category] = @find_articles_by_tag(category)
-    categories
+        title
 
   viewContext: (cx) =>
-    categories: @categories()
-    find_articles_by_tag: @find_articles_by_tag # not a function call
+    categories: @categories
+    articles: @articles
+    tags: @tags
     pagename: @filename cx
 
   title: (cx) =>
     try
-      @article_info(@filename(cx)).title
+      @articles[@filename(cx)].title
     catch e
       null
 

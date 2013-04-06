@@ -1,5 +1,6 @@
 %article
   - @article_tags = [ "reference" ]
+  - @child_tags = ["configuration"]
 
   = HAML['article_title']({icon: "icon-book", title: 'Configuring Circle', lastUpdated: "Aug 1, 2012", subtitle: "Tweak almost any setting you need"})
 
@@ -657,4 +658,4 @@
       = HAML["contact_us"]()
       and we'll figure something out.
 
-    = HAML['article_list']({tags: ['config_sample'], find_articles_by_tag: @find_articles_by_tag})
+    = HAML['article_list']({tags: @tags, child_tags: ['config_sample']})

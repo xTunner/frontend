@@ -2,14 +2,16 @@
   .sidebar-search-form
     = HAML['docs_search_form']()
   %ul.topics
-    - for rootCategory, categories of @categories
+    - for rootCategory, category of @categories
       %li{class: "expand"}
         %h4
           = HAML[rootCategory]()
         %hr
         %ul{class: "expand"}
-          - for c in categories
-            - @class = if c.slug == @page then "icon-chevron-down" else "icon-chevron-up"
-            - @expand = if c.slug == @page then "expand"
+
+          - for a in category.articles
+            -# TODO: these currently do nothing, and expanding and chevrons aren
+            - @class = if a.slug == @page then "icon-chevron-down" else "icon-chevron-up"
+            - @expand = if a.slug == @page then "expand"
             %li
-              %a{ href: "#{c.url}" } = c.title_with_child_count
+              %a{ href: "#{a.url}" } = a.title
