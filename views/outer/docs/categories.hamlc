@@ -3,15 +3,11 @@
     = HAML['docs_search_form']()
   %ul.topics
     - for rootCategory, category of @categories
-      %li{class: "expand"}
+      %li
         %h4
           = HAML[rootCategory]()
         %hr
-        %ul{class: "expand"}
-
+        %ul.expand
           - for a in category.articles
-            -# TODO: these currently do nothing, and expanding and chevrons aren
-            - @class = if a.slug == @page then "icon-chevron-down" else "icon-chevron-up"
-            - @expand = if a.slug == @page then "expand"
             %li
               %a{ href: "#{a.url}" } = a.title
