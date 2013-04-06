@@ -1,7 +1,8 @@
 %article
   - @article_tags = [ "troubleshooting" ]
+  - @child_tags = ["filesystem"]
 
   = HAML['article_title']({title: "Filesystem Layout Problems", subtitle: "", icon: "icon-hdd", lastUpdated: "Feb 2, 2013"})
 
   .doc
-    = HAML['article_list']({tags: @tags, child_tags: ["filesystem"]})
+    = HAML['article_list']({tags: @tags, child_tags: @child_tags})
