@@ -63,7 +63,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
     # iterate through the articles, and update the categories
     for _, a of @articles
-      for t in a.tags
+      for t in a.article_tags
         @tags[t] or= []
         @tags[t].push a
         if @categories[t]?
@@ -77,12 +77,11 @@ CI.outer.Docs = class Docs extends CI.outer.Page
   article_info: (slug, node, context) =>
     uriFragment = slug.replace(/_/g, '-')
     title = node.find('.title > h1').text().trim()
-    tags = context.article_tags or []
     result =
       url: "/docs/#{uriFragment}"
       slug: slug
       title: title
-      tags: tags
+      article_tags: context.article_tags or []
       subtitle: node.find('.title > h4').text().trim()
       lastupdated: node.find('.title > .lastupdated').text().trim()
       icon: node.find('.title > i').attr('class')
