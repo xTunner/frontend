@@ -1,7 +1,7 @@
 %article
   - @article_tags = [ 'how_to' ]
 
-  = HAML['article_title']({icon: "icon-wrench", title: "Start a Background Process From circle.yml", subtitle: "Detach without races or hanging", lastUpdated: "Feb 2, 2013"})
+  = HAML['article_title']({icon: "icon-wrench", title: "Start a background process from circle.yml", subtitle: "Detach without races or hanging", lastUpdated: "Apr 6, 2013"})
 
   .doc
     %p
