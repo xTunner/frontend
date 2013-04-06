@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ["config_sample"]
+  - @article_tags = ["reference"]
 
   = HAML['article_title']({icon: "icon-file", title: 'Sample circle.yml file', lastUpdated: "Aug 18, 2012", subtitle: "Avoid reading docs by copying from our example"})
 
