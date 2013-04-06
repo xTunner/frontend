@@ -4,4 +4,4 @@
       = @project
   %li
     %a{href: "/gh/#{@project}/edit"}
-      Edit
+      Edit settings
