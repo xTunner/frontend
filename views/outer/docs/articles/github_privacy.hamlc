@@ -1,8 +1,7 @@
 %article
   - @article_tags = ['privacy_security']
-  - @child_tags = ["github_privacy"]
 
   = HAML['article_title']({title: "Github Integration", subtitle: "", icon: "icon-key", lastUpdated: "Feb 2, 2013"})
 
   .doc
-    = HAML['article_list']({tags: @tags, child_tags: @child_tags})
+    = HAML['article_list'](@)

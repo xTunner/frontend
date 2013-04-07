@@ -71,7 +71,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     for _, c of @categories
       c.title_with_child_count = @title_with_child_count(c.title, @tags[c.slug]?.length)
     for _, a of @articles
-      a.title_with_child_count = @title_with_child_count(a.title, @tags[a.child_tags[0]]?.length)
+      a.title_with_child_count = @title_with_child_count(a.title, @tags[a.slug]?.length)
 
 
   article_info: (slug, node, context) =>
@@ -82,7 +82,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       slug: slug
       title: title
       article_tags: context.article_tags or []
-      child_tags: context.child_tags or []
       subtitle: node.find('.title > h4').text().trim()
       lastupdated: node.find('.title > .lastupdated').text().trim()
       icon: node.find('.title > i').attr('class')

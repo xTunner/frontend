@@ -3,7 +3,7 @@
     Related Articles
   %hr
   %ul
-    - if @child_tags? and @tags?
-      - for article in @tags[@child_tags[0]]
+    - if @pagename? and @tags? # ignoring first pass
+      - for article in @tags[@pagename]
         %li
           %a{ href: "#{article.url}" } = article.title

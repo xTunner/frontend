@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['ruby']
+  - @article_tags = ['troubleshooting_ruby']
 
   = HAML['article_title']({title: "Do you need the latest version of Bundler?", icon: "icon-download", lastUpdated: "Feb 3, 2013"})
 

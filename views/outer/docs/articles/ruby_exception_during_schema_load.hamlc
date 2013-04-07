@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['ruby']
+  - @article_tags = ['troubleshooting_ruby']
 
   = HAML['article_title']({title: "rake db:schema:load fails", icon: "icon-random", lastUpdated: "Feb 3, 2013"})
 

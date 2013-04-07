@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['ruby']
+  - @article_tags = ['troubleshooting_ruby']
 
   = HAML['article_title']({title: "Circle is running the wrong commands", icon: "icon-minus-sign", lastUpdated: "Feb 3, 2013"})
 
