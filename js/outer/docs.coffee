@@ -53,7 +53,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         # extract the metadata, which is actually in the file, writing into the context
         context = {}
         node = $(window.HAML[slug](context))
-        if context.article_tags
+        if context.parents
           @articles[slug] = @article_info(slug, node, context)
         if context.category
           @categories[slug] = @category_info(slug, node, context)
@@ -63,7 +63,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
     # iterate through the articles, and update the categories
     for _, a of @articles
-      for t in a.article_tags
+      for t in a.parents
         @tags[t] or= []
         @tags[t].push a
 
@@ -81,7 +81,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       url: "/docs/#{uriFragment}"
       slug: slug
       title: title
-      article_tags: context.article_tags or []
+      parents: context.parents or []
       subtitle: node.find('.title > h4').text().trim()
       lastupdated: node.find('.title > .lastupdated').text().trim()
       icon: node.find('.title > i').attr('class')

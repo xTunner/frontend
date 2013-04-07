@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['github_privacy']
+  - @parents = ['github_privacy']
 
   = HAML['article_title']({title: "What happens when you add a project?", icon: "icon-cogs", lastUpdated: "Feb 3, 2013"})
 

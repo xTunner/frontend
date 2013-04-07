@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['filesystem']
+  - @parents = ['filesystem']
 
   = HAML['article_title']({title: "A directory is missing from your repository", icon: "icon-hdd", lastUpdated: "Feb 3, 2013"})
 

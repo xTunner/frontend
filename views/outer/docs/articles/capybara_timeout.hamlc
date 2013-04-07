@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['timeout']
+  - @parents = ['timeout']
 
   = HAML['article_title']({title: "\"unable to obtain stable firefox connection in 60 seconds\"", icon: "icon-download", lastUpdated: "Feb 2, 2013"})
 

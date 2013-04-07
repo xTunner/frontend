@@ -1,5 +1,5 @@
 %article
-  - @article_tags = [ "troubleshooting" ]
+  - @parents = [ "troubleshooting" ]
 
   = HAML['article_title']({title: "Filesystem Layout Problems", subtitle: "", icon: "icon-hdd", lastUpdated: "Feb 2, 2013"})
 

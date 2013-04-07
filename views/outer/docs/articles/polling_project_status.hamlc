@@ -1,5 +1,5 @@
 %article
-  - @article_tags = [ 'reference' ]
+  - @parents = [ 'reference' ]
 
   = HAML['article_title']({icon: "icon-exchange", title: "Polling Project Status Using CCMenu, CCTray, etc.", lastUpdated: "Feb 2, 2013"})
 

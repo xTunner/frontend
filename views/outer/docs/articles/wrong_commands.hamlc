@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['troubleshooting_ruby']
+  - @parents = ['troubleshooting_ruby']
 
   = HAML['article_title']({title: "Circle is running the wrong commands", icon: "icon-minus-sign", lastUpdated: "Feb 3, 2013"})
 
@@ -59,12 +59,6 @@
       or
       %code :assets
       group.
-
-    %p
-      %b
-        (See also:
-        = succeed ')', ->
-          %a{href: "#wrong-dependencies"} Have you listed all your dependencies?
 
 
 

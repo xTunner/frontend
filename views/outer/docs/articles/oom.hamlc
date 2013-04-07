@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['troubleshooting']
+  - @parents = ['troubleshooting']
 
   = HAML['article_title']({title: "OOM Killer ran", icon: "icon-screenshot", lastUpdated: "Feb 2, 2013", subtitle: "Using too much memory"})
 

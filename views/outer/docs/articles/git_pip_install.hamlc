@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['troubleshooting_python']
+  - @parents = ['troubleshooting_python']
 
   = HAML['article_title']({title: "Git errors during pip install", icon: "icon-key", lastUpdated: "Feb 3, 2013"})
 

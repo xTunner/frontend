@@ -1,5 +1,5 @@
 %article
-  - @article_tags = [ "troubleshooting" ]
+  - @parents = [ "troubleshooting" ]
   -# add these as tags, once tags actually start to mean "tags":
   -# "browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11"
 

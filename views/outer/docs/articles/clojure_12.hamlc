@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['troubleshooting_clojure']
+  - @parents = ['troubleshooting_clojure']
 
   = HAML['article_title']({title: "java.lang.NoSuchMethodError: clojure.lang.KeywordLookupSite", icon: "icon-download", lastUpdated: "Feb 2, 2013"})
 

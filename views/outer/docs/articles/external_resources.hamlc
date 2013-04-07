@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['how_to']
+  - @parents = ['how_to']
 
   = HAML['article_title']({title: "Use resources which are not in your repository", icon: "icon-cloud", lastUpdated: "Feb 2, 2013", subtitle: "Submodules, user keys, and curl"})
 

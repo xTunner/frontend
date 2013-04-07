@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['time_date']
+  - @parents = ['time_date']
 
   = HAML['article_title']({title: "Time-based results are one day off", icon: "icon-time", lastUpdated: "Feb 3, 2013"})
 

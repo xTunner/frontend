@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['github_privacy']
+  - @parents = ['github_privacy']
 
   = HAML['article_title']({title: "Circle requires Admin permissions", icon: "icon-key", lastUpdated: "Feb 3, 2013"})
 

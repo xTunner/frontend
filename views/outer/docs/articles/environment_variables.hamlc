@@ -1,5 +1,5 @@
 %article
-  - @article_tags = [ 'reference' ]
+  - @parents = [ 'reference' ]
 
   = HAML['article_title']({icon: "icon-book", title: "Environment Variables", lastUpdated: "Feb 2, 2013"})
 

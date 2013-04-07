@@ -1,5 +1,5 @@
 %article
-  - @article_tags = ['troubleshooting_ruby']
+  - @parents = ['troubleshooting_ruby']
 
   = HAML['article_title']({title: "Circle uses the wrong Ruby version", icon: "icon-download", lastUpdated: "Feb 3, 2013"})
 
