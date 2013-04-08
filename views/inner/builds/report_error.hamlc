@@ -31,7 +31,7 @@
 
 %span{data-bind: "if: infrastructure_fail()"}
   .row-fluid
-    .offset2.span12
+    .offset2.span8
       .alert.alert-danger
         Looks like we had a bug in our infrastructure, or that of our providers (generally Github or AWS).
         We should have automatically retried this build.
