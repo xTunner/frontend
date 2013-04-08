@@ -16,7 +16,7 @@
     %p
       Parallelism works if tests do not share any state.
       Occasionally tests share state by accident, for example through
-      %a{href: "/docs/common-problems#file-ordering"}
+      %a{href: "/docs/file-ordering"}
         file-ordering bugs
       or by using the same remote 3rd-party APIs.
       Fortunately, both problems are relatively easy to solve.

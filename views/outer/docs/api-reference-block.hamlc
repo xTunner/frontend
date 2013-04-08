@@ -19,4 +19,4 @@
 
 - if @try_it?
   %p
-    %a{href: "https://circleci.com/api/v1/#{@url}"} Try it in your browser
+    %a{href: "https://circleci.com/api/v1/#{@url}", target: "_blank"} Try it in your browser

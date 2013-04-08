@@ -18,11 +18,12 @@
       If Circle ever disclosed your code to an attacker, whether through our own error or through the error of one of our partners, we would very likely be out of business.
       So the security of your code base is not just important to us, it is essential to the survival of our company.
 
-
-    %h3 We never read your code!
+    %h3 Circle staff don't read your code!
     %p
-      The only time we ever read your code is when we obtain explicit permission to do so, in response to a support request.
-      Otherwise, no human reads your code.
+      In the normal course of events, Circle staff will never read your code!
+      Occasionally, you might ask us for support, or to look into a problem you experience, in which it would be useful for our engineers to read your code.
+      We will only do this if explicitly granted permission to do so as part of a support request, and will never do it otherwise.
+      Outside of a support context, no human reads your code.
 
     %p
       However, we occasionally do automated analysis of active projects to provide data over what features and services to provide next.
@@ -39,7 +40,7 @@
 
     %p
       Note that this is a change from our early policies, when we believed that customers wanted our help in setting up their CI with Circle.
-      Early feedback, however, was unanimous: never ever read customer code.
+      Early feedback, however, was unanimous: never ever read customer code unless asked to.
       So that is our rule!
 
 
@@ -156,6 +157,10 @@
         %h3 Change log:
         %ul
           %li
+            %b Mar 10, 2013:
+            Clarify that if asked to, and given explicit permission, we will look at your code to answer your support request.
+
+          %li
             %b Feb 8, 2013:
             Add disclosure section and GPG key.
           %li
@@ -238,10 +243,22 @@
           %a{href: "http://www.google.co.uk/intl/en/analytics/privacyoverview.html"} Google Analytics' privacy policy
           discusses how they use this information.
 
+        %li
+          %a{href: "http://hipchat.com"} Hipchat
+          provides our live support channel, where we discuss support issues with customers.
+          This is a public channel, and we do not ask customers for any private details via Hipchat, and none should ever be volunteered.
+          Hipchat is also used for internal Circle communication.
+          %a{href: "https://www.hipchat.com/privacy"} Hipchat's privacy policy
+          discusses what information they collect, and how they protect our data and yours.
+
+
 
     #changelog#privacy-changelog
       %h3 Change log:
       %ul
+        %li
+          %b Mar 10, 2013:
+          Discuss Hipchat usage.
         %li
           %b Dec 22, 2012:
           Include KissMetrics and their privacy policy. Expand Intercom discussion.

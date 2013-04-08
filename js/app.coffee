@@ -13,6 +13,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
+    @from_heroku = ko.observable(window.renderContext.from_heroku)
 
     # inner
     @build = ko.observable()
@@ -27,12 +28,12 @@ class CircleViewModel extends CI.inner.Obj
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
     @selected = ko.observable({}) # Tracks what the dashboard is showing
-
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
+
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -45,13 +46,15 @@ class CircleViewModel extends CI.inner.Obj
           path[1]
 
     # outer
-    @home = new CI.outer.Home("home", "Continuous Integration made easy")
+    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
-    @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
-    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
+
+    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
+
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
@@ -374,8 +377,12 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/docs(.*)", (cx) => VM.docs.display(cx)
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
-    @get "^/technologies.*", (cx) => VM.technologies.display(cx)
+    @get "^/jobs.*", (cx) => VM.jobs.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
+
+    @post "^/heroku/resources", -> true
+
+    @get '^/api/.*', (cx) => false
 
     @get '^(.*)', (cx) => VM.error.display(cx)
 

@@ -9,6 +9,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     latest_build: null
     hipchat_room: null
     hipchat_api_token: null
+    hipchat_notify: false
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
@@ -232,6 +233,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       data: JSON.stringify
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
+        hipchat_notify: @hipchat_notify()
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()

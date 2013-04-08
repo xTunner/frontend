@@ -53,36 +53,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @wizardCompleted = @komp =>
       @wizardStep() > 3
 
-    # Make sure @parallelism remains a number
-    @editParallelism = @komp
-      read: ->
-        @parallelism()
-      write: (val) ->
-        if val? then @parallelism(parseInt(val))
-      owner: @
+  parallelism_option_text: (p) =>
+    "#{p}-way ($#{@parallelism_cost(@chosenPlan(), p)})"
 
-    @editConcurrency = @komp
-      read: ->
-        @concurrency()
-      write: (val) ->
-        if val? then @concurrency(parseInt(val))
-      owner: @
-
-  parallelism_option_text: (plan, p) =>
-    "#{p}-way ($#{@parallelism_cost(plan, p)})"
-
-  concurrency_option_text: (plan, c) =>
-    "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(plan, c)})"
-
-  raw_parallelism_cost: (p) ->
-    if p == 1
-      0
-    else
-      Math.round(CI.math.log2(p) * 99)
+  concurrency_option_text: (c) =>
+    "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(@chosenPlan(), c)})"
 
   parallelism_cost: (plan, p) =>
     Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
-    #Math.max(0, @raw_parallelism_cost(p) - @raw_parallelism_cost(plan.min_parallelism))
 
   # p2 > p1
   parallelism_cost_difference: (plan, p1, p2) =>

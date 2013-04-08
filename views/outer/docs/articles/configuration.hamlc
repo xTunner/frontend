@@ -191,16 +191,15 @@
 
     %p
       Although override does nothing, the standard pre and post sections are supported.
-      For example, installing <code>elasticsearch</code>:
+      For example, installing <code>phantomjs</code>:
 
     %pre
       %code.no-highlight<>
         :preserve
           machine:
             pre:
-              - curl -k -L -o elasticsearch-0.19.0.tar.gz http://github.com/downloads/elasticsearch/elasticsearch/elasticsearch-0.19.0.tar.gz
-              - tar -zxvf elasticsearch-0.19.0.tar.gz
-              - ./elasticsearch-0.19.0/bin/elasticsearch || [ $? -eq 1 ]
+              - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
+              - tar -jxvf phantomjs.tar.bz2
 
     %h3#timezone
       Timezone
@@ -350,6 +349,44 @@
         %li
           %code openjdk6
 
+    %h3#php-version
+      PHP version
+
+    %p
+      Choose the version of PHP used for your tests, for example:
+
+    %pre
+      %code.no-highlight<>
+        :preserve
+          machine:
+            php:
+              version: 5.4.5
+
+    %p
+      The allowed versions are:
+      - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
+      .row
+        - cols = 4
+        - per_col = (Math.ceil(php_versions.length / 4.0))
+        - for i in [0..cols]
+          .span2
+            %ul
+              - for v in php_versions[(i*per_col)...((i+1)*per_col)]
+                %li
+                  %code
+                    = v
+
+    %p
+      Circle uses
+      %a{href: "https://github.com/CHH/php-build"} php-build
+      and
+      %a{href: "https://github.com/CHH/phpenv"} phpenv
+      to manage PHP versions.
+    %p
+      Are you using a version of PHP that isn't included above?
+      = HAML['contact_us']()
+
+
     = HAML['heading']({title: "Checking out your code from GitHub", hash: "checkout"})
 
     %p
@@ -441,11 +478,8 @@
         :preserves
           dependencies:
             cache_directories:
-              - "custom_1"
-              - "custom_2"
-
-    %p
-      Note that cache directories are relative to the checkout dir, and absolute paths do not work.
+              - "custom_1"   # relative to the build directory
+              - "~/custom_2" # relative to the user's home directory
 
     = HAML['heading']({title: "Database setup", hash: "database"})
 
@@ -553,7 +587,6 @@
       Visit
       %code https://circleci.com/api/v1/project/:username/:projectname/:build
       to see an example.
-      (Note: this API is unstable and is changing very soon).
 
     = HAML['heading']({title: "Deployment", hash: "deployment"})
 

@@ -1,5 +1,5 @@
 #topbar
-  .navbar.navbar-fixed-top
+  .navbar
     .navbar-inner
       %a.brand{href: "/"}
 
@@ -23,10 +23,9 @@
               %a{href: '/account'}
                 Settings
 
-            %li
-              %a#logout-link{href: '/logout'}
+            %li{ data-bind: "ifnot: VM.from_heroku" }
+              %a#logout-link{ href: '/logout'}
                 Logout
-
 
             %li.divider
             %li

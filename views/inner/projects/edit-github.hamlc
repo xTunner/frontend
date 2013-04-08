@@ -23,3 +23,5 @@
                           data-bind: "click: clear_github_user",
                           data-loading-text: "Saving...",
                           data-success-text: "Saved"}
+
+%p Note: You should not delete the project's deploy key from Github. We will still use the project key to do an initial checkout that we use to configure the build.

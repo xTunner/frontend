@@ -4,7 +4,7 @@
       = @project
   %li
     %a{href: "/gh/#{@project}/edit"}
-      Edit
+      Edit settings
   %li.active
     %a{href: "/gh/#{@project}/#{@build_num}"}
       = @build_num

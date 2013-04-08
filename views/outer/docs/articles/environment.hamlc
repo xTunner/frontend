@@ -181,19 +181,25 @@
         %li
           %code 1.9.3-p327
         %li
+          %code 1.9.3-p327-falcon
+        %li
           %code 1.9.3-p362
         %li
           %code 1.9.3-p374
         %li
           %code 1.9.3-p385
         %li
-          %code 1.9.3-p327-falcon
+          %code 1.9.3-p392
+        %li
+          %code 2.0.0-p0
         %li
           %code jruby-1.6.5
         %li
           %code jruby-1.6.6
         %li
           %code jruby-1.7.0
+        %li
+          %code jruby-1.7.3
 
     %p
       By default we use
@@ -331,7 +337,7 @@
       %li
         %code g++ 4.6.3-1ubuntu5
       %li
-        %code go r60.1-1
+        %code golang go1
       %li
         %code erlang r14b02
 
@@ -356,7 +362,7 @@
       %li
         %code riak 1.0.3
       %li
-        %code cassandra 1.1.5
+        %code cassandra 1.2.2
       %li
         %code redis 2.4.16
       %li
@@ -413,3 +419,5 @@
         %code beanstalkd
       %li
         %code couchbase-server
+      %li
+        %code neo4j

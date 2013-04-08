@@ -1,7 +1,7 @@
 %h2 Select organizations
 
 %p
-  We'll use your plan to test any followed repositories in the following organizations:
+  We'll use your plan to test any followed repositories (including private forks) in the following organizations:
 
 %div{data-bind: "if: loadingOrganizations"}
   Loading organization list...
@@ -9,7 +9,7 @@
 %div{data-bind: "ifnot: loadingOrganizations"}
   %form
 
-    %label Tested organizations:
+    %label Organizations:
     %div.controls{data-bind: "foreach: organizations"}
       %label.checkbox
         %input{type: "checkbox", data-bind: "checked: enabled"}
@@ -23,4 +23,4 @@
                                        type: "submit",
                                        data-loading-text: "Saving...",
                                        data-success-text: "Saved"}
-            Run tests for these organizations
+            Pay for these organizations
