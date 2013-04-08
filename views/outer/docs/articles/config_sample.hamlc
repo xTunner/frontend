@@ -81,8 +81,8 @@
             post:
               - bundle exec rake jasmine:ci: # add an extra test type
                   environment:
-                    RAILS_ENV=test
-                    RACK_ENV=test
+                    RAILS_ENV: test
+                    RACK_ENV: test
 
 
           ## Custom notifications
