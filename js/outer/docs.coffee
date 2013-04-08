@@ -52,10 +52,10 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         # extract the metadata, which is actually in the file, writing into the context
         context = {}
         node = $(window.HAML[slug](context))
-        if context.parents
-          @articles[slug] = @article_info(slug, node, context)
         if context.category
           @categories[slug] = @category_info(slug, node, context)
+        else if context.title
+          @articles[slug] = @article_info(slug, node, context)
       catch error
         console.log "error generating #{slug}: #{error}"
         ## meaning: can't be rendered without more context. Should never be true of docs!
@@ -75,19 +75,19 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   article_info: (slug, node, context) =>
     uriFragment = slug.replace(/_/g, '-')
-    title = node.find('.title > h1').text().trim()
     result =
       url: "/docs/#{uriFragment}"
       slug: slug
-      title: title
+      title: context.title or null
       parents: context.parents or []
-      subtitle: node.find('.title > h4').text().trim()
-      lastupdated: node.find('.title > .lastupdated').text().trim()
-      icon: node.find('.title > i').attr('class')
+      subtitle: context.subtitle or null
+      lastUpdated: context.lastUpdated or null
+      icon: context.icon or null
+
     #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
     console.warn "#{uriFragment} must have an icon" unless result.icon
     console.warn "#{uriFragment} must have a title" unless result.title
-    console.warn "#{uriFragment} must have a lastupdated" unless result.lastupdated
+    console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
     result
 
   category_info: (slug, node, context) =>
@@ -102,10 +102,12 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       title
 
   viewContext: (cx) =>
-    categories: @categories
-    articles: @articles
-    tags: @tags
-    pagename: @filename cx
+    result =
+      categories: @categories
+      articles: @articles
+      tags: @tags
+      pagename: @filename cx
+    $.extend result, @articles[@filename cx]
 
   title: (cx) =>
     try
@@ -120,6 +122,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         return cx.redirect "/docs" + rewrite
 
       super cx
+
     catch e
       # TODO: go to 404 page
       return cx.redirect "/docs"

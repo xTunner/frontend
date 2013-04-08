@@ -1,47 +1,46 @@
-%article
-  - @parents = [ "troubleshooting" ]
-  -# add these as tags, once tags actually start to mean "tags":
-  -# "browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11"
+- @parents = [ "troubleshooting" ]
+- @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
+- @icon = "icon-globe"
+- @title = 'Browser Debugging'
+- @lastUpdated = "Feb 18, 2013"
+- @subtitle = "How to remotely debug your integration tests"
 
-  = HAML['article_title']({icon: "icon-globe", title: 'Browser Debugging', lastUpdated: "Feb 18, 2013", subtitle: "How to remotely debug your integration tests"})
+%p
+  Integration tests can be hard to debug, especially when they're running on a remote machine. Circle supports X11 forwarding over SSH to make this process much easier.
 
-  .doc
-    %p
-      Integration tests can be hard to debug, especially when they're running on a remote machine. Circle supports X11 forwarding over SSH to make this process much easier.
+%h2 How to interact with the browser running your tests
 
-    %h2 How to interact with the browser running your tests
+%p
+  Before you start, make sure you have an X Window System on your computer. If you're using a mac, I recommend
+  %a{href: 'http://xquartz.macosforge.org/landing/'}XQuartz.
+%p
+  %a{href: '/docs/ssh-build'} Start an SSH build.
 
-    %p
-      Before you start, make sure you have an X Window System on your computer. If you're using a mac, I recommend
-      %a{href: 'http://xquartz.macosforge.org/landing/'}XQuartz.
-    %p
-      %a{href: '/docs/ssh-build'} Start an SSH build.
+  When you ssh into the build machine, pass the -X flag
 
-      When you ssh into the build machine, pass the -X flag
+  %p
+    %code daniel@mymac$ ssh -X -p PORT ubuntu@IP_ADDRESS
 
-      %p
-        %code daniel@mymac$ ssh -X -p PORT ubuntu@IP_ADDRESS
+  This will start an SSH session with X11 forwarding enabled.
 
-      This will start an SSH session with X11 forwarding enabled.
+%br
 
-    %br
+%p
+  Set the display environment variable to localhost:10.0
+  %p
+    %code ubuntu@box10$ export DISPLAY=localhost:10.0
 
-    %p
-      Set the display environment variable to localhost:10.0
-      %p
-        %code ubuntu@box10$ export DISPLAY=localhost:10.0
+%br
 
-    %br
+%p
+  Check that everything is working by starting xclock
 
-    %p
-      Check that everything is working by starting xclock
+  %p
+    %code ubuntu@box10$ xclock
 
-      %p
-        %code ubuntu@box10$ xclock
+%p
+  You can kill xclock with Ctrl+c after it appears on your desktop.
 
-    %p
-      You can kill xclock with Ctrl+c after it appears on your desktop.
-
-    %br
-    %p
-      Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!
+%br
+%p
+  Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!

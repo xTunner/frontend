@@ -1,7 +1,7 @@
-%article
-  - @parents = [ "troubleshooting" ]
+- @parents = [ "troubleshooting" ]
+- @title = "Time and Date Problems"
+- @subtitle = ""
+- @icon = "icon-time"
+- @lastUpdated = "Feb 2, 2013"
 
-  = HAML['article_title']({title: "Time and Date Problems", subtitle: "", icon: "icon-time", lastUpdated: "Feb 2, 2013"})
-
-  .doc
-    = HAML['article_list'](@)
+= HAML['article_list'](@)

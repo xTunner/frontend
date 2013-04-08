@@ -1,26 +1,26 @@
-%article
-  - @article_tags = [ "how_to" ]
+- @parents = [ "how_to" ]
+- @icon = "icon-book"
+- @title = 'Test Android Applications'
+- @lastUpdated = "March 22, 2013"
+- @subtitle = ""
 
-  = HAML['article_title']({icon: "icon-book", title: 'Test Android Applications', lastUpdated: "March 22, 2013", subtitle: ""})
+= HAML['heading']({title: "Overview", hash: "overview"})
 
-  .doc
-    = HAML['heading']({title: "Overview", hash: "overview"})
+%p
+  CircleCI support testing Android applications. The SDK is
+  already installed on the VM at
 
-    %p
-      CircleCI support testing Android applications. The SDK is
-      already installed on the VM at
+  %code
+    \/usr\/local\/android-sdk-linux
 
-      %code
-        \/usr\/local\/android-sdk-linux
+%p
+  To save space, we don't download
+  every android version, so you'll need to specify the versions
+  you use:
 
-    %p
-      To save space, we don't download
-      every android version, so you'll need to specify the versions
-      you use:
-
-    %pre
-      %code.no-highlight<>
-        :preserve
-          dependencies:
-            pre:
-              \- android update sdk --no-ui --filter "android-16"
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        pre:
+          \- android update sdk --no-ui --filter "android-16"

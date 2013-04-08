@@ -8,6 +8,6 @@
           = HAML[rootCategory]()
         %hr
         %ul.expand
-          - for a in @tags[category.slug]
+          - for a in @tags[category.slug] or []
             %li
               %a{ href: "#{a.url}" } = a.title_with_child_count

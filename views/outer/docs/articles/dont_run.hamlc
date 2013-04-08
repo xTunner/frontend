@@ -1,18 +1,18 @@
-%article
-  - @parents = ['how_to']
+- @parents = ['how_to']
+- @title = "Skip code which should not run on your CI server"
+- @icon = "icon-minus-sign"
+- @subtitle = "From the 'use this wisely' department"
+- @lastUpdated = "Feb 2, 2013"
 
-  = HAML['article_title']({title: "Skip code which should not run on your CI server", icon: "icon-minus-sign", subtitle: "From the 'use this wisely' department", lastUpdated: "Feb 2, 2013"})
+%p
+  If there is code which should not be run on your CI server, you can wrap it in a conditional statement in your code base.
+  Circle has set the
+  %code CI
+  environmental variable, which can be used from within your application.
 
-  .doc
-    %p
-      If there is code which should not be run on your CI server, you can wrap it in a conditional statement in your code base.
-      Circle has set the
-      %code CI
-      environmental variable, which can be used from within your application.
-
-    %pre
-      %code.ruby<>
-        :preserve
-          if !ENV['CI']
-            Debugger.initialize!
-          end
+%pre
+  %code.ruby<>
+    :preserve
+      if !ENV['CI']
+        Debugger.initialize!
+      end

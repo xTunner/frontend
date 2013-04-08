@@ -1,17 +1,16 @@
-%article
-  - @parents = ['github_privacy']
+- @parents = ['github_privacy']
+- @title = "Circle requires Admin permissions"
+- @icon = "icon-key"
+- @lastUpdated = "Feb 3, 2013"
 
-  = HAML['article_title']({title: "Circle requires Admin permissions", icon: "icon-key", lastUpdated: "Feb 3, 2013"})
+%p
+  On the Manage Projects screen, Circle won't allow you to add a
+  project, because it requires admin permissions.
 
-  .doc
-    %p
-      On the Manage Projects screen, Circle won't allow you to add a
-      project, because it requires admin permissions.
-
-    %p
-      The reason for this is GitHub requires admin permissions to add
-      an SSH key to the project, which Circle requires to checkout
-      code, and to add a webhook, so GitHub tells us each time you
-      commit new code. If you are not admin on a project you would
-      like to follow, you should have an admin follow the project
-      first, then you will be able to follow it.
+%p
+  The reason for this is GitHub requires admin permissions to add
+  an SSH key to the project, which Circle requires to checkout
+  code, and to add a webhook, so GitHub tells us each time you
+  commit new code. If you are not admin on a project you would
+  like to follow, you should have an admin follow the project
+  first, then you will be able to follow it.

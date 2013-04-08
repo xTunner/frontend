@@ -1,7 +1,7 @@
-%article
-  - @parents = ['privacy_security']
+- @parents = ['privacy_security']
+- @title = "Github Integration"
+- @subtitle = ""
+- @icon = "icon-key"
+- @lastUpdated = "Feb 2, 2013"
 
-  = HAML['article_title']({title: "Github Integration", subtitle: "", icon: "icon-key", lastUpdated: "Feb 2, 2013"})
-
-  .doc
-    = HAML['article_list'](@)
+= HAML['article_list'](@)

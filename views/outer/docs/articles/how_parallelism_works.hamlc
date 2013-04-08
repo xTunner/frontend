@@ -1,22 +1,22 @@
-%article
-  - @parents = ['parallelism']
+- @parents = ['parallelism']
+- @title = "Does parallelism really work?"
+- @icon = "icon-cogs"
+- @lastUpdated = "Feb 2, 2013"
+- @subtitle = "Basically, yes"
 
-  = HAML['article_title']({title: "Does parallelism really work?", icon: "icon-cogs", lastUpdated: "Feb 2, 2013", subtitle: "Basically, yes"})
+%p
+  If you've ever tried a parallel testing solution, you've probably had a bad experience.
+  Most attempt to run multiple tests within the same language runtime, or within multiple processes on the same system.
 
-  .doc
-    %p
-      If you've ever tried a parallel testing solution, you've probably had a bad experience.
-      Most attempt to run multiple tests within the same language runtime, or within multiple processes on the same system.
+%p
+  Circle doesn't do that.
+  We split your tests up and run them on completely different machines, which share no memory, processes or databases.
+  This fixes the vast majority of the problems that people experience with parallel testing.
 
-    %p
-      Circle doesn't do that.
-      We split your tests up and run them on completely different machines, which share no memory, processes or databases.
-      This fixes the vast majority of the problems that people experience with parallel testing.
-
-    %p
-      Parallelism works if tests do not share any state.
-      Occasionally tests share state by accident, for example through
-      %a{href: "/docs/file-ordering"}
-        file-ordering bugs
-      or by using the same remote 3rd-party APIs.
-      Fortunately, both problems are relatively easy to solve.
+%p
+  Parallelism works if tests do not share any state.
+  Occasionally tests share state by accident, for example through
+  %a{href: "/docs/file-ordering"}
+    file-ordering bugs
+  or by using the same remote 3rd-party APIs.
+  Fortunately, both problems are relatively easy to solve.
