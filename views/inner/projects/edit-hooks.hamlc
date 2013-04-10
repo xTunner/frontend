@@ -66,6 +66,23 @@
       .help-block
         To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
 
+  %legend Add IRC
+
+  .control-group
+    %label.control-label{for: "irc_server"} Server
+    .controls
+      %input.span4#irc_server{ type: "text", data-bind: "value: irc_server" }
+      .help-block
+        HOSTNAME or HOSTNAME:PORT (e.g. 'irc.freenode.net' or 'irc.freenode.net:6667')
+
+  .control-group
+    %label.control-label{for: "irc_channel"} Channel
+    .controls
+      %input.span4#irc_channel{ type: "text", data-bind: "value: irc_channel" }
+      .help-inline
+      (e.g. #clojure)
+
+
 
   .form-actions
     %input.btn.btn-primary.span5.btn-large{data-bind: "click: save_hooks",
