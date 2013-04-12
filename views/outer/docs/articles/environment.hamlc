@@ -95,7 +95,7 @@
       This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
       You do not need to anything to set this up.
       We have
-      %code phantomjs 1.8.1
+      %code phantomjs 1.9.0
       and
       %code libwebkit (2.2.1-1ubuntu4)
       pre-installed,
@@ -362,7 +362,7 @@
       %li
         %code mysql 5.5.29
       %li
-        %code mongodb 2.2.3
+        %code mongodb 2.4.1
       %li
         %code riak 1.2.1
       %li
@@ -376,7 +376,7 @@
       %li
         %code elasticsearch 0.19.11
       %li
-        %code solr 4.1.0
+        %code solr 4.2.1
       %li
         %code beanstalkd 1.4.6
       %li
