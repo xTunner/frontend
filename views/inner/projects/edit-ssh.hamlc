@@ -4,7 +4,7 @@
   %p
     Add keys to the build VMs that you need to deploy to your machines.
   %p
-    If the hosname field is blank, the key will be used for all hosts.
+    If the hostname field is blank, the key will be used for all hosts.
 
 %table.well.table.table-condensed
   %thead
