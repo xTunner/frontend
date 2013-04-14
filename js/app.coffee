@@ -25,6 +25,7 @@ class CircleViewModel extends CI.inner.Obj
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
+    @build_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
     @selected = ko.observable({}) # Tracks what the dashboard is showing
@@ -171,10 +172,12 @@ class CircleViewModel extends CI.inner.Obj
 
 
   loadBuild: (cx, username, project, build_num) =>
+    @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
+      @build_has_been_loaded(true)
       @build().maybeSubscribe()
     display "build", {project: project_name, build_num: build_num}
 
