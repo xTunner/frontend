@@ -1,9 +1,6 @@
 .article_list
-  %h4
-    Related Articles
-  %hr
   %ul
     - if @pagename? and @tags? # ignoring first pass
       - for article in @tags[@pagename]
         %li
-          %a{ href: "#{article.url}" } = article.title
+          %a{ href: "#{article.url}" } = article.title_with_child_count
