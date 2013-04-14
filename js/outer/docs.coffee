@@ -55,23 +55,24 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         node = $(window.HAML[slug](context))
         if context.category
           @categories[slug] = @category_info(slug, node, context)
+          @articles[slug] = @article_info(slug, node, context)
+          @categories[slug].article = @articles[slug]
+          console.log "adding #{slug} to categories"
         else if context.title
           @articles[slug] = @article_info(slug, node, context)
       catch error
         console.log "error generating #{slug}: #{error}"
         ## meaning: can't be rendered without more context. Should never be true of docs!
 
-    # iterate through the articles, and update the categories
+    # iterate through the articles, and update the hierarchy
     for _, a of @articles
       for t in a.parents
         @tags[t] or= []
         @tags[t].push a
 
 
-    for _, c of @categories
-      c.title_with_child_count = @title_with_child_count(c.title, @tags[c.slug]?.length)
-    for _, a of @articles
-      a.title_with_child_count = @title_with_child_count(a.title, @tags[a.slug]?.length)
+    for _, i of $.extend({}, @categories, @articles)
+      i.title_with_child_count = @title_with_child_count(i.title, @tags[i.slug]?.length)
 
 
   article_info: (slug, node, context) =>
@@ -84,16 +85,18 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       subtitle: context.subtitle or null
       lastUpdated: context.lastUpdated or null
       icon: context.icon or null
+      category: context.category or null
 
-    #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
-    console.warn "#{uriFragment} must have an icon" unless result.icon
-    console.warn "#{uriFragment} must have a title" unless result.title
-    console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
+    unless result.category
+      #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
+      console.warn "#{uriFragment} must have an icon" unless result.icon
+      console.warn "#{uriFragment} must have a title" unless result.title
+      console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
     result
 
   category_info: (slug, node, context) =>
     result =
-      category: context['category']
+      category: context.category
       slug: slug
 
   title_with_child_count: (title, count) ->
@@ -108,7 +111,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       articles: @articles
       tags: @tags
       pagename: @filename cx
-    $.extend result, @articles[@filename cx]
+    result = $.extend result, @articles[@filename cx]
+    result
 
   title: (cx) =>
     try

@@ -1,3 +1,2 @@
 - @category = "parallelism"
-.category
-  Parallelism
+- @title = "Parallelism"

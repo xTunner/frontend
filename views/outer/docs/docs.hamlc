@@ -2,7 +2,6 @@
   %h1
     %a{href: "/docs"} Documentation
 
-- console.log @
 #content
   %section.article
     = HAML['categories']({categories: @categories, page: @pagename, tags: @tags})
@@ -19,4 +18,7 @@
         %hr
 
       .doc
-        = HAML[@pagename](@)
+        - if @category
+          = HAML['article_list'](@)
+        - else
+          = HAML[@pagename](@)
