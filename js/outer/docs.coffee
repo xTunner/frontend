@@ -110,9 +110,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       categories: @categories
       articles: @articles
       tags: @tags
-      pagename: @filename cx
-    result = $.extend result, @articles[@filename cx]
-    result
+      slug: @filename cx
+      article: @articles[@filename cx]
 
   title: (cx) =>
     try

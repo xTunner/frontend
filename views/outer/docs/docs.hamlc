@@ -4,21 +4,21 @@
 
 #content
   %section.article
-    = HAML['categories']({categories: @categories, page: @pagename, tags: @tags})
+    = HAML['categories']({categories: @categories, tags: @tags})
     %article
       .title
-        %h1= @title
-        %i{class: @icon}
-        - if @lastUpdated
+        %h1= @article.title
+        %i{class: @article.icon}
+        - if @article.lastUpdated
           %p.lastupdated
             Last Updated:
-            = @lastUpdated
-        - if @subtitle
-          %h4= @subtitle
+            = @article.lastUpdated
+        - if @article.subtitle
+          %h4= @article.subtitle
         %hr
 
       .doc
-        - if @category
+        - if @article.category
           = HAML['article_list'](@)
         - else
-          = HAML[@pagename](@)
+          = HAML[@article.slug](@)

@@ -1,6 +1,6 @@
 .article_list
   %ul
-    - if @pagename? and @tags? # ignoring first pass
-      - for article in @tags[@pagename]
+    - if @slug? and @tags? # ignoring first pass
+      - for article in @tags[@slug]
         %li
           %a{ href: "#{article.url}" } = article.title_with_child_count
