@@ -27,6 +27,8 @@ class CircleViewModel extends CI.inner.Obj
     @projects_have_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
+    @dashboard_ready = @komp =>
+      @projects_have_been_loaded() and @recent_builds_have_been_loaded()
     @selected = ko.observable({}) # Tracks what the dashboard is showing
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
