@@ -24,6 +24,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       when "/common-problems#bundler-latest" then "/bundler-latest"
       when "/common-problems#capybara-timeout" then "/capybara-timeout"
       when "/common-problems#clojure-12" then "/clojure-12"
+      when "/common-problems" then "/troubleshooting"
 
       when "/faq" then ""
       when "/faq#permissions" then "/permissions"
