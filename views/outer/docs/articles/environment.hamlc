@@ -1,433 +1,432 @@
-%article
-  - @article_tags = [ "reference" ]
-
-  = HAML['article_title']({icon: "icon-globe", title: 'Test Environment', lastUpdated: "Aug 1, 2012", subtitle: "How we set up our test boxes"})
-
-  .doc
-
-    %p
-      Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
-      In the future, we plan to allow as much of this to be configurable as possible.
-      Please
-      = HAML['contact_us']()
-      if some part of our environment is not suitable for you, and we will try to come up with a workaround.
-
-    %p
-      If any version is not listed here, SSH into our build boxes to check it manually (and
-      = HAML['contact_us']()
-      so we can update this doc.
-
-
-    %h1.section
-      %a#linux Base
-    %hr
-
-    %p
-      Our base image uses Ubuntu 12.04, with the addition of many packages
-      commonly used in web development.
-      Some specifics:
-
-    %ul
-      %li
-        %code Architecture: x86_64
-      %li
-        %code Username: ubuntu
-      %li
-        %code Ubuntu 12.04 (precise)
-      %li
-        %code Kernel version: 3.2
-      %li
-        %code git 1.7.9.5
-      %li
-        %code gcc 4.6.3-1ubuntu5
-      %li
-        %code g++ 4.6.3-1ubuntu5
-      %li
-        %code GNU make 3.81
-
-
-    %h1.section
-      %a#env-vars Environmental Variables
-    %hr
-
-    %p
-      See
-      %a{ href: "/docs/environment-variables" } this doc
-      for a thorough list of all available environment variables. Here are some of the most
-      useful ones:
-
-      %dl
-        %dt
-          %code CIRCLECI=true
-        %dt
-          %code CI=true
-        %dt
-          %code DISPLAY=:99
-        %dt
-          %code CIRCLE_BRANCH
-        %dd
-          The name of the branch being tested, such as 'master'
-        %dt
-          %code CIRCLE_SHA1
-        %dd
-          The SHA1 of the commit being tested
-        %dt
-          %code CIRCLE_BUILD_NUM
-        %dd
-          The build number, same as in circleci.com/gh/foo/bar/123
-
-    %p
-      You can use the
-      %code CI
-      and
-      %code CIRCLECI
-      environmental variables in your program, if you need to have CI-specific behavior in you application.
-      Naturally, this is not recommended in principle, but it can occasionally be useful in practice.
-
-    %h1.section
-      %a#browsers Browsers and GUIs
-    %hr
-
-    %p
-      Circle runs graphical programs in a virtual framebuffer, using
-      = succeed '.', ->
-        xvfb
-      This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
-      You do not need to anything to set this up.
-      We have
-      %code phantomjs 1.9.0
-      and
-      %code libwebkit (2.2.1-1ubuntu4)
-      pre-installed,
-      for Capybara and other headless browser interfaces.
-
-
-    %p
-      Xvfb runs on port 99, and the appropriate
-      %code DISPLAY
-      environmental variable has already been set.
-
-    %p
-      Selenium-based tests are able to use Chrome stable channel (Chrome 26.0 as of Apr 12, 2013), and Firefox 20.
-
-    %p
-      %span.label.label-info Help
-      %a{href: '/docs/browser-debugging'}Check out our browser debugging docs.
-
-
-    %h1.section
-      %a#languages Languages
-    %hr
-
-    %h3#ruby Ruby
-
-    %p
-      We use RVM to give you access to a wide variety of Ruby versions.
-      You can
-      %a{ href: "/docs/configuration#ruby-version" }
-        choose the exact version you need
-      directly, from the following list:
-
-      %ul
-        %li
-          %code 1.8.7-p302
-        %li
-          %code 1.8.7-p334
-        %li
-          %code 1.8.7-p352
-        %li
-          %code 1.8.7-p357
-        %li
-          %code 1.8.7-p358
-        %li
-          %code 1.8.7-p370
-        %li
-          %code 1.8.7-p371
-        %li
-          %code ree-1.8.7-2011.02
-        %li
-          %code ree-1.8.7-2011.03
-        %li
-          %code ree-1.8.7-2011.12
-        %li
-          %code ree-1.8.7-2012.02
-        %li
-          %code 1.9.2-p0
-          (should be avoided due to security problems)
-        %li
-          %code 1.9.2-p136
-        %li
-          %code 1.9.2-p180
-        %li
-          %code 1.9.2-p290
-        %li
-          %code 1.9.2-p320
-        %li
-          %code 1.9.3-p0-falcon
-        %li
-          %code 1.9.3-p0
-        %li
-          %code 1.9.3-p125
-        %li
-          %code 1.9.3-p125-perf
-        %li
-          %code 1.9.3-p194
-        %li
-          %code 1.9.3-p194-perf
-        %li
-          %code 1.9.3-p194-falcon
-        %li
-          %code 1.9.3-p286
-        %li
-          %code 1.9.3-p327
-        %li
-          %code 1.9.3-p327-falcon
-        %li
-          %code 1.9.3-p362
-        %li
-          %code 1.9.3-p374
-        %li
-          %code 1.9.3-p385
-        %li
-          %code 1.9.3-p392
-        %li
-          %code 2.0.0-p0
-        %li
-          %code jruby-1.6.5
-        %li
-          %code jruby-1.6.6
-        %li
-          %code jruby-1.7.0
-        %li
-          %code jruby-1.7.3
-
-    %p
-      By default we use
-      %code Ruby 1.9.3-p194
-      unless we detect that you need Ruby 1.8.7, in which case we'll use
-      %code Ruby 1.8.7-p358.
-      This is installed via
-      RVM (stable).
-
-    %p
-      We also have a number of Ruby commands pre-installed if you need to use them directly. They are installed using RVM 1.9.3-p194.
-
-    %ul
-      %li
-        %code bundler 1.3.2
-      %li
-        %code cucumber 1.2.0
-      %li
-        %code rspec 2.13
-      %li
-        %code rake 10.0.3
-
-
-
-
-
-
-
-    %h3#nodejs node.js
-    %p
-      We use NVM to provide access to a wide range of node versions.  Currently we have
-    %ul
-      %li
-        %code 0.6.18
-      %li
-        %code 0.8.2
-      %li
-        %code 0.8.12
-
-    %p
-      Please
-      = HAML['contact_us']()
-      if other versions of node.js would be useful to you.
-
-
-
-
-    %h3#clojure Clojure
-    %p
-      We use
-      %code lein 2.0.0
-      by default, and you can also use
-      = succeed ",", ->
-        %code lein16
-      which is version
-      = succeed ".", ->
-        1.6.1.1
-
-    %p
-      You should specify your Clojure version in your
-      %code project.clj
-      file.
-
-
-
-    %h3#python Python
-    %p
-      We use
-      = succeed ",", ->
-        %code python 2.7.3
-      and packages can be installed using
-      %code pip 1.0
-      and
-      = succeed ".", ->
-        %code virtualenv 1.7.1.2
-
-    %p
-      Please
-      = HAML['contact_us']()
-      if other versions of Python would be useful to you.
-
-
-
-
-    %h3#php PHP
-    %p
-      We use
-      = succeed ",", ->
-        %code php 5.3.10-1ubuntu3.5
-      by default, although you can
-      = succeed '.', ->
-        %a{href: "https://circleci.com/docs/configuration#php-version"} control the version in your circle.yml file
-      Packages can be installed using
-      %code pear
-      and
-      = succeed ".", ->
-        %code pecl
-
-    %p
-      Please
-      = HAML['contact_us']()
-      if other PHP versions would be useful to you, or if you need
-      %code composer
-      support.
-
-
-
-    %h3#java Java (and JVM based languages)
-    %p
-      We have Java installed, along with ant and maven.
-    %ul
-      %li
-        %code oracle JDK 7, using Java 1.7.0_15.
-      %li
-        %code ant 1.8.2
-      %li
-        %code maven 3.0.4
-
-    %p
-      Open JDK 6 and 7 are also available, through the circle.yml file.
-
-    %p
-      Other JVM-based languages should also work.
-      Circle has
-      = succeed ",", ->
-        %a{href: "#clojure"} special support for Clojure
-      please
-      = HAML['contact_us']()
-      let us know if you need anything else installed to run your JVM language of choice.
-
-
-
-    %h3#other Other languages
-    %p
-      We currently have a number of packages installed to help you test your backend applications, including:
-    %ul
-      %li
-        %code gcc 4.6.3-1ubuntu5
-      %li
-        %code g++ 4.6.3-1ubuntu5
-      %li
-        %code golang go1
-      %li
-        %code erlang r14b04
-
-
-
-    %h1.section
-      %a#databases Databases and Services
-    %hr
-
-    %p
-      We have the following services automatically set up for your tests:
-
-    %ul
-      %li
-        %code postgresql 9.1.8
-        (including postgis 2.0 extensions)
-
-      %li
-        %code mysql 5.5.29
-      %li
-        %code mongodb 2.4.1
-      %li
-        %code riak 1.2.1
-      %li
-        %code cassandra 1.2.2
-      %li
-        %code redis 2.6.10
-      %li
-        %code memcache 1.4.13-0ubuntu2
-      %li
-        %code sphinx 2.0.4-release
-      %li
-        %code elasticsearch 0.19.11
-      %li
-        %code solr 4.2.1
-      %li
-        %code beanstalkd 1.4.6
-      %li
-        %code couchbase 2.0.0
-      %li
-        %code couchdb 1.2.1
-      %li
-        %code neo4j 1.8.2
-      %li
-        %code rabbitmq 3.0.3
-
-    %p
-      Both
-      %code postgres
-      and
-      %code mysql
-      are set up to use the
-      %code ubuntu
-      user, have a database called
-      %code circle_test
-      available, and don't require any password.
-      The other databases should not need any specific username or password, and should just work.
-
-    %p
-      Several services are disabled by default because they're not
-      commonly used, or because of memory requirements. We try to
-      detect and enable them automatically, but in case
-      we fail (or don't have inference in your language), you can
-      enable them by adding to your circle.yml:
-
-    %pre
-      %code.no-highlight<>
-        :preserve
-          machine:
-            services:
-              \- cassandra
-
-    %p The list of services that can be enabled this way is
-
-    %ul
-      %li
-        %code cassandra
-      %li
-        %code elasticsearch
-      %li
-        %code rabbitmq-server
-      %li
-        %code riak
-      %li
-        %code beanstalkd
-      %li
-        %code couchbase-server
-      %li
-        %code neo4j
+- @parents = [ "reference" ]
+- @icon = "icon-globe"
+- @title = 'Test Environment'
+- @lastUpdated = "Apr 13, 2013"
+- @subtitle = "How we set up our test boxes"
+
+%p
+  Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
+  In the future, we plan to allow as much of this to be configurable as possible.
+  Please
+  = HAML['contact_us']()
+  if some part of our environment is not suitable for you, and we will try to come up with a workaround.
+
+%p
+  If any version is not listed here, SSH into our build boxes to check it manually (and
+  = HAML['contact_us']()
+  so we can update this doc.
+
+
+%h1.section
+  %a#linux Base
+%hr
+
+%p
+  Our base image uses Ubuntu 12.04, with the addition of many packages
+  commonly used in web development.
+  Some specifics:
+
+%ul
+  %li
+    %code Architecture: x86_64
+  %li
+    %code Username: ubuntu
+  %li
+    %code Ubuntu 12.04 (precise)
+  %li
+    %code Kernel version: 3.2
+  %li
+    %code git 1.7.9.5
+  %li
+    %code gcc 4.6.3-1ubuntu5
+  %li
+    %code g++ 4.6.3-1ubuntu5
+  %li
+    %code GNU make 3.81
+
+
+%h1.section
+  %a#env-vars Environmental Variables
+%hr
+
+%p
+  See
+  %a{ href: "/docs/environment-variables" } this doc
+  for a thorough list of all available environment variables. Here are some of the most
+  useful ones:
+
+  %dl
+    %dt
+      %code CIRCLECI=true
+    %dt
+      %code CI=true
+    %dt
+      %code DISPLAY=:99
+    %dt
+      %code CIRCLE_BRANCH
+    %dd
+      The name of the branch being tested, such as 'master'
+    %dt
+      %code CIRCLE_SHA1
+    %dd
+      The SHA1 of the commit being tested
+    %dt
+      %code CIRCLE_BUILD_NUM
+    %dd
+      The build number, same as in circleci.com/gh/foo/bar/123
+
+%p
+  You can use the
+  %code CI
+  and
+  %code CIRCLECI
+  environmental variables in your program, if you need to have CI-specific behavior in you application.
+  Naturally, this is not recommended in principle, but it can occasionally be useful in practice.
+
+%h1.section
+  %a#browsers Browsers and GUIs
+%hr
+
+%p
+  Circle runs graphical programs in a virtual framebuffer, using
+  = succeed '.', ->
+    xvfb
+  This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
+  You do not need to anything to set this up.
+  We have
+  %code phantomjs 1.9.0
+  and
+  %code libwebkit (2.2.1-1ubuntu4)
+  pre-installed,
+  for Capybara and other headless browser interfaces.
+
+
+%p
+  Xvfb runs on port 99, and the appropriate
+  %code DISPLAY
+  environmental variable has already been set.
+
+%p
+  Selenium-based tests are able to use Chrome stable channel (Chrome 26.0 as of Apr 12, 2013), and Firefox 20.
+
+%p
+  %span.label.label-info Help
+  %a{href: '/docs/browser-debugging'}Check out our browser debugging docs.
+
+
+%h1.section
+  %a#languages Languages
+%hr
+
+%h3#ruby Ruby
+
+%p
+  We use RVM to give you access to a wide variety of Ruby versions.
+  You can
+  %a{ href: "/docs/configuration#ruby-version" }
+    choose the exact version you need
+  directly, from the following list:
+
+  %ul
+    %li
+      %code 1.8.7-p302
+    %li
+      %code 1.8.7-p334
+    %li
+      %code 1.8.7-p352
+    %li
+      %code 1.8.7-p357
+    %li
+      %code 1.8.7-p358
+    %li
+      %code 1.8.7-p370
+    %li
+      %code 1.8.7-p371
+    %li
+      %code ree-1.8.7-2011.02
+    %li
+      %code ree-1.8.7-2011.03
+    %li
+      %code ree-1.8.7-2011.12
+    %li
+      %code ree-1.8.7-2012.02
+    %li
+      %code 1.9.2-p0
+      (should be avoided due to security problems)
+    %li
+      %code 1.9.2-p136
+    %li
+      %code 1.9.2-p180
+    %li
+      %code 1.9.2-p290
+    %li
+      %code 1.9.2-p320
+    %li
+      %code 1.9.3-p0-falcon
+    %li
+      %code 1.9.3-p0
+    %li
+      %code 1.9.3-p125
+    %li
+      %code 1.9.3-p125-perf
+    %li
+      %code 1.9.3-p194
+    %li
+      %code 1.9.3-p194-perf
+    %li
+      %code 1.9.3-p194-falcon
+    %li
+      %code 1.9.3-p286
+    %li
+      %code 1.9.3-p327
+    %li
+      %code 1.9.3-p327-falcon
+    %li
+      %code 1.9.3-p362
+    %li
+      %code 1.9.3-p374
+    %li
+      %code 1.9.3-p385
+    %li
+      %code 1.9.3-p392
+    %li
+      %code 2.0.0-p0
+    %li
+      %code jruby-1.6.5
+    %li
+      %code jruby-1.6.6
+    %li
+      %code jruby-1.7.0
+    %li
+      %code jruby-1.7.3
+
+%p
+  By default we use
+  %code Ruby 1.9.3-p194
+  unless we detect that you need Ruby 1.8.7, in which case we'll use
+  %code Ruby 1.8.7-p358.
+  This is installed via
+  RVM (stable).
+
+%p
+  We also have a number of Ruby commands pre-installed if you need to use them directly. They are installed using RVM 1.9.3-p194.
+
+%ul
+  %li
+    %code bundler 1.3.2
+  %li
+    %code cucumber 1.2.0
+  %li
+    %code rspec 2.13
+  %li
+    %code rake 0.10.0.3
+
+
+
+
+
+
+
+%h3#nodejs node.js
+%p
+  We use NVM to provide access to a wide range of node versions.  Currently we have
+%ul
+  %li
+    %code 0.6.18
+  %li
+    %code 0.8.2
+  %li
+    %code 0.8.12
+
+%p
+  Please
+  = HAML['contact_us']()
+  if other versions of node.js would be useful to you.
+
+
+
+
+%h3#clojure Clojure
+%p
+  We use
+  %code lein 2.0.0
+  by default, and you can also use
+  = succeed ",", ->
+    %code lein16
+  which is version
+  = succeed ".", ->
+    1.6.1.1
+
+%p
+  You should specify your Clojure version in your
+  %code project.clj
+  file.
+
+
+
+%h3#python Python
+%p
+  We use
+  = succeed ",", ->
+    %code python 2.7.3
+  and packages can be installed using
+  %code pip 1.0
+  and
+  = succeed ".", ->
+    %code virtualenv 1.7.1.2
+
+%p
+  Please
+  = HAML['contact_us']()
+  if other versions of Python would be useful to you.
+
+
+
+
+%h3#php PHP
+%p
+  We use
+  = succeed ",", ->
+    %code php 5.3.10-1ubuntu3.5
+  by default, although you can
+  = succeed '.', ->
+    %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file.
+  Packages can be installed using
+  %code pear
+  and
+  = succeed ".", ->
+    %code pecl
+
+%p
+  Please
+  = HAML['contact_us']()
+  if other PHP versions would be useful to you, or if you need
+  %code composer
+  support.
+
+
+
+%h3#java Java (and JVM based languages)
+%p
+  We have Java installed, along with ant and maven.
+%ul
+  %li
+    %code oracle JDK 7, using Java 1.7.0_15 (default)
+  %li
+    %code ant 1.8.2
+  %li
+    %code maven 3.0.4
+
+%p
+  Open JDK 6 and 7 are also available, through the circle.yml file.
+
+%p
+  Other JVM-based languages should also work.
+  Circle has
+  = succeed ",", ->
+    %a{href: "#clojure"} special support for Clojure
+  please
+  = HAML['contact_us']()
+  let us know if you need anything else installed to run your JVM language of choice.
+
+
+
+%h3#other Other languages
+%p
+  We currently have a number of packages installed to help you test your backend applications, including:
+%ul
+  %li
+    %code gcc 4.6.3-1ubuntu5
+  %li
+    %code g++ 4.6.3-1ubuntu5
+  %li
+    %code golang go1
+  %li
+    %code erlang r14b04
+
+
+
+%h1.section
+  %a#databases Databases and Services
+%hr
+
+%p
+  We have the following services automatically set up for your tests:
+
+%ul
+  %li
+    %code postgresql 9.1.8
+    (including postgis 2.0 extensions)
+
+  %li
+    %code mysql 5.5.29
+  %li
+    %code mongodb 2.4.1
+  %li
+    %code riak 1.2.1
+  %li
+    %code cassandra 1.2.2
+  %li
+    %code redis 2.6.10
+  %li
+    %code memcache 1.4.13-0ubuntu2
+  %li
+    %code sphinx 2.0.4-release
+  %li
+    %code elasticsearch 0.19.11
+  %li
+    %code solr 4.2.1
+  %li
+    %code beanstalkd 1.4.6
+  %li
+    %code couchbase 2.0.0
+  %li
+    %code couchdb 1.2.1
+  %li
+    %code neo4j 1.8.2
+  %li
+    %code rabbitmq 3.0.3
+
+%p
+  Both
+  %code postgres
+  and
+  %code mysql
+  are set up to use the
+  %code ubuntu
+  user, have a database called
+  %code circle_test
+  available, and don't require any password.
+  The other databases should not need any specific username or password, and should just work.
+
+%p
+  Several services are disabled by default because they're not
+  commonly used, or because of memory requirements. We try to
+  detect and enable them automatically, but in case
+  we fail (or don't have inference in your language), you can
+  enable them by adding to your circle.yml:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        services:
+          \- cassandra
+
+%p The list of services that can be enabled this way is
+
+%ul
+  %li
+    %code cassandra
+  %li
+    %code elasticsearch
+  %li
+    %code rabbitmq-server
+  %li
+    %code riak
+  %li
+    %code beanstalkd
+  %li
+    %code couchbase-server
+  %li
+    %code neo4j

@@ -1,13 +1,12 @@
-%article
-  - @article_tags = ['privacy_security']
+- @parents = ['privacy_security']
+- @title = "Does Circle look at my code?"
+- @icon = "icon-warning-sign"
+- @lastUpdated = "Feb 2, 2013"
 
-  = HAML['article_title']({title: "Does Circle look at my code?", icon: "icon-warning-sign", lastUpdated: "Feb 2, 2013"})
-
-  .doc
-    %p
-      Nobody from Circle manually looks at your code, without permission.
-      We will occasionally ask permission to debug why your code isn't working, but we will never look at your code without this permission.
-      Our
-      %a{ href: "/privacy#security" }
-        security policy
-      goes into more detail about our safeguards to ensure the security of your code.
+%p
+  Nobody from Circle manually looks at your code, without permission.
+  We will occasionally ask permission to debug why your code isn't working, but we will never look at your code without this permission.
+  Our
+  %a{ href: "/privacy#security" }
+    security policy
+  goes into more detail about our safeguards to ensure the security of your code.

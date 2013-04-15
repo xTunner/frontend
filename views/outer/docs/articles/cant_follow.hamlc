@@ -1,11 +1,10 @@
-%article
-  - @article_tags = ['github_privacy']
+- @parents = ['github_privacy']
+- @title = "Why can I not follow a project?"
+- @icon = "icon-key"
+- @lastUpdated = "Feb 2, 2013"
 
-  = HAML['article_title']({title: "Why can I not follow a project?", icon: "icon-key", lastUpdated: "Feb 2, 2013"})
-
-  .doc
-    %p
-      GitHub requires admin permissions to add an SSH key to a
-      project, and to add the webhook that tells Circle when someone
-      pushes new code. If you're not an admin, invite a user with
-      permissions to Circle, and have them follow the project first.
+%p
+  GitHub requires admin permissions to add an SSH key to a
+  project, and to add the webhook that tells Circle when someone
+  pushes new code. If you're not an admin, invite a user with
+  permissions to Circle, and have them follow the project first.

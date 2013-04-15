@@ -1,122 +1,122 @@
-%article
-  - @article_tags = [ 'how_to', 'deployment' ]
+- @parents = [ 'how_to' ]
+- @icon = "icon-cloud-upload"
+- @title = "Continuous Deployment to Google App Engine"
+- @lastUpdated = "Feb 2, 2013"
+- @subtitle = "Simple deployment, in Java, Python or Go"
 
-  = HAML['article_title']({icon: "icon-cloud-upload", title: "Continuous Deployment to Google App Engine", lastUpdated: "Feb 2, 2013", subtitle: "Simple deployment, in Java, Python or Go"})
+%p
+  Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
+  how you do it.
 
-  .doc
-    %p
-      Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
-      how you do it.
+%h2 Add Google App Engine SDK as a Dependency
 
-    %h2 Add Google App Engine SDK as a Dependency
+%p
+  First, you have to
+  %b
+    install the SDK on your build VM.
+  We don't do this by default, because it's very fast (under 10 seconds) and there are many
+  supported SDK versions to choose from.
 
-    %p
-      First, you have to
-      %b
-        install the SDK on your build VM.
-      We don't do this by default, because it's very fast (under 10 seconds) and there are many
-      supported SDK versions to choose from.
+%p
+  You'll need to find the download URL for the SDK that you need. The official source for
+  SDK downloads is
+  = succeed '.', ->
+    %a{href: "https://code.google.com/p/googleappengine/downloads/list"}
+      https://code.google.com/p/googleappengine/downloads/list
 
-    %p
-      You'll need to find the download URL for the SDK that you need. The official source for
-      SDK downloads is
-      = succeed '.', ->
-        %a{href: "https://code.google.com/p/googleappengine/downloads/list"}
-          https://code.google.com/p/googleappengine/downloads/list
+%p
+  This example
+  %a{href: '/docs/configuration'}
+    circle.yml
+  fragment installs version 1.5.1 of the Python Google App Engine SDK. Modify it to
+  download the SDK you need:
 
-    %p
-      This example
-      %a{href: '/docs/configuration'}
-        circle.yml
-      fragment installs version 1.5.1 of the Python Google App Engine SDK. Modify it to
-      download the SDK you need:
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        pre:
+          - curl -O https://googleappengine.googlecode.com/files/google_appengine_1.5.1.zip
+          - unzip -d $HOME google_appengine_1.5.1.zip
 
-    %pre
-      %code.no-highlight<>
-        :preserve
-          dependencies:
-            pre:
-              - curl -O https://googleappengine.googlecode.com/files/google_appengine_1.5.1.zip
-              - unzip -d $HOME google_appengine_1.5.1.zip
+%h2 Configure Deployment to Google App Engine
 
-    %h2 Configure Deployment to Google App Engine
+%p
+  With the SDK installed, next you need to
+  %b
+    configure continuous deployment.
+  You may want to read up on
+  %a{href: '/docs/configuration#deployment'}
+    configuring continuous deployment with circle.yml in general
+  if your needs are more complex than what's shown in these examples.
 
-    %p
-      With the SDK installed, next you need to
-      %b
-        configure continuous deployment.
-      You may want to read up on
-      %a{href: '/docs/configuration#deployment'}
-        configuring continuous deployment with circle.yml in general
-      if your needs are more complex than what's shown in these examples.
+%p
+  For the sake of this example, let's deploy the master branch to
+  Google App Engine every time the tests are green. The commands differ slightly
+  depending on which language you're using, but they're all doing basically
+  the same thing:
 
-    %p
-      For the sake of this example, let's deploy the master branch to
-      Google App Engine every time the tests are green. The commands differ slightly
-      depending on which language you're using, but they're all doing basically
-      the same thing:
+%h3 python
 
-    %h3 python
+%p
+  Using
+  = succeed ':', ->
+    %a{href: 'https://developers.google.com/appengine/docs/python/gettingstarted/uploading'}
+      appcfg.py update
 
-    %p
-      Using
-      = succeed ':', ->
-        %a{href: 'https://developers.google.com/appengine/docs/python/gettingstarted/uploading'}
-          appcfg.py update
+%pre
+  %code.no-highlight<>
+    :preserve
+      deployment:
+        appengine:
+          branch: master
+          commands:
+            - echo "my-password" | $HOME/google-appengine/appcfg.py update --email=me@example.com --passin .
 
-    %pre
-      %code.no-highlight<>
-        :preserve
-          deployment:
-            appengine:
-              branch: master
-              commands:
-                - echo "my-password" | $HOME/google-appengine/appcfg.py update --email=me@example.com --passin .
+%h3 java
 
-    %h3 java
+%p
+  Using
+  = succeed ':', ->
+    %a{href: 'https://developers.google.com/appengine/docs/java/tools/uploadinganapp'}
+      appcfg.sh update
 
-    %p
-      Using
-      = succeed ':', ->
-        %a{href: 'https://developers.google.com/appengine/docs/java/tools/uploadinganapp'}
-          appcfg.sh update
+%pre
+  %code.no-highlight<>
+    :preserve
+      deployment:
+        appengine:
+          branch: master
+          commands:
+            - echo "my-password" | $HOME/appengine-java-sdk/bin/appcfg.sh update --email=me@example.com --passin .
 
-    %pre
-      %code.no-highlight<>
-        :preserve
-          deployment:
-            appengine:
-              branch: master
-              commands:
-                - echo "my-password" | $HOME/appengine-java-sdk/bin/appcfg.sh update --email=me@example.com --passin .
+%h3 go
 
-    %h3 go
+%p
+  Using
+  = succeed ':', ->
+    %a{href: 'https://developers.google.com/appengine/docs/go/tools/uploadinganapp'}
+      appcfg.py update
 
-    %p
-      Using
-      = succeed ':', ->
-        %a{href: 'https://developers.google.com/appengine/docs/go/tools/uploadinganapp'}
-          appcfg.py update
+%pre
+  %code.no-highlight<>
+    :preserve
+      deployment:
+        appengine:
+          branch: master
+          commands:
+            - echo "my-password" | $HOME/google_appengine/appcfg.py update --email=me@example.com --passin .
 
-    %pre
-      %code.no-highlight<>
-        :preserve
-          deployment:
-            appengine:
-              branch: master
-              commands:
-                - echo "my-password" | $HOME/google_appengine/appcfg.py update --email=me@example.com --passin .
+%h3 Credentials
 
-    %h3 Credentials
+%p
+  In all three cases, the deployment command passes an email address and password to
+  the appcfg command. Python and Go users can also configure it to use non-interactive
+  oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
+  usage.)
 
-    %p
-      In all three cases, the deployment command passes an email address and password to
-      the appcfg command. Python and Go users can also configure it to use non-interactive
-      oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
-      usage.)
-
-    %p
-      We know that storing your credentials in plain text in circle.yml isn't a good solution.
-      We'll be adding secure credential management soon. Please
-      = HAML['contact_us']()
-      to make sure you're informed when we add this feature!
+%p
+  We know that storing your credentials in plain text in circle.yml isn't a good solution.
+  We'll be adding secure credential management soon. Please
+  = HAML['contact_us']()
+  to make sure you're informed when we add this feature!

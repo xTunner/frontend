@@ -1,40 +1,40 @@
-%article
-  - @article_tags = [ 'how_to' ]
+- @parents = [ 'how_to' ]
+- @icon = "icon-wrench"
+- @title = "Start a background process from circle.yml"
+- @subtitle = "Detach without races or hanging"
+- @lastUpdated = "Apr 6, 2013"
 
-  = HAML['article_title']({icon: "icon-wrench", title: "Start a Background Process From circle.yml", subtitle: "Detach without races or hanging", lastUpdated: "Feb 2, 2013"})
+%p
+  Starting a background process from
+  %a{ href: "/docs/configuration" }
+    circle.yml
+  is entirely possible, but doing it in a way that behaves reliably may not be
+  obvious.
+  Learn from our experience: don't just add
+  %code &amp;
+  to the end of your command line! Wrap it up like this, instead:
 
-  .doc
-    %p
-      Starting a background process from
-      %a{ href: "/docs/configuration" }
-        circle.yml
-      is entirely possible, but doing it in a way that behaves reliably may not be
-      obvious.
-      Learn from our experience: don't just add
-      %code &amp;
-      to the end of your command line! Wrap it up like this, instead:
+%pre
+  %code.no-highlight<>
+    :preserve
+      test:
+        pre:
+          - nohup bash -c "./daemon &"
 
-    %pre
-      %code.no-highlight<>
-        :preserve
-          test:
-            pre:
-              - nohup bash -c "./daemon &"
+%p
+  Unpacking this, for the curious:
 
-    %p
-      Unpacking this, for the curious:
-
-      %ul
-        %li
-          %code nohup
-          ensures that the command won't be killed when the
-          controlling pty is detached.
-        %li
-          %code bash -c
-          wraps the command in a new shell, without which there is a race
-          condition that can prevent the command from running at all!
-        %li
-          = succeed ',', ->
-            %code &amp;
-          of course, backgrounds the command so the rest of your testing
-          can proceed.
+  %ul
+    %li
+      %code nohup
+      ensures that the command won't be killed when the
+      controlling pty is detached.
+    %li
+      %code bash -c
+      wraps the command in a new shell, without which there is a race
+      condition that can prevent the command from running at all!
+    %li
+      = succeed ',', ->
+        %code &amp;
+      of course, backgrounds the command so the rest of your testing
+      can proceed.

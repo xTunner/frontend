@@ -1,3 +1,2 @@
 - @category = "how_to"
-.category
-  How-To
+- @title = "How-To"
