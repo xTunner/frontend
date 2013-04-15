@@ -5,141 +5,147 @@
 
   = HAML['flashes']({})
 
-  %div{data-bind: "with: build"}
+  %div{data-bind: "ifnot: build_has_been_loaded"}
+    .centered-spinner
+      = HAML['fast_spinner']()
 
-    .row-fluid.build-table#build-log-header
+  %div{data-bind: "if: build_has_been_loaded"}
+    %div{data-bind: "with: build"}
 
-      %dl.span4
+      .row-fluid.build-table#build-log-header
 
-        %dt Revision
-        %dd
-          %a{data-bind: "attr: { href: github_url }, text: github_revision"}
+        %dl.span4
 
-        %dt Build
-        %dd{data-bind: "text: build_num"}
-
-        %dt Author
-        %dd
-          %a{data-bind: "text: author, attr: {href: author_mailto}"}
-
-        / ko if: author_isnt_committer
-        %dt Committer
-        %dd
-          %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
-        / /ko
-
-        / ko if: previous_build
-        %dt Previous build
-        %dd
-          %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
-        / /ko
-
-      %dl.span4
-
-        %dt Status
-        %dd.build_status
-          %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
-
-        %dt Started at
-        %dd{data-bind: "text: pretty_start_time"}
-
-        %dt Duration
-        %dd{data-bind: "text: duration"}
-
-
-      %dl.span4
-
-        %dt Branch
-        %dd{data-bind: "text: branch"}
-
-        %dt Started by
-        %dd{data-bind: "text: why_in_words"}
-
-        %dt Actions:
-        %dd
-          %button.btn.btn-danger{data-bind: "click: report_build",
-                                 title: "Report an error in how Circle ran this build"}
-            Report...
-
-          %div.btn-group
-            %button.btn.btn-primary{data-bind: "click: retry_build",
-                                title: "Rerun the same version of the tests",
-                                data-loading-text: "Triggering...",
-                                data-success-text: "Triggered"}
-              Retry
-            %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
-              %span.caret
-            %ul.dropdown-menu
-              %li
-                %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
-                  Clear Cache &amp; Retry
-
-          %button.btn.btn-primary{data-bind: "click: ssh_build",
-                                title: "Rerun the tests, with SSH into the VM",
-                                data-loading-text: "Triggering...",
-                                data-success-text: "Triggered"}
-            SSH
-          %span{data-bind: "if: can_cancel()"}
-            %button.btn.btn-primary{data-bind: "click: cancel_build",
-                                    title: "Cancel the build immediately",
-                                    data-loading-text: "Canceling...",
-                                    data-success-text: "Canceled"}
-              Cancel
-
-    .container-fluid
-      .row
-        %dl.offset1
-
-          %dt Commit Log
+          %dt Revision
           %dd
-            %span{data-bind: "if: body"}
-              %a{href: '#', data-bind: "text: subject, jQueryExt: {type: 'tooltip', options: {title: body}}"}}
-            %span{data-bind: "ifnot: body"}
-              %span{data-bind: "text: subject"}
+            %a{data-bind: "attr: { href: github_url }, text: github_revision"}
 
-      %div{data-bind: "if: messages().length"}
-        = HAML['messages']()
-      %div{data-bind: "ifnot: messages().length"}
-        = HAML['report_error']({build: true})
+          %dt Build
+          %dd{data-bind: "text: build_num"}
 
-      %div{data-bind: "foreach: steps"}
-        %div{data-bind: "foreach: actions"}
+          %dt Author
+          %dd
+            %a{data-bind: "text: author, attr: {href: author_mailto}"}
 
-          -# wrapper allows the header and detail be siblings, for the JS
-          .wrapper.build-output
-            %div{data-bind: "if: $root.build().different_type($data)"}
-              .type-divider
-                %span{data-bind: "text: type"}
-            .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
-              .ah_wrapper
-                .button{data-bind: "css: action_header_button_style"}
-                .command{data-bind: "css: action_header_style"}
-                  %span
-                    \$
-                    %span{data-bind: "text: name, attr: {title: bash_command}"}
-                  %span.time
-                    = surround '(', ' )', ->
-                      %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
+          / ko if: author_isnt_committer
+          %dt Committer
+          %dd
+            %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+          / /ko
 
-                    %span{data-bind: "if: timedout"}
-                      %b (TIMED OUT)
-                  %span{data-bind: "if: source"}
-                    %span.action-source
-                      %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
+          / ko if: previous_build
+          %dt Previous build
+          %dd
+            %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
+          / /ko
 
-            .detail-wrapper{data-bind: "if: has_content"}
-              .detail{data-bind: "css: action_log_style, visible: !minimize()"}
+        %dl.span4
 
-                %span{data-bind: "if: bash_command"}
-                  Command:
-                  %span.pull-right
-                    Exit code:
-                    %span{data-bind: "text: exit_code"}
-                  %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
-                Output:
-                %pre.output{data-bind: "html: log_output()"}
+          %dt Status
+          %dd.build_status
+            %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
 
-              = HAML['report_error']({build: false})
+          %dt Started at
+          %dd{data-bind: "text: pretty_start_time"}
 
-      %div{data-bind: "if: steps().length > 1"}
-        = HAML['messages']()
+          %dt Duration
+          %dd{data-bind: "text: duration"}
+
+
+        %dl.span4
+
+          %dt Branch
+          %dd{data-bind: "text: branch"}
+
+          %dt Started by
+          %dd{data-bind: "text: why_in_words"}
+
+          %dt Actions:
+          %dd
+            %button.btn.btn-danger{data-bind: "click: report_build",
+                                   title: "Report an error in how Circle ran this build"}
+              Report...
+
+            %div.btn-group
+              %button.btn.btn-primary{data-bind: "click: retry_build",
+                                  title: "Rerun the same version of the tests",
+                                  data-loading-text: "Triggering...",
+                                  data-success-text: "Triggered"}
+                Retry
+              %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
+                %span.caret
+              %ul.dropdown-menu
+                %li
+                  %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
+                    Clear Cache &amp; Retry
+
+            %button.btn.btn-primary{data-bind: "click: ssh_build",
+                                  title: "Rerun the tests, with SSH into the VM",
+                                  data-loading-text: "Triggering...",
+                                  data-success-text: "Triggered"}
+              SSH
+            %span{data-bind: "if: can_cancel()"}
+              %button.btn.btn-primary{data-bind: "click: cancel_build",
+                                      title: "Cancel the build immediately",
+                                      data-loading-text: "Canceling...",
+                                      data-success-text: "Canceled"}
+                Cancel
+
+      .container-fluid
+        .row
+          %dl.offset1
+
+            %dt Commit Log
+            %dd
+              %span{data-bind: "if: body"}
+                %a{href: '#', data-bind: "text: subject, jQueryExt: {type: 'tooltip', options: {title: body}}"}}
+              %span{data-bind: "ifnot: body"}
+                %span{data-bind: "text: subject"}
+
+        %div{data-bind: "if: messages().length"}
+          = HAML['messages']()
+        %div{data-bind: "ifnot: messages().length"}
+          = HAML['report_error']({build: true})
+
+        %div{data-bind: "foreach: steps"}
+          %div{data-bind: "foreach: actions"}
+
+            -# wrapper allows the header and detail be siblings, for the JS
+            .wrapper.build-output
+              %div{data-bind: "if: $root.build().different_type($data)"}
+                .type-divider
+                  %span{data-bind: "text: type"}
+              .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
+                .ah_wrapper
+                  .button{data-bind: "css: action_header_button_style"}
+                  .command{data-bind: "css: action_header_style"}
+                    %span
+                      \$
+                      %span{data-bind: "text: name, attr: {title: bash_command}"}
+                    %span.time
+                      = surround '(', ' )', ->
+                        %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
+
+                      %span{data-bind: "if: timedout"}
+                        %b (TIMED OUT)
+                    %span{data-bind: "if: source"}
+                      %span.action-source
+                        %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
+
+              .detail-wrapper{data-bind: "if: has_content"}
+                .detail{data-bind: "css: action_log_style, visible: !minimize()"}
+
+                  %span{data-bind: "if: bash_command"}
+                    Command:
+                    %span.pull-right
+                      Exit code:
+                      %span{data-bind: "text: exit_code"}
+
+                    %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+                  Output:
+                  %pre.output{data-bind: "html: log_output()"}
+
+                = HAML['report_error']({build: false})
+
+        %div{data-bind: "if: steps().length > 1"}
+          = HAML['messages']()
