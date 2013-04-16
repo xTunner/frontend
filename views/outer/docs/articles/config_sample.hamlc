@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 - @parents = ["reference"]
 - @icon = "icon-file"
 - @title = 'Sample circle.yml file'
