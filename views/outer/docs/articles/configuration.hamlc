@@ -257,8 +257,9 @@
 %p
   Use this to add entries for /etc/hosts. This is useful if your tests connect to your webserver, at an established name, such as "circlehost".
 
-%h3#environment
-  Environment Variables
+%h3
+  %a#environment{href: "#environment" }
+    Environment Variables
 
 %p
   Sets environment variables for all commands in the build.
