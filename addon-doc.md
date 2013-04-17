@@ -1,57 +1,34 @@
-[CircleCI](http://addons.heroku.com/circleci) is an add-on that runs your tests in the cloud with minimal setup from you. Sign in with GitHub and we start running your tests.
+[CircleCI](http://addons.heroku.com/circleci) is an add-on that runs your tests in the cloud with minimal setup from you. We offer amazing features such as automatic parallelism for super fast tests, one click setup, support for whatever language and framework you use, world-class customer service, continuous deployment of green builds and many many more. 
+Sign in with GitHub and we start running your tests.
 
 
 ###Quick Setup
-Set up your continuous integration in 20 seconds, not two days. With one click CircleCI detects test settings for a wide range of web apps, and set them up automatically on our servers.
-
-###Fast Tests
-Your productivity relies on fast test results. CircleCI runs your tests faster than your Macbook Pro, EC2, your local server, or any other service.
-
-###Automatic Parallelization
-We can automatically parallelize your tests across multiple machines. With up to 12-way parallelization, your test turn-around time can be massively reduced.
-
-###Continuous Deployment
-Get code to your customers faster, as soon as the tests pass. CircleCI supports branch-specific deployments, SSH key management and supports any hosting environment using custom commands, auto-merging, and uploading packages.
-
-###CircleCI supports your language and framework.
-Lots of our customers use Ruby, Python, Java, Node.js, Clojure and Scala but we support all testing frameworks across all Heroku-supported languages. We can also add support for any framework you use.
-
-###Deep Customization
-Real applications often deviate slightly from standard configurations, so CircleCI does too. Our configuration is so flexible that it's easy to tweak almost anything you need.
-
-###Debug with Ease
-When your tests are broken, we help you get them fixed. We auto-detect errors, have great support, and even allow you to SSH into our machines to test manually.
-
-###Smart Notifications
-CircleCI intelligently notifies you via email, Hipchat, Campfire, Flowdock, webhooks and more. You won't be flooded with useless notifications about other people's builds and passing tests, we only notify you when it matters.
-
-###Loving support
-We respond to support requests as soon as possible, every day. Most requests get responded to within an hour. It is rare to wait 12 hours for a response.
-
-###More to come.
-At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know.
+1. Provision the addon using the heroku CLI or the heroku web interface.
+2. Open the circleci dashboard from the CLI or the heroku web interface and sign in with github and watch your tests run!
 
 ## Provisioning the add-on
 
 CircleCI can be attached to a Heroku application via the CLI:
 
-<div class="callout" markdown="1">
 A list of all plans available can be found [here](http://addons.heroku.com/circleci).
-</div>
 
     :::term
     $ heroku addons:add circleci
     -----> Adding circleci to sharp-mountain-4005... done, v18 (free)
 
-Once CircleCI has been added, navigate to the Heroku dashboard for your app and follow the circleci link to go to the circleci site. Sign in with your GitHub credentials (so we can check out your code) and your tests will be running in seconds.
+Once CircleCI has been added, the following CLI command opens the CircleCI dashboard
+    
+    :::term
+    $ heroku addons:open circleci
+    Opening circleci for sharp-mountain-4005…
 
-After installing CircleCI your application should be configured to fully integrate with the add-on.
+Alternatively navigate to the Heroku dashboard for your app and follow the circleci link to go to the circleci site.
+
+Sign in with your GitHub credentials (so we can check out your code) and your tests will be running in seconds.
 
 ## Dashboard
 
-<div class="callout" markdown="1">
-For more information on the features available within the CircleCI dashboard please see the docs at [https://circleci.com/docs](circleci.com/docs).
-</div>
+For more information on the features available within the CircleCI dashboard please see the docs at [circleci.com/docs](https://circleci.com/docs).
 
 The CircleCI dashboard allows you to see your running tests, specify which projects to build and set up continuous deployment for your app.
 
