@@ -14,28 +14,28 @@
     %h2 Who are we?
     %p
       We're 5 people: 3 developers, one developer who has to do business stuff instead of coding, and one business operations.
-      CircleCI is at the growth stage of its life: we've found "product-market fit" (we have a product that we know lots of people want and will pay for), and are focussing on growing our customer base and filling out the gaps in our product.
+      CircleCI is at the growth stage of its life: we've found "product-market fit" (we have a product that we know lots of people want and will pay for), and are focusing on growing our customer base and filling out the gaps in our product.
     %p
       We're not yet profitable, but make money and are growing rapidly with over a year's worth of funding in the bank.
       Its not certain we'll succeed yet, but its a fairly safe bet as early stage startups go.
 
     %h2 Who are we hiring?
     %p
-      We're looking for five people who collectively span the following skillsets. From front to back:
+      We're looking for five people who collectively span the following skill sets. From front to back:
       %ul
         %li writing marketing copy, landing pages, A/B testing, SEO, and other Conversion Rate Optimization
         %li UX
         %li visual design/photoshop/wireframing
         %li implementing designs in HTML/CSS
-        %li implementing complex flows in JS and Coffeescript (possibly in Angular/Ember or similar)
+        %li implementing complex flows in JS and CoffeeScript (possibly in Angular/Ember or similar)
         %li visualizations in D3 or similar
         %li writing Clojure (experience in other functional languages counts)
         %li designing elegant APIs
         %li DX (Developer experience)
         %li broad knowledge of important programming languages, such as Python, Node.js, Javascript, Ruby (esp. Rails), Java and PHP.
         %li scalable web services
-        %li devops including machine configuration and deployment on AWS
-        %li low-level Linux hacking (including file-systems, kernels, DBs, etc)
+        %li dev-ops including machine configuration and deployment on AWS
+        %li low-level Linux hacking (including file-systems, kernels, databases, etc)
 
 
     %h2 Why you'll love working at Circle
@@ -83,7 +83,7 @@
 
     %h3 Young company
     %p
-      At a small growing company, your work has a disproportiate affect.
+      At a small growing company, your work has a disproportionate affect.
       As well as making the lives of our customers better, it also sets a precedent for everyone who works for us in the future.
       You get to affect both the product and the company culture.
       Your opinions matter and are listened to, and that's why we hire you.
@@ -103,7 +103,7 @@
       So let me include a special pitch about why you'll love being a designer at Circle.
 
     %p
-      We are a very design-focussed company.
+      We are a very design-focused company.
       Sure, at the moment none of us can do visual design, but we think deeply about UX and experience for our customers.
       We spend a lot of time thinking about how our customers experience Circle, how to speak to them in a way in which they identify with, and allowing them solve complex problems simply.
       Everybody at Circle talks to the customer, including you.
@@ -122,7 +122,7 @@
     %h2 Who should apply?
 
     %p
-      Obviously, this is a very engineering focussed company, so the most important thing is to understand how developers work and think.
+      Obviously, this is a very engineering focused company, so the most important thing is to understand how developers work and think.
       In addition, we've noticed that the following correlate with the people that we want to hire.
       This is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory).
 
@@ -130,9 +130,9 @@
     %ul
       %li people who supremely care about developer productivity
       %li great communicators
-      %li good conversationist, and pleasant people - we'll be spending the next few years together after al
+      %li good conversationalist, and pleasant people - we'll be spending the next few years together after al
       %li being easy to work with: we're not interesting in solo artists, divas, people who always know best, or assholes,
-      %li we prefer that you do not identify with the words "ninja", "pirate", or "rockstar".
+      %li we prefer that you do not identify with the words "ninja", "pirate", or "rock star".
       %li
         a working knowledge of the writings of patio11 or other dev-marketers, and ability to discuss different types of conversion rate optimization, customer lifecycle marketing, virality, and other "growth hacks".
         Experience a serious plus.
@@ -142,7 +142,7 @@
     %ul
       %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, amazing coding chops (those having left coding behind them - this isn't the company for you, unfortunately), probably with 8-10 years of experience
       %li young, raw, talented devs who can crank out code
-      %li having worked on a significant project that wasn't in java, javascript, ruby or php.
+      %li having worked on a significant project that wasn't in java, JavaScript, ruby or php.
       %li good knowledge of algorithmic design and semi-formal CS theory (CS degree not required)
       %li people who know many languages, including post-college experience of functional ones (ML, Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
       %li people who have built or scaled large distributed systems
@@ -152,12 +152,12 @@
       For frontend devs:
     %ul
       %li knowledge of common HTML5 implementation strategies
-      %li experience with HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc. (jquery knowledge assumed)
+      %li experience with HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc. (jQuery knowledge assumed)
       %li experience with data visualization, including d3 or processing
       %li experience designing "flows" in complex stateful apps
       %li experience building fat JS apps
       %li good UX sensibilities
-      %li preferred if you arent awful at visual design so that prototypes can be shipped and iterated on
+      %li preferred if you aren't awful at visual design so that prototypes can be shipped and iterated on
       %li backend knowledge not required, but we expect that you're not helpless if a change requires trivial backend changes
 
     %p
@@ -170,7 +170,7 @@
         A requirement for designers is that you can implement your own stuff.
         We need to ship quickly, so you need to be able to turn designs into CSS and HTML.
       %li
-        Deep javascript experience is not required, but you'll need to roughly know your way around and change things if required.
+        Deep JavaScript experience is not required, but you'll need to roughly know your way around and change things if required.
       %li
         a willingness to learn about backend code and tech (you won't need to implement it, but its kinda required to relate to our customers)
       %li
@@ -190,8 +190,8 @@
 
     %h3 Local
     %p
-      We have lovely office in the dodgy end of SOMA in San Francisco, near Heroku, Twitter, Zynga, Pinterest, Atlassian, and many other startups.
-      We have caterred lunches, a great office atmosphere, and lovely colleagues.
+      We have lovely office in the dodgy end of SoMa in San Francisco, near Heroku, Twitter, Zynga, Pinterest, Atlassian, and many other startups.
+      We have catered lunches, a great office atmosphere, and lovely colleagues.
 
     %p
       Please note that we only hire people who are currently in the US or have US work authorization (though we're happy to work on transferring visa paperwork).
@@ -200,7 +200,7 @@
     %h3 Remote
     %p
       We have an asynchronous culture that is well suited to remote-working.
-      We use Hipchat, Skype and email heavily, and currently one of our three engineers is working remotely from Oregon.
+      We use HipChat, Skype and email heavily, and currently one of our three engineers is working remotely from Oregon.
       We'll bring you on-site every 8 weeks or so, and can do this according to your schedule.
 
     %p
@@ -235,8 +235,8 @@
     %p
       A phone screen typically takes an hour.
       We discuss your resume, your background, what you're looking for in a position, and do some technical screening by asking you to do some task related to your job, typically to write a couple of small pieces of code.
-      Coding interviews are done in your own environment, shared using tmux or scren sharing on skype.
-      You can do interviews in the programming language of your choice (which we will of course judge you on - I'm thinking of you, SmallTalkers).
+      Coding interviews are done in your own environment, shared using tmux or screen sharing on Skype.
+      You can do interviews in the programming language of your choice (which we will of course judge you on - I'm thinking of you, Smalltalkers).
 
     %p
       After a successful phone screen, we'll arrange more in-depth interviews, typically three interviews on relevant topics.
@@ -257,10 +257,10 @@
     %p
       All candidates will do a 2-3 day project, in the office, working directly with us.
       (Remote candidates will be flown in).
-      This project will be paid for, and we can accomodate those who are currently employed by doing it at evenings or weekends if you prefer.
+      This project will be paid for, and we can accommodate those who are currently employed by doing it at evenings or weekends if you prefer.
       The project will be a number of small or medium tasks that we wish to ship to production.
       This is to determine what it's like to work with you, whether you can ship, and how good your real-life code is.
-      We'll need you to sign a standard IP agreement, and again, we'll pay you for your time.
+      We'll need you to sign a standard OP agreement, and again, we'll pay you for your time.
 
     %p
       We feel that candidates who get this far and are unsuccessful are entitled to feedback about how to improve for the future, as a courtesy for taking the time to speak to us.
