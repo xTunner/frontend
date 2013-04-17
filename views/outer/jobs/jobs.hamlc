@@ -45,9 +45,11 @@
     %p
       Our culture is engineering-driven.
       Our customers and our founders are engineers, and most of our employees will be too.
-      We are inspired by companies like Stripe, GitHub, and
+      We are inspired by companies like
+      <a href="http://blog.alexmaccaw.com/stripes-culture">Stripe</a>,
+      <A href="http://gigaom.com/2012/03/26/tales-from-the-trenches-github/">GitHub</a>,
       <a href="http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html">Fog Creek</a>,
-      by <a href="http://www.valvesoftware.com/company/Valve_Handbook_LowRes.pdf">Valve and their handbook</a>.
+      and <a href="http://www.valvesoftware.com/company/Valve_Handbook_LowRes.pdf">Valve</a>.
 
     %p
       We have a flat organization.
@@ -124,7 +126,7 @@
       In addition, we've noticed that the following correlate with the people that we want to hire.
       This is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory).
 
-    %p for everybody:
+    %p For everybody:
     %ul
       %li people who supremely care about developer productivity
       %li great communicators
@@ -136,7 +138,7 @@
         Experience a serious plus.
 
     %p
-      For backend:
+      For backend/full-stack devs:
     %ul
       %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, amazing coding chops (those having left coding behind them - this isn't the company for you, unfortunately), probably with 8-10 years of experience
       %li young, raw, talented devs who can crank out code
@@ -147,7 +149,7 @@
       %li Clojure experts
 
     %p
-      For frontend:
+      For frontend devs:
     %ul
       %li knowledge of common HTML5 implementation strategies
       %li experience with HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc. (jquery knowledge assumed)
