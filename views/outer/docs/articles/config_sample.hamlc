@@ -51,7 +51,7 @@
 
       ## Customize dependencies
       dependencies:
-        :pre
+        pre:
            install coffeescript # install from a different package manager
           - gem uninstall bundler # use a custom version of bundler
           - gem install bundler --pre
