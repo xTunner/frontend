@@ -1,0 +1,69 @@
+- @parents = [ "how_to" ]
+- @icon = "icon-book"
+- @title = 'Installing custom software'
+
+
+
+
+%p
+  The Circle environment provides the libraries, languages, and databases needed for most development work. (See the
+  %a{href: "/docs/environment"} Circle environment
+  for a comprehensive list of what we have installed.)
+  However, if you need to install a particular version of software&mdash;to test backward compatibility, for example&mdash;or add custom code, Circle makes it easy for you to set up your environment to meet your testing needs. 
+  You do this by adding extra commands within the dependencies section in your  
+  %code circle.yml
+  file.
+  
+%p
+  For example, if you need to use a particular version of Redis that Circle does not have, you would download and untar the needed version in your build directory. 
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      http://download.redis.io/redis-<i>version-number</i>.tar.gz
+      tar xvzf redis-<i>version-number</i>.tar.gz
+      cd redis-<i>version-number</i>
+      make
+    
+%h2 Caching  
+  
+%p
+
+  If your custom build environment takes too much time to run, you probably want the dependencies section in your  
+  %code circle.yml
+  file to list such special directories so that they are cached between builds.
+  This will save you time during future testing.  
+
+%p 
+  Tell Circle to save a cached copy using the  
+  %code cache_directories
+  setting.  
+  
+%pre
+  %code.no-highlight<>
+    :preserve  
+      dependencies:
+        cache_directories:
+          - "custom_1"   # relative to the build directory
+          - "~/custom_2" # relative to the user's home directory
+  
+
+%h2 Testing cached directories
+
+  
+%p
+    
+  You should test that your cache is there by including a  
+  %code test
+  command in the dependencies section in your
+  %code circle.yml
+  file.   
+  
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      
+    ADD CODE HERE
+    
+
