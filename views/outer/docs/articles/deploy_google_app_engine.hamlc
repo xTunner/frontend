@@ -37,7 +37,7 @@
       dependencies:
         pre:
           - curl -O https://googleappengine.googlecode.com/files/google_appengine_1.5.1.zip
-          - unzip -d $HOME google_appengine_1.5.1.zip
+          - unzip -q -d $HOME google_appengine_1.5.1.zip
 
 %h2 Configure Deployment to Google App Engine
 

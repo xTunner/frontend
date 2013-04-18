@@ -347,7 +347,7 @@
 
 
 %h1.section
-  %a#databases Databases and Services
+  %a#databases{href: "#databases"} Databases and Services
 %hr
 
 %p

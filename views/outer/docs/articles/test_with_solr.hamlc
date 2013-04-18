@@ -26,7 +26,7 @@
 
 %p
   Even if we aren't able to do things automatically,
-  %code solr 4.1.0
+  %code solr 4.2.1
   is installed on your build system. It will need to be configured with your
   schema.xml, and booted via
   = succeed '.', ->
@@ -39,7 +39,7 @@
     :preserve
       database:
         post:
-          - cp -R /opt/solr-4.1.0 $HOME/solr
+          - cp -R /opt/solr-4.2.1 $HOME/solr
           - cp config/schema.xml $HOME/solr/example/solr/collection1/conf
           # optional: - cp config/solrconfig.xml $HOME/solr/example/solr/collection1/conf
           - nohup bash -c "cd $HOME/solr/example; java -jar start.jar &" &gt; $HOME/solr.log
@@ -50,7 +50,7 @@
 
   %ol
     %li
-      Copy a skeletal solr installation from /opt/solr-4.1.0 into your home directory.
+      Copy a skeletal solr installation from /opt/solr-4.2.1 into your home directory.
     %li
       Copy your configuration (schema.xml at least, and solrconfig.xml if you need it)
       into place.

@@ -49,6 +49,15 @@ CI.inner.User = class User extends CI.inner.Obj
     @plan_id = @komp =>
       @plan()
 
+    @collaborator = (login) =>
+      @komp =>
+        for collaborator in @collaboratorAccounts()
+          return collaborator if collaborator.login is login
+
+    @collaboratorsWithout = (login) =>
+      @komp =>
+        c for c in @collaboratorAccounts() when c.login isnt login
+
   create_token: (data, event) =>
     $.ajax
       type: "POST"
