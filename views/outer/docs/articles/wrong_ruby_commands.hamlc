@@ -1,5 +1,5 @@
 - @parents = ['troubleshooting_ruby']
-- @title = "Circle is running the wrong commands"
+- @title = "Circle is running the wrong Ruby commands"
 - @icon = "icon-minus-sign"
 - @lastUpdated = "Feb 3, 2013"
 
@@ -20,7 +20,7 @@
   Some of the most common problems:
 
 
-%h2#missing-gemfile-lock (Ruby) Do you have a Gemfile.lock checked in?
+%h2#missing-gemfile-lock Do you have a Gemfile.lock checked in?
 
 %p
   If you only have a Gemfile checked in, it is easy for us to make mistakes.
@@ -34,7 +34,7 @@
 
 
 
-%h2#wrong-dependencies (Ruby) Have you listed all your dependencies?
+%h2#wrong-dependencies Have you listed all your dependencies?
 %p
   Circle always prefixes its commands with
   = succeed '.', ->
@@ -45,7 +45,7 @@
   %code bundle exec
   prefix to check this (if it works locally with that command, this isn't the problem).
 
-%h2#wrong-groups (Ruby) Are you using the correct groups?
+%h2#wrong-groups Are you using the correct groups?
 %p
   Bundler only requires gems that are in the
   %code :test
@@ -62,7 +62,7 @@
 
 
 %h2#wrong-database
-  (Ruby) Do you have two databases in your
+  Do you have two databases in your
   %code :test
   group?
 
