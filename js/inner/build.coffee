@@ -11,6 +11,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     body: null
     start_time: null
     stop_time: null
+    queued_at: null
     steps: []
     status: null
     lifecycle: null
@@ -150,6 +151,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
           "canceled"
         else
           "still running"
+
+    @queued_time = @komp =>
+      if @status() == "queued"
+        "still queued"
+      else if @start_time() and @queued_at()
+        CI.time.as_duration(moment(@start_time()).diff(@queued_at()))
+
 
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
