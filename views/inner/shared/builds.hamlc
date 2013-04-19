@@ -5,7 +5,7 @@
       %th Revision
       %th Author
       %th Log
-      / ko if: VM.current_user().admin
+      / ko if: VM.current_user().admin && VM.selected().admin_builds
       %th Queued
       / /ko
       %th Started at
@@ -29,7 +29,7 @@
         %span{data-bind: "ifnot: body"}
           %span.build_log{data-bind: "text: subject"}
 
-      / ko if: VM.current_user().admin
+      / ko if: VM.current_user().admin && VM.selected().admin_builds
       %td{data-bind: "text: queued_time"}
       / /ko
 
