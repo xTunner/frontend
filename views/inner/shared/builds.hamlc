@@ -5,6 +5,9 @@
       %th Revision
       %th Author
       %th Log
+      / ko if: VM.current_user().admin
+      %th Queued
+      / /ko
       %th Started at
       %th Length
       %th Status
@@ -25,6 +28,10 @@
           %a.build_log{href: '#', data-bind: "text: subject, attr: { title: body }"}
         %span{data-bind: "ifnot: body"}
           %span.build_log{data-bind: "text: subject"}
+
+      / ko if: VM.current_user().admin
+      %td{data-bind: "text: queued_time"}
+      / /ko
 
       / ko if: status() != 'not_run'
       %td
