@@ -66,7 +66,9 @@ class CircleViewModel extends CI.inner.Obj
   refreshDashboard: () =>
     VM.loadProjects()
     sel = VM.selected()
-    if sel.project_name
+    if sel.admin_builds
+      VM.loadAdminRecentBuilds()
+    else if sel.project_name
       VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
       VM.loadRecentBuilds()
@@ -375,7 +377,11 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/admin', (cx) -> VM.loadAdminPage cx
     @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
     @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get '^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx
+    @get '^/admin/recent-builds', (cx) ->
+      VM.loadAdminRecentBuilds cx
+      VM.selected
+        admin_builds: true
+
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
     # outer
