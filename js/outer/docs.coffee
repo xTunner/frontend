@@ -35,6 +35,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       when "/faq#external-resources" then "/external-resources"
       when "/faq#cant-follow" then "/cant-follow"
 
+      when "/wrong-commands" then "/wrong-ruby-commands"
+
       else false
 
   filename: (cx) =>

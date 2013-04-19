@@ -507,6 +507,15 @@
             - mv config/database.ci.yml config/database.yml
             - bundle exec rake db:create db:schema:load --trace
 
+%p
+  If you store your database config in environment variables, then you can export them in the machine section.
+%p
+  %pre
+    %code.bash<>
+      :preserves
+        machine:
+          environment:
+            DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 
 = HAML['heading']({title: "Running your tests", hash: "test"})
 

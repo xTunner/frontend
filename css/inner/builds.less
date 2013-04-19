@@ -1,9 +1,17 @@
+table {
+  table-layout: fixed;
+}
+
 tbody.build-row {
   cursor: pointer;
   tr:hover td,
   tr:hover th {
     background-color: #aaaaaa;
    }
+  td {
+    word-wrap: break-word;
+    white-space: normal;
+  }
 }
 
 #build-messages {

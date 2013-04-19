@@ -51,6 +51,12 @@
           %dt Duration
           %dd{data-bind: "text: duration"}
 
+          / ko if: VM.current_user().admin && queued_time()
+
+          %dt Queued Time
+          %dd{data-bind: "text: queued_time"}
+
+          / /ko
 
         %dl.span4
 

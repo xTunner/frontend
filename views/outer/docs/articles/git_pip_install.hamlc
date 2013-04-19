@@ -11,7 +11,7 @@
 %pre
   %code.no-highlight<>
     :preserve
-      Obtaining somerepo from git+ssh://git@github.com/someorg/idx_interface.git#egg=somerepo (from -r requirements.txt (line 23))
+      Obtaining somerepo from git+ssh://git@github.com/someorg/somerepo.git#egg=somerepo (from -r requirements.txt (line 23))
       Cloning ssh://git@github.com/someorg/somerepo.git to ./venv/src/somerepo
       Complete output from command /usr/bin/git clone -q ssh://git@github.com/someorg/somerepo.git /home/ubuntu/someorg/venv/src/somerepo:
 
@@ -27,7 +27,7 @@
 %pre
   %code.ruby<>
     :preserve
-      git+git://github.com/kennethreitz/requests.git
+      git+git://github.com/someorg/somerepo.git
 
 %p
   If the repository is public, just change the dependency to use a
@@ -37,7 +37,7 @@
 %pre
   %code.ruby<>
     :preserve
-      git+http://github.com/kennethreitz/requests.git
+      git+http://github.com/someorg/somerepo.git
 
 %p
   If the repository is private, you will need
