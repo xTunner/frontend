@@ -47,7 +47,5 @@ CI.time =
       "#{minutes}m"
     else if minutes > 0
       "#{minutes}m #{seconds % 60}s"
-    else if duration > 1000
-      "#{seconds}s"
     else
-      "< 1s"
+      "#{seconds}s"
