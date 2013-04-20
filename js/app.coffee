@@ -67,7 +67,7 @@ class CircleViewModel extends CI.inner.Obj
     VM.loadProjects()
     sel = VM.selected()
     if sel.admin_builds
-      VM.loadAdminRecentBuilds()
+      VM.refreshAdminRecentBuilds()
     else if sel.project_name
       VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
@@ -265,6 +265,10 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
       @recent_builds((new CI.inner.Build d for d in data))
     @renderAdminPage "recent_builds"
+
+  refreshAdminRecentBuilds: () =>
+    $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @recent_builds((new CI.inner.Build d for d in data))
 
   adminRefreshIntercomData: (data, event) =>
     $.ajax(
