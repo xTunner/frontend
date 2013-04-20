@@ -1,0 +1,22 @@
+%section.cf.where
+  %h2 Where do we work?
+  %p We hire both local and remote folks.
+
+  .box
+    %h3 Local
+    %p We have lovely office in the dodgy end of SoMa in San Francisco, near Heroku, Twitter, Zynga, Pinterest, Atlassian, and many other startups.
+    %p We have catered lunches, a great office atmosphere, and lovely colleagues.
+
+    %p
+      Please note that we only hire people who are currently in the US or have US work authorization (though we're happy to work on transferring visa paperwork).
+
+
+  .box
+    %h3 Remote
+    %p
+      We have an asynchronous culture that is well suited to remote-working.
+      We use HipChat, Skype and email heavily, and currently one of our three engineers is working remotely from Oregon.
+      We'll bring you on-site every 8 weeks or so, and can do this according to your schedule.
+
+    %p
+      At the moment, we're only looking for remote folks who are based in the US.

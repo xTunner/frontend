@@ -1,0 +1,14 @@
+.point.tech
+  %span.ss-icon.ss-symbolicons genius
+
+  %h3 Cool tech
+  %p
+    Our backend is written in Clojure.
+    Everything from dev-ops to package management to serving our REST API is all done in Clojure.
+    This allows us be really productive, handle concurrency without difficulty, and leads to beautiful manageable code.
+    Clojure isn't just a fancy new language, its the most productive, powerful and elegant language we've ever used.
+
+  %p
+    Our frontend is a fat JS app written in HamlC, CoffeeScript, and Less.
+    It currently uses Knockout and Pusher to allow simple real-time updating without painful DOM tweaks.
+    It's fun and easy to work on, and is currently in pretty good shape.
