@@ -7,18 +7,28 @@
 %p
   If you want the benefits of parallel testing, and you're not
   using one of our automatically supported test runners, or if
-  you've overridden our test commands, you'll need to do some
-  extra work to make parallelism work.
+  you've overridden our test commands, you'll still be able to set up parallelism and reduce your test run-times.
 
-%h2 Circle Env Vars
+%h2 Spliting your test suite
 %p
-  The environment variables
-  %code CIRCLE_NODE_INDEX
-  and
-  %code CIRCLE_NODE_TOTAL
+  When you use Circle's parallelization, we run your code on multiple separate VMs.
+  To use parallelism, you make your test runner run only a subset of tests on each VM.
+  We use environmental variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
 
-  are exported. Your test runner should choose to run a subset
-  of your tests, on each node.
+%dl
+  %dt
+    %code CIRCLE_NODE_TOTAL
+  %dd
+    is the total number of parallel VMs being used to run your tests on each push.
+
+  %dt
+    %code CIRCLE_NODE_INDEX
+  %dd
+    is the index of the particular VM.
+    %code CIRCLE_NODE_INDEX
+    is indexed from zero.
+
+
 
 %h2 A simple example
 
@@ -43,7 +53,7 @@
 %h2 Balancing
 
 %p
-  A more powerful version evenly splits all test files across N nodes. We recommend you write a script that does something like
+  A more powerful version evenly splits all test files across N nodes. We recommend you write a script that does something like:
 %pre
   %code<>
     :preserve<>
@@ -69,6 +79,6 @@
 %p
 
   If you set this up for a library or framework that we should be
-  able to infer automatically, i.e. if you're using the standard
-  test runner, please let us know! We are always interested in
-  adding support for new languages and frameworks.
+  able to infer automatically, please
+  = HAML.contact_us({succeed: "."})
+  We are always interested in adding support for more languages and frameworks.
