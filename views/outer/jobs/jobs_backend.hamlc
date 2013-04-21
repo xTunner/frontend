@@ -2,18 +2,18 @@
   %input#backend{type: "checkbox"}
   %h3
     %label{for: "backend"} For backend/full-stack devs
-    %ul
-      %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, amazing coding chops (those having left coding behind them - this isn't the company for you, unfortunately), probably with 8-10 years of experience
-      %li young, raw, talented devs who can crank out code
-      %li having worked on a significant project that wasn't in java, JavaScript, ruby or php.
-      %li good knowledge of algorithmic design and semi-formal CS theory (CS degree not required)
-      %li people who know many languages, including post-college experience of functional ones (ML, Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
-      %li people who have built or scaled large distributed systems
-      %li Clojure experts
-      %li writing Clojure (experience in other functional languages counts)
-      %li designing elegant APIs
-      %li DX (Developer experience)
-      %li broad knowledge of important programming languages, such as Python, Node.js, Javascript, Ruby (esp. Rails), Java and PHP.
-      %li scalable web services
-      %li dev-ops including machine configuration and deployment on AWS
-      %li low-level Linux hacking (including file-systems, kernels, databases, etc)
+  %ul
+    %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, amazing coding chops (those having left coding behind them - this isn't the company for you, unfortunately), probably with 8-10 years of experience
+    %li young, raw, talented devs who can crank out code
+    %li having worked on a significant project that wasn't in java, JavaScript, ruby or php.
+    %li good knowledge of algorithmic design and semi-formal CS theory (CS degree not required)
+    %li people who know many languages, including post-college experience of functional ones (ML, Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
+    %li people who have built or scaled large distributed systems
+    %li Clojure experts
+    %li writing Clojure (experience in other functional languages counts)
+    %li designing elegant APIs
+    %li DX (Developer experience)
+    %li broad knowledge of important programming languages, such as Python, Node.js, Javascript, Ruby (esp. Rails), Java and PHP.
+    %li scalable web services
+    %li dev-ops including machine configuration and deployment on AWS
+    %li low-level Linux hacking (including file-systems, kernels, databases, etc)

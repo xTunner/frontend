@@ -1,7 +1,7 @@
 .accordion
-  %input#frontend{type: "frontend"}
+  %input#designers{type: "checkbox"}
   %h3
-    %label{for: "frontend"} For frontend devs
+    %label{for: "designers"} For designers
   %ul
     %li
       ability to relate to our customers, who are typically software developers.

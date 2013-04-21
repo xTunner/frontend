@@ -2,12 +2,12 @@
   %input#everybody{type: "checkbox"}
   %h3
     %label{for: "everybody"} For everybody
-    %ul
-      %li people who supremely care about developer productivity
-      %li great communicators
-      %li good conversationalist, and pleasant people - we'll be spending the next few years together after al
-      %li being easy to work with: we're not interesting in solo artists, divas, people who always know best, or assholes,
-      %li we prefer that you do not identify with the words "ninja", "pirate", or "rock star".
-      %li
-        a working knowledge of the writings of patio11 or other dev-marketers, and ability to discuss different types of conversion rate optimization, customer lifecycle marketing, virality, and other "growth hacks".
-        Experience a serious plus.
+  %ul
+    %li people who supremely care about developer productivity
+    %li great communicators
+    %li good conversationalist, and pleasant people - we'll be spending the next few years together after al
+    %li being easy to work with: we're not interesting in solo artists, divas, people who always know best, or assholes,
+    %li we prefer that you do not identify with the words "ninja", "pirate", or "rock star".
+    %li
+      a working knowledge of the writings of patio11 or other dev-marketers, and ability to discuss different types of conversion rate optimization, customer lifecycle marketing, virality, and other "growth hacks".
+      Experience a serious plus.
