@@ -1,0 +1,5 @@
+- if @succeed
+  = succeed @succeed, ->
+    %a{href: "mailto:sayhi@circleci.com", target: "_blank"} contact us
+- else
+  %a{href: "mailto:sayhi@circleci.com", target: "_blank"} contact us

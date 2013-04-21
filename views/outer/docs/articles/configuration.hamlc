@@ -385,7 +385,7 @@
   to manage PHP versions.
 %p
   Are you using a version of PHP that isn't included above?
-  = HAML['contact_us']()
+  = HAML['contact_us']({succeed: '.'})
 
 
 = HAML['heading']({title: "Checking out your code from GitHub", hash: "checkout"})

@@ -22,8 +22,7 @@
 %p
   Hitting the RAM limit is typically a bug. If your tests actually
   need more than 2GB of RAM, please
-  = succeed '.', ->
-    = HAML['contact_us']()
+  = HAML['contact_us']({succeed: '.'})
 
 %h2 Debugging
 

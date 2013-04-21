@@ -77,5 +77,4 @@
 %p
   If you run into trouble configuring these, or are using a different tool not on this list,
   please
-  = succeed '.', ->
-    = HAML['contact_us']()
+  = HAML['contact_us']({succeed: '.'})
