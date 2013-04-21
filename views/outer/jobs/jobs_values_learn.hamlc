@@ -1,5 +1,5 @@
 .point.learn
-  %span.ss-icon.ss-symbolicons graduationcap
+  %i.icon.icon-lightbulb
   %h3 Lots to Learn
   %p
     We try to hire really really high caliber people.

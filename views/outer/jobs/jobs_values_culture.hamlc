@@ -1,5 +1,5 @@
 .point.culture
-  %span.ss-icon.ss-symbolicons heart
+  %i.icon.icon-heart
   %h3 Culture
   %p
     %strong Our culture is engineering-driven.

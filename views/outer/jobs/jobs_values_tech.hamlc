@@ -1,6 +1,6 @@
 .point.tech
-  %span.ss-icon.ss-symbolicons genius
-
+  %i.icon.icon-magic
+  -# TODO: making tools for developers
   %h3 Cool tech
   %p
     Our backend is written in Clojure.

@@ -1,5 +1,5 @@
 .point.young
-  %span.ss-icon.ss-symbolicons heartuser
+  %i.icon.icon-group
   %h3 Young company
   %p
     At a small growing company, your work has a disproportionate affect.
