@@ -49,8 +49,7 @@ useful for more complex testing or deployment.
 %p
   These variables are available for
   = succeed ':', ->
-    %a{ href: "/docs/parallel-manual-setup" }
-      manually setting up parallelism
+    %a{ href: "/docs/parallel-manual-setup" } manually setting up parallelism
 
 %dl
   %dt
