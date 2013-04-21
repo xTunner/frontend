@@ -14,12 +14,5 @@
       = HAML['jobs_where']()
       = HAML['jobs_how']()
 
-
-
-
-
-
-
-    %h2 Recruiters
-    %p
-      <strong>No recruiters</strong>, thank you.
+      %h2
+        <strong>No recruiters</strong>, thank you.
