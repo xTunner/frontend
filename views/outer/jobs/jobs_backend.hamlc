@@ -11,7 +11,7 @@
     .accordion-inner
       %h4 The type of people we're looking for:
       %ul
-        %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops (those having left coding behind them - this isn't the company for you, unfortunately),
+        %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops (those having left coding behind them&mdash;this isn't the company for you, unfortunately),
         %li love young, raw, talented devs who can crank out code,
         %li clojure experts,
         %li people with post-college experience of functional languages (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc),
@@ -30,4 +30,4 @@
         %li broad knowledge of important programming languages, such as Python, Node.js, Javascript, Ruby (esp. Rails), Java and PHP,
         %li scalable cloud and web services,
         %li dev-ops including machine configuration and deployment on AWS
-        %li low-level Linux hacking (including file-systems, kernels, databases, etc)
+        %li low-level Linux hacking (including file-systems, kernels, databases, etc).
