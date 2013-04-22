@@ -66,7 +66,9 @@ class CircleViewModel extends CI.inner.Obj
   refreshDashboard: () =>
     VM.loadProjects()
     sel = VM.selected()
-    if sel.project_name
+    if sel.admin_builds
+      VM.refreshAdminRecentBuilds()
+    else if sel.project_name
       VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
       VM.loadRecentBuilds()
@@ -264,6 +266,10 @@ class CircleViewModel extends CI.inner.Obj
       @recent_builds((new CI.inner.Build d for d in data))
     @renderAdminPage "recent_builds"
 
+  refreshAdminRecentBuilds: () =>
+    $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @recent_builds((new CI.inner.Build d for d in data))
+
   adminRefreshIntercomData: (data, event) =>
     $.ajax(
       url: "/api/v1/admin/refresh-intercom-data"
@@ -375,7 +381,11 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/admin', (cx) -> VM.loadAdminPage cx
     @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
     @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get '^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx
+    @get '^/admin/recent-builds', (cx) ->
+      VM.loadAdminRecentBuilds cx
+      VM.selected
+        admin_builds: true
+
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
     # outer

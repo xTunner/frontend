@@ -153,11 +153,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
           "still running"
 
     @queued_time = @komp =>
-      if @status() == "queued"
-        "still queued"
-      else if @start_time() and @queued_at()
+      if @start_time() and @queued_at()
         CI.time.as_duration(moment(@start_time()).diff(@queued_at()))
-
+      else if @queued_at() and @status() is "queued"
+        CI.time.as_time_since(@queued_at())
 
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
