@@ -174,7 +174,7 @@
 %p
   Once you've gotten your tests set up, you may find that they fail.
   We have collected a
-  %a{href: "/docs/common-problems"} list of common problems and their solutions
+  %a{href: "/docs/troubleshooting"} list of common problems and their solutions
   which should help you debug your issues.
   We also have an SSH feature which runs your tests while allowing you to SSH in.
   This is very useful for debugging, and also for poking at our virtual machines to understand them better.

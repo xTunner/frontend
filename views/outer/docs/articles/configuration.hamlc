@@ -65,7 +65,7 @@
 
 %p
   If you have a test failure, our
-  %a{ href: "/docs/common-problems" }
+  %a{ href: "/docs/troubleshooting" }
     troubleshooting section
   may highlight the best way to solve the problem.
 

@@ -54,9 +54,9 @@
         set your project up manually
 
   %li
-    Sometimes, your tests won't work on our server, even though they work locally.
+    Sometimes, your tests will fail on our server, even though they work locally.
     Read our list of
-    %a{ href: "/docs/common-problems"} common problems
+    %a{ href: "/docs/troubleshooting"} common problems
     and their solutions.
 
 

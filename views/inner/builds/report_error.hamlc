@@ -11,7 +11,7 @@
         %b Error!
 
         = succeed ',', ->
-          %a{href: "/docs/common-problems" } Check out common problems
+          %a{href: "/docs/troubleshooting" } Check out common problems
 
         or
         - if @build
