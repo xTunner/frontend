@@ -25,26 +25,23 @@
     %li implementing complex flows in JS and CoffeeScript (possibly in Angular/Ember or similar)
     %li visualizations in D3 or similar
 
+  %section
+    %p
+      Although we talk a lot about engineers, great design is really important to us, and we're looking for great designers to help us with it.
+      So let me include a special pitch about why you'll love being a designer at Circle.
 
+    %p
+      %strong We are a very design-focused company.
+      Sure, at the moment none of us can do visual design, but we think deeply about UX and experience for our customers.
+      We spend a lot of time thinking about how our customers experience Circle, how to speak to them in a way in which they identify with, and allowing them solve complex problems simply.
+      Everybody at Circle talks to the customer, including you.
+      We value your role in this, and the rest of the team is very motivated to work with you to solve these problems.
 
-%section
-  %h2 We want designers too!
-  %p
-    Although we talk a lot about engineers, great design is really important to us, and we're looking for great designers to help us with it.
-    So let me include a special pitch about why you'll love being a designer at Circle.
+    %p
+      %strong At the same time, you'll have a high level of responsibility.
+      Companies live and die by beautiful design, and so we are looking for the perfect designer who understands both the product and our customers.
 
-  %p
-    %strong We are a very design-focused company.
-    Sure, at the moment none of us can do visual design, but we think deeply about UX and experience for our customers.
-    We spend a lot of time thinking about how our customers experience Circle, how to speak to them in a way in which they identify with, and allowing them solve complex problems simply.
-    Everybody at Circle talks to the customer, including you.
-    We value your role in this, and the rest of the team is very motivated to work with you to solve these problems.
-
-  %p
-    %strong At the same time, you'll have a high level of responsibility.
-    Companies live and die by beautiful design, and so we are looking for the perfect designer who understands both the product and our customers.
-
-  %p
-    %strong You'll also be able to work on a lot of cool things.
-    As well as an interesting technical stack and a smart team, you'll get to work with seriously experienced mentors and investors in important areas such as branding, positioning and messaging.
-    You'll be responsible for taking these high level concepts and implementing everything from front-page and landing page design, to logos and tshirts.
+    %p
+      %strong You'll also be able to work on a lot of cool things.
+      As well as an interesting technical stack and a smart team, you'll get to work with seriously experienced mentors and investors in important areas such as branding, positioning and messaging.
+      You'll be responsible for taking these high level concepts and implementing everything from front-page and landing page design, to logos and tshirts.
