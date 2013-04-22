@@ -1,40 +1,43 @@
-.accordion
-  %input#designers{type: "checkbox"}
-  %h3
-    %label{for: "designers"} For designers
-  %section
-    %p
-      Although we talk a lot about engineers, great design is really important to us, and we're looking for great designers to help us with it.
+.accordion-group
+  .accordion-heading
+    %a.accordion-toggle{data-toggle: "collapse",
+                        data-parent: "#accordion-who",
+                        href: "#collapseDesigners"} For designers
 
-    %p
-      %strong We are a very design-focused company.
-      Sure, at the moment none of us can do visual design, but we think deeply about UX and experience for our customers.
-      We spend a lot of time thinking about how our customers experience Circle, how to speak to them in a way in which they identify with, and allowing them solve complex problems simply.
-      Everybody at Circle talks to customers, and you will too.
-      We value your role in this, and the rest of the team is very motivated to work with you to solve these problems.
+  .accordion-body.collapse#collapseDesigners
+    %section
+      %p
+        Although we talk a lot about engineers, great design is really important to us, and we're looking for great designers to help us with it.
 
-    %p
-      %strong At the same time, you'll have a high level of responsibility.
-      Companies live and die by beautiful design, and so we are looking for the perfect designer who understands both the product and our customers.
+      %p
+        %strong We are a very design-focused company.
+        Sure, at the moment none of us can do visual design, but we think deeply about UX and experience for our customers.
+        We spend a lot of time thinking about how our customers experience Circle, how to speak to them in a way in which they identify with, and allowing them solve complex problems simply.
+        Everybody at Circle talks to customers, and you will too.
+        We value your role in this, and the rest of the team is very motivated to work with you to solve these problems.
 
-    %p
-      %strong You'll also be able to work on a lot of cool things.
-      As well as an interesting technical stack and a smart team, you'll get to work with seriously experienced mentors and investors in important areas such as branding, positioning and messaging.
-      You'll be responsible for taking these high level concepts and implementing everything from assets and artwork, to front-page and landing page designs, to logos and tshirts.
+      %p
+        %strong At the same time, you'll have a high level of responsibility.
+        Companies live and die by beautiful design, and so we are looking for the perfect designer who understands both the product and our customers.
 
-  %h4 What our perfect designer will have:
-  %ul
-    %li
-      The most important thing is an ability to relate to our customers, who are typically software developers.
-      Designers with a CS degree, who hang out with developers, have worked a lot with developers, built developer-facing tools, etc, are strongly encouraged.
-    %li
-      A requirement for designers is that you can implement your own stuff.
-      We need to ship quickly, so you need to be able to turn designs into CSS and HTML.
-    %li
-      Deep JavaScript experience is not required, but you'll need to roughly know your way around and change things if required.
-    %li
-      A willingness to learn about backend code and tech would be lovely (you won't need to implement it, but its kinda required to relate to our customers)
-    %li
-      We're looking for someone who likes to ship often, believes "done is better than perfect", and prefers to iterate after shipping, instead of waiting for the perfect design.
-    %li
-      Interest and experience in branding and messaging
+      %p
+        %strong You'll also be able to work on a lot of cool things.
+        As well as an interesting technical stack and a smart team, you'll get to work with seriously experienced mentors and investors in important areas such as branding, positioning and messaging.
+        You'll be responsible for taking these high level concepts and implementing everything from assets and artwork, to front-page and landing page designs, to logos and tshirts.
+
+    %h4 What our perfect designer will have:
+    %ul
+      %li
+        The most important thing is an ability to relate to our customers, who are typically software developers.
+        Designers with a CS degree, who hang out with developers, have worked a lot with developers, built developer-facing tools, etc, are strongly encouraged.
+      %li
+        A requirement for designers is that you can implement your own stuff.
+        We need to ship quickly, so you need to be able to turn designs into CSS and HTML.
+      %li
+        Deep JavaScript experience is not required, but you'll need to roughly know your way around and change things if required.
+      %li
+        A willingness to learn about backend code and tech would be lovely (you won't need to implement it, but its kinda required to relate to our customers)
+      %li
+        We're looking for someone who likes to ship often, believes "done is better than perfect", and prefers to iterate after shipping, instead of waiting for the perfect design.
+      %li
+        Interest and experience in branding and messaging

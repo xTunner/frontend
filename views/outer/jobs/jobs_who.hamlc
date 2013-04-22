@@ -8,8 +8,9 @@
     In addition, we've noticed that the following correlate with the people that we want to hire.
     This is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory), but rather how we look at who we're looking to hire.
 
-  .accordion-container
-    = HAML.jobs_everybody()
-    = HAML.jobs_backend()
-    = HAML.jobs_frontend()
-    = HAML.jobs_designers()
+  #accordion-who
+    .accordion
+      = HAML.jobs_everybody()
+      = HAML.jobs_backend()
+      = HAML.jobs_frontend()
+      = HAML.jobs_designers()

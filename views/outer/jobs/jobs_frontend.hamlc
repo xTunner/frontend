@@ -1,16 +1,19 @@
-.accordion
-  %input#frontend{type: "checkbox"}
-  %h3
-    %label{for: "frontend"} For frontend devs
-  %ul
-    %li knowledge of common HTML5 implementation strategies,
-    %li experience building fat JS apps,
-    %li experience designing complex stateful apps in a maintainable way,
-    %li experience using HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc,
-    %li experience with data visualization, such as D3 or Processing,
-    %li good knowledge of algorithmic design and CS theory (informally, CS degree not required),
-    %li good UX sensibilities,
-    %li preferred if you aren't awful at visual design so that prototypes can be shipped and iterated on
+.accordion-group
+  .accordion-heading
+    %a.accordion-toggle{data-toggle: "collapse",
+                        data-parent: "#accordion-who",
+                        href: "#collapseFrontend"} For frontend devs
 
-  %p
-    Backend knowledge is not required, but we expect that you're not helpless if a change requires simple backend changes.
+  .accordion-body.collapse#collapseFrontend
+    %ul
+      %li knowledge of common HTML5 implementation strategies,
+      %li experience building fat JS apps,
+      %li experience designing complex stateful apps in a maintainable way,
+      %li experience using HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc,
+      %li experience with data visualization, such as D3 or Processing,
+      %li good knowledge of algorithmic design and CS theory (informally, CS degree not required),
+      %li good UX sensibilities,
+      %li preferred if you aren't awful at visual design so that prototypes can be shipped and iterated on
+
+    %p
+      Backend knowledge is not required, but we expect that you're not helpless if a change requires simple backend changes.
