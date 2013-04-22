@@ -12,10 +12,10 @@
       %h4 The type of people we're looking for:
       %ul
         %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops (those having left coding behind them&mdash;this isn't the company for you, unfortunately),
-        %li love young, raw, talented devs who can crank out code,
+        %li young, raw, talented devs who can crank out code,
         %li clojure experts,
         %li people with post-college experience of functional languages (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc),
-        %li people who love trying new cutting edge things.
+        %li people who love trying new cutting-edge things.
 
       %h4 Experience we love to see:
       %ul
