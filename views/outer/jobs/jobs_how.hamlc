@@ -9,13 +9,13 @@
 
   %p
     The best applicants pitch us as to why they should work at Circle.
-    (We know this is a developer's market, but it's nice that you're interested in working here before we embark on an interview).
     This is both why you're interested, and why you think you'd be a good part of the team.
+    (We know this is a great market for developers, but we like folks who know why they want to work here).
     If all goes well we're going to spend a lot of time together, so its worth it for both of us to discuss this in advance.
 
   %p
     Naturally, this goes both ways.
-    We're happy to answer any questions you have about Circle, where we're going, and why it's an exciting place to work.
+    We're happy to answer any questions you have about Circle, where we're going, why it's a great place to work, and what we're doing to keep it that way.
 
 %section.application
   %h2 The application process
@@ -56,6 +56,14 @@
       This is to determine what it's like to work with you, whether you can ship, and how good your real-life code is.
       We'll need you to sign a standard IP assignment, and again, we'll pay you for your time.
 
-  %p
-    We feel that candidates who get this far and are unsuccessful are entitled to feedback about how to improve for the future, as a courtesy for taking the time to speak to us.
-    If you are interesting in frank feedback about your interviews, please ask us.
+  #final
+    %p
+      At this point, we'll be ready to hire you.
+      We do our best to ensure that the process, from start to finish, can be done on your time scale, and we feel that you deserve our best efforts to move as quickly as you need.
+    %p
+      Similarly, we feel that candidates who get this far and are unsuccessful are entitled to feedback about how to improve for the future, as a courtesy for taking the time to speak to us.
+      If you are interesting in frank feedback about your interviews, please ask us.
+
+    %p
+      Finally, if you have any questions, please feel free to contact us at any time at <a href="mailto:jobs@circleci.com">jobs@circleci.com</a>.
+      We look forward to hearing from you.
