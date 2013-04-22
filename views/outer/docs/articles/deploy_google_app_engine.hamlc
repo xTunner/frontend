@@ -12,8 +12,7 @@
 
 %p
   First, you have to
-  %b
-    install the SDK on your build VM.
+  %strong install the SDK on your build VM.
   We don't do this by default, because it's very fast (under 10 seconds) and there are many
   supported SDK versions to choose from.
 
@@ -45,10 +44,10 @@
   With the SDK installed, next you need to
   %b
     configure continuous deployment.
-  You may want to read up on
+  You may want to read up on configuring
   %a{href: '/docs/configuration#deployment'}
-    configuring continuous deployment with circle.yml in general
-  if your needs are more complex than what's shown in these examples.
+    continuous deployment with circle.yml
+  in general if your needs are more complex than what's shown in these examples.
 
 %p
   For the sake of this example, let's deploy the master branch to
@@ -56,13 +55,12 @@
   depending on which language you're using, but they're all doing basically
   the same thing:
 
-%h3 python
+%h3 Python
 
 %p
   Using
   = succeed ':', ->
-    %a{href: 'https://developers.google.com/appengine/docs/python/gettingstarted/uploading'}
-      appcfg.py update
+    %a{href: 'https://developers.google.com/appengine/docs/python/gettingstarted/uploading'} appcfg.py update
 
 %pre
   %code.no-highlight<>
@@ -73,13 +71,12 @@
           commands:
             - echo "my-password" | $HOME/google-appengine/appcfg.py update --email=me@example.com --passin .
 
-%h3 java
+%h3 Java
 
 %p
   Using
   = succeed ':', ->
-    %a{href: 'https://developers.google.com/appengine/docs/java/tools/uploadinganapp'}
-      appcfg.sh update
+    %a{href: 'https://developers.google.com/appengine/docs/java/tools/uploadinganapp'} appcfg.sh update
 
 %pre
   %code.no-highlight<>
@@ -90,13 +87,12 @@
           commands:
             - echo "my-password" | $HOME/appengine-java-sdk/bin/appcfg.sh update --email=me@example.com --passin .
 
-%h3 go
+%h3 Go
 
 %p
   Using
   = succeed ':', ->
-    %a{href: 'https://developers.google.com/appengine/docs/go/tools/uploadinganapp'}
-      appcfg.py update
+    %a{href: 'https://developers.google.com/appengine/docs/go/tools/uploadinganapp'} appcfg.py update
 
 %pre
   %code.no-highlight<>
