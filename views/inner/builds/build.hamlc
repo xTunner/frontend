@@ -14,99 +14,98 @@
 
       .row-fluid.build-table#build-log-header
 
-        %dl.span4
+        %h4.clearfix
+          Build information 
+          %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
 
-          %dt Revision
+        %div.clearfix
+          %dl.span4
+
+            %dt Revision
+            %dd
+              %a{data-bind: "attr: { href: github_url }, text: github_revision"}
+
+
+            %dt Branch
+            %dd{data-bind: "text: branch"}
+
+            %dt Author
+            %dd
+              %a{data-bind: "text: author, attr: {href: author_mailto}"}
+
+            / ko if: author_isnt_committer
+            %dt Committer
+            %dd
+              %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+            / /ko
+
+            %dt Started by
+            %dd{data-bind: "text: why_in_words"}
+
+
+          %dl.span4
+
+            %dt Started at
+            %dd{data-bind: "text: pretty_start_time"}
+
+            %dt Duration
+            %dd{data-bind: "text: duration"}
+
+            / ko if: VM.current_user().admin && queued_time()
+
+            %dt Queued Time
+            %dd{data-bind: "text: queued_time"}
+
+            / /ko
+
+            / ko if: previous_build
+            %dt Previous build
+            %dd
+              %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
+            / /ko
+
+          %dl.span4.actions
+            %dd
+              %button.btn.btn-danger{data-bind: "click: report_build",
+                                     title: "Report an error in how Circle ran this build"}
+                Report...
+
+              %div.btn-group
+                %button.btn.btn-primary{data-bind: "click: retry_build",
+                                    title: "Rerun the same version of the tests",
+                                    data-loading-text: "Triggering...",
+                                    data-success-text: "Triggered"}
+                  Retry
+                %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li
+                    %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
+                      Clear Cache &amp; Retry
+
+              %button.btn.btn-primary{data-bind: "click: ssh_build",
+                                    title: "Rerun the tests, with SSH into the VM",
+                                    data-loading-text: "Triggering...",
+                                    data-success-text: "Triggered"}
+                SSH
+              %span{data-bind: "if: can_cancel()"}
+                %button.btn.btn-primary{data-bind: "click: cancel_build",
+                                        title: "Cancel the build immediately",
+                                        data-loading-text: "Canceling...",
+                                        data-success-text: "Canceled"}
+                  Cancel
+
+        %dl.commit-log
+
+          %dt Commit Log
           %dd
-            %a{data-bind: "attr: { href: github_url }, text: github_revision"}
-
-          %dt Build
-          %dd{data-bind: "text: build_num"}
-
-          %dt Author
-          %dd
-            %a{data-bind: "text: author, attr: {href: author_mailto}"}
-
-          / ko if: author_isnt_committer
-          %dt Committer
-          %dd
-            %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
-          / /ko
-
-          / ko if: previous_build
-          %dt Previous build
-          %dd
-            %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
-          / /ko
-
-        %dl.span4
-
-          %dt Status
-          %dd.build_status
-            %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
-
-          %dt Started at
-          %dd{data-bind: "text: pretty_start_time"}
-
-          %dt Duration
-          %dd{data-bind: "text: duration"}
-
-          / ko if: VM.current_user().admin && queued_time()
-
-          %dt Queued Time
-          %dd{data-bind: "text: queued_time"}
-
-          / /ko
-
-        %dl.span4
-
-          %dt Branch
-          %dd{data-bind: "text: branch"}
-
-          %dt Started by
-          %dd{data-bind: "text: why_in_words"}
-
-          %dt Actions:
-          %dd
-            %button.btn.btn-danger{data-bind: "click: report_build",
-                                   title: "Report an error in how Circle ran this build"}
-              Report...
-
-            %div.btn-group
-              %button.btn.btn-primary{data-bind: "click: retry_build",
-                                  title: "Rerun the same version of the tests",
-                                  data-loading-text: "Triggering...",
-                                  data-success-text: "Triggered"}
-                Retry
-              %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
-                %span.caret
-              %ul.dropdown-menu
-                %li
-                  %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
-                    Clear Cache &amp; Retry
-
-            %button.btn.btn-primary{data-bind: "click: ssh_build",
-                                  title: "Rerun the tests, with SSH into the VM",
-                                  data-loading-text: "Triggering...",
-                                  data-success-text: "Triggered"}
-              SSH
-            %span{data-bind: "if: can_cancel()"}
-              %button.btn.btn-primary{data-bind: "click: cancel_build",
-                                      title: "Cancel the build immediately",
-                                      data-loading-text: "Canceling...",
-                                      data-success-text: "Canceled"}
-                Cancel
+            %span{data-bind: "if: body"}
+              %a{href: '#', data-bind: "text: subject, jQueryExt: {type: 'tooltip', options: {title: body}}"}}
+            %span{data-bind: "ifnot: body"}
+              %span{data-bind: "text: subject"}
 
       .container-fluid
         .row
-          %dl.offset1
-
-            %dt Commit Log
-            %dd
-              %span{data-bind: "if: body"}
-                %a{href: '#', data-bind: "text: subject, jQueryExt: {type: 'tooltip', options: {title: body}}"}}
-              %span{data-bind: "ifnot: body"}
-                %span{data-bind: "text: subject"}
 
         %div{data-bind: "if: messages().length"}
           = HAML['messages']()

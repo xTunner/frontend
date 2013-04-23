@@ -19,16 +19,22 @@ tbody.build-row {
   background: #EFF2F6;
   border-top: 1px solid #D7DCE3;
   border-bottom: 1px solid #D7DCE3;
-  width: 100%;
+  width: 94%;
+  padding: 1% 3%;
   top: 83px;
-  color: #596e8a;
+  color: #666;
+   h4 {
+    border-bottom: 1px solid #D7DCE3;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+   }
    dt {
       width: 100px;
       float: left;
       display: block;
       clear: left;
-      color: #134374;
-      text-align: right;
+      color: #333;
+      text-align: left;
       margin-right: 10px;
    }
 
@@ -39,6 +45,20 @@ tbody.build-row {
    dd {
       float: left;
       display: block;
+   }
+   .span4 {
+      margin: 0;
+      &.actions {
+        width: auto;
+        position: absolute;
+        top: 18px;
+        right: 44px;
+      }
+   }
+   .commit-log {
+      padding-top: 1%;
+      margin-top: 1%;
+      border-top: 1px solid #D7DCE3;
    }
 }
 
@@ -219,7 +239,8 @@ td.build_status {
 }
 
 #build-log-container {
+  position: relative;
 	#build-log-header {
-		clear: both;
+		margin-bottom: 20px;
 	}
 }
