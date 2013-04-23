@@ -534,7 +534,8 @@
 
 %ul
   %li
-    <b>minitest_globs</b>: a list of file globs. By default, when using parallelization, Circle
+    <b>minitest_globs</b>: a list of file globs, using <a href="http://ruby-doc.org/core-2.0/Dir.html#glob-method">Ruby's Dir.glob syntax</a>.
+    By default, when using parallelization, Circle
     will run all tests in the test/unit, test/integration and
     test/functional directories. Setting this option will replace the
     standard directories with your own. This is only needed when using
