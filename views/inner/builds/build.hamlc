@@ -110,7 +110,24 @@
         %div{data-bind: "ifnot: messages().length"}
           = HAML['report_error']({build: true})
 
-        %div{data-bind: "foreach: steps"}
+        %aside.stages.span3
+          %ul.nav.nav-list.well
+            %li
+              %h4 Stages
+            %li
+              %a.active Machine
+            %li
+              %a Checkout
+            %li
+              %a Dependencies
+            %li
+              %a Database
+            %li
+              %a Test
+            %li
+              %a Deploy       
+
+        %div{data-bind: "foreach: steps", class: "span12"}
           %div{data-bind: "foreach: actions"}
 
             -# wrapper allows the header and detail be siblings, for the JS

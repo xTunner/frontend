@@ -256,6 +256,53 @@ td.build_status {
 #build-log-container {
   top: -20px;
   position: relative;
+
+  .stages {
+    margin: 0;
+    h4 {
+      margin: 0 0 10px 20px;
+      line-height: 22px;
+    }
+    ul {
+      padding: 10px 0 0 0;
+      list-style-type: none;
+      li:not(:first-child) {
+        counter-increment: stage-counter;
+        border-top: 1px solid #e3e3e3;
+        padding: 0;
+        a {
+          display: block;
+          margin: 0;
+          position: relative;
+          padding: 8px 0 8px 45px;
+          cursor: pointer;
+          &.active {
+            background: #EBF3FC;
+            font-weight: bold;
+            &:before {
+              background: #366aa4;
+            }
+          }
+          &:before {
+            content: counter(stage-counter);
+            position: absolute;
+            top: 8px;
+            left: 15px;
+            border-radius: 20px;
+            height: 20px;
+            width: 20px;
+            color: white;
+            background: #D4D4D4;
+            font-weight: bold;
+            font-size: .8em;
+            text-align: center;
+            text-shadow: none;
+          }
+        }
+      }
+    }
+  }
+
 	#build-log-header {
 		margin-bottom: 20px;
 	}
