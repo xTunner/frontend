@@ -26,7 +26,22 @@ tbody.build-row {
    h4 {
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
-    margin-bottom: 15px;
+    margin: 0 0 15px 0;
+    .meta {
+      display: inline-block;
+      margin: 0 5px 0 0;
+      font-size: .75em;
+      font-weight: normal;
+      color: #999;
+      a {
+        margin-right: 3px;
+      }
+      span {
+        &:first-child {
+          margin-left: 3px;
+        }
+      }
+    }
    }
    dt {
       width: 100px;
@@ -51,7 +66,7 @@ tbody.build-row {
       &.actions {
         width: auto;
         position: absolute;
-        top: 18px;
+        top: 10px;
         right: 44px;
       }
    }
@@ -239,6 +254,7 @@ td.build_status {
 }
 
 #build-log-container {
+  top: -20px;
   position: relative;
 	#build-log-header {
 		margin-bottom: 20px;
