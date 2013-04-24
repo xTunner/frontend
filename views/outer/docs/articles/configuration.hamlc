@@ -346,6 +346,8 @@
     %li
       %code oraclejdk7 (default)
     %li
+      %code oraclejdk6 (default)
+    %li
       %code openjdk7
     %li
       %code openjdk6
