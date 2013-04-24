@@ -129,8 +129,12 @@ tbody.build-row {
   font-weight: normal;
 
   .action_header {
-    color: #666;
-    font-weight: bold;
+
+    &.success > .ah_wrapper { border-left: 5px solid @green; }
+    &.failed > .ah_wrapper { border-left: 5px solid @red; }
+    &.running > .ah_wrapper { border-left: 5px solid @yellow; }
+    &.timedout > .ah_wrapper { border-left: 5px solid @red; }
+
     .time {
       color: #D4D4D4;
       float: right;
@@ -147,11 +151,12 @@ tbody.build-row {
     margin-top: 5px;
   }
   .detail {
+     margin: 2%;
+     text-shadow: none;
      background: #1a3d64;
      border: 1px solid #132d49;
      border-top: 1px solid #132d49;
     .box-shadow(inset 0px 1px 0 rgba(255,255,255, .2));
-     margin-top: 5px;
      padding: 5px 10px;
      .bash-command {
         color: #94A1A1;
@@ -165,15 +170,19 @@ tbody.build-row {
 
    .ah_wrapper {
       #gradient > .vertical(#fff, #fafafa);
-      height: 40px;
+      min-height: 40px;
       border: 1px solid #eee;
-      border-left: none;
       text-shadow: 0 1px 0 #fff;
       overflow: hidden; // put the contents beside each other
 
       @green:  #57A957;
       @red: #EE5F5B;
       @yellow: #E0C91B;
+
+      .command {
+        color: #666;
+        font-weight: bold;
+      }
 
       .button {
          float: left; // put to the right of .command
@@ -188,11 +197,6 @@ tbody.build-row {
          i {
           color: #D4D4D4;
          }  
-
-        &.success { border-left: 5px solid @green; }
-        &.failed { border-left: 5px solid @red; }
-        &.running { border-left: 5px solid @yellow; }
-        &.timedout { border-left: 5px solid @red; }
 
       }
 

@@ -46,8 +46,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       cancelled: @komp => @status() == "cancelled"
 
     @collapse_icon = 
-      "icon-minus": @komp => !@minimize()
-      "icon-plus": @minimize
+      "icon-chevron-up": @komp => !@minimize()
+      "icon-chevron-down": @minimize
 
     @action_header_button_style = @komp =>
       if @has_content()
