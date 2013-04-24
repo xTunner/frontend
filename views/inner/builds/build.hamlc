@@ -102,7 +102,7 @@
             %span{data-bind: "ifnot: body"}
               %span{data-bind: "text: subject"}
 
-      .container-fluid
+      .container-fluid.row-fluid
         .row
 
         %div{data-bind: "if: messages().length"}
@@ -110,12 +110,14 @@
         %div{data-bind: "ifnot: messages().length"}
           = HAML['report_error']({build: true})
 
-        %aside.stages.span3
+        %aside.stages.span2
           %ul.nav.nav-list.well
             %li
               %h4 Stages
             %li
-              %a.active Machine
+              %a.active 
+                Machine
+                %i.icon-refresh.icon-spin
             %li
               %a Checkout
             %li
@@ -127,7 +129,7 @@
             %li
               %a Deploy       
 
-        %div{data-bind: "foreach: steps", class: "span12"}
+        %div{data-bind: "foreach: steps", class: "span10"}
           %div{data-bind: "foreach: actions"}
 
             -# wrapper allows the header and detail be siblings, for the JS
@@ -138,6 +140,7 @@
               .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
                 .ah_wrapper
                   .button{data-bind: "css: action_header_button_style"}
+                    %i{data-bind: "css: collapse_icon"}
                   .command{data-bind: "css: action_header_style"}
                     %span
                       \$

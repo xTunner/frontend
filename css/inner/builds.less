@@ -117,7 +117,6 @@ tbody.build-row {
   background: #d7dce3;
   .action_header {
     background: #1a3d64;
-    .text-shadow(0,-1px,0px, rgba(0,0,0, .8));
   }
 }
 .build-output  {
@@ -130,15 +129,18 @@ tbody.build-row {
   font-weight: normal;
 
   .action_header {
-    color: #eff2f6;
-    // text-transform: capitalize;
+    color: #666;
     font-weight: bold;
-    .text-shadow(0,-1px,0px, rgba(0,0,0, .6));
     .time {
-      color: black;
+      color: #D4D4D4;
+      float: right;
+      margin-right: 10px;
       font-weight: normal;
-      .text-shadow(0,-1px,0px, rgba(0,0,0, 0));
     }
+  }
+
+  .alert {
+    margin: 20px 0;
   }
 
   pre {
@@ -158,10 +160,15 @@ tbody.build-row {
   }
    .command {
       font-weight: bold;
-      font-size: 18px;
+      font-size: 15px;
    }
 
    .ah_wrapper {
+      #gradient > .vertical(#fff, #fafafa);
+      height: 40px;
+      border: 1px solid #eee;
+      border-left: none;
+      text-shadow: 0 1px 0 #fff;
       overflow: hidden; // put the contents beside each other
 
       @green:  #57A957;
@@ -170,55 +177,36 @@ tbody.build-row {
 
       .button {
          float: left; // put to the right of .command
-         .border-radius;
          background-repeat: no-repeat;
          background-position: center;
-         margin-right: 7px; // space between button and command
+         font-size: 1.2em;
+         text-align: center;
+         padding-top: 10px;
          height: 30px; // the button has no size without this
          width: 30px; // the button has no size without this
 
-         &.success {
-            &.contents { background-image: url("/img/green_minus.png"); }
-            &.contents.minimize { background-image: url("/img/green_plus.png"); }
-         }
+         i {
+          color: #D4D4D4;
+         }  
 
-         &.failed {
-            &.contents { background-image: url("/img/red_minus.png"); }
-            &.contents.minimize { background-image: url("/img/red_plus.png"); }
-         }
-
-         &.cancelled {
-            &.contents { background-image: url("/img/red_minus.png"); }
-            &.contents.minimize { background-image: url("/img/red_plus.png"); }
-         }
-
-         &.timedout {
-            &.contents { background-image: url("/img/red_minus.png"); }
-            &.contents.minimize { background-image: url("/img/red_plus.png"); }
-         }
-
-         &.running {
-            &.contents { background-image: url("/img/green_minus.png"); }
-            &.contents.minimize { background-image: url("/img/green_plus.png"); }
-         }
+        &.success { border-left: 5px solid @green; }
+        &.failed { border-left: 5px solid @red; }
+        &.running { border-left: 5px solid @yellow; }
+        &.timedout { border-left: 5px solid @red; }
 
       }
 
-      .success { background-color: @green; }
-      .failed { background-color: @red; }
-      .running { background-color: @yellow; }
-      .timedout { background-color: @red; }
-
       .command {
+          height: inherit;
+         line-height: 40px;
          overflow: hidden; // put to the left of .button
-         padding: 5px 0 5px 20px;
-         .border-radius;
+         padding: 0 0 0 10px;
       }
    }
 
 
    .time {
-      font-size: 14px;
+      font-size: 13px;
    }
 }
 
@@ -254,6 +242,12 @@ td.build_status {
 }
 
 #build-log-container {
+
+  .container-fluid.row-fluid {
+    padding: 0 2%;
+    width: 96%;
+  }
+
   top: -20px;
   position: relative;
 
@@ -276,6 +270,10 @@ td.build_status {
           position: relative;
           padding: 8px 0 8px 45px;
           cursor: pointer;
+          .icon-refresh {
+            float: right;
+            margin: 3px 10px 0 0;
+          }
           &.active {
             background: #EBF3FC;
             font-weight: bold;
