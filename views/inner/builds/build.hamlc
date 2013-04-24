@@ -142,7 +142,7 @@
                   .button{data-bind: "css: action_header_button_style"}
                     %i{data-bind: "css: collapse_icon"}
                   .command{data-bind: "css: action_header_style"}
-                    %span
+                    %span.command-text
                       \$
                       %span{data-bind: "text: name, attr: {title: bash_command}"}
                     %span.time

@@ -130,10 +130,12 @@ tbody.build-row {
 
   .action_header {
 
-    &.success > .ah_wrapper { border-left: 5px solid @green; }
-    &.failed > .ah_wrapper { border-left: 5px solid @red; }
-    &.running > .ah_wrapper { border-left: 5px solid @yellow; }
-    &.timedout > .ah_wrapper { border-left: 5px solid @red; }
+
+
+    &.success > .ah_wrapper:before { background: @green; }
+    &.failed > .ah_wrapper:before { background: @red; }
+    &.running > .ah_wrapper:before { background: @yellow; }
+    &.timedout > .ah_wrapper:before { background: @red; }
 
     .time {
       color: #D4D4D4;
@@ -148,6 +150,8 @@ tbody.build-row {
   }
 
   pre {
+    max-height: 250px;
+    overflow: scroll;
     margin-top: 5px;
   }
   .detail {
@@ -166,11 +170,29 @@ tbody.build-row {
    .command {
       font-weight: bold;
       font-size: 15px;
+      .command-text {
+        float: left;
+        max-width: 95%;
+        line-height: 18px;
+      }
    }
 
    .ah_wrapper {
+
+      &:before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 5px;
+      }
+
+      cursor: pointer;
       #gradient > .vertical(#fff, #fafafa);
       min-height: 40px;
+      position: relative;
       border: 1px solid #eee;
       text-shadow: 0 1px 0 #fff;
       overflow: hidden; // put the contents beside each other
@@ -191,6 +213,7 @@ tbody.build-row {
          font-size: 1.2em;
          text-align: center;
          padding-top: 10px;
+         margin-left: 10px;
          height: 30px; // the button has no size without this
          width: 30px; // the button has no size without this
 
@@ -202,9 +225,8 @@ tbody.build-row {
 
       .command {
           height: inherit;
-         line-height: 40px;
          overflow: hidden; // put to the left of .button
-         padding: 0 0 0 10px;
+         padding: 10px 0 10px 10px;
       }
    }
 
