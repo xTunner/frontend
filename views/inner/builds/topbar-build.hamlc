@@ -2,9 +2,10 @@
   %li
     %a{href: "/gh/#{@project}"}
       = @project
+  %li.active.build-no
+    %a{href: "/gh/#{@project}/#{@build_num}"}
+    	build: 
+      = @build_num
   %li
     %a{href: "/gh/#{@project}/edit"}
-      Edit settings
-  %li.active
-    %a{href: "/gh/#{@project}/#{@build_num}"}
-      = @build_num
+      %i{class: "icon-cog"}
