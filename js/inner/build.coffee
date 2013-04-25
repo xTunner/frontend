@@ -163,6 +163,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
       b = @branch()
       b = b.replace(/^remotes\/origin\//, "")
+      b = CI.stringHelpers.trimMiddle(b, 23)
       "(#{b})"
 
     @github_url = @komp =>
