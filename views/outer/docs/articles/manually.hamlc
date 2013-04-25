@@ -6,8 +6,9 @@
 
 %p
   Circle is designed to set up most tests automatically because we infer your settings from your code.
-  However, if you have an unusual setup or work in a platform that has no idiomatic way to set up your project, you'll need to set it up manually.
-  Fortunately, this simple procedure usually can be completed in 20 minutes or less by following this guide.
+  However, if you have an unusual setup or work in a framework that has no idiomatic way to set up your project, you'll need to set it up manually.
+  Fortunately, this is a pretty straightforward procedure. 
+  If you follow this guide, you should be running your tests in 20 minutes or less.
 
 = HAML['heading']({title: "Standard projects not inferred", hash: "standard"})
 
@@ -59,35 +60,46 @@
   %code circle.yml
   file. 
   You can alter the list by using <i>override</i>, <i>pre</i>, and <i>post</i> modifiers.
-  More about them later.
-  Failing commands (those with a non-zero exit code) will cause the whole process to stop, and you'll receive a notification.
+  The aforementioned
+  %a{ href: "/docs/configuration"}<
+    reference guide 
+  has detailed informations about using these modifiers should you want to learn more. 
+  
+%p  
+  Failing commands (those with a non-zero exit code) will cause the whole build to fail, and you'll receive a notification.
 
 
 = HAML['heading']({title: "Configuring your test machine", hash: "machine"})
 %p
-  For the most part, there is nothing that you have to add to set up the test machine.
+  For the most part, there is nothing that you have to add to configure the test machine.
   We have already installed the most common libraries, languages, browsers, and databases that you'll need.
   See
   %a{ href: "/docs/environment" } the Circle environment
   for a comprehensive list of what we have installed.
-  If you need anything else installed, contact Circle support and we will try to accommodate you.
+  If you need anything else installed, please
+  = HAML.contact_us({succeed: ""})
+  and Circle support should be able to accommodate you.
   Be aware that for security reasons, we don't provide root access.
-
+  
+    
+      
 %p
-  You can tweak common settings, such as the timezone, language version used, and
+  The
+  %a{href: "/docs/configuration#machine"}<
+    machine section
+  of the
+  %code circle.yml
+  file
+  is the place where you can tweak common settings, such as timezone, language version used, and
   %code /etc/hosts
-  contents, in the
-  = succeed '.', ->
-    %a{href: "/docs/configuration#machine"}<
-      machine section of the
-      %code circle.yml
-      file
+  contents.      
 
 
 = HAML['heading']({title: "Checking out code", hash: "checkout"})
 %p
   Circle will check out your code from your GitHub repository.
-  Currently, we don't check out submodules, so if your project requires that, you will need to add a command similar to the following:
+  Currently, we don't check out submodules.
+  If your project requires that, add the appropriate commands.
 
 %pre
   %code.no-highlight<>
@@ -98,7 +110,7 @@
 
 %p
   If you have any files in your repositories that need to be moved, now is a good time.
-  Here is an example of how to do that:
+  Here is an example of how to do that.
 
 %pre
   %code.no-highlight<>
@@ -111,7 +123,7 @@
 %p
   In all likelihood, you'll have a list of libraries and dependencies that your app requires.
   Circle automatically detects Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj, and Node's package.json, and then runs the appropriate commands to install the dependencies.
-  Add dependencies-related commands&mdash;along with any needed <i>override</i>, <i>pre</i>, and/or <i>post</i> modifiers&mdash;for your project here: 
+  When needed, add dependencies-related commands using <i>override</i>, <i>pre</i>, and/or <i>post</i> modifiers here.  
 
 %pre
   %code.no-highlight<>
@@ -148,7 +160,7 @@
 %p
   Now that everything is prepared, add your test commands to the 
   %code circle.yml
-  file, so that you can run your tests.
+  file so that you can run your tests.
 
 %pre
   %code.no-highlight<>
@@ -158,7 +170,7 @@
           \- php ./test-suite/run.php --unit-tests
 
 %p
-  Depending on how you structured your tests, you may need to start your application server first:
+  Depending on the structure of your tests, you may need to start your application server first.
 
 %pre
   %code.no-highlight<>
@@ -177,5 +189,10 @@
   If your tests fail and you need to fix something, Circle has a  
   %a{href: "/docs/troubleshooting"} list of common problems and their solutions
   that can help you debug many issues.
-  You might also like to know that we allow you to SSH in and poke around during your builds so that you can better understand how Circle works.
+  You might also like to know that we allow you to SSH in during your builds.
+  This lets you check out how Circle works and facilitates nimble and efficient debugging.
+  
+  
+  
+
   
