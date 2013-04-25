@@ -24,6 +24,10 @@
       li {
         // environment element
 
+        margin: 0 5px;
+        height: 50px;
+        line-height: 50px;
+
         .env-production, .env-staging, .env-development, .env-test, &.build-no > a {
           margin-top: 17px;
           padding: 0 5px;
@@ -32,23 +36,46 @@
           line-height: 20px;
         }
 
+        &.meta {
+
+          a, span {
+            display: inline-block;
+            font-size: .9em;
+            font-weight: normal;
+            color: white;
+            }
+          }
+
+          &.branch > span {
+            padding: 0 11px;
+          }
+
+         a.build_status {
+          height: 20px;
+          padding: 0 5px;
+          line-height: 20px;
+          text-shadow: none;
+         } 
+
         .env-production { background-color: red; }
         .env-staging { background-color: yellow; }
         .env-development { background-color: black; }
         .env-test { background-color: green; }
 
-        &.build-no {
-          height: 50px;
-          margin: 0 0 0 5px;
-          padding: 0 5px;
+        &.build-no, &.branch, &.rev {
           &:before {
             content: '/';
             position: absolute;
             left: -6px;
-            top: 17px;
+            top: 0;
             color: white;
             font-size: 1.1em;
           }
+        }
+
+        &.build-no {
+          height: 50px;
+          padding: 0 5px;
         }
 
         // nav elements

@@ -6,6 +6,12 @@
     %a{href: "/gh/#{@project}/#{@build_num}"}
     	build: 
       = @build_num
+  %li.meta.branch{data-bind: "with: build"}
+    %span{data-bind: "text: branch"}
+  %li.meta.rev{data-bind: "with: build"}
+    %a{data-bind: "attr: { href: github_url }, text: github_revision"}>
+  %li.meta{data-bind: "with: build"}
+    %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
   %li
     %a{href: "/gh/#{@project}/edit"}
       %i{class: "icon-cog"}

@@ -1,4 +1,4 @@
-= HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num})})
+= HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num, branch: @branch})})
 
 
 #build-log-container
@@ -13,16 +13,6 @@
     %div{data-bind: "with: build"}
 
       .row-fluid.build-table#build-log-header
-
-        %h4.clearfix
-          Build information 
-          %p.meta
-            (
-            %span{data-bind: "text: branch"}>
-            \/
-            %a{data-bind: "attr: { href: github_url }, text: github_revision"}>
-            )
-          %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
 
         %div.clearfix
           %dl.span4
