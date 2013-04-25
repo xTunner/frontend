@@ -24,12 +24,16 @@
     // rest of the nav elements
     ul.nav {
       top: 2px;
+
+      > li {
+        height: 50px;
+        line-height: 50px;
+      }
+
       li {
         // environment element
 
         margin: 0 5px;
-        height: 50px;
-        line-height: 50px;
 
         .env-production, .env-staging, .env-development, .env-test, &.build-no > a {
           margin-top: 17px;
@@ -95,7 +99,7 @@
             &:hover { background: darken(@green, 10%); }
           }
         }
-        &:hover { background: @navDarkBlue; }
+        &:hover:not(.divider) { background: @navDarkBlue; }
 
         // selected navbar element
         &.active a {
@@ -118,7 +122,6 @@
               background: #d7dce3;
             }
           }
-          .divider:hover { background: #E5E5E5; }
         }
       }
     }
