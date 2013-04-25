@@ -47,7 +47,7 @@
           }
 
           &.branch > span {
-            padding: 0 11px;
+            padding: 0 5px 0 7px;
           }
 
          a.build_status {
@@ -67,9 +67,9 @@
             content: '/';
             position: absolute;
             left: -6px;
-            top: 0;
+            top: 1px;
             color: white;
-            font-size: 1.1em;
+            font-size: 1.2em;
           }
         }
 
@@ -81,13 +81,16 @@
         // nav elements
         position: relative;
         font-family: 'Open Sans', sans-serif;
-        cursor: pointer;
         a {
+          cursor: pointer;
           line-height: 25px; // keeps this nav from overflowing the box
           font-size: 15px;
           padding: 14px 10px 11px;
           color: white;
           .text-shadow(1px,-2px,0px, #1B3E69);
+          &.label-success {
+            &:hover { background: darken(@green, 10%); }
+          }
         }
         &:hover { background: @navDarkBlue; }
 
