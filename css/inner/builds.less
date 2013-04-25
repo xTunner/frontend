@@ -1,8 +1,9 @@
 tbody.build-row {
   cursor: pointer;
+  background: #fff;
   tr:hover td,
   tr:hover th {
-    background-color: #aaaaaa;
+    background-color: #eee;
    }
   td {
     word-wrap: break-word;
@@ -228,7 +229,7 @@ tbody.build-row {
 
 td.build_status {
   vertical-align: middle;
-  text-align: center;
+  text-align: left;
 }
 
 .build_status {
@@ -237,8 +238,10 @@ td.build_status {
 }
 
 .build_dot {
-  width: 0px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  .border-radius(10px);
 }
 
 #build-log-header {

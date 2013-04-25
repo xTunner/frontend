@@ -17,13 +17,13 @@
         %div{data-bind: "if: dashboard_ready"}
 
           %div{data-bind: "if: has_no_followed_projects()"}
-            %h1 You don't have any projects in CircleCI!
+            %h2 You don't have any projects in CircleCI!
             %p
               Why don't you add a repository or two on
               %a{href: "/add-projects"} the Manage Projects page?
 
           %div{data-bind: "if: has_followed_projects()"}
-            %h1
+            %h2
               Latest builds for your projects
               %a.btn.pull-right#invite{data-toggle: "modal", data-target: "#inviteForm"}
                 Invite Collaborators
