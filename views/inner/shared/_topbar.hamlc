@@ -27,8 +27,6 @@
               %a#logout-link{ href: '/logout'}
                 Logout
 
-            %li.divider
-
             %li
               %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
                 Support
