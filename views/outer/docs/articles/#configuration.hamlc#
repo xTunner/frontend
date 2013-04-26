@@ -43,7 +43,7 @@
 
 
 
-%h3 When things are complex 
+%h2 When things are complex 
 %p
   Circle handles quite complex test behavior. How?
   You simply include overrides and modify scheduling settings in the
