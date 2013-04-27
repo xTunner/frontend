@@ -130,7 +130,8 @@
               .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
                 .ah_wrapper
                   .button{data-bind: "css: action_header_button_style"}
-                    %i{data-bind: "css: collapse_icon"}
+                    %span{data-bind: "if: has_content"}
+                      %i{data-bind: "css: collapse_icon"}
                   .command{data-bind: "css: action_header_style"}
                     %span.command-text
                       \$
