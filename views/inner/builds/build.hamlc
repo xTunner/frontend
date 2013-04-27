@@ -140,12 +140,10 @@
                       %span{data-bind: "text: name, attr: {title: bash_command}"}
                     %span.time
                       %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
-
                       %span{data-bind: "if: timedout"}
                         %b (TIMED OUT)
-                    %span{data-bind: "if: source"}
-                      %span.action-source
-                        %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
+                    %span.action-source
+                      %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
                   .detail-wrapper{data-bind: "if: has_content"}
                     .detail{data-bind: "css: action_log_style, visible: !minimize()"}
