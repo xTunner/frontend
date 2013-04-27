@@ -92,20 +92,20 @@
             %span{data-bind: "ifnot: body"}
               %span{data-bind: "text: subject"}
 
-      .container-fluid.row-fluid
-        .row
+      .container.row-fluid
 
         %div{data-bind: "if: messages().length"}
           = HAML['messages']()
         %div{data-bind: "ifnot: messages().length"}
           = HAML['report_error']({build: true})
 
-        %aside.stages.span2
+        -# coming soon
+        -#%aside.stages.span2
           %ul.nav.nav-list.well
             %li
               %h4 Stages
             %li
-              %a.active 
+              %a.active
                 Machine
                 %i.icon-refresh.icon-spin
             %li
@@ -117,9 +117,9 @@
             %li
               %a Test
             %li
-              %a Deploy       
+              %a Deploy
 
-        %div{data-bind: "foreach: steps", class: "span10"}
+        %div.offset1.span10{data-bind: "foreach: steps"}
           %div{data-bind: "foreach: actions"}
 
             -# wrapper allows the header and detail be siblings, for the JS
