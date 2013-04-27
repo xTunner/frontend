@@ -136,7 +136,8 @@
                       %i{data-bind: "css: collapse_icon"}
                   .command{data-bind: "css: action_header_style"}
                     %span.command-text
-                      \$
+                      %span{data-bind: "if: $data.bash_command() == $data.name()"}
+                        \$
                       %span{data-bind: "text: name, attr: {title: bash_command}"}
                     %span.time
                       %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
