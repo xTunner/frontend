@@ -136,8 +136,7 @@
                       \$
                       %span{data-bind: "text: name, attr: {title: bash_command}"}
                     %span.time
-                      = surround '(', ' )', ->
-                        %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
+                      %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
 
                       %span{data-bind: "if: timedout"}
                         %b (TIMED OUT)
