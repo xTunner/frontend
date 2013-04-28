@@ -1,17 +1,17 @@
-%ul.nav
+%ul.nav{data-bind: "with: build"}
   %li
     %a{href: "/gh/#{@project}"}
       = @project
   %li.active.build-no
     %a{href: "/gh/#{@project}/#{@build_num}"}
-    	build: 
+    	build:
       = @build_num
-  %li.meta.branch{data-bind: "with: build"}
+  %li.meta.branch
     %span{data-bind: "text: branch"}
-  %li.meta.rev{data-bind: "with: build"}
+  %li.meta.rev
     %a{data-bind: "attr: { href: github_url }, text: github_revision"}>
-  %li.meta{data-bind: "with: build"}
+  %li.meta
     %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
   %li
     %a{href: "/gh/#{@project}/edit"}
-      %i{class: "icon-cog"}
+      %i.icon-cog
