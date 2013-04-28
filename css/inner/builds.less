@@ -119,6 +119,8 @@ tbody.build-row {
     &.failed > .ah_wrapper:before { background: @red; }
     &.running > .ah_wrapper:before { background: @yellow; }
     &.timedout > .ah_wrapper:before { background: @red; }
+    @redLight: rgba(157, 38, 29, 0.7)
+    &.failed .contents.failed { background: @redLight; }
 
     .time {
       color: #D4D4D4;
@@ -176,17 +178,8 @@ tbody.build-row {
       position: relative;
       border: 1px solid #eee;
       border-left: 1px solid white;
-      text-shadow: 0 1px 0 #fff;
+      text-shadow: 0 1px 0 rgba(255,255,255,.1);
       overflow: hidden; // put the contents beside each other
-
-      @green:  #57A957;
-      @red: #EE5F5B;
-      @yellow: #E0C91B;
-
-      .command {
-        color: #666;
-        font-weight: bold;
-      }
 
       .button {
          float: left; // put to the right of .command
@@ -206,9 +199,14 @@ tbody.build-row {
       }
 
       .command {
+        color: #666;
+        font-weight: bold;
         height: inherit;
         overflow: hidden; // put to the left of .button
         padding: 10px 0 10px 10px;
+      }
+      .contents.failed {
+        color: #f0ffff;
       }
    }
 
