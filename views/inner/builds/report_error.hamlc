@@ -33,7 +33,11 @@
   .row-fluid
     .offset2.span8
       .alert.alert-danger
-        Looks like we had a bug in our infrastructure, or that of our providers (generally Github or AWS).
+        Looks like we had a bug in our infrastructure, or that of our providers (generally
+        %a{href: "https://status.github.com/"} GitHub
+        or
+        = succeed ').', ->
+          %a{href: "http://status.aws.amazon.com/"} AWS
         We should have automatically retried this build.
         We've been alerted of the issue and are almost certainly looking into it, please
         = HAML['contact_us_inner']()
