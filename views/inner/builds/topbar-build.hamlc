@@ -11,7 +11,7 @@
 
   / ko if: branch
   %li.meta.branch
-    %span{data-bind: "text: branch"}
+    %a{data-bind: "attr: { href: branch_url }, text: branch"}
   / /ko
 
   / ko if: github_revision

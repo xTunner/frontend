@@ -170,6 +170,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
 
+    @branch_url = @komp =>
+      return unless @branch
+      "#{@project_path()}/tree/#{@branch()}"
+
     @github_revision = @komp =>
       return unless @vcs_revision
       @vcs_revision.substring 0, 7
