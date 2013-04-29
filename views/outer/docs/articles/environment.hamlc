@@ -292,6 +292,7 @@
   = succeed '.', ->
     %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file.
   Packages can be installed using
+  %code composer,
   %code pear
   and
   = succeed ".", ->
@@ -300,9 +301,7 @@
 %p
   Please
   = HAML['contact_us']()
-  if other PHP versions would be useful to you, or if you need
-  %code composer
-  support.
+  if other PHP versions would be useful to you.
 
 
 
