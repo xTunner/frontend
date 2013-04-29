@@ -297,12 +297,14 @@
   If you do not specify a version, we will use the version in your
   %code .rvmrc
   file,
+  your
+  %code .ruby-version
+  file,
+  your Gemfile,
   or
   Ruby
   %code 1.9.2-p290
-  if unspecified. If you use a different Ruby version manager, such as
-  %a{ href: "https://github.com/sstephenson/rbenv/" } rbenv
-  , please let us know.
+  if unspecified.
 
 %h3#node-js-version
   Node.js version
