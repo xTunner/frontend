@@ -14,7 +14,7 @@
 
       .row-fluid.build-table#build-log-header
 
-        %div.clearfix
+        .clearfix
           %dl.span4
 
             %dt Author
@@ -51,7 +51,7 @@
                                      title: "Report an error in how Circle ran this build"}
                 Report...
 
-              %div.btn-group
+              .btn-group
                 %button.btn.btn-primary{data-bind: "click: retry_build",
                                     title: "Rerun the same version of the tests",
                                     data-loading-text: "Triggering...",
@@ -94,12 +94,12 @@
             %span{data-bind: "ifnot: body"}
               %span{data-bind: "text: subject"}
 
-      .container.row-fluid
-
-        %div{data-bind: "if: messages().length"}
-          = HAML['messages']()
-        %div{data-bind: "ifnot: messages().length"}
-          = HAML['report_error']({build: true})
+      .row-fluid
+        .offset2.span8
+          %div{data-bind: "if: messages().length"}
+            = HAML['messages']()
+          %div{data-bind: "ifnot: messages().length"}
+            = HAML['report_error']({build: true})
 
         -# coming soon
         -#%aside.stages.span2
@@ -121,7 +121,8 @@
             %li
               %a Deploy
 
-        %div.offset1.span10{data-bind: "foreach: steps"}
+      .row-fluid
+        .offset1.span10{data-bind: "foreach: steps"}
           %div{data-bind: "foreach: actions"}
 
             -# wrapper allows the header and detail be siblings, for the JS
