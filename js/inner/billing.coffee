@@ -241,7 +241,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @plans((new CI.inner.Plan(d) for d in data))
 
   loadPlanFeatures: () =>
-    @planFeatures(renderContext.pricingFeatures)
+    @planFeatures(CI.content.pricing_features)
     $('html').popover
       html: true
       delay: 0
