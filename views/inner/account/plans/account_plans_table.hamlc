@@ -45,7 +45,7 @@
           %td Unlimited
           / /ko
 
-
+        / ko if: concurrency_p
         %tr.concurrency.more-info{data-content: "Number of pushes that will be tested at the same time. The rest will be queued. If you need more, you can buy them later at $49 per concurrent push.",
                                   title: "Concurrent builds"}
           %td.title Concurrent builds
@@ -55,6 +55,7 @@
               %span{data-bind: "text: concurrency"}<>
 
           / /ko
+        / /ko
 
         %tr.available-parallelism.more-info{title: "Automatic parallelization",
                                             data-content: "Automatically run your tests up to 64x faster."}
@@ -63,12 +64,24 @@
           %td{data-bind: "text: maxParallelismDescription"}
           / /ko
 
+
+        / ko if: concurrency_p
         %tr.parallelism.more-info{title: "Included parallelization",
                                   data-content: "Larger plans include more parallelism."}
           %td.title Included parallelization
           / ko foreach: plans
           %td{data-bind: "text: minParallelismDescription"}
           / /ko
+        / /ko
+
+        / ko if: containers_p
+        %tr.free-containers.more-info{title: "Included Containers",
+                                      data-content: "You can use your containers to run more builds at once or to parallelize you test suite."}
+          %td.title Included containers
+          / ko foreach: plans
+          %td{data-bind: "text: freeContainersDescription"}
+          / /ko
+        / /ko
 
         / ko foreach: planFeatures
         %tr.features.more-info{data-bind: "attr: {title: headline, 'data-content': detail}"}
@@ -79,7 +92,6 @@
           %td{data-bind: "css: featureAvailable($parent)"}
           / /ko
         / /ko
-
 
 #confirmForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "conformFormLabel", :role => "dialog", :tabindex => "-1"}
   .modal-header

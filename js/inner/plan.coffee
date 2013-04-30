@@ -24,6 +24,9 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
     @maxParallelismDescription = @komp =>
       "up to #{@max_parallelism}x"
 
+    @freeContainersDescription = @komp =>
+      "#{@free_containers}"
+
     @pricingDescription = @komp =>
       if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id
         "Your current plan"

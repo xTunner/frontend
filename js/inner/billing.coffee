@@ -53,6 +53,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @wizardCompleted = @komp =>
       @wizardStep() > 3
 
+    @concurrency_p =  @komp =>
+      !!(@plans()[0] and @plans()[0].concurrency)
+
+    @containers_p = @komp =>
+      @plans()[0] and (@plans()[0].type is "containers")
+
   parallelism_option_text: (p) =>
     "#{p}-way ($#{@parallelism_cost(@chosenPlan(), p)})"
 
