@@ -1,7 +1,7 @@
 - @parents = [ "gettingstarted" ]
 - @icon = "icon-list-alt"
 - @title = "Manual build setup"
-- @lastUpdated = "Aug 13, 2012"
+- @lastUpdated = "April 29, 2013"
 - @subtitle = "Step-by-step instructions"
 
 %p
@@ -20,13 +20,13 @@
       
 = HAML['heading']({title: "The circle.yml file", hash: "circle-yml"})
 %p
-  From here, we'll assume you're manually setting up your tests.
+  From here, we'll assume that you're manually setting up your tests.
 
 %p
   The first thing to do is to add an empty
   %code circle.yml
   file to the root directory of your repository.
-  We recommend adding this on a branch the first time, so you don't piss off your colleagues.
+  We recommend adding this on a branch the first time so you don't piss off your colleagues.
 
 %p
   We have provided a
@@ -59,11 +59,17 @@
   Normally, these commands are inferred by Circle, but if you are reading this, you will likely be manually adding some commands to the
   %code circle.yml
   file. 
-  You can alter the list by using <i>override</i>, <i>pre</i>, and <i>post</i> modifiers.
-  The aforementioned
+  You can modify which&mdash;and in what order&mdash;commands are run by adding
+  %code override
+  ,
+  %code pre
+  , and/or
+  %code post
+  when needed.
+  Take a look at the aforementioned
   %a{ href: "/docs/configuration"}<
     reference guide 
-  has detailed informations about using these modifiers should you want to learn more. 
+  should you want to learn more details. 
   
 %p  
   Failing commands (those with a non-zero exit code) will cause the whole build to fail, and you'll receive a notification.
@@ -123,7 +129,15 @@
 %p
   In all likelihood, you'll have a list of libraries and dependencies that your app requires.
   Circle automatically detects Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj, and Node's package.json, and then runs the appropriate commands to install the dependencies.
-  When needed, add dependencies-related commands using <i>override</i>, <i>pre</i>, and/or <i>post</i> modifiers here.  
+  Circle also supports PHP's Composer.
+  When needed, you can modify which dependencies-related commands are run using
+  %code override
+  ,
+  %code pre
+  , and/or
+  %code post
+  here.
+  
 
 %pre
   %code.no-highlight<>
@@ -144,7 +158,7 @@
   %code circle_test
   database and the
   %code ubuntu
-  user, rather than creating the database yourself.
+  user rather than creating the database yourself.
   No password is required for any database.
 
 %p

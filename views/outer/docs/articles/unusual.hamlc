@@ -2,11 +2,11 @@
 - @title = "Can I test projects with unusual requirements?"
 - @icon = "icon-beaker"
 - @subtitle = "Every project is unique"
-- @lastUpdated = "Feb 2, 2013"
+- @lastUpdated = "April 29, 2013"
 
 %p
   Circle is completely configurable.
-  While we have an exceedingly simple setup for projects that follow established conventions, we also support many variations on the theme.
+  We have a simple setup for projects that follow established conventions, but we also support many variations on the theme.
 
     
 %ul
