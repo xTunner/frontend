@@ -39,6 +39,12 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
           else
             "Sign up now for $#{@price}/mo"
 
+    @outerPricingDescription = @komp =>
+      if not @price?
+        "Contact us for pricing"
+      else
+        "$#{@price} / month"
+
 
   featureAvailable: (feature) =>
     result =

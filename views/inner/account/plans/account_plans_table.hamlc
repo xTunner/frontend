@@ -21,6 +21,7 @@
           %td{data-bind: "text: why"}
           / /ko
 
+        / ko if: $root.current_user
         %tr.price
           %td.title
           / ko foreach: plans
@@ -30,6 +31,23 @@
                                               data-failed-text: "Failed!",
                                               data-loading-text: "Paying..."}
           / /ko
+        / /ko
+
+        / ko ifnot: $root.current_user
+        %tr.reason
+          %td.title
+          / ko foreach: plans
+          %td{data-bind: "text: outerPricingDescription"}
+          / /ko
+
+        %tr.price
+          %td.title
+          / ko foreach: plans
+          %td
+            %a.btn.btn-success.btn-large{href: CI.github.authUrl()}
+              Start your 14-day free trial
+          / /ko
+        / /ko
 
 
         %tr.projects.more-info{title: "Private Repositories", data-content: "Plans are only limited by the number of private repositories you want to test, not the number you have in GitHub. Forks are only counted once."}

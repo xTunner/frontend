@@ -31,8 +31,9 @@ class CircleViewModel extends CI.inner.Obj
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @recent_builds_have_been_loaded()
     @selected = ko.observable({}) # Tracks what the dashboard is showing
+    @billing = ko.observable(new CI.inner.Billing)
+
     if window.renderContext.current_user
-      @billing = ko.observable(new CI.inner.Billing)
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
@@ -393,7 +394,10 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
     @get "^/jobs.*", (cx) => VM.jobs.display(cx)
-    @get "^/pricing.*", (cx) => VM.pricing.display(cx)
+    @get "^/pricing.*", (cx) =>
+      VM.billing().loadPlans()
+      VM.billing().loadPlanFeatures()
+      VM.pricing.display(cx)
 
     @post "^/heroku/resources", -> true
 
