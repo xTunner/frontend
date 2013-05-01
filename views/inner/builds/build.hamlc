@@ -130,9 +130,9 @@
               %div{data-bind: "if: $root.build().different_type($data)"}
                 .type-divider
                   %span{data-bind: "text: type"}
-              .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
+              .action_header{data-bind: "css: action_header_style"}
                 .ah_wrapper
-                  .header{data-bind: "css: action_header_button_style"}
+                  .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
                     .button{data-bind: "css: action_header_button_style"}
                       %span{data-bind: "if: has_content"}
                         %i{data-bind: "css: collapse_icon"}
