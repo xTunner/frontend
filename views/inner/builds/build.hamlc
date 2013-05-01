@@ -132,23 +132,24 @@
                   %span{data-bind: "text: type"}
               .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
                 .ah_wrapper
-                  .button{data-bind: "css: action_header_button_style"}
-                    %span{data-bind: "if: has_content"}
-                      %i{data-bind: "css: collapse_icon"}
-                  .command{data-bind: "css: action_header_style"}
-                    %span.command-text
-                      %span{data-bind: "if: $data.bash_command() == $data.name()"}
-                        \$
-                      %span{data-bind: "text: name, attr: {title: bash_command}"}
-                      %span{data-bind: "if: $parent.has_multiple_actions"}
-                        = surround '(', ')', ->
-                          %span{data-bind: "text: index"}<>
-                    %span.time
-                      %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
-                      %span{data-bind: "if: timedout"}
-                        %b (TIMED OUT)
-                    %span.action-source
-                      %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
+                  .header{data-bind: "css: action_header_button_style"}
+                    .button{data-bind: "css: action_header_button_style"}
+                      %span{data-bind: "if: has_content"}
+                        %i{data-bind: "css: collapse_icon"}
+                    .command{data-bind: "css: action_header_style"}
+                      %span.command-text
+                        %span{data-bind: "if: $data.bash_command() == $data.name()"}
+                          \$
+                        %span{data-bind: "text: name, attr: {title: bash_command}"}
+                        %span{data-bind: "if: $parent.has_multiple_actions"}
+                          = surround '(', ')', ->
+                            %span{data-bind: "text: index"}<>
+                      %span.time
+                        %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
+                        %span{data-bind: "if: timedout"}
+                          %b (TIMED OUT)
+                      %span.action-source
+                        %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
                   .detail-wrapper{data-bind: "if: has_content"}
                     .detail{data-bind: "css: action_log_style, visible: !minimize()"}
