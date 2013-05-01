@@ -12,8 +12,18 @@
   When it doesn't, the
   %code circle.yml
   file makes it easy to tell Circle what you need.
-  This is a simple YAML file where you spell out any tweaks needed for your web app.
-  You place the file in your git repository's root directory, and Circle reads the file each time it runs a build.
+  This is a simple YAML file where you spell out any tweaks required for your web app.
+  You place the file in your git repository's root directory and Circle reads the file each time it runs a build.
+  
+%p
+  If you want a quick look at how to set up your
+  %code circle.yml
+  file, check out our 
+  = succeed '.', ->
+    %a{href: "/docs/config-sample"} sample file
+    
+
+  Feel free to use it as a template.   
   
 %p
   If you're adding
@@ -27,18 +37,10 @@
   If you find yourself repeateadly consulting this guide, please 
   = HAML['contact_us']()
   and let us know what you're working on. 
-  We will endeavor to make it easier for you.
+  We'll endeavor to make it easier for you.
   
 
-%p
-  If you want a quick look at how to set up your
-  %code circle.yml
-  file, check out our 
-  = succeed '.', ->
-    %a{href: "/docs/config-sample"} sample file
-    
 
-  Feel free to use it as a template. 
   
 %p
   One more thing before we get to the nitty-gritty details&mdash;most projects should put the
@@ -70,21 +72,23 @@
   %li <b>deployment</b>: deploying your code to your web servers
 
 %p
-  Rememer that most projects won't need to specify anything for most of the phases.
-  Any phases that are not specified will be inferred from your code.
+  Remember that most projects won't need to specify anything for many of the phases.
+  Any sections that are not specified in the 
+  %code circle.yml
+  file will be inferred from your code.
 
 
 
 %p
   The sections contain lists of bash commands.
   Commands are run in the order they appear in the file, and stop when any command returns a non-zero exit code.
-  You can modify which commands are run by adding 
+  You can modify which&mdash;and when&mdash;commands are run by adding 
   %code override
   ,
   %code pre
   , and/or
   %code post
-  when needed to adjust Circle's inferred commands.
+  to adjust Circle's inferred commands.
   Here is how it works:
   
 
@@ -96,23 +100,49 @@
 
 %p
   Each command is run in a separate shell.
-  As such, they do not share environment with their predecessors, so be aware that 
+  As such, they do not share an environment with their predecessors, so be aware that 
   %code export MYVAR=MYVAL
   in particular does not work. 
   If you'd like to set an environment variable globally, you can specify them in the <a href="#machine">Machine configuration</a> section, described below.
 
 %p
-  Commands can be tweaked individually by adding a modifier.
-  We will explain more about that in the Dependencies  Section. 
-  
-  
+  You can tweak individual commands by adding a modifier.
+  Allowed modifiers are:
 
+%ul
+  %li <b>timeout</b>: if a command runs this many seconds without output, kill it (default:180s)
+  %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project)
+  %li <b>environment</b>: a hash creating a list of environment variables set for this command 
+  (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine:</code> section 
+  %li <b>parallel</b>: if true, run this command in parallel across all build VMs
+
+
+%p 
+  Note that modifiers must be indented one level from their command.
+  In the following example,
+  %code bundle install
+  is a key whose value is a hash containing <code>timeout</code>, <code>environment</code>, and <code>pwd</code>.                
+
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        override:
+          - bundle install:
+              timeout: 240
+              environment:
+                MYVAR: MYVAL
+                MYVAR2: MYVAL2
+              pwd:
+                test_dir
+                
 
 = HAML['heading']({title: "Machine configuration", hash: "machine"})
 
 %p
   The 
-  %code machine
+  %code machine:
   section enables you to configure the virtual machine that runs your tests.
   
 %p 
@@ -141,22 +171,24 @@
   chooses a
   %a{href: "#ruby-version"} Ruby version
   and patchset,
-  and adds a
-  %a{href: "#post-test"} custom test command
+  and adds a custom test command
   to run after the rest of your commands.    
-
+  
 
 %p
-  Although
-  %code override
-  does nothing,
+  Although 
   %code pre
   and
   %code post
   are supported in the
-  %code machine
-  section.
-  The following example shows how to install <code>phantomjs</code>:
+  %code machine:
+  section,
+  %code override
+  is not.
+  Here is how you could use 
+  %code pre
+  to install <code>phantomjs</code>
+  in your file.
 
 %pre
   %code.no-highlight<>
@@ -165,6 +197,26 @@
         pre:
           - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
           - tar -jxf phantomjs.tar.bz2
+          
+%h4 Environment
+  
+%p
+  Adding
+  %code environment:
+  to the 
+  %machine:
+  section, lets you set environment variables for <b>all commands</b> in the build.
+  Since Circle uses a new shell for every command, a standard "export
+  FOO=bar" won't work so you would include something like this.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        environment:
+          foo: bar
+          baz: 123
+                  
 
 %h4#timezone
   Timezone
@@ -184,7 +236,7 @@
   This setting supports any time zone listed in the IANA time zone database.
   You can find this by looking in
   %code /usr/share/zoneinfo/
-  on your Unix machine, or in the
+  on your Unix machine or in the
   %strong TZ
   column in
   = succeed ".", ->
@@ -199,7 +251,10 @@
   Hosts
 
 %p
-  When you need to add entries to the /etc/hosts file, this is example of how to do that. 
+  Sometimes you might need to add one or more entries to the
+  %code /etc/hosts
+  file to assign various aliases to an IP address.
+  In this example, the tests point to the "circlehost" host name and IP address.
 
 %pre
   %code.no-highlight<>
@@ -209,28 +264,6 @@
           circlehost: 127.0.0.1
           foobar: 1.2.3.4
 
-%p
-  In this example, the tests connect to "circlehost" -- the established name of webserver.
-
-%h4
-  %a#environment{href: "#environment" }
-    Environment Variables
-
-%p
-  Sets environment variables for all commands in the build.
-
-%pre
-  %code.no-highlight<>
-    :preserve
-      machine:
-        environment:
-          foo: bar
-          baz: 123
-
-%p
-  Circle uses a new shell for every command, so a standard "export
-  FOO=bar" won't work. If you only need to set an environment
-  variable for a single command, that is covered below.
 
 %h4#ruby-version
   Ruby version
@@ -250,8 +283,8 @@
   If you use a different Ruby version manager, such as
   %a{ href: "https://github.com/sstephenson/rbenv/" } rbenv
   , let Circle know by including that information in the 
-  %code machine 
-  section. Here's an example.
+  %code machine: 
+  section. Here's an example of how you do that.
 
   
 %pre
@@ -262,12 +295,21 @@
           version: 1.9.3-p0-falcon
 
 
-
-%h3#node-js-version
+%h4#node-js-version
   Node.js version
-
+  
+  
 %p
-  Choose the version of Node.js used for your tests, for example:
+  Circle uses
+  %a{ href: "https://github.com/creationix/nvm" } NVM
+  to manage Node versions.
+  If you do not specify a version, Circle uses <code>0.8.2</code>.
+  Note that recent versions of NVM support selecting versions through
+  package.json.
+  If your version of NVM supports this, we recommend you use it.
+  
+%p
+  Here is an example of how to set the version of Node.js to be used for your tests.
 
 %pre
   %code.no-highlight<>
@@ -276,21 +318,12 @@
         node:
           version: 0.6.18
 
-%p
-  Circle uses
-  %a{ href: "https://github.com/creationix/nvm" } NVM
-  to manage Node versions.
 
-  If you do not specify a version, we will use 0.8.2. Note that
-  recent versions of NVM support selecting versions through
-  package.json. If your version of NVM supports this, we recommend
-  you use it.
-
-%h3#java-version
+%h4#java-version
   Java version
 
 %p
-  Choose the version of Java used for your tests, for example:
+  Here is an example of how to set the version of Java to be used for your tests.
 
 %pre
   %code.no-highlight<>
@@ -300,7 +333,7 @@
           version: openjdk7
 
 %p
-  The allowed versions are
+  Allowed Java versions are:
   %ul
     %li
       %code oraclejdk7 (default)
@@ -309,11 +342,16 @@
     %li
       %code openjdk6
 
-%h3#php-version
+%h4#php-version
   PHP version
 
 %p
-  Choose the version of PHP used for your tests, for example:
+  Circle uses
+  %a{href: "https://github.com/CHH/php-build"} php-build
+  and
+  %a{href: "https://github.com/CHH/phpenv"} phpenv
+  to manage PHP versions.  
+  Here is an example of how to set the version of PHP used for your tests.
 
 %pre
   %code.no-highlight<>
@@ -323,7 +361,7 @@
           version: 5.4.5
 
 %p
-  The allowed versions are:
+  Allowed PHP versions are:
   - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
   .row
     - cols = 4
@@ -337,29 +375,19 @@
                 = v
 
 %p
-  Circle uses
-  %a{href: "https://github.com/CHH/php-build"} php-build
-  and
-  %a{href: "https://github.com/CHH/phpenv"} phpenv
-  to manage PHP versions.
-%p
-  Are you using a version of PHP that isn't included above?
+  Are you using a version of PHP that isn't included in this list?
+  If so, please
   = HAML['contact_us']({succeed: '.'})
 
-
-= HAML['heading']({title: "Checking out your code from GitHub", hash: "checkout"})
+= HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
 
 %p
-  The checkout phase has no special sections.
-  The standard sections are available:
-
-%ul
-  %li <b>pre</b>: a list of commands run before checkout
-  %li <b>override</b>: a list of commands run instead of Circle's checkout commands
-  %li <b>post</b>: a list of commands run after checkout
+  The <code>checkout:</code> section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
+  You can modify commands by including <code>override</code>, <code>pre</code>, and/or <code>post</code>.
+   
 
 
-%h4 Example 1: using git submodules
+%h5 Example: using git submodules
 
 %pre
   %code.bash<>
@@ -369,7 +397,7 @@
           - git submodule init
           - git submodule update
 
-%h4 Example 2: Overwriting configuration files for Circle
+%h5 Example: overwriting configuration files for Circle
 %pre
   %code.bash<>
     :preserves
@@ -380,19 +408,19 @@
 = HAML['heading']({title: "Project-specific dependencies", hash: "dependencies"})
 
 %p
-  Most web programming languages and frameworks have some form of dependency specification, including Ruby's bundler, Node.js' npm and Python's pip.
-  Circle runs these commands to automatically fetch dependencies.
+  Most web programming languages and frameworks, including Ruby's bundler, npm for Node.js, and Python's pip, have some form of dependency specification;
+  Circle automatically runs commands to fetch such dependencies.
 
 %p
-  We support the standard sections:
+  You can use <code>override</code>, <code>pre</code>, and/or <code>post</code> to modify
+  %code dependencies:
+  commands.
+  Here are examples of common tweaks you might make in the 
+  %code dependendies:
+  section. 
 
-%ul
-  %li <b>pre</b>: a list of commands run before installing dependencies
-  %li <b>override</b>: a list of commands run instead of Circle's inferred dependency commands
-  %li <b>post</b>: a list of commands run after installing dependencies
 
-
-%h4 Example 1: using npm and Node.js:
+%h5 Example: using npm and Node.js:
 
 %pre
   %code.bash<>
@@ -401,7 +429,7 @@
         override:
           - npm install --dev
 
-%h4 Example 2: using a specific version of bundler:
+%h5 Example: using a specific version of bundler:
 
 %pre
   %code.bash<>
@@ -414,10 +442,13 @@
 %h4 Bundler flags
 
 %p
-  There is an additional section for Bundler, the dependency management program for Ruby
+  Circle supports the use of bundler flags. 
+  If your project includes bundler (the dependency management program for Ruby), you can include
+  %code without:
+  to list dependency groups to be excluded from bundle install.
+  Here is an example of what that would look like.
 
-%ul
-  %li <b>without</b>: a list of dependency groups to be excluded from bundle install
+
 
 %pre
   %code.bash<>
@@ -429,9 +460,11 @@
 %h4 Custom Cache Directories
 
 %p
-  Circle makes an effort to cache dependencies between builds. For common layouts, this
-  optimization will "just work". For uncommon cases, the <b>cache_directories</b> section
-  can list any additional directories you'd like cached between builds:
+  Circle makes an effort to cache dependencies between builds. Most of the time, this optimization just works. 
+  For uncommon cases, you can include
+  %code cache_directories:
+  to list any additional directories you'd like cached between builds.
+  Here is an example of how you would cache two custom directories.
 
 %pre
   %code.bash<>
@@ -444,18 +477,16 @@
 = HAML['heading']({title: "Database setup", hash: "database"})
 
 %p
-  Your web framework will typically include commands to create your database, install your schema and run your migrations.
-  The standard sections are available:
-
-%ul
-  %li <b>pre</b>: a list of commands run before setting up databases
-  %li <b>override</b>: a list of commands run instead of Circle's inferred database setup commands
-  %li <b>post</b>: a list of commands run after setting up databases.
+  Your web framework typically includes commands to create your database, install your schema, and run your migrations.
+  You can use <code>override</code>, <code>pre</code>, and/or <code>post</code> to modify
+  %code database:
+  commands.
 
 %p
-  If our inferred database.yml isn't working for you, then you can override our setup commands. Please
+  If our inferred <code>database.yml</code> isn't working for you, you may need to <code>override</code> our setup commands (as shown in the following example).
+  If that is the case, please
   = HAML["contact_us"]()
-  if you do, so that we can improve our inference.
+  and let Circle know so that we can improve our inferences.
 
 %p
   %pre
@@ -467,7 +498,9 @@
             - bundle exec rake db:create db:schema:load --trace
 
 %p
-  If you store your database config in environment variables, then you can export them in the machine section.
+  FYI, you have an option of pointing to the location of your stored database config file using an <code>environment:</code> variable in the 
+  %code machine
+  section.
 %p
   %pre
     %code.bash<>
@@ -479,28 +512,22 @@
 = HAML['heading']({title: "Running your tests", hash: "test"})
 
 %p
-  The most important part of testing: actually running the tests!
-  As always, pre, post and override commands are supported:
+  The most important part of testing is actually running the tests!
 
+%p  
+  Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
+  Circle also supports the use of <code>minitest_globs</code>, which can list the file globs to be used during testing. 
+  
+%p  
+  By default, when using parallelization, Circle runs all tests in the test/unit, test/integration, and
+    test/functional directories. 
+    Including <code>minitest_globs</code> replaces the
+    standard directories with your own. 
+    This is needed only when you have additional or non-standard
+    test directories and you are using parallelization with Minitest.
+    
 
-%ul
-  %li <b>pre</b>: a list of commands to run before the tests are run
-  %li <b>override</b>: replace our inferred test commands with a list of your choosing
-  %li <b>post</b>: a list of commands to run after the tests are run, typically more tests
-
-%p
-  Additionally, the following options are allowed:
-
-%ul
-  %li
-    <b>minitest_globs</b>: a list of file globs. By default, when using parallelization, Circle
-    will run all tests in the test/unit, test/integration and
-    test/functional directories. Setting this option will replace the
-    standard directories with your own. This is only needed when using
-    parallelization with Minitest, and you have additional or non-standard
-    test directories.
-
-%h5 Example 1: Running spinach after RSpec:
+%h5 Example: running spinach after RSpec:
 
 %pre
   %code.bash<>
@@ -511,7 +538,7 @@
               environment:
                 RAILS_ENV: test
 
-%h5 Example 2: Running phpunit on a special directory
+%h5 Example: running phpunit on a special directory
 
 %pre
   %code.bash<>
@@ -520,7 +547,7 @@
         override:
           - phpunit my/special/subdirectory/tests
 
-%h5 Example 3: Minitest globs
+%h5 Example: Minitest globs
 
 %pre
   %code.bash<>
@@ -530,39 +557,16 @@
           - test/integration/**/*.rb
           - test/extra-dir/**/*.rb
 
-= HAML['heading']({title: "Notifications", hash: "notify"})
+
+
+= HAML['heading']({title: "Deployment", hash: "deployment"}) 
+
 
 %p
-  Our normal notifications are sent by email, and can be configured on a per-user basis.
-  In addition, we allow sending notifications on a per-project basis.
-
-%p
-  Currently, we support sending web-hooks when your build completes.
-  We also support HipChat notifications, which are configured from your project's
-  %em settings
-  page.
-
-%pre
-  %code<>
-    :preserves
-      notify:
-        webhooks:
-          # A list of hashes representing hooks. Only the url field is supported.
-          - url: https://circleci.com/hooks/circle
-
-%p
-  This sends a JSON packet to the specified URL.
-  The JSON packet that will be sent can also be read using the REST API.
-  Visit
-  %code https://circleci.com/api/v1/project/:username/:projectname/:build
-  to see an example.
-
-= HAML['heading']({title: "Deployment", hash: "deployment"})
-
-%p
-  You can run commands at the end of the build, to deploy to
-  staging or production. Deployment commands are only run if the
-  build was successful.
+  The 
+  %code deploment:
+  section is optional. You can include run commands to deploy to staging or production. 
+  These commands are triggered only after a successful (green) build. 
 
 %pre
   %code.bash<>
@@ -580,16 +584,18 @@
 
 %p
 
-  Deployment consists of multiple sections. In this case, there
-  are two sections, one named 'production', and one named
-  'staging'. Section names must be unique. The section must
-  contain a field named branch. There can be multiple sections,
-  and the first one that matches the branch being built will be
-  run.
+  The 
+  %code deployment:
+  section consists of multiple subsections. In the example shown above, there
+  are two&mdash;one named <i>production</i> and one named <i>staging</i>. 
+  Subsection names must be unique.
+  Each subsection can list multiple branches, but at least one of these fields must be
+  named <i>branch</i>. In instances of multiple branches, the first one that matches 
+  the branch being built is the one that is run.
+  In the following example, if a developer pushes to any of the branches listed, the script
+  %code merge_to_master.sh
+  is run.
 
-%p
-  The deployment commands will only be run if the build is
-  green. A section can also list multiple branches
 
 %pre
   %code.bash<>
@@ -600,28 +606,25 @@
           commands:
             - ./merge_to_master.sh
 
-%p
-  In this example, if a developer pushes to any of the branches listed, the script
-  %code merge_to_master.sh
-  will be run.
+
 
 %h4 SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
-  upload the keys to Circle.  Edit the project in the UI, then
-  click the SSH keys button. Upload one or more SSH keys necessary
-  for deploying to your machines. If the hostname field is blank,
-  the key will be used for all hosts.
+  upload the keys to Circle.  Edit the project in the Circle UI, then
+  click the SSH keys button. Add and then submit the one or more SSH keys needed
+  for deploying to your machines. If you leave the hostname field blank,
+  the public key will be used for all hosts.
 
 
 %h3 Heroku
 
 %p
-  We also have first-class support for deploying to Heroku.
+  Circle also has first-class support for deploying to Heroku.
   Specify the app you'd like to
   %code git push
   to under <code>appname</code>.
-  Upon a successful build, we'll automatically deploy to the app in the section which matches the push, if there is one.
+  Upon a successful build, we'll automatically deploy to the app in the section that matches the push, if there is one.
 
 %pre
   %code.bash<>
@@ -633,14 +636,14 @@
             appname: foo-bar-123
 
 %p
-  Using our deployment to Heroku requires one extra step.
+  Setting up our deployment to Heroku requires one extra step.
   Due to Heroku's architecture and security model, we need to deploy as a particular user.
   A member of your project, possibly you, will need to register as that user.
-  You can do this on your project's settings page on Circle.
+  Circle's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
 
-%h3 Heroku with pre or post-deployment steps
+%h4 Heroku with pre or post-deployment steps
 %p
-  If you want to deploy to Heroku, and you'd like to run commands before or after the deploy, you'll have to use the 'normal' deployment syntax
+  If you want to deploy to Heroku and also run commands before or after the deploy, use must use the 'normal' deployment syntax.
 
 %pre
   %code.bash<>
@@ -651,86 +654,54 @@
             commands:
               - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:master
               - heroku run rake db:migrate --app foo-bar-123
+              
 
+ 
+= HAML['heading']({title: "Notifications", hash: "notify"})
+              
+%p
+  Our normal notifications are sent by email. 
+  Circle enables you to configure notifications for either a per-user or per-product basis.
+
+%p
+  Circle supports sending webhooks when your build completes.  
+  
+%p
+  This example sends a JSON packet to the specified URL.
+  Note that the JSON packet that will be sent can also be read using the REST API.
+  
+
+%pre
+  %code<>
+    :preserves
+      notify:
+        webhooks:
+          # A list of hashes representing hooks. Only the url field is supported.
+          - url: https://circleci.com/hooks/circle
+
+
+  
+  
+%p
+  Circle also supports HipChat, Campfire, and Flowdock notifications, which can be configured from your project's
+  <b>Edit settings > Notifications </b> page.
+  
+
+%h2 Need anything else?
 
 %p
   We are adding support for configuring every part of your build.
   If you need to tweak something that isn't currently possible, please
   = HAML["contact_us"]()
-  and we'll figure something out.
+  and we'll figure out how to make it happen.
   
-  %p 
-  Here is a brief description of the types of things you might set in your
-  %code circle.yml
-  file. 
-  This example uses an excerpt from the 
-  %code machine:
-  section of the file.
-
-%pre
-  %code.no-highlight<>
-    :preserve
-      machine:
-        timezone:
-          America/Los_Angeles
-        ruby:
-          version: 1.9.3-p0-falcon
-
-      test:
-        post:
-          \- bundle exec rake custom:test:suite
-
-%p
-  This sets the
-  = succeed ",", ->
-    %a{ href: "#timezone" }<
-      time zone
-  chooses a
-  %a{href: "#ruby-version"} Ruby version
-  and patchset,
-  and adds a
-  %a{href: "#post-test"} custom test command
-  to run after the rest of your commands.
+ 
   
-  For example, changing a command's timeout:
+ 
 
-%pre
-  %code.no-highlight<>
-    :preserve
-      dependencies:
-        override:
-          - bundle install:
-              timeout: 180
 
-%p
-  Allowed modifiers are:
 
-%ul
-  %li <b>timeout</b>: If a command runs this many seconds without output, kill it. Defaults to 180s.
-  %li <b>pwd</b>: Run your commands using this value as its current working directory. By default, commands are run in the checkout directory, named after your project name.
-  %li <b>environment</b>: A hash creating a list of environmental variables set for this command.
-  %li <b>parallel</b>: If true, run this command in parallel across all build VMs.
 
-%p For example:
-
-%pre
-  %code.no-highlight<>
-    :preserve
-      dependencies:
-        override:
-          - bundle install:
-              timeout: 180
-              environment:
-                MYVAR: MYVAL
-                MYVAR2: MYVAL2
-              pwd:
-                test_dir
-
-%p
-  Note in particular that the modifiers are indented one level from their command.
-  In the YAML above,
-  %code bundle install
-  is a key whose value is a hash containing <code>timeout</code>, <code>environment</code> and <code>pwd</code>.
 
 
 
