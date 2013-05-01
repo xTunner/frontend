@@ -122,22 +122,22 @@
       = precede '$', ->
         = succeed '.', ->
           %span{data-bind: "text: oldTotal"}<>
-    %p{data-bind: "if: chosen_plan_concurrency_p"}
+    %div{data-bind: "if: chosen_plan_concurrency_p"}
       Your new total is
       = precede '$', ->
         = succeed '.', ->
           %span{data-bind: "text: total"}<>
-    %p{data-bind: "if: chosen_plan_containers_p"}
+    %div{data-bind: "if: chosen_plan_containers_p"}
       Your new total is
       = succeed '.', ->
         %span{data-bind: "money: total"}<
-      %p
+      %p{data-bind: "with: chosenPlan"}
         Your new plan includes
-        %span{data-bind: "text: chosenPlan().free_containers()"}
+        %span{data-bind: "text: free_containers"}
         free containers and you can buy up to
-        %span{data-bind: "text: chosenPlan().max_containers()"}
+        %span{data-bind: "text: max_containers"}
         total for
-        %span{data-bind: "money: chosenPlan().container_cost"}
+        %span{data-bind: "money: container_cost"}
         each.
 
 
