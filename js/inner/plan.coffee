@@ -1,4 +1,9 @@
 CI.inner.Plan = class Plan extends CI.inner.Obj
+  observables: =>
+    free_containers: 1
+    max_containers: 1
+    containers: null
+
   constructor: ->
     super
 
@@ -11,6 +16,8 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
     @parallelism_options = ko.observableArray([1..@max_purchasable_parallelism()])
 
     @concurrency_options = ko.observableArray([1..20])
+
+    @container_options = ko.observableArray([@free_containers()..@max_containers()])
 
     @allowsParallelism = @komp =>
       @max_parallelism > 1
@@ -25,7 +32,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
       "up to #{@max_parallelism}x"
 
     @freeContainersDescription = @komp =>
-      "#{@free_containers}"
+      "#{@free_containers()}"
 
     @pricingDescription = @komp =>
       if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id
