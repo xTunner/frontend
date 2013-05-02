@@ -45,6 +45,11 @@
             %dt Duration
             %dd{data-bind: "text: duration"}
 
+            / ko if: VM.current_user().admin && queued_time()
+            %dt Queued
+            %dd{data-bind: "text: queued_time"}
+            / /ko
+
           %dl.span4.actions
             %dd
               %button.btn.btn-danger{data-bind: "click: report_build",
@@ -76,12 +81,6 @@
                                         data-success-text: "Canceled"}
                   Cancel
 
-            / ko if: VM.current_user().admin && queued_time()
-
-            %dt Queued Time
-            %dd{data-bind: "text: queued_time"}
-
-            / /ko
 
 
 
