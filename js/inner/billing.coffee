@@ -274,7 +274,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
 
   loadPlans: () =>
-    $.getJSON '/api/v1/user/plans', (data) =>
+    $.getJSON '/api/v1/plans', (data) =>
       @plans((new CI.inner.Plan(d) for d in data))
 
   loadPlanFeatures: () =>
