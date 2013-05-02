@@ -119,8 +119,11 @@ tbody.build-row {
     &.failed > .ah_wrapper:before { background: @red; }
     &.running > .ah_wrapper:before { background: @yellow; }
     &.timedout > .ah_wrapper:before { background: @red; }
-    @redLight: rgba(157, 38, 29, 0.7);
-    &.failed .contents.failed { background: @redLight; }
+    @lightRed: rgba(157, 38, 29, 0.7);
+    @lightYellow: rgba(255, 196, 13, 0.2);
+
+    &.failed .header.failed { background: @lightRed; }
+    &.failed .header.running { background: @lightYellow; }
 
     .time {
       color: #D4D4D4;
@@ -155,7 +158,7 @@ tbody.build-row {
       font-size: 15px;
       .command-text {
         float: left;
-        max-width: 95%;
+        max-width: 85%;
         line-height: 18px;
       }
    }
@@ -172,7 +175,9 @@ tbody.build-row {
         width: 5px;
       }
 
-      cursor: pointer;
+      .header {
+        cursor: pointer;
+      }
       #gradient > .vertical(#fff, #fafafa);
       min-height: 40px;
       position: relative;
@@ -319,4 +324,40 @@ td.build_status {
 	#build-log-header {
 		margin-bottom: 20px;
 	}
+}
+
+.success { color: @green; }
+.fixed { color: @green; }
+.failed { color: @red; }
+.running { color: @yellow; }
+.timedout { color: @red; }
+
+.build-circles {
+  font-size: 5px;
+  padding-top: 3px;
+  a { vertical-align: middle }
+
+  a:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  i.build-circle {
+    margin: 0;
+    width: 1em;
+  }
+
+}
+
+.branch-item:hover {
+  .build-circles {
+    font-size: 10px;
+    margin-left: -5em;
+    z-index: 100;
+    background-color: #eee;
+  }
+}
+
+.branch-name {
+  float: left;
 }
