@@ -141,7 +141,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       if @branches()[branch_name]
         recent = @branches()[branch_name].recent_builds or []
         running = @branches()[branch_name].running_builds or []
-        recent.concat(running).sort(@buildSort)
+        recent.concat(running).sort(Project.buildSort)
       else
         []
 
@@ -214,16 +214,16 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
   @buildNumSort: (l, r) ->
     if l.build_num > r.build_num
-      -1
-    else if l.build_num < r.build_num
       1
+    else if l.build_num < r.build_num
+      -1
     else
       0
 
   @buildSort: (l, r) ->
-    time_sort = @buildTimeSort(l, r)
+    time_sort = Project.buildTimeSort(l, r)
     if time_sort is 0
-      @buildNumSort(l, r)
+      Project.buildNumSort(l, r)
     else
       time_sort
 
