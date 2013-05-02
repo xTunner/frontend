@@ -10,17 +10,6 @@
       Your plan covers any number of GitHub organization or personal accounts.
       All pushes to those organizations will be tested, and will count against your concurrent and priority-builds.
 
-    %h3 I'd like more parallelism or concurrency?
-    %p{data-bind: "if: concurrency_p"}
-      You can add more parallelism or concurrency later.
-      Parallelism costs $99 to double the speed (eg from 2x to 4x, or 4x to 8x).
-      Concurrency is $49 per extra concurrent build.
-    %p{data-bind: "if: containers_p"}
-      %p
-        You can use containers for either more concurrent builds or more parallelism. It's up to you how you split up your containers.
-      %p
-        For example, if you have 6 containers, you can run 6 builds at a time, 3 builds at 2x speed, or 1 build at 6x speed.
-
     / ko if: concurrency_p
     %h3 How much concurrency do I need?
     %p
@@ -59,11 +48,14 @@
       With Circle, you don't need to worry about your tools - just focus on the product and leave the tools to us.
 
   .offset1.span5
+    / ko if: concurrency_p
     %h3 I'd like more parallelism or concurrency?
     %p
       You can add more parallelism or concurrency later.
       Parallelism costs $99 to double the speed (eg from 2x to 4x, or 4x to 8x).
       Concurrency is $49 per extra concurrent build.
+
+    / /ko
 
     %h3 How does parallelism work? Isn't that error-prone?
     %p
