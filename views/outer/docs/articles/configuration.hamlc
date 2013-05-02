@@ -1,7 +1,7 @@
 - @parents = [ "reference" ]
 - @icon = "icon-book"
 - @title = 'Configuring Circle'
-- @lastUpdated = "April 29, 2013"
+- @lastUpdated = "May 2, 2013"
 - @subtitle = "Tweak almost any setting you need"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
@@ -72,16 +72,16 @@
   %li <b>deployment</b>: deploying your code to your web servers
 
 %p
-  Remember that most projects won't need to specify anything for many of the phases.
-  Any sections that are not specified in the 
+  Remember: most projects won't need to specify anything for many of the phases.
+  Any sections not specified in the 
   %code circle.yml
-  file will be inferred from your code.
+  file&mdash;Circle infers from your code.
 
 
 
 %p
   The sections contain lists of bash commands.
-  Commands are run in the order they appear in the file, and stop when any command returns a non-zero exit code.
+  Commands are run in the order they appear in the file; testing stops when any command returns a non-zero exit code.
   You can modify which&mdash;and when&mdash;commands are run by adding 
   %code override
   ,
@@ -113,7 +113,7 @@
   %li <b>timeout</b>: if a command runs this many seconds without output, kill it (default:180s)
   %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project)
   %li <b>environment</b>: a hash creating a list of environment variables set for this command 
-  (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine:</code> section 
+  (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine</code> section of the file) 
   %li <b>parallel</b>: if true, run this command in parallel across all build VMs
 
 
@@ -136,18 +136,18 @@
                 MYVAR2: MYVAL2
               pwd:
                 test_dir
-                
+%p               
 
 = HAML['heading']({title: "Machine configuration", hash: "machine"})
 
 %p
   The 
-  %code machine:
+  %code machine
   section enables you to configure the virtual machine that runs your tests.
   
 %p 
   Here is an illustration of the types of things you might typically set in the 
-  %code machine:
+  %code machine
   section of the file.
 
 %pre
@@ -162,7 +162,7 @@
       test:
         post:
           \- bundle exec rake custom:test:suite
-
+%p
 %p
   This example sets the
   = succeed ",", ->
@@ -181,14 +181,13 @@
   and
   %code post
   are supported in the
-  %code machine:
+  %code machine
   section,
   %code override
   is not.
-  Here is how you could use 
+  Here is how you might adjust the <code>circle.yml</code> file using 
   %code pre
-  to install <code>phantomjs</code>
-  in your file.
+  to install <code>phantomjs</code>.
 
 %pre
   %code.no-highlight<>
@@ -197,17 +196,17 @@
         pre:
           - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
           - tar -jxf phantomjs.tar.bz2
-          
+%p          
 %h4 Environment
   
 %p
-  Adding
-  %code environment:
+  You set environment variables for <b>all commands</b> in the build by adding
+  %code environment
   to the 
-  %machine:
-  section, lets you set environment variables for <b>all commands</b> in the build.
-  Since Circle uses a new shell for every command, a standard "export
-  FOO=bar" won't work so you would include something like this.
+  %code machine
+  section. 
+  Remember that Circle uses a new shell for every command so a standard "export
+  FOO=bar" won't work. Instead, you must include something like this.
 
 %pre
   %code.no-highlight<>
@@ -216,7 +215,7 @@
         environment:
           foo: bar
           baz: 123
-                  
+%p                  
 
 %h4#timezone
   Timezone
@@ -225,15 +224,15 @@
   The machine's time zone is UTC by default. 
   You use 
   %code timezone
-  to change the setting to the same time zone as your <i>production</i> server.
-  Changing this setting to your <i>development</i> machine's time zone is <b>asking for trouble</b>. 
+  to adjust to the same time zone as your <i>production</i> server.
+  Changing the time to your <i>development</i> machine's time zone is <b>asking for trouble</b>. 
   
 %p  
-  This setting tells Circle to 
+  This modifier tells Circle to 
   overwrite
   %code /etc/timezone
   and then restart all databases and services that rely on it.
-  This setting supports any time zone listed in the IANA time zone database.
+  This modifier supports any time zone listed in the IANA time zone database.
   You can find this by looking in
   %code /usr/share/zoneinfo/
   on your Unix machine or in the
@@ -254,7 +253,7 @@
   Sometimes you might need to add one or more entries to the
   %code /etc/hosts
   file to assign various aliases to an IP address.
-  In this example, the tests point to the "circlehost" host name and IP address.
+  This example points to the "circlehost" host name and IP address.
 
 %pre
   %code.no-highlight<>
@@ -263,7 +262,7 @@
         hosts:
           circlehost: 127.0.0.1
           foobar: 1.2.3.4
-
+%p
 
 %h4#ruby-version
   Ruby version
@@ -283,7 +282,7 @@
   If you use a different Ruby version manager, such as
   %a{ href: "https://github.com/sstephenson/rbenv/" } rbenv
   , let Circle know by including that information in the 
-  %code machine: 
+  %code machine
   section. Here's an example of how you do that.
 
   
@@ -293,7 +292,7 @@
       machine:
         ruby:
           version: 1.9.3-p0-falcon
-
+%p
 
 %h4#node-js-version
   Node.js version
@@ -317,7 +316,7 @@
       machine:
         node:
           version: 0.6.18
-
+%p
 
 %h4#java-version
   Java version
@@ -331,7 +330,6 @@
       machine:
         java:
           version: openjdk7
-
 %p
   Allowed Java versions are:
   %ul
@@ -359,7 +357,7 @@
       machine:
         php:
           version: 5.4.5
-
+%p
 %p
   Allowed PHP versions are:
   - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
@@ -382,7 +380,7 @@
 = HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
 
 %p
-  The <code>checkout:</code> section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
+  The <code>checkout</code> section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
   You can modify commands by including <code>override</code>, <code>pre</code>, and/or <code>post</code>.
    
 
@@ -396,7 +394,7 @@
         post:
           - git submodule init
           - git submodule update
-
+%p
 %h5 Example: overwriting configuration files for Circle
 %pre
   %code.bash<>
@@ -413,14 +411,14 @@
 
 %p
   You can use <code>override</code>, <code>pre</code>, and/or <code>post</code> to modify
-  %code dependencies:
+  %code dependencies
   commands.
   Here are examples of common tweaks you might make in the 
-  %code dependendies:
+  %code dependendies
   section. 
 
 
-%h5 Example: using npm and Node.js:
+%h5 Example: using npm and Node.js
 
 %pre
   %code.bash<>
@@ -429,7 +427,7 @@
         override:
           - npm install --dev
 
-%h5 Example: using a specific version of bundler:
+%h5 Example: using a specific version of bundler
 
 %pre
   %code.bash<>
@@ -444,7 +442,7 @@
 %p
   Circle supports the use of bundler flags. 
   If your project includes bundler (the dependency management program for Ruby), you can include
-  %code without:
+  %code without
   to list dependency groups to be excluded from bundle install.
   Here is an example of what that would look like.
 
@@ -462,9 +460,9 @@
 %p
   Circle makes an effort to cache dependencies between builds. Most of the time, this optimization just works. 
   For uncommon cases, you can include
-  %code cache_directories:
+  %code cache_directories
   to list any additional directories you'd like cached between builds.
-  Here is an example of how you would cache two custom directories.
+  Here's an example of how you could cache two custom directories.
 
 %pre
   %code.bash<>
@@ -479,7 +477,7 @@
 %p
   Your web framework typically includes commands to create your database, install your schema, and run your migrations.
   You can use <code>override</code>, <code>pre</code>, and/or <code>post</code> to modify
-  %code database:
+  %code database
   commands.
 
 %p
@@ -498,7 +496,7 @@
             - bundle exec rake db:create db:schema:load --trace
 
 %p
-  FYI, you have an option of pointing to the location of your stored database config file using an <code>environment:</code> variable in the 
+  FYI, you have the option of pointing to the location of your stored database config file using the <code>environment</code> modifier in the 
   %code machine
   section.
 %p
@@ -527,7 +525,7 @@
     test directories and you are using parallelization with Minitest.
     
 
-%h5 Example: running spinach after RSpec:
+%h5 Example: running spinach after RSpec
 
 %pre
   %code.bash<>
@@ -556,7 +554,7 @@
         minitest_globs:
           - test/integration/**/*.rb
           - test/extra-dir/**/*.rb
-
+%p
 
 
 = HAML['heading']({title: "Deployment", hash: "deployment"}) 
@@ -564,7 +562,7 @@
 
 %p
   The 
-  %code deploment:
+  %code deployment
   section is optional. You can include run commands to deploy to staging or production. 
   These commands are triggered only after a successful (green) build. 
 
@@ -580,19 +578,17 @@
           branch: master
           commands:
             - ./deploy_staging.sh
-
-
 %p
 
   The 
-  %code deployment:
+  %code deployment
   section consists of multiple subsections. In the example shown above, there
   are two&mdash;one named <i>production</i> and one named <i>staging</i>. 
   Subsection names must be unique.
   Each subsection can list multiple branches, but at least one of these fields must be
   named <i>branch</i>. In instances of multiple branches, the first one that matches 
   the branch being built is the one that is run.
-  In the following example, if a developer pushes to any of the branches listed, the script
+  In the following example, if a developer pushes to any of the three branches listed, the script
   %code merge_to_master.sh
   is run.
 
@@ -605,15 +601,15 @@
           branch: [dev_alice, dev_bob, dev_carol]
           commands:
             - ./merge_to_master.sh
-
+%p
 
 
 %h4 SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
   upload the keys to Circle.  Edit the project in the Circle UI, then
-  click the SSH keys button. Add and then submit the one or more SSH keys needed
-  for deploying to your machines. If you leave the hostname field blank,
+  click the <b>SSH keys</b> button. Add and then submit the one or more SSH keys needed
+  for deploying to your machines. If you leave the <b>hostname</b> field blank,
   the public key will be used for all hosts.
 
 
@@ -654,21 +650,21 @@
             commands:
               - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:master
               - heroku run rake db:migrate --app foo-bar-123
-              
+%p             
 
  
 = HAML['heading']({title: "Notifications", hash: "notify"})
               
 %p
   Our normal notifications are sent by email. 
-  Circle enables you to configure notifications for either a per-user or per-product basis.
+  Circle enables you to configure notifications for either a per-user or per-project basis.
 
 %p
   Circle supports sending webhooks when your build completes.  
   
 %p
   This example sends a JSON packet to the specified URL.
-  Note that the JSON packet that will be sent can also be read using the REST API.
+  Note that the sent JSON packet can also be read using the REST API.
   
 
 %pre
@@ -678,7 +674,7 @@
         webhooks:
           # A list of hashes representing hooks. Only the url field is supported.
           - url: https://circleci.com/hooks/circle
-
+%p
 
   
   
@@ -691,7 +687,7 @@
 
 %p
   We are adding support for configuring every part of your build.
-  If you need to tweak something that isn't currently possible, please
+  If you need to tweak something that isn't currently supported, please
   = HAML["contact_us"]()
   and we'll figure out how to make it happen.
   
