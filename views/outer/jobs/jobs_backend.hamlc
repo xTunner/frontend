@@ -1,0 +1,33 @@
+.accordion-group
+  .accordion-heading
+    %h3
+      %a.accordion-toggle{data-toggle: "collapse",
+                          data-parent: "#accordion-who",
+                          href: "#collapseBackend"}
+        %i.icon-caret-right
+        For backend/full-stack devs
+
+  .accordion-body.collapse#collapseBackend
+    .accordion-inner
+      %h4 The type of people we're looking for:
+      %ul
+        %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops (those having left coding behind them&mdash;this isn't the company for you, unfortunately),
+        %li young, raw, talented devs who can crank out code,
+        %li clojure experts,
+        %li people with post-college experience of functional languages (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc),
+        %li people who love trying new cutting-edge things.
+
+      %h4 Experience we love to see:
+      %ul
+        %li having worked on significant projects that weren't in Java, JavaScript, Ruby or PHP,
+        %li having built or scaled large distributed systems.
+
+      %h4 Skills you might have:
+      %ul
+        %li good knowledge of algorithmic design and CS theory (informally, CS degree not required),
+        %li writing Clojure (experience in other functional languages counts)
+        %li designing elegant APIs,
+        %li broad knowledge of important programming languages, such as Python, Node.js, Javascript, Ruby (esp. Rails), Java and PHP,
+        %li scalable cloud and web services,
+        %li dev-ops including machine configuration and deployment on AWS
+        %li low-level Linux hacking (including file-systems, kernels, databases, etc).

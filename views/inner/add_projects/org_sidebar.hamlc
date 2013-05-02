@@ -15,11 +15,19 @@
     <!-- /ko -->
 
   %li.nav-header
-    Personal
+    You
+  %li{data-bind: "with: collaborator(login)"}
+    %a{data-bind: "click: $root.current_user().setActiveOrganization"}
+      %img{height: 25, data-bind: "attr: {src: avatar_url}"}
+      %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
+      %i.icon-chevron-right
 
+  %li.nav-header
+    Your Collaborators
+    %span.explanation
+      %i.icon-question-sign{data-bind: "jQueryExt: {type: 'tooltip', options: { title: 'These are the collaborators for all of your repos and forks'}}"}
   :plain
-    <!-- ko foreach: collaboratorAccounts -->
-
+    <!-- ko foreach: collaboratorsWithout(login) -->
   %li
     %a{data-bind: "click: $root.current_user().setActiveOrganization"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}

@@ -2,14 +2,13 @@
   %h1 About Us
 
 #content
-  %section.about
+  %section.about#watermark
 
     .story
       %p In 2011, Paul & Allen got frustrated with the state of software testing and decided to solve the problem.
       %p CircleCI was founded with the mission of giving every developer state of the art automated testing and continuous integration tools.
 
     %h1 Meet the CircleCI Team
-    -#%p Donec purus risus, pharetra in condimentum dapibus ante
     %hr
 
     -# Iterate over team members and print their information as hCard
@@ -85,7 +84,7 @@
 
         %li
           %i.icon-phone
-          (415) 341 - 2432
+          (800) 585-7075
 
         %li
           %i.icon-globe

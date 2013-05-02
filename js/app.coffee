@@ -13,6 +13,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
+    @from_heroku = ko.observable(window.renderContext.from_heroku)
 
     # inner
     @build = ko.observable()
@@ -24,16 +25,19 @@ class CircleViewModel extends CI.inner.Obj
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
+    @build_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
+    @dashboard_ready = @komp =>
+      @projects_have_been_loaded() and @recent_builds_have_been_loaded()
     @selected = ko.observable({}) # Tracks what the dashboard is showing
     if window.renderContext.current_user
       @billing = ko.observable(new CI.inner.Billing)
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
-            
-  
+
+
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
       path = window.location.pathname.match("/gh/([^/]+/[^/]+)")
@@ -45,14 +49,15 @@ class CircleViewModel extends CI.inner.Obj
           path[1]
 
     # outer
-    @home = new CI.outer.Home("home", "Continuous Integration made easy")
+    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
-    @technologies = new CI.outer.Page("technologies", "CircleCi Supported Technologies")
-    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
     @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
-
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
+
+    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
+
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
@@ -61,7 +66,9 @@ class CircleViewModel extends CI.inner.Obj
   refreshDashboard: () =>
     VM.loadProjects()
     sel = VM.selected()
-    if sel.project_name
+    if sel.admin_builds
+      VM.refreshAdminRecentBuilds()
+    else if sel.project_name
       VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
       VM.loadRecentBuilds()
@@ -169,10 +176,12 @@ class CircleViewModel extends CI.inner.Obj
 
 
   loadBuild: (cx, username, project, build_num) =>
+    @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
+      @build_has_been_loaded(true)
       @build().maybeSubscribe()
     display "build", {project: project_name, build_num: build_num}
 
@@ -256,6 +265,10 @@ class CircleViewModel extends CI.inner.Obj
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
       @recent_builds((new CI.inner.Build d for d in data))
     @renderAdminPage "recent_builds"
+
+  refreshAdminRecentBuilds: () =>
+    $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @recent_builds((new CI.inner.Build d for d in data))
 
   adminRefreshIntercomData: (data, event) =>
     $.ajax(
@@ -342,8 +355,10 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
-    @get '^/gh/:username/:project/tree/:branch',
+    @get '^/gh/:username/:project/tree/(.*)',
       (cx) ->
+        # github allows '/' is branch names, so match more broadly and combine them
+        cx.params.branch = cx.params.splat.join('/')
         VM.selected
           username: cx.params.username
           project: cx.params.project
@@ -368,20 +383,23 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/admin', (cx) -> VM.loadAdminPage cx
     @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
     @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get '^/admin/recent-builds', (cx) -> VM.loadAdminRecentBuilds cx
+    @get '^/admin/recent-builds', (cx) ->
+      VM.loadAdminRecentBuilds cx
+      VM.selected
+        admin_builds: true
+
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
     # outer
     @get "^/docs(.*)", (cx) => VM.docs.display(cx)
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
-    @get "^/technologies.*", (cx) => VM.technologies.display(cx)
+    @get "^/jobs.*", (cx) => VM.jobs.display(cx)
     @get "^/pricing.*", (cx) => VM.pricing.display(cx)
+
     @post "^/heroku/resources", -> true
 
-
-
-    @get '^/api/.*', (cx) => true
+    @get '^/api/.*', (cx) => false
 
     @get '^(.*)', (cx) => VM.error.display(cx)
 

@@ -1,7 +1,0 @@
-%article
-  - @article_tags = [ 'collection' ]
-
-  = HAML['article_title']({icon: "icon-wrench", title: "Common Problems", subtitle: "Troubleshooting common problems", lastUpdated: "Feb 26, 2013"})
-
-  .doc
-    = HAML['article_list']({tags: ['troubleshooting'], find_articles_by_tag: @find_articles_by_tag, no_heading: true})

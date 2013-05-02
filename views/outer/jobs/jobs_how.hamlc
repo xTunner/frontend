@@ -1,0 +1,69 @@
+%section
+  %h2 How to apply
+
+  %p
+    Send an email to <a href="mailto:jobs@circleci.com">jobs@circleci.com</a>, including a resume.
+    We're mostly interested in seeing proof that you're brilliant.
+    This might include great projects you've worked on, a portfolio, open source you've contributed to, your grades at MIT, that you got hired by Google, or anything that hints that you might be particularly good at what you do.
+    We're also interested in reading about technologies you've worked with in the past, and what you did with them.
+
+  %p
+    The best applicants pitch us as to why they should work at Circle.
+    This is both why you're interested, and why you think you'd be a good part of the team.
+    (We know this is a great market for developers, but we like folks who know why they want to work here).
+    If all goes well we're going to spend a lot of time together, so its worth it for both of us to discuss this in advance.
+
+  %p
+    Naturally, this goes both ways.
+    We're happy to answer any questions you have about Circle, where we're going, why it's a great place to work, and what we're doing to keep it that way.
+
+-# %section.application
+-#   %h2 The application process
+-#   %p
+-#     If we like your resume, we will be in touch, generally within a day or two, to arrange a phone screen.
+-#     Otherwise, we will respond quickly to let you know.
+
+-#   .step
+-#     %p
+-#       A phone screen typically takes an hour.
+-#       We discuss your resume, your background, what you're looking for in a position, and do some technical screening by asking you to do some task related to your job, typically to write a couple of small pieces of code.
+-#       Coding interviews are done in your own environment, shared using tmux or screen sharing on Skype.
+-#       You can do interviews in the programming language of your choice (which we will of course judge you on - I'm thinking of you, Smalltalkers).
+
+-#   .step
+-#     %p
+-#       After a successful phone screen, we'll arrange more in-depth interviews, typically three interviews on relevant topics.
+-#       These will be held in our office for local applicants, or remotely for remote applicants.
+-#       Local applicants should bring their laptops if they wish to work in their own dev environment, otherwise we can lend you a machine for the interview.
+
+-#     %p
+-#       For backend or full-stack engineers, interview questions typically involve:
+-#     %ul
+-#       %li A systems design question: come up with a design for a system we describe at a high level, and we'll drill down into specific details about how your design would, how the users would experience it, and how it would be built and scale.
+-#       %li A practical coding problem: write a program to do X, designed to take approximately 60-90 minutes.
+-#       %li A deeper algorithm problem: design and program an algorithm to do X (X will be something reasonably practical, and should not require formal CS theory, except to the extent that all programmers should have).
+
+-#   .step
+-#     %p
+-#       After successful interviews, we will discuss with you the offer we would make based on your experience and talent.
+-#       If it is agreeable on both sides, we'll move to the final stage.
+
+-#     %p
+-#       All candidates will do a 2-3 day project, in the office, working directly with us.
+-#       (Remote candidates will be flown in).
+-#       This project will be paid for, and we can accommodate those who are currently employed by doing it at evenings or weekends if you prefer.
+-#       The project will be a number of small or medium tasks that we wish to ship to production.
+-#       This is to determine what it's like to work with you, whether you can ship, and how good your real-life code is.
+-#       We'll need you to sign a standard IP assignment, and again, we'll pay you for your time.
+
+-#   #final
+-#     %p
+-#       At this point, we'll be ready to hire you.
+-#       We do our best to ensure that the process, from start to finish, can be done on your time scale, and we feel that you deserve our best efforts to move as quickly as you need.
+-#     %p
+-#       Similarly, we feel that candidates who get this far and are unsuccessful are entitled to feedback about how to improve for the future, as a courtesy for taking the time to speak to us.
+-#       If you are interesting in frank feedback about your interviews, please ask us.
+
+-#     %p
+-#       Finally, if you have any questions, please feel free to contact us at any time at <a href="mailto:jobs@circleci.com">jobs@circleci.com</a>.
+-#       We look forward to hearing from you.

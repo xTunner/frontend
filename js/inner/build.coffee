@@ -11,6 +11,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     body: null
     start_time: null
     stop_time: null
+    queued_at: null
     steps: []
     status: null
     lifecycle: null
@@ -157,16 +158,27 @@ CI.inner.Build = class Build extends CI.inner.Obj
         else
           "still running"
 
+    @queued_time = @komp =>
+      if @start_time() and @queued_at()
+        CI.time.as_duration(moment(@start_time()).diff(@queued_at()))
+      else if @queued_at() and @status() is "queued"
+        CI.time.as_time_since(@queued_at())
+
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
 
       b = @branch()
       b = b.replace(/^remotes\/origin\//, "")
+      b = CI.stringHelpers.trimMiddle(b, 23)
       "(#{b})"
 
     @github_url = @komp =>
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
+
+    @branch_url = @komp =>
+      return unless @branch
+      "#{@project_path()}/tree/#{@branch()}"
 
     @github_revision = @komp =>
       return unless @vcs_revision

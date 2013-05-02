@@ -1,3 +1,2 @@
 - @category = "troubleshooting"
-.category
-  Troubleshooting
+- @title = 'Troubleshooting'

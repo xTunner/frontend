@@ -9,7 +9,7 @@
     %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
       %i.icon-cog
 
-    %a.nav-menu-item{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 25)"}
+    %a.nav-menu-item{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
     %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
       %a.pull-right{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, jQueryExt: {type: 'tooltip', options: {animation: false}}"}

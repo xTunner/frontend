@@ -1,0 +1,23 @@
+.accordion-group
+  .accordion-heading
+    %h3
+      %a.accordion-toggle{data-toggle: "collapse",
+                          data-parent: "#accordion-who",
+                          href: "#collapseFrontend"}
+        %i.icon-caret-right
+        For frontend devs
+
+  .accordion-body.collapse#collapseFrontend
+    .accordion-inner
+      %ul
+        %li knowledge of common HTML5 implementation strategies,
+        %li experience building fat JS apps,
+        %li experience designing complex stateful apps in a maintainable way,
+        %li experience using HTML5 frameworks, such as Ember, Angular, Backbone, Knockout, Batman, Spine, Bootstrap, etc,
+        %li experience with data visualization, such as D3 or Processing,
+        %li good knowledge of algorithmic design and CS theory (informally, CS degree not required),
+        %li good UX sensibilities,
+        %li preferred if you aren't awful at visual design so that prototypes can be shipped and iterated on afterwards.
+
+      %p
+        Backend knowledge is not required, but we expect that you're not helpless if a change requires simple backend changes.

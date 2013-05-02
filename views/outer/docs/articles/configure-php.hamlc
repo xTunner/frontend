@@ -1,0 +1,67 @@
+- @parents = ['troubleshooting_php']
+- @title = "Configure PHP"
+- @icon = "icon-random"
+- @lastUpdated = "Apr 22, 2013"
+
+= HAML['heading']({title: "Use a configuration file", hash: "move-file"})
+
+%p
+  If you have an ini file that you'd like to include in the php configuration directory, you can add a pre-dependency step to your
+  != succeed ".", ->
+    %a{href: "/docs/configuration"} circle.yml
+
+%p
+  For example, if your repo contained the file <code>config/custom.ini</code>, you would do:
+
+%pre
+  %code.bash<>
+    :preserve
+      machine:
+        php:
+          version: 5.4.6
+
+      dependencies:
+        pre:
+          - mv config/custom.ini ~/.phpenv/versions/$(phpenv global)/etc/conf.d/
+
+%p
+  The <code>phpenv global</code> command will return 5.4.6, so you don't have to update you commands when you update your php version.
+
+= HAML['heading']({title: "Add a few lines", hash: "add-lines"})
+
+%p
+  If you just want to include a few lines of configuration, you can echo them into file. For example, if you want to add "memory_limit = 64M", you can add the following to your
+  != succeed ":", ->
+    %a{href: "/docs/configuration"} circle.yml
+
+%pre
+  %code.bash<>
+    :preserve
+      machine:
+        php:
+          version: 5.4.6
+
+      dependencies:
+        pre:
+          - echo "memory_limit = 64M" > ~/.phpenv/versions/$(phpenv global)/etc/conf.d/memory.ini
+
+= HAML['heading']({title: "Enable Xdebug", hash: "xdebug"})
+
+%p
+  Xdebug is installed for all versions of PHP, but is disabled by default. To enable it, simply add the following to your
+  != succeed ":", ->
+    %a{href: "/docs/configuration"} circle.yml
+
+%pre
+  %code.bash<>
+    :preserve
+      machine:
+        php:
+          version: 5.4.6
+
+      dependencies:
+        pre:
+          - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
+
+%p
+  This uses <code>sed</code> to uncomment the lines in the pre-installed <code>xdebug.ini</code> file.

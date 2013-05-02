@@ -1,5 +1,8 @@
 #topbar {
   .navbar-inner {
+    border-radius: 0px;
+    border-left: 0px;
+    border-right: 0px;
     @navDarkestBlue: #0d2e50;
     @navDarkBlue:  #134374;
 
@@ -20,24 +23,83 @@
 
     // rest of the nav elements
     ul.nav {
+      top: 2px;
+
+      > li {
+        height: 50px;
+        line-height: 50px;
+      }
+
       li {
         // environment element
+
+        margin: 0 5px;
+
+        .env-production, .env-staging, .env-development, .env-test, &.build-no > a {
+          margin-top: 17px;
+          padding: 0 5px;
+          border-radius: 3px;
+          font-size: .9em;
+          line-height: 20px;
+        }
+
+        &.meta {
+
+          a, span {
+            display: inline-block;
+            font-size: .9em;
+            font-weight: normal;
+            color: white;
+            }
+          }
+
+          &.branch > span {
+            padding: 0 5px 0 7px;
+          }
+
+         a.build_status {
+          height: 20px;
+          padding: 0 5px;
+          line-height: 20px;
+          text-shadow: none;
+         } 
+
         .env-production { background-color: red; }
         .env-staging { background-color: yellow; }
         .env-development { background-color: black; }
         .env-test { background-color: green; }
 
+        &.build-no, &.branch, &.rev {
+          &:before {
+            content: '/';
+            position: absolute;
+            left: -6px;
+            top: 1px;
+            color: white;
+            font-size: 1.2em;
+          }
+        }
+
+        &.build-no {
+          height: 50px;
+          padding: 0 5px;
+        }
+
         // nav elements
+        position: relative;
         font-family: 'Open Sans', sans-serif;
-        cursor: pointer;
         a {
+          cursor: pointer;
           line-height: 25px; // keeps this nav from overflowing the box
           font-size: 15px;
           padding: 14px 10px 11px;
           color: white;
-          .text-shadow(1px,-2px,0px, #1B3E69);
+          .text-shadow(0, 1px,0px, #1B3E69);
+          &.label-success {
+            &:hover { background: darken(@green, 10%); }
+          }
         }
-        &:hover { background: @navDarkBlue; }
+        &:hover:not(.divider) { background: @navDarkBlue; }
 
         // selected navbar element
         &.active a {
@@ -47,23 +109,40 @@
 
         // dropbox header
         &.open > a.dropdown-toggle { background-color: @navDarkBlue; }
-        .caret { margin-top: 11px }
+        .caret { margin-top: 11px; border-top-color: white; border-bottom-color: white; }
 
         // dropdown menu elements
         .dropdown-menu li {
+          margin: 0;
+          border-top: 1px solid lighten(@navDarkestBlue,4%);
+          &:first-child {
+            border: none;
+          }
           a {
-            color: #1f4976;
-            padding: 4px 11px 4px 11px;
-            .text-shadow(1px,-2px,0px, rgba(1,1,1, 0));
+            height: 40px;
+            line-height: 40px;
+            color: #fff;
+            padding: 0 10px;
             &:hover {
-              color: #455c78;
-              background: #d7dce3;
+              background: @navDarkestBlue;
             }
           }
-          .divider:hover { background: #E5E5E5; }
         }
       }
     }
+
+    .dropdown-menu {
+      &:before {
+        border-bottom: 0;
+      }
+      &:after {
+        border-bottom: 6px solid @navDarkBlue;
+      }
+      padding: 0;
+      border-radius: 0;
+      background: @navDarkBlue;
+    }
+
   }
 
   // Retina prettyness

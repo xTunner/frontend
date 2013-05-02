@@ -1,3 +1,2 @@
 - @category = "gettingstarted"
-.category
-  Getting Started
+- @title = "Getting Started"

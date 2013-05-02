@@ -2,14 +2,13 @@
   .sidebar-search-form
     = HAML['docs_search_form']()
   %ul.topics
-    - for rootCategory, categories of @categories
-      %li{class: "expand"}
-        %h4
-          = HAML[rootCategory]()
+    - for slug, category of @categories
+      %li
+        %a{href: "/docs/#{slug}"}
+          %h4
+            = category.article.title
         %hr
-        %ul{class: "expand"}
-          - for c in categories
-            - @class = if c.slug == @page then "icon-chevron-down" else "icon-chevron-up"
-            - @expand = if c.slug == @page then "expand"
+        %ul.expand
+          - for a in @tags[category.slug] or []
             %li
-              %a{ href: "#{c.url}" } = c.title
+              %a{ href: "#{a.url}" } = a.title_with_child_count

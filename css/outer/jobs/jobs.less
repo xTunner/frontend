@@ -1,0 +1,309 @@
+#jobs-page #title, #jobs-page #content {
+	font: 15px/24px 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  h1, h2, h3, h4, h5, h6, p, ul, li, dd, dt {
+	  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6, p, ul {
+    margin: 0 0 15px;
+  }
+	background: white;
+	color: #333;
+
+  counter-reset: my-counter;
+
+  .step {
+    counter-increment: my-counter;
+  }
+
+  step:before {
+    content: counter(my-counter);
+  }
+
+  strong {
+	  font-weight: 800;
+  }
+
+  h1, h2, h3, h4 {
+	  color: black;
+  }
+
+  h1 {
+	  padding: 50px 0;
+	  margin: 0 0 50px 0;
+	  font-size: 3em;
+	  text-align: center;
+	  background: #f9f8f8;
+  }
+
+  h2 {
+	  margin-bottom: 40px;
+	  font-size: 2em;
+	  line-height: 1.2em;
+  }
+
+  h3 {
+	  font-size: 1.1em;
+	  text-transform: uppercase;
+	  line-height: 1.3em;
+	  color: #444;
+  }
+
+  .headers {
+	  padding-bottom: 30px;
+	  margin-bottom: 40px;
+  }
+
+  .headers h2, .headers h3 {
+	  text-align: center;
+  }
+
+  a {
+	  color: #366aa4;
+	  text-decoration: none;
+  }
+
+  a:hover,
+  a:focus {
+	  color: #1b4f8a;
+  }
+
+  section a {
+	  font-weight: 600;
+  }
+
+  ul {
+	  margin: 0;
+	  padding: 0;
+  }
+
+  .cf:before,
+  .cf:after {
+    content: " ";
+    display: table;
+  }
+
+  .cf:after {
+    clear: both;
+  }
+
+  h1, .jobs section, .headers, .step,
+  .jobs .point {
+	  border-bottom: 1px solid #eee;
+  }
+
+  /* Jobs page specific */
+
+  .jobs section:last-of-type,
+  .jobs .point:last-of-type {
+	  border: none;
+  }
+
+  .jobs .box:first-of-type {
+	  padding-left: 0;
+  }
+
+  .jobs .apply .box h3 {
+	  text-align: center;
+  }
+
+  .jobs h2:last-child {
+	  margin: 40px 0 100px 0;
+	  text-align: center;
+  }
+
+  .jobs .application li {
+	  float: none;
+  }
+
+  .jobs .step {
+	  position: relative;
+  }
+
+  .jobs .step:before {
+	  left: 10px;
+	  top: 40px;
+	  background: #ffdf23;
+	  content: counter(my-counter);
+  }
+
+  .jobs .step:before,
+  .jobs .point .icon {
+	  position: absolute;
+	  color: white;
+	  border-radius: 50px;
+	  text-align: center;
+  }
+
+  .jobs .step ul {
+	  margin-left: 20px;
+  }
+
+  .jobs .step li {
+	  padding: 3px 0;
+	  list-style-type: disc;
+  }
+
+  .jobs .point {
+    h3 {
+      margin-top: 15px;
+    }
+	  position: relative;
+  }
+
+  .jobs .point .icon {
+	  display: block;
+	  padding-top: 20px;
+	  height: 40px;
+	  width: 60px;
+	  font-size: 1.7em;
+  }
+
+  .jobs .point.culture .icon {
+	  background: #ef535e;
+  }
+
+  .jobs .point.tech .icon {
+	  background: #0065d7;
+  }
+
+  .jobs .point.young .icon {
+	  background: #a100c4;
+  }
+
+  .jobs .point.learn .icon {
+	  background: #ffae00;
+  }
+
+  /* Accordion */
+  .accordion-group {
+    border: 0px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .accordion-inner {
+    border-top: 0px;
+    padding: 0;
+    ul {
+      padding: 0 0 15px 20px;
+    }
+  }
+
+  #accordion-who {
+    padding-top: 15px;
+  }
+
+  .accordion-heading {
+	  font-size: 1.1em;
+	  text-transform: uppercase;
+	  line-height: 1.3em;
+	  color: #444;
+    a {
+    font-size: 17px;
+    font-weight: bold;
+    font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+    }
+    i {
+      color: black;
+      margin-right: 15px;
+    }
+  }
+
+  .accordion-inner {
+    padding-left: 30px;
+    li {
+	    float: none;
+	    font-size: 1em;
+	    padding: 5px 0;
+	    list-style-type: disc;
+    }
+
+  }
+
+  .accordion {
+	  position: relative;
+  }
+
+  .accordion-group:last-child {
+	  border: none;
+  }
+
+
+  }
+
+  #final {
+    // hack, I don't know why this space isn't appearing
+    padding-top: 15px;
+  }
+
+  /* Media queries */
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+
+	  .jobs section {
+		  padding-bottom: 20px;
+		  margin-bottom: 20px;
+	  }
+
+	  .jobs .box {
+		  float: none;
+		  width: 100%;
+	  }
+
+	  .jobs .point {
+		  padding: 80px 0 20px 0;
+	  }
+
+	  .jobs .point h3 {
+		  text-align: center;
+		  width: 100%;
+	  }
+
+	  .jobs .point .icon {
+		  top: 20px;
+		  left: 50%;
+		  margin-left: -30px;
+	  }
+
+	  .jobs .step {
+		  padding:  20px 0 20px 60px;
+	  }
+
+	  .jobs .step:before {
+		  height: 27px;
+		  width: 30px;
+		  padding-top: 3px;
+	  }
+
+  }
+
+  @media screen and (min-width: 767px) {
+	  .jobs section {
+		  padding-bottom: 40px;
+		  margin-bottom: 40px;
+	  }
+
+	  .jobs .box {
+		  float: left;
+		  width: 45%;
+		  padding: 0 0 5% 5%;
+	  }
+	  .jobs .point {
+		  padding: 20px 0 20px 100px;
+	  }
+
+	  .jobs .point .icon {
+		  top: 40px;
+		  left: 0;
+	  }
+
+	  .jobs .step {
+		  padding:  20px 0 20px 100px;
+	  }
+
+	  .jobs .step:before {
+		  height: 40px;
+		  width: 50px;
+		  padding-top: 10px;
+	  }
+  }
+}

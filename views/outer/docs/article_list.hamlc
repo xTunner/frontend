@@ -1,13 +1,6 @@
-- if @find_articles_by_tag
-  .article_list
-    - unless @no_heading
-      %h4
-        Related Articles
-      %hr
-    %ul
-      - for tag in @tags
-        - articles = @find_articles_by_tag(tag)
-        - if articles
-          - for article in articles
-            %li
-              %a{ href: "#{article.url}" } = article.title
+.article_list
+  %ul
+    - if @slug? and @tags? # ignoring first pass
+      - for article in @tags[@slug]
+        %li
+          %a{ href: "#{article.url}" } = article.title_with_child_count

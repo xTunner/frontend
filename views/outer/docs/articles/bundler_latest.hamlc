@@ -1,21 +1,20 @@
-%article
-  - @article_tags = ['ruby']
+- @parents = ['troubleshooting_ruby']
+- @title = "Do you need the latest version of Bundler?"
+- @icon = "icon-download"
+- @lastUpdated = "Feb 3, 2013"
 
-  = HAML['article_title']({title: "Do you need the latest version of Bundler?", icon: "icon-download", lastUpdated: "Feb 3, 2013"})
+%p
+  Circle typically tracks the latest stable version of bundler.
+  Your project may oocasionally need to use a pre-release version, which is easy to add to your build.
+  Just add the following to your
+  %a{href: "/docs/configuration"}
+    circle.yml
+  file.
 
-  .doc
-    %p
-      Circle typically tracks the latest stable version of bundler.
-      Your project may oocasionally need to use a pre-release version, which is easy to add to your build.
-      Just add the following to your
-      %a{href: "/docs/configuration"}
-        circle.yml
-      file.
-
-    %pre
-      %code.bash<>
-        :preserves
-          dependencies:
-            pre:
-              - gem uninstall bundler
-              - gem install bundler --pre
+%pre
+  %code.bash<>
+    :preserves
+      dependencies:
+        pre:
+          - gem uninstall bundler
+          - gem install bundler --pre

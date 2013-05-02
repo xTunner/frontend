@@ -45,6 +45,10 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       failed: @komp => @status() == "failed"
       cancelled: @komp => @status() == "cancelled"
 
+    @collapse_icon =
+      "icon-chevron-up": @komp => !@minimize()
+      "icon-chevron-down": @minimize
+
     @action_header_button_style = @komp =>
       if @has_content()
         @action_header_style
@@ -61,7 +65,13 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       CI.time.as_duration(@run_time_millis())
 
     @sourceText = @komp =>
-      @source()
+      switch @source()
+        when "db"
+          "UI"
+        when "template"
+          "standard"
+        else
+          @source()
 
     @sourceTitle = @komp =>
       switch @source()
@@ -93,7 +103,6 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
-
 
 
 class Step extends CI.inner.Obj

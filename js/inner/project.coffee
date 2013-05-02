@@ -9,9 +9,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
     latest_build: null
     hipchat_room: null
     hipchat_api_token: null
+    hipchat_notify: false
+    hipchat_notify_prefs: null
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
+    campfire_notify_prefs: null
     flowdock_api_token: null
     github_user: null
     heroku_deploy_user: null
@@ -165,6 +168,15 @@ CI.inner.Project = class Project extends CI.inner.Obj
         else if not branch
           {selected: true}
 
+    # Forces the notification preference true/false checkbox value to
+    # convert to either smart or null
+    @translate_checked = (pref_observable) =>
+      ko.computed
+        read: () ->
+          pref_observable()
+        write: (newVal) ->
+          if newVal then pref_observable("smart") else pref_observable(null)
+
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
       if l.latest_build().build_num > r.latest_build().build_num then -1 else 1
@@ -269,9 +281,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
       data: JSON.stringify
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
+        hipchat_notify: @hipchat_notify()
+        hipchat_notify_prefs: @hipchat_notify_prefs()
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()
+        campfire_notify_prefs: @campfire_notify_prefs()
         flowdock_api_token: @flowdock_api_token()
 
 

@@ -1,7 +1,14 @@
 %h2 Delete your account
 
-%p
-  We currently don't support automatically deleting your account.
-  Please
-  = HAML['contact_us_inner']()
-  and we can do it manually.
+.row
+  .span5
+    %p
+      We don't currently have a button to delete your account.
+      Please
+      = HAML['contact_us_inner']()
+      and we can do it manually.
+
+    %p
+      If you have time, we'd love honest feedback about what made you close your account.
+      It's really useful as it helps us make the service a lot better.
+      Thanks in advance!

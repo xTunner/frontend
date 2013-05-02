@@ -1,4 +1,7 @@
 %ul.nav
   %li
+    %a{href: "/gh/#{@project}"}
+      = @project
+  %li.active
     %a{href: "/gh/#{@project}/edit"}
-      Edit
+      Edit settings

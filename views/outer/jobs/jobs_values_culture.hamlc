@@ -1,0 +1,28 @@
+.point.culture
+  %i.icon.icon-heart
+  %h3 Culture
+  %p
+    %strong Our culture is engineering-driven.
+    Our customers and our founders are engineers, and most of our employees will be too.
+    We are inspired by companies like
+    <a href="http://blog.alexmaccaw.com/stripes-culture">Stripe</a>,
+    <A href="http://gigaom.com/2012/03/26/tales-from-the-trenches-github/">GitHub</a>,
+    <a href="http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html">Fog Creek</a>,
+    and <a href="http://www.valvesoftware.com/company/Valve_Handbook_LowRes.pdf">Valve</a>.
+
+  %p
+    %strong We have a flat organization.
+    There are no managers, no org-chart and no hierarchy, and we plan to keep it that way for as long as possible.
+    Everyone gets access to all company information and can be involved in decision-making.
+    By keeping communication open and transparent, we believe everybody is able to make good decisions about the best thing to work on.
+
+  %p
+    %strong We have a very strong focus on productivity, and on shipping code.
+    This means you'll have a lot of days where you finish the day with the happy glow of having achieved something.
+    We ship often, and shape our work lives around enabling that.
+
+  %p
+    %strong We spend a lot of time talking to customers.
+    We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too.
+    This means you'll probably spend at least one day per week listening to and fixing their problems.
+    We refer to that day as "support", but really think of it as "customer development".

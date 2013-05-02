@@ -10,7 +10,7 @@
     %hr
 
     %p
-      %a{ href: "#security-changelog" } Last modified: Feb 8, 2013
+      %a{ href: "#security-changelog" } Last modified: Mar 10, 2013
 
 
     %h3 Code security
