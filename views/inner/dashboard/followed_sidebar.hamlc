@@ -6,6 +6,7 @@
 
   / ko foreach: {data: followed_projects(), as: 'project'}
   %li.nav-menu-row{data-bind: "css: project.active_style(project.project_name())"}
+
     %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
       %i.icon-cog
 
@@ -20,6 +21,16 @@
 
   / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
   %li.branch-item.nav-menu-row{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
+
+    / ko ifnot: VM.current_user().admin
+    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
+
+    %span{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
+      %a.build_status.build_dot{data-bind: "attr: {href: project.build_path(build_num)}, css: style, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"} &nbsp;
+
+    / /ko
+
+    / ko if: VM.current_user().admin
     .status-circle.pull-left{data-bind: "foreach: {data: [project.latest_branch_build(branch_name)], as: 'latest'}", style: "margin-top: 2px; margin-left: 5px; font-size: 10px"}
       / ko if: latest
       %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"}
@@ -34,6 +45,8 @@
     .pull-right.build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
       %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"}
         %i.icon-circle.build-circle{data-bind: "css: status"}
+
+    / /ko
 
   / /ko
   / /ko

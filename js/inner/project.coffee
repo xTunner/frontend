@@ -146,13 +146,24 @@ CI.inner.Project = class Project extends CI.inner.Obj
         []
 
     @latest_branch_build = (branch_name) =>
-      build = @sorted_builds(branch_name)[0]
-      if build
-        new CI.inner.Build(build)
+      if VM.current_user().admin
+        build = @sorted_builds(branch_name)[0]
+        if build
+          new CI.inner.Build(build)
+      else
+        if @branches()[branch_name] and @branches()[branch_name].recent_builds
+          new CI.inner.Build(@branches()[branch_name].recent_builds[0])
+
 
     @recent_branch_builds = (branch_name) =>
-      builds = @sorted_builds(branch_name).reverse()[0..4]
-      new CI.inner.Build(b) for b in builds
+      if VM.current_user().admin
+        builds = @sorted_builds(branch_name).reverse()[0..4]
+        new CI.inner.Build(b) for b in builds
+      else
+        builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
+          new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
+        if builds then builds.reverse()
+
 
     @build_path = (build_num) =>
       @project_path() + "/" + build_num
