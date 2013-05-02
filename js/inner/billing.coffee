@@ -279,11 +279,18 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadPlanFeatures: () =>
     @planFeatures(CI.content.pricing_features)
-    $('html').popover
+
+  popover_options: (extra) =>
+    options =
       html: true
+      trigger: 'hover'
       delay: 0
-      # this will break when we change bootstraps! take the new template from bootstrap.js
+      animation: false
+      placement: 'bottom'
+     # this will break when we change bootstraps! take the new template from bootstrap.js
       template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>'
-      placement: "bottom"
-      trigger: "hover"
-      selector: ".more-info"
+
+    for k, v of extra
+      options[k] = v
+
+    options
