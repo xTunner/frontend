@@ -8,7 +8,15 @@
     %h3 Who is included in my plan?
     %p
       Your plan covers any number of GitHub organization or personal accounts.
-      All pushes to those organizations will be tested, and will count against your concurrent and priority-builds.
+      All pushes to those organizations will be tested, and will count against your concurrent builds.
+
+    / ko if: containers_p
+    %h3 How do containers work?
+    %p
+      Every time you push to GitHub, we'll checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes will queue up until your build finishes.
+    %p
+      You can buy more containers to run multiple builds simultaneously. You can also use our parallelism to split your build across multiple containers. With 4 containers you could run 4 concurrent builds at 1x parallelism or 2 concurrent builds at 2x parallelism.
+    / /ko
 
     / ko if: concurrency_p
     %h3 How much concurrency do I need?
@@ -70,13 +78,8 @@
     %h3{data-bind: "if: concurrency_p"} Why use concurrent builds for pricing?
     %h3{data-bind: "if: containers_p"} Why use containers for pricing?
     %p
-      After talking to our users, we based our pricing on two important principles: charge in a fair way, and aligning your incentives with ours.
-      After some experiments with per-user pricing, we eventually settled on number of containers as the prime differentiator between plans.
-
-    %h3 Why do you charge for more concurrent builds?
-    %p
-      After talking to our users, we based our pricing on two important principles: charge in a fair way, and aligning your incentives with ours.
-      After some experiments with per-user pricing, we eventually decided that the fairest way is to let people pay for the resources they consume.
+      After talking to our users, we based our pricing on two important principles: charge in a fair way, and align our incentives with yours.
+      We did some experiments with per-user pricing, but eventually decided that the fairest way is to let people pay for the resources they consume.
     %p
       It's fair because it scales with the amount of work your team generates.
       At the same time, it's affordable for teams of all size.
