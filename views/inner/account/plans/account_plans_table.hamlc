@@ -7,6 +7,7 @@
         %col{class: "col3" }
         %col{class: "col4" }
         %col{class: "col5" }
+        %col{class: "col6" }
       %thead
         %tr.name
           %th.title
@@ -99,6 +100,14 @@
         / /ko
 
         / ko if: containers_p
+        %tr.container-cost.more-info{title: "Container Cost",
+                                     data-content: "The price you'll pay to buy extra containers. You can use your containers to run more builds at once or to parallelize you test suite.",
+                                     data-bind: "popover: popover_options()"}
+          %td.title Container cost
+          / ko foreach: plans
+          %td{data-bind: "text: containerCostDescription"}
+          / /ko
+
         %tr.free-containers.more-info{title: "Included Containers",
                                       data-content: "You can use your containers to run more builds at once or to parallelize you test suite.",
                                       data-bind: "popover: popover_options()"}

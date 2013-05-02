@@ -34,6 +34,13 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
     @freeContainersDescription = @komp =>
       "#{@free_containers()}"
 
+    @containerCostDescription = @komp =>
+      if @container_cost
+        "$#{@container_cost} / container"
+      else
+        "Negotiated"
+
+
     @pricingDescription = @komp =>
       if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id
         "Your current plan"
