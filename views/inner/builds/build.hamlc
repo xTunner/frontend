@@ -3,9 +3,8 @@
 
 #build-log-container
 
-  = HAML['flashes']({})
-
   %div{data-bind: "ifnot: build_has_been_loaded"}
+    = HAML['flashes']({})
     .centered-spinner
       = HAML['fast_spinner']()
 
@@ -92,6 +91,8 @@
               %a{href: '#', data-bind: "text: subject, tooltip: {title: body}"}}
             %span{data-bind: "ifnot: body"}
               %span{data-bind: "text: subject"}
+
+      = HAML['flashes']({})
 
       .row-fluid
         .offset2.span8
