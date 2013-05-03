@@ -82,11 +82,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
       label: true
       build_status: true
 
+    @canceled = @komp =>
+      @status() == 'canceled'
+
+    @queued = @komp =>
+      @status() == 'queued'
+
     @status_icon_class =
       "icon-ok": @success_style
-      "icon-remove": (@important_style || @warning_style)
-      "icon-repeat": @info_style
-      "icon-spin": @info_style
+      "icon-remove": @komp => @important_style() || @warning_style() || @canceled()
+      "icon-repeat": @komp => @info_style() || @queued()
+      "icon-spin": @komp => @info_style() || @queued()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
