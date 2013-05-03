@@ -45,7 +45,7 @@
 
     .pull-right.build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
       %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, tooltip: {title: tooltip_title, animation: false}"}
-        %i.icon-circle.build-circle{data-bind: "css: status"}
+        %i.build-circle{data-bind: "css: status_icon_class"}
 
     / /ko
 
