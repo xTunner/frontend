@@ -13,7 +13,7 @@
     / ko if: containers_p
     %h3 How do containers work?
     %p
-      Every time you push to GitHub, we'll checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes will queue up until your build finishes.
+      Every time you push to GitHub, we'll checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes will queue up until other builds finish.
     %p
       You can buy more containers to run multiple builds simultaneously. You can also use our parallelism to split your build across multiple containers. With 4 containers you could run 4 concurrent builds at 1x parallelism or 2 concurrent builds at 2x parallelism.
     / /ko

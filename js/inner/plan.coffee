@@ -38,7 +38,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
       if @container_cost
         "$#{@container_cost} / container"
       else
-        "Negotiated"
+        "Contact us"
 
 
     @pricingDescription = @komp =>
