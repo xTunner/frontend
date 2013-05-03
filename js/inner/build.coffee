@@ -82,6 +82,18 @@ CI.inner.Build = class Build extends CI.inner.Obj
       label: true
       build_status: true
 
+    @canceled = @komp =>
+      @status() == 'canceled'
+
+    @queued = @komp =>
+      @status() == 'queued'
+
+    @status_icon_class =
+      "icon-ok": @success_style
+      "icon-remove": @komp => @important_style() || @warning_style() || @canceled()
+      "icon-repeat": @komp => @info_style() || @queued()
+      "icon-spin": @komp => @info_style() || @queued()
+
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
         "circle bug"
@@ -163,11 +175,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
       b = @branch()
       b = b.replace(/^remotes\/origin\//, "")
+      b = CI.stringHelpers.trimMiddle(b, 23)
       "(#{b})"
 
     @github_url = @komp =>
       return unless @vcs_revision
       "#{@vcs_url()}/commit/#{@vcs_revision}"
+
+    @branch_url = @komp =>
+      return unless @branch
+      "#{@project_path()}/tree/#{@branch()}"
 
     @github_revision = @komp =>
       return unless @vcs_revision

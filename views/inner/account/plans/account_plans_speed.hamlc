@@ -1,5 +1,5 @@
 .row
-  .offset1.span4
+  .offset1.span4{data-bind: "if: chosen_plan_concurrency_p"}
     %h3 Concurrent builds
     %p
       More concurrent builds allows us to test more GitHub pushes at the same time.
@@ -17,7 +17,7 @@
         %li build frequently - if your developers push more than 5 times per day on average, you should scale up your concurrent builds linearly.
 
 
-  .offset1.span4
+  .offset1.span4{data-bind: "if: chosen_plan_concurrency_p"}
     %h3 Parallelism
 
     %p
@@ -29,13 +29,43 @@
     %form
       %select.span3{data-bind: "value: parallelism, enable: chosenPlan().allowsParallelism, options: chosenPlan().parallelism_options, optionsText: parallelism_option_text"}
 
-    %span.help-inline
+    %p.help-inline
       Parallelism can reduce your tests' run-times by up to 8x, by splitting up your tests and running them on different machines.
       You can expect almost linear speedup in test times.
       Some customer examples:
       %ul
         %li a 20 minute build time with 2x parallelization runs in 11 minutes
         %li a 45 minute build time with 3x parallelization runs in 18 minutes
+
+  .offset1.span4{data-bind: "if: chosen_plan_containers_p"}
+    %h3 Containers
+
+    %p
+      More containers allows us to test more GitHub pushes at the same time.
+      Other pushes will queue up waiting to be tested.
+
+    %form
+      %select.span3{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
+
+
+    %p.help-block
+      You'll need more containers if you:
+      %ul
+        %li have a large team - 1 concurrent build per 3 full-time developers is typical,
+        %li have a long test suite - add 20% more concurrent builds for every 7 minutes of test time,
+        %li build frequently - if your developers push more than 5 times per day on average, you should scale up your concurrent builds linearly.
+
+    %p.help-block
+      You can split your build across up to 8 containers to reduce your test time
+      by up to 8x.
+
+    %p.help-block
+      Some customer examples:
+      %ul
+        %li a 20 minute build with 2x parallelization runs in 11 minutes
+        %li a 45 minute build with 3x parallelization runs in 18 minutes
+
+
 
   .offset1.span4
     %h3

@@ -19,7 +19,7 @@
 
         %li#build-state
           %a{href: "/admin/build-state"}
-            Hazelcast build-state
+            Build State
 
         %li
           %button.btn.btn-primary{data-bind: "click: adminRefreshIntercomData"}

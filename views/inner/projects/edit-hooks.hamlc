@@ -12,6 +12,12 @@
       %input.span1#hipchat-notify{ type: "checkbox", data-bind: "checked: hipchat_notify" }
 
   .control-group
+    %label.control-label{for: "hipchat-notify-prefs"} Fixed/Failed Only
+      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+    .controls
+      %input.span1#hipchat-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)" }
+
+  .control-group
     %label.control-label{for: "hipchat-token"} API token
     .controls
       %input.span4#hipchat-token{ type: "text", data-bind: "value: hipchat_api_token" }
@@ -32,6 +38,12 @@
     %label.control-label{for: "campfire-subdomain"} Subdomain
     .controls
       %input.span4#campfire-subdomain{ type: "text", data-bind: "value: campfire_subdomain" }
+
+  .control-group
+    %label.control-label{for: "campfire-notify-prefs"} Fixed/Failed Only
+      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+    .controls
+      %input.span1#campfire-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)" }
 
   .control-group
     %label.control-label{for: "campfire-token"} API token

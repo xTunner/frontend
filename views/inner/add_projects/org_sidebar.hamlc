@@ -25,7 +25,7 @@
   %li.nav-header
     Your Collaborators
     %span.explanation
-      %i.icon-question-sign{data-bind: "jQueryExt: {type: 'tooltip', options: { title: 'These are the collaborators for all of your repos and forks'}}"}
+      %i.icon-question-sign{data-bind: "tooltip: { title: 'These are the collaborators for all of your repos and forks'}"}
   :plain
     <!-- ko foreach: collaboratorsWithout(login) -->
   %li

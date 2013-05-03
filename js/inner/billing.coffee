@@ -39,12 +39,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     plans: []
     parallelism: 1
     concurrency: 1
+    containers: 1
 
   constructor: ->
     super
-
-    @total = @komp =>
-      @calculateCost(@chosenPlan(), parseInt(@concurrency()), parseInt(@parallelism()))
 
     @savedCardNumber = @komp =>
       return "" unless @cardInfo()
@@ -53,11 +51,34 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @wizardCompleted = @komp =>
       @wizardStep() > 3
 
+    # Handles the plan templates we send
+    @concurrency_p =  @komp =>
+      @plans()[0] and (@plans()[0].type is "concurrency")
+
+    @containers_p = @komp =>
+      @plans()[0] and (@plans()[0].type is "containers")
+
+    # Handles their current plan
+    @chosen_plan_concurrency_p = @komp =>
+      @chosenPlan() and (@chosenPlan().type is "concurrency")
+
+    @chosen_plan_containers_p = @komp =>
+      @chosenPlan() and (@chosenPlan().type is "containers")
+
+    @total = @komp =>
+      if @chosen_plan_concurrency_p()
+        @calculateCost(@chosenPlan(), parseInt(@concurrency()), parseInt(@parallelism()))
+      else if @chosen_plan_containers_p()
+        @calculateCost(@chosenPlan(), parseInt(@containers()))
+
   parallelism_option_text: (p) =>
     "#{p}-way ($#{@parallelism_cost(@chosenPlan(), p)})"
 
   concurrency_option_text: (c) =>
     "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(@chosenPlan(), c)})"
+
+  containers_option_text: (c) =>
+    "#{c} containers ($#{@containerCost(@chosenPlan(), c)})"
 
   parallelism_cost: (plan, p) =>
     Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
@@ -72,19 +93,34 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     else
       Math.max(0, @calculateCost(plan, c) - @calculateCost(plan))
 
-  calculateCost: (plan, concurrency, parallelism) ->
+  calculateCostConcurrency: (plan, concurrency, parallelism) ->
+    c = concurrency or 0
+    extra_c = Math.max(0, c - 1)
+
+    p = parallelism or 1
+    p = Math.max(p, 2)
+    extra_p = (CI.math.log2 p) - 1
+    extra_p = Math.max(0, extra_p)
+
+    plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
+
+  containerCost: (plan, containers) ->
+    c = Math.min(containers or 0, plan.max_containers())
+    free_c = plan.free_containers()
+
+    Math.max(0, (c - free_c) * plan.container_cost)
+
+  calculateCostContainers: (plan, containers) =>
+    plan.price + @containerCost(plan, containers)
+
+  calculateCost: (plan, args...) =>
     unless plan
       0
     else
-      c = concurrency or 0
-      extra_c = Math.max(0, c - 1)
-
-      p = parallelism or 1
-      p = Math.max(p, 2)
-      extra_p = (CI.math.log2 p) - 1
-      extra_p = Math.max(0, extra_p)
-
-      plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
+      if plan.type is "concurrency"
+        @calculateCostConcurrency(plan, args...)
+      else if plan.type is "containers"
+        @calculateCostContainers(plan, args...)
 
   selectPlan: (plan, event) =>
     if plan.price?
@@ -195,6 +231,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
       @concurrency(data.concurrency or 1)
       @parallelism(data.parallelism or 1)
+      @containers(data.containers or 1)
       if @chosenPlan()
         @closeWizard()
 
@@ -237,16 +274,23 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
 
   loadPlans: () =>
-    $.getJSON '/api/v1/user/plans', (data) =>
+    $.getJSON '/api/v1/plans', (data) =>
       @plans((new CI.inner.Plan(d) for d in data))
 
   loadPlanFeatures: () =>
-    @planFeatures(renderContext.pricingFeatures)
-    $('html').popover
+    @planFeatures(CI.content.pricing_features)
+
+  popover_options: (extra) =>
+    options =
       html: true
+      trigger: 'hover'
       delay: 0
-      # this will break when we change bootstraps! take the new template from bootstrap.js
+      animation: false
+      placement: 'bottom'
+     # this will break when we change bootstraps! take the new template from bootstrap.js
       template: '<div class="popover billing-popover"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>'
-      placement: "bottom"
-      trigger: "hover"
-      selector: ".more-info"
+
+    for k, v of extra
+      options[k] = v
+
+    options

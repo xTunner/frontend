@@ -1,6 +1,6 @@
 - @parents = [ 'reference' ]
 - @icon = "icon-exchange"
-- @title = "Polling Project Status Using CCMenum, CCTray, etc."
+- @title = "Polling Project Status Using CCMenu, CCTray, etc."
 - @lastUpdated = "Feb 2, 2013"
 
 %p

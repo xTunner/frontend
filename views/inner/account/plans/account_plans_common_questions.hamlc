@@ -1,84 +1,93 @@
 %br
+%br
 
 %h2 Billing FAQ
-
-.row
-  .offset0.span7
+.row-fluid
+  .span5
 
     %h3 Who is included in my plan?
     %p
-      On the next page you'll choose organizations you'd like to include in your plan.
-      All pushes to those organizations will be tested, and will count against your concurrent and priority-builds.
+      Your plan covers any number of GitHub organization or personal accounts.
+      All pushes to those organizations will be tested, and will count against your concurrent builds.
 
-    %h3 I'd like more parallelism or concurrency?
+    / ko if: containers_p
+    %h3 How do containers work?
     %p
-      You can add more parallelism or concurrency later.
-      Parallelism costs $99 to double the speed (eg from 2x to 4x, or 4x to 8x).
-      Concurrency is $49 per extra concurrent build.
+      Every time you push to GitHub, we'll checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes will queue up until other builds finish.
+    %p
+      You can buy more containers to run multiple builds simultaneously. You can also use our parallelism to split your build across multiple containers. With 4 containers you could run 4 concurrent builds at 1x parallelism or 2 concurrent builds at 2x parallelism.
+    / /ko
 
+    / ko if: concurrency_p
     %h3 How much concurrency do I need?
     %p
       This very much depends on the team size, frequency of pushing, and the length of your test suite.
       Small teams with short tests who push frequently should only need one.
       A team of 20 full-time developers, with a 15 minute test suite, who push 5 times a day each, will probably need 6-7 concurrent builds.
       If you increase parallelism, you'll likely need fewer concurrent builds as your tests will complete much quicker.
+    / /ko
 
+    / ko if: containers_p
+    %h3 How many containers do I need?
+    %p
+      This very much depends on the team size, frequency of pushing, and the length of your test suite.
+      Small teams with short tests who push frequently should only need one.
+      A team of 20 full-time developers, with a 15 minute test suite, who push 5 times a day each, will probably need 6-7 containers.
+    / /ko
 
     %h3 Are there any extra charges?
     %p
       Circle has no extra charges in any of our standard plans.
       You have unlimited testing time, unlimited builds, unlimited anything which is not enumerated here.
       We don't believe that we should incentivise you to test less.
-
-
     %h3 Really? Unlimited?
     %p
       For practical purposes, our plans are unlimited.
       You won't be cut off for pushing too frequently, having a long test suite, or anything like that.
       However, like all services, we reserve the right to restrict abusive behaviour.
       If you're pushing a 10 hour test suite every minute, we won't feel bad about cutting you off.
-
-
-
     %h3 Why should I pay this instead of using Jenkins?
     %p
       Maintaining a CI server takes considerable time - we estimate about 8% of a team's time is spent on maintaining their build infrastructure (of course, much more is wasted if you don't have build infrastructure, but that's a separate question).
-      Circle allows you buy back this productivity, and let you focus on building your product.
+      Circle allows you to buy back this productivity, and let you focus on building your product.
 
     %p
       With Circle, you'll never have to buy machines, install plugins, refactor the test suite for speed, or spend any time on your test infrastructure.
       With Circle, you don't need to worry about your tools - just focus on the product and leave the tools to us.
 
+  .offset1.span5
+    / ko if: concurrency_p
+    %h3 I'd like more parallelism or concurrency?
+    %p
+      You can add more parallelism or concurrency later.
+      Parallelism costs $99 to double the speed (eg from 2x to 4x, or 4x to 8x).
+      Concurrency is $49 per extra concurrent build.
 
-  .offset1.span7
+    / /ko
+
     %h3 How does parallelism work? Isn't that error-prone?
     %p
       Most parallelism libraries are aimed at running on single machines, and so can be error-prone.
       We have found that it is hard to make parallelism work when the parallel tests share the same address-space, heap, run-time, process, database or even the same file-system.
-
     %p
       Circle instead splits the tests and runs them in separate VMs.
+
       Each VM is completely separate, with no shared code, no shared databases, no shared anything.
       Our customers have found it to be very reliable.
 
-    %h3 Why use concurrent builds for pricing?
+    %h3{data-bind: "if: concurrency_p"} Why use concurrent builds for pricing?
+    %h3{data-bind: "if: containers_p"} Why use containers for pricing?
     %p
-      After talking to our users, we based our pricing on two important principles: charge in a fair way, and aligning your incentives with ours.
-      After some experiments with per-user pricing, we eventually settled on concurrent builds as the prime differentiator between plans.
-
+      After talking to our users, we based our pricing on two important principles: charge in a fair way, and align our incentives with yours.
+      We did some experiments with per-user pricing, but eventually decided that the fairest way is to let people pay for the resources they consume.
     %p
       It's fair because it scales with the amount of work your team generates.
       At the same time, it's affordable for teams of all size.
-
     %p
       Most importantly, it allows us to maximize your productivity, without limits on builds or testing time.
       Circle works to make you as productive as possible, and we won't let our pricing get in the way.
 
 
-    %h3 Can I run Circle behind my firewall?
+    %h3 My team needs something not listed here
     %p
-      We also sell Circle for installation behind your firewall.
-      Contact
-      %a{href: "mailto:enterprise@circleci.com"}
-        enterprise@circleci.com
-      for details.
+      Contact us at <a href="mailto:enterprise@circleci.com">enterprise@circelci.com</a> to discuss the benefits of an enterprise plan.

@@ -10,9 +10,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
     hipchat_room: null
     hipchat_api_token: null
     hipchat_notify: false
+    hipchat_notify_prefs: null
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
+    campfire_notify_prefs: null
     flowdock_api_token: null
     github_user: null
     heroku_deploy_user: null
@@ -135,14 +137,33 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @toggle_show_all_branches = () =>
       @show_all_branches(!@show_all_branches())
 
+    @sorted_builds = (branch_name) =>
+      if @branches()[branch_name]
+        recent = @branches()[branch_name].recent_builds or []
+        running = @branches()[branch_name].running_builds or []
+        recent.concat(running).sort(Project.buildSort)
+      else
+        []
+
     @latest_branch_build = (branch_name) =>
-      if @branches()[branch_name] and @branches()[branch_name].recent_builds
-        new CI.inner.Build(@branches()[branch_name].recent_builds[0])
+      if VM.current_user().admin
+        build = @sorted_builds(branch_name)[0]
+        if build
+          new CI.inner.Build(build)
+      else
+        if @branches()[branch_name] and @branches()[branch_name].recent_builds
+          new CI.inner.Build(@branches()[branch_name].recent_builds[0])
+
 
     @recent_branch_builds = (branch_name) =>
-      builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
-        new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
-      if builds then builds.reverse()
+      if VM.current_user().admin
+        builds = @sorted_builds(branch_name)[0..4].reverse()
+        new CI.inner.Build(b) for b in builds
+      else
+        builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
+          new CI.inner.Build(b) for b in @branches()[branch_name].recent_builds[0..2]
+        if builds then builds.reverse()
+
 
     @build_path = (build_num) =>
       @project_path() + "/" + build_num
@@ -158,6 +179,15 @@ CI.inner.Project = class Project extends CI.inner.Obj
         else if not branch
           {selected: true}
 
+    # Forces the notification preference true/false checkbox value to
+    # convert to either smart or null
+    @translate_checked = (pref_observable) =>
+      ko.computed
+        read: () ->
+          pref_observable()
+        write: (newVal) ->
+          if newVal then pref_observable("smart") else pref_observable(null)
+
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
       if l.latest_build().build_num > r.latest_build().build_num then -1 else 1
@@ -167,6 +197,35 @@ CI.inner.Project = class Project extends CI.inner.Obj
       1
     else
       if l.vcs_url().toLowerCase() > r.vcs_url().toLowerCase() then 1 else -1
+
+  @buildTimeSort: (l, r) ->
+    if !l.pushed_at and !r.pushed_at
+      0
+    else if !l.pushed_at
+      1
+    else if !r.pushed_at
+      -1
+    else if new Date(l.pushed_at) > new Date(r.pushed_at)
+      -1
+    else if new Date(l.pushed_at) < new Date(r.pushed_at)
+      1
+    else
+      0
+
+  @buildNumSort: (l, r) ->
+    if l.build_num > r.build_num
+      -1
+    else if l.build_num < r.build_num
+      1
+    else
+      0
+
+  @buildSort: (l, r) ->
+    time_sort = Project.buildTimeSort(l, r)
+    if time_sort is 0
+      Project.buildNumSort(l, r)
+    else
+      time_sort
 
   compute_latest_build: () =>
     if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?
@@ -234,9 +293,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
         hipchat_room: @hipchat_room()
         hipchat_api_token: @hipchat_api_token()
         hipchat_notify: @hipchat_notify()
+        hipchat_notify_prefs: @hipchat_notify_prefs()
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()
+        campfire_notify_prefs: @campfire_notify_prefs()
         flowdock_api_token: @flowdock_api_token()
 
 

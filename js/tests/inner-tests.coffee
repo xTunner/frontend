@@ -6,16 +6,19 @@ plans =
     min_parallelism: 1
     price: 19
     concurrency: 1
+    type: 'concurrency'
   p15:
     max_parallelism: 1
     min_parallelism: 1
     price: 49
     concurrency: 1
+    type: 'concurrency'
   p16:
     max_parallelism: 8
     min_parallelism: 2
     price: 149
     concurrency: 1
+    type: 'concurrency'
 
 testBilling = (plan, c, p, e) ->
   @expect((new CI.inner.Billing()).calculateCost(plan, c, p)).toEqual e

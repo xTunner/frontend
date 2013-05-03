@@ -266,12 +266,12 @@
   Circle uses
   %a{ href: "https://rvm.io/" } RVM
   to manage Ruby versions.
-  We infer your Ruby version from your <code>.rvmrc</code>. 
-  If you don't have a <code>.rvmrc</code> file, 
+  We use the Ruby version you specify in your <code>.rvmrc</code>, your
+  %code .ruby-version
+  file, or your Gemfile.  
+  If you don't have one of these files,
   we'll use Ruby <code>1.9.3</code> or <code>1.8.7</code>, whichever we think is better.
-  If you use a different Ruby version manager, such as
-  %a{ href: "https://github.com/sstephenson/rbenv/" } rbenv
-  , let Circle know by including that information in the 
+  If you use a different Ruby version let Circle know by including that information in the 
   %code machine
   section. Here's an example of how you do that.
 
@@ -325,6 +325,8 @@
   %ul
     %li
       <code> oraclejdk7</code> (default)
+    %li
+      %code oraclejdk6 (default)
     %li
       %code openjdk7
     %li

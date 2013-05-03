@@ -2,9 +2,30 @@
   %li
     %a{href: "/gh/#{@project}"}
       = @project
+  %li.active.build-no
+    %a{href: "/gh/#{@project}/#{@build_num}"}
+    	build:
+      = @build_num
+
+  / ko with: build
+
+  / ko if: branch
+  %li.meta.branch
+    %a{data-bind: "attr: { href: branch_url }, text: branch"}
+  / /ko
+
+  / ko if: github_revision
+  %li.meta.rev
+    %a{data-bind: "attr: { href: github_url }, text: github_revision"}>
+  / /ko
+
+  / ko if: status
+  %li.meta
+    %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
+  / /ko
+
+  / /ko
+
   %li
     %a{href: "/gh/#{@project}/edit"}
-      Edit settings
-  %li.active
-    %a{href: "/gh/#{@project}/#{@build_num}"}
-      = @build_num
+      %i.icon-cog

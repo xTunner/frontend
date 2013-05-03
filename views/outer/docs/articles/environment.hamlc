@@ -292,6 +292,7 @@
   = succeed '.', ->
     %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file.
   Packages can be installed using
+  %code composer,
   %code pear
   and
   = succeed ".", ->
@@ -300,9 +301,7 @@
 %p
   Please
   = HAML['contact_us']()
-  if other PHP versions would be useful to you, or if you need
-  %code composer
-  support.
+  if other PHP versions would be useful to you.
 
 
 
@@ -311,7 +310,10 @@
   We have Java installed, along with ant and maven.
 %ul
   %li
-    %code oracle JDK 7, using Java 1.7.0_15 (default)
+    %code oracle JDK 7, using Java 1.7.0_21 (default)
+  %li
+    %code oracle JDK 6, using Java 1.6.0u37
+
   %li
     %code ant 1.8.2
   %li
