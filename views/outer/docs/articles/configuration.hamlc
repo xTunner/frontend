@@ -79,7 +79,7 @@
   , and/or
   %code post
   to adjust Circle's inferred commands.
-  Here is how it works:
+  Here's how it works:
   
 
 %ul
@@ -138,7 +138,7 @@
   section enables you to configure the virtual machine that runs your tests.
   
 %p 
-  Here is an illustration of the types of things you might typically set in the 
+  Here's an illustration of the types of things you might typically set in the 
   %code machine
   section of the file.
 
@@ -177,7 +177,7 @@
   section,
   %code override
   is not.
-  Here is how you might adjust the <code>circle.yml</code> file using 
+  Here's how you might adjust the <code>circle.yml</code> file using 
   %code pre
   to install a different version of <code>phantomjs</code> than the version Circle has installed.
 
@@ -246,7 +246,7 @@
   Sometimes you might need to add one or more entries to the
   %code /etc/hosts
   file to assign various domain names to an IP address.
-  This example points to the development subdomain at the circleci host name and IP address.
+  This example points to the development subdomain at the circleci hostname and IP address.
 
 %pre
   %code.no-highlight<>
@@ -268,7 +268,7 @@
   to manage Ruby versions.
   We infer your Ruby version from your <code>.rvmrc</code>. 
   If you don't have a <code>.rvmrc</code> file, 
-  we'll use Ruby <code>1.9.2</code> or <code>1.8.7</code>, whichever we think is better.
+  we'll use Ruby <code>1.9.3</code> or <code>1.8.7</code>, whichever we think is better.
   If you use a different Ruby version manager, such as
   %a{ href: "https://github.com/sstephenson/rbenv/" } rbenv
   , let Circle know by including that information in the 
@@ -298,7 +298,7 @@
   If your version of NVM supports this, we recommend you use it.
   
 %p
-  Here is an example of how to set the version of Node.js to be used for your tests.
+  Here's an example of how to set the version of Node.js to be used for your tests.
 
 %pre
   %code.no-highlight<>
@@ -312,7 +312,7 @@
   Java version
 
 %p
-  Here is an example of how to set the version of Java to be used for your tests.
+  Here's an example of how to set the version of Java to be used for your tests.
 
 %pre
   %code.no-highlight<>
@@ -324,7 +324,7 @@
   Allowed Java versions are:
   %ul
     %li
-      %code oraclejdk7 (default)
+      <code> oraclejdk7</code> (default)
     %li
       %code openjdk7
     %li
@@ -339,7 +339,7 @@
   and
   %a{href: "https://github.com/CHH/phpenv"} phpenv
   to manage PHP versions.  
-  Here is an example of how to set the version of PHP used for your tests.
+  Here's an example of how to set the version of PHP used for your tests.
 
 %pre
   %code.no-highlight<>
@@ -385,7 +385,7 @@
           - git submodule init
           - git submodule update
 %p
-%h5 Example: overwriting configuration files for Circle
+%h5 Example: overwriting configuration files on Circle
 %pre
   %code.bash<>
     :preserves
@@ -433,7 +433,7 @@
   If your project includes bundler (the dependency management program for Ruby), you can include
   %code without
   to list dependency groups to be excluded from bundle install.
-  Here is an example of what that would look like.
+  Here's an example of what that would look like.
 
 
 
@@ -537,9 +537,9 @@
   You can add <code>minitest_globs</code> to replace the
   standard directories with your own. 
   This is needed only when you have additional or non-standard
-  test directories and you are testing in parallel with Minitest.
+  test directories and you are testing in parallel with MiniTest.
 
-%h5 Example: Minitest globs
+%h5 Example: minitest_globs
 
 %pre
   %code.bash<>
@@ -634,7 +634,7 @@
 
 %h4 Heroku with pre or post-deployment steps
 %p
-  If you want to deploy to Heroku and also run commands before or after the deploy, use must use the 'normal' deployment syntax.
+  If you want to deploy to Heroku and also run commands before or after the deploy, you must use the 'normal' deployment syntax.
 
 %pre
   %code.bash<>
