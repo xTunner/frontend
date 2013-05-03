@@ -1,7 +1,7 @@
 - @parents = ["reference"]
 - @icon = "icon-file"
 - @title = 'Sample circle.yml file'
-- @lastUpdated = "Aug 18, 2012"
+- @lastUpdated = "May 2, 2013"
 - @subtitle = "Avoid reading docs by copying from our example"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
@@ -13,11 +13,14 @@
   we list everything that can go into a
   %code circle.yml
   file.
-  Here we list one complete file.
+  Here we provide one complete sample file.
 
 %p
-  %b Note that you probably don't need every setting here.
-  Most people need only one or two settings, and you do not have to include any section you don't need.
+  %b Note that you probably don't need to include every section or setting here.
+  Most people need only one or two settings in their 
+  %code circle.yml
+  file.
+  You don't have to include any section you don't need.
 
 = HAML['heading']({title: "The sample", hash: "sample"})
 
@@ -83,7 +86,13 @@
               environment:
                 RAILS_ENV: test
                 RACK_ENV: test
-
+                
+      ## Customize deployment commands
+      deployment:
+        staging:
+          branch: master                   
+          heroku:
+            appname: foo-bar-123
 
       ## Custom notifications
       notify:
