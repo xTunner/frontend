@@ -2,7 +2,7 @@
 - @icon = "icon-wrench"
 - @title = "Start a background process from circle.yml"
 - @subtitle = "Detach without races or hanging"
-- @lastUpdated = "Apr 6, 2013"
+- @lastUpdated = "May 2, 2013"
 
 %p
   Starting a background process from
@@ -17,8 +17,8 @@
 %pre
   %code.no-highlight<>
     :preserve
-      test:
-        pre:
+      machine:
+        post:
           - nohup bash -c "./daemon &"
 
 %p
@@ -38,3 +38,16 @@
         %code &amp;
       of course, backgrounds the command so the rest of your testing
       can proceed.
+
+%p
+  If your server takes more than a moment to start, it might be worth adding a
+  %code sleep
+  to prevent problems when the tests start:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        post:
+          - nohup bash -c "./daemon &"
+          - sleep 5
