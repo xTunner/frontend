@@ -1,24 +1,24 @@
 - @parents = [ "gettingstarted" ]
 - @icon = "icon-play"
 - @title = "Getting started with Circle"
-- @lastUpdated = "Aug 1, 2012"
+- @lastUpdated = "April 29, 2013"
 - @subtitle = "An overview of Circle"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 
-%p Setting up Circle for your project should be a matter of 3 mouse clicks:
+%p Setting up Circle usually takes only three mouse clicks:
 %ol
-  %li Sign up to Circle,
-  %li Give Circle permission to access GitHub on your behalf,
-  %li Click on a project
+  %li Sign up with Circle.
+  %li Give Circle permission to access GitHub on your behalf.
+  %li Click on a project.
 
 %p
-  It really is that easy, in about 90% of cases.
+  It really is that easy for about 90 percent of our users.
 
 %p
   The reason it's so easy is that we automatically infer your settings from your code.
-  We expect you have a project which roughly follows best practices for your platform.
-  If you do, your tests will be up and running in mere moments.
+  We expect you to have a project that roughly follows best practices for your platform.
+  If you do, your tests will be up and running in a flash.
 
   Add
   your
@@ -36,7 +36,8 @@
 
 %p
   Of course, life is not always sunshine and daisies.
-  Sometimes your tests will fail, or we won't infer your custom setup, or our inference won't be aware of your test suite.
+  Sometimes your tests will fail, Circle won't infer your custom setup, or our inference won't be aware of your test suite.
+  Here are some common issues and where you can find their fixes.
 
 %ul
   %li
@@ -48,13 +49,12 @@
     to tweak your test run.
 
   %li
-    If we didn't infer anything, you can still
+    If we didn't infer anything, you can
     = succeed '.', ->
-      %a{ href: "/docs/manually"}
-        set your project up manually
-
+      %a{ href: "/docs/manually"} set up your project manually
+        
   %li
-    Sometimes, your tests will fail on our server, even though they work locally.
+    Sometimes, your tests will fail on our server even though they work locally.
     Read our list of
     %a{ href: "/docs/troubleshooting"} common problems
     and their solutions.
@@ -65,14 +65,16 @@
 %h2 Add your colleagues
 %p
   Testing is no fun if you're the only one playing.
-  Circle is designed around the idea of each person having their own account, so that you gets the most precise notifications and most relevent information.
-
+  To add your colleagues, simply ask them to join Circle. 
+  We use GitHub permissions for all projects, so if they have access to your project on GitHub, they'll have access on Circle, too.
+  
 %p
-  To add your colleagues, simply ask them to join Circle - we use GitHub permissions for all projects, so if they have access to your project on GitHub, they'll have it on Circle too.
+  One of the best things about Circle's design is that you have your own account, which in turn enables Circle to send you personalized emails only for the branches you use.
+  
 
 %h2 Add more projects
 %p
-  Even if you only commit to a project once a month, or if the project is just started, adding it to Circle will help keep it working.
-  Add them from the
+  No matter if you commit to a project only once a month or if a project is just getting started, adding it to Circle will help keep it on track.
+  Add projects from the
   = succeed ".", ->
     %a{ href: "/"} dashboard

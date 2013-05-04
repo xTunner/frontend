@@ -33,8 +33,9 @@
     / ko if: VM.current_user().admin
     .status-circle.pull-left{data-bind: "foreach: {data: [project.latest_branch_build(branch_name)], as: 'latest'}", style: "margin-top: 2px; margin-left: 5px; font-size: 10px"}
       / ko if: latest
-      %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, tooltip: {title: tooltip_title, animation: false}"}
-        %i{data-bind: "css: status_icon_class"}
+      %span{data-bind: "css: status"}
+        %a.build-icon-link{data-bind: "attr: {href: project.build_path(build_num)}, css: status, tooltip: {title: tooltip_title, animation: false}"}
+          %i{data-bind: "css: status_icon_class"}
       / /ko
       / ko ifnot: latest
       %span{style: "color: rgba(0,0,0,0)"}
@@ -44,7 +45,7 @@
 
     .pull-right.build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
       %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, tooltip: {title: tooltip_title, animation: false}"}
-        %i.icon-circle.build-circle{data-bind: "css: status"}
+        %i.build-circle{data-bind: "css: status_icon_class"}
 
     / /ko
 

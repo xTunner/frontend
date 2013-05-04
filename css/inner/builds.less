@@ -236,6 +236,13 @@ td.build_status {
   text-align: left;
 }
 
+.status-circle {
+  a:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
 .build_status {
   text-transform: uppercase;
   vertical-align: middle;
@@ -331,6 +338,8 @@ td.build_status {
 .failed { color: @red; }
 .running { color: @yellow; }
 .timedout { color: @red; }
+.queued { color: @gray; }
+.canceled { color: @gray; }
 
 .build-circles {
   font-size: 5px;

@@ -157,7 +157,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @recent_branch_builds = (branch_name) =>
       if VM.current_user().admin
-        builds = @sorted_builds(branch_name).reverse()[0..4]
+        builds = @sorted_builds(branch_name)[0..4].reverse()
         new CI.inner.Build(b) for b in builds
       else
         builds = if @branches()[branch_name] and @branches()[branch_name].recent_builds
@@ -214,9 +214,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
   @buildNumSort: (l, r) ->
     if l.build_num > r.build_num
-      1
-    else if l.build_num < r.build_num
       -1
+    else if l.build_num < r.build_num
+      1
     else
       0
 
