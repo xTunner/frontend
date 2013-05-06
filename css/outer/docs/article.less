@@ -131,6 +131,13 @@
       padding-bottom: 1.5px;
     }
 
+    // Don't use bootstrap for inline code - it looks ridiculous.
+    :not(pre) > code {
+      padding: 0px;
+      border: 0px;
+      background-color: white;
+    }
+
     li {
       line-height: 26px;
     }
