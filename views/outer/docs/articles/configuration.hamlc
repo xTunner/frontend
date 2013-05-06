@@ -187,7 +187,8 @@
           - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
           - tar -jxf phantomjs.tar.bz2
 %p
-%h4 Environment
+%h3#environment
+  Environment
 
 %p
   You set environment variables for <b>all commands</b> in the build by adding
@@ -237,7 +238,7 @@
   Be aware that some developers, especially those that collaborate across different time zones, do use UTC on their production servers.
   This alternative can avoid horrific Daylight Saving Time (DST) bugs.
 
-%h4#hosts
+%h3#hosts
   Hosts
 
 %p
@@ -255,7 +256,7 @@
           foobar: 1.2.3.4
 %p
 
-%h4#ruby-version
+%h3#ruby-version
   Ruby version
 
 %p
@@ -273,7 +274,6 @@
   %code machine
   section. Here's an example of how you do that.
 
-
 %pre
   %code.no-highlight<>
     :preserve
@@ -281,8 +281,11 @@
         ruby:
           version: 1.9.3-p0-falcon
 %p
+  The complete list of supported Ruby versions is found 
+  = succeed ".", ->
+    %a{href: "/docs/environment#ruby"} here 
 
-%h4#node-js-version
+%h3#node-js-version
   Node.js version
 
 
@@ -290,11 +293,14 @@
   Circle uses
   %a{ href: "https://github.com/creationix/nvm" } NVM
   to manage Node versions.
+  See 
+  %a{href: "/docs/environment#nodejs"} supported Node versions
+  for a complete list.
   If you do not specify a version, Circle uses <code>0.8.2</code>.
   Note that recent versions of NVM support selecting versions through
   package.json.
   If your version of NVM supports this, we recommend you use it.
-
+ 
 %p
   Here's an example of how to set the version of Node.js to be used for your tests.
 
@@ -306,7 +312,7 @@
           version: 0.6.18
 %p
 
-%h4#java-version
+%h3#java-version
   Java version
 
 %p
@@ -319,18 +325,12 @@
         java:
           version: openjdk7
 %p
-  Allowed Java versions are:
-  %ul
-    %li
-      <code>oraclejdk7</code> (default)
-    %li
-      %code oraclejdk6
-    %li
-      %code openjdk7
-    %li
-      %code openjdk6
+  The default version of Java is <code>oraclejdk7</code>. 
+  See 
+  %a{href: "/docs/environment#java"} supported Java versions
+  for a complete list.
 
-%h4#php-version
+%h3#php-version
   PHP version
 
 %p
@@ -349,24 +349,24 @@
           version: 5.4.5
 %p
 %p
-  Allowed PHP versions are:
-  - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
-  .row
-    - cols = 4
-    - per_col = (Math.ceil(php_versions.length / 4.0))
-    - for i in [0..cols]
-      .span2
-        %ul
-          - for v in php_versions[(i*per_col)...((i+1)*per_col)]
-            %li
-              %code
-                = v
-
+  See 
+  %a{href: "/docs/environment#php"} supported PHP versions
+  for a complete list. 
+  
+%h3#other-languages
+  Other languages  
+  
 %p
-  Are you using a version of PHP that isn't included in this list?
-  If so, please
-  = HAML['contact_us']({succeed: '.'})
-
+  Our
+  %a{ href: "/docs/environment" } Test environment 
+  document has more configuration information about 
+  %a{ href: "/docs/environment#other" }other languages 
+  including 
+  %a{ href: "/docs/environment#clojure" } Clojure
+  and
+  %a{ href: "/docs/environment#python" }Python. 
+  
+ 
 = HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
 
 %p
@@ -375,7 +375,8 @@
 
 
 
-%h5 Example: using git submodules
+.top-caption
+  Example: using git submodules
 
 %pre
   %code.bash<>
@@ -385,7 +386,9 @@
           - git submodule init
           - git submodule update
 %p
-%h5 Example: overwriting configuration files on Circle
+
+.top-caption
+  Example: overwriting configuration files on Circle
 %pre
   %code.bash<>
     :preserves
@@ -408,7 +411,8 @@
   section.
 
 
-%h5 Example: using npm and Node.js
+.top-caption
+  Example: using npm and Node.js
 
 %pre
   %code.bash<>
@@ -417,7 +421,8 @@
         override:
           - npm install --dev
 
-%h5 Example: using a specific version of bundler
+.top-caption
+  Example: using a specific version of bundler
 
 %pre
   %code.bash<>
@@ -427,7 +432,8 @@
           - gem uninstall bundler
           - gem install bundler --pre
 
-%h4 Bundler flags
+%h3#bundler-flags
+  Bundler flags
 
 %p
   If your project includes bundler (the dependency management program for Ruby), you can include
@@ -444,7 +450,8 @@
         bundler:
           without: [production, osx]
 
-%h4#cache-directories Custom Cache Directories
+%h3#cache-directories
+  Custom Cache Directories
 
 %p
   Circle caches dependencies between builds.
@@ -509,7 +516,8 @@
   Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
 
 
-%h5 Example: running spinach after RSpec
+.top-caption
+  Example: running spinach after RSpec
 
 %pre
   %code.bash<>
@@ -520,7 +528,8 @@
               environment:
                 RAILS_ENV: test
 
-%h5 Example: running phpunit on a special directory
+.top-caption
+  Example: running phpunit on a special directory
 
 %pre
   %code.bash<>
@@ -542,7 +551,8 @@
   This is needed only when you have additional or non-standard
   test directories and you are testing in parallel with MiniTest.
 
-%h5 Example: minitest_globs
+.top-caption
+  Example: minitest_globs
 
 %pre
   %code.bash<>
@@ -601,7 +611,8 @@
 %p
 
 
-%h4 SSH Keys
+%h3#ssh-keys
+  SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
   upload the keys to Circle.
@@ -611,7 +622,8 @@
   the public key will be used for all hosts.
 
 
-%h3 Heroku
+%h3#heroku
+  Heroku
 
 %p
   Circle also has first-class support for deploying to Heroku.
@@ -635,7 +647,8 @@
   A member of your project, possibly you, will need to register as that user.
   Circle's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
 
-%h4 Heroku with pre or post-deployment steps
+%h3#heroku-pre-and-post-deployment
+  Heroku with pre or post-deployment steps
 %p
   If you want to deploy to Heroku and also run commands before or after the deploy, you must use the 'normal' deployment syntax.
 
