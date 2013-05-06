@@ -59,6 +59,9 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
       else
         "$#{@price} / month"
 
+    @enterprise_p = @komp =>
+      @name is "Enterprise"
+
 
   featureAvailable: (feature) =>
     result =
