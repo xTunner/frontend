@@ -678,7 +678,7 @@
 
 
 
-%h2 Need anything else?
+= HAML['heading']({title: "Need anything else?"})
 
 %p
   We are adding support for configuring every part of your build.
