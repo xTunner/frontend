@@ -320,9 +320,9 @@
   Allowed Java versions are:
   %ul
     %li
-      <code> oraclejdk7</code> (default)
+      <code>oraclejdk7</code> (default)
     %li
-      %code oraclejdk6 (default)
+      %code oraclejdk6
     %li
       %code openjdk7
     %li
