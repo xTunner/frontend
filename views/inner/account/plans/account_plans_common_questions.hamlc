@@ -8,7 +8,11 @@
     %h3 Who is included in my plan?
     %p
       Your plan covers any number of GitHub organization or personal accounts.
-      All pushes to those organizations will be tested, and will count against your concurrent builds.
+      All pushes to those organizations will be tested,
+      %span{data-bind: "if: concurrency_p"}
+        and will count against your concurrent builds.
+      %span{data-bind: "if: containers_p"}
+        and will use your available containers.
 
     / ko if: containers_p
     %h3 How do containers work?

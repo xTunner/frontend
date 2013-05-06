@@ -1,4 +1,4 @@
-%h1.section
+%h2.section
   %a{id: @hash, href: "##{@hash}"}
     = @title
 %hr

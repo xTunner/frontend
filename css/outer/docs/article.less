@@ -66,7 +66,7 @@
     h2, h3, h4, h5, h6 { color: #444; }
 
     h2 {
-      font-size: 20px;
+      font-size: 26px;
       margin: 1.83em 0 0.83em;
     }
 
@@ -74,6 +74,11 @@
       font-size: 18px;
       margin: 15px 0 0 0;
       line-height: 30px;
+    }
+
+    h4 {
+      margin: 18px 0 7px 0;
+      font-size: 18px;
     }
 
     hr+h2 { margin: 0.83em 0; }
@@ -131,8 +136,15 @@
       padding-bottom: 1.5px;
     }
 
+    // Don't use bootstrap for inline code - it looks ridiculous.
+    :not(pre) > code {
+      padding: 0px;
+      border: 0px;
+      background-color: white;
+    }
+
     li {
-      line-height: 26px;
+      line-height: 24px;
     }
 
     ul li {

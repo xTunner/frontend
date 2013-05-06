@@ -65,7 +65,7 @@
 
      .branch-name {
        width: 160px;
-       margin-left: 20px;
+       margin-left: 15px;
      }
 
    }
@@ -145,4 +145,59 @@
 			margin-top: -.5em;
 		}
 	}
+}
+
+.status-circle {
+  a:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+.build_dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  .border-radius(10px);
+}
+
+.success { color: @green; }
+.fixed { color: @green; }
+.failed { color: @red; }
+.running { color: @blueRunning; }
+.timedout { color: @red; }
+.queued { color: @gray; }
+.canceled { color: @gray; }
+
+.build-circles {
+  font-size: 5px;
+  padding-top: 3px;
+  a { vertical-align: middle }
+
+  a:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  i.build-circle {
+    margin: 0;
+    width: 1em;
+  }
+
+  .build-circle-container:last-child {
+    font-size: 10px;
+  }
+}
+
+.branch-item:hover {
+  .build-circles {
+    font-size: 10px;
+    margin-left: -5em;
+    z-index: 100;
+    background-color: #eee;
+  }
+}
+
+.branch-name {
+  float: left;
 }
