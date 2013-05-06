@@ -98,10 +98,12 @@
 %ul
   %li <b>timeout</b>: if a command runs this many seconds without output, kill it (default:180s)
   %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project)
-  %li <b>environment</b>: a hash creating a list of environment variables set for this command
-  (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine</code> section of the file)
-  %li <b>parallel</b>: (only used with commands in the <code>test</code> section)
-  set to true if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a> to run a command across all VMs
+  %li
+    <b>environment</b>: a hash creating a list of environment variables set for this command
+    (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine</code> section of the file)
+  %li
+    <b>parallel</b>: (only used with commands in the <code>test</code> section)
+    set to true if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a> to run a command across all VMs
 
 
 %p
