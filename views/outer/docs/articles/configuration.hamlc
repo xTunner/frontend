@@ -73,11 +73,7 @@
   If you don't specify commands, Circle infers them from your code.
   Commands are run in the order they appear in the file; testing stops when any command returns a non-zero exit code.
   You can modify which&mdash;and when&mdash;commands are run by adding
-  %code override
-  ,
-  %code pre
-  , and/or
-  %code post
+  <code>override</code>, <code>pre</code> and/or <code>post</code>
   to adjust Circle's inferred commands.
   Here's how it works:
 
