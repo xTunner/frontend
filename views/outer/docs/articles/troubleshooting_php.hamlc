@@ -1,0 +1,9 @@
+- @children = ['configure-php']
+- @title = "PHP"
+- @subtitle = ""
+- @icon = "icon-cogs"
+- @lastUpdated = "May 5th, 2013"
+
+
+
+= HAML['article_list'](@)
