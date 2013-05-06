@@ -1,2 +1,3 @@
 - @category = "how_to"
+- @children = ['android', 'background_process', 'deploy_google_app_engine', 'dont_run', 'external_resources', 'skip_a_build', 'test_with_solr', 'installing_custom_software']
 - @title = "How-To"

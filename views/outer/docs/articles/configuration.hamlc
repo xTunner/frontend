@@ -1,4 +1,4 @@
-- @parents = [ "gettingstarted" ]
+- @children = []
 - @icon = "icon-book"
 - @title = 'Configuring Circle'
 - @lastUpdated = "May 2, 2013"

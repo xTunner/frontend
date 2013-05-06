@@ -1,4 +1,4 @@
-- @parents = ['filesystem']
+- @children = []
 - @title = "A directory is missing from your repository"
 - @icon = "icon-hdd"
 - @lastUpdated = "Feb 3, 2013"

@@ -1,4 +1,4 @@
-- @parents = [ "reference" ]
+- @children = []
 - @icon = "icon-globe"
 - @title = 'Test Environment'
 - @lastUpdated = "Apr 13, 2013"

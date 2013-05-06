@@ -1,4 +1,4 @@
-- @children = ['configure-php']
+- @children = ['configure_php']
 - @title = "PHP"
 - @subtitle = ""
 - @icon = "icon-cogs"

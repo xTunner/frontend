@@ -68,13 +68,14 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
     # iterate through the articles, and update the hierarchy
     for _, a of @articles
-      for t in a.parents
-        @tags[t] or= []
-        @tags[t].push a
-
+      for c in a.children
+        @tags[a.slug] or= []
+        child_article = @articles[c]
+        throw "Missing child article #{c}" unless child_article
+        @tags[a.slug].push child_article
 
     for _, i of $.extend({}, @categories, @articles)
-      i.title_with_child_count = @title_with_child_count(i.title, @tags[i.slug]?.length)
+      i.title_with_child_count = @title_with_child_count(i.title, i.children.length)
 
 
   article_info: (slug, node, context) =>
@@ -83,7 +84,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       url: "/docs/#{uriFragment}"
       slug: slug
       title: context.title or null
-      parents: context.parents or []
+      children: context.children or []
       subtitle: context.subtitle or null
       lastUpdated: context.lastUpdated or null
       icon: context.icon or null
@@ -98,7 +99,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   category_info: (slug, node, context) =>
     result =
-      category: context.category
+      category: context.category or "none"
+      children: context.children or []
       slug: slug
 
   title_with_child_count: (title, count) ->

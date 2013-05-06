@@ -1,4 +1,4 @@
-- @parents = [ "how_to" ]
+- @children = []
 - @icon = "icon-book"
 - @title = 'Test Android Applications'
 - @lastUpdated = "March 22, 2013"

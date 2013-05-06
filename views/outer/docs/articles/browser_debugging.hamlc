@@ -1,4 +1,4 @@
-- @parents = [ "troubleshooting" ]
+- @children = []
 - @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
 - @icon = "icon-globe"
 - @title = 'Browser Debugging'

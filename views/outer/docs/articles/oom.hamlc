@@ -1,4 +1,4 @@
-- @parents = ['troubleshooting']
+- @children = []
 - @title = "OOM Killer ran"
 - @icon = "icon-screenshot"
 - @lastUpdated = "Feb 2, 2013"

@@ -1,4 +1,4 @@
-- @parents = ['troubleshooting_ruby']
+- @children = []
 - @title = "Circle uses the wrong Ruby version"
 - @icon = "icon-download"
 - @lastUpdated = "Feb 3, 2013"

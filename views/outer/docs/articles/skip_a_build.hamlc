@@ -1,4 +1,4 @@
-- @parents = ['how_to']
+- @children = []
 - @title = "Skip a build"
 - @icon = "icon-minus-sign"
 - @lastUpdated = "Feb 2, 2013"

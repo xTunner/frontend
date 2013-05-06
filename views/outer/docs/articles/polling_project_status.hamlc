@@ -1,4 +1,4 @@
-- @parents = [ 'reference' ]
+- @children = []
 - @icon = "icon-exchange"
 - @title = "Polling Project Status Using CCMenu, CCTray, etc."
 - @lastUpdated = "Feb 2, 2013"

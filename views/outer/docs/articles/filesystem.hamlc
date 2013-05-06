@@ -1,4 +1,4 @@
-- @parents = [ "troubleshooting" ]
+- @children = ['missing_dir', 'missing_file']
 - @title = "Filesystem Layout Problems"
 - @subtitle = ""
 - @icon = "icon-hdd"

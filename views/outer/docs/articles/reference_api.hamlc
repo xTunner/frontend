@@ -236,7 +236,7 @@
 -# (def api1-project-github-user "/api/v1/project/:username/:project/github-user")
 
 
-- @parents = [ "reference" ]
+- @children = []
 - @icon = "icon-lock"
 - @title = 'The Circle REST API'
 - @lastUpdated = "Aug 23, 2012"

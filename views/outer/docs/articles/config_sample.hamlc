@@ -1,4 +1,4 @@
-- @parents = ["reference"]
+- @children = []
 - @icon = "icon-file"
 - @title = 'Sample circle.yml file'
 - @lastUpdated = "May 2, 2013"

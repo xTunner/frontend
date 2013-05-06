@@ -1,4 +1,4 @@
-- @parents = ['troubleshooting_clojure']
+- @children = []
 - @title = "java.lang.NoSuchMethodError: clojure.lang.KeywordLookupSite"
 - @icon = "icon-download"
 - @lastUpdated = "Feb 2, 2013"

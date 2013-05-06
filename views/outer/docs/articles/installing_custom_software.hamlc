@@ -1,8 +1,7 @@
--# - @parents = [ "how_to" ]
 - @icon = "icon-hdd"
 - @title = 'Installing custom software'
-
-
+- @children = []
+- @lastUpdated = "May 2nd, 2013"
 
 
 %p
@@ -36,7 +35,7 @@
 
 %p
   Tell Circle to save a cached copy using the
-  = success '.', ->
+  = succeed '.', ->
     %a{href: "/docs/configuration#cache-directories"}
       %code cache_directories
       setting, in your

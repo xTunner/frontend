@@ -1,4 +1,4 @@
-- @parents = ['parallelism']
+- @children = []
 - @title = "Manually Setting Up Parallelism"
 - @icon = "icon-cogs"
 - @lastUpdated = "Feb 2, 2013"

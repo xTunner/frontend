@@ -1,4 +1,4 @@
-- @parents = ['how_to']
+- @children = []
 - @title = "Use resources which are not in your repository"
 - @icon = "icon-cloud"
 - @lastUpdated = "Feb 2, 2012"
