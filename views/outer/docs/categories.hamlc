@@ -6,9 +6,9 @@
       %li
         %a{href: "/docs/#{slug}"}
           %h4
-            = category.article.title
+            = category.title
         %hr
         %ul.expand
-          - for a in @tags[category.slug] or []
+          - for c in category.children
             %li
-              %a{ href: "#{a.url}" } = a.title_with_child_count
+              %a{ href: "#{c.url}" } = c.title_with_child_count
