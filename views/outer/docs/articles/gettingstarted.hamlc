@@ -1,3 +1,3 @@
 - @category = "gettingstarted"
-- @children = ['configuration', 'getting_started', 'manually', 'unusual']
+- @children = ['getting_started', 'manually', 'unusual', 'configuration']
 - @title = "Getting Started"
