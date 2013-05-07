@@ -1,6 +1,6 @@
 - @children = []
 - @icon = "icon-book"
-- @title = "Environment Variables"
+- @title = "Environment variables"
 - @lastUpdated = "Feb 2, 2013"
 
 

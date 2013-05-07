@@ -1,5 +1,5 @@
 - @children = []
-- @title = "SSH Access to Builds"
+- @title = "SSH access to builds"
 - @icon = "icon-signin"
 - @lastUpdated = "Feb 2, 2013"
 

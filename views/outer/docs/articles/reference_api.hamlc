@@ -238,7 +238,7 @@
 
 - @children = []
 - @icon = "icon-lock"
-- @title = 'The Circle REST API'
+- @title = 'Circle REST API'
 - @lastUpdated = "Aug 23, 2012"
 - @subtitle = "Embrace and Extend"
 
