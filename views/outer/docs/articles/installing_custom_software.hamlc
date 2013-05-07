@@ -1,7 +1,7 @@
 - @icon = "icon-hdd"
 - @title = 'Installing custom software'
 - @children = []
-- @lastUpdated = "May 2nd, 2013"
+- @lastUpdated = "May 2, 2013"
 
 
 %p
