@@ -1,3 +1,3 @@
 - @category = "reference"
-- @children = ['config_sample', 'environment', 'environment_variables', 'polling_project_status', 'reference_api']
+- @children = ['configuration', 'config_sample', 'environment', 'environment_variables', 'polling_project_status', 'reference_api']
 - @title = "Reference"
