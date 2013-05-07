@@ -1,5 +1,5 @@
 - @children = []
-- @title = "Configure PHP"
+- @title = "Customizing your PHP environment"
 - @icon = "icon-random"
 - @lastUpdated = "Apr 22, 2013"
 
