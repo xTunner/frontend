@@ -113,3 +113,9 @@ j.describe "CI.stringHelpers.trimMiddle", ->
     twenty = "01234567890123456789"
     @expect(CI.stringHelpers.trimMiddle(twenty, 10).length).toEqual 10
     @expect(CI.stringHelpers.trimMiddle(twenty, 10)).toEqual "012...6789"
+
+j.describe "time works", ->
+  j.it "over 1 minute is correct", ->
+    @expect(CI.time.as_duration(1000)).toEqual "1s"
+    @expect(CI.time.as_duration(100000)).toEqual "1m 40s"
+    @expect(CI.time.as_duration(1000000)).toEqual "16m 40s"
