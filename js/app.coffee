@@ -13,7 +13,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
-    @from_heroku = ko.observable(window.renderContext.from_heroku)
+    @from_heroku = false#ko.observable(window.renderContext.from_heroku)
 
     # inner
     @build = ko.observable()
