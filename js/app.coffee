@@ -153,6 +153,9 @@ class CircleViewModel extends CI.inner.Obj
     @current_user().loadOrganizations()
     @current_user().loadCollaboratorAccounts()
     display "add_projects", {}
+    if @current_user().repos().length == 0
+      track_signup_conversion()
+
 
 
   loadProject: (username, project, branch, refresh) =>

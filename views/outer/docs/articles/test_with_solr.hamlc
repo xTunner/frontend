@@ -1,4 +1,4 @@
-- @parents = [ 'how_to' ]
+- @children = []
 - @icon = "icon-wrench"
 - @title = "Test with Solr"
 - @lastUpdated = "Feb 2, 2013"

@@ -1,4 +1,4 @@
-- @parents = ['how_to']
+- @children = []
 - @title = "Skip code which should not run on your CI server"
 - @icon = "icon-minus-sign"
 - @subtitle = "From the 'use this wisely' department"

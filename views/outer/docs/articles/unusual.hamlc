@@ -1,4 +1,4 @@
-- @parents = ['gettingstarted']
+- @children = []
 - @title = "Can I test projects with unusual requirements?"
 - @icon = "icon-beaker"
 - @subtitle = "Every project is unique"

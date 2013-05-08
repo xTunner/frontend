@@ -41,7 +41,7 @@ CI.time =
 
     if hours > 0
       "#{hours}h #{minutes % 60}m"
-    else if minutes > 1
+    else if minutes >= 1
       "#{minutes}m #{seconds % 60}s"
     else
       "#{seconds % 60}s"

@@ -1,6 +1,6 @@
-- @parents = [ 'how_to' ]
+- @children = []
 - @icon = "icon-wrench"
-- @title = "Start a background process from circle.yml"
+- @title = "Start a background processes from circle.yml"
 - @subtitle = "Detach without races or hanging"
 - @lastUpdated = "May 2, 2013"
 

@@ -1,5 +1,5 @@
-- @parents = ['troubleshooting']
-- @title = "File-ordering bugs manifest on Linux systems"
+- @children = []
+- @title = "File-ordering bugs on Linux systems"
 - @icon = "icon-random"
 - @lastUpdated = "Feb 2, 2013"
 

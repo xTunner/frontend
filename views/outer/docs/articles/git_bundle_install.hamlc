@@ -1,4 +1,4 @@
-- @parents = ['troubleshooting_ruby']
+- @children = []
 - @title = "Git errors during a bundle install"
 - @icon = "icon-key"
 - @lastUpdated = "Feb 3, 2013"

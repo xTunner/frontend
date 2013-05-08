@@ -1,5 +1,5 @@
-- @parents = ['parallelism']
-- @title = "Manually Setting Up Parallelism"
+- @children = []
+- @title = "Manually setting up parallelism"
 - @icon = "icon-cogs"
 - @lastUpdated = "Feb 2, 2013"
 - @subtitle = "Partition your tests across N boxes"
