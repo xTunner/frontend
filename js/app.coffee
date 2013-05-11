@@ -351,6 +351,9 @@ class CircleViewModel extends CI.inner.Obj
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
+    @bind 'run-route', (e, data) ->
+      mixpanel.track_pageview(data.path)
+
     # ignore forms with method ko, useful when using the knockout submit binding
     @route 'ko', '.*', ->
       false
