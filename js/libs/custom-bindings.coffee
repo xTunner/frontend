@@ -8,6 +8,18 @@ ko.bindingHandlers.slider =
     options = valueAccessor()
     $(el).slider(options)
 
+ko.bindingHandlers.track =
+  init: (el, valueAccessor) =>
+    $(el).click ->
+      mixpanel.track(valueAccessor())
+
+ko.bindingHandlers.track_link =
+  init: (el, valueAccessor) =>
+    $(el).click (event) ->
+      event.preventDefault();
+      mixpanel.track(valueAccessor())
+      # setTimeout("window.location.replace($(el).attr('href'))", 2000)
+
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 jQueryExt = (type) =>

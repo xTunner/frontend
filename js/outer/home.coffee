@@ -5,6 +5,7 @@ class CI.outer.Home extends CI.outer.Page
     _kmq.push(['trackClickOnOutboundLink', '.kissAuthGithub', 'join link clicked'])
     _kmq.push(['trackClickOnOutboundLink', '#second-join', 'footer join link clicked'])
     _gaq.push(['_trackPageview', '/homepage'])
+    mixpanel.track("Home Page")
 
   viewContext: =>
     features: [

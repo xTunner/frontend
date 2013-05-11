@@ -62,6 +62,11 @@ class CircleViewModel extends CI.inner.Obj
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
+  authGitHubSlideDown: =>
+    console.log("authGitHubSlideDown")
+    mixpanel.track("Auth GitHub Modal Why Necessary")
+    $(".why_authenticate_github_modal").slideDown()
+
   # Project dashboard will eventually be merged into regular dashboard,
   # and this name will be more correct
   refreshDashboard: () =>

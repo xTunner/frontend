@@ -28,5 +28,5 @@
             %a{ href: '/docs', title: 'CircleCI Documentation'}
               Docs
       %p.cta
-        %a#login.kissAuthGithub.header_signup_button{ href: CI.github.authUrl(), title: 'Sign up with Github' }
+        %a#login.kissAuthGithub.header_signup_button{ href: CI.github.authUrl(), title: 'Sign up with Github', data-bind: "track_link: 'Auth GitHub'"}
           Sign in with GitHub
