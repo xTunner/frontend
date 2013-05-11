@@ -11,11 +11,18 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     source: null
     type: null
     out: []
+    step: null
+    index: null
+    has_output: null
+    retrieved_output: false
+    retrieving_output: false
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
 
-  constructor: (json) ->
+
+  constructor: (json, build) ->
     super json
 
+    @build = build
     @success = @komp =>
       @status() == "success"
 
@@ -29,11 +36,14 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       else
         @success()
 
+    if !@minimize()
+      @retrieve_output()
+
     @visible = @komp =>
       not @minimize()
 
     @has_content = @komp =>
-      (@out()? and @out().length > 0) or @bash_command()
+      @has_output() or ( @out()? and @out().length > 0) or @bash_command()
 
     @action_header_style =
       # knockout CSS requires a boolean observable for each of these
@@ -91,6 +101,9 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       @user_minimized(!@user_minimized())
     else
       @user_minimized(!@minimize())
+    if not @user_minimized()
+      @retrieve_output()
+    @user_minimized()
 
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -104,6 +117,17 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
+  retrieve_output: () =>
+    if @has_output() and !@retrieved_output() and !@retrieving_output()
+      @retrieving_output(true)
+      $.ajax
+        url: "/api/v1/project/#{@build.project_name()}/#{@build.build_num}/output/#{@step()}/#{@index()}"
+        type: "GET"
+        success: (data) =>
+          @retrieved_output(true)
+          @out(data)
+        complete: (data, status) =>
+          @retrieving_output(false)
 
 class Step extends CI.inner.Obj
 
