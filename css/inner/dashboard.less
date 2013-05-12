@@ -168,10 +168,15 @@
 .timedout { color: @red; }
 .queued { color: @gray; }
 .canceled { color: @gray; }
+.no_tests { color: @red; }
 
 .build-circles {
   font-size: 5px;
   padding-top: 3px;
+  margin-left: -5em;
+  z-index: 100;
+  background-color: #f5f5f5;
+
   a { vertical-align: middle }
 
   a:hover {
@@ -200,4 +205,5 @@
 
 .branch-name {
   float: left;
+  overflow: hidden;
 }

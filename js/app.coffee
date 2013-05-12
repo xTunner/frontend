@@ -227,6 +227,9 @@ class CircleViewModel extends CI.inner.Obj
     if subpage.indexOf("plans") == 0
       @billing().load()
 
+    if subpage.indexOf("notifications") == 0
+      @current_user().syncGithub()
+
     setOuter()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage]({}))
