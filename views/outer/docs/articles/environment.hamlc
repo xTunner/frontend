@@ -94,7 +94,8 @@
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
   You do not need to anything to set this up.
   We have
-  %code phantomjs 1.9.0
+  <code>phantomjs 1.9.0</code>,
+  %code casperjs 1.0.2
   and
   %code libwebkit (2.2.1-1ubuntu4)
   pre-installed,
