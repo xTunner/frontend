@@ -37,6 +37,8 @@ class CircleViewModel extends CI.inner.Obj
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
+      mixpanel.name_tag(@current_user().login)
+      mixpanel.identify(@current_user().login)
 
 
     @intercomUserLink = @komp =>
