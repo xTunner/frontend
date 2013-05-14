@@ -91,7 +91,7 @@
   in particular does not work.
   If you'd like to set an environment variable globally, you can specify them in the <a href="#machine">Machine configuration</a> section, described below.
 
-%p
+%p#modifiers
   You can tweak individual commands by adding a modifier.
   Allowed modifiers are:
 
@@ -103,7 +103,7 @@
     (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine</code> section of the file)
   %li
     <b>parallel</b>: (only used with commands in the <code>test</code> section)
-    set to true if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a> to run a command across all VMs
+    if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a>, set this to true to run a command across all VMs
 
 
 %p
@@ -208,6 +208,8 @@
           foo: bar
           baz: 123
 %p
+  If you don't want to use this method, there are
+  <a href="/docs/environment-variables">a number of other options</a>.
 
 %h4#timezone
   Timezone
