@@ -28,11 +28,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   constructor: (json) ->
 
-    json.steps = if json.steps? then (new CI.inner.Step(j, @) for j in json.steps) else []
+    steps = json.steps
+
+    json.steps = []
 
     super(json)
 
     CI.inner.VcsUrlMixin(@)
+
+    if steps?
+      for s in steps
+        @steps.push(new CI.inner.Step(s, @))
 
     @url = @komp =>
       @urlForBuildNum @build_num
