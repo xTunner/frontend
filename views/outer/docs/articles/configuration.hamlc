@@ -260,8 +260,6 @@
   Ruby version
 
 %p
-
-%p
   Circle uses
   %a{ href: "https://rvm.io/" } RVM
   to manage Ruby versions.
@@ -269,7 +267,13 @@
   %code .ruby-version
   file, or your Gemfile.
   If you don't have one of these files,
-  we'll use Ruby <code>1.9.3</code> or <code>1.8.7</code>, whichever we think is better.
+  we'll use Ruby
+  %code
+    = CI.Versions.default_ruby
+  or
+  = succeed ',', ->
+    %code= CI.Versions.old_ruby
+  whichever we think is better.
   If you use a different Ruby version let Circle know by including that information in the
   %code machine
   section. Here's an example of how you do that.
@@ -281,9 +285,9 @@
         ruby:
           version: 1.9.3-p0-falcon
 %p
-  The complete list of supported Ruby versions is found 
+  The complete list of supported Ruby versions is found
   = succeed ".", ->
-    %a{href: "/docs/environment#ruby"} here 
+    %a{href: "/docs/environment#ruby"} here
 
 %h3#node-js-version
   Node.js version

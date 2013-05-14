@@ -127,7 +127,7 @@
   %a{ href: "/docs/configuration#ruby-version" }
     choose the exact version you need
   directly, from the following list:
-  
+
   %ul
     %li
       %code 1.8.7-p302
@@ -203,14 +203,20 @@
 
 %p
   By default we use
-  %code Ruby 1.9.3-p194
+  %code
+    Ruby
+    = CI.Versions.default_ruby
   unless we detect that you need Ruby 1.8.7, in which case we'll use
-  %code Ruby 1.8.7-p358.
+  = succeed '.', ->
+    %code
+      = CI.Versions.old_ruby
   This is installed via
   RVM (stable).
 
 %p
-  We also have a number of Ruby commands pre-installed if you need to use them directly. They are installed using RVM 1.9.3-p194.
+  We also have a number of Ruby commands pre-installed if you need to use them directly. They use Ruby
+  = succeed '.', ->
+    = CI.Versions.default_ruby
 
 %ul
   %li
@@ -294,9 +300,9 @@
     %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file
   Packages can be installed using
   <code>composer</code>, <code>pear</code>, and <code>pecl</code>.
-        
+
 %p
-  Supported versions are: 
+  Supported versions are:
   - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
   .row
     - cols = 4
