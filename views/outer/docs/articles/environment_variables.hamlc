@@ -113,7 +113,7 @@ useful for more complex testing or deployment.
 
 %p
   Each time Circle runs one of your commands, it sources the
-  %code ~/.circlerc
+  %code \~/.circlerc
   file in the shell first.
   You can use this to store the secret API key:
 
