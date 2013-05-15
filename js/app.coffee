@@ -34,6 +34,10 @@ class CircleViewModel extends CI.inner.Obj
     @billing = ko.observable(new CI.inner.Billing)
 
     if window.renderContext.current_user
+      try
+        olark 'api.box.hide'
+      catch error
+        console.error 'Tried to hide olark, but it threw:', error
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
@@ -226,6 +230,9 @@ class CircleViewModel extends CI.inner.Obj
 
     if subpage.indexOf("plans") == 0
       @billing().load()
+
+    if subpage.indexOf("notifications") == 0
+      @current_user().syncGithub()
 
     setOuter()
     $('#main').html(HAML['account']({}))
