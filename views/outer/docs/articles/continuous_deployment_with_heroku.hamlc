@@ -43,7 +43,7 @@
     :preserve
       deployment:
         staging:
-          branch:master
+          branch: master
           heroku:
             appname: foo-bar-123
 %p
@@ -64,9 +64,9 @@
     :preserve
       deployment:
         production:
-          branch:production
+          branch: production
           commands:
-            - git push git@heroku.com appname: foo-bar-123.git $CIRCLE_SHA1:master
+            - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:master
             - heroku run rake db:migrate --app foo-bar-123
 %p
 
