@@ -8,7 +8,12 @@
   You can also specify it in your
   %a{href: "/docs/configuration#ruby-version"} circle.yml
   file.
-  If you don't do any of the above, we'll use Ruby 1.9.2 or 1.8.7, whichever we think is best.
+  If you don't do any of the above, we'll use Ruby
+  = CI.Versions.default_ruby
+  or
+  = succeed ',', ->
+    = CI.Versions.old_ruby
+  whichever we think is best.
   You can
   %a{href: "/docs/configuration#ruby-version"} control the version
   if we got it wrong.

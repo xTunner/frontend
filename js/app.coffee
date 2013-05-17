@@ -13,7 +13,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
-    @from_heroku = false#ko.observable(window.renderContext.from_heroku)
+    @from_heroku = ko.observable(window.renderContext.from_heroku)
 
     # inner
     @build = ko.observable()
@@ -34,6 +34,10 @@ class CircleViewModel extends CI.inner.Obj
     @billing = ko.observable(new CI.inner.Billing)
 
     if window.renderContext.current_user
+      try
+        olark 'api.box.hide'
+      catch error
+        console.error 'Tried to hide olark, but it threw:', error
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
