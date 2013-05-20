@@ -191,7 +191,11 @@
     %li
       %code 1.9.3-p392
     %li
+      %code 1.9.3-p429
+    %li
       %code 2.0.0-p0
+    %li
+      %code 2.0.0-p195
     %li
       %code jruby-1.6.5
     %li
