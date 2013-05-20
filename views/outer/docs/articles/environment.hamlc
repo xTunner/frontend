@@ -191,7 +191,11 @@
     %li
       %code 1.9.3-p392
     %li
+      %code 1.9.3-p429
+    %li
       %code 2.0.0-p0
+    %li
+      %code 2.0.0-p195
     %li
       %code jruby-1.6.5
     %li
@@ -302,8 +306,8 @@
   <code>composer</code>, <code>pear</code>, and <code>pecl</code>.
 
 %p
-  Supported versions are:
-  - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
+  Supported versions are: 
+  - php_versions = ["5.3.3", "5.3.10", "5.3.20", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
   .row
     - cols = 4
     - per_col = (Math.ceil(php_versions.length / 4.0))
