@@ -1,14 +1,6 @@
 noop = () ->
   null
 
-window.mixpanel ||=
-  name_tag: noop
-  identify: noop
-  track: noop
-  track_link: noop
-  track_pageview: noop
-  register_once: noop
-
 CI.ajax.init()
 
 setOuter = =>
