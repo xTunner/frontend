@@ -138,6 +138,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
         false
       else
         switch @lifecycle()
+          when "not_running"
+            true
           when "running"
             true
           when "queued"

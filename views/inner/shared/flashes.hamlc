@@ -1,5 +1,5 @@
 %div{data-bind: "if: $root.error_message"}
-  .row-fluid
+  .row-fluid.flash-error-wrapper
     .offset1.span10
       .alert.alert-block.alert-danger{data-bind: "with: $root"}
         %a.close{href: "#", data-dismiss: "alert", data-bind: "click: clearErrorMessage"}

@@ -1,3 +1,6 @@
+noop = () ->
+  null
+
 CI.ajax.init()
 
 setOuter = =>
@@ -13,7 +16,7 @@ class CircleViewModel extends CI.inner.Obj
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
-    @from_heroku = false#ko.observable(window.renderContext.from_heroku)
+    @from_heroku = ko.observable(window.renderContext.from_heroku)
 
     # inner
     @build = ko.observable()
@@ -41,6 +44,8 @@ class CircleViewModel extends CI.inner.Obj
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
+      mixpanel.name_tag(@current_user().login)
+      mixpanel.identify(@current_user().login)
 
 
     @intercomUserLink = @komp =>
@@ -65,6 +70,10 @@ class CircleViewModel extends CI.inner.Obj
 
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
+
+  authGitHubSlideDown: =>
+    mixpanel.track("Auth GitHub Modal Why Necessary")
+    $(".why_authenticate_github_modal").slideDown()
 
   # Project dashboard will eventually be merged into regular dashboard,
   # and this name will be more correct
@@ -349,6 +358,9 @@ class CircleViewModel extends CI.inner.Obj
 
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
+
+    @bind 'run-route', (e, data) ->
+      mixpanel.track_pageview(data.path)
 
     # ignore forms with method ko, useful when using the knockout submit binding
     @route 'ko', '.*', ->

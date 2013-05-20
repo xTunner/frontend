@@ -46,7 +46,7 @@
           / ko foreach: {data: plans, as: 'plan'}
           %td
             %span{data-bind: "ifnot: plan.enterprise_p"}
-              %a.btn.btn-success.btn-large{href: CI.github.authUrl()}
+              %a.btn.btn-success.btn-large{href: CI.github.authUrl(), data-bind: "track: 'Auth GitHub'"}
                 Start your 14-day free trial
             %span{data-bind: "if: plan.enterprise_p"}
               %a.btn.btn-success.btn-large{href: "mailto:enterprise@circleci.com"}
