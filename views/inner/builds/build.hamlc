@@ -110,6 +110,9 @@
                 %i.icon-refresh.icon-spin
             %li
               %a Checkout
+                %ul
+                  %li Command #1
+                  %li Command #2
             %li
               %a Dependencies
             %li
@@ -132,6 +135,10 @@
                   .button{data-bind: "css: action_header_button_style"}
                     %i{data-bind: "css: collapse_icon"}
                   .command{data-bind: "css: action_header_style"}
+                    .status
+                      %span.latest.success
+                      %span.success
+                      %span.failure
                     %span.command-text
                       \$
                       %span{data-bind: "text: name, attr: {title: bash_command}"}

@@ -148,11 +148,36 @@ tbody.build-row {
 
   }
    .command {
+
+      .status {
+        float: left;
+        margin-right: 15px;
+        span {
+          .border-radius(30px);
+          display: inline-block;
+          height: 7px;
+          width: 7px;
+          position: relative;
+          top: -1px;
+          &.latest {
+            top: 0;
+            width: 10px;
+            height: 10px;
+          }
+          &.success {
+            background: @green;
+          }
+          &.failure {
+            background: @red;
+          }
+        }
+      }
+
       font-weight: bold;
       font-size: 15px;
       .command-text {
         float: left;
-        max-width: 95%;
+        max-width: 90%;
         line-height: 18px;
       }
    }
@@ -266,7 +291,7 @@ td.build_status {
       margin: 0 0 10px 20px;
       line-height: 22px;
     }
-    ul {
+    > ul {
       padding: 10px 0 0 0;
       list-style-type: none;
       li:not(:first-child) {
@@ -304,6 +329,14 @@ td.build_status {
             font-size: .8em;
             text-align: center;
             text-shadow: none;
+          }
+          ul {
+            margin: 10px 0 0 20px;
+            list-style-type: decimal;
+            li {
+              border-top: none;
+              font-size: 11px;
+            }
           }
         }
       }
