@@ -1,4 +1,4 @@
-- @parents = [ "troubleshooting" ]
+- @children = ['time_day', 'time_seconds']
 - @title = "Time and Date Problems"
 - @subtitle = ""
 - @icon = "icon-time"

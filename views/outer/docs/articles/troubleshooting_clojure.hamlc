@@ -1,4 +1,4 @@
-- @parents = [ "troubleshooting" ]
+- @children = ['clojure_12']
 - @title = "Clojure"
 - @subtitle = ""
 - @icon = "icon-cogs"

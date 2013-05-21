@@ -8,16 +8,32 @@ ko.bindingHandlers.slider =
     options = valueAccessor()
     $(el).slider(options)
 
+ko.bindingHandlers.track =
+  init: (el, valueAccessor) =>
+    $(el).click ->
+      mixpanel.track(valueAccessor())
+
+# Prefer track_link for links to external sites, like github, because the redirect prevents JS from running/completing
+ko.bindingHandlers.track_link =
+  init: (el, valueAccessor) =>
+    $(el).click (event) ->
+      event.preventDefault();
+      redirect = () ->
+        window.location.replace($(el).attr('href'))
+      setTimeout(redirect, 1000)
+      mixpanel.track(valueAccessor(), {}, redirect)
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
-# Example usage:
-#   %a{href: "#", data-bind: "jQueryExt: {type: 'tooltip', options: {title: myObservable}}"}
-ko.bindingHandlers.jQueryExt =
+jQueryExt = (type) =>
   init: (el, valueAccessor) =>
-    options = valueAccessor().options
-    type = valueAccessor().type
+    options = valueAccessor()
     $el = $(el)
     $el[type].call($el, options)
+
+# Usage: %a{href: "#", tooltip: {title: myObservable}}
+ko.bindingHandlers.popover = jQueryExt('popover')
+ko.bindingHandlers.tooltip = jQueryExt('tooltip')
+ko.bindingHandlers.typeahead = jQueryExt('typeahead')
 
 ## Money custom binding
 

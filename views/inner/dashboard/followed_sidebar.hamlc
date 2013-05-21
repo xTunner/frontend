@@ -6,13 +6,14 @@
 
   / ko foreach: {data: followed_projects(), as: 'project'}
   %li.nav-menu-row{data-bind: "css: project.active_style(project.project_name())"}
+
     %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
       %i.icon-cog
 
     %a.nav-menu-item{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
     %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
-      %a.pull-right{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, jQueryExt: {type: 'tooltip', options: {animation: false}}"}
+      %a.pull-right{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, tooltip: {animation: false}"}
         %span{data-bind: "if: show_all_branches"}
           %i.icon-caret-down
         %span{data-bind: "ifnot: show_all_branches"}
@@ -23,8 +24,10 @@
 
     %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
 
-    %span{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
-      %a.build_status.build_dot{data-bind: "attr: {href: project.build_path(build_num)}, css: style, jQueryExt: {type: 'tooltip', options: {title: tooltip_title, animation: false}}"} &nbsp;
+    .pull-right.build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
+      %span.build-circle-container{data-bind: "css: status"}
+        %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status, tooltip: {title: tooltip_title, animation: false}"}
+          %i.build-circle{data-bind: "css: status_icon_class"}
 
   / /ko
   / /ko

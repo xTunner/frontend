@@ -6,16 +6,19 @@ plans =
     min_parallelism: 1
     price: 19
     concurrency: 1
+    type: 'concurrency'
   p15:
     max_parallelism: 1
     min_parallelism: 1
     price: 49
     concurrency: 1
+    type: 'concurrency'
   p16:
     max_parallelism: 8
     min_parallelism: 2
     price: 149
     concurrency: 1
+    type: 'concurrency'
 
 testBilling = (plan, c, p, e) ->
   @expect((new CI.inner.Billing()).calculateCost(plan, c, p)).toEqual e
@@ -52,7 +55,7 @@ j.describe "ansiToHtml", ->
   j.it "should work for the following simple escape sequences", ->
     @expect(t.ansiToHtml "\u001b[1mfoo\u001b[m").toEqual "<span style='font-weight: bold'>foo</span>"
     @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span style='font-style: italic'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span style='color: black'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span style='color: darkgrey'>foo</span>"
     @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span style='color: red'>foo</span>"
     @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span style='color: green'>foo</span>"
     @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span style='color: yellow'>foo</span>"
@@ -110,3 +113,9 @@ j.describe "CI.stringHelpers.trimMiddle", ->
     twenty = "01234567890123456789"
     @expect(CI.stringHelpers.trimMiddle(twenty, 10).length).toEqual 10
     @expect(CI.stringHelpers.trimMiddle(twenty, 10)).toEqual "012...6789"
+
+j.describe "time works", ->
+  j.it "over 1 minute is correct", ->
+    @expect(CI.time.as_duration(1000)).toEqual "1s"
+    @expect(CI.time.as_duration(100000)).toEqual "1m 40s"
+    @expect(CI.time.as_duration(1000000)).toEqual "16m 40s"

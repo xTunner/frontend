@@ -1,4 +1,4 @@
-- @parents = ['github_privacy']
+- @children = []
 - @title = "Circle requires Admin permissions"
 - @icon = "icon-key"
 - @lastUpdated = "Feb 3, 2013"

@@ -3,9 +3,8 @@
 
 #build-log-container
 
-  = HAML['flashes']({})
-
   %div{data-bind: "ifnot: build_has_been_loaded"}
+    = HAML['flashes']({})
     .centered-spinner
       = HAML['fast_spinner']()
 
@@ -14,7 +13,7 @@
 
       .row-fluid.build-table#build-log-header
 
-        %div.clearfix
+        .clearfix
           %dl.span4
 
             %dt Author
@@ -46,10 +45,8 @@
             %dd{data-bind: "text: duration"}
 
             / ko if: VM.current_user().admin && queued_time()
-
-            %dt Queued Time
+            %dt Queued
             %dd{data-bind: "text: queued_time"}
-
             / /ko
 
           %dl.span4.actions
@@ -58,7 +55,7 @@
                                      title: "Report an error in how Circle ran this build"}
                 Report...
 
-              %div.btn-group
+              .btn-group
                 %button.btn.btn-primary{data-bind: "click: retry_build",
                                     title: "Rerun the same version of the tests",
                                     data-loading-text: "Triggering...",
@@ -83,29 +80,34 @@
                                         data-success-text: "Canceled"}
                   Cancel
 
+
+
+
         %dl.commit-log
 
           %dt Commit Log
           %dd
             %span{data-bind: "if: body"}
-              %a{href: '#', data-bind: "text: subject, jQueryExt: {type: 'tooltip', options: {title: body}}"}}
+              %a{href: '#', data-bind: "text: subject, tooltip: {title: body}"}}
             %span{data-bind: "ifnot: body"}
               %span{data-bind: "text: subject"}
 
-      .container-fluid.row-fluid
-        .row
+      = HAML['flashes']({})
 
-        %div{data-bind: "if: messages().length"}
-          = HAML['messages']()
-        %div{data-bind: "ifnot: messages().length"}
-          = HAML['report_error']({build: true})
+      .row-fluid
+        .offset2.span8
+          %div{data-bind: "if: messages().length"}
+            = HAML['messages']()
+          %div{data-bind: "ifnot: messages().length"}
+            = HAML['report_error']({build: true})
 
-        %aside.stages.span2
+        -# coming soon
+        -#%aside.stages.span2
           %ul.nav.nav-list.well
             %li
               %h4 Stages
             %li
-              %a.active 
+              %a.active
                 Machine
                 %i.icon-refresh.icon-spin
             %li
@@ -120,9 +122,10 @@
             %li
               %a Test
             %li
-              %a Deploy       
+              %a Deploy
 
-        %div{data-bind: "foreach: steps", class: "span10"}
+      .row-fluid
+        .offset1.span10{data-bind: "foreach: steps"}
           %div{data-bind: "foreach: actions"}
 
             -# wrapper allows the header and detail be siblings, for the JS
@@ -130,8 +133,9 @@
               %div{data-bind: "if: $root.build().different_type($data)"}
                 .type-divider
                   %span{data-bind: "text: type"}
-              .action_header{data-bind: "css: action_header_style, click: toggle_minimize"}
+              .action_header{data-bind: "css: action_header_style"}
                 .ah_wrapper
+<<<<<<< HEAD
                   .button{data-bind: "css: action_header_button_style"}
                     %i{data-bind: "css: collapse_icon"}
                   .command{data-bind: "css: action_header_style"}
@@ -144,11 +148,24 @@
                       %span{data-bind: "text: name, attr: {title: bash_command}"}
                     %span.time
                       = surround '(', ' )', ->
+=======
+                  .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
+                    .button{data-bind: "css: action_header_button_style"}
+                      %span{data-bind: "if: has_content"}
+                        %i{data-bind: "css: collapse_icon"}
+                    .command{data-bind: "css: action_header_style"}
+                      %span.command-text
+                        %span{data-bind: "if: $data.bash_command() == $data.name()"}
+                          \$
+                        %span{data-bind: "text: name, attr: {title: bash_command}"}
+                        %span{data-bind: "if: $parent.has_multiple_actions"}
+                          = surround '(', ')', ->
+                            %span{data-bind: "text: index"}<>
+                      %span.time
+>>>>>>> 3300ba7ca1a3cfe22da60cd3d22095690ad8c620
                         %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
-
-                      %span{data-bind: "if: timedout"}
-                        %b (TIMED OUT)
-                    %span{data-bind: "if: source"}
+                        %span{data-bind: "if: timedout"}
+                          %b (TIMED OUT)
                       %span.action-source
                         %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 

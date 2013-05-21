@@ -1,17 +1,49 @@
 %ul.nav
+
+  / ko ifnot: build
   %li
     %a{href: "/gh/#{@project}"}
       = @project
+
   %li.active.build-no
     %a{href: "/gh/#{@project}/#{@build_num}"}
-    	build: 
+    	build:
       = @build_num
-  %li.meta.branch{data-bind: "with: build"}
-    %span{data-bind: "text: branch"}
-  %li.meta.rev{data-bind: "with: build"}
-    %a{data-bind: "attr: { href: github_url }, text: github_revision"}>
-  %li.meta{data-bind: "with: build"}
-    %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
+
   %li
     %a{href: "/gh/#{@project}/edit"}
-      %i{class: "icon-cog"}
+      %i.icon-cog
+
+  / /ko
+
+
+  / ko with: build
+  %li
+    %a{href: "/gh/#{@project}"}
+      = @project
+
+  / ko if: branch
+  %li.meta.branch
+    %a{data-bind: "attr: { href: branch_url }, text: branch"}
+  / /ko
+
+  / ko if: github_revision
+  %li.meta.rev
+    %a{data-bind: "attr: { href: github_url }, text: github_revision"}>
+  / /ko
+
+  %li.active.build-no
+    %a{href: "/gh/#{@project}/#{@build_num}"}
+    	build:
+      = @build_num
+
+  / ko if: status
+  %li.meta
+    %a{data-bind: "text: status_words, css: style, attr: { href: url }"}
+  / /ko
+
+  %li
+    %a{href: "/gh/#{@project}/edit"}
+      %i.icon-cog
+
+  / /ko

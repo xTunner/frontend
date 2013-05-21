@@ -1,6 +1,6 @@
-- @parents = [ 'reference' ]
+- @children = []
 - @icon = "icon-book"
-- @title = "Environment Variables"
+- @title = "Environment variables"
 - @lastUpdated = "Feb 2, 2013"
 
 
@@ -86,16 +86,59 @@ useful for more complex testing or deployment.
   %dd
     Includes /home/ubuntu/bin
 
-%h3 Set your own!
+%h3#custom Set your own!
 
 %p
-  You can of course set your own environment variables, too! The only gotcha is that each
-  command runs in its own shell, so just adding an
+  You can of course set your own environment variables, too!
+  The only gotcha is that each command runs in its own shell, so just adding an
   %code export FOO=bar
-  command won't work, and we offer a couple of different mechanisms. Our
-  %a{ href: "/docs/config-sample" }
-    sample config file
-  demonstrates setting environment variables globally and per-command, and the
-  %a{ href: "/docs/configuration" }
-    configuration reference
-  describes the full capabilities.
+  command won't work.
+
+%h4 Setting environmental variables for all commands using circle.yml
+
+%p
+  You can set environmental variables in your
+  %code circle.yml
+  file, that
+  = succeed '.', ->
+    %a{href: "/docs/configuration#environment"} will be set for every command
+
+
+%h4 Setting environmental variables for all commands without adding them to git
+
+%p
+  Occasionally, you'll need to add an API key or some other secret as an environmental variable.
+  Adding it to the circle.yml file will put it in your git history, which might be undesirable.
+  As a workaround, you can add it through our UI.
+
+%p
+  Each time Circle runs one of your commands, it sources the
+  %code \~/.circlerc
+  file in the shell first.
+  You can use this to store the secret API key:
+
+%pre
+  %code.bash<>
+    :preserve
+      $ echo 'AWS_IAM_KEY=01234556789abcdef' >> ~/.circlerc
+
+%p
+  All commands and data on Circle's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
+  Take this into account before adding important credentials that some colleagues do not have access to.
+
+
+%h4 Per-command environmental variables
+
+%p
+  You can set environental variables per-command as well.
+  You can use standard bash syntax in your commands:
+
+%pre
+  %code.bash<>
+    :preserve
+      RAILS_ENV=test bundle exec rake test
+
+%p
+  You can also use <a href="/docs/configuration#modifiers">the environment modifier</a> in your
+  %code circle.yml
+  file.

@@ -31,6 +31,8 @@ CI.ABTests = class ABTests
 
     @notify_kissmetrics()
 
+    @notify_mixpanel()
+
   get_user_seed: =>
     if not $.cookie(@cookie_name)?
       $.cookie(@cookie_name, Math.random(), {expires: 365, path: "/"})
@@ -65,3 +67,9 @@ CI.ABTests = class ABTests
     unpacked_tests[k] = v() for own k, v of @ab_tests()
 
     _kmq.push ["set", unpacked_tests]
+
+  notify_mixpanel: () =>
+    unpacked_tests = {}
+    unpacked_tests["ab_#{k}"] = v() for own k, v of @ab_tests()
+
+    mixpanel.register_once(unpacked_tests)

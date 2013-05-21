@@ -4,7 +4,7 @@
 
 #content
   %section.article
-    = HAML['categories']({categories: @categories, tags: @tags})
+    = HAML['categories']({categories: @categories})
     %article
       .title
         %h1= @article.title

@@ -1,6 +1,6 @@
-- @parents = [ "reference" ]
+- @children = []
 - @icon = "icon-globe"
-- @title = 'Test Environment'
+- @title = 'Test environment'
 - @lastUpdated = "Apr 13, 2013"
 - @subtitle = "How we set up our test boxes"
 
@@ -94,7 +94,8 @@
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
   You do not need to anything to set this up.
   We have
-  %code phantomjs 1.9.0
+  <code>phantomjs 1.9.0</code>,
+  %code casperjs 1.0.2
   and
   %code libwebkit (2.2.1-1ubuntu4)
   pre-installed,
@@ -202,14 +203,20 @@
 
 %p
   By default we use
-  %code Ruby 1.9.3-p194
+  %code
+    Ruby
+    = CI.Versions.default_ruby
   unless we detect that you need Ruby 1.8.7, in which case we'll use
-  %code Ruby 1.8.7-p358.
+  = succeed '.', ->
+    %code
+      = CI.Versions.old_ruby
   This is installed via
   RVM (stable).
 
 %p
-  We also have a number of Ruby commands pre-installed if you need to use them directly. They are installed using RVM 1.9.3-p194.
+  We also have a number of Ruby commands pre-installed if you need to use them directly. They use Ruby
+  = succeed '.', ->
+    = CI.Versions.default_ruby
 
 %ul
   %li
@@ -283,45 +290,65 @@
 
 
 
-%h3#php PHP
+%h3#php{href: "#php"} PHP
 %p
   We use
   = succeed ",", ->
     %code php 5.3.10-1ubuntu3.5
   by default, although you can
   = succeed '.', ->
-    %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file.
+    %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file
   Packages can be installed using
-  %code pear
-  and
-  = succeed ".", ->
-    %code pecl
+  <code>composer</code>, <code>pear</code>, and <code>pecl</code>.
 
 %p
-  Please
-  = HAML['contact_us']()
-  if other PHP versions would be useful to you, or if you need
-  %code composer
-  support.
-
+  Supported versions are:
+  - php_versions = ["5.2.17", "5.3.3", "5.3.10", "5.3.20", "5.4.0", "5.4.1", "5.4.2", "5.4.3", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10"]
+  .row
+    - cols = 4
+    - per_col = (Math.ceil(php_versions.length / 4.0))
+    - for i in [0..cols]
+      .span2
+        %ul
+          - for v in php_versions[(i*per_col)...((i+1)*per_col)]
+            %li
+              %code
+                = v    
+    
+%p
+  Are you using a version of PHP that isn't included in this list?
+  If so, please
+  = HAML['contact_us']({succeed: '.'})    
 
 
 %h3#java Java (and JVM based languages)
 %p
-  We have Java installed, along with ant and maven.
+  Circle has the following languages and tools installed:
 %ul
   %li
-    %code oracle JDK 7, using Java 1.7.0_21 (default)
+    <code>oracle JDK 7, using Java 1.7.0_21</code> (default)
   %li
     %code oracle JDK 6, using Java 1.6.0u37
-
+  %li
+    %code openjdk7
+  %li
+    %code openjdk6
   %li
     %code ant 1.8.2
   %li
     %code maven 3.0.4
 
 %p
-  Open JDK 6 and 7 are also available, through the circle.yml file.
+  You can specify the following Java versions in your <code>circle.yml</code> file:
+    %ul
+      %li
+        <code>oraclejdk7</code> (default)
+      %li
+        %code oraclejdk6
+      %li
+        %code openjdk7
+      %li
+        %code openjdk6
 
 %p
   Other JVM-based languages should also work.

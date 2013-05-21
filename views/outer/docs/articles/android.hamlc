@@ -1,6 +1,6 @@
-- @parents = [ "how_to" ]
+- @children = []
 - @icon = "icon-book"
-- @title = 'Test Android Applications'
+- @title = 'Test Android applications'
 - @lastUpdated = "March 22, 2013"
 - @subtitle = ""
 

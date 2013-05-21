@@ -45,7 +45,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       failed: @komp => @status() == "failed"
       cancelled: @komp => @status() == "cancelled"
 
-    @collapse_icon = 
+    @collapse_icon =
       "icon-chevron-up": @komp => !@minimize()
       "icon-chevron-down": @minimize
 
@@ -65,7 +65,13 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       CI.time.as_duration(@run_time_millis())
 
     @sourceText = @komp =>
-      @source()
+      switch @source()
+        when "db"
+          "UI"
+        when "template"
+          "standard"
+        else
+          @source()
 
     @sourceTitle = @komp =>
       switch @source()

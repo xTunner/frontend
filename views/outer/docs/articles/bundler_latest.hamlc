@@ -1,4 +1,4 @@
-- @parents = ['troubleshooting_ruby']
+- @children = []
 - @title = "Do you need the latest version of Bundler?"
 - @icon = "icon-download"
 - @lastUpdated = "Feb 3, 2013"

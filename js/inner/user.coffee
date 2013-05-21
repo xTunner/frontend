@@ -4,6 +4,7 @@ CI.inner.User = class User extends CI.inner.Obj
     collaboratorAccounts: []
     loadingOrganizations: false
     loadingRepos: false
+    loadingUser: false
     # the org we're currently viewing in add-projects
     activeOrganization: null
     # keyed on org/account name
@@ -14,6 +15,7 @@ CI.inner.User = class User extends CI.inner.Obj
     heroku_api_key: ""
     user_key_fingerprint: ""
     email_provider: ""
+    all_emails: []
     selected_email: ""
     basic_email_prefs: "smart"
     plan: null
@@ -155,6 +157,12 @@ CI.inner.User = class User extends CI.inner.Obj
     $.getJSON url, (data) =>
       @repos((new CI.inner.Repo r for r in data))
       @loadingRepos(false)
+
+  syncGithub: () =>
+    @loadingUser(true)
+    $.getJSON '/api/v1/sync-github', (data) =>
+      @updateObservables(data)
+      @loadingUser(false)
 
   isPaying: () =>
     @plan?

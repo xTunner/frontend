@@ -39,13 +39,9 @@ CI.time =
     minutes = Math.floor(seconds / 60)
     hours = Math.floor(minutes / 60)
 
-    if hours > 8
-      "#{hours}h"
-    else if hours > 0
+    if hours > 0
       "#{hours}h #{minutes % 60}m"
-    else if minutes > 8
-      "#{minutes}m"
-    else if minutes > 0
+    else if minutes >= 1
       "#{minutes}m #{seconds % 60}s"
     else
-      "#{seconds}s"
+      "#{seconds % 60}s"

@@ -1,9 +1,12 @@
 %section.intro
   %h2 Who are we?
   %p
-    We're <strong>5 people</strong>: 3 developers, one developer who has to do business stuff instead of coding, and one business operations.
+    We're <strong>9 people</strong>: made up almost entirely of people who work on the product.
   %p
-    CircleCI is at the growth stage of its life: we've found "<em>product-market fit</em>" (we have a product that we know lots of people want and will pay for), and are focusing on growing our customer base and filling out the gaps in our product.
+    CircleCI is at the growth stage of its life: we've found
+    %em
+      = HAML.smart_quotes({msg: "product-market fit"})
+    (we have a product that we know lots of people want and will pay for), and are focusing on growing our customer base and filling out the gaps in our product.
   %p
     We're not yet profitable, but make money and are growing rapidly with over a year's worth of funding in the bank.
-    Its not certain we'll succeed yet, but its a fairly safe bet as early stage startups go.
+    Its not certain we'll succeed yet, but you can make worse bets as early stage startups go.

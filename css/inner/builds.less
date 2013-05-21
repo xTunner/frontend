@@ -68,7 +68,7 @@ tbody.build-row {
    float: right;
    margin-right: 10px; // move back from the right edge
 
-   padding: 0px 2px; // padding, but without increasing the height
+   padding: 0px 4px; // padding, but without increasing the height
    background: #fff;
    // background-color: rgba(255, 255, 255, 0.2); // make slightly lighter
 
@@ -88,11 +88,11 @@ tbody.build-row {
 .type-divider {
    text-align: center;
    border-bottom: 1px solid #777;
-   line-height:0.1em;
-   margin: 15px 0 7px;
+   line-height: 0.1em;
+   margin: 30px 0 7px;
 
    span {
-      background: url("../../../img/outer/bg_pattern.png");
+      background: white;
       color: #777;
       font-size: 16px;
       padding: 0 10px;
@@ -119,6 +119,11 @@ tbody.build-row {
     &.failed > .ah_wrapper:before { background: @red; }
     &.running > .ah_wrapper:before { background: @yellow; }
     &.timedout > .ah_wrapper:before { background: @red; }
+    @lightRed: rgba(157, 38, 29, 0.7);
+    @lightYellow: rgba(255, 196, 13, 0.2);
+
+    &.failed .header.failed { background: @lightRed; }
+    &.failed .header.running { background: @lightYellow; }
 
     .time {
       color: #D4D4D4;
@@ -133,8 +138,9 @@ tbody.build-row {
   }
 
   pre {
-    max-height: 250px;
-    overflow: scroll;
+    // not yet
+    //    max-height: 250px;
+    //    overflow: scroll;
     margin-top: 5px;
   }
   .detail {
@@ -194,23 +200,16 @@ tbody.build-row {
         width: 5px;
       }
 
-      cursor: pointer;
+      .header {
+        cursor: pointer;
+      }
       #gradient > .vertical(#fff, #fafafa);
       min-height: 40px;
       position: relative;
       border: 1px solid #eee;
       border-left: 1px solid white;
-      text-shadow: 0 1px 0 #fff;
+      text-shadow: 0 1px 0 rgba(255,255,255,.1);
       overflow: hidden; // put the contents beside each other
-
-      @green:  #57A957;
-      @red: #EE5F5B;
-      @yellow: #E0C91B;
-
-      .command {
-        color: #666;
-        font-weight: bold;
-      }
 
       .button {
          float: left; // put to the right of .command
@@ -225,14 +224,19 @@ tbody.build-row {
 
          i {
           color: #D4D4D4;
-         }  
+         }
 
       }
 
       .command {
-          height: inherit;
-         overflow: hidden; // put to the left of .button
-         padding: 10px 0 10px 10px;
+        color: #666;
+        font-weight: bold;
+        height: inherit;
+        overflow: hidden; // put to the left of .button
+        padding: 10px 0 10px 10px;
+      }
+      .contents.failed {
+        color: #f0ffff;
       }
    }
 
@@ -257,17 +261,12 @@ td.build_status {
   text-align: left;
 }
 
+
 .build_status {
   text-transform: uppercase;
   vertical-align: middle;
 }
 
-.build_dot {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  .border-radius(10px);
-}
 
 #build-log-header {
 	dt, dd {
@@ -275,7 +274,14 @@ td.build_status {
 	}
 }
 
+
 #build-log-container {
+
+  // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
+  .tooltip-inner {
+    max-width: 500px;
+  }
+
 
   .container-fluid.row-fluid {
     padding: 0 2%;

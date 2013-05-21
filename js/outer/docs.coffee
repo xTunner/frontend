@@ -1,6 +1,3 @@
-# eagerly produce docs, fetching tags, and then reuse
-#
-
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
@@ -46,7 +43,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
   initialize: =>
     @articles = {}
     @categories = {}
-    @tags = {}
 
     # process all HAML templates, and pick the articles and categories based on
     # their contents (they write into the context, and we check for that)
@@ -55,39 +51,34 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         # extract the metadata, which is actually in the file, writing into the context
         context = {}
         node = $(window.HAML[slug](context))
-        if context.category
-          @categories[slug] = @category_info(slug, node, context)
+        if context.title
           @articles[slug] = @article_info(slug, node, context)
-          @categories[slug].article = @articles[slug]
-          console.log "adding #{slug} to categories"
-        else if context.title
-          @articles[slug] = @article_info(slug, node, context)
+          if context.category
+            @categories[slug] = @articles[slug]
+
       catch error
         console.log "error generating #{slug}: #{error}"
         ## meaning: can't be rendered without more context. Should never be true of docs!
 
     # iterate through the articles, and update the hierarchy
     for _, a of @articles
-      for t in a.parents
-        @tags[t] or= []
-        @tags[t].push a
+      a.children = for c in a.children
+        @articles[c] or throw "Missing child article #{c}"
 
 
-    for _, i of $.extend({}, @categories, @articles)
-      i.title_with_child_count = @title_with_child_count(i.title, @tags[i.slug]?.length)
-
-
-  article_info: (slug, node, context) =>
+  article_info: (slug, node, cx) =>
     uriFragment = slug.replace(/_/g, '-')
+    children = cx.children or []
     result =
       url: "/docs/#{uriFragment}"
       slug: slug
-      title: context.title or null
-      parents: context.parents or []
-      subtitle: context.subtitle or null
-      lastUpdated: context.lastUpdated or null
-      icon: context.icon or null
-      category: context.category or null
+      title: cx.title or null
+      children: children
+      subtitle: cx.subtitle or null
+      lastUpdated: cx.lastUpdated or null
+      icon: cx.icon or null
+      category: cx.category or null
+      title_with_child_count: cx.title + (if children.length then " (#{children.length})" else "")
 
     unless result.category
       #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
@@ -96,22 +87,11 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
     result
 
-  category_info: (slug, node, context) =>
-    result =
-      category: context.category
-      slug: slug
-
-  title_with_child_count: (title, count) ->
-    if count
-      title + " (#{count})"
-    else
-      title
-
   viewContext: (cx) =>
     result =
       categories: @categories
       articles: @articles
-      tags: @tags
+      children: @children
       slug: @filename cx
       article: @articles[@filename cx]
 

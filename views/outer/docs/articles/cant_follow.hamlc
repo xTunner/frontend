@@ -1,4 +1,4 @@
-- @parents = ['github_privacy']
+- @children = []
 - @title = "Why can I not follow a project?"
 - @icon = "icon-key"
 - @lastUpdated = "Feb 2, 2013"

@@ -1,3 +1,14 @@
+noop = () ->
+  null
+
+window.mixpanel ||=
+  name_tag: noop
+  identify: noop
+  track: noop
+  track_link: noop
+  track_pageview: noop
+  register_once: noop
+
 CI.ajax.init()
 
 setOuter = =>
@@ -31,11 +42,18 @@ class CircleViewModel extends CI.inner.Obj
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @recent_builds_have_been_loaded()
     @selected = ko.observable({}) # Tracks what the dashboard is showing
+    @billing = ko.observable(new CI.inner.Billing)
+
     if window.renderContext.current_user
-      @billing = ko.observable(new CI.inner.Billing)
+      try
+        olark 'api.box.hide'
+      catch error
+        console.error 'Tried to hide olark, but it threw:', error
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       _kmq.push ['identify', @current_user().login]
+      mixpanel.name_tag(@current_user().login)
+      mixpanel.identify(@current_user().login)
 
 
     @intercomUserLink = @komp =>
@@ -51,7 +69,7 @@ class CircleViewModel extends CI.inner.Obj
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
-    @pricing = new CI.outer.Pricing("pricing", "Plans and Pricing")
+    @pricing = new CI.outer.Page("pricing", "Plans and Pricing")
     @docs = new CI.outer.Docs("docs", "Documentation")
     @error = new CI.outer.Error("error", "Error")
 
@@ -60,6 +78,10 @@ class CircleViewModel extends CI.inner.Obj
 
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
+
+  authGitHubSlideDown: =>
+    mixpanel.track("Auth GitHub Modal Why Necessary")
+    $(".why_authenticate_github_modal").slideDown()
 
   # Project dashboard will eventually be merged into regular dashboard,
   # and this name will be more correct
@@ -152,6 +174,9 @@ class CircleViewModel extends CI.inner.Obj
     @current_user().loadOrganizations()
     @current_user().loadCollaboratorAccounts()
     display "add_projects", {}
+    if @current_user().repos().length == 0
+      track_signup_conversion()
+
 
 
   loadProject: (username, project, branch, refresh) =>
@@ -222,6 +247,9 @@ class CircleViewModel extends CI.inner.Obj
 
     if subpage.indexOf("plans") == 0
       @billing().load()
+
+    if subpage.indexOf("notifications") == 0
+      @current_user().syncGithub()
 
     setOuter()
     $('#main').html(HAML['account']({}))
@@ -339,6 +367,9 @@ class CircleViewModel extends CI.inner.Obj
 window.VM = new CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
+    @bind 'run-route', (e, data) ->
+      mixpanel.track_pageview(data.path)
+
     # ignore forms with method ko, useful when using the knockout submit binding
     @route 'ko', '.*', ->
       false
@@ -355,8 +386,10 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
-    @get '^/gh/:username/:project/tree/:branch',
+    @get '^/gh/:username/:project/tree/(.*)',
       (cx) ->
+        # github allows '/' is branch names, so match more broadly and combine them
+        cx.params.branch = cx.params.splat.join('/')
         VM.selected
           username: cx.params.username
           project: cx.params.project
@@ -393,7 +426,10 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/about.*", (cx) => VM.about.display(cx)
     @get "^/privacy.*", (cx) => VM.privacy.display(cx)
     @get "^/jobs.*", (cx) => VM.jobs.display(cx)
-    @get "^/pricing.*", (cx) => VM.pricing.display(cx)
+    @get "^/pricing.*", (cx) =>
+      VM.billing().loadPlans()
+      VM.billing().loadPlanFeatures()
+      VM.pricing.display(cx)
 
     @post "^/heroku/resources", -> true
 
