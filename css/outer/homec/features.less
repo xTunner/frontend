@@ -1,0 +1,72 @@
+// Teaser ------------------------------------------------------------------
+
+// Full width wrapper
+#features {
+  position: relative;
+  z-index: 1;
+  background: url("@{imgPath}/white-bg.png");
+
+  h2 {
+    font-size: 1.5em;
+    margin: 0;
+    line-height: 27px;
+    letter-spacing: 1px;
+  }
+
+  & > section {
+    .container;
+    padding-top: 35px;
+    padding-bottom: 65px;
+  }
+}
+
+
+// Sections
+.tour {
+  @ib-height: 160px;
+  width: 280px;
+  min-height: @ib-height;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
+  margin-left: 35px;
+  position: relative;
+  text-shadow: 0 1px 0 white;
+  zoom: 1;
+  *display: inline;
+  _height: @ib-height;
+
+  i {
+    position: absolute;
+    font-size: 35px;
+    top: 7px;
+    left: -25px;
+    color: #2F5F9E;
+    z-index: 1;
+
+    .icon-beaker    { left: -23px; }
+    .icon-bolt      { left: -19px; }
+    .icon-bullhorn  { left: -24px; }
+  }
+
+  // Tour text
+  figcaption {
+    padding-left: 20px;
+    position: relative;
+    z-index: 10;
+
+    h2 {
+      color: @blueDark;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    p {
+      margin: 0.75em 0;
+      font-size: 14px;
+      line-height: 20px;
+      color: #444;
+    }
+
+  } // /Tour text
+} // /Tour
