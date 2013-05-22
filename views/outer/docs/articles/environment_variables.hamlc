@@ -120,7 +120,7 @@ useful for more complex testing or deployment.
 %pre
   %code.bash<>
     :preserve
-      $ echo 'AWS_IAM_KEY=01234556789abcdef' >> ~/.circlerc
+      $ echo 'export AWS_IAM_KEY=01234556789abcdef' >> ~/.circlerc
 
 %p
   All commands and data on Circle's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
