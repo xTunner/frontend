@@ -28,11 +28,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   constructor: (json) ->
 
-    json.steps = if json.steps? then (new CI.inner.Step(j) for j in json.steps) else []
+    steps = json.steps or []
 
     super(json)
 
     CI.inner.VcsUrlMixin(@)
+
+    @steps(new CI.inner.Step(s, @) for s in steps)
 
     @url = @komp =>
       @urlForBuildNum @build_num
@@ -273,11 +275,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
     for i in [0..index]
       if not @steps()[step].actions()[i]?
-        @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}))
+        @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}, @))
 
   newAction: (json) =>
     @fillActions(json.step, json.index)
-    @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log))
+    @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
 
   updateAction: (json) =>
     # updates the observables on the action, such as end time and status.
