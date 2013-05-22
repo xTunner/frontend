@@ -27,13 +27,14 @@
             %span{data-bind: "text: title"}
 
 %div.article_list
-  %h4 Still feeling lost?
+  %h4 Having problems? You'll probably need these:
   %hr
+  .box
+    %h5 Getting started
+    - if VM?
+      = HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
 
   .box
-    %a{href: "/docs/gettingstarted"} Getting Started
-    %p Come to know CircleCI and get going in minutes.
-
-  .box
-    %a{href: "/docs/troubleshooting"} Troubleshooting
-    %p Experiencing some issues? We got you covered. 
+    %h5 Troubleshooting
+    - if VM?
+      = HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})
