@@ -24,7 +24,7 @@
           %h1
             CircleCI: Cloud-based Continuous Integration
           %h2
-            Cause you can't fit 24 build servers in the corner of your office
+            Intelligent Continuous Deployment for Fast-Moving Teams
           .span5.offset1
             %div
               %h3
