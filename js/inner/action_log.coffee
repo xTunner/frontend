@@ -37,7 +37,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         @success()
 
     if !@minimize()
-      @retrieve_output()
+      @maybe_retrieve_output()
 
     @visible = @komp =>
       not @minimize()
@@ -102,7 +102,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     else
       @user_minimized(!@minimize())
     if not @user_minimized()
-      @retrieve_output()
+      @maybe_retrieve_output()
     @user_minimized()
 
   htmlEscape: (str) =>
@@ -117,7 +117,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
-  retrieve_output: () =>
+  maybe_retrieve_output: () =>
     if @has_output() and !@retrieved_output() and !@retrieving_output()
       @retrieving_output(true)
       $.ajax
