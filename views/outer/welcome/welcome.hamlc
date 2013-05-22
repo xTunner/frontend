@@ -30,13 +30,11 @@
               %h3
                 Automatically run your tests in parallel. Up to <strong> 12X faster</strong>.
               %h3
-              %h3
                 <strong>One-click setup</strong>, sign in to github and we checkout and build your code. We infer your technology stack and <strong>automatically configure your builds</strong>. No more spending hours setting up Jenkins, Hudson or TeamCity.
               %h3
                 CircleCI makes merging & deployment a breeze. Automatically merge branches or deploy to <strong>Heroku</strong>, <strong>Amazon</strong> or your favorite hosting provider on a successful build.
               %h3
                 Do you have a developer who takes care of merging and deployment? Stop wasting <strong>expensive developer time</strong>. CircleCI can merge and deploy when your tests pass or intelligently notify you when they don't. 
-
           .span5.last
             %div
               %h3
