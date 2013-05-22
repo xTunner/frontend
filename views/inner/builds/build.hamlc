@@ -157,7 +157,7 @@
                       .output-spin{data-bind: "if: retrieving_output"}
                         = HAML['fast_spinner']()
 
-                      %div{data-bind: "if: retrieved_output"}
+                      %div{data-bind: "ifnot: retrieving_output"}
                         %span{data-bind: "if: bash_command"}
                           Command:
                           %span.pull-right
