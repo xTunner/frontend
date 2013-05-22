@@ -6,22 +6,34 @@
   .front-page-search
     = HAML['docs_search_form']()
 
-  %div{data-bind: "if: query_results_query"}
-    .article_list
-      %div{data-bind: "ifnot: query_results().length"}
-        %h4
-          No articles found matching
-          "
-          %span{data-bind: "text: query_results_query"}>
-          "
-      %div{data-bind: "if: query_results().length"}
-        %h4
-          Articles matching
-          "
-          %span{data-bind: "text: query_results_query"}>
-          "
-        %hr
-        %ul.query_results{data-bind: "foreach: query_results"}
-          %li
-            %a{data-bind: "attr: { href: url }"}
-              %span{data-bind: "text: title"}
+%div{data-bind: "if: query_results_query"}
+  .article_list
+    %div{data-bind: "ifnot: query_results().length"}
+      %h4
+        No articles found matching
+        "
+        %span{data-bind: "text: query_results_query"}>
+        "
+    %div{data-bind: "if: query_results().length"}
+      %h4
+        Articles matching
+        "
+        %span{data-bind: "text: query_results_query"}>
+        "
+      %hr
+      %ul.query_results{data-bind: "foreach: query_results"}
+        %li
+          %a{data-bind: "attr: { href: url }"}
+            %span{data-bind: "text: title"}
+
+%div.article_list
+  %h4 Still feeling lost?
+  %hr
+
+  .box
+    %a{href: "/docs/gettingstarted"} Getting Started
+    %p Come to know CircleCI and get going in minutes.
+
+  .box
+    %a{href: "/docs/troubleshooting"} Troubleshooting
+    %p Experiencing some issues? We got you covered. 
