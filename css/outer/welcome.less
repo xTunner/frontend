@@ -1,5 +1,9 @@
 @background-color: rgb(238,238,238);
 
+body {
+  counter-reset: featureCounter;
+}
+
 .grey-background {
 background-color: @background-color;
 }
@@ -80,9 +84,28 @@ body#welcome-page {
   .jumbotron h3 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 22px;
-    margin: 15px 0 5px 0;
+    padding-left: 30px;
+    margin: 15px 0 20px 0;
+    counter-increment: featureCounter;
+    position: relative;
+
+    &:before {
+      content: counter(featureCounter);
+      height: 18px;
+      width: 18px;
+      position: absolute;
+      top: 2px;
+      left: 0;
+      .border-radius(20px);
+      background: #ccc;
+      color: @white;
+      text-align: center;
+      font-size: 10px;
+      line-height: 18px;
+      font-weight: bold;
+    }
   }
   .introtron {
     margin: 0;
@@ -453,7 +476,7 @@ body#welcome-page {
   }
   .benefits {
     padding: 20px 0;
-    background: #efede4;
+    background: lighten(#efede4, 5%);
     border-bottom: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
 
@@ -616,7 +639,7 @@ body#welcome-page {
   .btn-jumbo {
     font-size: 22px;
     line-height: 32px;
-    border-radius: 32px;
+    border-radius: 10px;
     padding: 6px 24px 9px 24px;
     font-weight: bold;
   }

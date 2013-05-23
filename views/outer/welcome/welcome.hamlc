@@ -9,7 +9,7 @@
             Sign up with your Github credentials to get started
           %p.center
             %span
-              %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
+              %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
                 Run your tests
             %span
           %p.center
@@ -54,10 +54,10 @@
         .ctabox
           %p.center
             %span{data-bind: "if: VM.ab().github_warning_modal"}
-              %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
+              %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
                 Run your tests
             %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-              %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
+              %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
                 Run your tests
   .customer-list.grey-background
     .container-fluid
@@ -125,10 +125,10 @@
           .ctabox
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
+                %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
                   Start your 14 day free trial
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
+                %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
                   Start your 14 day free trial
 
   .benefits
@@ -219,10 +219,10 @@
           .ctabox
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
+                %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
                   Get started now
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
+                %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
                   Get started now
   .technotron
     .container-fluid
@@ -364,10 +364,10 @@
           .ctabox
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
+                %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
                   Try it out for free
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-                %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
+                %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
                   Try it out for free
 
 
@@ -389,7 +389,7 @@
       %p
         While CircleCI allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" CircleCI gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
   .modal-footer{style:'text-align: center'}
-    %a.btn.btn-danger.btn-action.btn-large.btn-danger.btn-jumbo{ href: CI.github.authUrl(), data-bind: "track_link: 'Auth GitHub'" } Authorize on GitHub
+    %a.btn.btn-warning.btn-action.btn-large.btn-warning.btn-jumbo{ href: CI.github.authUrl(), data-bind: "track_link: 'Auth GitHub'" } Authorize on GitHub
 
 %map{name: "customer-logo-image-map"}
   %area{shape: "rect", coords: "5,10,157,67", href: "http://www.storenvy.com/"}
