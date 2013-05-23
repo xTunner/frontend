@@ -10,7 +10,7 @@
           %p.center
             %span
               %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS' }
-                RUN YOUR TESTS
+                Run your tests
             %span
           %p.center
             %span
@@ -55,10 +55,10 @@
           %p.center
             %span{data-bind: "if: VM.ab().github_warning_modal"}
               %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
-                RUN YOUR TESTS
+                Run your tests
             %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
               %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
-                RUN YOUR TESTS
+                Run your tests
   .customer-list.grey-background
     .container-fluid
       .row-fluid
@@ -126,10 +126,10 @@
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
                 %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
-                  START YOUR 14 DAY FREE TRIAL
+                  Start your 14 day free trial
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
                 %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
-                  START YOUR 14 DAY FREE TRIAL
+                  Start your 14 day free trial
 
   .benefits
     .container-fluid
@@ -220,10 +220,10 @@
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
                 %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
-                  GET STARTED NOW
+                  Get started now
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
                 %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
-                  GET STARTED NOW
+                  Get started now
   .technotron
     .container-fluid
       .row-fluid
@@ -365,10 +365,10 @@
             %p.center
               %span{data-bind: "if: VM.ab().github_warning_modal"}
                 %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
-                  TRY IT OUT FOR FREE
+                  Try it out for free
               %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
                 %a#join.btn.btn-action.btn-jumbo.btn-danger.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
-                  TRY IT OUT FOR FREE
+                  Try it out for free
 
 
 #githubModal.modal.hide.fade
