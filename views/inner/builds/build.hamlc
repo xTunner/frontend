@@ -112,9 +112,6 @@
                 %i.icon-refresh.icon-spin
             %li
               %a Checkout
-                %ul
-                  %li Command #1
-                  %li Command #2
             %li
               %a Dependencies
             %li
@@ -135,20 +132,6 @@
                   %span{data-bind: "text: type"}
               .action_header{data-bind: "css: action_header_style"}
                 .ah_wrapper
-<<<<<<< HEAD
-                  .button{data-bind: "css: action_header_button_style"}
-                    %i{data-bind: "css: collapse_icon"}
-                  .command{data-bind: "css: action_header_style"}
-                    .status
-                      %span.latest.success
-                      %span.success
-                      %span.failure
-                    %span.command-text
-                      \$
-                      %span{data-bind: "text: name, attr: {title: bash_command}"}
-                    %span.time
-                      = surround '(', ' )', ->
-=======
                   .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
                     .button{data-bind: "css: action_header_button_style"}
                       %span{data-bind: "if: has_content"}
@@ -162,7 +145,6 @@
                           = surround '(', ')', ->
                             %span{data-bind: "text: index"}<>
                       %span.time
->>>>>>> 3300ba7ca1a3cfe22da60cd3d22095690ad8c620
                         %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
                         %span{data-bind: "if: timedout"}
                           %b (TIMED OUT)
@@ -172,15 +154,20 @@
                   .detail-wrapper{data-bind: "if: has_content"}
                     .detail{data-bind: "css: action_log_style, visible: !minimize()"}
 
-                      %span{data-bind: "if: bash_command"}
-                        Command:
-                        %span.pull-right
-                          Exit code:
-                          %span{data-bind: "text: exit_code"}
+                      .output-spin{data-bind: "if: retrieving_output"}
+                        = HAML['fast_spinner']()
 
-                        %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
-                      Output:
-                      %pre.output{data-bind: "html: log_output()"}
+                      %div{data-bind: "ifnot: retrieving_output"}
+                        %span{data-bind: "if: bash_command"}
+                          Command:
+                          %span.pull-right
+                            Exit code:
+                            %span{data-bind: "text: exit_code"}
+
+                          %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+                        Output:
+
+                        %pre.output{data-bind: "html: log_output()"}
 
                 / = HAML['report_error']({build: false})
 
