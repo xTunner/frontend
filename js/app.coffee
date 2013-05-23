@@ -17,6 +17,7 @@ class CircleViewModel extends CI.inner.Obj
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
     @from_heroku = ko.observable(window.renderContext.from_heroku)
+    @flash = ko.observable(@flash)
 
     # inner
     @build = ko.observable()
