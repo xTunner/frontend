@@ -40,6 +40,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     parallelism: 1
     concurrency: 1
     containers: 1
+    payor: null
 
   constructor: ->
     super
@@ -63,7 +64,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @chosenPlan() and (@chosenPlan().type is "concurrency")
 
     @chosen_plan_containers_p = @komp =>
-      @chosenPlan() and (@chosenPlan().type is "containers")
+      @chosenPlan() and ((@chosenPlan().type is "containers") or
+        @chosenPlan().type is "trial")
 
     @total = @komp =>
       if @chosen_plan_concurrency_p()
@@ -225,13 +227,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     $.getScript "https://js.stripe.com/v1/"
     $.getScript "https://checkout.stripe.com/v2/checkout.js"
 
+  loadPlanData: (data) =>
+    @oldTotal(data.amount / 100)
+    @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
+    @concurrency(data.concurrency or 1)
+    @parallelism(data.parallelism or 1)
+    @containers(data.containers or 1)
+    @payor(data.payor) if data.payor
+
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>
-      @oldTotal(data.amount / 100)
-      @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
-      @concurrency(data.concurrency or 1)
-      @parallelism(data.parallelism or 1)
-      @containers(data.containers or 1)
+      @loadPlanData data
       if @chosenPlan()
         @closeWizard()
 

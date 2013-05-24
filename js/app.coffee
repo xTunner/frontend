@@ -217,10 +217,12 @@ class CircleViewModel extends CI.inner.Obj
         @project().get_users()
         if subpage is "parallel_builds"
           @project().load_paying_user()
+          @project().load_billing()
           @billing().load()
 
     else if subpage is "parallel_builds"
       @project().load_paying_user()
+      @project().load_billing()
       @billing().load()
 
     setOuter()

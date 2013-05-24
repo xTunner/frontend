@@ -22,50 +22,51 @@
           %strong{data-bind: "text: focused_parallel"}
           times faster.
 
-        %div{data-bind: "ifnot: paying_user"}
+        %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning
-            %a{href: '/account/plans'} Select a plan
+            %a{href: '/account/plans#organizations'} Select a plan
             to increase your maximum build speed
-        / ko if: paying_user
+        / ko if: billing.payor
         %div{data-bind: "if: show_parallel_upgrade_plan_p"}
           .alert.alert-warning
             Your plan's max speed is only
-            != succeed ".", ->
+            != succeed "x.", ->
               %strong{data-bind: "text: plan_max_speed"}
-            %span{data-bind: "if: current_user_is_paying_user_p"}
+
+            %span{data-bind: "if: current_user_is_payor_p"}
               %a{href: "/account/plans#edit"} Upgrade your plan
               to unlock more speed.
-            %span{data-bind: "ifnot: current_user_is_paying_user_p"}
+
+            %span{data-bind: "ifnot: current_user_is_payor_p"}
               Send
-              %span{data-bind: "text: paying_user_ident"}
+              %span{data-bind: "text: payor_login"}
               to
               %a{href: "/account/plans#edit"} https://circleci.com/account/plans#edit
               to upgrade your plan.
+
         %div{data-bind: "if: show_parallel_upgrade_speed_p"}
           .alert.alert-warning
-            %p{data-bind: "if: current_user_is_paying_user_p"}
+            %p
+              You can only go up to
+              != succeed "x!", ->
+                %span{data-bind: "text: paid_speed"}
+
+            %p{data-bind: "if: current_user_is_payor_p"}
               %a{href: "/account/plans#speed"} Increase your speed
               to
               %strong
                 != succeed "x", ->
                   %span{data-bind: "text: focused_parallel"}
-                for
-                %span{data-bind: "money: focused_parallel_cost_increase"}
-              more per month.
-            %p{data-bind: "ifnot: current_user_is_paying_user_p"}
+
+            %p{data-bind: "ifnot: current_user_is_payor_p"}
               Send
-              %span{data-bind: "text: paying_user_ident"}
+              %span{data-bind: "text: payor_login"}
               to
               %a{href: "/account/plans#speed"} https://circleci.com/account/plans#speed
               to increase your speed to
               %strong
                 != succeed "x", ->
                   %span{data-bind: "text: focused_parallel"}
-                for
-                %span{data-bind: "money: focused_parallel_cost_increase"}
-
-              more per month.
-
         / /ko
 
     .row-fluid{data-bind: "if: retried_build"}
