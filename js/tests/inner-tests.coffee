@@ -119,3 +119,104 @@ j.describe "time works", ->
     @expect(CI.time.as_duration(1000)).toEqual "1s"
     @expect(CI.time.as_duration(100000)).toEqual "1m 40s"
     @expect(CI.time.as_duration(1000000)).toEqual "16m 40s"
+
+j.describe "setting project parallelism works", ->
+  VM.current_user = ko.observable(new CI.inner.User({login: 'test-user'}))
+
+  j.it "should handle trials", ->
+    project = new CI.inner.Project
+      parallel: 2
+    project.billing.loadPlanData
+      containers: 6
+      plan:
+        max_parallelism: 6
+        price: null
+        type: "trial"
+
+    @expect(project.paid_speed()).toEqual 6
+    @expect(project.plan_max_speed()).toEqual 6
+    @expect(project.payor_login()).toBe(null)
+    @expect(project.parallel_label_style(5).disabled()).not.toBe(true)
+    @expect(project.parallel_label_style(8).disabled()).toEqual(true)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+  j.it "should handle concurrency-type plans", ->
+    project = new CI.inner.Project
+      parallel: 2
+    project.billing.loadPlanData
+      plan:
+        max_parallelism: 3
+        price: null
+        type: "concurrency"
+      payor:
+        login: 'daniel'
+      concurrency: 5
+      parallelism: 2
+
+    @expect(project.paid_speed()).toEqual 2
+    @expect(project.plan_max_speed()).toEqual 3
+    @expect(project.payor_login()).toBe('daniel')
+    @expect(project.parallel_label_style(2).disabled()).toBe(false)
+    @expect(project.parallel_label_style(3).disabled()).toBe(true)
+    @expect(project.parallel_label_style(4).disabled()).toBe(true)
+    @expect(project.current_user_is_payor_p()).not.toBe(true)
+
+    project.focused_parallel(2)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+    project.focused_parallel(3)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).toBe(true)
+
+    project.focused_parallel(4)
+    @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+  j.it "should handle container-type plans", ->
+    project = new CI.inner.Project
+      parallel: 2
+    project.billing.loadPlanData
+      plan:
+        max_parallelism: 3
+        price: null
+        type: "containers"
+      payor:
+        login: 'daniel'
+      concurrency: 5
+      parallelism: 2
+      containers: 2
+
+    @expect(project.paid_speed()).toEqual 2
+    @expect(project.plan_max_speed()).toEqual 3
+    @expect(project.payor_login()).toBe('daniel')
+    @expect(project.parallel_label_style(2).disabled()).not.toBe(true)
+    @expect(project.parallel_label_style(3).disabled()).toBe(true)
+    @expect(project.parallel_label_style(4).disabled()).toBe(true)
+
+    project.focused_parallel(2)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+    project.focused_parallel(3)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).toBe(true)
+
+    project.focused_parallel(4)
+    @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+
+    project.billing.containers(5)
+    project.focused_parallel(2)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+    project.focused_parallel(3)
+    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
+
+    project.focused_parallel(4)
+    @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
+    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
