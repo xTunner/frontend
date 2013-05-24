@@ -381,7 +381,7 @@
 
 
 
-%h5
+.top-caption
   Example: using git submodules
 
 %pre
@@ -393,7 +393,7 @@
           - git submodule update
 %p
 
-%h5
+.top-caption
   Example: overwriting configuration files on Circle
 %pre
   %code.bash<>
@@ -417,7 +417,7 @@
   section.
 
 
-%h5
+.top-caption
   Example: using npm and Node.js
 
 %pre
@@ -427,7 +427,7 @@
         override:
           - npm install --dev
 
-%h5
+.top-caption
   Example: using a specific version of bundler
 
 %pre
@@ -522,7 +522,7 @@
   Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
 
 
-%h5
+.top-caption
   Example: running spinach after RSpec
 
 %pre
@@ -534,7 +534,7 @@
               environment:
                 RAILS_ENV: test
 
-%h5
+.top-caption
   Example: running phpunit on a special directory
 
 %pre
@@ -557,7 +557,7 @@
   This is needed only when you have additional or non-standard
   test directories and you are testing in parallel with MiniTest.
 
-%h5
+.top-caption
   Example: minitest_globs
 
 %pre
