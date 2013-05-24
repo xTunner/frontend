@@ -188,29 +188,61 @@
       description: "Retries the build, returns a summary of the new build."
       method: "POST"
       response: """
-      {
-        "vcs_url" : "https://github.com/circleci/mongofinil",
-        "build_url" : "https://circleci.com/gh/circleci/mongofinil/23",
-        "build_num" : 23,
-        "branch" : "master",
-        "vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
-        "committer_name" : "Allen Rohner",
-        "committer_email" : "arohner@gmail.com",
-        "subject" : "Don't explode when the system clock shifts backwards",
-        "body" : "", // commit message body
-        "why" : "retry", // short string explaining the reason we built
-        "dont_build" : null, // reason why we didn't build, if we didn't build
-        "queued_at" : "2013-04-12T21:33:30Z" // time build was queued
-        "start_time" : "2013-04-12T21:33:38Z", // time build started running
-        "stop_time" : "2013-04-12T21:34:01Z", // time build finished running
-        "build_time_millis" : 23505,
-        "lifecycle" : "queued",
-        "outcome" : null,
-        "status" : "queued",
-        "retry_of" : 22, // build_num of the build this is a retry of
-        "previous" : { // previous build
-          "status" : "failed",
-          "build_num" : 22
+        {
+          "vcs_url" : "https://github.com/circleci/mongofinil",
+          "build_url" : "https://circleci.com/gh/circleci/mongofinil/23",
+          "build_num" : 23,
+          "branch" : "master",
+          "vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+          "committer_name" : "Allen Rohner",
+          "committer_email" : "arohner@gmail.com",
+          "subject" : "Don't explode when the system clock shifts backwards",
+          "body" : "", // commit message body
+          "why" : "retry", // short string explaining the reason we built
+          "dont_build" : null, // reason why we didn't build, if we didn't build
+          "queued_at" : "2013-04-12T21:33:30Z" // time build was queued
+          "start_time" : "2013-04-12T21:33:38Z", // time build started running
+          "stop_time" : "2013-04-12T21:34:01Z", // time build finished running
+          "build_time_millis" : 23505,
+          "lifecycle" : "queued",
+          "outcome" : null,
+          "status" : "queued",
+          "retry_of" : 22, // build_num of the build this is a retry of
+          "previous" : { // previous build
+            "status" : "failed",
+            "build_num" : 22
+          }
+        }
+        """
+    'project/:username/:project/:build_num/cancel':
+      description: "Cancels the build, returns a summary of the build."
+      method: "POST"
+      response: """
+        {
+          "vcs_url" : "https://github.com/circleci/mongofinil",
+          "build_url" : "https://circleci.com/gh/circleci/mongofinil/26",
+          "build_num" : 26,
+          "branch" : "master",
+          "vcs_revision" : "59c9c5ea3e289f2f3b0c94e128267cc0ce2d65c6",
+          "committer_name" : "Allen Rohner",
+          "committer_email" : "arohner@gmail.com",
+          "subject" : "Merge pull request #6 from dlowe/master"
+          "body" : "le bump", // commit message body
+          "why" : "retry", // short string explaining the reason we built
+          "dont_build" : null, // reason why we didn't build, if we didn't build
+          "queued_at" : "2013-05-24T19:37:59.095Z" // time build was queued
+          "start_time" : null, // time build started running
+          "stop_time" : null, // time build finished running
+          "build_time_millis" : null,
+          "lifecycle" : "queued",
+          "outcome" : "canceled",
+          "status" : "canceled",
+          "canceled" : true,
+          "retry_of" : 25, // build_num of the build this is a retry of
+          "previous" : { // previous build
+            "status" : "success",
+            "build_num" : 25
+          }
         }
         """
     'project/:username/:project/build-cache':
@@ -345,6 +377,9 @@
   You can retry a build with ssh by swapping "retry" with "ssh":
   %p
     %code.no-highlight https://circleci.com/api/v1/project/:username/:project/:build_num/ssh
+
+= HAML['heading']({title: "Cancel a Build", hash: "cancel-build"})
+= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/cancel'})
 
 = HAML['heading']({title: "Clear Cache", hash: "clear-cache"})
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/build-cache'})
