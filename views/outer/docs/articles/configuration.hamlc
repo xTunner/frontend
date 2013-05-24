@@ -457,7 +457,8 @@
           without: [production, osx]
 
 %h3#cache-directories
-  Custom Cache Directories
+  %a{href: "#cache-directories"}
+    Custom Cache Directories
 
 %p
   Circle caches dependencies between builds.
