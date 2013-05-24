@@ -1,5 +1,4 @@
 - @children = []
-- @icon = "icon-globe"
 - @title = 'Test environment'
 - @lastUpdated = "Apr 13, 2013"
 - @subtitle = "How we set up our test boxes"

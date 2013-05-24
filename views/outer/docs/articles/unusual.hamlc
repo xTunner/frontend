@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Can I test projects with unusual requirements?"
-- @icon = "icon-beaker"
 - @subtitle = "Every project is unique"
 - @lastUpdated = "April 29, 2013"
 

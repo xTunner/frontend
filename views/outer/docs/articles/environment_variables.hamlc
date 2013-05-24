@@ -1,5 +1,4 @@
 - @children = []
-- @icon = "icon-book"
 - @title = "Environment variables"
 - @lastUpdated = "Feb 2, 2013"
 

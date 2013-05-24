@@ -1,5 +1,4 @@
 - @parents = ["reference"]
-- @icon = "icon-file"
 - @title = 'Continuous Deployment with Heroku'
 - @lastUpdated = "May 7, 2013"
 - @subtitle = "We have first-class support for deploying to Heroku."

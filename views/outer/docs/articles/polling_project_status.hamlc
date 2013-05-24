@@ -1,5 +1,4 @@
 - @children = []
-- @icon = "icon-exchange"
 - @title = "Polling project status Using CCMenu, CCTray, etc."
 - @lastUpdated = "Feb 2, 2013"
 

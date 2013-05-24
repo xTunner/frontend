@@ -1,6 +1,5 @@
 - @children = []
 - @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
-- @icon = "icon-globe"
 - @title = 'Browser debugging'
 - @lastUpdated = "Feb 18, 2013"
 - @subtitle = "How to remotely debug your integration tests"

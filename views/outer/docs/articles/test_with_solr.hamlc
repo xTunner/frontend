@@ -1,5 +1,4 @@
 - @children = []
-- @icon = "icon-wrench"
 - @title = "Test with Solr"
 - @lastUpdated = "Feb 2, 2013"
 - @subtitle = "Test searching with Solr, Lucene and Sunspot"

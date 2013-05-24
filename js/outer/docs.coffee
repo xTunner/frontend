@@ -76,13 +76,11 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       children: children
       subtitle: cx.subtitle or null
       lastUpdated: cx.lastUpdated or null
-      icon: cx.icon or null
       category: cx.category or null
       title_with_child_count: cx.title + (if children.length then " (#{children.length})" else "")
 
     unless result.category
       #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
-      console.warn "#{uriFragment} must have an icon" unless result.icon
       console.warn "#{uriFragment} must have a title" unless result.title
       console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
     result
