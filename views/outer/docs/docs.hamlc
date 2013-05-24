@@ -6,9 +6,9 @@
   %section.article
     = HAML['categories']({categories: @categories})
     %article
+      = HAML['docs_search_form']()
       .title
         %h1= @article.title
-        %i{class: @article.icon}
         - if @article.lastUpdated
           %p.lastupdated
             Last Updated:
