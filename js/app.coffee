@@ -17,7 +17,7 @@ class CircleViewModel extends CI.inner.Obj
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
     @from_heroku = ko.observable(window.renderContext.from_heroku)
-    @flash = ko.observable(@flash)
+    @flash = ko.observable(window.renderContext.flash)
 
     # inner
     @build = ko.observable()
@@ -340,8 +340,6 @@ class CircleViewModel extends CI.inner.Obj
     if VM.current_user
       VM.loadDashboard cx
     else
-      if URI(window.location).search(true).join?.toLowerCase() == "hacker-bundle"
-        VM.flash("Welcome HackerBundler! Sign up below to get the Startup plan, free for 3 months!")
       VM.home.display cx
 
   # For error pages, we are passed the status from the server, stored in renderContext.
