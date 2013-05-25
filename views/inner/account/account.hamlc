@@ -25,8 +25,8 @@
     %li#close
       %a{href: '/account/close'}
         Close account
-
-.row{data-bind: "with: current_user"}
+.row
   = HAML['flashes']({})
+.row{data-bind: "with: current_user"}
   .offset1
     #subpage
