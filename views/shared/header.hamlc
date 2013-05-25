@@ -1,6 +1,6 @@
--if @flash
-  #flash
-    = @flash
+%div{data-bind: "if: flash"}
+  #flash{data-bind: "text: flash"}
+
 %div
 #head
   %header.masthead.clearfix
