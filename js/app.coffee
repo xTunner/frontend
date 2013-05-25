@@ -159,6 +159,7 @@ class CircleViewModel extends CI.inner.Obj
     @loadRecentBuilds()
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
+    mixpanel.track("Dashboard")
     display "dashboard", {}
 
 
