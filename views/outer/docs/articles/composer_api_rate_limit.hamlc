@@ -6,7 +6,7 @@
 
 %p
   %i
-    Note that this only applies when setting up your composer step manually - Circle's built-in PHP support know's how to workaround this issue.
+    Note that this only applies when setting up your composer step manually - Circle's built-in PHP support knows how to workaround this issue.
 
 %p
   Composer uses the GitHub API to download dependencies.

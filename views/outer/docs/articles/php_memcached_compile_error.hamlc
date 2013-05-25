@@ -5,7 +5,7 @@
 - @lastUpdated = "May 23, 2013"
 
 %p
-  Circle is built on Ubuntu 12.04, and PHP's memcached module clashes with this. If you're trying to run
+  Circle is built on Ubuntu 12.04, and PHP's memcached module clashes with this. If you try to run
 
 %pre
   %code.no-highlight<>
