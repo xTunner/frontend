@@ -339,6 +339,8 @@ class CircleViewModel extends CI.inner.Obj
     if VM.current_user
       VM.loadDashboard cx
     else
+      if URI(window.location).search(true).join?.toLowerCase() == "hacker-bundle"
+        VM.flash("Welcome HackerBundler! Sign up below to get the Startup plan, free for 3 months!")
       VM.home.display cx
 
   # For error pages, we are passed the status from the server, stored in renderContext.
@@ -454,4 +456,4 @@ $(document).ready () ->
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
 
-  SammyApp.run path
+  SammyApp.run path + window.location.search
