@@ -1,0 +1,30 @@
+.jumbotron
+  .container-fluid
+    .row-fluid
+      .span12
+        %h1
+          CircleCI: Cloud-based Continuous Integration
+        %h2
+          Intelligent Continuous Deployment for Fast-Moving Teams
+        .span5.offset1
+          %div
+            %h3
+              Automatically run your tests in parallel. Up to <strong> 12X faster</strong>.
+            %h3
+              <strong>One-click setup</strong>, sign in to github and we checkout and build your code. We infer your technology stack and <strong>automatically configure your builds</strong>. No more spending hours setting up Jenkins, Hudson or TeamCity.
+            %h3
+              CircleCI makes merging & deployment a breeze. Automatically merge branches or deploy to <strong>Heroku</strong>, <strong>Amazon</strong> or your favorite hosting provider on a successful build.
+            %h3
+              Do you have a developer who takes care of merging and deployment? Stop wasting <strong>expensive developer time</strong>. CircleCI can merge and deploy when your tests pass or intelligently notify you when they don't.
+        .span5.last
+          %div
+            %h3
+              Run multiple builds concurrently, CircleCI automatically builds all branches (great for <strong>productive teams</strong>).
+            %h3
+              <strong>Seamless github integration;</strong> see the status of builds in github before merging a pull-request, never merge broken code again.
+            %h3
+              We support <strong>Ruby on Rails, Sinatra, Node, Python, PHP, Java, Clojure </strong> and many more technologies.
+            %h3
+              14 day <strong>free trial</strong>. Full featured. No credit card required. Start running your tests in 2 clicks.
+
+  = HAML.home_cta2()

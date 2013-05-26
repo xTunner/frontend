@@ -1,0 +1,11 @@
+.final-cta
+  .container
+    .span12
+      .ctabox
+        %p.center
+          %span{data-bind: "if: VM.ab().github_warning_modal"}
+            %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
+              Try it out for free
+          %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
+            %a#join.btn.btn-action.btn-jumbo.btn-warning.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
+              Try it out for free
