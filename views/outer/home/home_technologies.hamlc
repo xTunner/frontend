@@ -1,0 +1,134 @@
+.technotron
+  .container-fluid
+    .row-fluid
+      .span12
+        %h2
+          Technology Support
+        %h3
+          We test your stack
+        %ul#tech-tabs.nav.nav-tabs
+          %li.active
+            %a{data-toggle:"tab",data-target:"#languages"}
+              Languages
+          %li
+            %a{data-toggle:"tab",data-target:"#databases"}
+              Databases
+          %li
+            %a{data-toggle:"tab",data-target:"#queues"}
+              Queues
+          %li
+            %a{data-toggle:"tab",data-target:"#browsers"}
+              Browsers
+          %li
+            %a{data-toggle:"tab",data-target:"#libraries"}
+              Libraries
+          %li
+            %a{data-toggle:"tab",data-target:"#deployment"}
+              Deployment
+          %li
+            %a{data-toggle:"tab",data-target:"#custom"}
+              Custom
+        %div.tab-content
+          %div#languages.tab-pane.active
+            .row
+              .span6
+                %p.center
+                  = HAML.languages_image()
+                  -# %img{src: assetPath("img/outer/home/tech/ruby.png"),width:"50"}
+                  -# %img{src: assetPath("img/outer/home/tech/python.png"),width:"70"}
+                  -# %img{src: assetPath("img/outer/home/tech/javascript.png"),width:"55"}
+                  -# %img{src: assetPath("img/outer/home/tech/php.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/java.png"),width:"60"}
+                  -# %br
+                  -# %img{src: assetPath("img/outer/home/tech/rails.png"),width:"50"}
+                  -# %img{src: assetPath("img/outer/home/tech/nodejs.png"),width:"120"}
+                  -# %img{src: assetPath("img/outer/home/tech/django.png"),width:"40"}
+              .span6
+                %h4 Languages
+                %p
+                  CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages.
+          %div#databases.tab-pane
+            .row
+              .span6
+                %p.center
+                  = HAML.dbs_image()
+                  -# %img{src: assetPath("img/outer/home/tech/mysql.png"),width:"75"}
+                  -# %img{src: assetPath("img/outer/home/tech/postgres.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/mongodb.png"),width:"90"}
+                  -# %img{src: assetPath("img/outer/home/tech/redis.png"),width:"50"}
+                  -# %img{src: assetPath("img/outer/home/tech/riak.png"),width:"60"}
+                  -# %img{src: assetPath("img/outer/home/tech/sqlite.png"),width:"75"}
+                  -# %img{src: assetPath("img/outer/home/tech/memcached.png"),width:"60"}
+                  -# %img{src: assetPath("img/outer/home/tech/neo4j.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/elastic_search.png"),width:"70"}
+                  -# %img{src: assetPath("img/outer/home/tech/couchdb.png"),width:"60"}
+                  -# %img{src: assetPath("img/outer/home/tech/cassandra.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/solr.png"),width:"60"}
+                  -# %img{src: assetPath("img/outer/home/tech/couchbase.png"),width:"70"}
+                  -# %img{src: assetPath("img/outer/home/tech/lucene.png"),width:"100"}
+                  -# %img{src: assetPath("img/outer/home/tech/sphinx.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/thriftdb.png"),width:"70"}
+              .span6
+                %h4 Databases
+                %p
+                  If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use. Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away.
+          %div#queues.tab-pane
+            .row
+              .span6
+                %p.center
+                  = HAML.queues_image()
+                  -# %img{src: assetPath("img/outer/home/tech/rabbitmq.png"),width:"120"}
+                  -# %img{src: assetPath("img/outer/home/tech/beanstalkd.png"),width:"120"}
+                  -# %img{src: assetPath("img/outer/home/tech/resque.png"),width:"90"}
+              .span6
+                %h4 Queues
+                %p
+                  If need to test against queues, we have them installed on our boxes. We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need.
+          %div#browsers.tab-pane
+            .row
+              .span6
+                %p.center
+                  = HAML.browsers_image()
+                  -# %img{src: assetPath("img/outer/home/tech/chrome.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/firefox.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/webkit.png"),width:"80"}
+                  -# %br
+                  -# %img{src: assetPath("img/outer/home/tech/selenium.png"),width:"80"}
+                  -# %img{src: assetPath("img/outer/home/tech/phantomjs.png"),width:"70"}
+                  -# %img{src: assetPath("img/outer/home/tech/casperjs.png"),width:"60"}
+                  -# %img{src: assetPath("img/outer/home/tech/capybara.jpg"),width:"130"}
+              .span6
+                %h4 Browser Testing
+                %p
+                  We support continuous integration testing in your apps against a wide range of browsers. We have latest Chrome, Firefox and webkit installed using <span class="monospace">xvfb</span>, as well as PhantomJS and CasperJS. Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber.
+          %div#libraries.tab-pane
+            .row
+              .span8.offset2
+                %h4 Libraries
+                %p
+                  We run a recent version Ubuntu and have installed all of the libraries you need for development. We have common libs like <span class="monospace">libxml2</span>, uncommon ones like <span class="monospace">libblas</span>, and downright rare libraries like <span class="monospace">libavahi-compat-libdnssd-dev</span>. As new important libraries come out its trivial for us to add them for you.
+          %div#deployment.tab-pane
+            .row
+              .span6
+                %p.center
+                  = HAML.deployment_image()
+                  -# %img{src: assetPath("img/outer/home/tech/heroku.png"),width:"100"}
+                  -# %img{src: assetPath("img/outer/home/tech/dotcloud.png"),width:"120"}
+                  -# %img{src: assetPath("img/outer/home/tech/engine_yard.png"),width:"40"}
+                  -# %img{src: assetPath("img/outer/home/tech/appfog.png"),width:"40"}
+                  -# %img{src: assetPath("img/outer/home/tech/nodejitsu.png"),width:"70"}
+                  -# %img{src: assetPath("img/outer/home/tech/fabric.png"),width:"70"}
+                  -# %img{src: assetPath("img/outer/home/tech/capistrano.png"),width:"100"}
+                  -# %img{src: assetPath("img/outer/home/tech/aws.png"),width:"100"}
+                  -# %img{src: assetPath("img/outer/home/tech/rackspace.png"),width:"100"}
+                  -# %img{src: assetPath("img/outer/home/tech/joyent.png"),width:"90"}
+              .span6
+                %h4 Continuous Deployment
+                %p
+                  Continuous Deployment means that you can deploy your fresh code to production fast and with no fear. Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or &ndash; for you autoscalers &ndash; by auto-merging to another branch, or packaging code up to S3.
+          %div#custom.tab-pane
+            .row
+              .span8.offset2
+                %h4 Custom Technology Support
+                %p
+                  Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use <span class="monospace">npm</span> in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environmental variables, timeouts, packages, databases, commands, etc, are all trivial to set up.

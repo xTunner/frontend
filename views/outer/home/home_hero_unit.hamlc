@@ -1,0 +1,33 @@
+.jumbotron
+  .container-fluid
+    .row-fluid
+      .span12
+        %h6
+          Ship better code, faster.
+        %h1
+          <span>TL;DR</span> CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
+
+.how-it-works
+  .container
+    .row
+      .span4
+        %p.center
+          = HAML.github_image()
+
+        %h6
+          %span 1
+          Push your new code to GitHub
+      .span4
+        %p.center
+          = HAML.watch_your_tests_image()
+
+        %h6
+          %span 2
+          Your tests run on the CircleCI platform
+      .span4
+        %p.center
+          = HAML.deploy_image()
+
+        %h6
+          %span 3
+          Deploy green builds to your servers

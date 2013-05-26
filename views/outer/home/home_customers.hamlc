@@ -1,0 +1,59 @@
+.customer-list
+  .container-fluid
+    .row-fluid
+      .span12
+        %p.center
+          = HAML.happy_customers_image()
+          -# %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
+
+.customer-quotes
+  .container-fluid
+    .row-fluid
+      .span4
+        .customer-quote.clearfix
+          %p
+          %blockquote
+            %span.mark-start "
+            CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go.
+            %strong I'm a huge fan.
+            %span.mark-end "
+            %br
+          %span.avatar
+            = HAML.john_collison_image()
+            -# %img{:src => assetPath("img/outer/home/john-collison-2.png")}
+          %strong.name
+            John Collison
+          %i
+            Founder of
+            %b Stripe
+      .span4
+        .customer-quote
+          %p
+          %blockquote
+            %span.mark-start "
+            It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.<strong>The first time it happened, my team cheered</strong>. The fact that we don't have to admin the server ourselves
+            is a big timesaver.
+            %span.mark-end "
+          %span.avatar
+            = HAML.jon_crawford_image()
+            -# %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
+          %strong.name
+            Jon Crawford
+          %i
+            CEO of
+            %b Storenvy
+      .span4
+        .customer-quote
+          %p
+          %blockquote
+            %span.mark-start "
+            CircleCI was super simple to set up and we started reaping the benefits immediately. CircleCI lets us ship code quickly and confidently. <strong>CircleCI's customer support is outstanding.</strong> We get quick, thorough answers to all our questions.
+            %span.mark-end "
+          %span.avatar
+            = HAML.aaron_suggs_image()
+            -# %img{:src => assetPath("img/outer/home/aaron-suggs.jpg")}
+          %strong.name
+            Aaron Suggs
+          %i
+            Operations Engineer at
+            %b Kickstarter
