@@ -119,3 +119,22 @@ j.describe "time works", ->
     @expect(CI.time.as_duration(1000)).toEqual "1s"
     @expect(CI.time.as_duration(100000)).toEqual "1m 40s"
     @expect(CI.time.as_duration(1000000)).toEqual "16m 40s"
+
+
+j.describe "headings get link anchors correctly", ->
+  d = VM.docs
+  console.log d
+  j.it "should work for existing ids", ->
+    h = "<h2 id='asd'>Some title</h2>"
+    expected = '<h2 id="asd"><a href="#asd">Some title</a></h2>'
+    @expect(d.addLinkTarget(h)[0].outerHTML).toEqual expected
+
+  j.it "should work when there are no ids", ->
+    h = "<h2>Some title</h2>"
+    expected = '<h2 id="some-title"><a href="#some-title">Some title</a></h2>'
+    @expect(d.addLinkTarget(h)[0].outerHTML).toEqual expected
+
+  j.it "should work correctly with apostrophies", ->
+    h = "<h2>Someone's title</h2>"
+    expected = '<h2 id="someones-title"><a href="#someones-title">Someone\'s title</a></h2>'
+    @expect(d.addLinkTarget(h)[0].outerHTML).toEqual expected

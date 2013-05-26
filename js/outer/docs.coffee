@@ -116,17 +116,20 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
 
   addLinkTargets: =>
+    # Add a link target to every heading. If there's an existing id, it won't override it
     for heading in $('article h2, article h3, article h4, article h5, article h6')
-      title = $(heading).text()
-      id = $(heading).attr("id")
-      console.log $(heading)
-      console.log heading
-      console.log id
-      console.log title
-      if not id?
-        id = title.toLowerCase()
-        id = id.replace(/^\s+/g, '').replace(/\s+$/g, '') # strip whitespace
-        id = id.replace(/\'/, '') # heroku's -> herokus
-        id = id.replace(/[^a-z0-9]+/g, '-') # dashes everywhere
-        id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
-        $(heading).html("<a href='##{id}'>#{title}</a>")
+      @addLinkTarget heading
+
+  addLinkTarget: (heading) =>
+    jqh = $(heading)
+    title = jqh.text()
+    id = jqh.attr("id")
+
+    if not id?
+      id = title.toLowerCase()
+      id = id.replace(/^\s+/g, '').replace(/\s+$/g, '') # strip whitespace
+      id = id.replace(/\'/, '') # heroku's -> herokus
+      id = id.replace(/[^a-z0-9]+/g, '-') # dashes everywhere
+      id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
+
+    jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
