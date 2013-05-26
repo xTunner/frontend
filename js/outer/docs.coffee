@@ -108,7 +108,25 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         return cx.redirect "/docs" + rewrite
 
       super cx
+      @addLinkTargets()
 
     catch e
       # TODO: go to 404 page
       return cx.redirect "/docs"
+
+
+  addLinkTargets: =>
+    for heading in $('article h2, article h3, article h4, article h5, article h6')
+      title = $(heading).text()
+      id = $(heading).attr("id")
+      console.log $(heading)
+      console.log heading
+      console.log id
+      console.log title
+      if not id?
+        id = title.toLowerCase()
+        id = id.replace(/^\s+/g, '').replace(/\s+$/g, '') # strip whitespace
+        id = id.replace(/\'/, '') # heroku's -> herokus
+        id = id.replace(/[^a-z0-9]+/g, '-') # dashes everywhere
+        id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
+        $(heading).html("<a href='##{id}'>#{title}</a>")
