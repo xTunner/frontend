@@ -91,7 +91,10 @@
   in particular does not work.
   If you'd like to set an environment variable globally, you can specify them in the <a href="#machine">Machine configuration</a> section, described below.
 
-%p#modifiers
+%h4#modifiers
+  Modifiers
+
+%p
   You can tweak individual commands by adding a modifier.
   Allowed modifiers are:
 
@@ -187,7 +190,7 @@
           - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
           - tar -jxf phantomjs.tar.bz2
 %p
-%h3#environment
+%h3
   Environment
 
 %p
@@ -211,7 +214,7 @@
   If you don't want to use this method, there are
   <a href="/docs/environment-variables">a number of other options</a>.
 
-%h4#timezone
+%h4
   Timezone
 
 %p
@@ -240,7 +243,7 @@
   Be aware that some developers, especially those that collaborate across different time zones, do use UTC on their production servers.
   This alternative can avoid horrific Daylight Saving Time (DST) bugs.
 
-%h3#hosts
+%h3
   Hosts
 
 %p
@@ -258,7 +261,7 @@
           foobar: 1.2.3.4
 %p
 
-%h3#ruby-version
+%h3
   Ruby version
 
 %p
@@ -291,7 +294,7 @@
   = succeed ".", ->
     %a{href: "/docs/environment#ruby"} here
 
-%h3#node-js-version
+%h3#node-version
   Node.js version
 
 
@@ -318,7 +321,7 @@
           version: 0.6.18
 %p
 
-%h3#java-version
+%h3
   Java version
 
 %p
@@ -336,7 +339,7 @@
   %a{href: "/docs/environment#java"} supported Java versions
   for a complete list.
 
-%h3#php-version
+%h3
   PHP version
 
 %p
@@ -359,7 +362,7 @@
   %a{href: "/docs/environment#php"} supported PHP versions
   for a complete list.
 
-%h3#other-languages
+%h3
   Other languages
 
 %p
@@ -465,7 +468,7 @@
           - gem uninstall bundler
           - gem install bundler --pre
 
-%h3#bundler-flags
+%h3#bundler
   Bundler flags
 
 %p
@@ -484,8 +487,7 @@
           without: [production, osx]
 
 %h3#cache-directories
-  %a{href: "#cache-directories"}
-    Custom Cache Directories
+  Custom Cache Directories
 
 %p
   Circle caches dependencies between builds.
@@ -645,7 +647,7 @@
 %p
 
 
-%h3#ssh-keys
+%h3
   SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
@@ -656,7 +658,7 @@
   the public key will be used for all hosts.
 
 
-%h3#heroku
+%h3
   Heroku
 
 %p
@@ -681,7 +683,7 @@
   A member of your project, possibly you, will need to register as that user.
   Circle's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
 
-%h3#heroku-pre-and-post-deployment
+%h3#heroku-extra
   Heroku with pre or post-deployment steps
 %p
   If you want to deploy to Heroku and also run commands before or after the deploy, you must use the 'normal' deployment syntax.
