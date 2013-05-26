@@ -3,7 +3,7 @@
     .row-fluid
       .span12
         %h2 Features &amp; Benefits of CircleCI
-        %h3 A professional continuous integration setup for your team today, tomorrow and beyond.
+        %h3{ data-bind: "text: VM.ab().home_benefits_heading" }
     .row-fluid
       .span4.section.quick-setup.clearfix
         .section-graphic
@@ -65,7 +65,9 @@
         .section-content
           %h6 Automatic Parallelization
           %p
-            We can automatically parallelize your tests across multiple machines. <strong>With up to 4-way parallelization</strong>, your test turn-around time can be massively reduced.
+            We can automatically parallelize your tests across multiple machines. <strong>With up to
+            %span{data-bind: "text: VM.ab().home_speed_level"} 4-way
+            parallelization</strong>, your test turn-around time can be massively reduced.
       .span4.section.continuous-deployment.clearfix
         .section-graphic
           %i.icon-refresh
@@ -80,3 +82,6 @@
           %h6 More to come.
           %p
             At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know.
+
+  %div{ data-bind: "if: VM.ab().home_extra_ctas" }
+    = HAML.home_cta3()

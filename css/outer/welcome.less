@@ -646,4 +646,27 @@ body#welcome-page {
   .monospace {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   }
+  .happy-customers-spacer {
+    display:block;
+    content:'';
+    height:100px;
+    width:300px;
+    top: 50px;
+    position: relative;
+  }
+  .happy-customers-callout {
+    display:block;
+    content:'';
+    position:absolute;
+    width:300px;
+    height:42px;
+    background-image: url('@{imgPath}/outer/home/callouts-01.png');
+    background-repeat: no-repeat;
+    background-position: 0 -62px;
+    top: 50px;
+    left: 37%;
+    img:hover {
+      cursor: pointer;
+    }
+  }
 }

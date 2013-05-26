@@ -11,6 +11,10 @@ exports.ab_test_definitions =
     github_warning_modal: [true, false]
     alternate_home_page: [true,false]
     show_add_repos_blank_slate: [true, false] # true shows the show_add_repos_blank_slate div, false hides it
+    home_extra_ctas: [true, false]
+    number_one_instead_of_happy_customers_callout: [true, false]
+    home_benefits_heading: ["A professional continuous integration setup for your team today, tomorrow and beyond.", "The most advanced Continuous Integration available"]
+    home_speed_level: ["4-way", "8-way", "12-way"]
   overrides:
     [
       override_p: ->

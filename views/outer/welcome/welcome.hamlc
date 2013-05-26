@@ -5,6 +5,6 @@
 
 #wrapper{ data-bind:"ifnot: from_heroku" }
   = HAML.home_text_hero_unit()
-  = HAML.home_customers2()
-  = HAML.home_benefits2()
-  = HAML.home_technologies2()
+  = HAML.home_customers()
+  = HAML.home_benefits()
+  = HAML.home_technologies()

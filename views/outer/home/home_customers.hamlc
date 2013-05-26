@@ -1,8 +1,15 @@
-.customer-list
+.customer-list.grey-background
   .container-fluid
     .row-fluid
       .span12
-        %p.center
+        .center
+          %div{ data-bind: "if: VM.ab().number_one_instead_of_happy_customers_callout" }
+            %h2
+              CircleCI is the #1 hosted continuous deployment provider. But don't take our word for it, read what our awesome customers have to say.
+          %div.center{ data-bind: "ifnot: VM.ab().number_one_instead_of_happy_customers_callout" }
+            .happy-customers-callout
+            .happy-customers-spacer
+
           = HAML.happy_customers_image()
           -# %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
 
@@ -57,3 +64,6 @@
           %i
             Operations Engineer at
             %b Kickstarter
+
+  %div{ data-bind: "if: VM.ab().home_extra_ctas" }
+    = HAML.home_cta5()
