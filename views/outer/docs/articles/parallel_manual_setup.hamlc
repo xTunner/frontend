@@ -38,12 +38,20 @@
   and
   %code npm test
   in parallel, you can use a bash case statement:
+
 %pre
   %code<>
-    :preserve<>
+    :preserve
       test:
         override:
-          - case $CIRCLE_NODE_INDEX in 0) rake spec ;; 1) npm test ;; esac
+          - case $CIRCLE_NODE_INDEX in 0) rake spec ;; 1) npm test ;; esac:
+              parallel: true
+
+%p
+  Note the final colon, and
+  %code parallel: true
+  on the next line.
+  This is a command modifier which tells circle that the command should be run in parallel on all test machines.
 
 %p
   Obviously, this is slightly limited because it's hard-coded to
