@@ -50,7 +50,7 @@
 %hr
 %h2
   Step 3: Add deployment settings to your
-  %a{href: "https://circleci.com/docs/configuration#deployment"} circle.yml file
+  %a{href: "/docs/configuration#deployment"} circle.yml file
 
 %p For example:
   %pre<>
