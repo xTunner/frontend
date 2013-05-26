@@ -41,6 +41,6 @@
 
 %p
   If the repository is private, you will need
-  %a{href: "https://circleci.com/account/ssh"}
+  %a{href: "/account/ssh"}
     enable user keys
   from your account settings.
