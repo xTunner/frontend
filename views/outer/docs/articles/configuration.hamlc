@@ -299,14 +299,14 @@
   Circle uses
   %a{ href: "https://github.com/creationix/nvm" } NVM
   to manage Node versions.
-  See 
+  See
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
   If you do not specify a version, Circle uses <code>0.8.2</code>.
   Note that recent versions of NVM support selecting versions through
   package.json.
   If your version of NVM supports this, we recommend you use it.
- 
+
 %p
   Here's an example of how to set the version of Node.js to be used for your tests.
 
@@ -331,8 +331,8 @@
         java:
           version: openjdk7
 %p
-  The default version of Java is <code>oraclejdk7</code>. 
-  See 
+  The default version of Java is <code>oraclejdk7</code>.
+  See
   %a{href: "/docs/environment#java"} supported Java versions
   for a complete list.
 
@@ -355,31 +355,58 @@
           version: 5.4.5
 %p
 %p
-  See 
+  See
   %a{href: "/docs/environment#php"} supported PHP versions
-  for a complete list. 
-  
+  for a complete list.
+
 %h3#other-languages
-  Other languages  
-  
+  Other languages
+
 %p
   Our
-  %a{ href: "/docs/environment" } Test environment 
-  document has more configuration information about 
-  %a{ href: "/docs/environment#other" }other languages 
-  including 
-  %a{ href: "/docs/environment#clojure" } Clojure
+  %a{ href: "/docs/environment" } Test environment
+  document has more configuration information about
+  %a{ href: "/docs/environment#other" } other languages
+  including
+  <a href="/docs/environment#python">Python</a>,
+  <a href="/docs/environment#clojure">Clojure</a>,
+  <a href="/docs/environment#other">C/C++</a>,
+  <a href="/docs/environment#other">Golang</a>
   and
-  %a{ href: "/docs/environment#python" }Python. 
-  
- 
+  <a href="/docs/environment#other">Erlang</a>.
+
+
+%h3#services
+  Databases and other services
+
+%p
+  Circle supports a large number of
+  <a href="/docs/environment#databases">databases and other services</a>.
+  Most popular ones are running by default on our build machines, including Postgres, MySQL, Redis and MongoDB.
+
+%p
+  You can enable other databases and services from the
+  %code services
+  section:
+
+%pre
+  %code<>
+    :preserves
+      machine:
+        services:
+          - cassandra
+          - elasticsearch
+          - rabbitmq-server
+          - riak
+          - beanstalkd
+          - couchbase-server
+          - neo4j
+
 = HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
 
 %p
   The <code>checkout</code> section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
   You can modify commands by including <code>override</code>, <code>pre</code>, and/or <code>post</code>.
-
-
 
 .top-caption
   Example: using git submodules
