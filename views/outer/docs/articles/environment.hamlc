@@ -373,7 +373,7 @@
   %li
     %code erlang r14b04
 
-= HAML['heading']({title: "Databases and Services", hash: "databases})
+= HAML['heading']({title: "Databases and Services", hash: "databases"})
 
 %p
   We have the following services automatically set up for your tests:
