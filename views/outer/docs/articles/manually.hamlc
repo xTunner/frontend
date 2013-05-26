@@ -7,7 +7,7 @@
 %p
   Circle is designed to set up most tests automatically because we infer your settings from your code.
   However, if you have an unusual setup or work in a framework that has no idiomatic way to set up your project, you'll need to set it up manually.
-  Fortunately, this is a pretty straightforward procedure. 
+  Fortunately, this is a pretty straightforward procedure.
   If you follow this guide, you should be running your tests in 20 minutes or less.
 
 = HAML['heading']({title: "Standard projects not inferred", hash: "standard"})
@@ -16,8 +16,8 @@
   Before we get into the details of a manual setup, here is a quick fix to a common problem first-timers can experience.
   If you have a standard project and received a "no test" status, it is probably because the project is in a subdirectory.
   This is easy to fix: add an empty file called <code>circle.yml</code> and Circle will pick up the file and run your tests from that subdirectory.
-      
-      
+
+
 = HAML['heading']({title: "The circle.yml file", hash: "circle-yml"})
 %p
   From here, we'll assume that you're manually setting up your tests.
@@ -50,7 +50,7 @@
   %li Set up your test databases
   %li Run your tests
   %li (Optionally) deploy your code
-  
+
 %p
   (Note that some of these phases may not apply if you are testing a project that is not a web app.)
 
@@ -58,7 +58,7 @@
   Each phase consists of a list of bash commands.
   Normally, these commands are inferred by Circle, but if you are reading this, you will likely be manually adding some commands to the
   %code circle.yml
-  file. 
+  file.
   You can modify which&mdash;and in what order&mdash;commands are run by adding
   %code override
   ,
@@ -68,10 +68,10 @@
   when needed.
   Take a look at the aforementioned
   %a{ href: "/docs/configuration"}<
-    reference guide 
-  should you want to learn more details. 
-  
-%p  
+    reference guide
+  should you want to learn more details.
+
+%p
   Failing commands (those with a non-zero exit code) will cause the whole build to fail, and you'll receive a notification.
 
 
@@ -86,9 +86,9 @@
   = HAML.contact_us({succeed: ""})
   and Circle support should be able to accommodate you.
   Be aware that for security reasons, we don't provide root access.
-  
-    
-      
+
+
+
 %p
   The
   %a{href: "/docs/configuration#machine"}<
@@ -98,7 +98,7 @@
   file
   is the place where you can tweak common settings, such as timezone, language version used, and
   %code /etc/hosts
-  contents.      
+  contents.
 
 
 = HAML['heading']({title: "Checking out code", hash: "checkout"})
@@ -137,7 +137,7 @@
   , and/or
   %code post
   here.
-  
+
 
 %pre
   %code.no-highlight<>
@@ -172,7 +172,7 @@
 
 = HAML['heading']({title: "Running your tests", hash: "tests"})
 %p
-  Now that everything is prepared, add your test commands to the 
+  Now that everything is prepared, add your test commands to the
   %code circle.yml
   file so that you can run your tests.
 
@@ -196,17 +196,12 @@
 
 %p
   You should be good to go. Happy testing!
- 
-  
+
+
 = HAML['heading']({title: "Next steps", hash: "next"})
 %p
-  If your tests fail and you need to fix something, Circle has a  
+  If your tests fail and you need to fix something, Circle has a
   %a{href: "/docs/troubleshooting"} list of common problems and their solutions
   that can help you debug many issues.
   You might also like to know that we allow you to SSH in during your builds.
   This lets you check out how Circle works and facilitates nimble and efficient debugging.
-  
-  
-  
-
-  
