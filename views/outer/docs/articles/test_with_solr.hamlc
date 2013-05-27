@@ -1,7 +1,6 @@
 - @children = []
 - @title = "Test with Solr"
 - @lastUpdated = "Feb 2, 2013"
-- @subtitle = "Test searching with Solr, Lucene and Sunspot"
 
 %p
   If your tests require a running solr instance, you will need to configure

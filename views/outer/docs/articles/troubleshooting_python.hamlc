@@ -1,6 +1,5 @@
 - @children = ['git_pip_install']
 - @title = "Python"
-- @subtitle = ""
 - @lastUpdated = "Feb 2, 2013"
 
 = HAML['article_list'](@)

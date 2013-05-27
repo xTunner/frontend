@@ -1,7 +1,6 @@
 - @children = []
 - @title = "Skip a build"
 - @lastUpdated = "Feb 2, 2013"
-- @subtitle = "What could possibly go wrong?"
 
 %p
   Circle supports the <code>[ci skip]</code> standard for ignoring builds.

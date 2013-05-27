@@ -1,7 +1,6 @@
 - @children = []
 - @title = 'Configuring Circle'
 - @lastUpdated = "May 2, 2013"
-- @subtitle = "Tweak almost any setting you need"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 

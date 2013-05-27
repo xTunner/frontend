@@ -1,6 +1,5 @@
 - @children = ['configure_php']
 - @title = "PHP"
-- @subtitle = ""
 - @lastUpdated = "May 5th, 2013"
 
 

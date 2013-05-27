@@ -1,7 +1,6 @@
 - @children = []
 - @title = "Continuous Deployment to Google App Engine"
 - @lastUpdated = "Feb 2, 2013"
-- @subtitle = "Simple deployment, in Java, Python or Go"
 
 %p
   Setting up continuous deployment to Google App Engine is pretty straightforward. Here's

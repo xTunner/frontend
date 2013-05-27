@@ -1,7 +1,6 @@
 - @children = []
 - @title = "Does parallelism really work?"
 - @lastUpdated = "Feb 2, 2013"
-- @subtitle = "Basically, yes"
 
 %p
   If you've ever tried a parallel testing solution, you've probably had a bad experience.

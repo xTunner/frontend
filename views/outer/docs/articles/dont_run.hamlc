@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Skip code which should not run on your CI server"
-- @subtitle = "From the 'use this wisely' department"
 - @lastUpdated = "Feb 2, 2013"
 
 %p

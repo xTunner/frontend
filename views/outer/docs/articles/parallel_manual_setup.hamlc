@@ -1,7 +1,6 @@
 - @children = []
 - @title = "Manually setting up parallelism"
 - @lastUpdated = "Feb 2, 2013"
-- @subtitle = "Partition your tests across N boxes"
 
 %p
   If you want the benefits of parallel testing, and you're not
