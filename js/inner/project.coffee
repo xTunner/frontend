@@ -25,7 +25,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
     parallel: 1
     paying_user: null
     loaded_paying_user: null
-    trial_parallelism: null
     retried_build: null
     branches: null
     default_branch: null
