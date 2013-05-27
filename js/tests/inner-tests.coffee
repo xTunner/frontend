@@ -136,8 +136,13 @@ j.describe "setting project parallelism works", ->
     @expect(project.paid_speed()).toEqual 6
     @expect(project.plan_max_speed()).toEqual 6
     @expect(project.payor_login()).toBe(null)
+
+    # Allow them to select 5x
     @expect(project.parallel_label_style(5).disabled()).not.toBe(true)
+
+    # Don't allow them to select 8x
     @expect(project.parallel_label_style(8).disabled()).toEqual(true)
+
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
 
@@ -162,14 +167,17 @@ j.describe "setting project parallelism works", ->
     @expect(project.parallel_label_style(4).disabled()).toBe(true)
     @expect(project.current_user_is_payor_p()).not.toBe(true)
 
+    # Don't tell them to upgrade for things they can click
     project.focused_parallel(2)
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
 
+    # Don't tell them to upgrade their plan if it supports higher speed
     project.focused_parallel(3)
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).toBe(true)
 
+    # Don't tell them to upgrade their speed if their plan doesn't supports it
     project.focused_parallel(4)
     @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
@@ -195,18 +203,20 @@ j.describe "setting project parallelism works", ->
     @expect(project.parallel_label_style(3).disabled()).toBe(true)
     @expect(project.parallel_label_style(4).disabled()).toBe(true)
 
+    # Don't tell them to upgrade for things they can click
     project.focused_parallel(2)
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
 
+    # Don't tell them to upgrade their plan if it supports higher speed
     project.focused_parallel(3)
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).toBe(true)
 
+    # Don't tell them to upgrade their speed if their plan doesn't supports it
     project.focused_parallel(4)
     @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
-
 
     project.billing.containers(5)
     project.focused_parallel(2)
