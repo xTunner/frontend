@@ -13,8 +13,6 @@
           %p.lastupdated
             Last Updated:
             = @article.lastUpdated
-        - if @article.subtitle
-          %h4= @article.subtitle
 
       .doc
         - if @article.category
