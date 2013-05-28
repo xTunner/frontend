@@ -305,7 +305,9 @@
   See
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
-  If you do not specify a version, Circle uses <code>0.8.2</code>.
+  If you do not specify a version, Circle uses
+  = succeed '.', ->
+    %code= CI.Versions.default_node
   Note that recent versions of NVM support selecting versions through
   package.json.
   If your version of NVM supports this, we recommend you use it.
@@ -404,6 +406,7 @@
           - beanstalkd
           - couchbase-server
           - neo4j
+
 
 = HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
 
