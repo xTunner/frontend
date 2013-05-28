@@ -83,6 +83,13 @@
 -#      %input.span4#irc_channel{ type: "text", data-bind: "value: irc_channel" }
 -#      .help-inline
 -#      (e.g. #clojure)
+-#
+-#  .control-group
+-#    %label.control-label{for: "irc_keyword"} Channel
+-#    .controls
+-#      %input.span4#irc_keyword{ type: "text", data-bind: "value: irc_keyword" }
+-#      .help-inline
+-#      Private keyword to join the channel (e.g. "trustno1")
 
 
 
