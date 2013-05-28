@@ -248,6 +248,16 @@
     %code 0.8.2
   %li
     %code 0.8.12
+  %li
+    %code 0.8.22
+  %li
+    %code 0.10.0
+
+%p
+  If you do not specify a version, we use
+  = succeed '.', ->
+    %code= CI.Versions.default_node
+
 
 %p
   Please
@@ -317,12 +327,12 @@
           - for v in php_versions[(i*per_col)...((i+1)*per_col)]
             %li
               %code
-                = v    
-    
+                = v
+
 %p
   Are you using a version of PHP that isn't included in this list?
   If so, please
-  = HAML['contact_us']({succeed: '.'})    
+  = HAML['contact_us']({succeed: '.'})
 
 
 %h3#java Java (and JVM based languages)
