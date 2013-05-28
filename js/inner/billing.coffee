@@ -257,6 +257,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: =>
         @advanceWizard()
 
+  saveSpeed: (data, event) =>
+    if @chosen_plan_containers_p()
+      @saveContainers(data, event)
+    else
+      @saveParallelism(data, event)
+
   saveParallelism: (data, event) =>
     $.ajax
       type: "PUT"
@@ -265,6 +271,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify
         parallelism: @parallelism()
         concurrency: @concurrency()
+      success: (data) =>
+        @oldTotal(@total())
+        @closeWizard()
+
+  saveContainers: (data, event) =>
+    $.ajax
+      type: "PUT"
+      event: event
+      url: "/api/v1/user/containers"
+      data: JSON.stringify
+        containers: @containers()
       success: (data) =>
         @oldTotal(@total())
         @closeWizard()

@@ -4,6 +4,7 @@
   "../../components/jquery/jquery.js"
   "../../components/jquery.cookie/jquery.cookie.js"
   "../../components/jquery-placeholder/jquery.placeholder.js"
+  "../../components/uri.js/src/URI.min.js"
   "../../components/knockout/build/output/knockout-latest.js"
   "../../components/sammy/lib/sammy.js"
   "../../components/moment/moment.js"

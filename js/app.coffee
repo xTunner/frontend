@@ -17,6 +17,7 @@ class CircleViewModel extends CI.inner.Obj
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
     @from_heroku = ko.observable(window.renderContext.from_heroku)
+    @flash = ko.observable(window.renderContext.flash)
 
     # inner
     @build = ko.observable()
@@ -159,6 +160,7 @@ class CircleViewModel extends CI.inner.Obj
     @loadRecentBuilds()
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
+    mixpanel.track("Dashboard")
     display "dashboard", {}
 
 
@@ -456,4 +458,4 @@ $(document).ready () ->
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
 
-  SammyApp.run path
+  SammyApp.run path + window.location.search
