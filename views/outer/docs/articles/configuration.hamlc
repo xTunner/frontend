@@ -299,14 +299,16 @@
   Circle uses
   %a{ href: "https://github.com/creationix/nvm" } NVM
   to manage Node versions.
-  See 
+  See
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
-  If you do not specify a version, Circle uses <code>0.8.2</code>.
+  If you do not specify a version, Circle uses
+  = succeed '.', ->
+    %code= CI.Versions.default_node
   Note that recent versions of NVM support selecting versions through
   package.json.
   If your version of NVM supports this, we recommend you use it.
- 
+
 %p
   Here's an example of how to set the version of Node.js to be used for your tests.
 
@@ -331,8 +333,8 @@
         java:
           version: openjdk7
 %p
-  The default version of Java is <code>oraclejdk7</code>. 
-  See 
+  The default version of Java is <code>oraclejdk7</code>.
+  See
   %a{href: "/docs/environment#java"} supported Java versions
   for a complete list.
 
@@ -355,24 +357,24 @@
           version: 5.4.5
 %p
 %p
-  See 
+  See
   %a{href: "/docs/environment#php"} supported PHP versions
-  for a complete list. 
-  
+  for a complete list.
+
 %h3#other-languages
-  Other languages  
-  
+  Other languages
+
 %p
   Our
-  %a{ href: "/docs/environment" } Test environment 
-  document has more configuration information about 
-  %a{ href: "/docs/environment#other" }other languages 
-  including 
+  %a{ href: "/docs/environment" } Test environment
+  document has more configuration information about
+  %a{ href: "/docs/environment#other" }other languages
+  including
   %a{ href: "/docs/environment#clojure" } Clojure
   and
-  %a{ href: "/docs/environment#python" }Python. 
-  
- 
+  %a{ href: "/docs/environment#python" }Python.
+
+
 = HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
 
 %p
