@@ -85,11 +85,25 @@
 -#      (e.g. #clojure)
 -#
 -#  .control-group
--#    %label.control-label{for: "irc_keyword"} Channel
+-#    %label.control-label{for: "irc_keyword"} Keyword
 -#    .controls
 -#      %input.span4#irc_keyword{ type: "text", data-bind: "value: irc_keyword" }
 -#      .help-inline
 -#      Private keyword to join the channel (e.g. "trustno1")
+-#
+-#  .control-group
+-#    %label.control-label{for: "irc_username"} Username
+-#    .controls
+-#      %input.span4#irc_username{ type: "text", data-bind: "value: irc_username" }
+-#      .help-inline
+-#      (e.g. circlebot)
+-#
+-#  .control-group
+-#    %label.control-label{for: "irc_password"} Password
+-#    .controls
+-#      %input.span4#irc_password{ type: "text", data-bind: "value: irc_password" }
+-#      .help-inline
+-#      optional
 
 
 
