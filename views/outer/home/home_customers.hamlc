@@ -66,4 +66,4 @@
             %b Kickstarter
 
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    = HAML.home_cta5()
+    = HAML.home_cta({text: "Start your 14-day free trial now"})

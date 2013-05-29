@@ -84,4 +84,4 @@
             At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know.
 
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    = HAML.home_cta3()
+    = HAML.home_cta({text: "Get started now"})
