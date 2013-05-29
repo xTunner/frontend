@@ -46,7 +46,7 @@
   }
 
   ul, ol {
-    margin: 0 0 30px 30px;
+    margin: 0 0 25px 30px;
   }
 
   .top-caption {
@@ -161,11 +161,15 @@
       margin-top: 0;
       font-size: 28px;
 
-      & a {
+      a {
         display: block;
         padding-top: 1em;
-        color: #444;
         line-height: 22px;
+
+        &:hover {
+          text-decoration: none;
+          color: @linkColorHover;
+        }
       }
 
       &:first-child a {
