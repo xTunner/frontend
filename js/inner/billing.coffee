@@ -41,6 +41,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     concurrency: 1
     containers: 1
     payor: null
+    special_price_p: null
 
   constructor: ->
     super
@@ -244,6 +245,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @parallelism(data.parallelism or 1)
     @containers(data.containers or 1)
     @payor(data.payor) if data.payor
+    @special_price_p(@oldTotal() <  @total())
 
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>
@@ -284,7 +286,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @oldTotal(@total())
         @closeWizard()
+        @loadExistingPlans()
 
+  # TODO: make the API call return existing plan
   saveContainers: (data, event) =>
     $.ajax
       type: "PUT"
@@ -295,6 +299,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @oldTotal(@total())
         @closeWizard()
+        @loadExistingPlans()
 
   loadExistingCard: () =>
     $.getJSON '/api/v1/user/pay/card', (card) =>
