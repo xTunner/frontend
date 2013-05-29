@@ -456,4 +456,4 @@ $(document).ready () ->
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
 
-  SammyApp.run path
+  SammyApp.run path + window.location.search
