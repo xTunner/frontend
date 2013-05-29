@@ -57,7 +57,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
             @categories[slug] = @articles[slug]
 
       catch error
-        console.log "error generating #{slug}: #{error}"
+        console.log "error generating doc #{slug}: #{error} (it might not be a doc)"
         ## meaning: can't be rendered without more context. Should never be true of docs!
 
     # iterate through the articles, and update the hierarchy
