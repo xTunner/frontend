@@ -60,11 +60,7 @@ class CircleViewModel extends CI.inner.Obj
           path[1]
 
     # outer
-    if true # @ab().alternate_home_page(true)
-      @home = new CI.outer.Home("welcome", "Continuous Integration and Deployment")
-    else
-      @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
-
+    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
     @pricing = new CI.outer.Page("pricing", "Plans and Pricing")
     @docs = new CI.outer.Docs("docs", "Documentation")

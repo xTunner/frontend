@@ -1,12 +1,20 @@
 = HAML.home_github_modal()
 
-%div{ data-bind:"if: from_heroku" }
+%div{ data-bind: "if: from_heroku" }
   = HAML.heroku_header()
 
-%div{ data-bind:"ifnot: from_heroku" }
-  = HAML.home_hero_unit()
-  = HAML.home_cta1()
-  = HAML.home_customers()
-  = HAML.home_technologies()
-  = HAML.home_benefits()
-  = HAML.home_get_started()
+%div{ data-bind: "ifnot: from_heroku" }
+  %div{ data-bind: "if: ab().alternate_home_page"}
+    #wrapper{ data-bind:"ifnot: from_heroku" }
+      = HAML.home_text_hero_unit()
+      = HAML.home_customers()
+      = HAML.home_benefits()
+      = HAML.home_technologies()
+
+  %div{ data-bind: "ifnot: ab().alternate_home_page"}
+    = HAML.home_hero_unit()
+    = HAML.home_cta1()
+    = HAML.home_customers()
+    = HAML.home_technologies()
+    = HAML.home_benefits()
+    = HAML.home_get_started()
