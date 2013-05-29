@@ -25,6 +25,6 @@
             %h3
               We support <strong>Ruby on Rails, Sinatra, Node, Python, PHP, Java, Clojure </strong> and many more technologies.
             %h3
-              14 day <strong>free trial</strong>. Full featured. No credit card required. Start running your tests in 2 clicks.
+              14 day <strong>free trial</strong>. Full featured. No credit card required. Start running your tests in one click.
 
   = HAML.home_cta({text: "Run your tests"})
