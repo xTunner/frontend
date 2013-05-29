@@ -22,6 +22,13 @@
           %strong{data-bind: "text: focused_parallel"}
           times faster.
 
+        %div{data-bind: "if: show_uneven_divisor_warning_p"}
+          .label.label-warning
+            Careful!
+          You'll be able to run more simultaneous builds if you choose a speed that divides
+          %span{data-bind: "text: paid_speed"}
+          evenly.
+
         %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning
             %a{href: '/account/plans#organizations'} Select a plan
@@ -53,9 +60,9 @@
 
             %p{data-bind: "if: current_user_is_payor_p"}
               %a{href: "/account/plans#speed"} Increase your speed
-              to
+              up to
               %strong
-                != succeed "x", ->
+                != succeed "x.", ->
                   %span{data-bind: "text: focused_parallel"}
 
             %p{data-bind: "ifnot: current_user_is_payor_p"}
@@ -63,9 +70,9 @@
               %span{data-bind: "text: payor_login"}
               to
               %a{href: "/account/plans#speed"} https://circleci.com/account/plans#speed
-              to increase your speed to
+              to increase your speed up to
               %strong
-                != succeed "x", ->
+                != succeed "x.", ->
                   %span{data-bind: "text: focused_parallel"}
         / /ko
 

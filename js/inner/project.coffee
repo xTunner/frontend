@@ -64,6 +64,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
         @billing.chosenPlan().max_parallelism
 
+    # Trial speed is counted as paid here
     @paid_speed = @komp =>
       if @containers_p()
         Math.min @plan_max_speed(), @billing.containers()
@@ -84,12 +85,19 @@ CI.inner.Project = class Project extends CI.inner.Obj
         parseInt(num) > @paid_speed()
       selected: @komp =>
         parseInt(num) is @parallel()
+      bad_choice: @komp =>
+        if @containers_p()
+          parseInt(num) < @paid_speed() && @paid_speed() % parseInt(num) isnt 0
 
     @show_parallel_upgrade_plan_p = @komp =>
       @plan_max_speed() && @plan_max_speed() < @focused_parallel()
 
     @show_parallel_upgrade_speed_p = @komp =>
       @paid_speed() && @plan_max_speed && (@paid_speed() < @focused_parallel() <= @plan_max_speed())
+
+    @show_uneven_divisor_warning_p = @komp =>
+      if @containers_p()
+        @focused_parallel() < @paid_speed() && @paid_speed() % @focused_parallel() isnt 0
 
     ## Sidebar
     @branch_names = @komp =>
