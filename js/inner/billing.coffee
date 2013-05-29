@@ -78,7 +78,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(@chosenPlan(), c)})"
 
   containers_option_text: (c) =>
-    "#{c} containers ($#{@containerCost(@chosenPlan(), c)})"
+    container_price = @chosenPlan().container_cost
+    cost = @containerCost(@chosenPlan(), c)
+    "#{c} containers at $#{container_price} each ($#{cost})"
+
 
   parallelism_cost: (plan, p) =>
     Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
