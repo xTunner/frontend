@@ -1,4 +1,4 @@
-.jumbotron
+.text-hero-unit
   .container-fluid
     .row-fluid
       .span12

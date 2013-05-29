@@ -1,3 +1,9 @@
+@background-color: rgb(238,238,238);
+
+body {
+  counter-reset: featureCounter;
+}
+
 area {
   display: block;
   cursor: default;
@@ -9,62 +15,109 @@ area:hover {
 }
 
 body#home-page {
-  .jumbotron {
+
+  .hero-unit {
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background: white;
+
+    .container-fluid {
+      padding: 0;
+    }
+
+    h1 {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+      text-align: center;
+      font-size: 82px;
+      line-height: 92px;
+      margin: 25px 0 5px 0;
+      text-shadow: 0px 1px 1px #ffffff;
+      letter-spacing: -2px;
+    }
+
+    h2 {
+      text-align: center;
+      font: 400 22px/44px 'Source Sans Pro', sans-serif;
+      color: #555;
+    }
+
+    h2 span {
+      color: #ffc137;
+      font-weight: 600;
+      font-style: normal;
+      color: #ffdf23;
+      background: #ffdf23;
+      color: black;
+      padding: 5px 10px 7px 12px;
+      border-radius: 50px;
+      font-size: 18px;
+      text-align: center;
+      margin-right: 4px;
+      position: relative;
+      top: -2px;
+    }
+  }
+
+
+  .text-hero-unit {
     margin: 0;
     padding: 0;
-    background: #ffffff;
     color: #333333;
+
+    .container-fluid {
+      padding: 0;
+    }
+    h1 {
+      padding: 20px 0 0 0;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+      text-align: center;
+      font-size: 46px;
+      line-height: 46px;
+      margin: 15px 0 0px 0;
+      text-shadow: 0px 1px 1px @background-color;
+      letter-spacing: -2px;
+    }
+    h2 {
+      text-align: center;
+      border-bottom: 1px solid lighten(@gray, 45%);
+      padding: 0 0 15px 0;
+      margin: 0 0 30px 0;
+      font: 400 22px/44px 'Source Sans Pro', sans-serif;
+      color: #555;
+    }
+
+    h3 {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      padding-left: 30px;
+      margin: 15px 0 20px 0;
+      counter-increment: featureCounter;
+      position: relative;
+
+      &:before {
+        content: counter(featureCounter);
+        height: 18px;
+        width: 18px;
+        position: absolute;
+        top: 2px;
+        left: 0;
+        .border-radius(20px);
+        background: #ccc;
+        color: @white;
+        text-align: center;
+        font-size: 10px;
+        line-height: 18px;
+        font-weight: bold;
+      }
+    }
   }
-  .jumbotron .container-fluid {
-    padding: 0;
-  }
-  .jumbotron h6 {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 600;
-    text-align: center;
-    font-size: 82px;
-    line-height: 92px;
-    margin: 25px 0 5px 0;
-    text-shadow: 0px 1px 1px #ffffff;
-    letter-spacing: -2px;
-  }
-  .jumbotron h1 {
-    text-align: center;
-    font: 400 22px/44px 'Source Sans Pro', sans-serif;
-    color: #555;
-  }
-  .jumbotron h1 span {
-    color: #ffc137;
-    font-weight: 600;
-    font-style: normal;
-    color: #ffdf23;
-    background: #ffdf23;
-    color: black;
-    padding: 5px 10px 7px 12px;
-    border-radius: 50px;
-    font-size: 18px;
-    text-align: center;
-    margin-right: 4px;
-    position: relative;
-    top: -2px;
-  }
-  .jumbotron h1 span.label {
-    font-size: 16px;
-    line-height:12px;
-    padding: 14px 8px 16px 8px;
-    border-radius: 40px;
-    margin-right: 5px;
-    font-weight: normal;
-    background-color: #ff8800;
-    text-align: center;
-  }
-  .jumbotron h3 {
-    text-align: center;
-    font-family: 'Source Sans Pro', sans-serif;
-    text-shadow: 0px 2px 0px rgba(26,57,104,0.5);
-    font-weight: 400;
-  }
-  .introtron {
+
+  .get-started {
     margin: 0;
     padding: 50px 0 220px 0;
     font-family: 'Source Sans Pro', sans-serif;
@@ -72,464 +125,397 @@ body#home-page {
     font-size: 18px;
     line-height: 28px;
     background: #0066ff url("@{imgPath}/outer/home/concentric-bg-3.png") no-repeat center -100px;
+
+    ol {
+      margin:  10px 0px 15px 17%;
+    }
+    ol li {
+      font-size: 22px;
+      line-height: 32px;
+      width: auto;
+    }
+    h2 {
+      margin: 10px 0 15px 0;
+      font-weight: 300;
+      text-align: center;
+      line-height: 52px;
+      font-size: 42px;
+      color: #333333;
+    }
+
+    hr {
+      margin: 10px 0;
+      border-top: 1px solid #ccc;
+    }
+
+    .btn {
+      margin: 10px 0;
+    }
+
+    .ctabox {
+      background: #ffffff;
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      padding: 20px 20px 40px 20px;
+      margin: 30px 0;
+    }
   }
-  .introinclude {
-    background: #ffffff;
-    padding-top: 15px;
-  }
-  .introtron ol {
-    margin:  10px 0px 15px 17%;
-  }
-  .introtron ol li {
-    font-size: 22px;
-    line-height: 32px;
-    width: auto;
-  }
-  .introtron h5 {
-    margin: 10px 0 15px 0;
-    font-weight: 300;
-    text-align: center;
-    line-height: 52px;
-    font-size: 42px;
-    color: #333333;
-  }
-  .introtron h5 i {
-  }
-  .introtron h6 {
-    text-align: center;
-    font-size: 18px;
-    line-height: 28px;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-style: italic;
-    color: #777777;
-    font-weight: 500;
-    margin: 0 0 10px 0;
-  }
-  .introtron ul {
-    border-top: 5px solid #ffc137;
-    padding-top: 10px;
-    margin: 0;
-    padding: 0;
-    box-shadow: 0px 2px 5px #003483;
-    border-radius: 3px;
-    border: 0;
-    box-shadow: none;
-    margin: 0;
-  }
-  .introtron ul li.hr {
-    padding: 0;
-  }
-  .introtron hr {
-    margin: 10px 0;
-    border-top: 1px solid #ccc;
-  }
-  .introtron ul li {
-    font-size: 22px;
-    line-height: 32px;
-    list-style-type: none;
-    background: url('@{imgPath}/outer/home/bullet-orange.png') no-repeat 8px 11px;
-    font-weight: normal;
-    list-style-position: outside;
-    padding-left: 30px;
-    font-weight: 600;
-    color: #111111;
-  }
-  .introtron ul li i {
-    font-weight: 400;
-    font-size: 20px;
-    margin-left: 7px;
-    color: #0a8dfe;
-  }
-  .introtron li a {
-    text-decoration: underline;
-  }
-  .introtron .btn {
-    margin: 10px 0;
-  }
-  .introtron .ctabox {
-    background: #ffffff;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    padding: 20px 20px 40px 20px;
-    margin: 30px 0;
-  }
-  .ctabox hr {
-    margin: 0 5% 10px;
-  }
-  .ctabox img.trial-badge {
-    float: left;
-    position: relative;
-    top: -10px;
-    left: -5px;
-    margin-right: -15px;
-  }
-  .ctabox p strong {
-    font-weight: 600;
-    padding: 2px 5px 4px 5px;
-    background-color: #fff562;
-  }
+
+
   .center {
     text-align: center;
   }
+
+
+
   .customer-list {
-    background: #eeeeee;
-    padding: 120px 0 10px 0;
-    border-top: 1px solid #cccccc;
+    background-color: rgb(238,238,238);
     position: relative;
     margin-top: 10px;
-  }
-  .customer-list .container-fluid::before {
-    display:block;
-    content:'';
-    position:absolute;
-    width:300px;
-    height:42px;
-    background-image: url('@{imgPath}/outer/home/callouts-01.png');
-    background-repeat: no-repeat;
-    background-position: 0 -62px;
-    top: 50px;
-    left: 37%;
-    img:hover {
-      cursor: pointer;
+
+    .container-fluid::before {
+      display:block;
+      content:'';
+      position:absolute;
+      width:300px;
+      height:42px;
+      top: 50px;
+      left: 37%;
+      img:hover {
+        cursor: pointer;
+      }
+    }
+    h2 {
+      text-align: center;
+      font-family: 'Source Sans Pro', sans-serif;
+      line-height: 22px;
+      font-size: 18px;
+      font-weight: 600;
     }
   }
-  .customer-list h5,
-  .how-it-works h5 {
-    text-align: center;
-    font-family: 'Source Sans Pro', sans-serif;
-    line-height: 52px;
-    font-size: 42px;
-    font-weight: 300;
-    color: #333333;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 15px 0 25px;
-  }
+
   .customer-quotes {
-    background: #e2e2e2;
     background: #eeeeee;
     padding-top: 25px;
     padding-bottom: 65px;
     border-bottom: 1px solid #cccccc;
+
+    .customer-quote {
+      margin: 0 0 20px 0;
+      padding: 0;
+      position: relative;
+      font-family: 'Source Sans Pro', sans-serif;
+
+      p {
+        margin: 0;
+        padding: 0;
+      }
+
+      blockquote {
+        background: #ffffff;
+        margin: 0 0 25px 0;
+        padding: 20px 12px 30px 30px;
+        border-radius: 5px;
+        box-shadow: 0px 1px 3px #777777;
+        border: 0;
+        position: relative;
+        font-size: 16px;
+        line-height: 22px;
+        font-style: italic;
+        font-weight: 400;
+        color: #555555;
+
+        strong {
+          color: #444444;
+        }
+        .mark-start {
+          position: absolute;
+          color: #bbbbbb;
+          top: 24px;
+          left: 12px;
+          font-size: 42px;
+        }
+        .mark-end {
+          position: relative;
+          color: #cccccc;
+          font-size: 42px;
+          top: 14px;
+          left: -4px;
+          line-height: 0;
+        }
+        &::after {
+          display: block;
+          content: '';
+          position: absolute;
+          width: 18px;
+          height: 18px;
+          background: transparent url('@{imgPath}/outer/home/quote-arrow.png') no-repeat left top;
+          bottom: -18px;
+          left: 72px;
+          z-index: 10;
+        }
+      }
+
+      img {
+        height: 65px;
+        max-width: 65px;
+        display: block;
+        border-radius: 5px;
+      }
+
+      .avatar {
+        height: 65px;
+        width: 65px;
+        box-shadow: inset 1px 1px 1px #000;
+        border-radius: 5px;
+        overflow: hidden;
+        display: block;
+        position: relative;
+        float: left;
+        margin-right: 13px;
+
+        &&::before {
+          display:block;
+          content:'';
+          position:absolute;
+          width:100%;
+          height:100%;
+          -moz-box-shadow:inset 0px 2px 2px 1px rgba(0,0,0,0.4);
+          -webkit-box-shadow:inset 0px 2px 2px 1px rgba(0,0,0,0.4);
+          box-shadow:inset 0px 2px 2px 1px rgba(0,0,0,0.4);
+        }
+      }
+
+      i {
+        display: block;
+        font-size: 18px;
+        line-height: 32px;
+        color: #777777;
+        font-weight: 400;
+      }
+
+      strong.name {
+        display: block;
+        font-size: 32px;
+        line-height: 32px;
+        position: relative;
+        font-weight: 600;
+        color: #444;
+      }
+    }
   }
-  .customer-quote {
-    margin: 0 0 20px 0;
-    padding: 0;
-    position: relative;
-    font-family: 'Source Sans Pro', sans-serif;
-  }
-  .customer-quote p {
-    margin: 0;
-    padding: 0;
-  }
-  .customer-quote blockquote {
-    background: #ffffff;
-    margin: 0 0 25px 0;
-    padding: 20px 12px 30px 30px;
-    border-radius: 5px;
-    box-shadow: 0px 1px 3px #777777;
-    border: 0;
-    position: relative;
-    font-size: 16px;
-    line-height: 22px;
-    font-style: italic;
-    font-weight: 400;
-    color: #555555;
-  }
-  .customer-quote blockquote strong {
-    color: #444444;
-  }
-  .customer-quote blockquote .mark-start {
-    position: absolute;
-    color: #bbbbbb;
-    top: 24px;
-    left: 12px;
-    font-size: 42px;
-  }
-  .customer-quote blockquote .mark-end {
-    position: relative;
-    color: #cccccc;
-    font-size: 42px;
-    top: 14px;
-    left: -4px;
-    line-height: 0;
-  }
-  .customer-quote blockquote::after {
-    display: block;
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: transparent url('@{imgPath}/outer/home/quote-arrow.png') no-repeat left top;
-    bottom: -18px;
-    left: 72px;
-    z-index: 10;
-  }
-  .customer-quote img {
-    height: 65px;
-    max-width: 65px;
-    display: block;
-    border-radius: 5px;
-  }
-  .customer-quote .avatar {
-    height: 65px;
-    width: 65px;
-    box-shadow: inset 1px 1px 1px #000;
-    border-radius: 5px;
-    overflow: hidden;
-    display: block;
-    position: relative;
-    float: left;
-    margin-right: 13px;
-  }
-  .customer-quote .avatar::before {
-    display:block;
-    content:'';
-    position:absolute;
-    width:100%;
-    height:100%;
-    -moz-box-shadow:inset 0px 2px 2px 1px rgba(0,0,0,0.4);
-    -webkit-box-shadow:inset 0px 2px 2px 1px rgba(0,0,0,0.4);
-    box-shadow:inset 0px 2px 2px 1px rgba(0,0,0,0.4);
-  }
-  .customer-quote i {
-    display: block;
-    font-size: 18px;
-    line-height: 32px;
-    color: #777777;
-    font-weight: 400;
-  }
-  .customer-quote strong.name {
-    display: block;
-    font-size: 32px;
-    line-height: 32px;
-    position: relative;
-    font-weight: 600;
-    color: #444;
-  }
-  .main-cta .ctabox {
-    border-top: 1px solid #cccccc;
-    padding: 20px 0;
-    font-size: 18px;
-    line-height: 32px;
-  }
-  .main-cta .ctabox .btn {
-    margin: 12px 0 4px 0;
-  }
-  .main-cta .ctabox p {
-    margin: 0;
-  }
-  .main-cta .ctabox a.btn-jumbo {
-    font-family: Arial, Helvetica, Sans-Serif;
-    font-weight: bold;
-    font-size: 28px;
-    line-height: 38px;
-    padding: 10px 25px;
-  }
-  .heroku-cta-box {
-    height: 300px;                
-  }
-  .main-cta .ctabox i {
-    font-size: 14px;
-    line-height: 24px;
-    margin: 0;
-  }
+
+
   .how-it-works {
     background: #ffffff;
     padding: 25px 0 35px 0;
     position: relative;
+
+    .container {
+      position: relative;
+      overflow: visible;
+    }
+
+    .container::before {
+      display:block;
+      content:'';
+      position:absolute;
+      width:175px;
+      height:50px;
+      background-image: url('@{imgPath}/outer/home/callouts-01.png');
+      background-repeat: no-repeat;
+      background-position: -25px 0;
+      top: -10px;
+      left: -90px;
+      z-index: 5;
+    }
+
+    p {
+      img { z-index: 50; }
+      strong { font-weight: normal; }
+
+      font-size: 14px;
+      line-height: 24px;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    h3 {
+      font-family: 'Source Sans Pro', sans-serif;
+      text-align: left;
+      font-size: 22px;
+      line-height: 32px;
+      font-weight: 600;
+      padding-left: 70px;
+      padding-right: 30px;
+      position: relative;
+    }
+
+    h3 span {
+      color: #333333;
+      font-size: 18px;
+      line-height: 30px;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 100px;
+      text-shadow: 0 1px 1px #ffffff;
+      background-color: #ffdf23;
+      display: block;
+      height: 30px;
+      width: 30px;
+      left: 30px;
+      position: absolute;
+    }
+
+    .ctabox {
+      border-top: 1px solid #ccc;
+      margin-top: 25px;
+      padding-top: 5px;
+
+      p {
+        font-size: 18px;
+        line-height: 28px;
+        margin: 10px 0;
+        text-align: center;
+      }
+    }
   }
-  .how-it-works .container {
-    position: relative;
-    overflow: visible;
-  }
-  .how-it-works .container::before {
-    display:block;
-    content:'';
-    position:absolute;
-    width:175px;
-    height:50px;
-    background-image: url('@{imgPath}/outer/home/callouts-01.png');
-    background-repeat: no-repeat;
-    background-position: -25px 0;
-    top: -10px;
-    left: -90px;
-    z-index: 5;
-  }
-  .how-it-works h6 {
-    font-family: 'Source Sans Pro', sans-serif;
-    text-align: left;
-    font-size: 22px;
-    line-height: 32px;
-    font-weight: 600;
-    padding-left: 70px;
-    padding-right: 30px;
-    position: relative;
-  }
-  .how-it-works h6 span {
-    color: #333333;
-    font-size: 18px;
-    line-height: 30px;
-    font-weight: 600;
-    text-align: center;
-    border-radius: 100px;
-    text-shadow: 0 1px 1px #ffffff;
-    background-color: #ffdf23;
-    display: block;
-    height: 30px;
-    width: 30px;
-    left: 30px;
-    position: absolute;
-  }
-  /*
-  .how-it-works .with-arrow {
-    position: relative;
-  }
-  .how-it-works .with-arrow::after {
-    display: block;
-    content: '';
-    position: absolute;
-    width: 43px;
-    height: 31px;
-    background: transparent url('@{imgPath}/outer/home/right-arrow-grey.png') no-repeat left top;
-    top: 70px;
-    right: -31px;
-    z-index: 10;
-  }
-  */
-  .how-it-works p img {
-    z-index: 50;
-  }
-  .how-it-works p {
-    font-size: 14px;
-    line-height: 24px;
-    margin: 10px 0;
-    text-align: center;
-  }
-  .how-it-works .ctabox {
-    border-top: 1px solid #ccc;
-    margin-top: 25px;
-    padding-top: 5px;
-  }
-  .how-it-works .ctabox p {
-    font-size: 18px;
-    line-height: 28px;
-    margin: 10px 0;
-    text-align: center;
-  }
-  .how-it-works p strong {
-    font-weight: normal;
-  }
+
   .benefits {
     padding: 50px 0;
     background: #efede4 url('@{imgPath}/outer/home/stacked_circles.png') repeat left top;
     border-bottom: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
+
+    .span8 {
+      background: #ffffff;
+      padding: 10px 20px;
+      text-align: left;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.25);
+      border: 1px solid #cccccc;
+    }
+
+    .section {
+      border-top: 1px solid #cccccc;
+      margin: 10px 0 30px 0;
+    }
+
+    h2 {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+      text-align: center;
+      font-size: 42px;
+      margin: 20px 0 5px 0;
+    }
+    h3 {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 300;
+      text-align: center;
+      font-size: 32px;
+      line-height: 42px;
+      margin: 0 0 25px 0;
+    }
+
+    h6 {
+      font-size: 22px;
+      line-height: 32px;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+    }
+
+    .section-content {
+      width: 75%;
+      float: left;
+      p {
+        font-size: 15px;
+        line-height: 22px;
+        color: #333333;
+        margin-top: -5px;
+      }
+    }
+
+    .section-graphic {
+      width: 24%;
+      font-size: 40px;
+      color: black;
+      display: block;
+      float: left;
+      margin: 15px 0 0 2px;
+      text-align: center;
+
+      i {
+        font-size: 34px;
+        color: white;
+        display: block;
+        margin: 0 auto;
+        padding: 12px 12px 12px !important;
+        width: 34px;
+        height: 34px;
+        border-radius: 80px;
+        text-shadow: none !important;
+        border-bottom: none !important;
+        }
+    }
+
+
+    .quick-setup .section-graphic i {
+      background-color: #0065d7;
+      padding: 28px 24px 12px;
+      border-bottom: 10px solid #0024aa;
+      text-shadow: 0 -4px 1px #0024aa;
+    }
+    .fast-tests .section-graphic i {
+      background-color: #ffae00;
+      border-bottom: 10px solid #e07900;
+      text-shadow: 0 -4px 1px #c16800;
+    }
+    .deep-customization .section-graphic i {
+      background-color: #a100c4;
+      border-bottom: 10px solid #6b0093;
+      text-shadow: 0 -5px 1px #6b0093;
+    }
+    .debug-with-ease .section-graphic i {
+      background-color: #999999;
+      border-bottom: 10px solid #555555;
+      text-shadow: 0 -5px 1px #555555;
+      padding: 24px 24px 16px 24px;
+    }
+    .smart-notifications .section-graphic i {
+      background-color: #00bbb9;
+      border-bottom: 10px solid #006666;
+      text-shadow: 0 -4px 1px #006666;
+    }
+    .incredible-support .section-graphic i {
+      background-color: #ef535e;
+      padding: 28px 23px 12px;
+      border-bottom: 10px solid #990033;
+      text-shadow: 0 -4px 1px #990033;
+    }
+    .debug-with-ease .section-graphic i {
+      background-color: #999999;
+      border-bottom: 10px solid #555555;
+      text-shadow: 0 -5px 1px #555555;
+      padding: 24px 24px 16px 24px;
+    }
+    .automatic-parallelization .section-graphic i {
+      background-color: #ff5400;
+      border-bottom: 10px solid #555555;
+      text-shadow: 0 -5px 1px #555555;
+    }
+    .continuous-deployment .section-graphic i {
+      background-color: #329700;
+      border-bottom: 10px solid #555555;
+      text-shadow: 0 -5px 1px #555555;
+    }
+    .more-to-come .section-graphic i {
+      background-color: #f6d200;
+      border-bottom: 10px solid #555555;
+      text-shadow: 0 -5px 1px #555555;
+    }
   }
-  .benefits .span8 {
-    background: #ffffff;
-    padding: 10px 20px;
-    text-align: left;
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.25);
-    border: 1px solid #cccccc;
-  }
-  .benefits .section {
-    border-top: 1px solid #cccccc;
-    margin: 10px 0 30px 0;
-  }
-  .benefits h6 {
-    font-size: 22px;
-    line-height: 32px;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 600;
-  }
-  .benefits .section-content {
-    width: 75%;
-    float: left;
-  }
-  .benefits .section-content p {
-    font-size: 15px;
-    line-height: 22px;
-    color: #333333;
-    margin-top: -5px;
-  }
-  .benefits .section-graphic {
-    width: 24%;
-    font-size: 40px;
-    color: black;
-    display: block;
-    float: left;
-    margin: 15px 0 0 2px;
-    text-align: center;
-  }
-  .benefits .section-graphic i {
-    font-size: 34px;
-    color: white;
-    display: block;
-    margin: 0 auto;
-    padding: 12px 12px 12px !important;
-    width: 34px;
-    height: 34px;
-    border-radius: 80px;
-    text-shadow: none !important;
-    border-bottom: none !important;
-  }
-  .benefits .quick-setup .section-graphic i {
-    background-color: #0065d7;
-    padding: 28px 24px 12px;
-    border-bottom: 10px solid #0024aa;
-    text-shadow: 0 -4px 1px #0024aa;
-  }
-  .benefits .fast-tests .section-graphic i {
-    background-color: #ffae00;
-    border-bottom: 10px solid #e07900;
-    text-shadow: 0 -4px 1px #c16800;
-  }
-  .benefits .deep-customization .section-graphic i {
-    background-color: #a100c4;
-    border-bottom: 10px solid #6b0093;
-    text-shadow: 0 -5px 1px #6b0093;
-  }
-  .benefits .debug-with-ease .section-graphic i {
-    background-color: #999999;
-    border-bottom: 10px solid #555555;
-    text-shadow: 0 -5px 1px #555555;
-    padding: 24px 24px 16px 24px;
-  }
-  .benefits .smart-notifications .section-graphic i {
-    background-color: #00bbb9;
-    border-bottom: 10px solid #006666;
-    text-shadow: 0 -4px 1px #006666;
-  }
-  .benefits .incredible-support .section-graphic i {
-    background-color: #ef535e;
-    padding: 28px 23px 12px;
-    border-bottom: 10px solid #990033;
-    text-shadow: 0 -4px 1px #990033;
-  }
-  .benefits .debug-with-ease .section-graphic i {
-    background-color: #999999;
-    border-bottom: 10px solid #555555;
-    text-shadow: 0 -5px 1px #555555;
-    padding: 24px 24px 16px 24px;
-  }
-  .benefits .automatic-parallelization .section-graphic i {
-    background-color: #ff5400;
-    border-bottom: 10px solid #555555;
-    text-shadow: 0 -5px 1px #555555;
-  }
-  .benefits .continuous-deployment .section-graphic i {
-    background-color: #329700;
-    border-bottom: 10px solid #555555;
-    text-shadow: 0 -5px 1px #555555;
-  }
-  .benefits .more-to-come .section-graphic i {
-    background-color: #f6d200;
-    border-bottom: 10px solid #555555;
-    text-shadow: 0 -5px 1px #555555;
-  }
-  .technotron {
+
+  .technologies {
     padding: 50px 0 80px 0;
     .nav-tabs {
       text-align: center;
@@ -544,36 +530,81 @@ body#home-page {
       font-weight: bold;
       font-size: 18px;
       line-height: 28px;
-    } 
+    }
+    h2 {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+      text-align: center;
+      font-size: 42px;
+      margin: 20px 0 5px 0;
+    }
+    h3 {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 300;
+      text-align: center;
+      font-size: 32px;
+      line-height: 42px;
+      margin: 0 0 25px 0;
+    }
+    img {
+      margin: 6px 8px;
+    }
+    .tab-pane p {
+      font-size: 16px;
+      line-height: 26px;
+    }
   }
-  .technotron h2,
-  .benefits h2 {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 600;
-    text-align: center;
-    font-size: 42px;
-    line-height: 52px;
-    margin: 20px 0 5px 0;
+
+
+  .heroku-cta-box {
+    height: 300px;
   }
-  .technotron h3,
-  .benefits h3 {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 300;
-    text-align: center;
-    font-size: 32px;
-    line-height: 42px;
-    margin: 0 0 25px 0;
+
+  .main-cta .ctabox {
+
+    border-top: 1px solid #cccccc;
+    padding: 20px 0;
+    font-size: 18px;
+    line-height: 32px;
+
+    .btn {
+      margin: 12px 0 4px 0;
+    }
+    p {
+      margin: 0;
+      strong {
+        font-weight: 600;
+        padding: 2px 5px 4px 5px;
+        background-color: #fff562;
+      }
+    }
+    a.btn-jumbo {
+      font-family: Arial, Helvetica, Sans-Serif;
+      font-weight: bold;
+      font-size: 28px;
+      line-height: 38px;
+      padding: 10px 25px;
+      text-transform: none;
+    }
+    i {
+      font-size: 14px;
+      line-height: 24px;
+      margin: 0;
+    }
+    hr {
+      margin: 0 5% 10px;
+    }
+
+    img.trial-badge {
+      float: left;
+      position: relative;
+      top: -10px;
+      left: -5px;
+      margin-right: -15px;
+    }
   }
-  .technotron img {
-    margin: 6px 8px;
-  }
-  .technotron .tab-pane p {
-    font-size: 16px;
-    line-height: 26px;
-  }
-  .technolist {
-    line-height: 8px;
-  }
+
+
   .btn-action {
     background-color: #ff6d02 ;
     background-repeat: repeat-x;
@@ -590,14 +621,12 @@ body#home-page {
     text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
     -webkit-font-smoothing: antialiased;
   }
+
   .btn-jumbo {
     font-size: 22px;
     line-height: 32px;
-    border-radius: 32px;
+    border-radius: 10px;
     padding: 6px 24px 9px 24px;
     font-weight: bold;
-  }
-  .monospace {
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   }
 }

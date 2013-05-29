@@ -1,9 +1,9 @@
-.introtron
+.get-started
   .container
     .row
       .span6.offset3
         .ctabox
-          %h5 Get Started
+          %h2 Get Started
           %hr
           %p.center
             %strong Set up your continuous integration in 20 seconds.
