@@ -1,0 +1,35 @@
+#confirmForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "conformFormLabel", :role => "dialog", :tabindex => "-1", :data-backdrop => "static"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", data-bind: "click: cancelUpdate"} &times;
+    %h3#confirmFormLabel
+      Change your plan
+  .modal-body
+    %p
+      Your old total was
+      = precede '$', ->
+        = succeed '.', ->
+          %span{data-bind: "text: oldTotal"}<>
+    %div{data-bind: "if: chosen_plan_concurrency_p"}
+      Your new total is
+      = precede '$', ->
+        = succeed '.', ->
+          %span{data-bind: "text: total"}<>
+    %div{data-bind: "if: chosen_plan_containers_p"}
+      Your new total is
+      = succeed '.', ->
+        %span{data-bind: "money: total"}<
+      %p{data-bind: "with: chosenPlan"}
+        Your new plan includes
+        %span{data-bind: "text: free_containers"}
+        free containers and you can buy up to
+        %span{data-bind: "text: max_containers"}
+        total for
+        %span{data-bind: "money: container_cost"}
+        each.
+
+
+  .modal-footer
+    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: cancelUpdate"}
+      Cancel
+    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: doUpdate"}
+      Confirm plan change
