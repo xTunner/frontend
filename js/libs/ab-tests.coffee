@@ -29,8 +29,6 @@ CI.ABTests = class ABTests
 
     @apply_overrides()
 
-    @notify_kissmetrics()
-
     @notify_mixpanel()
 
   get_user_seed: =>
@@ -60,13 +58,6 @@ CI.ABTests = class ABTests
           if @ab_tests()[name]
             console.log "Overriding A/B test '#{name}' with value '#{value}'"
             @ab_tests()[name](value)
-
-
-  notify_kissmetrics: () =>
-    unpacked_tests = {}
-    unpacked_tests[k] = v() for own k, v of @ab_tests()
-
-    _kmq.push ["set", unpacked_tests]
 
   notify_mixpanel: () =>
     unpacked_tests = {}
