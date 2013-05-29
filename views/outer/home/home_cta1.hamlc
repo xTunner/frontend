@@ -5,12 +5,11 @@
         %p.center
           Plans start at $19 per month. All plans include a free 14 day trial.
         %p.center
-          %span{data-bind: "if: VM.ab().github_warning_modal"}
-            %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ data-toggle: "modal", data-target: "#githubModal", title: 'RUN YOUR TESTS', data-bind: "track: 'Modal Join Open'"}
-              RUN YOUR TESTS
-          %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-            %a#join.btn.btn-action.btn-jumbo.kissAuthGithub{ href: CI.github.authUrl(), title: 'RUN YOUR TESTS', data-bind: "track_link: 'Auth GitHub'"}
-              RUN YOUR TESTS
+          %span{data-bind: "if: VM.ab().home_red_buttons"}
+            = HAML.home_button({text: @text, red: true, modal: true})
+
+          %span{data-bind: "ifnot: VM.ab().home_red_buttons"}
+            = HAML.home_button({text: @text, red: false, modal: true})
         %p.center
           %i
             CircleCI keeps your code safe.

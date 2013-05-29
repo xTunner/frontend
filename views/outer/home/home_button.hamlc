@@ -1,0 +1,11 @@
+- @href = CI.github.authUrl
+- @red = @red or false
+- @title = @text
+- @class = "btn btn-action btn-jumbo"
+- @class = @class + (if @red then " btn-danger" else " btn-warning")
+- @toggle = (if @modal then "modal" else "")
+- @target = (if @modal then "#githubModal" else "")
+- @track = (if @modal then 'track_link: "Modal Join Open"' else 'track_link: "Auth Github"')
+
+%a{href: @href, title: @title, class: @class, data-toggle: @toggle, data-target: @target, data-bind: @track}
+  = @text
