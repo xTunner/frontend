@@ -140,6 +140,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   doUpdate: (data, event) =>
     @recordStripeTransaction event, null
     $('#confirmForm').modal('hide')
+    if @wizardCompleted() # go to the speed nav
+      # fight jQuery plugins with more jQuery
+      $("#speed > a").click()
 
   ajaxSetCard: (event, token, type) =>
     $.ajax
