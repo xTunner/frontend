@@ -56,7 +56,7 @@
 
         / ko if: containers_p
         %tr.free-containers.more-info{title: "Included Containers",
-                                      data-content: "You can use your containers to run more builds at once or to parallelize your test suite.",
+                                      data-content: "You can use your containers to run more builds at once or to speed up your test suite. Learn more in the FAQ below.",
                                       data-bind: "popover: popover_options()"}
           %td.title Included containers
           / ko foreach: plans
