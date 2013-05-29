@@ -73,6 +73,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       else if @chosen_plan_containers_p()
         @calculateCost(@chosenPlan(), parseInt(@containers()))
 
+    @extra_containers = @komp =>
+      if @chosen_plan_containers_p()
+        Math.max(0, @containers() - @chosenPlan().free_containers())
+
   parallelism_option_text: (p) =>
     "#{p}-way ($#{@parallelism_cost(@chosenPlan(), p)})"
 
