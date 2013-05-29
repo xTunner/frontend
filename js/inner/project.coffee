@@ -245,7 +245,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
         @followed(data.followed)
-        _kmq.push(['record', 'Removed A Project']);
         _gaq.push(['_trackEvent', 'Projects', 'Remove']);
 
   follow: (data, event) =>
@@ -254,7 +253,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        _kmq.push(['record', 'Added A Project']);
         _gaq.push(['_trackEvent', 'Projects', 'Add']);
         if data.first_build
           (new CI.inner.Build(data.first_build)).visit()

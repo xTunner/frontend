@@ -17,9 +17,13 @@
     / ko if: containers_p
     %h3 How do containers work?
     %p
-      Every time you push to GitHub, we'll checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes will queue up until other builds finish.
+      Every time you push to GitHub, we checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes queue up until other builds finish.
     %p
-      You can buy more containers to run multiple builds simultaneously. You can also use our parallelism to split your build across multiple containers. With 4 containers you could run 4 concurrent builds at 1x parallelism or 2 concurrent builds at 2x parallelism.
+      You can buy containers at $50 each to run multiple builds simultaneously.
+    %p
+      If your plan supports it, you can use our parallelism to speed up your test suite. We automatically split your tests across multiple containers, finishing your build in a fraction of the time.
+    %p
+      For example, with 4 containers you can run 4 simultaneous builds at 1x parallelism or 2 simultaneous builds in half the time at 2x parallelism.
     / /ko
 
     / ko if: concurrency_p
@@ -36,7 +40,7 @@
     %p
       This very much depends on the team size, frequency of pushing, and the length of your test suite.
       Small teams with short tests who push frequently should only need one.
-      A team of 20 full-time developers, with a 15 minute test suite, who push 5 times a day each, will probably need 6-7 containers.
+      A team of 20 full-time developers, with a 15 minute test suite, who push 5 times a day each, will probably need 6-8 containers.
     / /ko
 
     %h3 Are there any extra charges?
@@ -74,9 +78,9 @@
       Most parallelism libraries are aimed at running on single machines, and so can be error-prone.
       We have found that it is hard to make parallelism work when the parallel tests share the same address-space, heap, run-time, process, database or even the same file-system.
     %p
-      Circle instead splits the tests and runs them in separate VMs.
+      Circle instead splits the tests and runs them in separate containers.
 
-      Each VM is completely separate, with no shared code, no shared databases, no shared anything.
+      Each container is completely separate, with no shared code, no shared databases, no shared anything.
       Our customers have found it to be very reliable.
 
     %h3{data-bind: "if: concurrency_p"} Why use concurrent builds for pricing?
