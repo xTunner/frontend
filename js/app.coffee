@@ -11,7 +11,7 @@ display = (template, args) ->
   ko.applyBindings(VM)
 
 
-class CircleViewModel extends CI.inner.Obj
+class CI.inner.CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
@@ -357,7 +357,7 @@ class CircleViewModel extends CI.inner.Obj
 
     return true
 
-window.VM = new CircleViewModel()
+window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
     @bind 'run-route', (e, data) ->
