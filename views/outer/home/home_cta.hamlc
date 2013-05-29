@@ -4,15 +4,7 @@
       .ctabox
         %p.center
           %span{data-bind: "if: VM.ab().github_warning_modal"}
-            %span{data-bind: "if: VM.ab().home_red_buttons"}
-              = HAML.home_button({text: @text, red: true, modal: true})
-
-            %span{data-bind: "ifnot: VM.ab().home_red_buttons"}
-              = HAML.home_button({text: @text, red: false, modal: true})
+            = HAML.home_button({text: @text, modal: true})
 
           %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-            %span{data-bind: "if: VM.ab().home_red_buttons"}
-              = HAML.home_button({text: @text, red: true, modal: false})
-
-            %span{data-bind: "ifnot: VM.ab().home_red_buttons"}
-              = HAML.home_button({text: @text, red: false, modal: false})
+            = HAML.home_button({text: @text, modal: false})

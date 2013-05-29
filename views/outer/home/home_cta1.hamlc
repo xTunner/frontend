@@ -5,11 +5,7 @@
         %p.center
           Plans start at $19 per month. All plans include a free 14 day trial.
         %p.center
-          %span{data-bind: "if: VM.ab().home_red_buttons"}
-            = HAML.home_button({text: @text, red: true, modal: true})
-
-          %span{data-bind: "ifnot: VM.ab().home_red_buttons"}
-            = HAML.home_button({text: @text, red: false, modal: true})
+          = HAML.home_button({text: @text, modal: true})
         %p.center
           %i
             CircleCI keeps your code safe.
