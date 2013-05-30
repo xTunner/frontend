@@ -1,0 +1,91 @@
+- @children = []
+- @icon = "icon-book"
+- @title = 'Continuous Integration and Continuous Deployment with Ruby on Rails'
+- @lastUpdated = "May 29, 2013"
+- @subtitle = "Circle makes it easy for you to test and deploy your Rails projects"
+
+= HAML['heading']({title: "Overview", hash: "overview"})
+
+%p
+  Good tests make good code.
+  Rails was developed and structured to incorporate robust testing functionality.
+
+%p
+  Circle makes Rails testing simple and uncomplicated.
+  Circle looks at your code, infers your build environment, and runs your tests.
+  The majority of the time, this works.
+  Of course, it helps if your project adheres to standard practices for the Ruby on Rails testing framework
+
+%p
+  We use
+  %a{ href: "https://rvm.io/" } RVM
+  to provide access to a wide variety of Ruby versions.
+  Circle has a number of Ruby- and Rails-related tools and frameworks
+  pre-installed so that you can use them directly if needed.
+  These include:
+
+%ul
+  %li
+    Bundler
+
+  %li
+    Cucumber
+
+  %li
+    RSpec
+
+  %li
+    Rake
+%p
+  They are installed using RVM 1.9.3-p194.
+
+%p
+  For more specifics, you can look at our
+    %a{href: "/docs/environment"} Test environment
+  documentation, which includes a complete listing of all the versions of Ruby
+  that we support as well as a brief description of how Circle selects the
+  default version of Ruby.
+  This document also describes how Circle makes it easy to use testing tools that require a browser.
+
+%p
+  As we previously said, Circle automatically infers your settings from your code.
+  This works fine in most cases for our Ruby on Rails customers.
+  When it doesn't (your web app has a special dependency, for example),
+  all that you need to do is add a <code>circle.yml</code> file.
+  You can find all the information that you need to create that file in our
+  %a{href: "/docs/configuration"} Configuring Circle
+  document.
+  And, should you need to run your tests in parallel, you might want to read
+  %a{href: "/docs/parallel-manual-setup"} this document
+  first.
+
+= HAML['heading']({title: "Troubleshooting for Ruby on Rails", hash: "ror-troubleshooting"})
+
+%p
+  Our
+  %a{href: "/docs/troubleshooting-ruby"}
+    Ruby Troubleshooting
+  documentation has information about the following issues and problems:
+
+%ul
+  %li
+    Do you need the latest version of Bundler?
+
+  %li
+    Error message: "unable to obtain stable firefox connection in 60 seconds"
+
+  %li
+    Git errors during a bundle install
+
+  %li
+    rake db:schema:load fails
+
+  %li
+    Circle is running the wrong Ruby commands
+
+  %li
+    Circle uses the wrong Ruby version
+%p
+  If you still having trouble, please
+  = HAML.contact_us({succeed: ""})
+  and we will be happy to help.

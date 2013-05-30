@@ -1,0 +1,64 @@
+- @children = []
+- @icon = "icon-book"
+- @title = 'Continuous Integration and Continuous Deployment with Node.js'
+- @lastUpdated = "May 29, 2013"
+- @subtitle = "Circle makes it easy for you to test and deploy your Node.js projects"
+
+= HAML['heading']({title: "Overview", hash: "overview"})
+
+%p
+  Circle's automatic inference recognizes and executes the
+  testing and deployment needed for most Node.js applications.
+  If you have custom requirements or dependencies,
+  just specify them in your
+  %a{href: "/docs/configuration"} circle.yml
+  file and place this file in your git repo's root directory.
+  Circle then reads your <code>circle.yml</code> file each time it runs a build.
+
+= HAML['heading']({title: "Node.js version", hash: "Node-version"})
+
+%p
+  Circle uses
+  %a{ href: "https://github.com/creationix/nvm" } NVM
+  to manage Node versions.
+  See
+  %a{href: "/docs/environment#nodejs"} supported Node versions
+  for a complete list of the versions that Circle has installed.
+
+%p
+  You can specify the version in your <code>circle.yml</code> file.
+  Here's an example:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        node:
+          version: 0.6.18
+%p
+  Circle installs the specified version (if not already installed)
+  and globally sets the Node.js version.
+
+= HAML['heading']({title: "package.json", hash: "package-json"})
+
+%p
+  When Circle finds a <code>package.json</code> file,
+  we automatically run <code>npm install</code>
+  to fetch all of your dependencies (version included).
+  Be sure to place your <code>package.json</code> file in your project's root directory.
+
+= HAML['heading']({title: "Testing", hash: "testing"})
+
+%p
+  Circle makes testing simple. We run <code>npm test</code>
+  when you specify a test script in <code>package.json</code>.
+  We run <code>mocha</code> when we find a test folder with <code>*.js</code> files
+  and that dependency listed in your <code>circle.yml</code> file.
+
+%p
+  Circle runs <code>cake test</code> if we find a Cakefile with a test task and target.
+  We run <code>make test</code> if we find a Makefile.
+
+%p
+  You can override or change the timing for any of these testing inferences
+  in your <code>circle.yml</code> file, if needed.

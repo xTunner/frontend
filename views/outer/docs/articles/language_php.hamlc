@@ -1,0 +1,124 @@
+- @children = []
+- @icon = "icon-book"
+- @title = 'Continuous Integration and Continuous Deployment with PHP'
+- @lastUpdated = "May 29, 2013"
+- @subtitle = "Circle makes it easy for you to test and deploy your PHP projects"
+
+= HAML['heading']({title: "Overview", hash: "overview"})
+
+%p
+  Circle seamless works with all the tools and package managers that
+  help PHP developers test and deploy their code.
+
+%p
+  Circle uses
+  %a{href: "https://github.com/CHH/php-build"} php-build
+  and
+  %a{href: "https://github.com/CHH/phpenv"} phpenv
+  to manage PHP versions.
+  If you use Circle's default version of PHP, <code>php 5.3.10-1ubuntu3.5</code>,
+  you and your tests are ready to roll.
+  If you use a different version, no worries; Circle supports
+  %a{href: "/docs/environment#php"} several versions of PHP
+  so it is likely we have you covered.
+
+%p
+  You can specifying the PHP version to use as well as other important
+  dependencies by creating a
+  %a{href: "/docs/configuration"} circle.yml
+  file.
+  When you place this file in your git repo's root directory,
+  Circle reads the file each time it runs a build.
+  Your <code>circle.yml</code> file defines your PHP environment.
+
+= HAML['heading']({title: "composer, pear, and pecl", hash: "composer-pear-pecl"})
+
+%p
+  Circle has all three of these package managers installed.
+
+%p
+  You don't need to specify anything in your <code>circle.yml</code>
+  file if you are using <code>composer</code>.
+  When Circle encounters a <code>composer.json</code> file in your code,
+  we automatically install your <code>composer</code> dependencies.
+
+%p
+  To install your dependencies with either <code>pear</code> or <code>pecl</code>,
+  you have to include pre-dependency commands in your <code>circle.yml</code> file.
+  The following example shows how you would tell Circle to invoke <code>pecl</code>
+  to include the MongoDB extension.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        pre:
+          - pecl install mongo
+
+= HAML['heading']({title: "Customizing your PHP environment", hash: "customizing-php-environ"})
+
+%p
+  Your <code>circle.yml</code> file is the way to handle customization.
+  Let's say that you need to change your <code>config.ini</code> file,
+  and you want to make sure that Circle knows your tests use <code>php 5.4.6</code>.
+  Here is an example that states the version number and
+  includes a pre-dependency command telling Circle your repo contains
+  a file named <code>config/custom.ini</code>.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        php:
+          version: 5.4.6
+
+      dependencies:
+        pre:
+          - mv config/custom.ini ~/.phpenv/versions/$(phpenv global)/etc/conf.d/
+
+%p
+  Note: <code>phpenv global</code> returns the PHP version that has been
+  specified in your <code>circle.yml</code> file.
+
+= HAML['heading']({title: "Add a few lines", hash: "add-lines"})
+
+%p
+  If you want to create a configuration file with only a few simple settings,
+  you can incorporate them in your <code>circle.yml</code> file using <code>echo</code>.
+  For example, if you want to include a setting that restricts memory use to 64 megabytes,
+  here's how you would modify your <code>circle.yml</code> file:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        php:
+          version: 5.4.6
+
+      dependencies:
+        pre:
+          - echo "memory_limit = 64M" > ~/.phpenv/versions/$(phpenv global)/etc/conf.d/memory.ini
+
+= HAML['heading']({title: "Enable Xdebug", hash: "xdebug"})
+
+%p
+  Xdebug is installed for all versions of PHP, but is disabled by default&mdash;Circle
+  disables it because the debugger's tracking slows down execution.
+  It is simple to reactivate the tool's debugging and profiling capabilities.
+  As you might expect,
+  you enable Xdebug by adding the following to your <code>circle.yml</code> file:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        php:
+          version: 5.4.6
+
+      dependencies:
+        pre:
+          - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
+
+%p
+  This example uses <code>sed</code> to uncomment the lines in the pre-installed <code>xdebug.ini</code> file.
+

@@ -1,0 +1,83 @@
+- @children = []
+- @icon = "icon-book"
+- @title = 'Continuous Integration and Continuous Deployment with Python'
+- @lastUpdated = "May 29, 2013"
+- @subtitle = "Circle makes it easy for you to test and deploy your Python projects"
+
+= HAML['heading']({title: "Overview", hash: "overview"})
+
+%p
+  Circle has great support for Python.
+  We can infer a substantial amount of your settings and required
+  dependencies from your code.
+  When we don't, just create a
+  %a{href: "/docs/configuration"} circle.yml
+  file and place this
+  file in your git repo's root directory.
+  Circle then reads your <code>circle.yml</code> file each time we run a build.
+
+%p
+  When Circle detects Python, we automatically initiate <code>virtualenv</code>
+  to create an isolated Python environment using <code>python 2.7.3</code>.
+  Please
+  = HAML.contact_us({succeed: ""})
+  if other versions of Python would be of use to you.
+
+= HAML['heading']({title: "Package managers and dependencies", hash: "package-mgrs-dependencies"})
+
+%p
+  Python is a popular language with many packages and package managers.
+  Circle automatically installs your dependencies using either <code>pip</code>
+  or <code>distutils</code> when you create a <code>requirements.txt</code> or a <code>setup.py file</code>.
+%p
+  Alternatively, you can install each package individually,
+  although this is seldom necessary.
+  In such rare cases, you specify each dependency you need in the <code>circle.yml</code> file.
+  Here's an example of how you would do that using <code>pip</code>.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        post:
+          - pip install a-python-package
+%p
+  Please read our documentation about
+  %a{href: "/docs/git-pip-install"}git errors during pip install
+  to avoid problems.
+
+= HAML['heading']({title: "Testing", hash: "testing"})
+
+%p
+  Circle automatically runs <code>tox</code> when we find a <code>tox.ini</code> file,
+  and runs <code>nosetests</code> when we find a <code>unittest.py</code> file.
+  Circle runs <code>manage.py</code> test if you are using Django.
+  If none of those work for your project,
+  you can override Circle's testing by including your own testing script.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        override:
+          - ./my_testing_script.sh
+
+= HAML['heading']({title: "Deployment", hash: "deployment"})
+
+%p
+  Circle has first-class support for
+  %a{href: "/docs/configuration#deployment"} deployment
+  with Fabric or Paver.
+  Include information in your <code>circle.yml</code> file to let
+  Circle know that your Python project uses one of these tools.
+  Here's an example of how to do that.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      deployment:
+        production:
+          branch: master
+          commands:
+            - fab deploy
+%p
