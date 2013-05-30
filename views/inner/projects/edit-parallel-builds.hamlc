@@ -22,21 +22,19 @@
           %strong{data-bind: "text: focused_parallel"}
           times faster.
 
-        %p{data-bind: "if: show_uneven_divisor_warning_p"}
+        %p{data-bind: "if: show_number_of_simultaneous_builds_p"}
+          You have
+          %span{data-bind: "text: billing.containers"}
+          containers, so you can run
+          %span{data-bind: "text: simultaneous_builds"}
+          builds at once at
+          = succeed 'x.', ->
+            %span{data-bind: "text: focused_parallel"}
 
-          .label.label-warning
+        %p{data-bind: "if: show_uneven_divisor_warning_p"}
+          %span.label.label-warning
             Careful
           You'll be able to run more simultaneous builds if you choose a speed that divides your total number containers evenly.
-
-        %p{data-bind: "if: show_number_of_simultaneous_builds_p"}
-          %p
-            You have
-            %span{data-bind: "text: billing.containers"}
-            containers, so you can run
-            %span{data-bind: "text: simultaneous_builds"}
-            builds at once at
-            = succeed 'x.', ->
-              %span{data-bind: "text: focused_parallel"}
 
         %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning
