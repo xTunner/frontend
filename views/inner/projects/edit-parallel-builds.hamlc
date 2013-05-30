@@ -107,6 +107,31 @@
             Manual setup required if you've overridden the test command, or are using another test framework. See our doc
             %a{href: '/docs/parallel-manual-setup'} Parallelism Manual Setup
 
+        %div{data-bind: "if: containers_p"}
+          %h3 How containers work
+          %p{data-bind: "with: billing"}
+            Containers are what we call the virtual machines that your tests run in. Your current plan has
+            %span{data-bind: "text: containers"}
+            containers
+            %span{data-bind: "if: chosenPlan().allowsParallelism"}
+              and supports up to
+              = succeed "x", ->
+                %span{data-bind: "text: chosenPlan().max_parallelism"}
+              paralellism.
+            %span{data-bind: "ifnot: chosenPlan().allowsParallelism"}
+              but does not support parallelism.
+
+          %p
+            With 16 containers and a plan that supports 8x parallelism, you could run
+            %ul
+              %li
+                16 simultaneous builds at 1x speed
+              %li
+                8 simultaneous builds at 2x speed
+              %li
+                4 simultaneous builds at 4x speed
+              %li
+                2 simultaneous builds at 8x speed
 
     .row-fluid
       .span10
