@@ -1,3 +1,5 @@
+= HAML.confirm_plan_modal()
+
 .row-fluid#plans-table
   .span12
     %table.plan
@@ -55,16 +57,8 @@
         / /ko
 
         / ko if: containers_p
-        %tr.container-cost.more-info{title: "Container Cost",
-                                     data-content: "The price you'll pay to buy extra containers. You can use your containers to run more builds at once or to parallelize your test suite.",
-                                     data-bind: "popover: popover_options()"}
-          %td.title Container cost
-          / ko foreach: plans
-          %td{data-bind: "text: containerCostDescription"}
-          / /ko
-
         %tr.free-containers.more-info{title: "Included Containers",
-                                      data-content: "You can use your containers to run more builds at once or to parallelize your test suite.",
+                                      data-content: "You can use your containers to run more builds at once or to speed up your test suite. Learn more in the FAQ below.",
                                       data-bind: "popover: popover_options()"}
           %td.title Included containers
           / ko foreach: plans
@@ -138,39 +132,3 @@
           %td{data-bind: "css: featureAvailable($parent)"}
           / /ko
         / /ko
-
-#confirmForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "conformFormLabel", :role => "dialog", :tabindex => "-1", :data-backdrop => "static"}
-  .modal-header
-    %button.close{"aria-hidden" => "true", data-bind: "click: cancelUpdate"} &times;
-    %h3#confirmFormLabel
-      Change your plan
-  .modal-body
-    %p
-      Your old total was
-      = precede '$', ->
-        = succeed '.', ->
-          %span{data-bind: "text: oldTotal"}<>
-    %div{data-bind: "if: chosen_plan_concurrency_p"}
-      Your new total is
-      = precede '$', ->
-        = succeed '.', ->
-          %span{data-bind: "text: total"}<>
-    %div{data-bind: "if: chosen_plan_containers_p"}
-      Your new total is
-      = succeed '.', ->
-        %span{data-bind: "money: total"}<
-      %p{data-bind: "with: chosenPlan"}
-        Your new plan includes
-        %span{data-bind: "text: free_containers"}
-        free containers and you can buy up to
-        %span{data-bind: "text: max_containers"}
-        total for
-        %span{data-bind: "money: container_cost"}
-        each.
-
-
-  .modal-footer
-    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: cancelUpdate"}
-      Cancel
-    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: doUpdate"}
-      Confirm plan change

@@ -1,5 +1,5 @@
 %div
-  %h1 Change Build Speed For This Project
+  %h1 Change parallelism for this project
   %div
     .row-fluid{style: "min-height: 250px"}
       .span5
@@ -11,7 +11,7 @@
               %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().editParallel, disable: $root.project().disable_parallel_input($data), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
       .span6.well.focused-label{data-bind: "css: speed_description_style"}
         %span{data-bind: "if: focused_parallel() == 1"}
-          At 1x build speed, all of your tests will run sequentially on the same machine.
+          At 1x parallelism, all of your tests will run sequentially on the same machine.
         %p{data-bind: "if: focused_parallel() > 1"}
           %strong
             != succeed 'x', ->
@@ -22,50 +22,65 @@
           %strong{data-bind: "text: focused_parallel"}
           times faster.
 
-        %div{data-bind: "ifnot: paying_user"}
+        %p{data-bind: "if: show_number_of_simultaneous_builds_p"}
+          You have
+          %span{data-bind: "text: billing.containers"}
+          containers, so you can run
+          %span{data-bind: "text: simultaneous_builds"}
+          builds at once at
+          = succeed 'x.', ->
+            %span{data-bind: "text: focused_parallel"}
+
+        %p{data-bind: "if: show_uneven_divisor_warning_p"}
+          %span.label.label-warning
+            Careful
+          You'll be able to run more simultaneous builds if you choose a speed that divides your total number containers evenly.
+
+        %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning
-            %a{href: '/account/plans'} Select a plan
+            %a{href: '/account/plans#organizations'} Select a plan
             to increase your maximum build speed
-        / ko if: paying_user
+        / ko if: billing.payor
         %div{data-bind: "if: show_parallel_upgrade_plan_p"}
           .alert.alert-warning
             Your plan's max speed is only
-            != succeed ".", ->
+            != succeed "x.", ->
               %strong{data-bind: "text: plan_max_speed"}
-            %span{data-bind: "if: current_user_is_paying_user_p"}
+
+            %span{data-bind: "if: current_user_is_payor_p"}
               %a{href: "/account/plans#edit"} Upgrade your plan
               to unlock more speed.
-            %span{data-bind: "ifnot: current_user_is_paying_user_p"}
+
+            %span{data-bind: "ifnot: current_user_is_payor_p"}
               Send
-              %span{data-bind: "text: paying_user_ident"}
+              %span{data-bind: "text: payor_login"}
               to
               %a{href: "/account/plans#edit"} https://circleci.com/account/plans#edit
               to upgrade your plan.
+
         %div{data-bind: "if: show_parallel_upgrade_speed_p"}
           .alert.alert-warning
-            %p{data-bind: "if: current_user_is_paying_user_p"}
+            %p
+              You can only go up to
+              != succeed "x!", ->
+                %span{data-bind: "text: paid_speed"}
+
+            %p{data-bind: "if: current_user_is_payor_p"}
               %a{href: "/account/plans#speed"} Increase your speed
-              to
+              up to
               %strong
-                != succeed "x", ->
+                != succeed "x.", ->
                   %span{data-bind: "text: focused_parallel"}
-                for
-                %span{data-bind: "money: focused_parallel_cost_increase"}
-              more per month.
-            %p{data-bind: "ifnot: current_user_is_paying_user_p"}
+
+            %p{data-bind: "ifnot: current_user_is_payor_p"}
               Send
-              %span{data-bind: "text: paying_user_ident"}
+              %span{data-bind: "text: payor_login"}
               to
               %a{href: "/account/plans#speed"} https://circleci.com/account/plans#speed
-              to increase your speed to
+              to increase your speed up to
               %strong
-                != succeed "x", ->
+                != succeed "x.", ->
                   %span{data-bind: "text: focused_parallel"}
-                for
-                %span{data-bind: "money: focused_parallel_cost_increase"}
-
-              more per month.
-
         / /ko
 
     .row-fluid{data-bind: "if: retried_build"}
@@ -79,7 +94,7 @@
 
     .row-fluid
       .span8
-        %h3 How "Build Speed" Works
+        %h3 How Parallelism Works
         %ul
           %li
             We run your tests in parallel on completely separate machines
@@ -99,6 +114,31 @@
             Manual setup required if you've overridden the test command, or are using another test framework. See our doc
             %a{href: '/docs/parallel-manual-setup'} Parallelism Manual Setup
 
+        %div{data-bind: "if: containers_p"}
+          %h3 How containers work
+          %p{data-bind: "with: billing"}
+            Containers are what we call the virtual machines that your tests run in. Your current plan has
+            %span{data-bind: "text: containers"}
+            containers
+            %span{data-bind: "if: chosenPlan().allowsParallelism"}
+              and supports up to
+              = succeed "x", ->
+                %span{data-bind: "text: chosenPlan().max_parallelism"}
+              paralellism.
+            %span{data-bind: "ifnot: chosenPlan().allowsParallelism"}
+              but does not support parallelism.
+
+          %p
+            With 16 containers and a plan that supports 8x parallelism, you could run
+            %ul
+              %li
+                16 simultaneous builds at 1x parallelism
+              %li
+                8 simultaneous builds at 2x parallelism
+              %li
+                4 simultaneous builds at 4x parallelism
+              %li
+                2 simultaneous builds at 8x parallelism
 
     .row-fluid
       .span10

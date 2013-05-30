@@ -1,14 +1,6 @@
 noop = () ->
   null
 
-window.mixpanel ||=
-  name_tag: noop
-  identify: noop
-  track: noop
-  track_link: noop
-  track_pageview: noop
-  register_once: noop
-
 CI.ajax.init()
 
 setOuter = =>
@@ -19,12 +11,13 @@ display = (template, args) ->
   ko.applyBindings(VM)
 
 
-class CircleViewModel extends CI.inner.Obj
+class CI.inner.CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
     @from_heroku = ko.observable(window.renderContext.from_heroku)
+    @flash = ko.observable(window.renderContext.flash)
 
     # inner
     @build = ko.observable()
@@ -51,7 +44,6 @@ class CircleViewModel extends CI.inner.Obj
         console.error 'Tried to hide olark, but it threw:', error
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
-      _kmq.push ['identify', @current_user().login]
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
 
@@ -167,6 +159,7 @@ class CircleViewModel extends CI.inner.Obj
     @loadRecentBuilds()
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
+    mixpanel.track("Dashboard")
     display "dashboard", {}
 
 
@@ -225,10 +218,12 @@ class CircleViewModel extends CI.inner.Obj
         @project().get_users()
         if subpage is "parallel_builds"
           @project().load_paying_user()
+          @project().load_billing()
           @billing().load()
 
     else if subpage is "parallel_builds"
       @project().load_paying_user()
+      @project().load_billing()
       @billing().load()
 
     setOuter()
@@ -364,7 +359,7 @@ class CircleViewModel extends CI.inner.Obj
 
     return true
 
-window.VM = new CircleViewModel()
+window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
     @bind 'run-route', (e, data) ->
@@ -462,4 +457,4 @@ $(document).ready () ->
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
 
-  SammyApp.run path
+  SammyApp.run path + window.location.search

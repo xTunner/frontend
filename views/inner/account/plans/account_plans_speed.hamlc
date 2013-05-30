@@ -68,6 +68,7 @@
 
 
   .offset1.span4
+    -# pricing calc table
     %h3
       New total: $
       %span{data-bind: "text: total"}<>
@@ -75,9 +76,14 @@
     %h4
       Old total: $
       %span{data-bind: "text: oldTotal"}<>
+      %span.grandfather{data-bind: "if: special_price_p"}
+        (grandfathered
+        %i.icon-question-sign{data-bind: "tooltip: {animation: false, title: \"We've changed plan prices since you signed up, so you're grandfathered in at the old price!\"}"}
+        %span<>
+          )
 
     .form-actions
-      %button.btn.btn-primary.btn-large{data-bind: "click: saveParallelism",
+      %button.btn.btn-primary.btn-large{data-bind: "click: saveSpeed",
                                         type: "submit",
                                         data-loading-text: "Saving...",
                                         data-success-text: "Saved"}

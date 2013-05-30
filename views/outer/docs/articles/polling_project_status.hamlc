@@ -1,5 +1,5 @@
 - @children = []
-- @title = "Polling project status Using CCMenu, CCTray, etc."
+- @title = "Polling project status using CCMenu, CCTray, etc."
 - @lastUpdated = "Feb 2, 2013"
 
 %p
@@ -20,12 +20,16 @@
     https://circleci.com/cc.xml?circle-token=:circle-token
 
 %p
-  Or, if you only care about a subset of your projects, you can use per-project URLs.
-  Just substitute the github username (or organization) and repo name into a URL of
-  this form:
+  Or, if you only care about a subset of your projects, you can use per-project URLs:
 
   %code
     https://circleci.com/gh/:owner/:repo.cc.xml?circle-token=:circle-token
+
+%p
+  You can also use per-branch URLs:
+
+  %code
+    https://circleci.com/gh/:owner/:repo/tree/:branch.cc.xml?circle-token=:circle-token
 
 %p
   You can generate or retrieve API tokens for use with these URLs from your
