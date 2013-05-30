@@ -26,8 +26,8 @@
           .label.label-warning
             Careful!
           You'll be able to run more simultaneous builds if you choose a speed that divides
-          %span{data-bind: "text: paid_speed"}
-          evenly.
+          %span{data-bind: "text: billing.containers"}
+          (your total number containers) evenly.
 
         %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning

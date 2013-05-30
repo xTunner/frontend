@@ -87,7 +87,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         parseInt(num) is @parallel()
       bad_choice: @komp =>
         if @containers_p()
-          parseInt(num) < @paid_speed() && @paid_speed() % parseInt(num) isnt 0
+          parseInt(num) < @paid_speed() && @billing.containers() % parseInt(num) isnt 0
 
     @show_parallel_upgrade_plan_p = @komp =>
       @plan_max_speed() && @plan_max_speed() < @focused_parallel()
@@ -97,7 +97,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @show_uneven_divisor_warning_p = @komp =>
       if @containers_p()
-        @focused_parallel() < @paid_speed() && @paid_speed() % @focused_parallel() isnt 0
+        @focused_parallel() < @paid_speed() && @billing.containers() % @focused_parallel() isnt 0
 
     ## Sidebar
     @branch_names = @komp =>
