@@ -1,5 +1,5 @@
 %div
-  %h1 Change Build Speed For This Project
+  %h1 Change parallelism for this project
   %div
     .row-fluid{style: "min-height: 250px"}
       .span5
@@ -11,7 +11,7 @@
               %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().editParallel, disable: $root.project().disable_parallel_input($data), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
       .span6.well.focused-label{data-bind: "css: speed_description_style"}
         %span{data-bind: "if: focused_parallel() == 1"}
-          At 1x build speed, all of your tests will run sequentially on the same machine.
+          At 1x parallelism, all of your tests will run sequentially on the same machine.
         %p{data-bind: "if: focused_parallel() > 1"}
           %strong
             != succeed 'x', ->
@@ -28,6 +28,14 @@
           You'll be able to run more simultaneous builds if you choose a speed that divides
           %span{data-bind: "text: billing.containers"}
           (your total number containers) evenly.
+
+        %div{data-bind: "if: show_number_of_simultaneous_builds_p"}
+          %p
+            You have
+            %span{data-bind: "text: billing.containers"}
+            containers, so you'll be able to run
+            %span{data-bind: "text: simultaneous_builds"}
+            builds at once.
 
         %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning
@@ -87,7 +95,7 @@
 
     .row-fluid
       .span8
-        %h3 How "Build Speed" Works
+        %h3 How Parallelism Works
         %ul
           %li
             We run your tests in parallel on completely separate machines
@@ -125,13 +133,13 @@
             With 16 containers and a plan that supports 8x parallelism, you could run
             %ul
               %li
-                16 simultaneous builds at 1x speed
+                16 simultaneous builds at 1x parallelism
               %li
-                8 simultaneous builds at 2x speed
+                8 simultaneous builds at 2x parallelism
               %li
-                4 simultaneous builds at 4x speed
+                4 simultaneous builds at 4x parallelism
               %li
-                2 simultaneous builds at 8x speed
+                2 simultaneous builds at 8x parallelism
 
     .row-fluid
       .span10

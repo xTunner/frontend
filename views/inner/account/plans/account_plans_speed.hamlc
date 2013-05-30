@@ -68,6 +68,7 @@
 
 
   .offset1.span4
+    -# pricing calc table
     %h3
       New total: $
       %span{data-bind: "text: total"}<>

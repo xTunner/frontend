@@ -87,7 +87,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
-    "#{c} containers at $#{container_price} each ($#{cost})"
+    "#{c} containers ($#{cost})"
 
 
   parallelism_cost: (plan, p) =>
