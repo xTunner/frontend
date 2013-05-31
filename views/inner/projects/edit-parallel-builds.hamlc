@@ -32,9 +32,9 @@
             %span{data-bind: "text: focused_parallel"}
 
         %p{data-bind: "if: show_uneven_divisor_warning_p"}
-          %span.label.label-warning
-            Careful
-          You'll be able to run more simultaneous builds if you choose a speed that divides your total number containers evenly.
+          %span.label.label-info
+            Tip
+          You can run more simultaneous builds if you choose a speed that divides your total containers evenly.
 
         %div{data-bind: "ifnot: billing.payor"}
           .alert.alert-warning
