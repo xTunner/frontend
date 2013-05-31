@@ -8,7 +8,7 @@
           %a{ href: '/', title: 'Go to the Circle homepage' }
             Home
         -#%li
-          %a{ href: 'http://status.circleci.com', title: 'Go to the Status page' }
+          %a{ href: 'http://twitter.com/circleci', title: 'Go to the Status page' }
             Status
         %li
           %a{ href: 'https://www.hipchat.com/gjwkHcrD5', target: "_blank", title: 'Go to our pre-sales support chatroom' }
