@@ -1,6 +1,5 @@
 - @children = []
 - @title = "rake db:schema:load fails"
-- @icon = "icon-random"
 - @lastUpdated = "Feb 3, 2013"
 
 %p

@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Customizing your PHP environment"
-- @icon = "icon-random"
 - @lastUpdated = "Apr 22, 2013"
 
 = HAML['heading']({title: "Use a configuration file", hash: "move-file"})

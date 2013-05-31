@@ -1,7 +1,5 @@
 - @children = ['configure_php', 'php_memcached_compile_error', 'composer_api_rate_limit']
 - @title = "PHP"
-- @subtitle = ""
-- @icon = "icon-cogs"
 - @lastUpdated = "May 5th, 2013"
 
 

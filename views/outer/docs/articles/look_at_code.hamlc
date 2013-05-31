@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Does Circle look at my code?"
-- @icon = "icon-warning-sign"
 - @lastUpdated = "Feb 2, 2013"
 
 %p

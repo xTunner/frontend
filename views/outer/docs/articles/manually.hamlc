@@ -1,8 +1,6 @@
 - @children = []
-- @icon = "icon-list-alt"
 - @title = "Manual build setup"
 - @lastUpdated = "April 29, 2013"
-- @subtitle = "Step-by-step instructions"
 
 %p
   Circle is designed to set up most tests automatically because we infer your settings from your code.

@@ -1,9 +1,7 @@
 - @children = []
 - @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
-- @icon = "icon-globe"
 - @title = 'Browser debugging'
 - @lastUpdated = "Feb 18, 2013"
-- @subtitle = "How to remotely debug your integration tests"
 
 %p
   Integration tests can be hard to debug, especially when they're running on a remote machine. Circle supports X11 forwarding over SSH to make this process much easier.

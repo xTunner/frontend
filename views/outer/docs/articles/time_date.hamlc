@@ -1,7 +1,5 @@
 - @children = ['time_day', 'time_seconds']
 - @title = "Time and Date Problems"
-- @subtitle = ""
-- @icon = "icon-time"
 - @lastUpdated = "Feb 2, 2013"
 
 = HAML['article_list'](@)

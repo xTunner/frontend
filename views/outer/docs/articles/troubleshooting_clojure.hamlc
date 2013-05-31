@@ -1,7 +1,5 @@
 - @children = ['clojure_12']
 - @title = "Clojure"
-- @subtitle = ""
-- @icon = "icon-cogs"
 - @lastUpdated = "Feb 2, 2013"
 
 = HAML['article_list'](@)
