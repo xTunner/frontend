@@ -7,39 +7,42 @@
   @active-color: @greenLight;
   @disabled-color: @grayLight;
 
-	line-height: 1px;
-	input {
-		display: none
-	}
-	label {
-		float: left;
-		background-color: @active-color;
-		width: 30px;
-		height: 30px;
-		margin: 5px;
-		text-align: center;
-		line-height: 30px;
-		.border-radius(5px);
-		border: 3px solid rgba(0,0,0,0);
-		cursor: pointer;
-	}
-	label:hover {
-		border: 3px dashed @focused-border-color;
-	}
-	label.selected {
-		border: 3px solid @selected-border-color;
-	}
-	label.disabled {
-		background-color: @disabled-color;
-		cursor: default;
-	}
-	label.disabled:hover {
-		border: 3px solid rgba(0,0,0,0);
-	}
-	well.focused-label {
-		border: 1px solid @focused-border-color;
-	}
-	well.selected-label {
-		border: 1px solid @selected-border-color;
-	}
+  line-height: 1px;
+  input {
+    display: none
+  }
+  label {
+    float: left;
+    background-color: @active-color;
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    text-align: center;
+    line-height: 30px;
+    .border-radius(5px);
+    border: 3px solid rgba(0,0,0,0);
+    cursor: pointer;
+  }
+  label:hover {
+    border: 3px dashed @focused-border-color;
+  }
+  label.selected {
+    border: 3px solid @selected-border-color;
+  }
+  label.disabled {
+    background-color: @disabled-color;
+    cursor: default;
+  }
+  label.disabled:hover {
+    border: 3px solid rgba(0,0,0,0);
+  }
+  label.bad_choice {
+    background-color: fadeout(@active-color, 50%);
+  }
+  well.focused-label {
+    border: 1px solid @focused-border-color;
+  }
+  well.selected-label {
+    border: 1px solid @selected-border-color;
+  }
 }

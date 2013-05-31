@@ -11,7 +11,7 @@ display = (template, args) ->
   ko.applyBindings(VM)
 
 
-class CircleViewModel extends CI.inner.Obj
+class CI.inner.CircleViewModel extends CI.inner.Obj
   constructor: ->
     @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
     @error_message = ko.observable(null)
@@ -44,7 +44,6 @@ class CircleViewModel extends CI.inner.Obj
         console.error 'Tried to hide olark, but it threw:', error
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
-      _kmq.push ['identify', @current_user().login]
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
 
@@ -219,10 +218,12 @@ class CircleViewModel extends CI.inner.Obj
         @project().get_users()
         if subpage is "parallel_builds"
           @project().load_paying_user()
+          @project().load_billing()
           @billing().load()
 
     else if subpage is "parallel_builds"
       @project().load_paying_user()
+      @project().load_billing()
       @billing().load()
 
     setOuter()
@@ -358,7 +359,7 @@ class CircleViewModel extends CI.inner.Obj
 
     return true
 
-window.VM = new CircleViewModel()
+window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
 
     @bind 'run-route', (e, data) ->
