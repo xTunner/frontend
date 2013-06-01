@@ -205,6 +205,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
                   (Date.now() - new Date(@build().stop_time()).getTime()) / 1000
       mixpanel.track("View Build",
         "running": not @build().stop_time()?
+        "elapsed": elapsed
         "build-num": @build().build_num
         "vcs-url": @build().project_name()
         "outcome": @build().outcome())
