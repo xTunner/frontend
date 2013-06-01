@@ -106,9 +106,11 @@
 %h4 Setting environmental variables for all commands without adding them to git
 
 %p
-  Occasionally, you'll need to add an API key or some other secret as an environmental variable.
-  Adding it to the circle.yml file will put it in your git history, which might be undesirable.
-  As a workaround, you can add it through our UI.
+  Occasionally, you'll need to add an API key or some other secret as
+  an environmental variable.  Adding it to the circle.yml file will
+  put it in your git history, which might be undesirable.  As a
+  workaround, you can add it through our UI. A good place to put them
+  is the pre-dependencies section.
 
 %p
   Each time Circle runs one of your commands, it sources the
