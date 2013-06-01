@@ -201,14 +201,16 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
       @build().maybeSubscribe()
-      elapsed = if @build().stop_time()?
-                  (Date.now() - new Date(@build().stop_time()).getTime()) / 1000
-      mixpanel.track("View Build",
+      mixpanel_data =
         "running": not @build().stop_time()?
-        "elapsed": elapsed
         "build-num": @build().build_num
         "vcs-url": @build().project_name()
-        "outcome": @build().outcome())
+        "outcome": @build().outcome()
+
+      if @build().stop_time()?
+        mixpanel_data.elapsed = (Date.now() - new Date(@build().stop_time()).getTime()) / 1000
+
+      mixpanel.track("View Build", mixpanel_data)
 
     display "build", {project: project_name, build_num: build_num}
 
