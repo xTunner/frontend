@@ -7,7 +7,7 @@
     font-size: 30px;
     text-align: left;
     line-height: 36px;
-    color: @linkColorHover;
+    color: #000;
   }
 
   i {
@@ -23,24 +23,89 @@
     font-size: 14px;
     text-align: left;
     color: @gray;
-    margin-top: 0;
-  }
-
-  hr {
-    z-index: -2; // behind the icon
-    position: relative;
-    margin: 0.5em 0 1.5em;
-    border-color: #d7dce3;
+    padding: 0;
+    margin: 0 0 30px 0;
+    border-bottom: 1px dashed #d7dce3;
   }
 
   h4 {
     margin: 1.33em 0 0;
-    color: #366aa4;
     font-size: 16px;
   }
 }
 
 #docs-page #content {
+
+  .form-search {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    input {
+      width: 95%;
+    }
+  }
+
+  ul, ol {
+    margin: 0 0 25px 30px;
+  }
+
+  .top-caption {
+    color: #444;
+    margin: 9px 0;
+    font: bold 14px/18px "Lato", sans-serif;
+    text-rendering: optimizelegibility;
+  }
+
+  .article_list {
+
+    &.problems {
+      h4 {
+        margin: 50px 0 15px 0;
+      }
+    }
+
+    margin-bottom: 30px;
+
+    .query_results {
+      margin-left: 30px;
+    }
+
+    ul {
+      li {
+        list-style-type: decimal;
+      }
+    }
+
+    .box {
+      float: left;
+      width: 245px;
+      padding: 10px 20px 0 20px;
+      margin-right: 2%;
+      background: #f9f9f9;
+      .border-radius(3px);
+      ul {
+        margin: 20px 0 20px 30px;
+        > li {
+          margin: 0;
+          padding: 0;
+          color: lighten(@gray, 30%);
+        }
+      }
+      &:last-child {
+        margin: 0;
+        width: 46%;
+      }
+      a {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      p {
+        line-height: 18px;
+      }
+    }
+  }
+
   article {
     margin-top: 10px;
     background: white;
@@ -54,9 +119,13 @@
     z-index: 99;
     position: relative;
 
+    pre {
+      margin-bottom: 20px;
+    }
+
     & > h1, h1 {
       text-align: left;
-      font-size: 26px;
+      font-size: 30px;
       line-height: 1em;
       margin: 0.83em 0;
     }
@@ -70,20 +139,23 @@
       }
     }
 
+    h2, h3, h4 {
+      margin: 15px 0 0 0;
+    }
+
     h2 {
       font-size: 26px;
-      margin: 1.83em 0 0.83em;
     }
 
     h3 {
-      font-size: 18px;
-      margin: 15px 0 0 0;
+      font-size: 20px;
       line-height: 30px;
     }
 
     h4 {
-      margin: 18px 0 7px 0;
-      font-size: 18px;
+      font-size: 16px;
+      text-transform: uppercase;
+      color: #666;
     }
 
     hr+h2 { margin: 0.83em 0; }
@@ -91,13 +163,18 @@
     .section {
       line-height: 16px;
       margin-bottom: 0;
-      margin-top: 1.5em;
+      margin-top: 0;
+      font-size: 28px;
 
-      & a {
+      a {
         display: block;
         padding-top: 1em;
-        color: #444;
         line-height: 22px;
+
+        &:hover {
+          text-decoration: none;
+          color: @linkColorHover;
+        }
       }
 
       &:first-child a {
@@ -129,6 +206,7 @@
     p, dd {
       font-size: 14px;
       line-height: 22px;
+      margin-bottom: 25px;
     }
 
     dd {
@@ -149,7 +227,8 @@
     }
 
     li {
-      line-height: 24px;
+      padding: 7px 0;
+      line-height: 20px;
     }
 
     ul li {

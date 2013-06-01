@@ -1,27 +1,32 @@
-- @title = "Documentation"
-- @icon = "icon-search"
-- @subtitle = "What can we help you with?"
+- @title = "What can we help you with?"
 
-%h4
-  .front-page-search
-    = HAML['docs_search_form']()
+%div{data-bind: "if: query_results_query"}
+  .article_list
+    %div{data-bind: "ifnot: query_results().length"}
+      %p
+        No articles found matching
+        "
+        %strong{data-bind: "text: query_results_query"}>
+        "
+    %div{data-bind: "if: query_results().length"}
+      %h5
+        Articles matching
+        "
+        %span{data-bind: "text: query_results_query"}>
+        "
+      %ul.query_results{data-bind: "foreach: query_results"}
+        %li
+          %a{data-bind: "attr: { href: url }"}
+            %span{data-bind: "text: title"}
 
-  %div{data-bind: "if: query_results_query"}
-    .article_list
-      %div{data-bind: "ifnot: query_results().length"}
-        %h4
-          No articles found matching
-          "
-          %span{data-bind: "text: query_results_query"}>
-          "
-      %div{data-bind: "if: query_results().length"}
-        %h4
-          Articles matching
-          "
-          %span{data-bind: "text: query_results_query"}>
-          "
-        %hr
-        %ul.query_results{data-bind: "foreach: query_results"}
-          %li
-            %a{data-bind: "attr: { href: url }"}
-              %span{data-bind: "text: title"}
+%div.article_list.problems
+  %h4 Having problems? You'll probably need these:
+  .box
+    %h5 Getting started
+    - if VM?
+      = HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
+
+  .box
+    %h5 Troubleshooting
+    - if VM?
+      = HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})

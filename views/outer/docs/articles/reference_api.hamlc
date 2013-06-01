@@ -269,10 +269,8 @@
 
 
 - @children = []
-- @icon = "icon-lock"
 - @title = 'Circle REST API'
 - @lastUpdated = "Aug 23, 2012"
-- @subtitle = "Embrace and Extend"
 
 
 = HAML['heading']({title: "The Circle API", hash: "intro"})

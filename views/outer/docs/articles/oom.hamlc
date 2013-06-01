@@ -1,8 +1,6 @@
 - @children = []
 - @title = "OOM killer ran"
-- @icon = "icon-screenshot"
 - @lastUpdated = "Feb 2, 2013"
-- @subtitle = "Using too much memory"
 
 %p
   Your build contains a message that says the Linux Out-of-Memory (OOM)

@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Circle is running the wrong Ruby commands"
-- @icon = "icon-minus-sign"
 - @lastUpdated = "Feb 3, 2013"
 
 %p

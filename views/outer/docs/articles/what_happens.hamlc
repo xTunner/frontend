@@ -1,6 +1,5 @@
 - @children = []
 - @title = "What happens when you add a project?"
-- @icon = "icon-cogs"
 - @lastUpdated = "May 2, 2013"
 
 %p

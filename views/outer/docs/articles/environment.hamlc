@@ -1,8 +1,6 @@
 - @children = []
-- @icon = "icon-globe"
 - @title = 'Test environment'
 - @lastUpdated = "Apr 13, 2013"
-- @subtitle = "How we set up our test boxes"
 
 %p
   Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.

@@ -1,6 +1,5 @@
 - @children = []
 - @title = "\"unable to obtain stable firefox connection in 60 seconds\""
-- @icon = "icon-download"
 - @lastUpdated = "Feb 2, 2013"
 
 %p
