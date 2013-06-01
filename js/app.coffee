@@ -201,8 +201,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
       @build().maybeSubscribe()
-    display "build", {project: project_name, build_num: build_num}
+      elapsed = if @build().stop_time()?
+                  (Date.now() - new Date(@build().stop_time()).getTime()) / 1000
+      mixpanel.track("View Build",
+        "running": not @build().stop_time()?
+        "build-num": @build().build_num
+        "vcs-url": @build().project_name()
+        "outcome": @build().outcome())
 
+    display "build", {project: project_name, build_num: build_num}
 
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
