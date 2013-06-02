@@ -1,5 +1,4 @@
 - @children = ['bundler_latest', 'capybara_timeout', 'git_bundle_install', 'ruby_exception_during_schema_load', 'wrong_ruby_commands', 'wrong_ruby_version']
 - @title = "Ruby"
-- @lastUpdated = "Feb 2, 2013"
 
 = HAML['article_list'](@)
