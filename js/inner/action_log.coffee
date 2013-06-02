@@ -120,8 +120,12 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   maybe_retrieve_output: () =>
     if @has_output() and !@retrieved_output() and !@retrieving_output()
       @retrieving_output(true)
+      url = if @output_url
+              @output_url
+            else
+              "/api/v1/project/#{@build.project_name()}/#{@build.build_num}/output/#{@step()}/#{@index()}"
       $.ajax
-        url: "/api/v1/project/#{@build.project_name()}/#{@build.build_num}/output/#{@step()}/#{@index()}"
+        url: url
         type: "GET"
         success: (data) =>
           @retrieved_output(true)
