@@ -36,6 +36,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
       else false
 
+
   filename: (cx) =>
     name = cx.params.splat[0] or "front-page"
     name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
@@ -115,7 +116,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   addLinkTargets: =>
     # Add a link target to every heading. If there's an existing id, it won't override it
-    for heading in $('article h2, article h3, article h4, article h5, article h6')
+    h = "article doc" # hierarchy
+    for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
       @addLinkTarget heading
 
   addLinkTarget: (heading) =>
