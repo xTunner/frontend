@@ -6,39 +6,44 @@
 %p
   Integration tests can be hard to debug, especially when they're running on a remote machine. Circle supports X11 forwarding over SSH to make this process much easier.
 
-%h2 How to interact with the browser running your tests
+= HAML.heading {title: "How to interact with the browser running your tests"}
 
 %p
-  Before you start, make sure you have an X Window System on your computer. If you're using a mac, I recommend
-  %a{href: 'http://xquartz.macosforge.org/landing/'}XQuartz.
+  Before you start, make sure you have an X Window System on your computer. If you're using OSX, I recommend
+  = succeed '.', ->
+    %a{href: 'http://xquartz.macosforge.org/landing/'} XQuartz
+
 %p
-  %a{href: '/docs/ssh-build'} Start an SSH build.
+  With X set up on your system,
+  %a{href: '/docs/ssh-build'} start an SSH build
+  to a Circle VM, using the
+  %code -x
+  flag to set up forwarding:
 
-  When you ssh into the build machine, pass the -X flag
+%pre
+  %code.bash<>
+    :preserve
+      daniel@mymac$ ssh -X -p PORT ubuntu@IP_ADDRESS
 
-  %p
-    %code daniel@mymac$ ssh -X -p PORT ubuntu@IP_ADDRESS
-
+%p
   This will start an SSH session with X11 forwarding enabled.
+  To connect your VM's display to your machine, set the display environment variable to localhost:10.0
 
-%br
-
-%p
-  Set the display environment variable to localhost:10.0
-  %p
-    %code ubuntu@box10$ export DISPLAY=localhost:10.0
-
-%br
+%pre
+  %code.bash<>
+    :preserve
+      ubuntu@box10$ export DISPLAY=localhost:10.0
 
 %p
-  Check that everything is working by starting xclock
+  Check that everything is working by starting xclock.
 
-  %p
-    %code ubuntu@box10$ xclock
+%pre
+  %code.bash<>
+    :preserve
+      ubuntu@box10$ xclock
 
 %p
   You can kill xclock with Ctrl+c after it appears on your desktop.
 
-%br
 %p
   Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!
