@@ -1,8 +1,4 @@
 #docs-page #content .article_list {
-  li {
-    list-style: none;
-  }
-
   hr {
     margin: 0.5em 0 1.5em;
     border-color: #d7dce3;
@@ -11,5 +7,53 @@
   h4 {
     margin: 1.33em 0 0;
     font-size: 16px;
+  }
+
+  &.problems {
+    h4 {
+      margin: 50px 0 15px 0;
+    }
+  }
+
+  margin-top: 20px;
+  margin-bottom: 30px;
+
+  .query_results {
+    margin-left: 30px;
+  }
+
+  ul {
+    li {
+      list-style-type: decimal;
+    }
+  }
+
+  .box {
+    float: left;
+    width: 245px;
+    padding: 10px 20px 0 20px;
+    margin-right: 2%;
+    background: #f9f9f9;
+    .border-radius(3px);
+    ul {
+      margin: 20px 0 20px 30px;
+      > li {
+        margin: 0;
+        padding: 0;
+        color: lighten(@gray, 30%);
+      }
+    }
+    &:last-child {
+      margin: 0;
+      width: 46%;
+    }
+    a {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    p {
+      line-height: 18px;
+    }
   }
 }
