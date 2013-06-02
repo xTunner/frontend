@@ -1,3 +1,7 @@
-%h2.section{id: @hash}
-  = @title
+- if @hash
+  %h2.section{id: @hash}
+    = @title
+- else
+  %h2.section
+    = @title
 %hr
