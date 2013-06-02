@@ -80,10 +80,14 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       category: cx.category or null
       title_with_child_count: cx.title + (if children.length then " (#{children.length})" else "")
 
+    if result.children.length and result.lastUpdated
+      console.warn "#{uriFragment} has children but has lastUpdated"
+
     unless result.category
       #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
       console.warn "#{uriFragment} must have a title" unless result.title
-      console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
+      unless result.lastUpdated or result.children.length or result.slug == "front_page"
+        console.warn "#{uriFragment} must have a lastUpdated"
     result
 
   viewContext: (cx) =>
