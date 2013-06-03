@@ -1,5 +1,4 @@
 - @children = ['missing_dir', 'missing_file']
 - @title = "Filesystem layout problems"
-- @lastUpdated = "Feb 2, 2013"
 
 = HAML['article_list'](@)

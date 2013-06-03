@@ -147,13 +147,13 @@
 %p
   Here are migration-related articles that you might find useful.
 
-%p
-  %a{href: "http://guides.rubyonrails.org/migrations.html"}Rails
-
-%p
-  %a{href: "http://github.com/nearinfinity/node-db-migrate#readme"}node.js
-%p
-  %a{href: "http://djangopro.com/2011/01/django-database-migration-tool-south-explained"}Django (Python web framework)
+%ul
+  %li
+    %a{href: "http://guides.rubyonrails.org/migrations.html"} Rails
+  %li
+    %a{href: "http://github.com/nearinfinity/node-db-migrate#readme"}node.js
+  %li
+    %a{href: "http://djangopro.com/2011/01/django-database-migration-tool-south-explained"}Django (Python web framework)
 
 
 = HAML['heading']({title: "Clearing caches after a deployment", hash: "heroku-clearing-caches-after-deployment"})
@@ -180,10 +180,10 @@
 %p
   Here are related articles that you might find useful.
 
-%p
-  %a{href: "http://devcenter.heroku.com/articles/memcachier#getting-started"}Memcachier documentation
-
-%p
-  %a{href: "http://redis.io/documentation"}Redis documentation
-%p
-  %a{href: "http://docs.djangoproject.com/en/1.5/topics/cache"}Django's cache framework documentation
+%ul
+  %li
+    %a{href: "http://devcenter.heroku.com/articles/memcachier#getting-started"} Memcachier documentation
+  %li
+    %a{href: "http://redis.io/documentation"} Redis documentation
+  %li
+    %a{href: "http://docs.djangoproject.com/en/1.5/topics/cache"} Django's cache framework documentation

@@ -284,11 +284,11 @@
   %li
     Add an API token from your
     = succeed '.', ->
-      %a{ href: "https://circleci.com/account/api"} account dashboard
+      %a{ href: "/account/api"} account dashboard
 
   %li
     To test it,
-    %a{href: "https://circleci.com/api/v1/me", target: "_blank"} view it in your browser
+    %a{href: "/api/v1/me", target: "_blank"} view it in your browser
     or call the API using <code>curl</code>:
     %pre
       %code.bash<>
@@ -325,7 +325,7 @@
 %p
   To authenticate, add an API token using your
   = succeed '.', ->
-    %a{ href: "https://circleci.com/account/api"} account dashboard
+    %a{ href: "/account/api"} account dashboard
   To use the API token, add it to the
   %code circle-token
   query param, like so:

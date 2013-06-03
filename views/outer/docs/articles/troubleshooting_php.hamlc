@@ -1,7 +1,4 @@
 - @children = ['configure_php', 'php_memcached_compile_error', 'composer_api_rate_limit']
 - @title = "PHP"
-- @lastUpdated = "May 5th, 2013"
-
-
 
 = HAML['article_list'](@)

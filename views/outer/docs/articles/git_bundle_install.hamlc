@@ -34,7 +34,7 @@
       gem "rails", :git => "http://github.com/rails/rails"
 
 %p
-  If the repository is private, you will need
-  %a{href: "https://circleci.com/account/ssh"}
+  If the repository is private, you will need to
+  %a{href: "/account/ssh"}
     enable user keys
   from your account settings.

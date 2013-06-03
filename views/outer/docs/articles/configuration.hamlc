@@ -89,7 +89,10 @@
   in particular does not work.
   If you'd like to set an environment variable globally, you can specify them in the <a href="#machine">Machine configuration</a> section, described below.
 
-%p#modifiers
+%h4#modifiers
+  Modifiers
+
+%p
   You can tweak individual commands by adding a modifier.
   Allowed modifiers are:
 
@@ -185,7 +188,7 @@
           - curl -k -L -o phantomjs.tar.bz2 http://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2
           - tar -jxf phantomjs.tar.bz2
 %p
-%h3#environment
+%h3
   Environment
 
 %p
@@ -209,7 +212,7 @@
   If you don't want to use this method, there are
   <a href="/docs/environment-variables">a number of other options</a>.
 
-%h4#timezone
+%h4
   Timezone
 
 %p
@@ -238,7 +241,7 @@
   Be aware that some developers, especially those that collaborate across different time zones, do use UTC on their production servers.
   This alternative can avoid horrific Daylight Saving Time (DST) bugs.
 
-%h3#hosts
+%h3
   Hosts
 
 %p
@@ -256,7 +259,7 @@
           foobar: 1.2.3.4
 %p
 
-%h3#ruby-version
+%h3
   Ruby version
 
 %p
@@ -289,7 +292,7 @@
   = succeed ".", ->
     %a{href: "/docs/environment#ruby"} here
 
-%h3#node-js-version
+%h3#node-version
   Node.js version
 
 
@@ -318,7 +321,7 @@
           version: 0.6.18
 %p
 
-%h3#java-version
+%h3
   Java version
 
 %p
@@ -336,7 +339,7 @@
   %a{href: "/docs/environment#java"} supported Java versions
   for a complete list.
 
-%h3#php-version
+%h3
   PHP version
 
 %p
@@ -359,18 +362,48 @@
   %a{href: "/docs/environment#php"} supported PHP versions
   for a complete list.
 
-%h3#other-languages
+%h3
   Other languages
 
 %p
   Our
   %a{ href: "/docs/environment" } Test environment
   document has more configuration information about
-  %a{ href: "/docs/environment#other" }other languages
+  %a{ href: "/docs/environment#other" } other languages
   including
-  %a{ href: "/docs/environment#clojure" } Clojure
+  <a href="/docs/environment#python">Python</a>,
+  <a href="/docs/environment#clojure">Clojure</a>,
+  <a href="/docs/environment#other">C/C++</a>,
+  <a href="/docs/environment#other">Golang</a>
   and
-  %a{ href: "/docs/environment#python" }Python.
+  <a href="/docs/environment#other">Erlang</a>.
+
+
+%h3#services
+  Databases and other services
+
+%p
+  Circle supports a large number of
+  <a href="/docs/environment#databases">databases and other services</a>.
+  Most popular ones are running by default on our build machines, including Postgres, MySQL, Redis and MongoDB.
+
+%p
+  You can enable other databases and services from the
+  %code services
+  section:
+
+%pre
+  %code<>
+    :preserves
+      machine:
+        services:
+          - cassandra
+          - elasticsearch
+          - rabbitmq-server
+          - riak
+          - beanstalkd
+          - couchbase-server
+          - neo4j
 
 
 = HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
@@ -378,8 +411,6 @@
 %p
   The <code>checkout</code> section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
   You can modify commands by including <code>override</code>, <code>pre</code>, and/or <code>post</code>.
-
-
 
 .top-caption
   Example: using git submodules
@@ -438,7 +469,7 @@
           - gem uninstall bundler
           - gem install bundler --pre
 
-%h3#bundler-flags
+%h3#bundler
   Bundler flags
 
 %p
@@ -457,8 +488,7 @@
           without: [production, osx]
 
 %h3#cache-directories
-  %a{href: "#cache-directories"}
-    Custom Cache Directories
+  Custom Cache Directories
 
 %p
   Circle caches dependencies between builds.
@@ -618,7 +648,7 @@
 %p
 
 
-%h3#ssh-keys
+%h3
   SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
@@ -629,7 +659,7 @@
   the public key will be used for all hosts.
 
 
-%h3#heroku
+%h3
   Heroku
 
 %p
@@ -654,7 +684,7 @@
   A member of your project, possibly you, will need to register as that user.
   Circle's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
 
-%h3#heroku-pre-and-post-deployment
+%h3#heroku-extra
   Heroku with pre or post-deployment steps
 %p
   If you want to deploy to Heroku and also run commands before or after the deploy, you must use the 'normal' deployment syntax.
@@ -694,7 +724,7 @@
       notify:
         webhooks:
           # A list of hashes representing hooks. Only the url field is supported.
-          - url: https://circleci.com/hooks/circle
+          - url: https://example.com/hooks/circle
 %p
 
 

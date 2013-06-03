@@ -6,13 +6,20 @@
   %section.article
     = HAML['categories']({categories: @categories})
     %article
-      = HAML['docs_search_form']()
+      - unless @article.slug? and @article.slug == "front_page"
+        = HAML['docs_search_form']()
+
       .title
         %h1= @article.title
         - if @article.lastUpdated
           %p.lastupdated
             Last Updated:
             = @article.lastUpdated
+
+
+      - if @article.slug? and @article.slug == "front_page"
+        %br
+        = HAML['docs_search_form']()
 
       .doc
         - if @article.category

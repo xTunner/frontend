@@ -36,6 +36,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
       else false
 
+
   filename: (cx) =>
     name = cx.params.splat[0] or "front-page"
     name.replace(/^\//, '').replace(/\//g, '_').replace(/-/g, '_').replace(/#.*/, '')
@@ -79,10 +80,14 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       category: cx.category or null
       title_with_child_count: cx.title + (if children.length then " (#{children.length})" else "")
 
+    if result.children.length and result.lastUpdated
+      console.warn "#{uriFragment} has children but has lastUpdated"
+
     unless result.category
       #console.warn "#{uriFragment} should have a subtitle" unless result.subtitle
       console.warn "#{uriFragment} must have a title" unless result.title
-      console.warn "#{uriFragment} must have a lastUpdated" unless result.lastUpdated
+      unless result.lastUpdated or result.children.length or result.slug == "front_page"
+        console.warn "#{uriFragment} must have a lastUpdated"
     result
 
   viewContext: (cx) =>
@@ -106,7 +111,29 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         return cx.redirect "/docs" + rewrite
 
       super cx
+      @addLinkTargets()
 
     catch e
       # TODO: go to 404 page
       return cx.redirect "/docs"
+
+
+  addLinkTargets: =>
+    # Add a link target to every heading. If there's an existing id, it won't override it
+    h = "article doc" # hierarchy
+    for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
+      @addLinkTarget heading
+
+  addLinkTarget: (heading) =>
+    jqh = $(heading)
+    title = jqh.text()
+    id = jqh.attr("id")
+
+    if not id?
+      id = title.toLowerCase()
+      id = id.replace(/^\s+/g, '').replace(/\s+$/g, '') # strip whitespace
+      id = id.replace(/\'/, '') # heroku's -> herokus
+      id = id.replace(/[^a-z0-9]+/g, '-') # dashes everywhere
+      id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
+
+    jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
