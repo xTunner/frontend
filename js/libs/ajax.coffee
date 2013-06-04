@@ -26,12 +26,25 @@ $(document).ajaxSuccess (ev, xhr, options) ->
 $(document).ajaxError (ev, xhr, settings, errorThrown) ->
   finishAjax(xhr.event, "data-failed-text", "Failed")
   resp = xhr.responseText
+
+  error_object =
+    status: xhr.status
+    statusText: xhr.statusText
+    url: settings.url if settings?
+    method: settings.type if settings?
+
+  window.ev = ev
+  window.xhr = xhr
+  window.s = settings
   if xhr.status == 401
-    notifyError "You've been logged out, log back in to continue."
+    error_object.message = "You've been logged out, log back in to continue."
+    notifyError error_object
   else if resp.indexOf("<!DOCTYPE") is 0 or resp.length > 500
-    notifyError "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
+    error_object.message = "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
+    notifyError error_object
   else
-    notifyError (xhr.responseText or xhr.statusText)
+    error_object.message = (xhr.responseText or xhr.statusText)
+    notifyError error_object
 
 $(document).ajaxSend (ev, xhr, options) ->
   xhr.event = options.event
