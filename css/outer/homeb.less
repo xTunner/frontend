@@ -624,9 +624,16 @@ body#home-page {
   }
 
 
-  .btn-action {
-    background-color: #ff6d02 ;
+  .btn-action-prototype {
     background-repeat: repeat-x;
+    color: #ffffff ;
+    text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .btn-action-orange {
+    .btn-action-prototype;
+    background-color: #ff6d02;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ff6d02");
     background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ff6d02));
     background-image: -moz-linear-gradient(top, #feb401, #ff6d02);
@@ -636,10 +643,14 @@ body#home-page {
     background-image: -o-linear-gradient(top, #fe8800, #ff6d02);
     background-image: linear-gradient(#fe8800, #ff6d02);
     border-color: #feb401 #ffa405 #ff6d02;
-    color: #ffffff ;
-    text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
-    -webkit-font-smoothing: antialiased;
   }
+
+  .btn-action-red {
+   // Use bootstrap's default red, until we get our own style
+    .btn-action-prototype;
+    .btn-danger;
+  }
+
 
   .btn-jumbo {
     font-size: 22px;
