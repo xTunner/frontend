@@ -1,8 +1,7 @@
 - @children = []
 - @icon = "icon-book"
 - @title = 'Continuous Integration and Continuous Deployment with Ruby on Rails'
-- @lastUpdated = "May 29, 2013"
-- @subtitle = "Circle makes it easy for you to test and deploy your Rails projects"
+- @lastUpdated = "Jun 4, 2013"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 
@@ -13,8 +12,10 @@
 %p
   Circle makes Rails testing simple and uncomplicated.
   Circle looks at your code, infers your build environment, and runs your tests.
-  The majority of the time, this works.
-  Of course, it helps if your project adheres to standard practices for the Ruby on Rails testing framework
+  The majority of the time, this just works&mdash;and works well.
+  Of course, it helps if your project adheres to standard practices
+  (i.e., "convention over configuration") for the Ruby on Rails testing framework.
+  For that reason, the best method is to specify all your project dependencies in a Gemfile.
 
 %p
   We use
@@ -36,8 +37,6 @@
 
   %li
     Rake
-%p
-  They are installed using RVM 1.9.3-p194.
 
 %p
   For more specifics, you can look at our
@@ -45,17 +44,23 @@
   documentation, which includes a complete listing of all the versions of Ruby
   that we support as well as a brief description of how Circle selects the
   default version of Ruby.
-  This document also describes how Circle makes it easy to use testing tools that require a browser.
+  The document also describes how Circle makes it easy to use testing tools that require a browser.
 
 %p
-  As we previously said, Circle automatically infers your settings from your code.
+  As we mentioned, Circle automatically infers your settings from your code.
   This works fine in most cases for our Ruby on Rails customers.
   When it doesn't (your web app has a special dependency, for example),
   all that you need to do is add a <code>circle.yml</code> file.
   You can find all the information that you need to create that file in our
   %a{href: "/docs/configuration"} Configuring Circle
   document.
-  And, should you need to run your tests in parallel, you might want to read
+
+%p
+  Should you need to run your tests in parallel, you can choose a plan and
+  set up parallelism for your project on the <b>Edit settings > Build Speed</b> page.
+  Circle automatically sets up for RSpec, Cucumber, and Test::Unit.
+  If you've overridden the test command or have other custom requirements,
+  you might want to read
   %a{href: "/docs/parallel-manual-setup"} this document
   first.
 

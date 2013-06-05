@@ -1,8 +1,8 @@
 - @children = []
 - @icon = "icon-book"
 - @title = 'Continuous Integration and Continuous Deployment with PHP'
-- @lastUpdated = "May 29, 2013"
-- @subtitle = "Circle makes it easy for you to test and deploy your PHP projects"
+- @lastUpdated = "Jun 4, 2013"
+
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 
