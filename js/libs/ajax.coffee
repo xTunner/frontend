@@ -33,9 +33,6 @@ $(document).ajaxError (ev, xhr, settings, errorThrown) ->
     url: settings.url if settings?
     method: settings.type if settings?
 
-  window.ev = ev
-  window.xhr = xhr
-  window.s = settings
   if xhr.status == 401
     error_object.message = "You've been logged out, log back in to continue."
     notifyError error_object
