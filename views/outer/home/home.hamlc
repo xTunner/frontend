@@ -5,7 +5,7 @@
 
 %div{ data-bind: "ifnot: from_heroku" }
   %div{ data-bind: "if: ab().alternate_home_page"}
-    #wrapper{ data-bind:"ifnot: from_heroku" }
+    #wrapper
       = HAML.home_text_hero_unit()
       = HAML.home_customers()
       = HAML.home_benefits()
