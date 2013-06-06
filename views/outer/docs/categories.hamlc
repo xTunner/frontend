@@ -1,6 +1,6 @@
 .sidebar
-  .sidebar-search-form
-    = HAML['docs_search_form']()
+  / .sidebar-search-form
+  /   = HAML['docs_search_form']()
   %ul.topics
     - for slug, category of @categories
       %li

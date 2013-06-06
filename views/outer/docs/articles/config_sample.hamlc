@@ -1,8 +1,6 @@
 - @children = []
-- @icon = "icon-file"
 - @title = 'Sample circle.yml file'
 - @lastUpdated = "May 2, 2013"
-- @subtitle = "Avoid reading docs by copying from our example"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 

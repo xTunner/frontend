@@ -1,6 +1,5 @@
 - @children = []
 - @title = "An important file is missing from your repository"
-- @icon = "icon-hdd"
 - @lastUpdated = "Feb 3, 2013"
 
 %p

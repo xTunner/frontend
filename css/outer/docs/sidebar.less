@@ -3,18 +3,7 @@
   float: left;
   width: 248px;
   margin-right: 10px;
-
-  .sidebar-search-form {
-    form {
-      margin-bottom: 0;
-      width: 248px - 20px;
-      margin-left: 10px;
-      margin-right: 10px;
-      input {
-        width: 248px - 20px - 28px; // extra 28px for padding on left and right
-      }
-    }
-  }
+  margin-top: 5px;
 
   .topics {
     margin: 5px 0 10px 0;
@@ -27,6 +16,7 @@
     ul {
       height: 0;
       overflow: hidden;
+      margin: 0;
     }
 
     .expand {
@@ -49,6 +39,22 @@
     }
     li > ul {
       list-style: none;
+
+      li {
+        padding: 0;
+        border-bottom: 1px solid #f1f1f1;
+        &:last-child {
+          border: none;
+        }
+        a {
+          display: block;
+          padding: 8px 5px;
+          &:hover {
+            text-decoration: none;
+            background: #f1f1f1;
+            }
+        }
+      }
     }
 
     .category {

@@ -1,5 +1,4 @@
 - @children = []
-- @icon = "icon-exchange"
 - @title = "Polling project status using CCMenu, CCTray, etc."
 - @lastUpdated = "Feb 2, 2013"
 
@@ -35,7 +34,7 @@
 %p
   You can generate or retrieve API tokens for use with these URLs from your
   = succeed '.', ->
-    %a{ href: "https://circleci.com/account/api"} account dashboard
+    %a{ href: "/account/api"} account dashboard
 
 %h3
   Tools
