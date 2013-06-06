@@ -1,6 +1,5 @@
 - @children = []
 - @title = "GitHub security and SSH keys"
-- @icon = "icon-key"
 - @lastUpdated = "May 1, 2013"
 
 %p

@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Git errors during a bundle install"
-- @icon = "icon-key"
 - @lastUpdated = "Feb 3, 2013"
 
 %p
@@ -35,7 +34,7 @@
       gem "rails", :git => "http://github.com/rails/rails"
 
 %p
-  If the repository is private, you will need
-  %a{href: "https://circleci.com/account/ssh"}
+  If the repository is private, you will need to
+  %a{href: "/account/ssh"}
     enable user keys
   from your account settings.

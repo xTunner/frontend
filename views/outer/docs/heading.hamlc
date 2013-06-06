@@ -1,4 +1,7 @@
-%h2.section
-  %a{id: @hash, href: "##{@hash}"}
+- if @hash
+  %h2.section{id: @hash}
+    = @title
+- else
+  %h2.section
     = @title
 %hr

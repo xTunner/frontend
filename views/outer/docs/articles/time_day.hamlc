@@ -1,6 +1,5 @@
 - @children = []
 - @title = "Time-based results are one day off"
-- @icon = "icon-time"
 - @lastUpdated = "Feb 3, 2013"
 
 %p

@@ -22,10 +22,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     followed: null
     loading_users: false
     users: []
-    paying_user: null
     parallel: 1
-    loaded_paying_user: false
-    trial_parallelism: null
+    paying_user: null
+    loaded_paying_user: null
     retried_build: null
     branches: null
     default_branch: null
@@ -55,58 +54,57 @@ CI.inner.Project = class Project extends CI.inner.Obj
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
     ## Parallelism
+    @billing = new CI.inner.Billing
 
-    # TODO: maybe this should return null if there are no plans
-    #       should also probably load plans
-    @plan = @komp =>
-      if @paying_user()? and @paying_user().plan
-        plans = VM.billing().plans().filter (p) =>
-          p.id is @paying_user().plan_id()
-        p = plans[0]
-        new CI.inner.Plan plans[0]
-      else
-        new CI.inner.Plan
+    @containers_p = @komp =>
+      @billing.chosen_plan_containers_p()
 
     # Allows for user parallelism to trump the plan's max_parallelism
     @plan_max_speed = @komp =>
-      if @plan().max_parallelism?
-        Math.max(@plan().max_parallelism, @max_parallelism())
+      if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
+        @billing.chosenPlan().max_parallelism
 
-    @max_parallelism = @komp =>
-      if @paying_user()? then @paying_user().parallelism() else @trial_parallelism()
+    # Trial speed is counted as paid here
+    @paid_speed = @komp =>
+      if @containers_p()
+        Math.min @plan_max_speed(), @billing.containers()
+      else
+        @billing.parallelism()
 
     @focused_parallel = ko.observable @parallel()
 
-    @can_select_parallel = @komp =>
-      if @paying_user()?
-        @focused_parallel() <= @max_parallelism()
-      else
-        false
+    @payor_login = @komp =>
+      @billing.payor() && @billing.payor().login
 
-    @current_user_is_paying_user_p = @komp =>
-      if @paying_user()?
-        @paying_user().login is VM.current_user().login
-      else
-        false
+    @current_user_is_payor_p = @komp =>
+      @payor_login() is VM.current_user().login
 
     @parallel_label_style = (num) =>
       disabled: @komp =>
         # weirdly sends num as string when num is same as parallel
-        parseInt(num) > @max_parallelism()
+        parseInt(num) > @paid_speed()
       selected: @komp =>
         parseInt(num) is @parallel()
-
-    @paying_user_ident = @komp =>
-      if @paying_user()? then @paying_user().login
+      bad_choice: @komp =>
+        if @containers_p()
+          parseInt(num) <= @paid_speed() && @billing.containers() % parseInt(num) isnt 0
 
     @show_parallel_upgrade_plan_p = @komp =>
-      @paying_user()? and @plan_max_speed() < @focused_parallel()
+      @plan_max_speed() && @plan_max_speed() < @focused_parallel()
 
     @show_parallel_upgrade_speed_p = @komp =>
-      @paying_user()? and (@max_parallelism() < @focused_parallel() <= @plan_max_speed())
+      @paid_speed() && @plan_max_speed && (@paid_speed() < @focused_parallel() <= @plan_max_speed())
 
-    @focused_parallel_cost_increase = @komp =>
-      VM.billing().parallelism_cost_difference(@plan(), @max_parallelism(), @focused_parallel())
+    @show_uneven_divisor_warning_p = @komp =>
+      if @containers_p()
+        @focused_parallel() <= @paid_speed() && @billing.containers() % @focused_parallel() isnt 0
+
+    @simultaneous_builds = @komp =>
+      if @containers_p
+        Math.floor(@billing.containers() / @focused_parallel())
+
+    @show_number_of_simultaneous_builds_p = @komp =>
+      @containers_p && (@focused_parallel() <= @paid_speed())
 
     ## Sidebar
     @branch_names = @komp =>
@@ -234,7 +232,14 @@ CI.inner.Project = class Project extends CI.inner.Obj
     'selected-label': @focused_parallel() == @parallel()
 
   disable_parallel_input: (num) =>
-    num > @max_parallelism()
+    num > @paid_speed()
+
+  load_billing: =>
+    $.ajax
+      type: "GET"
+      url: "/api/v1/project/#{@project_name()}/plan"
+      success: (result) =>
+        @billing.loadPlanData(result)
 
   load_paying_user: =>
     $.ajax
@@ -255,7 +260,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/unfollow"
       success: (data) =>
         @followed(data.followed)
-        _kmq.push(['record', 'Removed A Project']);
         _gaq.push(['_trackEvent', 'Projects', 'Remove']);
 
   follow: (data, event) =>
@@ -264,7 +268,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        _kmq.push(['record', 'Added A Project']);
         _gaq.push(['_trackEvent', 'Projects', 'Add']);
         if data.first_build
           (new CI.inner.Build(data.first_build)).visit()

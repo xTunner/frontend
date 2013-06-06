@@ -8,7 +8,6 @@ parseQuery = (search) ->
 
 CI.maybeOverrideABTests = (search, ab_tests) ->
   params = parseQuery(search)
-  console.log(params)
 
   for own k, v of params
     if ab_tests()[k]
