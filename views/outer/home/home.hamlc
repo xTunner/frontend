@@ -4,16 +4,12 @@
   = HAML.heroku_header()
 
 %div{ data-bind: "ifnot: from_heroku" }
-  %div{ data-bind: "if: ab().alternate_home_page"}
+  %div{ data-bind: "if: ab().home_text_hero"}
     = HAML.home_text_hero_unit()
-    = HAML.home_customers()
-    = HAML.home_benefits()
-    = HAML.home_technologies()
-
-  %div{ data-bind: "ifnot: ab().alternate_home_page"}
+  %div{ data-bind: "ifnot: ab().home_text_hero"}
     = HAML.home_hero_unit()
-    = HAML.home_cta1()
-    = HAML.home_customers()
-    = HAML.home_technologies()
-    = HAML.home_benefits()
-    = HAML.home_get_started()
+  = HAML.home_cta1()
+  = HAML.home_customers()
+  = HAML.home_technologies()
+  = HAML.home_benefits()
+  = HAML.home_get_started()

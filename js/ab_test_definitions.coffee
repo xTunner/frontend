@@ -10,7 +10,7 @@ exports.ab_test_definitions =
     quick_setup_or_trial: ["14-day free trial.", "Run your first test with 3 clicks."]
     github_warning_modal: [true, false]
     home_red_buttons: [true, false]
-    alternate_home_page: [true,false]
+    home_text_hero: [true, false]
     show_add_repos_blank_slate: [true, false] # true shows the show_add_repos_blank_slate div, false hides it
     home_extra_ctas: [true, false]
     number_one_instead_of_happy_customers_callout: [true, false]
