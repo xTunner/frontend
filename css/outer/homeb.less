@@ -162,55 +162,36 @@ body#home-page {
     }
   }
 
-
   .center {
     text-align: center;
-  }
-
-
-  .customer-list .happy-customers-callout {
-    display:block;
-    content:'';
-    position:absolute;
-    width:300px;
-    height:42px;
-    background-image: url('@{imgPath}/outer/home/callouts-01.png');
-    background-repeat: no-repeat;
-    background-position: 0 -62px;
-    top: 30px;
-    left: 37%;
-    img:hover {
-      cursor: pointer;
-    }
-  }
-  .happy-customers-spacer {
-    height: 120px;
   }
 
   .customer-list {
     background-color: rgb(238,238,238);
 
-    position: relative;
-    margin-top: 10px;
+    // For some fucked up reason, this is a background imagem and so we need all this crap.
+    .happy-customers {
+      margin-top: 25px;
+      height: 70px;
 
-    .container-fluid::before {
-      display:block;
-      content:'';
-      position:absolute;
-      width:300px;
-      height:42px;
-      top: 50px;
-      left: 37%;
-      img:hover {
-        cursor: pointer;
+      .callout {
+        position: absolute;
+        width: 300px;
+        height: 42px;
+        background-image: url('@{imgPath}/outer/home/callouts-01.png');
+        background-repeat: no-repeat;
+        background-position: 0 -62px;
+        left: 37%;
       }
     }
-    h2 {
+
+    .were-number-one h2 {
       text-align: center;
       font-family: 'Source Sans Pro', sans-serif;
       line-height: 22px;
       font-size: 18px;
       font-weight: 600;
+      margin-top: 25px;
     }
   }
 
