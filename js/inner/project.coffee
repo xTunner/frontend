@@ -29,6 +29,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     branches: null
     default_branch: null
     show_all_branches: false
+    tokens: []
 
   constructor: (json) ->
 
@@ -426,3 +427,28 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @focusTimeout = window.setTimeout =>
       @focused_parallel(@parallel())
     , 200
+
+  load_tokens: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/token", (data) =>
+      @tokens(data)
+
+  create_token: () =>
+    $.ajax
+      type: "POST"
+      url: "/api/v1/project/#{@project_name()}/token",
+      data: JSON.stringify
+        label: $("#tokenLabel").val()
+        scope: $("#tokenScope").val()
+      success: (result) =>
+        $("#tokenLabel").val("")
+        $("#tokenScope").val("")
+        @load_tokens()
+    false
+
+  delete_token: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      url: "/api/v1/project/#{@project_name()}/token/#{data.token}",
+      success: (result) =>
+        @load_tokens()
+    false

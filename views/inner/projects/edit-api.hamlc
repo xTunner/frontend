@@ -1,0 +1,72 @@
+%h1 API tokens
+
+.doc
+  %p
+    Create and revoke project-specific API tokens to access this project's details using our
+    API.
+
+  %p
+    The token's scope constrains what can be done by an agent holding that token. The current
+    scopes are:
+
+    %dl
+      %dt status
+      %dd
+        A "status" scoped token allows read-only access to the build status (passing, failing,
+        etc) of any branch of the project. Its intended use is
+        %a{href: "/docs/status-badges"}
+          sharing status badges
+        and
+        %a{href: "/docs/polling-project-status"}
+          status polling tools
+        for private projects.
+      %dt all
+      %dd
+        An "all" scoped token allows full read-write access to this project in CircleCI. It
+        is intended for full-fledged API clients which only need to access a single project.
+
+  %h2 Existing tokens
+
+  %p{data-bind: "ifnot: tokens().length"}
+    No existing tokens
+
+  %div{data-bind: "if: tokens().length"}
+    %table.table.well.table-condensed
+      %thead
+        %th Label
+        %th Token
+        %th Scope
+        %th Created
+        %th
+      %tbody{data-bind: "foreach: tokens()"}
+        %td{data-bind: "text: label"}
+        %td
+          %span.code{data-bind: "text: token"}
+        %td{data-bind: "text: scope"}
+        %td{data-bind: "text: time"}
+        %td
+          %span
+            %button.btn.btn-action{data-bind: "click: $root.project().delete_token"}
+              Revoke
+
+  %h2 Create new tokens
+
+  %form.well.form-inline
+    %label{for: "label"} Label
+
+    %input#tokenLabel.input-medium{type: "text",
+                                   name: "label",
+                                   placeholder: "label"}
+
+    %label{for: "scope"} Scope
+
+    %select#tokenScope{name: "scope"}
+      %option status
+      %option all
+
+    %input#submit.btn.btn-primary{type: "submit",
+                                  value: "Create token",
+                                  data-bind: "click: create_token",
+                                  data-loading-text: "Creating...",
+                                  data-success-text: "Created",
+                                  data-failed-text: "Failed"}
