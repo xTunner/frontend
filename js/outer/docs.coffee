@@ -123,7 +123,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   addLinkTargets: =>
     # Add a link target to every heading. If there's an existing id, it won't override it
-    h = "article doc" # hierarchy
+    h = "article .doc" # hierarchy
     for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
       @addLinkTarget heading
 
