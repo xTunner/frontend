@@ -8,7 +8,11 @@
     = HAML.home_text_hero_unit()
   %div{ data-bind: "ifnot: ab().home_text_hero"}
     = HAML.home_hero_unit()
-  = HAML.home_cta1()
+  %div{ data-bind: "if: ab().home_cta_plan_price_trial"}
+    = HAML.home_cta_plan_price_trial()
+  %div{ data-bind: "ifnot: ab().home_cta_plan_price_trial"}
+    = HAML.home_cta()
+
   = HAML.home_customers()
   = HAML.home_technologies()
   = HAML.home_benefits()
