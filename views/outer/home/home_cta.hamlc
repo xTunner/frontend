@@ -1,10 +1,7 @@
-.main-cta
+.other-cta
   .container
     .span12
-      .ctabox
-        %p.center
-          %span{data-bind: "if: VM.ab().github_warning_modal"}
-            = HAML.home_button({text: "RUN YOUR TESTS", modal: true})
-
-          %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-            = HAML.home_button({text: "RUN YOUR TESTS", modal: false})
+      .center
+        .ctabox
+          %p
+            = HAML.home_button({text: "RUN YOUR TESTS"})
