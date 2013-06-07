@@ -366,7 +366,7 @@
 
 %p
   Our
-  %a{ href: "/docs/environment" } Test environment
+  %a{ href: "/docs/environment" } test environment
   document has more configuration information about
   %a{ href: "/docs/environment#other" } other languages
   including
