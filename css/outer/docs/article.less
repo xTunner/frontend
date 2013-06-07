@@ -1,16 +1,19 @@
 // Article view
 #docs-page #content {
 
-  .article {
-    article {
-      .column(8.1);
-      margin-left: 0;
-    }
+  article {
+    .column(8.1);
+    background: white;
+    margin-top: 10px;
+    margin-bottom: 50px;
+    margin-left: 0;
+    padding: 25px 30px;
+    border: 1px solid #E0E0E0;
+    .border-radius(5px);
   }
 
   .title {
-
-    & > h1 {
+    h1 {
       font-size: 30px;
       text-align: left;
       line-height: 36px;
@@ -51,15 +54,6 @@
     margin: 9px 0;
     font: bold 14px/18px "Lato", sans-serif;
     text-rendering: optimizelegibility;
-  }
-
-  article {
-    margin-top: 10px;
-    background: white;
-    margin-bottom: 50px;
-    padding: 25px 30px;
-    border: 1px solid #E0E0E0;
-    .border-radius(5px);
   }
 
   .doc {
