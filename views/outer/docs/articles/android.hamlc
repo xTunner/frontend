@@ -1,8 +1,6 @@
 - @children = []
-- @icon = "icon-book"
 - @title = 'Test Android applications'
 - @lastUpdated = "March 22, 2013"
-- @subtitle = ""
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 

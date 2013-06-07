@@ -46,6 +46,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
+      if _rollbarParams?
+        _rollbarParams.person = {id: @current_user().login}
 
 
     @intercomUserLink = @komp =>
@@ -201,8 +203,18 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
       @build().maybeSubscribe()
-    display "build", {project: project_name, build_num: build_num}
+      mixpanel_data =
+        "running": not @build().stop_time()?
+        "build-num": @build().build_num
+        "vcs-url": @build().project_name()
+        "outcome": @build().outcome()
 
+      if @build().stop_time()?
+        mixpanel_data.elapsed = (Date.now() - new Date(@build().stop_time()).getTime()) / 1000
+
+      mixpanel.track("View Build", mixpanel_data)
+
+    display "build", {project: project_name, build_num: build_num}
 
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
@@ -218,10 +230,12 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         @project().get_users()
         if subpage is "parallel_builds"
           @project().load_paying_user()
+          @project().load_billing()
           @billing().load()
 
     else if subpage is "parallel_builds"
       @project().load_paying_user()
+      @project().load_billing()
       @billing().load()
 
     setOuter()

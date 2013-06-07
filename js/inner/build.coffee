@@ -258,7 +258,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
   maybeSubscribe: () =>
     if @shouldSubscribe()
       @build_channel = VM.pusher.subscribe(@pusherChannel())
-      @build_channel.bind('pusher:subscription_error', (status) -> notifyError status)
+      @build_channel.bind 'pusher:subscription_error', (status) ->
+        if _rollbar? && _rollbar.push?
+          _rollbar.push status
 
       @build_channel.bind('newAction', @newAction)
       @build_channel.bind('updateAction', @updateAction)
@@ -306,14 +308,26 @@ CI.inner.Build = class Build extends CI.inner.Obj
     existing = (message.message for message in @messages())
     (@messages.push(msg) if msg.message not in existing) for msg in json
 
+  trackRetryBuild: (build, clearCache, SSH) =>
+    mixpanel.track("Trigger Build",
+      "vcs-url": build.project_name()
+      "build-num": build.build_num
+      "retry?": true
+      "clear-cache?": clearCache
+      "ssh?": SSH)
+
   # TODO: CSRF protection
-  retry_build: (data, event) =>
+  retry_build: (data, event, clearCache) =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
       type: "POST"
       event: event
       success: (data) =>
-        (new CI.inner.Build(data)).visit()
+        console.log("retry build data", data)
+        console.log("retry event", event)
+        build = new CI.inner.Build(data)
+        build.visit()
+        @trackRetryBuild build, clearCache, false
     false
 
   clear_cache_and_retry_build: (data, event) =>
@@ -322,7 +336,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "DELETE"
       event: event
       success: (data) =>
-        @retry_build data, event
+        @retry_build data, event, true
     false
 
   ssh_build: (data, event) =>
@@ -331,7 +345,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "POST"
       event: event
       success: (data) =>
-        (new CI.inner.Build(data)).visit()
+        build = new CI.inner.Build(data)
+        build.visit()
+        @trackRetryBuild build, false, true
     false
 
   cancel_build: (data, event) =>

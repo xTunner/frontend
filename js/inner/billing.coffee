@@ -40,6 +40,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     parallelism: 1
     concurrency: 1
     containers: 1
+    payor: null
+    special_price_p: null
 
   constructor: ->
     super
@@ -63,13 +65,18 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @chosenPlan() and (@chosenPlan().type is "concurrency")
 
     @chosen_plan_containers_p = @komp =>
-      @chosenPlan() and (@chosenPlan().type is "containers")
+      @chosenPlan() and ((@chosenPlan().type is "containers") or
+        @chosenPlan().type is "trial")
 
     @total = @komp =>
       if @chosen_plan_concurrency_p()
         @calculateCost(@chosenPlan(), parseInt(@concurrency()), parseInt(@parallelism()))
       else if @chosen_plan_containers_p()
         @calculateCost(@chosenPlan(), parseInt(@containers()))
+
+    @extra_containers = @komp =>
+      if @chosen_plan_containers_p()
+        Math.max(0, @containers() - @chosenPlan().free_containers())
 
   parallelism_option_text: (p) =>
     "#{p}-way ($#{@parallelism_cost(@chosenPlan(), p)})"
@@ -80,7 +87,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
-    "#{c} containers at $#{container_price} each ($#{cost})"
+    "#{c} containers ($#{cost})"
 
 
   parallelism_cost: (plan, p) =>
@@ -231,13 +238,18 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     $.getScript "https://js.stripe.com/v1/"
     $.getScript "https://checkout.stripe.com/v2/checkout.js"
 
+  loadPlanData: (data) =>
+    @oldTotal(data.amount / 100)
+    @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
+    @concurrency(data.concurrency or 1)
+    @parallelism(data.parallelism or 1)
+    @containers(data.containers or 1)
+    @payor(data.payor) if data.payor
+    @special_price_p(@oldTotal() <  @total())
+
   loadExistingPlans: () =>
     $.getJSON '/api/v1/user/existing-plans', (data) =>
-      @oldTotal(data.amount / 100)
-      @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
-      @concurrency(data.concurrency or 1)
-      @parallelism(data.parallelism or 1)
-      @containers(data.containers or 1)
+      @loadPlanData data
       if @chosenPlan()
         @closeWizard()
 
@@ -274,7 +286,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @oldTotal(@total())
         @closeWizard()
+        @loadExistingPlans()
 
+  # TODO: make the API call return existing plan
   saveContainers: (data, event) =>
     $.ajax
       type: "PUT"
@@ -285,6 +299,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @oldTotal(@total())
         @closeWizard()
+        @loadExistingPlans()
 
   loadExistingCard: () =>
     $.getJSON '/api/v1/user/pay/card', (card) =>
