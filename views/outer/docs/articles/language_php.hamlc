@@ -7,7 +7,7 @@
 = HAML['heading']({title: "Overview", hash: "overview"})
 
 %p
-  Circle seamless works with all the tools and package managers that
+  Circle works seamlessly with all the tools and package managers that
   help PHP developers test and deploy their code.
 
 %p
