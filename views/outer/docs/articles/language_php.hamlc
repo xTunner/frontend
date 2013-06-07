@@ -1,7 +1,8 @@
 - @children = []
 - @icon = "icon-book"
 - @title = 'Continuous Integration and Continuous Deployment with PHP'
-- @lastUpdated = "Jun 4, 2013"
+- @short_title = 'PHP'
+- @lastUpdated = "Jun 7, 2013"
 
 
 = HAML['heading']({title: "Overview", hash: "overview"})
@@ -121,4 +122,3 @@
 
 %p
   This example uses <code>sed</code> to uncomment the lines in the pre-installed <code>xdebug.ini</code> file.
-

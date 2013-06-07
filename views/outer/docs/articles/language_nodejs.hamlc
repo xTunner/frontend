@@ -1,6 +1,7 @@
 - @children = []
 - @icon = "icon-book"
 - @title = 'Continuous Integration and Continuous Deployment with Node.js'
+- @short_title = 'Node.js'
 - @lastUpdated = "Jun 5, 2013"
 
 

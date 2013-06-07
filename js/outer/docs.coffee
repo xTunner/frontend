@@ -74,11 +74,14 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       url: "/docs/#{uriFragment}"
       slug: slug
       title: cx.title or null
+      short_title: cx.short_title or cx.title or null
       children: children
       subtitle: cx.subtitle or null
       lastUpdated: cx.lastUpdated or null
       category: cx.category or null
       title_with_child_count: cx.title + (if children.length then " (#{children.length})" else "")
+      short_title_with_child_count:
+        (cx.short_title or cx.title) + (if children.length then " (#{children.length})" else "")
 
     if result.children.length and result.lastUpdated
       console.warn "#{uriFragment} has children but has lastUpdated"
