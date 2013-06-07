@@ -268,7 +268,6 @@
 -# (def api1-project-github-user "/api/v1/project/:username/:project/github-user")
 
 
-- @children = []
 - @title = 'Circle REST API'
 - @lastUpdated = "Aug 23, 2012"
 

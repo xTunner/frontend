@@ -1,6 +1,4 @@
-- @children = []
 - @title = "Permissions and access during deployment"
-- @icon = "icon-key"
 - @lastUpdated = "Jun 4, 2013"
 
 %p

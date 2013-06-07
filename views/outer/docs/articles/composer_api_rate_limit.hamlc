@@ -1,7 +1,4 @@
-- @children = []
-- @icon = "icon-wrench"
 - @title = "Composer hitting GitHub API rate limits"
-- @subtitle = "Better to use git instead"
 - @lastUpdated = "May 23, 2013"
 
 %p

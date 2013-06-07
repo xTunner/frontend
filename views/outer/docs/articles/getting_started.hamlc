@@ -1,4 +1,3 @@
-- @children = []
 - @title = "Getting started with Circle"
 - @lastUpdated = "April 29, 2013"
 
@@ -50,7 +49,7 @@
     If we didn't infer anything, you can
     = succeed '.', ->
       %a{ href: "/docs/manually"} set up your project manually
-        
+
   %li
     Sometimes, your tests will fail on our server even though they work locally.
     Read our list of
@@ -63,12 +62,12 @@
 %h2 Add your colleagues
 %p
   Testing is no fun if you're the only one playing.
-  To add your colleagues, simply ask them to join Circle. 
+  To add your colleagues, simply ask them to join Circle.
   We use GitHub permissions for all projects, so if they have access to your project on GitHub, they'll have access on Circle, too.
-  
+
 %p
   One of the best things about Circle's design is that you have your own account, which in turn enables Circle to send you personalized emails only for the branches you use.
-  
+
 
 %h2 Add more projects
 %p

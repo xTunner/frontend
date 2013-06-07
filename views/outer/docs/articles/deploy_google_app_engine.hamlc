@@ -1,4 +1,3 @@
-- @children = []
 - @title = "Continuous Deployment to Google App Engine"
 - @lastUpdated = "Feb 2, 2013"
 

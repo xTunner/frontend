@@ -1,4 +1,3 @@
-- @children = []
 - @title = 'Sample circle.yml file'
 - @lastUpdated = "May 2, 2013"
 
@@ -15,7 +14,7 @@
 
 %p
   %b Note that you probably don't need to include every section or setting here.
-  Most people need only one or two settings in their 
+  Most people need only one or two settings in their
   %code circle.yml
   file.
   You don't have to include any section you don't need.
@@ -84,11 +83,11 @@
               environment:
                 RAILS_ENV: test
                 RACK_ENV: test
-                
+
       ## Customize deployment commands
       deployment:
         staging:
-          branch: master                   
+          branch: master
           heroku:
             appname: foo-bar-123
 
