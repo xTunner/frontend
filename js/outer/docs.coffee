@@ -1,7 +1,6 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
-    @initialize()
 
   rewrite_old_name: (name) =>
     switch name
@@ -108,6 +107,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       null
 
   render: (cx) =>
+    @initialize()
     try
       rewrite = @rewrite_old_name cx.params.splat[0]
       if rewrite != false
