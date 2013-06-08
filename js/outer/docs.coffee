@@ -104,7 +104,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     try
       @articles[@filename(cx)].title
     catch e
-      null
+      "Documentation"
 
   render: (cx) =>
     @initialize()
@@ -115,6 +115,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
       super cx
       @addLinkTargets()
+      @setPageTitle(cx)
 
     catch e
       # TODO: go to 404 page
