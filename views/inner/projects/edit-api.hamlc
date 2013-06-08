@@ -6,8 +6,7 @@
     API.
 
   %p
-    The token's scope constrains what can be done by an agent holding that token. The current
-    scopes are:
+    A token's scope constrains what can be done with it. The current scopes are:
 
     %dl
       %dt status
