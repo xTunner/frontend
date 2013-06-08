@@ -434,8 +434,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     $.getJSON "/api/v1/project/#{@project_name()}/token", (data) =>
       @tokens(data)
 
-  create_token: () =>
+  create_token: (data, event) =>
     $.ajax
+      event: event
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/token",
       data: JSON.stringify
