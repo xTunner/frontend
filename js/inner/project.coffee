@@ -30,6 +30,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     default_branch: null
     show_all_branches: false
     tokens: []
+    tokenLabel: ""
+    tokenScope: "status"
 
   constructor: (json) ->
 
@@ -437,11 +439,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/token",
       data: JSON.stringify
-        label: $("#tokenLabel").val()
-        scope: $("#tokenScope").val()
+        label: @tokenLabel()
+        scope: @tokenScope()
       success: (result) =>
-        $("#tokenLabel").val("")
-        $("#tokenScope").val("")
+        @tokenLabel("")
         @load_tokens()
     false
 
