@@ -36,7 +36,7 @@
         %th Scope
         %th Created
         %th
-      %tbody{data-bind: "foreach: tokens()"}
+      %tbody{data-bind: "foreach: tokens"}
         %td{data-bind: "text: label"}
         %td
           %span.code{data-bind: "text: token"}
