@@ -15,7 +15,9 @@
   and
   %a{href: "https://github.com/CHH/phpenv"} phpenv
   to manage PHP versions.
-  If you use Circle's default version of PHP, <code>php 5.3.10-1ubuntu3.5</code>,
+  If you use Circle's default version of PHP,
+  = succeed ',', ->
+    %code= CI.Versions.default_php
   you and your tests are ready to roll.
   If you use a different version, no worries; Circle supports
   %a{href: "/docs/environment#php"} several versions of PHP
