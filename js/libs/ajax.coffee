@@ -34,13 +34,17 @@ $(document).ajaxError (ev, xhr, settings, errorThrown) ->
     method: settings.type if settings?
 
   if xhr.status == 401
-    error_object.message = "You've been logged out, log back in to continue."
+    error_object.message = "You've been logged out, <a href='#{CI.github.authUrl()}'>log back in</a> to continue."
     notifyError error_object
   else if resp.indexOf("<!DOCTYPE") is 0 or resp.length > 500
     error_object.message = "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
     notifyError error_object
   else
-    error_object.message = (xhr.responseText or xhr.statusText)
+    try
+      resp_message = JSON.parse(resp).message
+    catch e
+      console.log("error message isn't JSON parseable")
+    error_object.message = (resp_message or resp or xhr.statusText)
     notifyError error_object
 
 $(document).ajaxSend (ev, xhr, options) ->
