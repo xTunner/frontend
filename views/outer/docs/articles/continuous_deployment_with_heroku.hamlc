@@ -64,7 +64,7 @@
         production:
           branch: production
           commands:
-            - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:master
+            - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
             - heroku run rake db:migrate --app foo-bar-123
 %p
 
@@ -107,7 +107,7 @@
         commands:
           - heroku maintenance:on --app foo-bar-123
           - heroku scale worker=0 --app foo-bar-123
-          - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:master
+          - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
           - heroku run rake db:migrate --app foo-bar-123
           - heroku scale worker=x --app foo-bar-123
           - heroku maintenance:off --app foo-bar-123
