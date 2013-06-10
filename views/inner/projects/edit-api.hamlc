@@ -12,12 +12,11 @@
 
     %label{for: "scope"} Scope
       %i.icon-question-sign{
-      data-bind: "popover: {html: true, placement: 'left', title: 'Scope'}",
-      data-content: "<p>A token's scope limits what can be done with it.<dl><dt>status</dt><dd>Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is <a href='/docs/status-badges' target='_blank'>sharing status badges</a> and <a href='/docs/polling-project-status' target: '_blank'>status polling tools</a> for private projects.</dd><dt>all</dt><dd>Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project.</dd></dl></p>"}
+        data-bind: "popover: {html: true, trigger: 'hover', delay: 0, animation: false, placement: 'left', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
 
     %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
 
-    %input#submit.btn.btn-primary{type: "submit",
+    %input#submit.btn.btn-primary.float-left{type: "submit",
                                   value: "Create token",
                                   data-bind: "click: create_token",
                                   data-loading-text: "Creating...",
@@ -27,11 +26,14 @@
   %div{data-bind: "if: tokens().length"}
     %h2 Project API Tokens
 
-    %table.table.well.table-condensed
+    %table.table.well.table
       %thead
         %th Label
         %th Token
-        %th Scope
+        %td
+          %b Scope
+          %i.icon-question-sign{
+            data-bind: "popover: {html: true, trigger: 'hover', delay: 0, animation: false, placement: 'right', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
         %th Created
         %th
       %tbody{data-bind: "foreach: tokens"}
@@ -42,5 +44,24 @@
         %td{data-bind: "text: time"}
         %td
           %span
-            %button.btn.btn-danger{data-bind: "click: $root.project().delete_token"}
+            %button.btn-mini.btn-danger{data-bind: "click: $root.project().delete_token"}
               Revoke
+
+  %div#scope-popover.hide
+    %p
+      A token's scope limits what can be done with it.
+      %dl
+        %dt
+          status
+        %dd
+          Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is
+          %a{href: "/docs/status-badges", target: "_blank"}
+            sharing status badges
+          and
+          %a{href: "/docs/polling-project-status", target: "_blank"}
+            status polling tools
+          for private projects.
+        %dt
+          all
+        %dd
+          Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project.
