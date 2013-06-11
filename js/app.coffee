@@ -216,6 +216,14 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
     display "build", {project: project_name, build_num: build_num}
 
+  loadExtraEditPageData: (subpage) =>
+    if subpage is "parallel_builds"
+      @project().load_paying_user()
+      @project().load_billing()
+      @billing().load()
+    else if subpage is "api"
+      @project().load_tokens()
+
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
 
@@ -228,15 +236,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
         @project(new CI.inner.Project data)
         @project().get_users()
-        if subpage is "parallel_builds"
-          @project().load_paying_user()
-          @project().load_billing()
-          @billing().load()
-
-    else if subpage is "parallel_builds"
-      @project().load_paying_user()
-      @project().load_billing()
-      @billing().load()
+        VM.loadExtraEditPageData subpage
+    else
+        VM.loadExtraEditPageData subpage
 
     setOuter()
     $('#main').html(HAML['edit']({project: project_name}))

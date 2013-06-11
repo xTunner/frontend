@@ -40,6 +40,8 @@
         %a{ href: "edit#ssh" } SSH Keys
       %li
         %a{ href: "edit#github" } GitHub User
+      %li
+        %a{ href: "edit#api" } API Tokens
 
 
       %li.nav-header
