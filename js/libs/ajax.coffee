@@ -43,7 +43,7 @@ $(document).ajaxError (ev, xhr, settings, errorThrown) ->
     try
       resp_message = JSON.parse(resp).message
     catch e
-      console.log("error message isn't JSON parseable")
+      console.log("error message isn't JSON parsable")
     error_object.message = (resp_message or resp or xhr.statusText)
     notifyError error_object
 
