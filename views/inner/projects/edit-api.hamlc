@@ -12,7 +12,7 @@
 
     %label{for: "scope"} Scope
       %i.icon-question-sign{
-        data-bind: "popover: {html: true, trigger: 'hover', delay: 0, animation: false, placement: 'left', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
+        data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
 
     %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
 
@@ -33,7 +33,7 @@
         %td
           %b Scope
           %i.icon-question-sign{
-            data-bind: "popover: {html: true, trigger: 'hover', delay: 0, animation: false, placement: 'right', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
+            data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'right', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
         %th Created
         %th
       %tbody{data-bind: "foreach: tokens"}
