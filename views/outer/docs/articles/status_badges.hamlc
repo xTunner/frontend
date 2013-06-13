@@ -8,7 +8,7 @@
 
 %p
   Here's our current build status:
-  %img{ src: "https://circleci.com/gh/circleci/circle.png?circle-token=9d08f2d7a27f378d18681e517a0723518f478df3" }
+  %img{ src: "https://circleci.com/gh/circleci/circle.png?circle-token=3cc80b12ab3627373c76e13735b8bc00a1259b9e" }
 
 %p
   You can use a simple image URL like this to see the status of your project's default branch:
