@@ -31,10 +31,18 @@
   %code
     https://circleci.com/gh/:owner/:repo/tree/:branch.cc.xml?circle-token=:circle-token
 
+%h3
+  Access Control
+
 %p
-  You can generate or retrieve API tokens for use with these URLs from your
-  = succeed '.', ->
-    %a{ href: "/account/api"} account dashboard
+  We recommend creating specific, narrowly scoped API tokens. In fact, we created a whole
+  class of tokens just for this purpose: tokens which give read-only access to the build
+  status of a single project, and nothing else. You can create and manage these tokens from
+  the <b>Edit settings &gt; API Tokens</b> page of any project.
+
+%p
+  If you prefer, it is also possible to use a user's API token as the circle-token. These
+  tokens are very powerful, so only do that in a trusted environment!
 
 %h3
   Tools

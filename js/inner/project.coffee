@@ -16,6 +16,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
     campfire_subdomain: null
     campfire_notify_prefs: null
     flowdock_api_token: null
+    irc_server: null
+    irc_channel: null
+    irc_keyword: null
+    irc_username: null
+    irc_password: null
     github_user: null
     heroku_deploy_user: null
     ssh_keys: []
@@ -29,6 +34,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     branches: null
     default_branch: null
     show_all_branches: false
+    tokens: []
+    tokenLabel: ""
+    tokenScope: "status"
 
   constructor: (json) ->
 
@@ -291,6 +299,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
         campfire_subdomain: @campfire_subdomain()
         campfire_notify_prefs: @campfire_notify_prefs()
         flowdock_api_token: @flowdock_api_token()
+        irc_server: @irc_server()
+        irc_channel: @irc_channel()
+        irc_keyword: @irc_keyword()
+        irc_username: @irc_username()
+        irc_password: @irc_password()
 
 
     false # dont bubble the event up
@@ -426,3 +439,28 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @focusTimeout = window.setTimeout =>
       @focused_parallel(@parallel())
     , 200
+
+  load_tokens: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/token", (data) =>
+      @tokens(data)
+
+  create_token: (data, event) =>
+    $.ajax
+      event: event
+      type: "POST"
+      url: "/api/v1/project/#{@project_name()}/token",
+      data: JSON.stringify
+        label: @tokenLabel()
+        scope: @tokenScope()
+      success: (result) =>
+        @tokenLabel("")
+        @load_tokens()
+    false
+
+  delete_token: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      url: "/api/v1/project/#{@project_name()}/token/#{data.token}",
+      success: (result) =>
+        @load_tokens()
+    false
