@@ -72,5 +72,5 @@
 
     .row
       .offset1
-        %a.btn.btn-primary.btn-large{ href: "#tests" }
+        %a.btn.btn-primary.btn-large{ href: "#tests", data-bind: "click: save_dependencies" }
           Now set up your tests =>
