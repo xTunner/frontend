@@ -16,6 +16,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
     campfire_subdomain: null
     campfire_notify_prefs: null
     flowdock_api_token: null
+    irc_server: null
+    irc_channel: null
+    irc_keyword: null
+    irc_username: null
+    irc_password: null
     github_user: null
     heroku_deploy_user: null
     ssh_keys: []
@@ -294,6 +299,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
         campfire_subdomain: @campfire_subdomain()
         campfire_notify_prefs: @campfire_notify_prefs()
         flowdock_api_token: @flowdock_api_token()
+        irc_server: @irc_server()
+        irc_channel: @irc_channel()
+        irc_keyword: @irc_keyword()
+        irc_username: @irc_username()
+        irc_password: @irc_password()
 
 
     false # dont bubble the event up

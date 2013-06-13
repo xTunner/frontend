@@ -210,7 +210,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         "outcome": @build().outcome()
 
       if @build().stop_time()?
-        mixpanel_data.elapsed = (Date.now() - new Date(@build().stop_time()).getTime()) / 1000
+        mixpanel_data.elapsed_hours = (Date.now() - new Date(@build().stop_time()).getTime()) / (60 * 60 * 1000)
 
       mixpanel.track("View Build", mixpanel_data)
 
