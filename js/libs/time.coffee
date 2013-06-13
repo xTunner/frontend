@@ -13,7 +13,9 @@ CI.time =
     minutes = now.diff date, "minutes"
     seconds = now.diff date, "seconds"
 
-    if seconds < 45
+    if seconds is 1
+      "1 second ago"
+    else if seconds < 45
       "#{seconds} seconds ago"
     else if date.clone().sod().diff(yesterday) == 0
       "Yesterday at " + date.format "h:mma"
