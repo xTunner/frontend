@@ -101,7 +101,7 @@
   environmental variable has already been set.
 
 %p
-  Selenium-based tests are able to use Chrome stable channel (Chrome 26.0 as of Apr 12, 2013), and Firefox 20.
+  Selenium-based tests are able to use Chrome stable channel (Chrome 27.0 as of June 12, 2013), and Firefox 21.
 
 %p
   %span.label.label-info Help
