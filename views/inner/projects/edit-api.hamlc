@@ -1,0 +1,67 @@
+%h1 API Tokens
+
+.doc
+  %p
+    Create and revoke project-specific API tokens to access this project's details using our
+    API.
+
+  %form.well.form-inline
+    %label{for: "label"} Label
+
+    %input.input-medium{type: "text", name: "label", placeholder: "label", data-bind: "value: tokenLabel"}
+
+    %label{for: "scope"} Scope
+      %i.icon-question-sign{
+        data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
+
+    %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
+
+    %input#submit.btn.btn-primary.float-left{type: "submit",
+                                  value: "Create token",
+                                  data-bind: "click: create_token",
+                                  data-loading-text: "Creating...",
+                                  data-success-text: "Created",
+                                  data-failed-text: "Failed"}
+
+  %div{data-bind: "if: tokens().length"}
+    %h2 Project API Tokens
+
+    %table.table.well.table
+      %thead
+        %th Label
+        %th Token
+        %td
+          %b Scope
+          %i.icon-question-sign{
+            data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'right', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
+        %th Created
+        %th
+      %tbody{data-bind: "foreach: tokens"}
+        %td{data-bind: "text: label"}
+        %td
+          %span.code{data-bind: "text: token"}
+        %td{data-bind: "text: scope"}
+        %td{data-bind: "text: time"}
+        %td
+          %span
+            %button.btn-mini.btn-danger{data-bind: "click: $root.project().delete_token"}
+              Revoke
+
+  %div#scope-popover.hide
+    %p
+      A token's scope limits what can be done with it.
+      %dl
+        %dt
+          status
+        %dd
+          Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is
+          %a{href: "/docs/status-badges", target: "_blank"}
+            sharing status badges
+          and
+          %a{href: "/docs/polling-project-status", target: "_blank"}
+            status polling tools
+          for private projects.
+        %dt
+          all
+        %dd
+          Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project.
