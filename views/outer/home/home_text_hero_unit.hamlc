@@ -1,4 +1,4 @@
-.text-hero-unit
+.text-hero-unit.open-section.close-section
   .container-fluid
     .row-fluid
       .span12

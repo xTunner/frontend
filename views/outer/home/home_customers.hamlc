@@ -1,4 +1,4 @@
-.customer-list
+.customer-list.open-section
   .container-fluid
     .row-fluid
       .span12
@@ -16,7 +16,7 @@
           = HAML.happy_customers_image()
           -# %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
 
-.customer-quotes
+.customer-quotes.close-section
   .container-fluid
     .row-fluid
       .span4
