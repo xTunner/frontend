@@ -115,7 +115,9 @@ CI.outer.Docs = class Docs extends CI.outer.Page
         return cx.redirect "/docs" + rewrite
 
       super cx
-      @addLinkTargets()
+      unless @filename(cx) == "front_page"
+        @addLinkTargets()
+
       @setPageTitle(cx)
 
     catch e
