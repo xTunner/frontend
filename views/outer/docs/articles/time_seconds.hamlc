@@ -1,4 +1,3 @@
-- @children = []
 - @title = "Time-based results are a few seconds off"
 - @lastUpdated = "Feb 3, 2013"
 

@@ -1,4 +1,3 @@
-- @children = []
 - @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
 - @title = 'Browser debugging'
 - @lastUpdated = "Feb 18, 2013"

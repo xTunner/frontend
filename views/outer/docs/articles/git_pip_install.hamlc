@@ -1,4 +1,3 @@
-- @children = []
 - @title = "Git errors during pip install"
 - @lastUpdated = "Feb 3, 2013"
 

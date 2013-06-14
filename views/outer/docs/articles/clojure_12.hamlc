@@ -1,4 +1,3 @@
-- @children = []
 - @title = "java.lang.NoSuchMethodError: clojure.lang.KeywordLookupSite"
 - @lastUpdated = "Feb 2, 2013"
 

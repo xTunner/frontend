@@ -1,4 +1,3 @@
-- @children = []
 - @title = 'Configuring Circle'
 - @lastUpdated = "May 2, 2013"
 
@@ -212,7 +211,7 @@
   If you don't want to use this method, there are
   <a href="/docs/environment-variables">a number of other options</a>.
 
-%h4
+%h3
   Timezone
 
 %p
@@ -367,7 +366,7 @@
 
 %p
   Our
-  %a{ href: "/docs/environment" } Test environment
+  %a{ href: "/docs/environment" } test environment
   document has more configuration information about
   %a{ href: "/docs/environment#other" } other languages
   including

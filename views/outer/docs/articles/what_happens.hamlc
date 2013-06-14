@@ -1,4 +1,3 @@
-- @children = []
 - @title = "What happens when you add a project?"
 - @lastUpdated = "May 2, 2013"
 
@@ -19,16 +18,16 @@
 %p
   %pre
     %code.no-highlight<>
-      :preserve    
+      :preserve
         bundle install
         bundle exec rake db:schema:load
         bundle exec rspec spec
         bundle exec cucumber
-%p 
+%p
   %ul
     %li
       We run your tests on a clean virtual machine every time.
-      This means that: 
+      This means that:
       %ul
         %li Your code isn't accessible to other users
         %li We run your tests freshly each time you push

@@ -1,4 +1,3 @@
-- @children = []
 - @title = "Manually setting up parallelism"
 - @lastUpdated = "Feb 2, 2013"
 
@@ -6,6 +5,10 @@
   If you want the benefits of parallel testing, and you're not
   using one of our automatically supported test runners, or if
   you've overridden our test commands, you'll still be able to set up parallelism and reduce your test run-times.
+
+%p
+  To begin with, you'll need to turn on parallelism from your project's settings page.
+  Go to <strong>Edit settings > Build speed</strong> to adjust the settings.
 
 %h2 Spliting your test suite
 %p
@@ -28,7 +31,7 @@
 
 
 
-%h2 A simple example
+%h2#simple-example A simple example
 
 %p
   If you want to run the two commands
