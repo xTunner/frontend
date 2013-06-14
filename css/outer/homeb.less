@@ -4,15 +4,6 @@ body#home-page {
 
   counter-reset: featureCounter;
 
-  .open-section {
-    padding-top: 50px;
-  }
-
-  .close-section {
-    padding-bottom: 30px;
-  }
-
-
   .hero-unit {
       margin: 0;
       padding: 0;
@@ -62,11 +53,6 @@ body#home-page {
     margin: 0;
     padding-top: 0;
     color: #333333;
-
-    // some spacing before then CTA
-    .main-cta {
-      padding-top: 25px;
-    }
 
     .container-fluid {
       padding: 0;
@@ -167,6 +153,7 @@ body#home-page {
   }
 
   .customer-list {
+    padding-top: 50px;
     background-color: rgb(238,238,238);
     border-top: 1px solid #cccccc;
 
@@ -191,7 +178,10 @@ body#home-page {
       line-height: 22px;
       font-size: 18px;
       font-weight: 600;
-      margin-top: 25px;
+
+      // we want this to be higher than normal in the section
+      margin-top: -15px;
+      margin-bottom: 35px;
     }
   }
 
@@ -202,7 +192,7 @@ body#home-page {
 
     .customer-quote {
       margin: 0 0 20px 0;
-      padding: 0;
+      padding: 0 0 25px 0;
       position: relative;
       font-family: 'Source Sans Pro', sans-serif;
 
@@ -305,18 +295,23 @@ body#home-page {
     }
   }
 
+  .hero-unit-cta {
+    padding: 25px 0;
+  }
+
 
   .how-it-works {
-    margin: 25px 0;
+    margin: 25px 0 0 0;
+    padding: 0;
 
     // the "how it works" arrow
     .container {
       position: relative;
       overflow: visible;
       &::before {
-        position:absolute;
-        width:175px;
-        height:50px;
+        position: absolute;
+        width: 175px;
+        height: 50px;
         background-image: url('@{imgPath}/outer/home/callouts-01.png');
         background-repeat: no-repeat;
         background-position: -25px 0;
@@ -356,6 +351,8 @@ body#home-page {
     background: #efede4 url('@{imgPath}/outer/home/stacked_circles.png') repeat left top;
     border-bottom: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
+    padding: 50px 0;
+
 
     .section {
       border-top: 1px solid #cccccc;
@@ -478,6 +475,7 @@ body#home-page {
 
 
   .technologies {
+    padding: 50px 0;
 
     h2 {
       font-family: 'Source Sans Pro', sans-serif;

@@ -1,4 +1,4 @@
-.text-hero-unit.open-section.close-section
+.text-hero-unit
   .container-fluid
     .row-fluid
       .span12
@@ -27,4 +27,5 @@
             %h3
               14 day <strong>free trial</strong>. Full featured. No credit card required. Start running your tests in one click.
 
+.hero-unit-cta
   = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})

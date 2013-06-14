@@ -1,4 +1,4 @@
-.hero-unit.open-section
+.hero-unit
   .container-fluid
     .row-fluid
       .span12
@@ -32,5 +32,5 @@
           %span 3
           Deploy green builds to your servers
 
-.close-section
+.hero-unit-cta
   = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
