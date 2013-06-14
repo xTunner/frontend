@@ -458,21 +458,24 @@ body#home-page {
     }
   }
 
+
   .technologies {
     .nav-tabs {
       text-align: center;
+
+      li {
+        float: none;
+        display: inline-block;
+        a {
+          cursor: hand;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 18px;
+          line-height: 28px;
+        }
+      }
     }
-    .nav-tabs li {
-      float: none;
-      display: inline-block;
-    }
-    .nav-tabs li a {
-      cursor: hand;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
-      line-height: 28px;
-    }
+
     h2 {
       font-family: 'Source Sans Pro', sans-serif;
       font-weight: 600;
@@ -480,6 +483,7 @@ body#home-page {
       font-size: 42px;
       margin: 20px 0 5px 0;
     }
+
     h3 {
       font-family: 'Source Sans Pro', sans-serif;
       font-weight: 300;
@@ -488,9 +492,11 @@ body#home-page {
       line-height: 42px;
       margin: 0 0 25px 0;
     }
+
     img {
       margin: 6px 8px;
     }
+
     .tab-pane p {
       font-size: 16px;
       line-height: 26px;
@@ -501,6 +507,7 @@ body#home-page {
   .heroku-cta-box {
     height: 300px;
   }
+
 
   .main-cta .ctabox {
 
