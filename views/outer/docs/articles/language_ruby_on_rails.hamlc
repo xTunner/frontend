@@ -1,6 +1,5 @@
-- @children = []
-- @icon = "icon-book"
-- @title = 'Continuous Integration and Continuous Deployment with Ruby on Rails'
+- @title = 'Continuous Integration and Continuous Deployment with Ruby and Rails'
+- @short_title = 'Ruby and Rails'
 - @lastUpdated = "Jun 4, 2013"
 
 = HAML['heading']({title: "Overview", hash: "overview"})

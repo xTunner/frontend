@@ -1,6 +1,4 @@
 .sidebar
-  / .sidebar-search-form
-  /   = HAML['docs_search_form']()
   %ul.topics
     - for slug, category of @categories
       %li
@@ -11,4 +9,4 @@
         %ul.expand
           - for c in category.children
             %li
-              %a{ href: "#{c.url}" } = c.title_with_child_count
+              %a{ href: "#{c.url}" } = c.short_title_with_child_count

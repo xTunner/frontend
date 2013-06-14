@@ -1,7 +1,4 @@
-- @children = []
-- @icon = "icon-wrench"
 - @title = "Adding memcached with pecl on Circle"
-- @subtitle = "Silly compile errors"
 - @lastUpdated = "May 23, 2013"
 
 %p

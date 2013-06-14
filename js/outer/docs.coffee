@@ -1,7 +1,6 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
-    @initialize()
 
   rewrite_old_name: (name) =>
     switch name
@@ -33,6 +32,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       when "/faq#cant-follow" then "/cant-follow"
 
       when "/wrong-commands" then "/wrong-ruby-commands"
+      when "/configure-php" then "/language-php"
 
       else false
 
@@ -58,7 +58,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
             @categories[slug] = @articles[slug]
 
       catch error
-        console.log "error generating #{slug}: #{error}"
+        console.log "error generating doc #{slug}: #{error} (it might not be a doc)"
         ## meaning: can't be rendered without more context. Should never be true of docs!
 
     # iterate through the articles, and update the hierarchy
@@ -74,11 +74,14 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       url: "/docs/#{uriFragment}"
       slug: slug
       title: cx.title or null
+      short_title: cx.short_title or cx.title or null
       children: children
       subtitle: cx.subtitle or null
       lastUpdated: cx.lastUpdated or null
       category: cx.category or null
       title_with_child_count: cx.title + (if children.length then " (#{children.length})" else "")
+      short_title_with_child_count:
+        (cx.short_title or cx.title) + (if children.length then " (#{children.length})" else "")
 
     if result.children.length and result.lastUpdated
       console.warn "#{uriFragment} has children but has lastUpdated"
@@ -102,16 +105,20 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     try
       @articles[@filename(cx)].title
     catch e
-      null
+      "Documentation"
 
   render: (cx) =>
+    @initialize()
     try
       rewrite = @rewrite_old_name cx.params.splat[0]
       if rewrite != false
         return cx.redirect "/docs" + rewrite
 
       super cx
-      @addLinkTargets()
+      unless @filename(cx) == "front_page"
+        @addLinkTargets()
+
+      @setPageTitle(cx)
 
     catch e
       # TODO: go to 404 page
@@ -120,7 +127,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   addLinkTargets: =>
     # Add a link target to every heading. If there's an existing id, it won't override it
-    h = "article doc" # hierarchy
+    h = "article .doc" # hierarchy
     for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
       @addLinkTarget heading
 
