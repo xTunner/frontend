@@ -32,6 +32,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       when "/faq#cant-follow" then "/cant-follow"
 
       when "/wrong-commands" then "/wrong-ruby-commands"
+      when "/configure-php" then "/language-php"
 
       else false
 
