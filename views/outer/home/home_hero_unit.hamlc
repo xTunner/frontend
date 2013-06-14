@@ -7,7 +7,7 @@
         %h2
           <span>TL;DR</span> CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
 
-.how-it-works.close-section
+.how-it-works
   .container
     .row
       .span4
@@ -32,5 +32,5 @@
           %span 3
           Deploy green builds to your servers
 
-
-= HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
+.close-section
+  = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
