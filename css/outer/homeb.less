@@ -508,81 +508,51 @@ body#home-page {
     font-size: 18px;
     line-height: 32px;
 
-    .btn {
-      margin: 12px 0 4px 0;
-    }
-    p {
-      margin: 0;
-      strong {
-        font-weight: 600;
-        padding: 2px 5px 4px 5px;
-        background-color: #fff562;
-      }
-    }
+    p { margin: 0; }
+
     a.btn-jumbo {
+      margin: 12px 0 4px 0;
       font-family: Arial, Helvetica, Sans-Serif;
-      font-weight: bold;
       font-size: 28px;
-      line-height: 38px;
-      padding: 10px 25px;
-      text-transform: none;
+      font-weight: bold;
+      padding: 15px 25px;
+      border-radius: 10px;
     }
+
     i {
       font-size: 14px;
-      line-height: 24px;
       margin: 0;
     }
-    hr {
-      margin: 0 5% 10px;
+
+    .btn-action-prototype {
+      background-repeat: repeat-x;
+      color: #ffffff ;
+      text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
+      -webkit-font-smoothing: antialiased;
     }
 
-    img.trial-badge {
-      float: left;
-      position: relative;
-      top: -10px;
-      left: -5px;
-      margin-right: -15px;
+    .btn-action-orange {
+      .btn-action-prototype;
+      background-color: #ff6d02;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ff6d02");
+      background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ff6d02));
+      background-image: -moz-linear-gradient(top, #feb401, #ff6d02);
+      background-image: -ms-linear-gradient(top, #feb401, #ff6d02);
+      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #feb401), color-stop(100%, #ec7702));
+      background-image: -webkit-linear-gradient(top, #feb401, #ff6d02);
+      background-image: -o-linear-gradient(top, #fe8800, #ff6d02);
+      background-image: linear-gradient(#fe8800, #ff6d02);
+      border-color: #feb401 #ffa405 #ff6d02;
     }
-  }
 
+    .btn-action {
+      .btn-action-orange;
+    }
 
-  .btn-action-prototype {
-    background-repeat: repeat-x;
-    color: #ffffff ;
-    text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .btn-action-orange {
-    .btn-action-prototype;
-    background-color: #ff6d02;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ff6d02");
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ff6d02));
-    background-image: -moz-linear-gradient(top, #feb401, #ff6d02);
-    background-image: -ms-linear-gradient(top, #feb401, #ff6d02);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #feb401), color-stop(100%, #ec7702));
-    background-image: -webkit-linear-gradient(top, #feb401, #ff6d02);
-    background-image: -o-linear-gradient(top, #fe8800, #ff6d02);
-    background-image: linear-gradient(#fe8800, #ff6d02);
-    border-color: #feb401 #ffa405 #ff6d02;
-  }
-
-  .btn-action {
-    .btn-action-orange;
-  }
-
-  .btn-action-red {
-   // Use bootstrap's default red, until we get our own style
-    .btn-action-prototype;
-    .btn-danger;
-  }
-
-
-  .btn-jumbo {
-    font-size: 22px;
-    line-height: 32px;
-    border-radius: 10px;
-    padding: 6px 24px 9px 24px;
-    font-weight: bold;
+    .btn-action-red {
+      // Use bootstrap's default red, until we get our own style
+      .btn-action-prototype;
+      .btn-danger;
+    }
   }
 }
