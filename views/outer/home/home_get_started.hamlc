@@ -12,8 +12,10 @@
             %li Watch your tests run faster than ever.
             %li Get your team into the flow.
 
-          %p.center
-            = HAML.home_cta({text: "Run your tests now"})
+          .center
+            .main-cta
+              .ctabox
+                = HAML.home_button({text: "Run your tests now"})
 
           %p.center
             %i
