@@ -2,7 +2,7 @@
   .container
     .row
       .span6.offset3
-        .ctabox
+        .box
           %h2 Get Started
           %hr
           %p.center
