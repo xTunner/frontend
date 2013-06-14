@@ -27,4 +27,4 @@
             %h3
               14 day <strong>free trial</strong>. Full featured. No credit card required. Start running your tests in one click.
 
-  = HAML.home_cta({first: true})
+  = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
