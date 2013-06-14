@@ -9,7 +9,7 @@ body#home-page {
   }
 
   .close-section {
-    padding-bottom: 50px;
+    padding-bottom: 30px;
   }
 
 
@@ -60,12 +60,18 @@ body#home-page {
 
   .text-hero-unit {
     margin: 0;
-    padding: 0;
+    padding-top: 0;
     color: #333333;
+
+    // some spacing before then CTA
+    .main-cta {
+      padding-top: 25px;
+    }
 
     .container-fluid {
       padding: 0;
     }
+
     h1 {
       padding: 20px 0 0 0;
       font-family: 'Source Sans Pro', sans-serif;
@@ -157,9 +163,8 @@ body#home-page {
     background-color: rgb(238,238,238);
     border-top: 1px solid #cccccc;
 
-    // For some fucked up reason, this is a background imagem and so we need all this crap.
+    // For some fucked up reason, this is a background image and so we need all this crap.
     .happy-customers {
-      margin-top: 25px;
       height: 70px;
 
       .callout {
@@ -519,7 +524,7 @@ body#home-page {
     &.line {
       border-top: 1px solid #cccccc;
     }
-    padding: 20px 0;
+    padding: 20px 0 0 0;
     font-size: 18px;
     line-height: 32px;
 
