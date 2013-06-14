@@ -4,7 +4,8 @@
       .span12
         %h2
           Technology Support
-        %h3
+        %h3{data-bind: "text: VM.ab().does_we_test_your_stack_work"}
+
           We test your stack
         %ul#tech-tabs.nav.nav-tabs
           %li.active
