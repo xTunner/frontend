@@ -309,14 +309,15 @@ CI.inner.Project = class Project extends CI.inner.Obj
     false # dont bubble the event up
 
   save_dependencies: (data, event) =>
-    $.ajax
-      type: "PUT"
-      event: event
-      url: "/api/v1/project/#{@project_name()}/settings"
-      data: JSON.stringify
-        setup: @setup()
-        dependencies: @dependencies()
-        post_dependencies: @post_dependencies()
+    # Comment this out until changing settings doesn't kick off a new build
+    # $.ajax
+    #   type: "PUT"
+    #   event: event
+    #   url: "/api/v1/project/#{@project_name()}/settings"
+    #   data: JSON.stringify
+    #     setup: @setup()
+    #     dependencies: @dependencies()
+    #     post_dependencies: @post_dependencies()
     true # bubble up so that we move to the test step
 
 
