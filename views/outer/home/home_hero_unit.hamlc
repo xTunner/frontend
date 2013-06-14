@@ -33,4 +33,4 @@
           Deploy green builds to your servers
 
 
-  = HAML.home_cta({first: true})
+= HAML.home_cta({first: true})
