@@ -2,7 +2,7 @@
   .container
     .span12
       .center
-        .ctabox
+        .ctabox{class: @first and "line"}
           - if @first
             %div{data-bind: "if: VM.ab().home_cta_plan_price_trial"}
               %p
