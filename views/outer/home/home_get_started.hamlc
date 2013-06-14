@@ -12,12 +12,7 @@
             %li Watch your tests run faster than ever.
             %li Get your team into the flow.
           %p.center
-            %span{data-bind: "if: VM.ab().github_warning_modal"}
-              = HAML.home_button({text: "Run your tests now", modal: true})
-
-            %span{data-bind: "ifnot: VM.ab().github_warning_modal"}
-              = HAML.home_button({text: "Run your tests now", modal: false})
-
+            = HAML.home_button({text: "Run your tests now"})
 
           %p.center
             %i
