@@ -223,6 +223,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @billing().load()
     else if subpage is "api"
       @project().load_tokens()
+    else if subpage is "env_vars"
+      @project().load_env_vars()
 
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"

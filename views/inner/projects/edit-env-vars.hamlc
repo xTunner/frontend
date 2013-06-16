@@ -1,0 +1,38 @@
+%h1 Environment Variables
+
+.doc
+  %p
+    Add environment variables to the project build.  Environment variables set here don't
+    appear in the Circle logs.
+
+  %form.well.form-inline
+    %label{for: "name"} Name
+
+    %input.input-medium{type: "text", name: "name", placeholder: "name", data-bind: "value: env_varName"}
+
+    %label{for: "value"} Value
+
+    %input.input-medium{type: "text", name: "value", placeholder: "value", data-bind: "value: env_varValue"}
+
+    %input#submit.btn.btn-primary.float-left{type: "submit",
+                                  value: "Save",
+                                  data-bind: "click: create_env_var",
+                                  data-loading-text: "Saving...",
+                                  data-success-text: "Saved",
+                                  data-failed-text: "Failed"}
+
+  %div{data-bind: "if: env_vars().length"}
+    %h2 Project Environment Variables
+
+    %table.table.well.table
+      %thead
+        %th Name
+        %th Value
+        %th
+      %tbody{data-bind: "foreach: env_vars"}
+        %td{data-bind: "text: name"}
+        %td{data-bind: "text: value"}
+        %td
+          %span
+            %button.btn{data-bind: "click: $root.project().delete_env_var"}
+              Delete
