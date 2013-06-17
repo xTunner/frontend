@@ -106,21 +106,10 @@
 
 %p
   Occasionally, you'll need to add an API key or some other secret as
-  an environmental variable.  Adding it to the circle.yml file will
-  put it in your git history, which might be undesirable.  As a
-  workaround, you can add it through our UI. A good place to put them
-  is the pre-dependencies section.
-
-%p
-  Each time Circle runs one of your commands, it sources the
-  %code \~/.circlerc
-  file in the shell first.
-  You can use this to store the secret API key:
-
-%pre
-  %code.bash<>
-    :preserve
-      $ echo 'export AWS_IAM_KEY=01234556789abcdef' >> ~/.circlerc
+  an environment variable.  Adding it to the circle.yml file will
+  put it in your git history, which might be undesirable.  You
+  can add and manage environment variables from the
+  <b>Edit settings &gt; Environment Variables</b> page of any project.
 
 %p
   All commands and data on Circle's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
