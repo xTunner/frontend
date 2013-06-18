@@ -349,11 +349,14 @@
 %h2 User
 = HAML['api_reference_block']({api_data: api_data, url: "me", try_it: true})
 
+
 %h2 Projects
 = HAML['api_reference_block']({api_data: api_data, url: 'projects', try_it: true})
 
+
 %h2#recent-builds Recent Builds Across All Projects
 = HAML['api_reference_block']({api_data: api_data, url: 'recent-builds', try_it: true})
+
 
 %h2#recent-builds-project Recent Builds For a Single Project
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project'})
@@ -364,22 +367,26 @@
   The branch name should be url-encoded.
 
 
-%h2#single-build Single Build
+%h2#build Single Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num'})
+
 
 %h2#retry-build Retry a Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/retry'})
 
 %p
   You can retry a build with ssh by swapping "retry" with "ssh":
-  %p
-    %code.no-highlight https://circleci.com/api/v1/project/:username/:project/:build_num/ssh
+%p
+  %code.no-highlight https://circleci.com/api/v1/project/:username/:project/:build_num/ssh
+
 
 %h2#cancel-build Cancel a Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/cancel'})
 
+
 %h2#clear-cache Clear Cache
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/build-cache'})
+
 
 %h2 Summary
 %dl.dl-horizontal
