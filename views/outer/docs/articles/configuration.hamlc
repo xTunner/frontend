@@ -712,7 +712,10 @@
 
 %p
   This example sends a JSON packet to the specified URL.
-  Note that the sent JSON packet can also be read using the REST API.
+  The JSON packet is identical to the result of the
+  %a{ href: "/docs/reference-api#build" } Build API
+  call for the same build.
+
 
 
 %pre
