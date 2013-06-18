@@ -2,7 +2,7 @@
 - @short_title = 'Python'
 - @lastUpdated = "Jun 3, 2013"
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2 Overview
 
 %p
   Circle has great support for Python.
@@ -21,7 +21,7 @@
   = HAML.contact_us({succeed: ""})
   if other versions of Python would be of use to you.
 
-= HAML['heading']({title: "Package managers and dependencies", hash: "package-mgrs-dependencies"})
+%h2#package-mgrs-dependencies Package managers and dependencies
 
 %p
   Python is a popular language with many packages and package managers.
@@ -44,7 +44,7 @@
   %a{href: "/docs/git-pip-install"}git errors during pip install
   to avoid problems.
 
-= HAML['heading']({title: "Testing", hash: "testing"})
+%h2 Testing
 
 %p
   Circle automatically runs <code>tox</code> when we find a <code>tox.ini</code> file,
@@ -60,7 +60,7 @@
         override:
           - ./my_testing_script.sh
 
-= HAML['heading']({title: "Deployment", hash: "deployment"})
+%h2 Deployment
 
 %p
   Circle has first-class support for

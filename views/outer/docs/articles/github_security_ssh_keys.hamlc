@@ -29,7 +29,7 @@
   and then has access to all your repositories.
 
 
-= HAML['heading']({title: "User key security", hash: "security"})
+%h2#security User key security
 %p
   Circle is serious when it comes to security.
   We will never make your SSH keys public.
@@ -42,7 +42,7 @@
   Beware of someone stealing your code.
 
 
-= HAML['heading']({title: "User key access-related error messages", hash: "error messages"})
+%h2#error-messages User key access-related error messages
 
 %p
   Here are common errors that indicate you need to add a user key.

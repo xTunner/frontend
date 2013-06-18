@@ -272,13 +272,13 @@
 - @lastUpdated = "Aug 23, 2012"
 
 
-= HAML['heading']({title: "The Circle API", hash: "intro"})
+%h2#intro The Circle API
 %p
   The Circle API is a RESTy, fully-featured API that allows you to do almost anything in Circle.
   You can access all information and trigger all actions.
   The only thing we don't provide access to is billing functions, which must be done from the Circle web UI.
 
-= HAML['heading']({title: "Getting started", hash: "getting-started"})
+%h2 Getting started
 %ol
   %li
     Add an API token from your
@@ -314,7 +314,7 @@
             "login" : "pbiggar"
           }
 
-= HAML['heading']({title: "Making calls", hash: "calling"})
+%h2#calling Making calls
 %p
   All API calls are made in the same way, by making standard HTTP calls, using JSON, a content-type, and your API token.
   All Circle API endpoints begin in
@@ -346,16 +346,16 @@
       curl https://circleci.com/api/v1/me?circle-token=:token -H "Accept: application/json"
 
 
-= HAML['heading']({title: "User", hash: "user"})
+%h2 User
 = HAML['api_reference_block']({api_data: api_data, url: "me", try_it: true})
 
-= HAML['heading']({title: "Projects", hash: "projects"})
+%h2 Projects
 = HAML['api_reference_block']({api_data: api_data, url: 'projects', try_it: true})
 
-= HAML['heading']({title: "Recent Builds Across All Projects", hash: "recent-builds"})
+%h2#recent-builds Recent Builds Across All Projects
 = HAML['api_reference_block']({api_data: api_data, url: 'recent-builds', try_it: true})
 
-= HAML['heading']({title: "Recent Builds For a Single Project", hash: "recent-builds-project"})
+%h2#recent-builds-project Recent Builds For a Single Project
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project'})
 %p
   You can narrow the builds to a single branch by appending /tree/:branch to the url:
@@ -364,10 +364,10 @@
   The branch name should be url-encoded.
 
 
-= HAML['heading']({title: "Single Build", hash: "single-build"})
+%h2#single-build Single Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num'})
 
-= HAML['heading']({title: "Retry a Build", hash: "retry-build"})
+%h2#retry-build Retry a Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/retry'})
 
 %p
@@ -375,13 +375,13 @@
   %p
     %code.no-highlight https://circleci.com/api/v1/project/:username/:project/:build_num/ssh
 
-= HAML['heading']({title: "Cancel a Build", hash: "cancel-build"})
+%h2#cancel-build Cancel a Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/cancel'})
 
-= HAML['heading']({title: "Clear Cache", hash: "clear-cache"})
+%h2#clear-cache Clear Cache
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/build-cache'})
 
-= HAML['heading']({title: "Summary", hash: "summary"})
+%h2 Summary
 %dl.dl-horizontal
 - for own url, data of api_data
   %dt
