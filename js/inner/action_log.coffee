@@ -23,11 +23,13 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     super json
 
     @build = build
-    @success = @komp =>
-      @status() == "success"
 
-    @failed = @komp => @status() == "failed" or @status() == "timedout" or @status() == "cancelled"
+    # these should be the only options
+    @success = @komp => @status() == "success"
+    @success = @komp => @status() == "running"
+    @failed = @komp => @status() == "failed" or @status() == "timedout" or @status() == "cancelled" || @status() == "infrastructure_fail"
     @infrastructure_fail = @komp => @status() == "infrastructure_fail"
+
 
     # Expand failing actions
     @minimize = @komp =>
@@ -49,11 +51,11 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       # knockout CSS requires a boolean observable for each of these
       minimize: @minimize
       contents: @has_content
-      running: @komp => @status() == "running"
-      timedout: @komp => @status() == "timedout"
-      success: @komp => @status() == "success"
-      failed: @komp => @status() == "failed"
-      cancelled: @komp => @status() == "cancelled"
+
+      # see circle.model.action/compute-status for the list
+      failed: @komp => @failed() or @infrastructure_fail()
+      running: @komp => @running()
+      success: @komp => @success()
 
     @collapse_icon =
       "icon-chevron-up": @komp => !@minimize()
