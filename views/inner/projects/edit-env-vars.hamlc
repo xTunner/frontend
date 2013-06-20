@@ -2,8 +2,8 @@
 
 .doc
   %p
-    Add environment variables to the project build.  Environment variables set here don't
-    appear in the Circle logs.
+    Add environment variables to the project build.  You can add sensetive data (e.g. API keys) here,
+    rather than placing them in the repository.
 
   %form.well.form-inline
     %label{for: "name"} Name
