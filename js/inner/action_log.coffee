@@ -26,7 +26,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
 
     # these should be the only options
     @success = @komp => @status() == "success"
-    @success = @komp => @status() == "running"
+    @running = @komp => @status() == "running"
     @failed = @komp => @status() == "failed" or @status() == "timedout" or @status() == "cancelled" || @status() == "infrastructure_fail"
     @infrastructure_fail = @komp => @status() == "infrastructure_fail"
 
