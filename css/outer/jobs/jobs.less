@@ -9,18 +9,13 @@
 	background: white;
 	color: #333;
 
-  counter-reset: my-counter;
+  counter-reset: jobs-counter;
 
   .step {
-    counter-increment: my-counter;
-  }
-
-  step:before {
-    content: counter(my-counter);
-  }
-
-  strong {
-	  font-weight: 800;
+    counter-increment: jobs-counter;
+    &:before {
+      content: counter(jobs-counter);
+    }
   }
 
   h1, h2, h3, h4 {
@@ -51,11 +46,11 @@
   .headers {
 	  padding-bottom: 30px;
 	  margin-bottom: 40px;
+    h2, h3 {
+	    text-align: center;
+    }
   }
 
-  .headers h2, .headers h3 {
-	  text-align: center;
-  }
 
   a {
 	  color: #366aa4;
@@ -123,7 +118,7 @@
 	  left: 10px;
 	  top: 40px;
 	  background: #ffdf23;
-	  content: counter(my-counter);
+	  content: counter(jobs-counter);
   }
 
   .jobs .step:before,
