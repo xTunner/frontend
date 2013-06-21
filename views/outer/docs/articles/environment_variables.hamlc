@@ -92,17 +92,17 @@
   %code export FOO=bar
   command won't work.
 
-%h4 Setting environmental variables for all commands using circle.yml
+%h4 Setting environment variables for all commands using circle.yml
 
 %p
-  You can set environmental variables in your
+  You can set environment variables in your
   %code circle.yml
   file, that
   = succeed '.', ->
     %a{href: "/docs/configuration#environment"} will be set for every command
 
 
-%h4 Setting environmental variables for all commands without adding them to git
+%h4 Setting environment variables for all commands without adding them to git
 
 %p
   Occasionally, you'll need to add an API key or some other secret as
@@ -115,10 +115,10 @@
   Take this into account before adding important credentials that some colleagues do not have access to.
 
 
-%h4 Per-command environmental variables
+%h4 Per-command environment variables
 
 %p
-  You can set environental variables per-command as well.
+  You can set environment variables per-command as well.
   You can use standard bash syntax in your commands:
 
 %pre

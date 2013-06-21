@@ -14,7 +14,7 @@
 %p
   When you use Circle's parallelization, we run your code on multiple separate VMs.
   To use parallelism, you make your test runner run only a subset of tests on each VM.
-  We use environmental variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
+  We use environment variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
 
 %dl
   %dt

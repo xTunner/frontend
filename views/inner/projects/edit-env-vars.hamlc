@@ -1,4 +1,4 @@
-%h1 Environment Variables
+%h1 Environment variables
 
 .doc
   %p
@@ -22,7 +22,7 @@
                                   data-failed-text: "Failed"}
 
   %div{data-bind: "if: env_vars().length"}
-    %h2 Project Environment Variables
+    %h2 Project environment variables
 
     %table.table.well.table
       %thead
