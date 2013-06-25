@@ -17,11 +17,13 @@ ko.bindingHandlers.track =
 ko.bindingHandlers.track_link =
   init: (el, valueAccessor) =>
     $(el).click (event) ->
-      event.preventDefault();
+      event.preventDefault()
       redirect = () ->
         window.location.replace($(el).attr('href'))
-      setTimeout(redirect, 1000)
-      mixpanel.track(valueAccessor(), {}, redirect)
+      backup_redirect = setTimeout(redirect, 1000)
+      mixpanel.track valueAccessor(), {}, ->
+        clearTimeout(backup_redirect)
+        redirect()
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 jQueryExt = (type) =>
