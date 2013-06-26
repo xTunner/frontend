@@ -284,7 +284,7 @@
   by default, although you can
   = succeed '.', ->
     %a{href: "/docs/configuration#python-version"} control the version in your circle.yml file
-  Packages can installed using
+  Packages can be installed using
   %code pip 1.0
   and
   = succeed ".", ->
