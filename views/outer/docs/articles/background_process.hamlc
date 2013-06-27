@@ -50,5 +50,5 @@
           - sleep 5
 
 %p
-  Or better yet, block at the start of your test suite until the connetion is available.
+  Or better yet, block at the start of your test suite until the connection is available.
   This speeds up your tests by starting them in parallel with your daemon, but doesn't suffer from any race conditions where your tests start before your daemon does.
