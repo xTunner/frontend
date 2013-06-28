@@ -360,6 +360,28 @@
   for a complete list.
 
 %h3
+  Python version
+
+%p
+  Circle uses
+  %a{href: "https://github.com/yyuu/pyenv"} pyenv
+  to manage Python versions.
+  Here's an example of how to set the version of Python used for your tests.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        python:
+          version: 2.7.5
+
+%p
+%p
+  See
+  %a{href: "/doc/environment#python"} supported Python versions
+  for a complete list.
+
+%h3
   Other languages
 
 %p
