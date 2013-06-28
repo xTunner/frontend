@@ -1,6 +1,6 @@
 - @children = []
 - @title = "Embeddable status badges"
-- @lastUpdated = "June 7, 2013"
+- @lastUpdated = "June 28, 2013"
 
 %p
   We provide project and branch status images, which you can embed anywhere you want: a GitHub
@@ -17,10 +17,27 @@
     https://circleci.com/gh/:owner/:repo.png?circle-token=:circle-token
 
 %p
+  For example:
+  %a{ href: "https://circleci.com/gh/circleci/mongofinil.png?circle-token=b14acf911433d315298235b0c2fbf7b2670a92a8" }
+    https://circleci.com/gh/circleci/mongofinil.png?circle-token=b14ac...
+
+%p
   Or you can see the status of any specific branch:
 
   %code
     https://circleci.com/gh/:owner/:repo/tree/:branch.png?circle-token=:circle-token
+
+%p
+  For example:
+  %a{ href: "https://circleci.com/gh/circleci/mongofinil/tree/master.png?circle-token=b14acf911433d315298235b0c2fbf7b2670a92a8" }
+    https://circleci.com/gh/circleci/mongofinil/tree/master.png?circle-token=b14ac...
+
+%p
+
+  One small wrinkle: if your branch name includes characters that are "special" in URLs (most commonly '/') they'll need to be
+  %a{ href: "http://www.w3schools.com/tags/ref_urlencode.asp" }
+    URL encoded
+  when constructing status badge URLs. For example, the badge for a branch called 'feature/nonexistent' would be at '.../tree/feature%2Fnonexistent.png'.
 
 %h3
   Access Control
