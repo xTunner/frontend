@@ -1,45 +1,44 @@
 - @title = 'Continuous Integration and Continuous Deployment with PHP'
 - @short_title = 'PHP'
-- @lastUpdated = "Jun 7, 2013"
+- @lastUpdated = "Jun 19, 2013"
 
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 
 %p
-  Circle works seamlessly with all the tools and package managers that
-  help PHP developers test and deploy their code.
+  Circle works seamlessly with all the tools and package managers,
+  such as <code>composer</code>, that help PHP developers test and deploy their code.
+  Circle looks at your code, determines what version of PHP you use,
+  infers your test configuration, and runs your tests.
+  Circle has all your DB requirements covered because we have pre-installed
+  the most-used databases.
+  To complete the process, we can&mdash;if you tell us where&mdash;deploy your code once your build is green.
 
 %p
-  Circle uses
+  If your project has any special requirements, tell us about them by including a
+  %a{href: "/docs/configuration"} circle.yml
+  file in your repo.
+
+%h2 Version
+
+%p
+  Circle supports more than a dozen
+  %a{href: "/docs/environment#php"} versions of PHP,
+  and uses
+  %code= CI.Versions.default_php
+  as the default.
+  It is trivial for us to add more versions if needed because we use
   %a{href: "https://github.com/CHH/php-build"} php-build
   and
   %a{href: "https://github.com/CHH/phpenv"} phpenv
   to manage PHP versions.
-  If you use Circle's default version of PHP,
-  = succeed ',', ->
-    %code= CI.Versions.default_php
-  you and your tests are ready to roll.
-  If you use a different version, no worries; Circle supports
-  %a{href: "/docs/environment#php"} several versions of PHP
-  so it is likely we have you covered.
 
-%p
-  You can specifying the PHP version to use as well as other important
-  dependencies by creating a
-  %a{href: "/docs/configuration"} circle.yml
-  file.
-  When you place this file in your git repo's root directory,
-  Circle reads the file each time it runs a build.
-  Your <code>circle.yml</code> file defines your PHP environment.
-
-= HAML['heading']({title: "composer, pear, and pecl", hash: "composer-pear-pecl"})
+%h2 Dependencies&mdash;including composer, pear, and pecl
 
 %p
   Circle has all three of these package managers installed.
-
-%p
-  You don't need to specify anything in your <code>circle.yml</code>
-  file if you are using <code>composer</code>.
+  You don't need to specify anything in your <code>circle.yml</code> file
+  if you are using <code>composer</code>.
   When Circle encounters a <code>composer.json</code> file in your code,
   we automatically install your <code>composer</code> dependencies.
 
@@ -47,7 +46,7 @@
   To install your dependencies with either <code>pear</code> or <code>pecl</code>,
   you have to include pre-dependency commands in your <code>circle.yml</code> file.
   The following example shows how you would tell Circle to invoke <code>pecl</code>
-  to include the MongoDB extension.
+  to include the <code>mongo</code> extension.
 
 %pre
   %code.no-highlight<>
@@ -55,24 +54,15 @@
       dependencies:
         pre:
           - pecl install mongo
-
-= HAML['heading']({title: "Customizing your PHP environment", hash: "customizing-php-environ"})
-
 %p
-  Your <code>circle.yml</code> file is the way to handle customization.
-  Let's say that you need to change your <code>config.ini</code> file,
-  and you want to make sure that Circle knows your tests use <code>php 5.4.6</code>.
-  Here is an example that states the version number and
-  includes a pre-dependency command telling Circle your repo contains
-  a file named <code>config/custom.ini</code>.
+  It is simple to add a line or two to your <code>circle.yml</code> file telling us
+  how to handle your project.
+  Here's an example of a pre-dependency command telling Circle that your
+  repo contains a custom configuration file.
 
 %pre
   %code.no-highlight<>
     :preserve
-      machine:
-        php:
-          version: 5.4.6
-
       dependencies:
         pre:
           - mv config/custom.ini ~/.phpenv/versions/$(phpenv global)/etc/conf.d/
@@ -81,44 +71,87 @@
   Note: <code>phpenv global</code> returns the PHP version that has been
   specified in your <code>circle.yml</code> file.
 
-= HAML['heading']({title: "Add a few lines", hash: "add-lines"})
-
 %p
-  If you want to create a configuration file with only a few simple settings,
-  you can incorporate them in your <code>circle.yml</code> file using <code>echo</code>.
-  For example, if you want to include a setting that restricts memory use to 64 megabytes,
-  here's how you would modify your <code>circle.yml</code> file:
+  Here's another example showing how you could adjust PHP settings in
+  a <code>.ini</code> file.
 
 %pre
   %code.no-highlight<>
     :preserve
-      machine:
-        php:
-          version: 5.4.6
-
       dependencies:
         pre:
           - echo "memory_limit = 64M" > ~/.phpenv/versions/$(phpenv global)/etc/conf.d/memory.ini
 
-= HAML['heading']({title: "Enable Xdebug", hash: "xdebug"})
+%h3 Enabling Xdebug
 
 %p
-  Xdebug is installed for all versions of PHP, but is disabled by default&mdash;Circle
-  disables it because the debugger's tracking slows down execution.
-  It is simple to reactivate the tool's debugging and profiling capabilities.
-  As you might expect,
-  you enable Xdebug by adding the following to your <code>circle.yml</code> file:
+  Xdebug is installed for all versions of PHP, but is disabled by default.
+  It is simple to reactivate the tool's debugging and profiling capabilities by
+  adding the following to your <code>circle.yml</code> file:
 
 %pre
   %code.no-highlight<>
     :preserve
-      machine:
-        php:
-          version: 5.4.6
-
       dependencies:
         pre:
           - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
 
 %p
-  This example uses <code>sed</code> to uncomment the lines in the pre-installed <code>xdebug.ini</code> file.
+  This example uses <code>sed</code> to uncomment the lines in the pre-installed
+  <code>xdebug.ini</code> file.
+
+%h2 Databases
+
+%p
+  Circle routinely manages all your database requirements,
+  such as creating your database and installing your schema.
+  We have pre-installed more than a dozen
+  = succeed ',', ->
+    %a{href: "/docs/environment#databases"} databases and queues
+  including PostgreSQL and MySQL.
+  If needed, you have the option of
+  = succeed '.', ->
+    %a{href: "/docs/manually#dependencies"} manually setting up your test database
+
+%h2 Testing
+
+%p
+  Circle always runs your tests on a fresh machine.
+  If you have a project that roughly follows best practices for PHP,
+  testing should proceed without complications.
+  However, if your project needs something a little more customized,
+  you can override Circle's testing by including your own testing script.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      test:
+        override:
+          - ./my_testing_script.sh
+
+%h2 Deployment
+
+%p
+  Circle offers first-class support for
+  = succeed '.', ->
+    %a{href: "/docs/configuration#deployment"} deployment
+  When a build is green, Circle will deploy your project as directed
+  in your <code>circle.yml</code> file.
+  We can deploy to PaaS providers as well as to
+  physical servers under your control.
+
+%h3 Troubleshooting for PHP
+
+%p
+  Our
+  %a{href: "/docs/troubleshooting-php"}
+    PHP troubleshooting
+  documentation has information about the following issues and problems:
+
+=HAML["troubleshooting_php"](@)
+
+%p
+  If you are still having trouble, please
+  = HAML.contact_us({succeed: ""})
+  and we will be happy to help.
+          

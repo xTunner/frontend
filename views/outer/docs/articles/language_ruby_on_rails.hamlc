@@ -1,28 +1,34 @@
-- @title = 'Continuous Integration and Continuous Deployment with Ruby and Rails'
-- @short_title = 'Ruby and Rails'
-- @lastUpdated = "Jun 4, 2013"
+- @title = 'Continuous Integration and Continuous Deployment with Ruby/Rails'
+- @short_title = 'Ruby/Rails'
+- @lastUpdated = "Jun 20, 2013"
 
 = HAML['heading']({title: "Overview", hash: "overview"})
 
-%p
+%p  
   Good tests make good code.
-  Rails was developed and structured to incorporate robust testing functionality.
+  Circle makes Rails testing simple and uncomplicated.
+  Circle looks at your code, determines what version of Ruby you use,
+  infers your test configuration, and runs your tests.
+  Circle has all your DB requirements covered because we have pre-installed
+  the most-used databases.
+  To complete the process, we can&mdash;if you tell us where&mdash;deploy
+  your code once your build is green.
 
 %p
-  Circle makes Rails testing simple and uncomplicated.
-  Circle looks at your code, infers your build environment, and runs your tests.
-  The majority of the time, this just works&mdash;and works well.
+  The majority of the time, this just works.
   Of course, it helps if your project adheres to standard practices
-  (i.e., "convention over configuration") for the Ruby on Rails testing framework.
-  For that reason, the best method is to specify all your project dependencies in a Gemfile.
+  (i.e., "convention over configuration") for standard Ruby testing frameworks.
+
+%h2 Version
 
 %p
   We use
-  %a{ href: "https://rvm.io/" } RVM
-  to provide access to a wide variety of Ruby versions.
-  Circle has a number of Ruby- and Rails-related tools and frameworks
-  pre-installed so that you can use them directly if needed.
-  These include:
+  %a{href: "https://rvm.io/" } RVM
+  to provide access to a wide variety of
+  = succeed '.', ->
+    %a{href: "/docs/environment#languages"} Ruby versions
+%p
+  To enable you to use certain tools and frameworks directly, Circle has pre-installed:
 
 %ul
   %li
@@ -38,58 +44,78 @@
     Rake
 
 %p
-  For more specifics, you can look at our
-    %a{href: "/docs/environment"} Test environment
-  documentation, which includes a complete listing of all the versions of Ruby
-  that we support as well as a brief description of how Circle selects the
-  default version of Ruby.
-  The document also describes how Circle makes it easy to use testing tools that require a browser.
+  These tools and frameworks are available globally without any need for special 
+  configuration. They use <code>RVM 1.9.3-p194</code>.
 
 %p
-  As we mentioned, Circle automatically infers your settings from your code.
-  This works fine in most cases for our Ruby on Rails customers.
-  When it doesn't (your web app has a special dependency, for example),
-  all that you need to do is add a <code>circle.yml</code> file.
-  You can find all the information that you need to create that file in our
-  %a{href: "/docs/configuration"} Configuring Circle
-  document.
+  Our
+    %a{href: "/docs/environment"} test environment
+  covers more details about language versions and tools as well as describes how
+  Circle facilitates the use of testing tools that require a browser.
+
+%h2 Dependencies
+
+%p
+  If Circle detects a Gemfile, we automatically run <code>bundle install</code>.
+  You can specify other  project dependencies by including a
+  %a{href: "/docs/configuration"} circle.yml
+  file in your repo.
+
+%h2 Databases
+
+%p
+  Circle routinely manages all your database requirements,
+  such as creating your database and installing your schema.
+  We have pre-installed more than a dozen
+  = succeed ',', ->
+    %a{href: "/docs/environment#databases"} databases and queues
+  including PostgreSQL and MySQL.
+  If needed, you have the option of
+    %a{href: "/docs/manually#dependencies"} manually setting up your test database
+  or including commands in your <code>circle.yml</code> file to override
+  the order that database-related processes occur.
+
+%h2 Testing
+
+%p
+  Circle runs all tests automatically, working in tandem with
+  Ruby on Rail's built-in testing functionality and following any
+  custom testing specifications in your <code>circle.yml</code> file.
+
+%h2 Testing in Parallel
 
 %p
   Should you need to run your tests in parallel, you can choose a plan and
-  set up parallelism for your project on the <b>Edit settings > Build Speed</b> page.
+  set up parallelism on your project's
+  <b>Edit settings > Build speed</b> page of the Circle UI.
   Circle automatically sets up for RSpec, Cucumber, and Test::Unit.
-  If you've overridden the test command or have other custom requirements,
-  you might want to read
-  %a{href: "/docs/parallel-manual-setup"} this document
-  first.
 
-= HAML['heading']({title: "Troubleshooting for Ruby on Rails", hash: "ror-troubleshooting"})
+%p
+  If you've overridden the test command or have other custom requirements,
+  you can
+  = succeed '.', ->
+    %a{href: "/docs/parallel-manual-setup"} manually set up parallelism
+
+%h2 Deployment
+
+%p
+  Circle offers first-class support for
+  = succeed '.', ->
+    %a{href: "/docs/configuration#deployment"} deployment
+  When a build is green, Circle will deploy your Ruby on Rails project as directed
+  in your <code>circle.yml</code> file.
+
+%h3 Troubleshooting for Ruby on Rails
 
 %p
   Our
   %a{href: "/docs/troubleshooting-ruby"}
-    Ruby Troubleshooting
+    Ruby troubleshooting
   documentation has information about the following issues and problems:
 
-%ul
-  %li
-    Do you need the latest version of Bundler?
+=HAML["troubleshooting_ruby"](@)
 
-  %li
-    Error message: "unable to obtain stable firefox connection in 60 seconds"
-
-  %li
-    Git errors during a bundle install
-
-  %li
-    rake db:schema:load fails
-
-  %li
-    Circle is running the wrong Ruby commands
-
-  %li
-    Circle uses the wrong Ruby version
 %p
-  If you still having trouble, please
+  If you are still having trouble, please
   = HAML.contact_us({succeed: ""})
   and we will be happy to help.
