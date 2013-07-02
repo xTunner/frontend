@@ -32,6 +32,7 @@ $(document).ajaxError (ev, xhr, settings, errorThrown) ->
     statusText: xhr.statusText
     url: settings.url if settings?
     method: settings.type if settings?
+    circleIdentity: xhr.getResponseHeader("X-CircleCI-Identity")
 
   if xhr.status == 401
     error_object.message = "You've been logged out, <a href='#{CI.github.authUrl()}'>log back in</a> to continue."

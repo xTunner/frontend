@@ -3,7 +3,7 @@
 - @lastUpdated = "Jun 7, 2013"
 
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2 Overview
 
 %p
   Circle works seamlessly with all the tools and package managers that
@@ -32,7 +32,7 @@
   Circle reads the file each time it runs a build.
   Your <code>circle.yml</code> file defines your PHP environment.
 
-= HAML['heading']({title: "composer, pear, and pecl", hash: "composer-pear-pecl"})
+%h2#composer-pear-pecl composer, pear, and pecl
 
 %p
   Circle has all three of these package managers installed.
@@ -56,7 +56,7 @@
         pre:
           - pecl install mongo
 
-= HAML['heading']({title: "Customizing your PHP environment", hash: "customizing-php-environ"})
+%h2#customizing-php-environ Customizing your PHP environment
 
 %p
   Your <code>circle.yml</code> file is the way to handle customization.
@@ -81,7 +81,7 @@
   Note: <code>phpenv global</code> returns the PHP version that has been
   specified in your <code>circle.yml</code> file.
 
-= HAML['heading']({title: "Add a few lines", hash: "add-lines"})
+%h2#add-lines Add a few lines
 
 %p
   If you want to create a configuration file with only a few simple settings,
@@ -100,7 +100,7 @@
         pre:
           - echo "memory_limit = 64M" > ~/.phpenv/versions/$(phpenv global)/etc/conf.d/memory.ini
 
-= HAML['heading']({title: "Enable Xdebug", hash: "xdebug"})
+%h2#xdebug Enable Xdebug
 
 %p
   Xdebug is installed for all versions of PHP, but is disabled by default&mdash;Circle

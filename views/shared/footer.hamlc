@@ -29,6 +29,9 @@
           %a{ href: '/docs', title: 'Documentation' }
             Docs
         %li
+          %a{ href: '/jobs', title: 'Come work at CircleCI' }
+            Jobs
+        %li
           %a.ficon.em{ href: 'mailto:sayhi@circleci.com' }
             Email
         %li.twitter-follow

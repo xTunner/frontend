@@ -37,6 +37,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     tokens: []
     tokenLabel: ""
     tokenScope: "status"
+    env_vars: []
+    env_varName: ""
+    env_varValue: ""
 
   constructor: (json) ->
 
@@ -479,4 +482,30 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/token/#{data.token}",
       success: (result) =>
         @load_tokens()
+    false
+
+  load_env_vars: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/envvar", (data) =>
+      @env_vars(data)
+
+  create_env_var: (data, event) =>
+    $.ajax
+      event: event
+      type: "POST"
+      url: "/api/v1/project/#{@project_name()}/envvar",
+      data: JSON.stringify
+        name: @env_varName()
+        value: @env_varValue()
+      success: (result) =>
+        @env_varName("")
+        @env_varValue("")
+        @load_env_vars()
+      false
+
+  delete_env_var: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      url: "/api/v1/project/#{@project_name()}/envvar/#{data.name}",
+      success: (result) =>
+        @load_env_vars()
     false

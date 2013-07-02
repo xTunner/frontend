@@ -7,9 +7,9 @@
     .span9
       .row-fluid
         %h1
-          Your Repositories
+          Choose a repository
           %button.btn.btn-success.btn-large.pull-right{data-bind: "click: $root.goDashboard"}
-            Your Recent Builds
+            Back to Dashboard
       .row-fluid
         %div{data-bind: "if: showLoading"}
           .centered-spinner

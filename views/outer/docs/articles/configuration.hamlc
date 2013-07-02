@@ -1,8 +1,7 @@
 - @title = 'Configuring Circle'
 - @lastUpdated = "May 2, 2013"
 
-= HAML['heading']({title: "Overview", hash: "overview"})
-
+%h2 Overview
 
 %p
   Circle automatically infers your settings from your code, so Circle's normal processing works just fine in most circumstances.
@@ -41,7 +40,7 @@
   file in that subdirectory tells Circle to look for your app in that subdirectory.
 
 
-= HAML['heading']({title: "File structure and content", hash: "phases"})
+%h2#phases File structure and content
 
 %p
   The
@@ -88,8 +87,7 @@
   in particular does not work.
   If you'd like to set an environment variable globally, you can specify them in the <a href="#machine">Machine configuration</a> section, described below.
 
-%h4#modifiers
-  Modifiers
+%h4 Modifiers
 
 %p
   You can tweak individual commands by adding a modifier.
@@ -128,7 +126,7 @@
                 test_dir
 %p
 
-= HAML['heading']({title: "Machine configuration", hash: "machine"})
+%h2#machine Machine configuration
 
 %p
   The
@@ -362,6 +360,28 @@
   for a complete list.
 
 %h3
+  Python version
+
+%p
+  Circle uses
+  %a{href: "https://github.com/yyuu/pyenv"} pyenv
+  to manage Python versions.
+  Here's an example of how to set the version of Python used for your tests.
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        python:
+          version: 2.7.5
+
+%p
+%p
+  See
+  %a{href: "/doc/environment#python"} supported Python versions
+  for a complete list.
+
+%h3
   Other languages
 
 %p
@@ -405,7 +425,7 @@
           - neo4j
 
 
-= HAML['heading']({title: "Code checkout from GitHub", hash: "checkout"})
+%h2#checkout Code checkout from GitHub
 
 %p
   The <code>checkout</code> section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
@@ -432,7 +452,7 @@
         post:
           - mv config/.app.yml config/app.yml
 
-= HAML['heading']({title: "Project-specific dependencies", hash: "dependencies"})
+%h2#dependencies Project-specific dependencies
 
 %p
   Most web programming languages and frameworks, including Ruby's bundler, npm for Node.js, and Python's pip, have some form of dependency specification;
@@ -507,7 +527,7 @@
 %p
   Caches are private, and are not shared with other projects.
 
-= HAML['heading']({title: "Database setup", hash: "database"})
+%h2#database Database setup
 
 %p
   Your web framework typically includes commands to create your database, install your schema, and run your migrations.
@@ -543,7 +563,7 @@
           environment:
             DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 
-= HAML['heading']({title: "Running your tests", hash: "test"})
+%h2#test Running your tests
 
 %p
   The most important part of testing is actually running the tests!
@@ -600,7 +620,7 @@
 %p
 
 
-= HAML['heading']({title: "Deployment", hash: "deployment"})
+%h2 Deployment
 
 
 %p
@@ -700,7 +720,7 @@
 %p
 
 
-= HAML['heading']({title: "Notifications", hash: "notify"})
+%h2#notify Notifications
 
 %p
   Circle sends personalized notifications by email.
@@ -714,7 +734,10 @@
 
 %p
   This example sends a JSON packet to the specified URL.
-  Note that the sent JSON packet can also be read using the REST API.
+  The JSON packet is identical to the result of the
+  %a{ href: "/docs/reference-api#build" } Build API
+  call for the same build.
+
 
 
 %pre
@@ -729,7 +752,7 @@
 
 
 
-= HAML['heading']({title: "Need anything else?"})
+%h2#help Need anything else?
 
 %p
   We are adding support for configuring every part of your build.

@@ -1,7 +1,7 @@
 - @title = "Getting started with Circle"
 - @lastUpdated = "April 29, 2013"
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2#overview Overview
 
 %p Setting up Circle usually takes only three mouse clicks:
 %ol
@@ -29,7 +29,7 @@
       What happens when you add a project?
 
 
-%h2 When the magic doesn't work?
+%h3 When the magic doesn't work?
 
 %p
   Of course, life is not always sunshine and daisies.
@@ -57,9 +57,9 @@
     and their solutions.
 
 
-= HAML['heading']({title: "What next?", hash: "what-next"})
+%h2 What next?
 
-%h2 Add your colleagues
+%h3 Add your colleagues
 %p
   Testing is no fun if you're the only one playing.
   To add your colleagues, simply ask them to join Circle.
@@ -69,7 +69,7 @@
   One of the best things about Circle's design is that you have your own account, which in turn enables Circle to send you personalized emails only for the branches you use.
 
 
-%h2 Add more projects
+%h3 Add more projects
 %p
   No matter if you commit to a project only once a month or if a project is just getting started, adding it to Circle will help keep it on track.
   Add projects from the

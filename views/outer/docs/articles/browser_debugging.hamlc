@@ -5,7 +5,7 @@
 %p
   Integration tests can be hard to debug, especially when they're running on a remote machine. Circle supports X11 forwarding over SSH to make this process much easier.
 
-= HAML.heading {title: "How to interact with the browser running your tests"}
+%h2#interacting Interacting with the browser on Circle's VM
 
 %p
   Before you start, make sure you have an X Window System on your computer. If you're using OSX, I recommend

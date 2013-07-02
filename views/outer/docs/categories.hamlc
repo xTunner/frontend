@@ -2,7 +2,7 @@
   %ul.topics
     - for slug, category of @categories
       %li
-        %a{href: "/docs/#{slug}"}
+        %a{href: "#{category.url}"}
           %h4
             = category.title
         %hr

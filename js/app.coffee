@@ -232,6 +232,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @billing().load()
     else if subpage is "api"
       @project().load_tokens()
+    else if subpage is "env_vars"
+      @project().load_env_vars()
 
   loadEditPage: (cx, username, project, subpage) =>
     project_name = "#{username}/#{project}"
@@ -440,14 +442,21 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
     # outer
-    @get "^/docs(.*)", (cx) => VM.docs.display(cx)
-    @get "^/about.*", (cx) => VM.about.display(cx)
-    @get "^/privacy.*", (cx) => VM.privacy.display(cx)
+    @get "^/docs(.*)", (cx) =>
+      VM.docs.display(cx)
+      mixpanel.track("View Docs")
+    @get "^/about.*", (cx) =>
+      VM.about.display(cx)
+      mixpanel.track("View About")
+    @get "^/privacy.*", (cx) =>
+      VM.privacy.display(cx)
+      mixpanel.track("View Privacy")
     @get "^/jobs.*", (cx) => VM.jobs.display(cx)
     @get "^/pricing.*", (cx) =>
       VM.billing().loadPlans()
       VM.billing().loadPlanFeatures()
       VM.pricing.display(cx)
+      mixpanel.track("View Pricing Outer")
 
     @post "^/heroku/resources", -> true
 

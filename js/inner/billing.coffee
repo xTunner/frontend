@@ -224,6 +224,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         @loadInvoices()
 
         @advanceWizard()
+        mixpanel.track("Paid")
     )
     false
 
@@ -268,6 +269,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         organizations: @organizations()
       success: =>
         @advanceWizard()
+        mixpanel.track("Save Organizations")
 
   saveSpeed: (data, event) =>
     if @chosen_plan_containers_p()
@@ -287,6 +289,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         @oldTotal(@total())
         @closeWizard()
         @loadExistingPlans()
+        mixpanel.track("Save Parallelism")
 
   # TODO: make the API call return existing plan
   saveContainers: (data, event) =>
@@ -299,6 +302,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @oldTotal(@total())
         @closeWizard()
+        mixpanel.track("Save Containers")
         @loadExistingPlans()
 
   loadExistingCard: () =>

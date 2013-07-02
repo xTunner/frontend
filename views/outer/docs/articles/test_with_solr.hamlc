@@ -16,7 +16,7 @@
 %p
   If you're using a library or module with similar functionality (i.e. one
   that provides a bundled solr, and a wrapper for booting it), please
-  =HAML['contact_us']()
+  = HAML['contact_us']()
   so that we can extend our inference to make it work automatically!
 
 %h2 The Hard Way
@@ -47,9 +47,13 @@
 
   %ol
     %li
-      Copy a skeletal solr installation from /opt/solr-4.2.1 into your home directory.
+      Copy a skeletal solr installation from
+      %code /opt/solr-4.2.1
+      into your home directory.
     %li
-      Copy your configuration (schema.xml at least, and solrconfig.xml if you need it)
+      Copy your configuration (<code>schema.xml</code> at least, and
+      %code solrconfig.xml
+      if you need it)
       into place.
     %li
       Launch solr as a
@@ -58,8 +62,9 @@
           background process
 
 %p
-  Solr, when started this way, will be running under http://localhost:8983/solr/,
-  and logging to $HOME/solr.log.
+  Solr, when started this way, will be running under
+  <code>http://localhost:8983/solr/</code>,
+  and logging to <code>$HOME/solr.log</code>.
 
 %p
   Please
