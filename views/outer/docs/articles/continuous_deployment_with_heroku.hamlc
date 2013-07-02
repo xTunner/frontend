@@ -2,7 +2,7 @@
 - @title = 'Continuous Deployment with Heroku'
 - @lastUpdated = "May 7, 2013"
 
-= HAML['heading']({title: "Heroku setup", hash: "heroku-setup"})
+%h2 Heroku setup
 
 %p
   You must supply or confirm some authentication settings before Heroku deployment.
@@ -50,7 +50,7 @@
   command.
   Upon a successful build, we'll automatically deploy to the app in the section that matches the push, should there be one.
 
-= HAML['heading']({title: "Heroku with pre- or post-deployment steps", hash: "heroku-deployment-steps"})
+%h2#pre-or-post Heroku with pre- or post-deployment steps
 
 %p
   If you'd like to run commands before or after deploying to Heroku, you'll have to use the 'normal'
@@ -68,7 +68,7 @@
             - heroku run rake db:migrate --app foo-bar-123
 %p
 
-= HAML['heading']({title: "Heroku's maintenance mode", hash: "heroku-maintenance-mode"})
+%h2#maintenance-mode Heroku's maintenance mode
 
 %p
   When you are pushing new code that requires a database migration, your app will not be available.
@@ -122,7 +122,7 @@
   %a{href: "http://devcenter.heroku.com/articles/error-pages#customize-pages"} custom
   service unavailable page for your app.
 
-= HAML['heading']({title: "Heroku and database migrations", hash: "heroku-database-migrations"})
+%h2#migrations Heroku and database migrations
 
 %p
   After pushing new code, you may wish to run your database migration.
@@ -156,7 +156,7 @@
     %a{href: "http://djangopro.com/2011/01/django-database-migration-tool-south-explained"}Django (Python web framework)
 
 
-= HAML['heading']({title: "Clearing caches after a deployment", hash: "heroku-clearing-caches-after-deployment"})
+%h2#caches Clearing caches after a deployment
 
 %p
   If you are using a caching add-on,

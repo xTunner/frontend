@@ -2,7 +2,7 @@
 - @short_title = 'Ruby/Rails'
 - @lastUpdated = "Jun 20, 2013"
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2 Overview
 
 %p  
   Good tests make good code.
@@ -105,7 +105,8 @@
   When a build is green, Circle will deploy your Ruby on Rails project as directed
   in your <code>circle.yml</code> file.
 
-%h3 Troubleshooting for Ruby on Rails
+
+%h2#troubleshooting Troubleshooting for Ruby on Rails
 
 %p
   Our

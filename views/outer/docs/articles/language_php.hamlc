@@ -3,7 +3,7 @@
 - @lastUpdated = "Jun 19, 2013"
 
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2 Overview
 
 %p
   Circle works seamlessly with all the tools and package managers,
@@ -33,7 +33,7 @@
   %a{href: "https://github.com/CHH/phpenv"} phpenv
   to manage PHP versions.
 
-%h2 Dependencies&mdash;including composer, pear, and pecl
+%h2#composer-pear-pecl Dependencies&mdash;including composer, pear, and pecl
 
 %p
   Circle has all three of these package managers installed.
@@ -54,6 +54,7 @@
       dependencies:
         pre:
           - pecl install mongo
+
 %p
   It is simple to add a line or two to your <code>circle.yml</code> file telling us
   how to handle your project.
@@ -81,24 +82,6 @@
       dependencies:
         pre:
           - echo "memory_limit = 64M" > ~/.phpenv/versions/$(phpenv global)/etc/conf.d/memory.ini
-
-%h3 Enabling Xdebug
-
-%p
-  Xdebug is installed for all versions of PHP, but is disabled by default.
-  It is simple to reactivate the tool's debugging and profiling capabilities by
-  adding the following to your <code>circle.yml</code> file:
-
-%pre
-  %code.no-highlight<>
-    :preserve
-      dependencies:
-        pre:
-          - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
-
-%p
-  This example uses <code>sed</code> to uncomment the lines in the pre-installed
-  <code>xdebug.ini</code> file.
 
 %h2 Databases
 
@@ -128,6 +111,24 @@
       test:
         override:
           - ./my_testing_script.sh
+
+%h3#xdebug Enable Xdebug
+
+%p
+  Xdebug is installed for all versions of PHP, but is disabled by default.
+  It is simple to reactivate the tool's debugging and profiling capabilities by
+  adding the following to your <code>circle.yml</code> file:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        pre:
+          - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
+
+%p
+  This example uses <code>sed</code> to uncomment the lines in the pre-installed
+  <code>xdebug.ini</code> file.
 
 %h2 Deployment
 

@@ -3,7 +3,7 @@
 - @lastUpdated = "Jun 19, 2013"
 
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2 Overview
 
 %p
   Circle supports Node.js applications development.

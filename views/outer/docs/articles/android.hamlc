@@ -2,7 +2,7 @@
 - @title = 'Test Android applications'
 - @lastUpdated = "March 22, 2013"
 
-= HAML['heading']({title: "Overview", hash: "overview"})
+%h2 Overview
 
 %p
   CircleCI support testing Android applications. The SDK is

@@ -14,7 +14,9 @@
       %li.nav-header
         Tweaks
       %li
-        %a{ href: "edit#parallel-builds" } Build Speed
+        %a{ href: "edit#parallel-builds" } Build speed
+      %li
+        %a{ href: "edit#env-vars" } Environment variables
       %li.divider
 
       %li.nav-header
@@ -37,11 +39,11 @@
       -# %li
       -#   %a{ href: "edit#collaborators" } Collaborators
       %li
-        %a{ href: "edit#ssh" } SSH Keys
+        %a{ href: "edit#ssh" } SSH keys
       %li
-        %a{ href: "edit#github" } GitHub User
+        %a{ href: "edit#github" } GitHub user
       %li
-        %a{ href: "edit#api" } API Tokens
+        %a{ href: "edit#api" } API tokens
 
 
       %li.nav-header

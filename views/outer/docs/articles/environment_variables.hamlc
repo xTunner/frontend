@@ -92,45 +92,33 @@
   %code export FOO=bar
   command won't work.
 
-%h4 Setting environmental variables for all commands using circle.yml
+%h4 Setting environment variables for all commands using circle.yml
 
 %p
-  You can set environmental variables in your
+  You can set environment variables in your
   %code circle.yml
   file, that
   = succeed '.', ->
     %a{href: "/docs/configuration#environment"} will be set for every command
 
 
-%h4 Setting environmental variables for all commands without adding them to git
+%h4 Setting environment variables for all commands without adding them to git
 
 %p
   Occasionally, you'll need to add an API key or some other secret as
-  an environmental variable.  Adding it to the circle.yml file will
-  put it in your git history, which might be undesirable.  As a
-  workaround, you can add it through our UI. A good place to put them
-  is the pre-dependencies section.
-
-%p
-  Each time Circle runs one of your commands, it sources the
-  %code \~/.circlerc
-  file in the shell first.
-  You can use this to store the secret API key:
-
-%pre
-  %code.bash<>
-    :preserve
-      $ echo 'export AWS_IAM_KEY=01234556789abcdef' >> ~/.circlerc
+  an environment variable.  You might not want to add the value to your
+  git history.  Instead, you can add environment variables using the
+  <b>Edit settings &gt; Environment Variables</b> page of your project.
 
 %p
   All commands and data on Circle's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
   Take this into account before adding important credentials that some colleagues do not have access to.
 
 
-%h4 Per-command environmental variables
+%h4 Per-command environment variables
 
 %p
-  You can set environental variables per-command as well.
+  You can set environment variables per-command as well.
   You can use standard bash syntax in your commands:
 
 %pre
