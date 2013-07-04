@@ -164,26 +164,31 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: =>
         @loadExistingCard()
 
+  stripeDefaults: () =>
+    key: @stripeKey()
+    name: "CircleCI"
+    address: false
+    email: VM.current_user().selected_email()
+
   createCard: (plan, event) =>
-    StripeCheckout.open
-      key: @stripeKey()
-      name: 'CircleCi',
+    vals =
       panelLabel: 'Add card',
-      description: "#{plan.name} plan"
       price: 100 * plan.price
+      description: "#{plan.name} plan"
       token: (token) =>
         @chosenPlan(plan)
         @recordStripeTransaction event, token
 
+    StripeCheckout.open($.extend @stripeDefaults(), vals)
+
 
   updateCard: (data, event) =>
-    StripeCheckout.open
-      key: @stripeKey()
-      name: 'CircleCI',
-      email: VM.current_user().selected_email(),
+    vals =
       panelLabel: 'Update card',
       token: (token) =>
         @ajaxSetCard(event, token.id, "PUT")
+
+    StripeCheckout.open($.extend @stripeDefaults(), vals)
 
 
   load: (hash="small") =>
