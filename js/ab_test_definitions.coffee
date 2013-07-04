@@ -18,6 +18,7 @@ exports.ab_test_definitions =
     home_benefits_heading: ["A professional continuous integration setup for your team today, tomorrow and beyond.", "The most advanced Continuous Integration available"]
     home_speed_level: ["4-way", "8-way", "12-way"]
     does_we_test_your_stack_work: ["We test your stack", "If it runs on Linux, it runs on CircleCI"]
+    stripe_v3: [true, false]
 
   overrides:
     [

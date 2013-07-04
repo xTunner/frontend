@@ -179,7 +179,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   updateCard: (data, event) =>
     StripeCheckout.open
       key: @stripeKey()
-      name: 'CircleCi',
+      name: 'CircleCI',
+      email: VM.current_user().selected_email(),
       panelLabel: 'Update card',
       token: (token) =>
         @ajaxSetCard(event, token.id, "PUT")
@@ -237,7 +238,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadStripe: () =>
     $.getScript "https://js.stripe.com/v1/"
-    $.getScript "https://checkout.stripe.com/v2/checkout.js"
+    if VM.ab().stripe_v3
+      $.getScript "https://checkout.stripe.com/v3/checkout.js"
+    else
+      $.getScript "https://checkout.stripe.com/v2/checkout.js"
 
   loadPlanData: (data) =>
     @oldTotal(data.amount / 100)
