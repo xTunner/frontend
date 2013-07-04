@@ -1,6 +1,6 @@
 .sidebar
   %ul.topics
-    - for slug, category of @categories
+    - for category in @categories
       %li
         %a{href: "#{category.url}"}
           %h4
