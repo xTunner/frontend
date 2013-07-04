@@ -7,7 +7,6 @@ exports = this
 
 exports.ab_test_definitions =
   options:
-    quick_setup_or_trial: ["14-day free trial.", "Run your first test with 3 clicks."]
     github_warning_modal: [true, false]
     home_red_buttons: [true, false]
     home_text_hero: [true, false]
