@@ -158,8 +158,7 @@
                       .output-spin{data-bind: "if: retrieving_output"}
                         = HAML['fast_spinner']()
 
-                      %div{data-bind: "ifnot: retrieving_output"}
-
+                      %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
                         = HAML.messages()
 
                         %span{data-bind: "if: bash_command"}
