@@ -84,11 +84,7 @@
 
         %li
           %i.icon-phone
-          (800) 585-7075
-
-        %li
-          %i.icon-phone
-          +1 415 944-3995 (international)
+          800 585-7075 / +1 415 944-3995
 
         %li
           %i.icon-globe
