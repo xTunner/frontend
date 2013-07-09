@@ -151,6 +151,7 @@
                       %span.action-source
                         %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
+
                   .detail-wrapper{data-bind: "if: has_content"}
                     .detail{data-bind: "css: action_log_style, visible: !minimize()"}
 
@@ -158,6 +159,9 @@
                         = HAML['fast_spinner']()
 
                       %div{data-bind: "ifnot: retrieving_output"}
+
+                        = HAML.messages()
+
                         %span{data-bind: "if: bash_command"}
                           Command:
                           %span.pull-right
@@ -169,7 +173,6 @@
 
                         %pre.output{data-bind: "fastHtml: log_output()"}
 
-                / = HAML['report_error']({build: false})
 
         %div{data-bind: "if: steps().length > 1"}
-          = HAML['messages']()
+          = HAML.messages()
