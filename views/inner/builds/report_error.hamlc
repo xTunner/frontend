@@ -1,9 +1,4 @@
 %span{data-bind: "if: failed() && !infrastructure_fail()"}
-  %span{data-bind: "if: messages.length"}
-    .alert.alert-danger
-      %span{data-bind: "foreach: messages"}
-        %span{data-bind: "html: message"}
-
   .alert.alert-danger
     %b Error!
 
