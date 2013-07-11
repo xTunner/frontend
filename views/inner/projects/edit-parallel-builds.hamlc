@@ -149,6 +149,8 @@
                 4 simultaneous builds at 4x parallelism
               %li
                 2 simultaneous builds at 8x parallelism
+              %li
+                1 simultaneous build at 16x parallelism
 
     .row-fluid
       .span10
