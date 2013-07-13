@@ -10,7 +10,6 @@ exports.ab_test_definitions =
     github_warning_modal: [true, false]
     home_red_buttons: [true, false]
     home_text_hero: [true, false]
-    show_add_repos_blank_slate: [true, false] # true shows the show_add_repos_blank_slate div, false hides it
     home_extra_ctas: [true, false]
     home_cta_plan_price_trial: [true, false] # around the home button CTA, include text about plans starting from $19, and 14 day trial
     number_one_instead_of_happy_customers_callout: [true, false]
