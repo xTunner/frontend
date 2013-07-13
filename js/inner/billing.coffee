@@ -243,7 +243,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadStripe: () =>
     $.getScript "https://js.stripe.com/v1/"
-    if VM.ab().stripe_v3
+    if VM.ab().stripe_v3()
       $.getScript "https://checkout.stripe.com/v3/checkout.js"
     else
       $.getScript "https://checkout.stripe.com/v2/checkout.js"
