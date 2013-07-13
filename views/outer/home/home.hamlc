@@ -5,10 +5,7 @@
 
 %div{ data-bind: "ifnot: from_heroku" }
 
-  %div{ data-bind: "if: ab().home_text_hero"}
-    = HAML.home_text_hero_unit()
-  %div{ data-bind: "ifnot: ab().home_text_hero"}
-    = HAML.home_hero_unit()
+  = HAML.home_hero_unit()
 
   = HAML.home_customers()
   = HAML.home_technologies()
