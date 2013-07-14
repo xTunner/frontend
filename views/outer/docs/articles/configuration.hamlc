@@ -300,12 +300,10 @@
   See
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
-  If you do not specify a version, Circle uses
+  If you do not specify a version, Circle uses the version in your package.json, or
   = succeed '.', ->
     %code= CI.Versions.default_node
-  Note that recent versions of NVM support selecting versions through
-  package.json.
-  If your version of NVM supports this, we recommend you use it.
+
 
 %p
   Here's an example of how to set the version of Node.js to be used for your tests.
