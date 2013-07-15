@@ -59,7 +59,7 @@
           %li build frequently - if your developers push more than 5 times per day on average, you should scale up your concurrent builds linearly.
 
       %p.help-block
-        You can split your build across up to 8 containers to reduce your test time
+        You can split your build across up to 16 containers to reduce your test time
         by up to 16x.
 
       %p.help-block
