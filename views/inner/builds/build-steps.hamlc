@@ -1,0 +1,49 @@
+.row-fluid
+  .offset1.span10{data-bind: "foreach: steps"}
+    %div{data-bind: "foreach: actions"}
+
+      -# wrapper allows the header and detail be siblings, for the JS
+      .wrapper.build-output
+        %div{data-bind: "if: $root.build().different_type($data)"}
+          .type-divider
+            %span{data-bind: "text: type"}
+        .action_header{data-bind: "css: action_header_style"}
+          .ah_wrapper
+            .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
+              .button{data-bind: "css: action_header_button_style"}
+                %span{data-bind: "if: has_content"}
+                  %i{data-bind: "css: collapse_icon"}
+              .command{data-bind: "css: action_header_style"}
+                %span.command-text
+                  %span{data-bind: "if: $data.bash_command() == $data.name()"}
+                    \$
+                  %span{data-bind: "text: name, attr: {title: bash_command}"}
+                  %span{data-bind: "if: $parent.has_multiple_actions"}
+                    = surround '(', ')', ->
+                      %span{data-bind: "text: index"}<>
+                %span.time
+                  %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
+                  %span{data-bind: "if: timedout"}
+                    %b (TIMED OUT)
+                %span.action-source
+                  %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
+
+            .detail-wrapper{data-bind: "if: has_content"}
+              .detail{data-bind: "css: action_log_style, visible: !minimize()"}
+
+                .output-spin{data-bind: "if: retrieving_output"}
+                  = HAML['fast_spinner']()
+
+                %div{data-bind: "ifnot: retrieving_output"}
+                  %span{data-bind: "if: bash_command"}
+                    Command:
+                    %span.pull-right
+                      Exit code:
+                      %span{data-bind: "text: exit_code"}
+
+                    %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+                  Output:
+
+                  %pre.output{data-bind: "fastHtml: log_output()"}
+
+          / = HAML['report_error']({build: false})
