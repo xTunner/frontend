@@ -3,4 +3,4 @@ CI.Versions =
   old_ruby: "1.8.7-p358"
   default_node: "0.8.12"
   default_php: "5.3.10-1ubuntu3.5"
-  default_python: "python 2.7.3"
+  default_python: "2.7.3"
