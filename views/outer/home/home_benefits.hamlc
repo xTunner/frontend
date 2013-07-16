@@ -3,7 +3,8 @@
     .row-fluid
       .span12
         %h2 Features &amp; Benefits of CircleCI
-        %h3{ data-bind: "text: VM.ab().home_benefits_heading" }
+        %h3
+          A professional continuous integration setup for your team today, tomorrow and beyond.
     .row-fluid
       .span4.section.quick-setup.clearfix
         .section-graphic
