@@ -32,7 +32,7 @@
           branch: master
           commands:
             - ./deploy-to-production.sh
-        staging:           # just a label
+        staging:
           branch: staging
           commands:
             - ./deploy-to-staging.sh
@@ -48,9 +48,7 @@
 %p
   Most of our customers deploy to servers using SSH.
   You need to upload your SSH keys from your project's
-  %b
-    Edit settings > SSH keys
-  page in the Circle UI.
+  <b>Edit settings > SSH keys</b> page in the Circle UI.
   Circle adds them to the <code>ssh-agent</code>, so they are available for forwarding.
 
 %p
@@ -127,6 +125,4 @@
   a physical or in-the-cloud server under your control.
   If you run into any problems,
   = HAML['contact_us']()
-  and we'll be happy to help. 
-
-
+  and we'll be happy to help.
