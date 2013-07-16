@@ -77,9 +77,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     mixpanel.track("Auth GitHub Modal Why Necessary")
     $(".why_authenticate_github_modal").slideDown()
 
-  # Project dashboard will eventually be merged into regular dashboard,
-  # and this name will be more correct
-  refreshDashboard: () =>
+  refreshBuildState: () =>
     VM.loadProjects()
     sel = VM.selected()
     if sel.admin_builds
@@ -88,6 +86,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
       VM.loadRecentBuilds()
+
+  # Keep this until backend has a chance to fully deploy
+  refreshDashboard: () =>
+    @refreshBuildState()
 
   performDocSearch: (query) =>
     $.ajax
