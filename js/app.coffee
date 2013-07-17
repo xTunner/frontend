@@ -412,6 +412,11 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
+      VM.selected
+        username: cx.params.username
+        project: cx.params.project
+        project_name: "#{cx.params.username}/#{cx.params.project}"
+        build_num: cx.params.build_num
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
   @get('^/gh/:username/:project',
