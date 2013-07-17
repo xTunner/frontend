@@ -188,7 +188,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if @usage_queued_at() and @queued_at()
         CI.time.as_duration(moment(@queued_at()).diff(@usage_queued_at()))
       else if @usage_queued_at()
-        CI.time.as_duration(moment(@usage_queued_at()).diff(moment()))
+        @updatingDuration(@usage_queued_at())
 
     @queued_time_summary = @komp =>
       str = "#{@usage_queued_time()} waiting"

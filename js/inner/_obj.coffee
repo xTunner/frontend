@@ -6,6 +6,8 @@ CI.inner.Obj = class Obj
     for k,v of $.extend {}, defaults, json
       if @observables().hasOwnProperty(k) then @[k](v) else @[k] = v
 
+    @_timers = {}
+
   observables: () => {}
 
 
@@ -22,6 +24,10 @@ CI.inner.Obj = class Obj
     for k,v of obj
       if @observables().hasOwnProperty(k)
         @[k](v)
+
+  updatingDuration: (start) =>
+    timer = @_timers[start] or= new CI.Timer(start)
+    timer.maybe_start()
 
 
 CI.inner.VcsUrlMixin = (obj) ->
