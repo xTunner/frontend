@@ -11,13 +11,13 @@
   from your code&mdash;Circle automatically detects a
   <code>package.json</code>, for example.
   This enables Circle to configure the VM to your preferences and requirements,
-  set up your dependencies, recognize what database (if any) your tests use,
-  run your tests, and, if directed, deploy your green build.
+  set up your dependencies, and run your tests.
 
 %p
   If your project has any special requirements, tell us about them by including a
   %a{href: "/docs/configuration"} circle.yml
-  file in your repo.
+  file in your repo. Providing deployment information in your <code>circle.yml</code>
+  file is optional, but if you do, we'll deploy your green builds, too.
 
 %h2 Version
 
@@ -80,6 +80,6 @@
 
 %p
   If you have any trouble, please
-  = HAML.contact_us({succeed: ""})
+  = HAML.contact_us()
   and we will be happy to help.
 

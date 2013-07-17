@@ -8,9 +8,8 @@
   Good tests make good code.
   Circle makes Rails testing simple and uncomplicated.
   Circle looks at your code, determines what version of Ruby you use,
-  infers your test configuration, and runs your tests.
-  Circle has all your DB requirements covered because we have pre-installed
-  the most-used databases.
+  infers your test configuration, runs your tests, and handles testing database
+  requirements.
   To complete the process, we can&mdash;if you tell us where&mdash;deploy
   your code once your build is green.
 
@@ -45,13 +44,13 @@
 
 %p
   These tools and frameworks are available globally without any need for special 
-  configuration. They use <code>RVM 1.9.3-p194</code>.
+  configuration.
 
 %p
   Our
     %a{href: "/docs/environment"} test environment
-  covers more details about language versions and tools as well as describes how
-  Circle facilitates the use of testing tools that require a browser.
+  covers more details about language versions and tools; it also explains how Circle
+  works with testing tools that require a browser.
 
 %h2 Dependencies
 
@@ -64,12 +63,13 @@
 %h2 Databases
 
 %p
-  Circle routinely manages all your database requirements,
-  such as creating your database and installing your schema.
+  Circle manages all your database requirements,
+  such as running your <code>rake</code> commands for creating, loading, 
+  and migrating your database.
   We have pre-installed more than a dozen
   = succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
-  including PostgreSQL and MySQL.
+  including PostgreSQL, MySQL, and MongoDB.
   If needed, you have the option of
     %a{href: "/docs/manually#dependencies"} manually setting up your test database
   or including commands in your <code>circle.yml</code> file to override
@@ -79,14 +79,14 @@
 
 %p
   Circle runs all tests automatically, working in tandem with
-  Ruby on Rail's built-in testing functionality and following any
+  Ruby on Rails built-in testing functionality and following any
   custom testing specifications in your <code>circle.yml</code> file.
 
 %h2 Testing in Parallel
 
 %p
-  Should you need to run your tests in parallel, you can choose a plan and
-  set up parallelism on your project's
+  Should you need faster testing, you can run your tests in parallel.
+  You set up parallelism on your project's
   <b>Edit settings > Build speed</b> page of the Circle UI.
   Circle automatically sets up for RSpec, Cucumber, and Test::Unit.
 
@@ -118,5 +118,5 @@
 
 %p
   If you are still having trouble, please
-  = HAML.contact_us({succeed: ""})
+  = HAML.contact_us()
   and we will be happy to help.

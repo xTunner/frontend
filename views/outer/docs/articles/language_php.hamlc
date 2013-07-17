@@ -8,9 +8,9 @@
 %p
   Circle works seamlessly with all the tools and package managers,
   such as <code>composer</code>, that help PHP developers test and deploy their code.
-  Circle looks at your code, determines what version of PHP you use,
-  infers your test configuration, and runs your tests.
-  Circle has all your DB requirements covered because we have pre-installed
+  Circle looks at your code and determines what version of PHP you use. 
+  We run your specified tests.
+  Circle has your project's DB requirements covered because we have pre-installed
   the most-used databases.
   To complete the process, we can&mdash;if you tell us where&mdash;deploy your code once your build is green.
 
@@ -27,11 +27,9 @@
   and uses
   %code= CI.Versions.default_php
   as the default.
-  It is trivial for us to add more versions if needed because we use
-  %a{href: "https://github.com/CHH/php-build"} php-build
-  and
-  %a{href: "https://github.com/CHH/phpenv"} phpenv
-  to manage PHP versions.
+  Please
+  = HAML.contact_us()
+  if you need a different version; we'll be happy to install it for you.
 
 %h2#composer-pear-pecl Dependencies&mdash;including composer, pear, and pecl
 
@@ -86,8 +84,6 @@
 %h2 Databases
 
 %p
-  Circle routinely manages all your database requirements,
-  such as creating your database and installing your schema.
   We have pre-installed more than a dozen
   = succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
@@ -100,10 +96,9 @@
 
 %p
   Circle always runs your tests on a fresh machine.
-  If you have a project that roughly follows best practices for PHP,
-  testing should proceed without complications.
-  However, if your project needs something a little more customized,
-  you can override Circle's testing by including your own testing script.
+  The <code>test</code> section of your <code>circle.yml</code> file is where
+  you specify your customized testing needs, such as including your own 
+  testing script.
 
 %pre
   %code.no-highlight<>
@@ -116,8 +111,8 @@
 
 %p
   Xdebug is installed for all versions of PHP, but is disabled by default.
-  It is simple to reactivate the tool's debugging and profiling capabilities by
-  adding the following to your <code>circle.yml</code> file:
+  It is simple to reactivate this tool by adding the following to your
+  <code>circle.yml</code> file:
 
 %pre
   %code.no-highlight<>
@@ -144,15 +139,14 @@
 %h3 Troubleshooting for PHP
 
 %p
-  Our
+  If you run into problems, check out our
   %a{href: "/docs/troubleshooting-php"}
     PHP troubleshooting
-  documentation has information about the following issues and problems:
-
+  write-ups about these issues:
 =HAML["troubleshooting_php"](@)
 
 %p
   If you are still having trouble, please
-  = HAML.contact_us({succeed: ""})
+  = HAML.contact_us()
   and we will be happy to help.
           

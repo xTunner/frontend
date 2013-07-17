@@ -6,11 +6,10 @@
 
 %p
   Circle has great support for Python.
-  We can infer a substantial amount of your settings and required dependencies
-  from your code.
-  This enables Circle to configure the VM to your preferences and requirements,
+  We infer a substantial amount of your settings and required dependencies from your code.
+  This allows Circle to configure the VM to your preferences and requirements,
   set up your dependencies, recognize what database (if any) your tests use,
-  run your tests, and, if directed, deploy your green build.
+  and run your tests. If directed, Circle will also deploy your green build.
 
 %p
   If your project has any special requirements, tell us about them by including a
@@ -24,10 +23,16 @@
   to create an isolated Python environment using
   = succeed '.', ->
     %code= CI.Versions.default_python
-  Please
-  = HAML.contact_us({succeed: ""})
-  if other versions of Python would be of use to you.
 
+%p
+  We support
+  = succeed ',', ->
+    %a{href: "/docs/environment#python"} many version of Python
+  so specify your project's required version in your
+  <code>circle.yml</code> file if it differs from Circle's default version.
+  Please
+  = HAML.contact_us()
+  if other versions of Python would be of use to you.
 
 %h2#package-mgrs-dependencies Package managers and dependencies
 
@@ -53,7 +58,7 @@
 %h2 Databases
 
 %p
-  Circle routinely manages all your database requirements,
+  Circle manages all your database requirements,
   such as creating your database and installing your schema.
   We have pre-installed more than a dozen
   = succeed ',', ->
@@ -66,8 +71,7 @@
 %h2 Testing
 
 %p
-  Circle automatically runs <code>manage.py test</code> if you are using Django.
-  We also automatically run <code>nosetests</code> and <code>tox</code>.
+  Circle automatically runs tests for Django, nose, and Tox.
   If none of those work for your project,
   you can override Circle's testing by including your own testing script.
 
@@ -100,16 +104,17 @@
 %h3 Troubleshooting for Python
 
 %p
-  Our
+  Problems?
+  Check out our
   %a{href: "/docs/troubleshooting-python"}
     Python troubleshooting
-  documentation has information about the following issues and problems:
+  information:
 
 =HAML["troubleshooting_python"](@)
 
 %p
   If you are still having trouble, please
-  = HAML.contact_us({succeed: ""})
+  = HAML.contact_us()
   and we will be happy to help.
 
 
