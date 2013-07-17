@@ -379,99 +379,100 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
 window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
+  @bind 'run-route', (e, data) ->
+    mixpanel.track_pageview(data.path)
 
-    @bind 'run-route', (e, data) ->
-      mixpanel.track_pageview(data.path)
+  # ignore forms with method ko, useful when using the knockout submit binding
+  @route 'ko', '.*', ->
+    false
 
-    # ignore forms with method ko, useful when using the knockout submit binding
-    @route 'ko', '.*', ->
-      false
+  @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
+  @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
-    @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
-    @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
+  @get '^/', (cx) =>
+    VM.selected({})
+    VM.loadRootPage(cx)
 
-    @get '^/', (cx) =>
-      VM.selected({})
-      VM.loadRootPage(cx)
-
-    @get '^/add-projects', (cx) => VM.loadAddProjects cx
-    @get '^/gh/:username/:project/edit(.*)',
-      (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
-    @get '^/account(.*)',
-      (cx) -> VM.loadAccountPage cx, cx.params.splat
-    @get '^/gh/:username/:project/tree/(.*)',
-      (cx) ->
-        # github allows '/' is branch names, so match more broadly and combine them
-        cx.params.branch = cx.params.splat.join('/')
-        VM.selected
-          username: cx.params.username
-          project: cx.params.project
-          project_name: "#{cx.params.username}/#{cx.params.project}"
-          branch: cx.params.branch
-
-        VM.loadProject cx.params.username, cx.params.project, cx.params.branch
-
-    @get '^/gh/:username/:project/:build_num',
-      (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
-    @get('^/gh/:username/:project',
-      (cx) ->
-        VM.selected
-          username: cx.params.username
-          project: cx.params.project
-          project_name: "#{cx.params.username}/#{cx.params.project}"
-
-        VM.loadProject cx.params.username, cx.params.project
-
-    @get '^/logout', (cx) -> VM.logout cx
-
-    @get '^/admin', (cx) -> VM.loadAdminPage cx
-    @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
-    @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get '^/admin/recent-builds', (cx) ->
-      VM.loadAdminRecentBuilds cx
+  @get '^/add-projects', (cx) => VM.loadAddProjects cx
+  @get '^/gh/:username/:project/edit(.*)',
+    (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+  @get '^/account(.*)',
+    (cx) -> VM.loadAccountPage cx, cx.params.splat
+  @get '^/gh/:username/:project/tree/(.*)',
+    (cx) ->
+      # github allows '/' is branch names, so match more broadly and combine them
+      cx.params.branch = cx.params.splat.join('/')
       VM.selected
-        admin_builds: true
+        username: cx.params.username
+        project: cx.params.project
+        project_name: "#{cx.params.username}/#{cx.params.project}"
+        branch: cx.params.branch
 
-    @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
+      VM.loadProject cx.params.username, cx.params.project, cx.params.branch
 
-    # outer
-    @get "^/docs(.*)", (cx) =>
-      VM.docs.display(cx)
-      mixpanel.track("View Docs")
-    @get "^/about.*", (cx) =>
-      VM.about.display(cx)
-      mixpanel.track("View About")
-    @get "^/privacy.*", (cx) =>
-      VM.privacy.display(cx)
-      mixpanel.track("View Privacy")
-    @get "^/jobs.*", (cx) => VM.jobs.display(cx)
-    @get "^/pricing.*", (cx) =>
-      VM.billing().loadPlans()
-      VM.billing().loadPlanFeatures()
-      VM.pricing.display(cx)
-      mixpanel.track("View Pricing Outer")
+  @get '^/gh/:username/:project/:build_num',
+    (cx) ->
+      VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
-    @post "^/heroku/resources", -> true
+  @get('^/gh/:username/:project',
+    (cx) ->
+      VM.selected
+        username: cx.params.username
+        project: cx.params.project
+        project_name: "#{cx.params.username}/#{cx.params.project}"
 
-    @get '^/api/.*', (cx) => false
+      VM.loadProject cx.params.username, cx.params.project
 
-    @get '^(.*)', (cx) => VM.error.display(cx)
+  @get '^/logout', (cx) -> VM.logout cx
 
-    # valid posts, allow to propegate
-    @post '^/logout', -> true
-    @post '^/admin/switch-user', -> true
-    @post "^/about/contact", -> true # allow to propagate
+  @get '^/admin', (cx) -> VM.loadAdminPage cx
+  @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
+  @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
+  @get '^/admin/recent-builds', (cx) ->
+    VM.loadAdminRecentBuilds cx
+    VM.selected
+      admin_builds: true
 
-    @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
+  @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
-    # Google analytics
-    @bind 'event-context-after', ->
-      if window._gaq? # we dont use ga in test mode
-        window._gaq.push @path
+  # outer
+  @get "^/docs(.*)", (cx) =>
+    VM.docs.display(cx)
+    mixpanel.track("View Docs")
+  @get "^/about.*", (cx) =>
+    VM.about.display(cx)
+    mixpanel.track("View About")
+  @get "^/privacy.*", (cx) =>
+    VM.privacy.display(cx)
+    mixpanel.track("View Privacy")
+  @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  @get "^/pricing.*", (cx) =>
+    VM.billing().loadPlans()
+    VM.billing().loadPlanFeatures()
+    VM.pricing.display(cx)
+    mixpanel.track("View Pricing Outer")
 
-    @bind 'error', (e, data) ->
-      if data? and data.error? and window.Airbrake?
-        window.notifyError data
+  @post "^/heroku/resources", -> true
+
+  @get '^/api/.*', (cx) => false
+
+  @get '^(.*)', (cx) => VM.error.display(cx)
+
+  # valid posts, allow to propegate
+  @post '^/logout', -> true
+  @post '^/admin/switch-user', -> true
+  @post "^/about/contact", -> true # allow to propagate
+
+  @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
+
+  # Google analytics
+  @bind 'event-context-after', ->
+    if window._gaq? # we dont use ga in test mode
+      window._gaq.push @path
+
+  @bind 'error', (e, data) ->
+    if data? and data.error? and window.Airbrake?
+      window.notifyError data
 
 
 $(document).ready () ->
