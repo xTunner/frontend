@@ -1,0 +1,12 @@
+.row-fluid{data-bind: "visible: usage_queue_visible"}
+  .usage-queue-why.span12
+    .spinner-container{data-bind: "ifnot: usage_queue_why"}
+      = HAML.fast_spinner({})
+    %div{data-bind: "if: usage_queue_why"}
+      %div{data-bind: "if: usage_queue_why().length"}
+        = HAML.builds({builds: "usage_queue_why", mention_project: true, bare: false})
+        .upsell
+          %span.label.label-success Buy more
+          You can buy more containers to run more builds at the same time.
+      %div{data-bind: "ifnot: usage_queue_why().length"}
+        %span There were no builds ahead of this one in your queue

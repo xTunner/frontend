@@ -16,11 +16,12 @@
       %dt Started by
       %dd{data-bind: "text: why_in_words"}
 
-      / ko if: previous_build
-      %dt Previous build
-      %dd
-        %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
-      / /ko
+      %dt.queued-def{data-bind: "click: toggle_usage_queue_why"}
+        Queued Time
+        %span
+          %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': usage_queue_visible }"
+
+      %dd{data-bind: "text: queued_time_summary"}
 
     %dl.span4
 
@@ -30,9 +31,10 @@
       %dt Duration
       %dd{data-bind: "text: duration"}
 
-      / ko if: VM.current_user().admin && queued_time()
-      %dt Queued
-      %dd{data-bind: "text: queued_time"}
+      / ko if: previous_build
+      %dt Previous build
+      %dd
+        %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
       / /ko
 
     %dl.span4.actions
@@ -65,6 +67,8 @@
                                   data-loading-text: "Canceling...",
                                   data-success-text: "Canceled"}
             Cancel
+
+  = HAML.usage_queue_table({})
 
 
   %dl.commit-log

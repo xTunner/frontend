@@ -25,6 +25,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     retry_of: null
     subject: null
     parallel: null
+    usage_queued_at: null
+    usage_queue_why: null
+    usage_queue_visible: true#false
 
   constructor: (json) ->
 
@@ -89,6 +92,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @queued = @komp =>
       @status() == 'queued'
+
+    @finished = @komp =>
+      @stop_time()? or @canceled()
 
     @status_icon_class =
       "icon-ok": @success_style
@@ -172,7 +178,23 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if @start_time() and @queued_at()
         CI.time.as_duration(moment(@start_time()).diff(@queued_at()))
       else if @queued_at() and @status() is "queued"
-        CI.time.as_time_since(@queued_at())
+        "still queued"
+      else if @usage_queued_at() and @status() is "not_running"
+        "still waiting"
+      else
+        "unknown"
+
+    @usage_queued_time = @komp =>
+      if @usage_queued_at() and @queued_at()
+        CI.time.as_duration(moment(@queued_at()).diff(@usage_queued_at()))
+      else if @usage_queued_at()
+        CI.time.as_duration(moment(@usage_queued_at()).diff(moment()))
+
+    @queued_time_summary = @komp =>
+      str = "#{@usage_queued_time()} waiting"
+      if @usage_queued_time()
+        str += " + #{@queued_time()} in queue"
+      str
 
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
@@ -356,6 +378,24 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "POST"
       event: event
     false
+
+  toggle_usage_queue_why: () =>
+    if @usage_queue_visible()
+      @usage_queue_visible(!@usage_queue_visible())
+      @usage_queue_why(null)
+    else
+      @load_usage_queue_why()
+      @usage_queue_visible(true)
+
+  load_usage_queue_why: () =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/usage-queue"
+      type: "GET"
+      success: (data) =>
+        @usage_queue_why(new CI.inner.Build(build_data) for build_data in data)
+      complete: () =>
+        # stop the spinner if there was an error
+        @usage_queue_why([]) if not @usage_queue_why()
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')

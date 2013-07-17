@@ -82,6 +82,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     sel = VM.selected()
     if sel.admin_builds
       VM.refreshAdminRecentBuilds()
+    else if sel.build_num
+      if VM.build() and VM.build().usage_queue_visible()
+        VM.build().load_usage_queue_why()
     else if sel.project_name
       VM.loadProject(sel.username, sel.project, sel.branch, true)
     else
@@ -205,6 +208,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
       @build().maybeSubscribe()
+
+      # TODO: remove this and make it respond to user action
+      @build().load_usage_queue_why()
       mixpanel_data =
         "running": not @build().stop_time()?
         "build-num": @build().build_num
