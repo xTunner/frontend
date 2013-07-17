@@ -4,7 +4,7 @@
 
 %h2 Overview
 
-%p  
+%p
   Good tests make good code.
   Circle makes Rails testing simple and uncomplicated.
   Circle looks at your code, determines what version of Ruby you use,
@@ -43,7 +43,7 @@
     Rake
 
 %p
-  These tools and frameworks are available globally without any need for special 
+  These tools and frameworks are available globally without any need for special
   configuration.
 
 %p
@@ -64,7 +64,7 @@
 
 %p
   Circle manages all your database requirements,
-  such as running your <code>rake</code> commands for creating, loading, 
+  such as running your <code>rake</code> commands for creating, loading,
   and migrating your database.
   We have pre-installed more than a dozen
   = succeed ',', ->
@@ -114,7 +114,7 @@
     Ruby troubleshooting
   documentation has information about the following issues and problems:
 
-=HAML["troubleshooting_ruby"](@)
+= @include_article('troubleshooting_ruby')
 
 %p
   If you are still having trouble, please

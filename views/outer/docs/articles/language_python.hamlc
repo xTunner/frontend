@@ -110,11 +110,9 @@
     Python troubleshooting
   information:
 
-=HAML["troubleshooting_python"](@)
+= @include_article('troubleshooting_python')
 
 %p
   If you are still having trouble, please
   = HAML.contact_us()
   and we will be happy to help.
-
-

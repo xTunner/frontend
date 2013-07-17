@@ -8,7 +8,7 @@
 %p
   Circle works seamlessly with all the tools and package managers,
   such as <code>composer</code>, that help PHP developers test and deploy their code.
-  Circle looks at your code and determines what version of PHP you use. 
+  Circle looks at your code and determines what version of PHP you use.
   We run your specified tests.
   Circle has your project's DB requirements covered because we have pre-installed
   the most-used databases.
@@ -97,7 +97,7 @@
 %p
   Circle always runs your tests on a fresh machine.
   The <code>test</code> section of your <code>circle.yml</code> file is where
-  you specify your customized testing needs, such as including your own 
+  you specify your customized testing needs, such as including your own
   testing script.
 
 %pre
@@ -143,10 +143,10 @@
   %a{href: "/docs/troubleshooting-php"}
     PHP troubleshooting
   write-ups about these issues:
-=HAML["troubleshooting_php"](@)
+
+= @include_article('troubleshooting_php')
 
 %p
   If you are still having trouble, please
   = HAML.contact_us()
   and we will be happy to help.
-          
