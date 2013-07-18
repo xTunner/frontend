@@ -66,12 +66,12 @@ addCommas = (num) ->
   prefix + suffix
 
 # Copy of setTextContent in ko's utils
-setMoneyContent = (element, textContent) ->
+transformContent = (f, element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)
   if not value?
     value = ""
   else
-    value = "$#{addCommas(value)}"
+    value = f(value)
 
   if 'innerText' in element
     element.innerText = value
@@ -83,7 +83,13 @@ setMoneyContent = (element, textContent) ->
 
 ko.bindingHandlers.money =
   update: (el, valueAccessor) =>
-    setMoneyContent(el, valueAccessor())
+    f = (value) -> "$#{addCommas(value)}"
+    transformContent(f, el, valueAccessor())
+
+ko.bindingHandlers.duration =
+  update: (el, valueAccessor) =>
+    f = (value) -> CI.time.as_duration(value)
+    transformContent(f, el, valueAccessor())
 
 setLeadingZeroContent = (element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)
