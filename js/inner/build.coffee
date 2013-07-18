@@ -178,30 +178,41 @@ CI.inner.Build = class Build extends CI.inner.Obj
         if @status() == "canceled"
           # build was canceled from the queue
           "canceled"
-        else
-          "still running"
+        else if @start_time()
+          CI.time.as_duration(@updatingDuration(@start_time()))
 
-    @queued_time = @komp =>
+
+    # don't try to show queue information if the build is pre-usage_queue
+    @show_queued_p = @komp =>
+      @usage_queued_at()?
+
+    @in_usage_queue_p = @komp =>
+      not @finished() and @queued_at()?
+
+    @in_run_queue_p = @komp =>
+      not @finished() and @queued_at()? and not @start_time()?
+
+    @run_queued_time = @komp =>
       if @start_time() and @queued_at()
-        CI.time.as_duration(moment(@start_time()).diff(@queued_at()))
-      else if @queued_at() and @status() is "queued"
-        "still queued"
-      else if @usage_queued_at() and @status() is "not_running"
-        "still waiting"
-      else
-        "unknown"
+        moment(@start_time()).diff(@queued_at())
+      else if @queued_at() and @stop_time() # canceled before left queue
+        moment(@stop_time()).diff(@queued_at())
+      else if @queued_at()
+        @updatingDuration(@queued_at())
 
     @usage_queued_time = @komp =>
-      if @usage_queued_at() and @queued_at()
-        CI.time.as_duration(moment(@queued_at()).diff(@usage_queued_at()))
+      if @usage_queued_at() and false# @queued_at()
+        moment(@queued_at()).diff(@usage_queued_at())
+      else if @usage_queued_at() and @stop_time() # canceled before left queue
+        moment(@stop_time()).diff(@usage_queued_at())
       else if @usage_queued_at()
         @updatingDuration(@usage_queued_at())
 
     @queued_time_summary = @komp =>
-      str = "#{@usage_queued_time()} waiting"
-      if @usage_queued_time()
-        str += " + #{@queued_time()} in queue"
-      str
+      if @run_queued_time()
+        "#{CI.time.as_duration(@usage_queued_time())} waiting + #{CI.time.as_duration(@run_queued_time())} in queue"
+      else
+        "#{CI.time.as_duration(@usage_queued_time())} waiting for builds to finish"
 
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
@@ -391,22 +402,22 @@ CI.inner.Build = class Build extends CI.inner.Obj
   toggle_usage_queue_why: () =>
     if @usage_queue_visible()
       @usage_queue_visible(!@usage_queue_visible())
-      @clear_usage_queue_why()
+      @clean_usage_queue_why()
+      @usage_queue_why(null)
     else
       @load_usage_queue_why()
       @usage_queue_visible(true)
 
-  clear_usage_queue_why: () =>
+  clean_usage_queue_why: () =>
     if @usage_queue_why()
-      $.each @usage_queue_why(), (b, i) ->  b.clean()
-    @usage_queue_why(null)
+      $.each @usage_queue_why(), (i, b) ->  b.clean()
 
   load_usage_queue_why: () =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/usage-queue"
       type: "GET"
       success: (data) =>
-        @clear_usage_queue_why()
+        @clean_usage_queue_why()
         @usage_queue_why(new CI.inner.Build(build_data) for build_data in data)
       complete: () =>
         # stop the spinner if there was an error

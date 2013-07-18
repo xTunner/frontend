@@ -16,12 +16,16 @@
       %dt Started by
       %dd{data-bind: "text: why_in_words"}
 
-      %dt.queued-def{data-bind: "click: toggle_usage_queue_why"}
-        Queued Time
-        %span
-          %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': usage_queue_visible }"
+      / ko if: show_queued_p
+      .queued-def{data-bind: "click: toggle_usage_queue_why"}
+        %dt
+          Queued Time
+          %span
+            %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': usage_queue_visible }"
 
-      %dd{data-bind: "text: queued_time_summary"}
+        %dd{data-bind: "text: queued_time_summary"}
+      / /ko
+
 
     %dl.span4
 
