@@ -391,18 +391,22 @@ CI.inner.Build = class Build extends CI.inner.Obj
   toggle_usage_queue_why: () =>
     if @usage_queue_visible()
       @usage_queue_visible(!@usage_queue_visible())
-      @usage_queue_why(null)
+      @clear_usage_queue_why()
     else
       @load_usage_queue_why()
       @usage_queue_visible(true)
+
+  clear_usage_queue_why: () =>
+    if @usage_queue_why()
+      $.each @usage_queue_why(), (b, i) ->  b.clean()
+    @usage_queue_why(null)
 
   load_usage_queue_why: () =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/usage-queue"
       type: "GET"
       success: (data) =>
-        $.each @usage_queue_why, (b, i) ->
-          b.clean()
+        @clear_usage_queue_why()
         @usage_queue_why(new CI.inner.Build(build_data) for build_data in data)
       complete: () =>
         # stop the spinner if there was an error
