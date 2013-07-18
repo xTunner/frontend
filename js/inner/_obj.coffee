@@ -1,5 +1,8 @@
 CI.inner.Obj = class Obj
   constructor: (json={}, defaults={}) ->
+
+    @komps = []
+
     for k,v of @observables()
       @[k] = @observable(v)
 
@@ -10,9 +13,12 @@ CI.inner.Obj = class Obj
 
   observables: () => {}
 
+  komps: []
 
   komp: (args...) =>
-    ko.computed args...
+    comp = ko.computed args...
+    @komps.push(comp)
+    comp
 
   observable: (obj) ->
     if $.isArray obj
@@ -25,8 +31,11 @@ CI.inner.Obj = class Obj
       if @observables().hasOwnProperty(k)
         @[k](v)
 
-  updatingDuration: (start) =>
-    timer = @_timers[start] or= new CI.Timer(start)
+  updatingDuration: (start, caller) =>
+    if not @_timers[start]
+      @_timers[start] = new CI.Timer(start, caller)
+      window.timers.push(@_timers[start])
+    timer = @_timers[start]
     timer.maybe_start()
 
 
