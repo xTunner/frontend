@@ -32,10 +32,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @build_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
-    @dashboard_ready = @komp =>
-      @projects_have_been_loaded() and @recent_builds_have_been_loaded()
     @selected = ko.observable({}) # Tracks what the dashboard is showing
     @billing = ko.observable(new CI.inner.Billing)
+
+    @dashboard_ready = @komp =>
+      @projects_have_been_loaded() and @recent_builds_have_been_loaded()
+
+    @project_dashboard_ready = @komp =>
+      @project_builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
+
 
     if window.renderContext.current_user
       try
@@ -184,6 +189,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
+    settings_path = path + "/settings"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
     if not refresh
@@ -193,6 +199,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @project_builds_have_been_loaded(true)
+
+    $.getJSON settings_path, (data) =>
+      @project(new CI.inner.Project data)
 
     if not refresh
       display "project",

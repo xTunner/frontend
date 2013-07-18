@@ -272,6 +272,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (data) =>
         @followed(data.followed)
         _gaq.push(['_trackEvent', 'Projects', 'Remove']);
+        VM.loadProjects() # refresh sidebar
 
   follow: (data, event) =>
     $.ajax
@@ -286,6 +287,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
           $('html, body').animate({ scrollTop: 0 }, 0);
           @followed(data.followed)
           VM.loadRecentBuilds()
+        VM.loadProjects() # refresh sidebar
+
 
   save_hooks: (data, event) =>
     $.ajax
