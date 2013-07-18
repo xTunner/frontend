@@ -29,6 +29,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
     usage_queue_why: null
     usage_queue_visible: true#false
 
+  clean: () =>
+    super
+
+    $.each @steps(), (i, s) ->
+      s.clean()
+
+
   constructor: (json) ->
 
     steps = json.steps or []

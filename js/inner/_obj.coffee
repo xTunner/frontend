@@ -38,6 +38,9 @@ CI.inner.Obj = class Obj
     timer = @_timers[start]
     timer.maybe_start()
 
+  clean: () =>
+    for k in @komps
+      k.dispose()
 
 CI.inner.VcsUrlMixin = (obj) ->
   obj.vcs_url = ko.observable(if obj.vcs_url then obj.vcs_url else "")
