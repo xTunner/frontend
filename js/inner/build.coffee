@@ -27,7 +27,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     parallel: null
     usage_queued_at: null
     usage_queue_why: null
-    usage_queue_visible: true#false
+    usage_queue_visible: false
 
   clean: () =>
     super

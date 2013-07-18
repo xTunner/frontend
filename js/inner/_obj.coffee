@@ -31,12 +31,9 @@ CI.inner.Obj = class Obj
       if @observables().hasOwnProperty(k)
         @[k](v)
 
-  updatingDuration: (start, caller) =>
-    if not @_timers[start]
-      @_timers[start] = new CI.Timer(start, caller)
-      window.timers.push(@_timers[start])
-    timer = @_timers[start]
-    timer.maybe_start()
+  updatingDuration: (start) =>
+    @_timers[start] or= new CI.Timer(start)
+    @_timers[start].maybe_start()
 
   clean: () =>
     for k in @komps
