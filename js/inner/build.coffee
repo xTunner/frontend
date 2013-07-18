@@ -310,6 +310,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   newAction: (json) =>
     @fillActions(json.step, json.index)
+    if old = @steps()[json.step].actions()[json.index]
+      old.clean()
     @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
 
   updateAction: (json) =>
@@ -399,6 +401,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/usage-queue"
       type: "GET"
       success: (data) =>
+        $.each @usage_queue_why, (b, i) ->
+          b.clean()
         @usage_queue_why(new CI.inner.Build(build_data) for build_data in data)
       complete: () =>
         # stop the spinner if there was an error

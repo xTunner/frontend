@@ -203,6 +203,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
+    @build().clean() if @build()
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
@@ -310,6 +311,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   loadAdminRecentBuilds: () =>
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      $.each @recent_builds(), (i, b) ->
+        b.clean()
       @recent_builds((new CI.inner.Build d for d in data))
     @renderAdminPage "recent_builds"
 
