@@ -77,7 +77,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       if @run_time_millis()
         CI.time.as_duration(@run_time_millis())
       else if @start_time()
-        @updatingDuration(@start_time())
+        CI.time.as_duration(@updatingDuration(@start_time()))
 
     @sourceText = @komp =>
       switch @source()

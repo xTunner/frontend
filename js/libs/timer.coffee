@@ -34,7 +34,7 @@ CI.Timer = class Timer
 
   update_timer: () =>
     console.log "updating"
-    @timer(CI.time.as_duration(moment().diff(@start_at)))
+    @timer(moment().diff(@start_at))
 
   has_subscribers: () =>
     @timer.getSubscriptionsCount() > 0
