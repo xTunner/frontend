@@ -80,6 +80,6 @@
     %dt Commit Log
     %dd
       %span{data-bind: "if: body"}
-        %a{href: '#', data-bind: "text: subject, tooltip: {title: body}"}}
+        %a{href: '#', data-bind: "attr: { href: github_url }, text: subject, tooltip: {title: body}"}}
       %span{data-bind: "ifnot: body"}
-        %span{data-bind: "text: subject"}
+        %a{data-bind: "attr: { href: github_url }, text: subject"}}

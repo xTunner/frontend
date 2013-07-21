@@ -142,7 +142,7 @@
 %pre
   %code.no-highlight<>
     :preserve
-      checkout:
+      dependencies:
         post:
           \- python ./install-packages
 
