@@ -6,12 +6,12 @@ CI.terminal =
     output  = ""
 
     style =
-      color: null
+      color: "white"
       italic: false
       bold: false
 
       reset: () ->
-        @color = null
+        @color = "white"
         @italic = false
         @bold = false
 
@@ -22,7 +22,7 @@ CI.terminal =
           when 3 then @italic = true
           when 22 then @bold = false
           when 23 then @italic = false
-          when 30 then @color = "darkgrey"
+          when 30 then @color = "black"
           when 31 then @color = "red"
           when 32 then @color = "green"
           when 33 then @color = "yellow"
@@ -30,20 +30,20 @@ CI.terminal =
           when 35 then @color = "magenta"
           when 36 then @color = "cyan"
           when 37 then @color = "white"
-          when 39 then @color = null
+          when 39 then @color = "white"
 
       openSpan: () ->
-        styles = []
-        if @color?
-          styles.push("color: #{@color}")
-        if @italic
-          styles.push("font-style: italic")
+        classes = []
         if @bold
-          styles.push("font-weight: bold")
+          classes.push("solarized-br#{@color}")
+        else
+          classes.push("solarized-#{@color}")
+        if @italic
+          classes.push("italic")
 
         s = "<span"
-        if styles.length > 0
-          s += " style='" + styles.join("; ") + "'"
+        if classes.length > 0
+          s += " class='" + classes.join(" ") + "'"
         s += ">"
 
       applyTo: (content) ->
