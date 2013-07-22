@@ -164,25 +164,31 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: =>
         @loadExistingCard()
 
+  stripeDefaults: () =>
+    key: @stripeKey()
+    name: "CircleCI"
+    address: false
+    email: VM.current_user().selected_email()
+
   createCard: (plan, event) =>
-    StripeCheckout.open
-      key: @stripeKey()
-      name: 'CircleCi',
+    vals =
       panelLabel: 'Add card',
-      description: "#{plan.name} plan"
       price: 100 * plan.price
+      description: "#{plan.name} plan"
       token: (token) =>
         @chosenPlan(plan)
         @recordStripeTransaction event, token
 
+    StripeCheckout.open($.extend @stripeDefaults(), vals)
+
 
   updateCard: (data, event) =>
-    StripeCheckout.open
-      key: @stripeKey()
-      name: 'CircleCi',
+    vals =
       panelLabel: 'Update card',
       token: (token) =>
         @ajaxSetCard(event, token.id, "PUT")
+
+    StripeCheckout.open($.extend @stripeDefaults(), vals)
 
 
   load: (hash="small") =>
@@ -237,7 +243,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadStripe: () =>
     $.getScript "https://js.stripe.com/v1/"
-    $.getScript "https://checkout.stripe.com/v2/checkout.js"
+    if VM.ab().stripe_v3()
+      $.getScript "https://checkout.stripe.com/v3/checkout.js"
+    else
+      $.getScript "https://checkout.stripe.com/v2/checkout.js"
 
   loadPlanData: (data) =>
     @oldTotal(data.amount / 100)

@@ -14,6 +14,7 @@ exports.ab_test_definitions =
     home_cta_plan_price_trial: [true, false] # around the home button CTA, include text about plans starting from $19, and 14 day trial
     number_one_instead_of_happy_customers_callout: [true, false]
     home_speed_level: ["4-way", "8-way", "12-way"]
+    stripe_v3: [true, false]
 
   overrides:
     [
@@ -21,4 +22,5 @@ exports.ab_test_definitions =
         window.circleEnvironment is 'test'
       options:
         github_warning_modal: false
+        stripe_v3: false
     ]
