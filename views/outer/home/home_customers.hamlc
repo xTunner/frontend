@@ -1,72 +1,49 @@
-.customer-list
-  .container-fluid
-    .row-fluid
-      .span12
-        .center
-          %div{ data-bind: "if: VM.ab().number_one_instead_of_happy_customers_callout" }
-            .were-number-one
-              %h2
-                CircleCI is the #1 hosted continuous deployment provider.
-                But don't take our word for it, read what our awesome customers have to say.
-
-          %div{ data-bind: "ifnot: VM.ab().number_one_instead_of_happy_customers_callout" }
-            .happy-customers
-              .callout
-
-          = HAML.happy_customers_image()
-          -# %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
-
-.customer-quotes
-  .container-fluid
-    .row-fluid
-      .span4
-        .customer-quote.clearfix
-          %p
-          %blockquote
-            %span.mark-start "
-            CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go.
-            %strong I'm a huge fan.
-            %span.mark-end "
-            %br
-          %span.avatar
-            = HAML.john_collison_image()
-            -# %img{:src => assetPath("img/outer/home/john-collison-2.png")}
-          %strong.name
-            John Collison
-          %i
-            Founder of
-            %b Stripe
-      .span4
-        .customer-quote
-          %p
-          %blockquote
-            %span.mark-start "
-            It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.<strong>The first time it happened, my team cheered</strong>. The fact that we don't have to admin the server ourselves
-            is a big timesaver.
-            %span.mark-end "
-          %span.avatar
-            = HAML.jon_crawford_image()
-            -# %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
-          %strong.name
-            Jon Crawford
-          %i
-            CEO of
-            %b Storenvy
-      .span4
-        .customer-quote
-          %p
-          %blockquote
-            %span.mark-start "
-            CircleCI was super simple to set up and we started reaping the benefits immediately. CircleCI lets us ship code quickly and confidently. <strong>CircleCI's customer support is outstanding.</strong> We get quick, thorough answers to all our questions.
-            %span.mark-end "
-          %span.avatar
-            = HAML.aaron_suggs_image()
-            -# %img{:src => assetPath("img/outer/home/aaron-suggs.jpg")}
-          %strong.name
-            Aaron Suggs
-          %i
-            Operations Engineer at
-            %b Kickstarter
+.container
+  %section.customers
+    %h2 Happy Customers
+    .row
+      .well.customer.span4
+        %p
+          CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go.
+          %strong I'm a huge fan.
+        %img{:alt => "John Collison", :height => "50", :src => "img/outer/home/john-collison.png", :width => "50"}
+        %h4 John Collison
+        %p
+          Founder at
+          %a{:alt => "Stripe", :href => "https://stripe.com/", :title => "Stripe"} Stripe
+      .well.customer.span4
+        %p
+          It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.
+          %strong The first time it happened, my team cheered.
+          The fact that we don't have to admin the server ourselves is a big timesaver.
+        %img{:alt => "Jon Crawford", :height => "50", :src => "img/outer/home/jon-crawford.png", :width => "50"}
+        %h4 Jon Crawford
+        %p
+          CEO of
+          %a{:alt => "Storenvy", :href => "http://www.storenvy.com/", :title => "Storenvy"} Storenvy
+      .well.customer.span4
+        %p
+          CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently.
+          %strong CircleCI's customer support is outstanding.
+          We get quick, thorough answers to all our questions.
+        %img{:alt => "Aaron Suggs", :height => "50", :src => "img/outer/home/aaron-suggs-circle.png", :width => "50"}
+        %h4 Aaron Suggs
+        %p
+          Operations Engineer at
+          %a{:alt => "Kickstarter", :href => "http://www.kickstarter.com/", :title => "Kickstarter"} Kickstarter
+    .row.logos
+      %a.span2{:href => "http://www.storenvy.com/"}
+        %img{:height => "27", :src => "images/storenvy.png", :title => "Storenvy", :width => "140"}/
+      %a.span2{:href => "http://www.tapjoy.com/"}
+        %img{:height => "64", :src => "images/tapjoy.png", :title => "Tapjoy", :width => "140"}/
+      %a.span2{:href => "http://www.kickstarter.com/"}
+        %img{:height => "16", :src => "images/kickstarter.png", :title => "Kickstarter", :width => "140"}/
+      %a.span2{:href => "https://stripe.com/"}
+        %img{:height => "57", :src => "images/stripe.png", :title => "Stripe", :width => "140"}/
+      %a.span2{:href => "http://www.redbull.com/en"}
+        %img{:height => "84", :src => "images/redbull.png", :title => "RedBull", :width => "140"}/
+      %a.span2{:href => "https://www.mongohq.com/home"}
+        %img{:height => "41", :src => "images/mongohq.png", :title => "MongoHQ", :width => "140"}/
 
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
     = HAML.home_cta({text: "Start your 14-day free trial now"})

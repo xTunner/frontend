@@ -1,32 +1,36 @@
 %div{data-bind: "if: flash"}
   #flash{data-bind: "text: flash"}
 
-%div
-#head
-  %header.masthead.clearfix
+%header{:role => "banner"}
+  .bar
     .container
-      %a.brand{href: '/', title: 'Go to the CircleCI homepage'}
-        %span CircleCI
-      %nav
-        %ul.nav.nav-pills.pull-left
-          %li
-            %a{ href: '/', title: 'Go to the Circle homepage' }
-              Home
-          %li
-            %a{ href: 'http://blog.circleci.com', title: 'Read the CircleCi Blog' }
-              Blog
-          %li
-            %a{ href: '/about', title: 'Learn more about CircleCI' }
-              About
-          %li
-            %a{ href: '/jobs', title: 'Come work at CircleCI' }
-              Jobs
-          %li{ data-bind:"ifnot: from_heroku" }
-            %a{ href: '/pricing', title: 'CircleCI Plans and Pricing' }
-              Pricing
-          %li
-            %a{ href: '/docs', title: 'CircleCI Documentation'}
-              Docs
-      %p.cta
-        %a#login.header_signup_button{ href: CI.github.authUrl(), title: 'Sign up with Github', data-bind: "track_link: 'Auth GitHub'"}
-          Sign in with GitHub
+      .row
+        .span8
+          .row
+            %a#logo.span2{:href => "/"}
+              %img{:height => "26", :src => "images/logo.svg", :width => "106"}/
+            %nav.span6{:role => "navigation"}
+              %ul.nav.nav-pills
+                %li
+                  %a{:href => "about.html"} About
+
+                %li{ data-bind:"ifnot: from_heroku" }
+                  %a{:href => "pricing.html"} Pricing
+                %li
+                  %a{:href => "documentation.html"} Documentation
+                %li
+                  %a{:href => "jobs.html"} Jobs
+                %li
+                  %a{:href => "blog.html"} Blog
+        .span4.controls
+          %a.btn.btn-primary{href: CI.github.authUrl(), title: 'Sign up with Github', data-bind: "track_link: 'Auth GitHub'"}
+            %i.ss-icon.ss-social-regular>
+              octocat
+            Sign up with Github
+  .container
+    %h1
+      Deliver
+      %em
+        faster
+    %h3.span5
+      Powerful Continuous Integration and Deployment for web applications.

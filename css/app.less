@@ -3,9 +3,10 @@
 // understand why, but this fixes it.
 html { height: 100%; }
 
-.outer {
-  @import "outer/outer.less";
-}
+@import "circle.less";
+@import "outer/bootstrap-variables.less";
+@import "shared/bootstrap-files.less";
+@imgPath: "../img";
 
 .inner {
   @import "inner/inner.less";
