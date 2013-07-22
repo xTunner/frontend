@@ -32,9 +32,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
   clean: () =>
     super
 
-    $.each @steps(), (i, s) ->
-      s.clean()
-
+    VM.cleanObjs(@steps())
+    @clean_usage_queue_why()
 
   constructor: (json) ->
 
@@ -368,6 +367,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         console.log("retry build data", data)
         console.log("retry event", event)
         build = new CI.inner.Build(data)
+        build.clean() # no need to keep updating observables
         build.visit()
         @trackRetryBuild build, clearCache, false
     false
@@ -388,6 +388,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       event: event
       success: (data) =>
         build = new CI.inner.Build(data)
+        build.clean() # don't update observables
         build.visit()
         @trackRetryBuild build, false, true
     false
@@ -410,7 +411,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   clean_usage_queue_why: () =>
     if @usage_queue_why()
-      $.each @usage_queue_why(), (i, b) ->  b.clean()
+      VM.cleanObjs(@usage_queue_why())
 
   load_usage_queue_why: () =>
     $.ajax

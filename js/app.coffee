@@ -78,6 +78,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
+  cleanObjs: (objs) ->
+    $.each objs, (i, o) ->
+      o.clean()
+
   authGitHubSlideDown: =>
     mixpanel.track("Auth GitHub Modal Why Necessary")
     $(".why_authenticate_github_modal").slideDown()
@@ -163,6 +167,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
+      @cleanObjs(@recent_builds())
       @recent_builds((new CI.inner.Build d for d in data))
       @recent_builds_have_been_loaded(true)
 
@@ -182,8 +187,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     if @current_user().repos().length == 0
       track_signup_conversion()
 
-
-
   loadProject: (username, project, branch, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
@@ -192,6 +195,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     settings_path = path + "/settings"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
+    @cleanObjs(@builds())
     if not refresh
       @builds.removeAll()
       @project_builds_have_been_loaded(false)
@@ -320,13 +324,13 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   loadAdminRecentBuilds: () =>
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
-      $.each @recent_builds(), (i, b) ->
-        b.clean()
+      @cleanObjs @recent_builds()
       @recent_builds((new CI.inner.Build d for d in data))
     @renderAdminPage "recent_builds"
 
   refreshAdminRecentBuilds: () =>
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @cleanObjs @recent_builds()
       @recent_builds((new CI.inner.Build d for d in data))
 
   adminRefreshIntercomData: (data, event) =>

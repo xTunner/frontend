@@ -145,8 +145,7 @@ class Step extends CI.inner.Obj
 
   clean: () =>
     super
-    $.each @actions(), (i, a) ->
-      a.clean()
+    VM.cleanObjs(@actions())
 
   constructor: (json) ->
     json.actions = if json.actions? then (new CI.inner.ActionLog(j) for j in json.actions) else []

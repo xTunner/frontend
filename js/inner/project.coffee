@@ -282,7 +282,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (data) =>
         _gaq.push(['_trackEvent', 'Projects', 'Add']);
         if data.first_build
-          (new CI.inner.Build(data.first_build)).visit()
+          build = new CI.inner.Build(data.first_build)
+          build.clean() # no need to update observables
+          (build).visit()
         else
           $('html, body').animate({ scrollTop: 0 }, 0);
           @followed(data.followed)
@@ -339,7 +341,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
         test: @test()
         extra: @extra()
       success: (data) =>
-        (new CI.inner.Build(data)).visit()
+        build = new CI.inner.Build(data)
+        build.clean() # no need to update observables
+        (build).visit()
     false # dont bubble the event up
 
   set_heroku_deploy_user: (data, event) =>
@@ -440,7 +444,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
       data: JSON.stringify
         parallel: @parallel()
       success: (data) =>
-        @retried_build(new CI.inner.Build(data))
+        build = new CI.inner.Build(data)
+        build.clean()
+        @retried_build(build)
       error: (data) =>
         @refresh()
         @load_paying_user()
