@@ -171,8 +171,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @previous()? and @previous().build_num
 
     @duration = @komp () =>
-      if @build_time_millis()?
-        CI.time.as_duration(@build_time_millis())
+      if @start_time() and @stop_time()
+        CI.time.as_duration(moment(@stop_time()).diff(moment(@start_time())))
       else
         if @status() == "canceled"
           # build was canceled from the queue
