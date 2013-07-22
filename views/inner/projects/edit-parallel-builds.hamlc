@@ -112,7 +112,7 @@
 
 
         %p
-          Each machine is completely separated (sanboxed and firewalled) from the others,
+          Each machine is completely separated (sandboxed and firewalled) from the others,
           so that your tests can't conflict with each other:
           separate databases, file systems, process space, memory, and databases.
 
