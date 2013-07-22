@@ -200,7 +200,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @updatingDuration(@queued_at())
 
     @usage_queued_time = @komp =>
-      if @usage_queued_at() and false# @queued_at()
+      if @usage_queued_at() and @queued_at()
         moment(@queued_at()).diff(@usage_queued_at())
       else if @usage_queued_at() and @stop_time() # canceled before left queue
         moment(@stop_time()).diff(@usage_queued_at())

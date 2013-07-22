@@ -223,8 +223,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @build_has_been_loaded(true)
       @build().maybeSubscribe()
 
-      # TODO: remove this and make it respond to user action
-      @build().load_usage_queue_why()
       mixpanel_data =
         "running": not @build().stop_time()?
         "build-num": @build().build_num
