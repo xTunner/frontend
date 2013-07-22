@@ -26,9 +26,9 @@
 
       %div{data-bind: "if: usage_queue_why().length"}
         %h5{data-bind: "if: in_usage_queue_p"}
-          Some of these builds have to finish before your build can start
+          Some of these builds have to finish before your build can start:
         %h5{data-bind: "ifnot: in_usage_queue_p"}
-          These builds were in front of your build in the queue
+          These builds were in front of your build in the queue:
         = HAML.builds({builds: "usage_queue_why", mention_project: true})
         .upsell
           %span.label.label-success Buy more
