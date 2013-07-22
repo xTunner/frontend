@@ -33,17 +33,17 @@
           %a{:alt => "Kickstarter", :href => "http://www.kickstarter.com/", :title => "Kickstarter"} Kickstarter
     .row.logos
       %a.span2{:href => "http://www.storenvy.com/"}
-        %img{:height => "27", :src => "images/storenvy.png", :title => "Storenvy", :width => "140"}/
+        %img{:height => "27", :src => "img/outer/home/logos/storenvy.png", :title => "Storenvy", :width => "140"}
       %a.span2{:href => "http://www.tapjoy.com/"}
-        %img{:height => "64", :src => "images/tapjoy.png", :title => "Tapjoy", :width => "140"}/
+        %img{:height => "64", :src => "img/outer/home/logos/tapjoy.png", :title => "Tapjoy", :width => "140"}
       %a.span2{:href => "http://www.kickstarter.com/"}
-        %img{:height => "16", :src => "images/kickstarter.png", :title => "Kickstarter", :width => "140"}/
+        %img{:height => "16", :src => "img/outer/home/logos/kickstarter.png", :title => "Kickstarter", :width => "140"}
       %a.span2{:href => "https://stripe.com/"}
-        %img{:height => "57", :src => "images/stripe.png", :title => "Stripe", :width => "140"}/
+        %img{:height => "57", :src => "img/outer/home/logos/stripe.png", :title => "Stripe", :width => "140"}
       %a.span2{:href => "http://www.redbull.com/en"}
-        %img{:height => "84", :src => "images/redbull.png", :title => "RedBull", :width => "140"}/
+        %img{:height => "84", :src => "img/outer/home/logos/redbull.png", :title => "RedBull", :width => "140"}
       %a.span2{:href => "https://www.mongohq.com/home"}
-        %img{:height => "41", :src => "images/mongohq.png", :title => "MongoHQ", :width => "140"}/
+        %img{:height => "41", :src => "img/outer/home/logos/mongohq.png", :title => "MongoHQ", :width => "140"}
 
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
     = HAML.home_cta({text: "Start your 14-day free trial now"})
