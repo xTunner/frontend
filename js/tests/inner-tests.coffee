@@ -50,41 +50,41 @@ j.describe "ansiToHtml", ->
   t = CI.terminal
   j.it "shouldn't screw up simple text", ->
     @expect(t.ansiToHtml "").toEqual ""
-    @expect(t.ansiToHtml "foo").toEqual "<span class='solarized-white'>foo</span>"
+    @expect(t.ansiToHtml "foo").toEqual "<span class='white'>foo</span>"
 
   j.it "should work for the following simple escape sequences", ->
-    @expect(t.ansiToHtml "\u001b[1mfoo\u001b[m").toEqual "<span class='solarized-brwhite'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span class='solarized-white italic'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='solarized-black'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span class='solarized-red'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span class='solarized-green'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span class='solarized-yellow'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[34mfoo\u001b[m").toEqual "<span class='solarized-blue'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[35mfoo\u001b[m").toEqual "<span class='solarized-magenta'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[36mfoo\u001b[m").toEqual "<span class='solarized-cyan'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[37mfoo\u001b[m").toEqual "<span class='solarized-white'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[1mfoo\u001b[m").toEqual "<span class='brwhite'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span class='white italic'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='black'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span class='red'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span class='green'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span class='yellow'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[34mfoo\u001b[m").toEqual "<span class='blue'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[35mfoo\u001b[m").toEqual "<span class='magenta'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[36mfoo\u001b[m").toEqual "<span class='cyan'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[37mfoo\u001b[m").toEqual "<span class='white'>foo</span>"
 
   j.it "shouldn't leave an open span even when the escape isn't reset", ->
-    @expect(t.ansiToHtml "\u001b[32mfoo").toEqual "<span class='solarized-green'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo").toEqual "<span class='green'>foo</span>"
 
   j.it "should cope with leading text", ->
-    @expect(t.ansiToHtml "foo\u001b[32mbar").toEqual "<span class='solarized-white'>foo</span><span class='solarized-green'>bar</span>"
+    @expect(t.ansiToHtml "foo\u001b[32mbar").toEqual "<span class='white'>foo</span><span class='green'>bar</span>"
 
   j.it "should cope with trailing text, and correctly clear styles", ->
-    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[mbar").toEqual "<span class='solarized-green'>foo</span><span class='solarized-white'>bar</span>"
-    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[0mbar").toEqual "<span class='solarized-green'>foo</span><span class='solarized-white'>bar</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[mbar").toEqual "<span class='green'>foo</span><span class='white'>bar</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[0mbar").toEqual "<span class='green'>foo</span><span class='white'>bar</span>"
 
   j.it "should allow multiple escapes in sequence", ->
-    @expect(t.ansiToHtml "\u001b[1;3;32mfoo").toEqual "<span class='solarized-brgreen italic'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[1;3;32mfoo").toEqual "<span class='brgreen italic'>foo</span>"
 
   j.it "should allow independent changes to styles", ->
-    @expect(t.ansiToHtml "\u001b[1;3;32mfoo\u001b[22mbar\u001b[23mbaz\u001b[39mbarney").toEqual "<span class='solarized-brgreen italic'>foo</span><span class='solarized-green italic'>bar</span><span class='solarized-green'>baz</span><span class='solarized-white'>barney</span>"
+    @expect(t.ansiToHtml "\u001b[1;3;32mfoo\u001b[22mbar\u001b[23mbaz\u001b[39mbarney").toEqual "<span class='brgreen italic'>foo</span><span class='green italic'>bar</span><span class='green'>baz</span><span class='white'>barney</span>"
 
   j.it "should strip escapes it doesn't understand", ->
     # only 'm' escapes are known currently
-    @expect(t.ansiToHtml "\u001b[1Mfoo").toEqual "<span class='solarized-white'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[1Mfoo").toEqual "<span class='white'>foo</span>"
     # no blinking
-    @expect(t.ansiToHtml "\u001b[5mfoo").toEqual "<span class='solarized-white'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[5mfoo").toEqual "<span class='white'>foo</span>"
 
 
 j.describe "githubAuthURL", ->

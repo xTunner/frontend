@@ -35,9 +35,9 @@ CI.terminal =
       openSpan: () ->
         classes = []
         if @bold
-          classes.push("solarized-br#{@color}")
+          classes.push("br#{@color}")
         else
-          classes.push("solarized-#{@color}")
+          classes.push("#{@color}")
         if @italic
           classes.push("italic")
 
