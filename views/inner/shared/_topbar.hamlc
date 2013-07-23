@@ -8,7 +8,7 @@
       / /ko
 
       %ul.nav.pull-right{data-bind: "with: current_user"}
-        %li
+        %li.pane
           %a{href: "/docs", target: "_blank"}
             Documentation
 
@@ -16,7 +16,7 @@
           %a
             %span{data-bind: "text: environment, css: environmentColor"}
 
-        %li.dropdown
+        %li.pane.dropdown
           %a.dropdown-toggle{data-toggle: "dropdown"}
             %span{data-bind: "ifnot: gravatar_url()"}
               %span{data-bind: "text: login"}
