@@ -1,0 +1,23 @@
+%ul.nav{data-bind: "with: navbar"}
+  %li.meta.project
+    %a{data-bind: "attr: {href: project_path}"
+      %span.label{data-bind: "text: project_name, css: active_class('project')"}
+
+  / ko if: show_project_branch
+  %li.meta.branch
+    %a{data-bind: "attr: {href: project_branch_path}"}
+      %span.label{data-bind: "text: branch, css: active_class('project_branch')"}
+  / /ko
+
+  / ko if: build_active
+  %li.meta.build-no
+    %a{data-bind: "attr: {href: build_path}"}
+      %span.label.label-active
+        build:
+        %span{data-bind: "text: build_num"}
+  / /ko
+
+  %li.meta.edit
+    %a{data-bind: "attr: {href: project_settings_path}"}
+      %span.label{data-bind: "css: active_class('project_settings')"}
+        Edit settings

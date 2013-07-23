@@ -5,11 +5,12 @@
     border-right: 0px;
     @navDarkestBlue: #0d2e50;
     @navDarkBlue:  #134374;
+    @navbarHeight: 50px;
 
     // the bar itself
     background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
     border-top: 4px solid @navDarkBlue;
-    height: 52px;
+    height: @navbarHeight + 2;
     min-width: 500px;
 
     // circle logo
@@ -26,8 +27,8 @@
       top: 2px;
 
       > li {
-        height: 50px;
-        line-height: 50px;
+        height: @navbarHeight;
+        line-height: @navbarHeight;
       }
 
       li {
@@ -35,14 +36,7 @@
 
         margin: 0 5px;
 
-        .env-production, .env-staging, .env-development, .env-test, &.build-no > a {
-          margin-top: 17px;
-          padding: 0 5px;
-          border-radius: 3px;
-          font-size: .9em;
-          line-height: 20px;
-        }
-
+        // crumb elements
         &.meta {
 
           a, span {
@@ -50,26 +44,27 @@
             font-size: .9em;
             font-weight: normal;
             color: white;
+          }
+
+          span.label {
+            background-color: inherit;
+            padding: 5px;
+          }
+
+          span.label-active {
+            background: @navDarkestBlue;
+          }
+
+          &:hover {
+            .label {
+              background: @navDarkBlue;
+              .box-shadow(inset 0 0 3px darken(@navDarkBlue, 10%));
+              padding: 5px;
             }
           }
+        }
 
-          &.branch > span {
-            padding: 0 5px 0 7px;
-          }
-
-         a.build_status {
-          height: 20px;
-          padding: 0 5px;
-          line-height: 20px;
-          text-shadow: none;
-         } 
-
-        .env-production { background-color: red; }
-        .env-staging { background-color: yellow; }
-        .env-development { background-color: black; }
-        .env-test { background-color: green; }
-
-        &.build-no, &.branch, &.rev {
+        &.build-no, &.branch, &.rev, &.edit {
           &:before {
             content: '/';
             position: absolute;
@@ -80,9 +75,29 @@
           }
         }
 
-        &.build-no {
-          height: 50px;
+        &.project {
+          .label {
+            font-size: 15px;
+            padding: 0.5em;
+          }
+        }
+
+        // &:hover:not(.divider) {
+        //   .label {
+        //     background: @navDarkBlue;
+        //     .box-shadow(inset 0 0 3px darken(@navDarkBlue, 10%));
+        //   }
+        // }
+
+        a.build_status {
+          //height: 20px;
           padding: 0 5px;
+          line-height: @navbarHeight;
+          text-shadow: none;
+        }
+
+        .build_status {
+          vertical-align: inherit; // override too general selector in builds.less
         }
 
         // nav elements
@@ -90,26 +105,42 @@
         font-family: 'Open Sans', sans-serif;
         a {
           cursor: pointer;
-          line-height: 25px; // keeps this nav from overflowing the box
+          line-height: @navbarHeight; // keeps this nav from overflowing the box
           font-size: 15px;
-          padding: 14px 10px 11px;
+          padding: 0px 10px;//          padding: 0px 5px;
           color: white;
           .text-shadow(0, 1px,0px, #1B3E69);
           &.label-success {
             &:hover { background: darken(@green, 10%); }
           }
         }
-        &:hover:not(.divider) { background: @navDarkBlue; }
-
-        // selected navbar element
-        &.active a {
-          background: @navDarkestBlue;
-          font-weight: 400;
+        // dropbox header
+        &.open > a.dropdown-toggle {
+          background-color: @navDarkBlue;
+          //border-top: 4px solid @navDarkBlue;
+          height: 48px;
         }
 
-        // dropbox header
-        &.open > a.dropdown-toggle { background-color: @navDarkBlue; }
-        .caret { margin-top: 11px; border-top-color: white; border-bottom-color: white; }
+        .dropdown-toggle {
+          .gravatar {
+            .border-radius(5px);
+            border: 1px solid white;
+            margin-right: 5px;
+            width: 30px;
+            height: 30px;
+            vertical-align: bottom;
+            // oddly hard to automatically center, so I'm calculating it's position.
+            margin-bottom: floor((@navbarHeight - 30px) / 2);
+            position: relative;
+          }
+        }
+
+        ul.dropdown-menu {
+          margin-top: 0;
+          &:after {
+            display: none; // get rid of caret
+          }
+        }
 
         // dropdown menu elements
         .dropdown-menu li {
@@ -118,6 +149,7 @@
           &:first-child {
             border: none;
           }
+
           a {
             height: 40px;
             line-height: 40px;
@@ -126,21 +158,41 @@
             &:hover {
               background: @navDarkestBlue;
             }
+            i {
+              font-size: .8em;
+              padding-right: .8em;
+            }
+
           }
         }
-      }
-    }
 
-    .dropdown-menu {
-      &:before {
-        border-bottom: 0;
+        .dropdown-menu {
+
+          &:before {
+            border-bottom: 0;
+          }
+          &:after {
+            border-bottom: 6px solid @navDarkBlue;
+          }
+          padding: 0;
+          border-radius: 0;
+          background: @navDarkBlue;
+
+        }
+
+        .env-production, .env-staging, .env-development, .env-test {
+          .label;
+          padding: 6px 8px;
+          background: @navDarkestBlue;
+          font-size: .9em;
+        }
+
+        .env-production { @prodRed: #c45b23; background-color: @prodRed; }
+        .env-staging { @stagingYellow: #e2c256; background-color: @stagingYellow; color: black;}
+        .env-development { background-color: @navDarkestBlue; }
+        .env-test { @testGreen: #178261; background-color: @testGreen; }
+
       }
-      &:after {
-        border-bottom: 6px solid @navDarkBlue;
-      }
-      padding: 0;
-      border-radius: 0;
-      background: @navDarkBlue;
     }
 
   }
@@ -148,10 +200,10 @@
   // Retina prettyness
   @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
     .navbar-inner {
-	    a.brand {
-	      background: url(../../../img/circleci-top-logo@2x.png) no-repeat;
-	      background-size: 150px 41px;
-	    }
+      a.brand {
+        background: url(../../../img/circleci-top-logo@2x.png) no-repeat;
+        background-size: 150px 41px;
+      }
     }
   }
 }
