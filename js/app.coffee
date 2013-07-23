@@ -32,7 +32,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @build_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
-    @selected = ko.observable({}) # Tracks what the dashboard is showing
+
+    # Tracks what page we're on (for pages we care about)
+    @selected = ko.observable({})
+
     @navbar = ko.observable(new CI.inner.Navbar(@selected, @))
     @billing = ko.observable(new CI.inner.Billing)
 
