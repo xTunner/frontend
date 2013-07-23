@@ -163,7 +163,7 @@
 
                         %span{data-bind: "if: bash_command"}
                           Command:
-                          %span.pull-right{data-bind: "if: (exit_code != null)" }
+                          %span.pull-right{data-bind: "if: exit_code() != null" }
                             Exit code:
                             %span{data-bind: "text: exit_code"}
 
