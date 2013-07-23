@@ -53,27 +53,44 @@ CI.terminal =
         else
           ""
 
-    # loop over escape sequences
-    while (escape_start = current.indexOf('\u001B[')) != -1
-      # append everything up to the start of the escape sequence to the output
-      output += style.applyTo(current.slice(0, escape_start))
+    # loop over lines
+    while (line_end = current.search(/\r|\n|$/))
+      next_line_start = current.slice(line_end).search(/[^\r\n]/)
+      if next_line_start == -1
+        terminator = current.slice(line_end)
+      else
+        terminator = current.slice(line_end, line_end + next_line_start)
+      input_line = current.slice(0, line_end + terminator.length)
+      output_line = ""
 
-      # find the end of the escape sequence -- a single letter
-      rest = current.slice(escape_start + 2)
-      escape_end = rest.search(/[A-Za-z]/)
+      # loop over escape sequences within the line
+      while (escape_start = input_line.indexOf('\u001B[')) != -1
+        # append everything up to the start of the escape sequence to the output
+        output_line += style.applyTo(input_line.slice(0, escape_start))
 
-      # point "current" at first character after the end of the escape sequence
-      current = rest.slice(escape_end + 1)
+        # find the end of the escape sequence -- a single letter
+        rest = input_line.slice(escape_start + 2)
+        escape_end = rest.search(/[A-Za-z]/)
 
-      # only actually deal with 'm' escapes
-      if rest.charAt(escape_end) == 'm'
-        escape_sequence = rest.slice(0, escape_end)
-        if escape_sequence == ''
-          # \esc[m is equivalent to \esc[0m
-          style.reset()
-        else
-          escape_codes = escape_sequence.split(';')
-          style.add esc for esc in escape_codes
+        # point "input_line" at first character after the end of the escape sequence
+        input_line = rest.slice(escape_end + 1)
 
-    output += style.applyTo(current)
+        # only actually deal with 'm' escapes
+        if rest.charAt(escape_end) == 'm'
+          escape_sequence = rest.slice(0, escape_end)
+          if escape_sequence == ''
+            # \esc[m is equivalent to \esc[0m
+            style.reset()
+          else
+            escape_codes = escape_sequence.split(';')
+            style.add esc for esc in escape_codes
+
+      current = current.slice(line_end + terminator.length)
+      output_line += style.applyTo(input_line)
+
+      # don't write the output line if it ends with a carriage return, unless it is the last
+      # line, for primitive terminal animations...
+      if (terminator.search(/^\r+$/) == -1) or (current.search(/\r|\n/) == -1)
+        output += output_line
+
     output
