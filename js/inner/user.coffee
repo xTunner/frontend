@@ -20,6 +20,7 @@ CI.inner.User = class User extends CI.inner.Obj
     basic_email_prefs: "smart"
     plan: null
     parallelism: 1
+    gravatar_id: null
 
   constructor: (json) ->
     super json,
