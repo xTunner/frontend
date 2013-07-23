@@ -4,14 +4,15 @@ CI.terminal =
     start   = 0
     current = str
     output  = ""
+    defaultColor = "brblue"
 
     style =
-      color: "white"
+      color: defaultColor
       italic: false
       bold: false
 
       reset: () ->
-        @color = "white"
+        @color = defaultColor
         @italic = false
         @bold = false
 
@@ -30,11 +31,11 @@ CI.terminal =
           when 35 then @color = "magenta"
           when 36 then @color = "cyan"
           when 37 then @color = "white"
-          when 39 then @color = "white"
+          when 39 then @color = defaultColor
 
       openSpan: () ->
         classes = []
-        if @bold
+        if @bold and not @color.match(/^br/)
           classes.push("br#{@color}")
         else
           classes.push("#{@color}")
