@@ -417,7 +417,10 @@ window.SammyApp = Sammy 'body', (n) ->
           project_name: "#{cx.params.username}/#{cx.params.project}"
         VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
-      (cx) -> VM.loadAccountPage cx, cx.params.splat
+      (cx) ->
+        VM.selected
+          type: "account"
+        VM.loadAccountPage cx, cx.params.splat
     @get '^/gh/:username/:project/tree/(.*)',
       (cx) ->
         # github allows '/' is branch names, so match more broadly and combine them
