@@ -13,40 +13,47 @@
       %th Status
 
   %tbody.build-row{data-bind: "foreach: { data: #{@builds} }"}
-    %tr{data-bind: "css: { dont_build: dont_build }, click: visit"}
-      %td
+    %tr{data-bind: "css: { dont_build: dont_build }"}
+      %td.clickable
         %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
-      %td
-        %span{data-bind: "text: github_revision"}
-        %span{data-bind: "text: branch_in_words"}
+      %td.clickable
+        %a.text{data-bind: "attr: { href: url }"}
+          %span{data-bind: "text: github_revision"}
+          %span{data-bind: "text: branch_in_words"}
 
-      %td{data-bind: "text: author"}
+      %td.clickable
+        %a.text{data-bind: "attr: { href: url }, text: author() || '&nbsp;'" }
 
-      %td{style: "max-width: 45em;"}
-        %span{data-bind: "if: body"}
-          %a.build_log{href: '#', data-bind: "text: subject, attr: { title: body }"}
-        %span{data-bind: "ifnot: body"}
-          %span.build_log{data-bind: "text: subject"}
+      %td.clickable{style: "max-width: 45em;"}
+        / ko if: body
+        %a.build_log{href: '#', data-bind: "text: subject() || '&nbsp;', attr: { title: body, href: url }"}
+        / /ko
+
+        / ko ifnot: body
+        %a.build_log.text{data-bind: "attr: { href: url }, text: subject() || '&nbsp;'"}
+        / /ko
 
       / ko if: VM.current_user().admin && VM.selected().admin_builds
-      %td{data-bind: "duration: queued_time"}
+      %td.clickable
+        %a.text{data-bind: "attr: { href: url }, duration: queued_time"}
       / /ko
 
       / ko if: status() != 'not_run'
-      %td
-        %span{data-bind: "text: pretty_start_time"}
+      %td.clickable
+        %a.text{data-bind: "attr: { href: url }, text: pretty_start_time() || '&nbsp;'"}
 
-      %td
-        %span{data-bind: "text: duration"}
+      %td.clickable
+        %a.text{data-bind: "attr: { href: url }, text: duration() || '&nbsp;'"}
       / /ko
 
       / ko if: status() == 'not_run'
       = HAML['not_run_message']()
       / /ko
 
-      %td.build_status
-        %a{data-bind: "attr: { href: url }, text: status_words, css: style"}
+      %td.build_status.clickable
+        %a{data-bind: "attr: { href: url }"}
+          %span{href: "#", data-bind: "text: status_words, css: style"} / href is needed to preserve style
 
 
 -#- if @pagination
