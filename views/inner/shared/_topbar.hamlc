@@ -7,60 +7,55 @@
       = HAML.crumbs({})
       / /ko
 
-      %a.btn.btn-navbar{data-toggle: "collapse", data-target: ".nav-collapse"}
-        %span.icon-bar
-        %span.icon-bar
+      %ul.nav.pull-right{data-bind: "with: current_user"}
+        %li
+          %a{href: "/docs", target: "_blank"}
+            Documentation
 
-      .nav-collapse.collapse
-        %ul.nav.pull-right{data-bind: "with: current_user"}
-          %li
-            %a{href: "/docs", target: "_blank"}
-              Documentation
+        %li{data-bind: "if: showEnvironment"}
+          %a
+            %span{data-bind: "text: environment, css: environmentColor"}
 
-          %li{data-bind: "if: showEnvironment"}
-            %a
-              %span{data-bind: "text: environment, css: environmentColor"}
+        %li.dropdown
+          %a.dropdown-toggle{data-toggle: "dropdown"}
+            %span{data-bind: "ifnot: gravatar_url()"}
+              %span{data-bind: "text: login"}
+            %span{data-bind: "if: gravatar_url()"}
+              %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
 
-          %li.dropdown
-            %a.dropdown-toggle{data-toggle: "dropdown"}
-              %span{data-bind: "ifnot: gravatar_url()"}
-                %span{data-bind: "text: login"}
-              %span{data-bind: "if: gravatar_url()"}
-                %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
+            %i.icon-caret-down
 
-              %i.icon-caret-down
+          %ul.dropdown-menu
+            %li
+              %a{href: '/account'}
+                %i.icon-gears
+                Settings
 
-            %ul.dropdown-menu
+            %li{ data-bind: "ifnot: VM.from_heroku" }
+              %a#logout-link{ href: '/logout'}
+                %i.icon-signout
+                Logout
+
+            %li
+              %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
+                %i.icon-bullhorn
+                Support
+
+            %li
+              %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+                %i.icon-comments
+                Chat support
+
+
+            %div{data-bind: "if: admin"}
+              %li.divider
               %li
-                %a{href: '/account'}
-                  %i.icon-gears
-                  Settings
-
-              %li{ data-bind: "ifnot: VM.from_heroku" }
-                %a#logout-link{ href: '/logout'}
-                  %i.icon-signout
-                  Logout
-
+                %a{href: "/admin"} Admin
               %li
-                %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
-                  %i.icon-bullhorn
-                  Support
-
+                %a{href: "/admin/users"} Users
               %li
-                %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
-                  %i.icon-comments
-                  Chat support
-
-
-              %div{data-bind: "if: admin"}
-                %li.divider
-                %li
-                  %a{href: "/admin"} Admin
-                %li
-                  %a{href: "/admin/users"} Users
-                %li
-                  %a{href: "/admin/recent-builds"} Recent builds
-                %li
-                  %a{href: "/admin/projects"} Projects
-                %li
-                  %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+                %a{href: "/admin/recent-builds"} Recent builds
+              %li
+                %a{href: "/admin/projects"} Projects
+              %li
+                %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
