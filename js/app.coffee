@@ -405,7 +405,13 @@ window.SammyApp = Sammy 'body', (n) ->
 
     @get '^/add-projects', (cx) => VM.loadAddProjects cx
     @get '^/gh/:username/:project/edit(.*)',
-      (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+      (cx) ->
+        VM.selected
+          type: 'project_settings'
+          username: cx.params.username
+          project: cx.params.project
+          project_name: "#{cx.params.username}/#{cx.params.project}"
+        VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
       (cx) -> VM.loadAccountPage cx, cx.params.splat
     @get '^/gh/:username/:project/tree/(.*)',
@@ -413,6 +419,7 @@ window.SammyApp = Sammy 'body', (n) ->
         # github allows '/' is branch names, so match more broadly and combine them
         cx.params.branch = cx.params.splat.join('/')
         VM.selected
+          type: "project_branch"
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -421,10 +428,20 @@ window.SammyApp = Sammy 'body', (n) ->
         VM.loadProject cx.params.username, cx.params.project, cx.params.branch
 
     @get '^/gh/:username/:project/:build_num',
-      (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
-    @get('^/gh/:username/:project',
       (cx) ->
         VM.selected
+          type: "build"
+          username: cx.params.username
+          project: cx.params.project
+          project_name: "#{cx.params.username}/#{cx.params.project}"
+          build_num: cx.params.build_num
+
+        VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
+
+    @get '^/gh/:username/:project',
+      (cx) ->
+        VM.selected
+          type: "project"
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -435,10 +452,11 @@ window.SammyApp = Sammy 'body', (n) ->
 
     @get '^/admin', (cx) -> VM.loadAdminPage cx
     @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
-    @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
+    @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
     @get '^/admin/recent-builds', (cx) ->
       VM.loadAdminRecentBuilds cx
       VM.selected
+        type: "admin"
         admin_builds: true
 
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
