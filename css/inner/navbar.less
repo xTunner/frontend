@@ -51,17 +51,19 @@
             padding: 5px;
           }
 
+          &:hover {
+            span.label {
+              background: @navDarkBlue;
+              .box-shadow(inset 0 0 3px darken(@navDarkBlue, 10%));
+            }
+            span.label-active {
+              background: @navDarkestBlue;
+            }
+          }
           span.label-active {
             background: @navDarkestBlue;
           }
 
-          &:hover {
-            .label {
-              background: @navDarkBlue;
-              .box-shadow(inset 0 0 3px darken(@navDarkBlue, 10%));
-              padding: 5px;
-            }
-          }
         }
 
         &.build-no, &.branch, &.rev, &.edit {
@@ -75,29 +77,18 @@
           }
         }
 
-        &.project {
+        &.meta.project {
           .label {
             font-size: 15px;
-            padding: 0.5em;
+            padding: 8px;
           }
         }
 
+        // rightside nav elements
         &.pane:hover {
           background: @navDarkBlue;
         }
 
-        a.build_status {
-          //height: 20px;
-          padding: 0 5px;
-          line-height: @navbarHeight;
-          text-shadow: none;
-        }
-
-        .build_status {
-          vertical-align: inherit; // override too general selector in builds.less
-        }
-
-        // nav elements
         position: relative;
         font-family: 'Open Sans', sans-serif;
         a {
@@ -111,6 +102,7 @@
             &:hover { background: darken(@green, 10%); }
           }
         }
+
         // dropbox header
         &.open > a.dropdown-toggle {
           background-color: @navDarkBlue;
