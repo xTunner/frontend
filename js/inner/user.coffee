@@ -61,6 +61,11 @@ CI.inner.User = class User extends CI.inner.Obj
       @komp =>
         c for c in @collaboratorAccounts() when c.login isnt login
 
+    @gravatar_url = (size=200) =>
+      @komp =>
+        if @gravatar_id() and @gravatar_id() isnt ""
+          "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
+
   create_token: (data, event) =>
     $.ajax
       type: "POST"
