@@ -44,7 +44,11 @@
             %dt Duration
             %dd{data-bind: "text: duration"}
 
-            / ko if: VM.current_user().admin && queued_time()
+            %dt Status
+            %dd
+              %span.label{data-bind: "text: status_words, css: style"}
+
+            / ko if: true || VM.current_user().admin && queued_time()
             %dt Queued
             %dd{data-bind: "text: queued_time"}
             / /ko
