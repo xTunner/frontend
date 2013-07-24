@@ -170,8 +170,11 @@
                           %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
                         Output:
 
-                        %pre.output.solarized{data-bind: "fastHtml: log_output()"}
-
+                        %pre.output.solarized
+                          /ko foreach: final_out
+                          %span{data-bind: "html: $data"}
+                          / /ko
+                          %span{data-bind: "html: trailing_out"}
 
         %div{data-bind: "if: steps().length > 1"}
           = HAML.messages()

@@ -12,6 +12,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     type: null
     messages: []
     out: []
+    final_out: []
+    trailing_out: ""
     step: null
     index: null
     has_output: null
@@ -114,8 +116,13 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   log_output: =>
     return "" unless @out()
     x = for o in @out()
-      "<p class='#{o.type}'><span class='bubble'></span>#{CI.terminal.ansiToHtml(@htmlEscape(o.message))}</p>"
+      "#{CI.terminal.ansiToHtml(@htmlEscape(o.message))}"
     x.join ""
+
+  append_output: (new_out) =>
+    @out.push(o) for o in new_out
+    @final_out([@log_output()])
+    @trailing_out("")
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
@@ -132,7 +139,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         type: "GET"
         success: (data) =>
           @retrieved_output(true)
-          @out(data)
+          @append_output(data)
         complete: (data, status) =>
           @retrieving_output(false)
 

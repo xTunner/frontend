@@ -292,17 +292,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # adds output to the action
     @fillActions(json.step, json.index)
 
-    # @steps()[json.step].actions()[json.index].out.push(json.out)
-    out = @steps()[json.step].actions()[json.index].out
-    len = out().length
-    last = out()[len - 1]
-    payload = json.out
-    if last? and last.type == payload.type
-      out.valueWillMutate()
-      last.message += payload.message
-      out.valueHasMutated()
-    else
-      out.push(payload)
+    @steps()[json.step].actions()[json.index].append_output([json.out])
 
   maybeAddMessages: (json) =>
     existing = (message.message for message in @messages())
