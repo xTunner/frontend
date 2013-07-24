@@ -1,7 +1,8 @@
 .page.about
-  .container
-    %h1 About us
-    %h3 CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools.
+  %header{role: "banner"}
+    .container
+      %h1 About us
+      %h3 CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools.
 
   .container.content
     %h2 Meet the CircleCI Team
