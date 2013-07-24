@@ -14,15 +14,15 @@
             %nav.span6{role: "navigation"}
               %ul.nav.nav-pills
                 %li
-                  %a{href: "about.html"} About
+                  %a{href: "/about"} About
                 %li{data-bind: "ifnot: from_heroku" }
-                  %a{href: "pricing.html"} Pricing
+                  %a{href: "/pricing"} Pricing
                 %li
-                  %a{href: "documentation.html"} Documentation
+                  %a{href: "/docs"} Documentation
                 %li
-                  %a{href: "jobs.html"} Jobs
+                  %a{href: "/jobs"} Jobs
                 %li
-                  %a{href: "blog.html"} Blog
+                  %a{href: "http://blog.circleci.com"} Blog
         .span4.controls
           %a.btn.btn-primary{href: CI.github.authUrl(),
                              title: 'Sign up with Github',
