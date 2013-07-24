@@ -187,7 +187,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @usage_queued_at()?
 
     @in_usage_queue_p = @komp =>
-      not @finished() and @queued_at()?
+      not @finished() and not @queued_at()?
 
     @in_run_queue_p = @komp =>
       not @finished() and @queued_at()? and not @start_time()?
