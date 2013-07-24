@@ -8,6 +8,9 @@
   -# = HAML.home_hero_unit()
 
   = HAML.home_customers()
-  -# = HAML.home_technologies()
-  -# = HAML.home_benefits()
-  -# = HAML.home_get_started()
+  = HAML.home_features()
+  = HAML.home_additional()
+
+-# = HAML.home_technologies()
+-# = HAML.home_benefits()
+-# = HAML.home_get_started()

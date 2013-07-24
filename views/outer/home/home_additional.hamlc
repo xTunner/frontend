@@ -1,0 +1,17 @@
+%section.additional
+  .container
+    .span4
+      %h3 Contact us
+      %ul
+        %li Say hi through email
+        %li File an support issue
+        %li Call us at 1-800-CIRCLE
+    .span4
+      %h3 Try it right now
+      %p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      %a.btn.btn-primary{:href => ""} Try it
+      %span or
+      %a.btn{:href => "pricing.html"} See Pricing
+    .span4
+      %h3 Learn more
+      %p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus imperdiet at arcu in facilisis.
