@@ -104,91 +104,12 @@
     background: lighten(@circleAccent, 5%);
   }
 
-
-  header {
-    background: @circleBlue;
-    height: 280px;
-
-    h1, h3 {
-      color: white;
-    }
-
-    h1 em {
-      color: #9ec5d4;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 200;
-      line-height: 26px;
-    }
-
-	  .bar {
-	    padding: 15px 0;
-      background: @circleBlueDark;
-
-	    #logo {
-		    display: block;
-		    height: 26px;
-		    width: 106px;
-		    margin: 3px 0 0 0;
-	    }
-
-      nav {
-        li {
-          a:hover, a:focus, .active {
-            background: #084963;
-          }
-        }
-      }
-
-	    .nav-pills {
-		    margin: 0;
-		    a {
-		      color: #84aebe;
-		    }
-	    }
-
-      .controls {
-        text-align: right;
-      }
-	  }
-
-    .container:nth-child(2) {
-      margin-top: 40px;
-    }
-
-  }
-
-  // Footer
-
-  footer {
-    padding: 20px 0;
-    border-top: 1px solid #eee;
-
-    .logo {
-      margin: 6px 10px 0 0;
-    }
-
-    nav {
-      margin: 0;
-      li {
-        a:hover, a:focus, .active {
-          background: lighten(#eee, 4%);
-        }
-      }
-    }
-
-    a {
-      color: darken(#eee, 8%);
-    }
-  }
-
   h2 {
     margin: 30px 0;
   }
 
+  @import "shared/header.less";
+  @import "shared/footer.less";
   @import "home/customers.less";
   @import "home/features.less";
 
