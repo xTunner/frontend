@@ -6,69 +6,67 @@
 
   .container.content
     %h2 Meet the CircleCI Team
-    .member.left.row
-      %img.pull-left{alt: "Paul Biggar", height: "150", src: "images/paul.png", width: "150"}
-      .span9
-        %h3 Paul Biggar
-        %h4 Founder
-        %ul.clearfix
-          %li
-            %a.ss-icon.ss-social-regular{href: "mailto:paul@circleci.com"} email
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://github.com/pbiggar"} github
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://twitter.com/paulbiggar"} twitter
-        %p Within five minutes of meeting Paul, he'll probably have mentioned that he has a PhD and did YCombinator. Given five minutes more, you'll know that his life's passions are compilers and programming languages. His proudest accomplishment is his Google Tech Talk on that topic, though it's closely followed by the time he mostly landed a backflip on skis.
-        %p Paul approaches Continuous Integration from the perspective of developer productivity. It pains him to see so much time wasted due to inadequate developer tools. Good continuous integration doesn't exist yet, but it will when he's finished. Having done his PhD on static analysis of scripting languages, he has a good idea of how it should look.
 
-    .member.right.row
-      %img.pull-right{alt: "Allen Rohner", height: "150", src: "images/allen.png", width: "150"}
-      .span9
-        %h3 Allen Rohner
-        %h4 Founder
-        %ul.clearfix
-          %li
-            %a.ss-icon.ss-social-regular{href: "mailto:allen@circleci.com"} email
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://github.com/arohner"} github
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://twitter.com/arohner"} twitter
-        %p
-          The answer to any question posed to Allen is "Clojure". He
-          %strong loves
-          Clojure! He's been working with Clojure since before it was officially released, and his name appears in the Changelog of dozens of libraries, including Clojure core. Allen's favourite philosopher is Rich Hickey, and his hobbies include Ultimate Frisbee, persistent data structures, and immutability.
-        %p Allen started Circle to make Continuous Deployment available to the masses. He's greatly influenced by the work of IMVU, and his goal is their infrastructure as a generalized service. He currently deploys six times a day, and more on weekends.
+    - for member of @team
+      - user = @team[member]
+      .member.row{ class: "#{if member%2 != 0 then 'right' else 'left'}" }
+        %img{alt: user.name,
+             height: "150",
+             src: assetPath("img/team-#{user.photo}-tb.png"),
+             width: "150",
+             class: "#{if member%2 != 0 then 'pull-right' else 'pull-left'}"}
+        .span9
+          %h3= user.name
+          %h4= user.role
+          %ul.clearfix
+            %li
+              %a.ss-icon.ss-social-regular{href: "mailto:#{user.email}"} email
+            %li
+              %a.ss-icon.ss-social-regular{href: "https://github.com/#{user.github}"} github
+            %li
+              %a.ss-icon.ss-social-regular{href: "https://twitter.com/#{user.twitter}"} twitter
 
-    .member.left.row
-      %img.pull-left{alt: "David Lowe", height: "150", src: "images/dlowe.png", width: "150"}
-      .span9
-        %h3 David Lowe
-        %h4 Back-end Developer
-        %ul.clearfix
-          %li
-            %a.ss-icon.ss-social-regular{href: "mailto:dlowe@circleci.com"} email
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://github.com/dlowe"} github
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://twitter.com/j_david_lowe"} twitter
-        %p David is responsible for all of the bugs. He wrote his first buggy code in BASIC with a pencil and paper, and he's been getting better at it ever since. These days, he likes to split his time between telling kids to get off his lawn, introducing new bugs, and baking pies.
-        %p David drank the automated testing kool-aid years ago. After introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle to do the same on a much larger scale.
 
-    .member.right.row
-      %img.pull-right{alt: "David Lowe", height: "150", src: "images/jenn.png", width: "150"}
-      .span9
-        %h3 Jenneviere Villegas
-        %h4 Operations
-        %ul.clearfix
-          %li
-            %a.ss-icon.ss-social-regular{href: "mailto:jenneviere@circleci.com"} email
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://github.com/jenneviere"} github
-          %li
-            %a.ss-icon.ss-social-regular{href: "https://twitter.com/jenneviere"} twitter
-        %p Jenneviere moved to the Bay Area 3 years ago after spending a few months there, singing and dancing, as the lead in a rock opera. She then worked as an extra on a movie set, and when she realized that Mr. Coppola wasn't going to cast her as the lead in his next film, she began drowning her sorrows in hoppy IPAs and the soothing click of knitting needles. She took the black and works the Gate at That Thing In The Desert, and has only written a single line of code, ever.
-        %p Jenneviere brings her many years' experience with cat wrangling to the team at Circle, and spends most of her time trying to keep everyone well-groomed and hairball free.
+  -# #content
+  -#   %section.about#watermark
 
+  -#     .story
+  -#       %p In 2011, Paul & Allen got frustrated with the state of software testing and decided to solve the problem.
+  -#       %p CircleCI was founded with the mission of giving every developer state of the art automated testing and continuous integration tools.
+
+  -#     %h1 Meet the CircleCI Team
+  -#     %hr
+
+  -#     -# Iterate over team members and print their information as hCard
+  -#     -# http://html5doctor.com/microformats/#hcard
+  -#     - for member of @team
+
+  -#       - user = @team[member]
+
+  -#       - if user.visible
+  -#         %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
+
+  -#           %figcaption{ class: "#{user.github}" }
+  -#             %div
+  -#               %h4.fn= user.name
+  -#               %h5.title= user.role
+
+  -#             - for b in user.bio
+  -#               %p.note= b
+
+  -#           .social
+  -#             - if user.email
+  -#               %a.email{ href: "mailto:#{user.email}" } Email Address
+
+  -#             %a.github{ href: "https://github.com/#{user.github}" } Github
+
+  -#             - if user.twitter
+  -#               %a.twitter{ href: "https://twitter.com/#{user.twitter}" } Twitter
+
+  -#           .visual
+  -#             -# If photo has not been defined for user, use .visual bg image
+  -#             - if user.photo
+  -#               %img.photo{ src: assetPath("img/team-#{user.photo}-tb.jpg") }
 
 
 
@@ -77,46 +75,6 @@
 
 
 
--# #content
--#   %section.about#watermark
-
--#     .story
--#       %p In 2011, Paul & Allen got frustrated with the state of software testing and decided to solve the problem.
--#       %p CircleCI was founded with the mission of giving every developer state of the art automated testing and continuous integration tools.
-
--#     %h1 Meet the CircleCI Team
--#     %hr
-
--#     -# Iterate over team members and print their information as hCard
--#     -# http://html5doctor.com/microformats/#hcard
--#     - for member of @team
-
--#       - user = @team[member]
-
--#       - if user.visible
--#         %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
-
--#           %figcaption{ class: "#{user.github}" }
--#             %div
--#               %h4.fn= user.name
--#               %h5.title= user.role
-
--#             - for b in user.bio
--#               %p.note= b
-
--#           .social
--#             - if user.email
--#               %a.email{ href: "mailto:#{user.email}" } Email Address
-
--#             %a.github{ href: "https://github.com/#{user.github}" } Github
-
--#             - if user.twitter
--#               %a.twitter{ href: "https://twitter.com/#{user.twitter}" } Twitter
-
--#           .visual
--#             -# If photo has not been defined for user, use .visual bg image
--#             - if user.photo
--#               %img.photo{ src: assetPath("img/team-#{user.photo}-tb.jpg") }
 
 -#   %section.contact
 -#     %a{name: 'contact'}
