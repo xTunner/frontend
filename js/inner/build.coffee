@@ -302,8 +302,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     if @shouldSubscribe()
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind 'pusher:subscription_error', (status) ->
-        if _rollbar? && _rollbar.push?
-          _rollbar.push status
+        _rollbar.push status
 
       @build_channel.bind('newAction', @newAction)
       @build_channel.bind('updateAction', @updateAction)

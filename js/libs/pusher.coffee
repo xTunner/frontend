@@ -16,8 +16,7 @@ CI.Pusher = class Pusher
     channel_name = "private-" + @login
     @user_channel = @pusher.subscribe(channel_name)
     @user_channel.bind 'pusher:subscription_error', (status) ->
-      if _rollbar? && _rollbar.push?
-        _rollbar.push status
+      _rollbar.push status
 
   subscribe: (args...) =>
     @pusher.subscribe.apply @pusher, args
