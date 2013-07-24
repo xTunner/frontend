@@ -1,26 +1,27 @@
-%footer{:role => "contentinfo"}
+%footer{role: "contentinfo"}
   .container.row
-    %nav.span12{:role => "navigation"}
-      %a.span1.logo{:href => ""}
-        %img{:height => "13", :src => "images/logo-small.svg", :width => "50"}
+    %nav.span12{role: "navigation"}
+      %a.span1.logo{href: ""}
+        %img{height: "13", src: "images/logo-small.svg", width "50"}
       %ul.nav.nav-pills
         %li
-          %a{:href => "about.html"} About
+          %a{href: "/about"} About
         %li
-          %a{:href => "pricing.html"} Pricing
+          %a{href: "/pricing"} Pricing
         %li
-          %a{:href => "documentation.html"} Documentation
+          %a{href: "/docs"} Documentation
         %li
-          %a{:href => "jobs.html"} Jobs
+          %a{href: "/jobs"} Jobs
         %li
-          %a{:href => "blog.html"} Blog
+          %a{href: "http://blog.circleci.com"} Blog
         %li
-          %a{:href => "privacy.html"} Privacy
+          %a{href: "/privacy"} Privacy
         %li
-          %a{:href => "security.html"} Security
+          %a{href: "/security"} Security
         %li
-          %a{:href => "contact.html"} Contact
+          %a{href: "/contact"} Contact
         %li
-          %a{:href => "https://www.hipchat.com/gjwkHcrD5"} Live Support
+          %a{href: "https//www.hipchat.com/gjwkHcrD5"} Live Support
         %li.pull-right
-          %a.ss-icon.ss-social-regular{:href => "https://twitter.com/circleci", :title => "Follow CircleCi on Twitter"} twitter
+          %a.ss-icon.ss-social-regular{href: "https://twitter.com/circleci",
+                                       title: "Follow CircleCi on Twitter"} twitter
