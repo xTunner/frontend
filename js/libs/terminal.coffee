@@ -54,7 +54,7 @@ CI.terminal =
           ""
 
     # loop over lines
-    while (line_end = current.search(/\r|\n|$/))
+    while current.length and ((line_end = current.search(/\r|\n|$/)) != -1)
       next_line_start = current.slice(line_end).search(/[^\r\n]/)
       if next_line_start == -1
         terminator = current.slice(line_end)
