@@ -55,7 +55,7 @@ j.describe "ansiToHtml", ->
   j.it "should work for the following simple escape sequences", ->
     @expect(t.ansiToHtml "\u001b[1mfoo\u001b[m").toEqual "<span class='brblue'>foo</span>"
     @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span class='brblue italic'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='black'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='white'>foo</span>"
     @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span class='red'>foo</span>"
     @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span class='green'>foo</span>"
     @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span class='yellow'>foo</span>"
