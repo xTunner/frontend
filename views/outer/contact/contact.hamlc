@@ -1,0 +1,49 @@
+.page.contact
+  %header{role: "banner"}
+    .container
+      %h1 Contact us
+      %h3 We'd love to hear from you.
+
+  .container.content
+    .row
+      .span6
+        %h3 Fill the form
+        %form#contactUs
+          %label{for: "name"} Full name
+          %input#name{name: "name", placeholder: "Your Name", type: "text"}
+          %label{for: "email"} Email address
+          %input#email{name: "email", placeholder: "Your email address", type: "email"}
+          %label{for: "message"} Message
+          %textarea{placeholder: "Your message"}
+          %button.btn-primary{type: "submit"} Send
+      .span6.vcard
+        %h3 Don't like forms? Contact us anyway!
+        %ul
+          %li
+            %a.email{href: "mailto:sayhi@circleci.com"}
+              %i.ss-icon email
+              sayhi@circleci.com
+          %li
+            %a{href: "https://www.hipchat.com/gjwkHcrD5"}
+              %i.ss-icon chat
+              Live Support
+          %li
+            %a{href: "https://twitter.com/circleci"}
+              %i.ss-icon.ss-social-regular> twitter
+              @circleci
+          %li.tel
+            %i.ss-icon> phone
+            (800) 585-7075
+          %li.adr
+            %i.ss-icon location
+            = succeed ",", ->
+              %span.street-address 325 9th Street
+            = succeed ",", ->
+              %span.locality San Francisco
+            %span.region CA
+            %span.postal-code 94103
+        %h3 Press Inquiries
+        %p
+          Drop a line to
+          = succeed ".", ->
+            %a{href: "mailtopress@circleci.com"} press@circleci.com
