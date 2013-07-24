@@ -1,0 +1,10 @@
+%form.form-search#searchDocs.clearfix{method: "ko",
+                                      action: "",
+                                      data-bind: "submit: searchArticles"}
+
+  %input#searchQuery.search-query{name: "query",
+                                  placeholder: "Search",
+                                  data-bind: "typeahead: { source: VM.suggestArticles, updater: VM.performDocSearch }",
+                                  type: "text"}
+  %button{:type => "submit"}
+    %i.ss-icon.ss-symbolicons-block search
