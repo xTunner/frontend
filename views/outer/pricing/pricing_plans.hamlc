@@ -1,0 +1,31 @@
+.row
+  %p.intro
+    All plans include
+    = succeed ".", ->
+      %strong free, 14-day trial
+  .span3.plan
+    %h2 Solo
+    %h4 For personal projects
+    %p
+      %strong $19
+      \/ month
+    %a.btn.btn-primary{:href => ""} Start your 14-day trial
+  .span3.plan
+    %h2 Startup
+    %h4 For small teams
+    %p
+      %strong $49
+      \/ month
+    %a.btn.btn-primary{:href => ""} Start your 14-day trial
+  .span3.plan
+    %h2 Small business
+    %h4 For established teams
+    %p
+      %strong $149
+      \/ month
+    %a.btn.btn-primary{:href => ""} Start your 14-day trial
+  .span3.plan
+    %h2 Enterprise
+    %h4 Enterprisy features
+    %p Request a quote by contacting us
+    %a.btn{:href => ""} Contact us
