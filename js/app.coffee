@@ -412,6 +412,7 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) ->
         VM.selected
           page: 'project_settings'
+          crumbs: true
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -427,6 +428,7 @@ window.SammyApp = Sammy 'body', (n) ->
         cx.params.branch = cx.params.splat.join('/')
         VM.selected
           page: "project_branch"
+          crumbs: true
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -438,6 +440,7 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) ->
         VM.selected
           page: "build"
+          crumbs: true
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -449,6 +452,7 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) ->
         VM.selected
           page: "project"
+          crumbs: true
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"

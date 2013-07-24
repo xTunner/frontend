@@ -3,9 +3,7 @@
     .navbar-inner
       %a.brand{href: "/"}
 
-      / ko if: navbar().show_crumbs
       = HAML.crumbs({})
-      / /ko
 
       %ul.nav.pull-right{data-bind: "with: current_user"}
         %li.pane
