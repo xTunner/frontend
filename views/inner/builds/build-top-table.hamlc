@@ -7,14 +7,14 @@
       %dd
         %a{data-bind: "text: author, attr: {href: author_mailto}"}
 
-      / ko if: author_isnt_committer
-      %dt Committer
-      %dd
-        %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
-      / /ko
-
       %dt Started by
       %dd{data-bind: "text: why_in_words"}
+
+      / ko if: previous_build
+      %dt Previous build
+      %dd
+        %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
+      / /ko
 
       / ko if: show_queued_p
       .queued-def{data-bind: "click: toggle_usage_queue_why"}
@@ -28,6 +28,11 @@
 
 
     %dl.span4
+      / ko if: author_isnt_committer
+      %dt Committer
+      %dd
+        %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+      / /ko
 
       %dt Started at
       %dd{data-bind: "text: pretty_start_time"}
@@ -38,12 +43,6 @@
       %dt Status
       %dd
         %span.label{data-bind: "text: status_words, css: style"}
-
-      / ko if: previous_build
-      %dt Previous build
-      %dd
-        %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
-      / /ko
 
     %dl.span4.actions
       %dd
