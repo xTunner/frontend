@@ -14,8 +14,13 @@ CI.inner.Navbar = class Navbar extends CI.inner.Obj
     @username = @komp => @selected().username
     @project = @komp => @selected().project
     @project_name = @komp => @selected().project_name
-    @branch = @komp => @selected().branch || @current_build_branch()
+    @branch = @komp => @selected().branch
     @build_num = @komp => @selected().build_num
+
+    @current_build_branch.subscribe (new_val) =>
+      sel = @selected()
+      sel.branch = new_val
+      @selected(sel)
 
     @project_path = @komp =>
       if @username() and @project()

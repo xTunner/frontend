@@ -426,6 +426,8 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) ->
         # github allows '/' is branch names, so match more broadly and combine them
         cx.params.branch = cx.params.splat.join('/')
+        branch = cx.params.branch
+        build_num = if VM.selected().branch is branch then VM.selected().build_num
         VM.selected
           page: "project_branch"
           crumbs: true
@@ -433,6 +435,7 @@ window.SammyApp = Sammy 'body', (n) ->
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
           branch: cx.params.branch
+          build_num: build_num
 
         VM.loadProject cx.params.username, cx.params.project, cx.params.branch
 

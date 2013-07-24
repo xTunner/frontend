@@ -13,7 +13,7 @@
     / ko if: build_num
     %li.meta.build-no
       %a{data-bind: "attr: {href: build_path}"}
-        %span.label.label-active
+        %span.label{data-bind: "css: label_class('build')"}
           build:
           %span{data-bind: "text: build_num"}
     / /ko
