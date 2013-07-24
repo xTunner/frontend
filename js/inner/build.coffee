@@ -165,6 +165,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @pretty_start_time = @komp =>
       if @start_time()
+        window.updator()
         CI.time.as_time_since(@start_time())
 
     @previous_build = @komp =>

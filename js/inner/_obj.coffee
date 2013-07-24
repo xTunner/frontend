@@ -1,15 +1,5 @@
-# Update this observable every second so that we can get updating durations
-# and intervals
-window.updator = ko.observable(0)
-
-setInterval () ->
-  window.updator(window.updator() + 1)
-, 1000
-
 CI.inner.Obj = class Obj
   constructor: (json={}, defaults={}) ->
-    @updator = window.updator
-
     @komps = []
 
     for k,v of @observables()
@@ -40,11 +30,10 @@ CI.inner.Obj = class Obj
 
   # Meant to be used in a computed observable. Updates every second and returns
   # the number of millis between now and start.
-  # It's best to use this in an else branch, so that it's not evaluated after the
-  # duration no longer needs to update.
-  updatingDuration: (start, f, o) =>
-    @updator()
-    console.log('updating', f)
+  # It's best to put this behind a conditional, so that it stops evaluating
+  # after the duration no longer needs to update.
+  updatingDuration: (start) =>
+    window.updator()
     moment().diff(start)
 
   clean: () =>
