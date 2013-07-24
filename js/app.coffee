@@ -432,16 +432,16 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/gh/:username/:project/tree/(.*)',
       (cx) ->
         # github allows '/' is branch names, so match more broadly and combine them
-        cx.params.branch = cx.params.splat.join('/')
+        branch = cx.params.splat.join('/')
         project_name = "#{cx.params.username}/#{cx.params.project}"
-        branch = cx.params.branch
+
         sel =
           page: "project_branch"
           crumbs: true
           username: cx.params.username
           project: cx.params.project
           project_name: project_name
-          branch: cx.params.branch
+          branch: branch
 
         if project_name is VM.selected().project_name and branch is VM.selected().branch
           sel = _.extend(VM.selected(), sel)
