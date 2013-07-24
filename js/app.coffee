@@ -411,7 +411,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/gh/:username/:project/edit(.*)',
       (cx) ->
         VM.selected
-          type: 'project_settings'
+          page: 'project_settings'
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -419,14 +419,14 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/account(.*)',
       (cx) ->
         VM.selected
-          type: "account"
+          page: "account"
         VM.loadAccountPage cx, cx.params.splat
     @get '^/gh/:username/:project/tree/(.*)',
       (cx) ->
         # github allows '/' is branch names, so match more broadly and combine them
         cx.params.branch = cx.params.splat.join('/')
         VM.selected
-          type: "project_branch"
+          page: "project_branch"
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -437,7 +437,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/gh/:username/:project/:build_num',
       (cx) ->
         VM.selected
-          type: "build"
+          page: "build"
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -448,7 +448,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/gh/:username/:project',
       (cx) ->
         VM.selected
-          type: "project"
+          page: "project"
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -463,7 +463,7 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/admin/recent-builds', (cx) ->
       VM.loadAdminRecentBuilds cx
       VM.selected
-        type: "admin"
+        page: "admin"
         admin_builds: true
 
     @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx

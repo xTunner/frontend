@@ -9,10 +9,10 @@ CI.inner.Navbar = class Navbar extends CI.inner.Obj
     @current_build_branch = @komp =>
       if @current_build() then @current_build().branch()
 
-    @project_active = @komp => @selected().type is 'project'
-    @project_branch_active = @komp => @selected().type is 'project_branch'
-    @project_settings_active = @komp => @selected().type is 'project_settings'
-    @build_active = @komp => @selected().type is 'build'
+    @project_active = @komp => @selected().page is 'project'
+    @project_branch_active = @komp => @selected().page is 'project_branch'
+    @project_settings_active = @komp => @selected().page is 'project_settings'
+    @build_active = @komp => @selected().page is 'build'
 
     @username = @komp => @selected().username
     @project = @komp => @selected().project
@@ -44,9 +44,9 @@ CI.inner.Navbar = class Navbar extends CI.inner.Obj
       if @username() and @project() and @build_num()
         "#{@project_path()}/#{@build_num()}"
 
-    @active_class = (type) =>
+    @active_class = (page) =>
       @komp =>
-        label_active = switch type
+        label_active = switch page
           when 'project' then @project_active()
           when 'project_branch' then @project_branch_active()
           when 'project_settings' then @project_settings_active()
