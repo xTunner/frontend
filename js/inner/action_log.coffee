@@ -10,6 +10,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     status: null
     source: null
     type: null
+    messages: []
     out: []
     step: null
     index: null
@@ -36,7 +37,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       if @user_minimized()?
         @user_minimized()
       else
-        @success()
+        @success() and not @messages().length > 0
 
     if !@minimize()
       @maybe_retrieve_output()

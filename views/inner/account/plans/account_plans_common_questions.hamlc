@@ -98,4 +98,4 @@
 
     %h3 My team needs something not listed here
     %p
-      Contact us at <a href="mailto:enterprise@circleci.com">enterprise@circelci.com</a> to discuss the benefits of an enterprise plan.
+      Contact us at <a href="mailto:enterprise@circleci.com">enterprise@circleci.com</a> to discuss the benefits of an enterprise plan.

@@ -53,11 +53,12 @@
   %a{href: "/docs/configuration#deployment"} circle.yml file
 
 %p For example:
-  %pre<>
-    %p.out
-      :preserve
-        deployment:
-          staging:
-            branch: master
-            heroku:
-              appname: foo-bar-123
+
+%pre
+  %code<>
+    :preserve
+      deployment:
+        staging:
+          branch: master
+          heroku:
+            appname: foo-bar-123

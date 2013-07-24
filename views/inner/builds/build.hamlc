@@ -1,4 +1,4 @@
-= HAML['_topbar']({crumbs: HAML['topbar_build']({project: @project, build_num: @build_num, branch: @branch})})
+= HAML._topbar()
 
 #build-log-container
 
@@ -44,4 +44,4 @@
         = HAML.build_steps({})
 
         %div{data-bind: "if: steps().length > 1"}
-          = HAML['messages']()
+          = HAML.messages()

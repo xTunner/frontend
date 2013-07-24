@@ -32,7 +32,7 @@
         %select.span3{data-bind: "value: parallelism, enable: chosenPlan().allowsParallelism, options: chosenPlan().parallelism_options, optionsText: parallelism_option_text"}
 
       %p.help-inline
-        Parallelism can reduce your tests' run-times by up to 8x, by splitting up your tests and running them on different machines.
+        Parallelism can reduce your tests' run-times by up to 16x, by splitting up your tests and running them on different machines.
         You can expect almost linear speedup in test times.
         Some customer examples:
         %ul
@@ -59,8 +59,8 @@
           %li build frequently - if your developers push more than 5 times per day on average, you should scale up your concurrent builds linearly.
 
       %p.help-block
-        You can split your build across up to 8 containers to reduce your test time
-        by up to 8x.
+        You can split your build across up to 16 containers to reduce your test time
+        by up to 16x.
 
       %p.help-block
         Some customer examples:

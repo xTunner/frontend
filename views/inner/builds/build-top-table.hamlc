@@ -35,6 +35,10 @@
       %dt Duration
       %dd{data-bind: "text: duration"}
 
+      %dt Status
+      %dd
+        %span.label{data-bind: "text: status_words, css: style"}
+
       / ko if: previous_build
       %dt Previous build
       %dd

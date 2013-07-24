@@ -33,6 +33,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
       when "/wrong-commands" then "/wrong-ruby-commands"
       when "/configure-php" then "/language-php"
+      when "/reference-api" then "/api"
 
       else false
 
@@ -66,6 +67,18 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       a.children = for c in a.children
         @articles[c] or throw "Missing child article #{c}"
 
+    # sort the categories
+    @sorted_categories = [
+      @categories.gettingstarted,
+      @categories.languages,
+      @categories.how_to,
+      @categories.troubleshooting,
+      @categories.reference,
+      @categories.parallelism,
+      @categories.privacy_security,
+      ]
+
+
 
   article_info: (slug, node, cx) =>
     uriFragment = slug.replace(/_/g, '-')
@@ -95,7 +108,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   viewContext: (cx) =>
     result =
-      categories: @categories
+      categories: @sorted_categories
       articles: @articles
       children: @children
       slug: @filename cx

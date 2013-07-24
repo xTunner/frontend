@@ -34,16 +34,16 @@
                 .output-spin{data-bind: "if: retrieving_output"}
                   = HAML['fast_spinner']()
 
-                %div{data-bind: "ifnot: retrieving_output"}
+                %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
+                  = HAML.messages()
+
                   %span{data-bind: "if: bash_command"}
                     Command:
-                    %span.pull-right
+                    %span.pull-right{data-bind: "if: exit_code() != null" }
                       Exit code:
                       %span{data-bind: "text: exit_code"}
 
                     %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
                   Output:
 
-                  %pre.output{data-bind: "fastHtml: log_output()"}
-
-          / = HAML['report_error']({build: false})
+                  %pre.output.solarized{data-bind: "fastHtml: log_output()"}

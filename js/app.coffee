@@ -32,7 +32,11 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @build_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
-    @selected = ko.observable({}) # Tracks what the dashboard is showing
+
+    # Tracks what page we're on (for pages we care about)
+    @selected = ko.observable({})
+
+    @navbar = ko.observable(new CI.inner.Navbar(@selected, @))
     @billing = ko.observable(new CI.inner.Billing)
 
     @dashboard_ready = @komp =>
@@ -415,36 +419,74 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/add-projects', (cx) => VM.loadAddProjects cx
   @get '^/gh/:username/:project/edit(.*)',
-    (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+    (cx) ->
+      project_name = "#{cx.params.username}/#{cx.params.project}"
+      sel =
+        page: 'project_settings'
+        crumbs: true
+        username: cx.params.username
+        project: cx.params.project
+        project_name: project_name
+
+      if project_name is VM.selected().project_name
+        sel = _.extend(VM.selected(), sel)
+
+      VM.selected sel
+
+      VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
   @get '^/account(.*)',
-    (cx) -> VM.loadAccountPage cx, cx.params.splat
+    (cx) ->
+      VM.selected
+        page: "account"
+      VM.loadAccountPage cx, cx.params.splat
   @get '^/gh/:username/:project/tree/(.*)',
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
-      cx.params.branch = cx.params.splat.join('/')
-      VM.selected
+      branch = cx.params.splat.join('/')
+      project_name = "#{cx.params.username}/#{cx.params.project}"
+
+      sel =
+        page: "project_branch"
+        crumbs: true
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
-        branch: cx.params.branch
+        project_name: project_name
+        branch: branch
+
+      if project_name is VM.selected().project_name and branch is VM.selected().branch
+        sel = _.extend(VM.selected(), sel)
+
+      VM.selected sel
 
       VM.loadProject cx.params.username, cx.params.project, cx.params.branch
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
       VM.selected
+        page: "build"
+        crumbs: true
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
+
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
-  @get('^/gh/:username/:project',
+  @get '^/gh/:username/:project',
     (cx) ->
-      VM.selected
+      project_name = "#{cx.params.username}/#{cx.params.project}"
+
+      sel =
+        page: "project"
+        crumbs: true
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
+
+      if project_name is VM.selected().project_name
+        sel = _.extend(VM.selected(), sel)
+
+      VM.selected sel
 
       VM.loadProject cx.params.username, cx.params.project
 
@@ -452,10 +494,11 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/admin', (cx) -> VM.loadAdminPage cx
   @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
-  @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
+  @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
   @get '^/admin/recent-builds', (cx) ->
     VM.loadAdminRecentBuilds cx
     VM.selected
+      page: "admin"
       admin_builds: true
 
   @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
