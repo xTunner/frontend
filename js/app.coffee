@@ -410,12 +410,20 @@ window.SammyApp = Sammy 'body', (n) ->
     @get '^/add-projects', (cx) => VM.loadAddProjects cx
     @get '^/gh/:username/:project/edit(.*)',
       (cx) ->
-        VM.selected
+        project_name = "#{cx.params.username}/#{cx.params.project}"
+        sel =
           page: 'project_settings'
           crumbs: true
           username: cx.params.username
           project: cx.params.project
-          project_name: "#{cx.params.username}/#{cx.params.project}"
+          project_name: project_name
+
+        if project_name is VM.selected().project_name
+          sel = _.extend(VM.selected(), sel)
+
+        console.log(sel)
+        VM.selected sel
+
         VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
     @get '^/account(.*)',
       (cx) ->
@@ -426,16 +434,20 @@ window.SammyApp = Sammy 'body', (n) ->
       (cx) ->
         # github allows '/' is branch names, so match more broadly and combine them
         cx.params.branch = cx.params.splat.join('/')
+        project_name = "#{cx.params.username}/#{cx.params.project}"
         branch = cx.params.branch
-        build_num = if VM.selected().branch is branch then VM.selected().build_num
-        VM.selected
+        sel =
           page: "project_branch"
           crumbs: true
           username: cx.params.username
           project: cx.params.project
-          project_name: "#{cx.params.username}/#{cx.params.project}"
+          project_name: project_name
           branch: cx.params.branch
-          build_num: build_num
+
+        if project_name is VM.selected().project_name and branch is VM.selected().branch
+          sel = _.extend(VM.selected(), sel)
+
+        VM.selected sel
 
         VM.loadProject cx.params.username, cx.params.project, cx.params.branch
 
@@ -453,12 +465,19 @@ window.SammyApp = Sammy 'body', (n) ->
 
     @get '^/gh/:username/:project',
       (cx) ->
-        VM.selected
+        project_name = "#{cx.params.username}/#{cx.params.project}"
+
+        sel =
           page: "project"
           crumbs: true
           username: cx.params.username
           project: cx.params.project
           project_name: "#{cx.params.username}/#{cx.params.project}"
+
+        if project_name is VM.selected().project_name
+          sel = _.extend(VM.selected(), sel)
+
+        VM.selected sel
 
         VM.loadProject cx.params.username, cx.params.project
 
