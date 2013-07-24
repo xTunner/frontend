@@ -3,30 +3,27 @@
     .spinner-container{data-bind: "ifnot: usage_queue_why"}
       = HAML.fast_spinner({})
     %div{data-bind: "if: usage_queue_why"}
-      %div{data-bind: "if: in_usage_queue_p"}
+      %p{data-bind: "if: in_usage_queue_p"}
         Your build has spent
         %strong{data-bind: "duration: usage_queued_time"}
-        waiting for your other builds to finish.
-      %div{data-bind: "ifnot: in_usage_queue_p"}
+        in your queue waiting for your other builds to finish.
+      %p{data-bind: "ifnot: in_usage_queue_p"}
         Your build spent
         %strong{data-bind: "duration: usage_queued_time"}
-        waiting for your other builds to finish.
-        %span{data-bind: "if: in_run_queue_p"}
+        in your queue waiting for your other builds to finish.
+        %p{data-bind: "if: in_run_queue_p"}
           Circle has spent
           %strong{data-bind: "duration: run_queued_time"}
-          looking for containers.
-        %span{data-bind: "ifnot: in_run_queue_p"}
+          obtaining containers to run your build.
+        %p{data-bind: "ifnot: in_run_queue_p"}
           %span{data-bind: "if: run_queued_time"}
             Circle spent
             %strong{data-bind: "duration: run_queued_time"}
-            looking for containers.
-
-      %div{data-bind: "ifnot: usage_queue_why().length"}
-        %span There were no builds ahead of this one in your queue
+            obtaining containers to run your build.
 
       %div{data-bind: "if: usage_queue_why().length"}
         %h5{data-bind: "if: in_usage_queue_p"}
-          Some of these builds have to finish and free up containers before your build can start:
+          Some of these builds have to finish to free up containers before your build can start:
         %h5{data-bind: "ifnot: in_usage_queue_p"}
           These builds were in front of your build in the queue:
         = HAML.builds({builds: "usage_queue_why", mention_project: true})
