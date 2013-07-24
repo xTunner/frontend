@@ -1,11 +1,8 @@
 CI.terminal =
-  ansiToHtml: (str) ->
-    # http://en.wikipedia.org/wiki/ANSI_escape_code
-    start   = 0
-    current = str
-    output  = ""
+  ansiToHtmlConverter: () ->
     defaultColor = "brblue"
-
+    trailing_raw = ""
+    trailing_out = ""
     style =
       color: defaultColor
       italic: false
@@ -53,44 +50,66 @@ CI.terminal =
         else
           ""
 
-    # loop over lines
-    while current.length and ((line_end = current.search(/\r|\n|$/)) != -1)
-      next_line_start = current.slice(line_end).search(/[^\r\n]/)
-      if next_line_start == -1
-        terminator = current.slice(line_end)
-      else
-        terminator = current.slice(line_end, line_end + next_line_start)
-      input_line = current.slice(0, line_end + terminator.length)
-      output_line = ""
+    get_trailing: () ->
+      trailing_out
 
-      # loop over escape sequences within the line
-      while (escape_start = input_line.indexOf('\u001B[')) != -1
-        # append everything up to the start of the escape sequence to the output
-        output_line += style.applyTo(input_line.slice(0, escape_start))
+    append: (str) ->
+      # http://en.wikipedia.org/wiki/ANSI_escape_code
+      start   = 0
+      current = trailing_raw + str
+      output  = ""
 
-        # find the end of the escape sequence -- a single letter
-        rest = input_line.slice(escape_start + 2)
-        escape_end = rest.search(/[A-Za-z]/)
+      trailing_raw = ""
+      trailing_out = ""
 
-        # point "input_line" at first character after the end of the escape sequence
-        input_line = rest.slice(escape_end + 1)
+      # loop over lines
+      while current.length and ((line_end = current.search(/\r|\n|$/)) != -1)
+        next_line_start = current.slice(line_end).search(/[^\r\n]/)
+        if next_line_start == -1
+          terminator = current.slice(line_end)
+        else
+          terminator = current.slice(line_end, line_end + next_line_start)
+        input_line = current.slice(0, line_end + terminator.length)
+        output_line = ""
 
-        # only actually deal with 'm' escapes
-        if rest.charAt(escape_end) == 'm'
-          escape_sequence = rest.slice(0, escape_end)
-          if escape_sequence == ''
-            # \esc[m is equivalent to \esc[0m
-            style.reset()
-          else
-            escape_codes = escape_sequence.split(';')
-            style.add esc for esc in escape_codes
+        # loop over escape sequences within the line
+        while (escape_start = input_line.indexOf('\u001B[')) != -1
+          # append everything up to the start of the escape sequence to the output
+          output_line += style.applyTo(input_line.slice(0, escape_start))
 
-      current = current.slice(line_end + terminator.length)
-      output_line += style.applyTo(input_line)
+          # find the end of the escape sequence -- a single letter
+          rest = input_line.slice(escape_start + 2)
+          escape_end = rest.search(/[A-Za-z]/)
 
-      # don't write the output line if it ends with a carriage return, unless it is the last
-      # line, for primitive terminal animations...
-      if (terminator.search(/^\r+$/) == -1) or (current.search(/\r|\n/) == -1)
-        output += output_line
+          # point "input_line" at first character after the end of the escape sequence
+          input_line = rest.slice(escape_end + 1)
 
-    output
+          # only actually deal with 'm' escapes
+          if rest.charAt(escape_end) == 'm'
+            escape_sequence = rest.slice(0, escape_end)
+            if escape_sequence == ''
+              # \esc[m is equivalent to \esc[0m
+              style.reset()
+            else
+              escape_codes = escape_sequence.split(';')
+              style.add esc for esc in escape_codes
+
+        current = current.slice(line_end + terminator.length)
+        output_line += style.applyTo(input_line)
+
+        if not current.length
+          ## the last line is "trailing"
+          trailing_raw = input_line
+          trailing_out = output_line
+        else
+          # don't write the output line if it ends with a carriage return, for primitive
+          # terminal animations...
+          if terminator.search(/^\r+$/) == -1
+            output += output_line
+
+      output
+
+  ansiToHtml: (str) ->
+    # convenience function for testing
+    converter = @ansiToHtmlConverter()
+    converter.append(str) + converter.get_trailing()
