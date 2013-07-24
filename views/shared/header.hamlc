@@ -30,9 +30,3 @@
             %i.ss-icon.ss-social-regular>
               octocat
             Sign up with Github
-  .container
-    %h1
-      Deliver
-      %em faster
-    %h3.span5
-      Powerful Continuous Integration and Deployment for web applications.
