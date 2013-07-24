@@ -421,7 +421,6 @@ window.SammyApp = Sammy 'body', (n) ->
         if project_name is VM.selected().project_name
           sel = _.extend(VM.selected(), sel)
 
-        console.log(sel)
         VM.selected sel
 
         VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
