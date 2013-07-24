@@ -55,7 +55,7 @@ j.describe "ansiToHtml", ->
   j.it "should work for the following simple escape sequences", ->
     @expect(t.ansiToHtml "\u001b[1mfoo\u001b[m").toEqual "<span class='brblue'>foo</span>"
     @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span class='brblue italic'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='black'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='white'>foo</span>"
     @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span class='red'>foo</span>"
     @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span class='green'>foo</span>"
     @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span class='yellow'>foo</span>"
@@ -86,6 +86,18 @@ j.describe "ansiToHtml", ->
     # no blinking
     @expect(t.ansiToHtml "\u001b[5mfoo").toEqual "<span class='brblue'>foo</span>"
 
+  j.it "should 'animate' carriage returns", ->
+    @expect(t.ansiToHtml "foo\nfoo\r").toEqual "<span class='brblue'>foo\n</span><span class='brblue'>foo\r</span>"
+    @expect(t.ansiToHtml "foo\nfoo\rbar\n").toEqual "<span class='brblue'>foo\n</span><span class='brblue'>bar\n</span>"
+
+  j.it "should not throw away \r\n ended lines", ->
+    @expect(t.ansiToHtml "rn\r\nend").toEqual "<span class='brblue'>rn\r\n</span><span class='brblue'>end</span>"
+
+  j.it "shouldn't short-circuit because of empty lines", ->
+    @expect(t.ansiToHtml "first\n\nsecond\n").toEqual "<span class='brblue'>first\n\n</span><span class='brblue'>second\n</span>"
+
+  j.it "shouldn't blow up if the first line is empty", ->
+    @expect(t.ansiToHtml "\r\nfirst\n").toEqual "<span class='brblue'>\r\n</span><span class='brblue'>first\n</span>"
 
 j.describe "githubAuthURL", ->
   j.it "should be the expect values", ->
