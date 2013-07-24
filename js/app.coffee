@@ -73,7 +73,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @error = new CI.outer.Error("error", "Error")
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
-    @privacy = new CI.outer.Page("privacy", "Privacy and Security")
+    @contact = new CI.outer.Page("contact", "Contact us")
+    @privacy = new CI.outer.Page("privacy", "Privacy")
+    @security = new CI.outer.Page("security", "Security")
 
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
@@ -450,9 +452,15 @@ window.SammyApp = Sammy 'body', (n) ->
     @get "^/about.*", (cx) =>
       VM.about.display(cx)
       mixpanel.track("View About")
+    @get "^/contact.*", (cx) =>
+      VM.contact.display(cx)
+      mixpanel.track("View Contact")
     @get "^/privacy.*", (cx) =>
       VM.privacy.display(cx)
       mixpanel.track("View Privacy")
+    @get "^/security.*", (cx) =>
+      VM.security.display(cx)
+      mixpanel.track("View Security")
     @get "^/jobs.*", (cx) => VM.jobs.display(cx)
     @get "^/pricing.*", (cx) =>
       VM.billing().loadPlans()
