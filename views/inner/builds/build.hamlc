@@ -41,6 +41,7 @@
             %li
               %a Deploy
 
+
         = HAML.build_steps({})
 
         %div{data-bind: "if: steps().length > 1"}

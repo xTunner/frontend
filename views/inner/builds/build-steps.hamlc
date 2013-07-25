@@ -28,6 +28,7 @@
                 %span.action-source
                   %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
+
             .detail-wrapper{data-bind: "if: has_content"}
               .detail{data-bind: "css: action_log_style, visible: !minimize()"}
 
@@ -46,4 +47,7 @@
                     %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
                   Output:
 
-                  %pre.output.solarized{data-bind: "fastHtml: log_output()"}
+                  %pre.output.solarized{style: "white-space: normal;"}
+                    %span{data-bind: "foreach: final_out"}
+                      %span.pre{data-bind: "html: $data"}
+                    %span.pre{data-bind: "html: trailing_out"}
