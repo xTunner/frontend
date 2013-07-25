@@ -1,6 +1,5 @@
 CI.terminal =
-  ansiToHtmlConverter: () ->
-    defaultColor = "brblue"
+  ansiToHtmlConverter: (defaultColor) ->
     trailing_raw = ""
     trailing_out = ""
     style =
@@ -111,5 +110,5 @@ CI.terminal =
 
   ansiToHtml: (str) ->
     # convenience function for testing
-    converter = @ansiToHtmlConverter()
+    converter = @ansiToHtmlConverter("brblue")
     converter.append(str) + converter.get_trailing()

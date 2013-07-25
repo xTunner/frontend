@@ -48,7 +48,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       not @minimize()
 
     @has_content = @komp =>
-      @has_output() or ( @out()? and @out().length > 0) or @bash_command()
+      @has_output() or ( @final_out()? and @final_out().length > 0) or @bash_command()
 
     @action_header_style =
       # knockout CSS requires a boolean observable for each of these
@@ -101,7 +101,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         when "db"
           "You specified this command on the project settings page"
 
-    @outputConverter = CI.terminal.ansiToHtmlConverter()
+    @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
+    @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
 
   toggle_minimize: =>
     if not @user_minimized?
@@ -115,12 +116,15 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
+  append_one_output: (o) =>
+    if o.type == 'err'
+      @stderrConverter.append(@htmlEscape(o.message))
+    else
+      @stdoutConverter.append(@htmlEscape(o.message))
+
   append_output: (new_out) =>
-    console.log new_out
-    @final_out.push(@outputConverter.append(@htmlEscape((o.message for o in new_out).join "")))
-    console.log @final_out()
-    @trailing_out(@outputConverter.get_trailing())
-    console.log @trailing_out()
+    @final_out.push((@append_one_output(o) for o in new_out).join "")
+    @trailing_out(@stdoutConverter.get_trailing() + @stderrConverter.get_trailing())
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
@@ -138,7 +142,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         success: (data) =>
           @retrieved_output(true)
           ## reset the converter
-          @outputConverter = CI.terminal.ansiToHtmlConverter()
+          @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
+          @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
           @append_output(data)
         complete: (data, status) =>
           @retrieving_output(false)
