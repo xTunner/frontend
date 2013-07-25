@@ -165,7 +165,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @pretty_start_time = @komp =>
       if @start_time()
-        window.updator()
+        window.updator() # update every second
         CI.time.as_time_since(@start_time())
 
     @previous_build = @komp =>
@@ -186,10 +186,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @show_queued_p = @komp =>
       @usage_queued_at()?
 
-    @in_usage_queue_p = @komp =>
+    @usage_queued = @komp =>
       not @finished() and not @queued_at()?
 
-    @in_run_queue_p = @komp =>
+    @run_queued = @komp =>
       not @finished() and @queued_at()? and not @start_time()?
 
     @run_queued_time = @komp =>

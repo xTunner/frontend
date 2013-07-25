@@ -96,9 +96,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   refreshBuildState: () =>
     VM.loadProjects()
     sel = VM.selected()
-    if sel.admin_builds
+    if sel.page is 'admin'
       VM.refreshAdminRecentBuilds()
-    else if sel.build_num
+    else if sel.page is 'build'
       if VM.build() and VM.build().usage_queue_visible()
         VM.build().load_usage_queue_why()
     else if sel.project_name

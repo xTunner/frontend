@@ -441,7 +441,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         parallel: @parallel()
       success: (data) =>
         build = new CI.inner.Build(data)
-        build.clean()
+        build.clean() # no need to update observables
         @retried_build(build)
       error: (data) =>
         @refresh()

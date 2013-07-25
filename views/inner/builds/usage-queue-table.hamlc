@@ -3,30 +3,25 @@
     .spinner-container{data-bind: "ifnot: usage_queue_why"}
       = HAML.fast_spinner({})
     %div{data-bind: "if: usage_queue_why"}
-      %p{data-bind: "if: in_usage_queue_p"}
-        Your build has spent
-        %strong{data-bind: "duration: usage_queued_time"}
-        in your queue waiting for your other builds to finish.
-      %p{data-bind: "ifnot: in_usage_queue_p"}
-        Your build spent
-        %strong{data-bind: "duration: usage_queued_time"}
-        in your queue waiting for your other builds to finish.
-        %p{data-bind: "if: in_run_queue_p"}
+      Your build
+      %span{data-bind: "text: usage_queued() ? 'has':''"}
+      spent
+      %strong{data-bind: "duration: usage_queued_time"}
+      in your queue waiting for your other builds to finish.
+      %div{data-bind: "ifnot: usage_queued"}
+        %p{data-bind: "if: run_queued"}
           Circle has spent
           %strong{data-bind: "duration: run_queued_time"}
           obtaining containers to run your build.
-        %p{data-bind: "ifnot: in_run_queue_p"}
+        %p{data-bind: "ifnot: run_queued"}
           %span{data-bind: "if: run_queued_time"}
             Circle spent
             %strong{data-bind: "duration: run_queued_time"}
             obtaining containers to run your build.
 
       %div{data-bind: "if: usage_queue_why().length"}
-        %h5{data-bind: "if: in_usage_queue_p"}
-          Some of these builds have to finish to free up containers before your build can start:
-        %h5{data-bind: "ifnot: in_usage_queue_p"}
-          These builds were in front of your build in the queue:
+        %h5{data-bind: "if: usage_queued"}
+          Your build will start when some of these builds finish and free up containers:
+        %h5{data-bind: "ifnot: usage_queued"}
+          Your build was queued behind these builds:
         = HAML.builds({builds: "usage_queue_why", mention_project: true})
-        .upsell
-          %span.label.label-success Buy more
-          You can buy more containers to run more builds at the same time.
