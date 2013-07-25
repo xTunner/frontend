@@ -461,7 +461,7 @@ window.SammyApp = Sammy 'body', (n) ->
 
       VM.selected sel
 
-      VM.loadProject cx.params.username, cx.params.project, cx.params.branch
+      VM.loadProject cx.params.username, cx.params.project, branch
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
