@@ -12,12 +12,12 @@
         %p{data-bind: "if: run_queued"}
           Circle has spent
           %strong{data-bind: "duration: run_queued_time"}
-          obtaining containers to run your build.
+          acquiring containers to run your build.
         %p{data-bind: "ifnot: run_queued"}
           %span{data-bind: "if: run_queued_time"}
             Circle spent
             %strong{data-bind: "duration: run_queued_time"}
-            obtaining containers to run your build.
+            acquiring containers to run your build.
 
       %div{data-bind: "if: usage_queue_why().length"}
         %h5{data-bind: "if: usage_queued"}
