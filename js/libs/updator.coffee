@@ -10,7 +10,6 @@ checkOverzealousUpdator = () ->
       msg: "over 250 subscribers to the updator, something is leaking"
 
 setUpdate = () ->
-  console.log window.updator.getSubscriptionsCount()
   checkOverzealousUpdator()
   window.updator(window.updator() + 1)
   setTimeout setUpdate, 1000
