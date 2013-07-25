@@ -345,7 +345,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
   trackRetryBuild: (data, clearCache, SSH) =>
     mixpanel.track("Trigger Build",
       "vcs-url": data.vcs_url.substring(19)
-      "build-num": build.build_num
+      "build-num": data.build_num
       "retry?": true
       "clear-cache?": clearCache
       "ssh?": SSH)
