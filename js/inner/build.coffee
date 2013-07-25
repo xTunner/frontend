@@ -418,7 +418,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "GET"
       success: (data) =>
         @clean_usage_queue_why()
-        @usage_queue_why(new CI.inner.Build(build_data) for build_data in data)
+        @usage_queue_why(new CI.inner.Build(build_data) for build_data in data.reverse())
       complete: () =>
         # stop the spinner if there was an error
         @usage_queue_why([]) if not @usage_queue_why()
