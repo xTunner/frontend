@@ -85,6 +85,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     $.each objs, (i, o) ->
       o.clean()
 
+  visit_local_url: (url) =>
+    path = URI(url).path()
+    SammyApp.setLocation path
+
   authGitHubSlideDown: =>
     mixpanel.track("Auth GitHub Modal Why Necessary")
     $(".why_authenticate_github_modal").slideDown()

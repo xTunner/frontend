@@ -352,9 +352,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     existing = (message.message for message in @messages())
     (@messages.push(msg) if msg.message not in existing) for msg in json
 
-  trackRetryBuild: (build, clearCache, SSH) =>
+  trackRetryBuild: (data, clearCache, SSH) =>
     mixpanel.track("Trigger Build",
-      "vcs-url": build.project_name()
+      "vcs-url": data.vcs_url.substring(19)
       "build-num": build.build_num
       "retry?": true
       "clear-cache?": clearCache
@@ -369,10 +369,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       success: (data) =>
         console.log("retry build data", data)
         console.log("retry event", event)
-        build = new CI.inner.Build(data)
-        build.clean() # no need to keep updating observables
-        build.visit()
-        @trackRetryBuild build, clearCache, false
+        VM.visit_local_url data.build_url
+        @trackRetryBuild data, clearCache, false
     false
 
   clear_cache_and_retry_build: (data, event) =>
@@ -390,10 +388,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "POST"
       event: event
       success: (data) =>
-        build = new CI.inner.Build(data)
-        build.clean() # don't update observables
-        build.visit()
-        @trackRetryBuild build, false, true
+        VM.visit_local_url data.build_url
+        @trackRetryBuild data, false, true
     false
 
   cancel_build: (data, event) =>

@@ -39,9 +39,7 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
         _gaq.push(['_trackEvent', 'Repos', 'Add']);
         @following(true)
         if data.first_build
-          build = new CI.inner.Build(data.first_build)
-          build.clean()
-          (build).visit()
+          VM.visit_local_url data.build_url
         else
           $('html, body').animate({ scrollTop: 0 }, 0);
           VM.loadRecentBuilds()
