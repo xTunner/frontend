@@ -139,7 +139,7 @@
               but does not support parallelism.
 
           %p
-            With 16 containers and a plan that supports 8x parallelism, you could run
+            With 16 containers and a plan that supports 16x parallelism, you could run
             %ul
               %li
                 16 simultaneous builds at 1x parallelism
@@ -150,7 +150,7 @@
               %li
                 2 simultaneous builds at 8x parallelism
               %li
-                1 simultaneous build at 16x parallelism
+                1 build at 16x parallelism
 
     .row-fluid
       .span10
