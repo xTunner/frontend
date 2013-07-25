@@ -95,16 +95,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   refreshBuildState: () =>
     VM.loadProjects()
-    sel = VM.selected()
-    if sel.page is 'admin'
-      VM.refreshAdminRecentBuilds()
-    else if sel.page is 'build'
-      if VM.build() and VM.build().usage_queue_visible()
-        VM.build().load_usage_queue_why()
-    else if sel.project_name
-      VM.loadProject(sel.username, sel.project, sel.branch, true)
-    else
-      VM.loadRecentBuilds()
+    VM.selected().refresh_fn() if VM.selected().refresh_fn
 
   # Keep this until backend has a chance to fully deploy
   refreshDashboard: () =>
@@ -417,7 +408,8 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
   @get '^/', (cx) =>
-    VM.selected({})
+    VM.selected
+      refresh_fn: VM.loadRecentBuilds
     VM.loadRootPage(cx)
 
   @get '^/add-projects', (cx) => VM.loadAddProjects cx
@@ -455,6 +447,8 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: project_name
         branch: branch
+        refresh_fn: =>
+          VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
       if project_name is VM.selected().project_name and branch is VM.selected().branch
         sel = _.extend(VM.selected(), sel)
@@ -472,6 +466,9 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
+        refresh_fn: =>
+          if VM.build() and VM.build().usage_queue_visible()
+            VM.build().load_usage_queue_why()
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
@@ -485,6 +482,8 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
+        refresh_fn: =>
+          VM.loadProject(cx.params.username, cx.params.project, null, true)
 
       if project_name is VM.selected().project_name
         sel = _.extend(VM.selected(), sel)
@@ -503,6 +502,7 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.selected
       page: "admin"
       admin_builds: true
+      refresh_fn: VM.refreshAdminRecentBuilds
 
   @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
