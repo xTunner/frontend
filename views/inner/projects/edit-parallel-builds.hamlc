@@ -139,7 +139,7 @@
               but does not support parallelism.
 
           %p
-            With 16 containers and a plan that supports 16x parallelism, you could run
+            With 16 containers you could run
             %ul
               %li
                 16 simultaneous builds at 1x parallelism
