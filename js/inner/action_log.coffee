@@ -101,6 +101,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         when "db"
           "You specified this command on the project settings page"
 
+    @outputConverter = CI.terminal.ansiToHtmlConverter()
+
   toggle_minimize: =>
     if not @user_minimized?
       @user_minimized(!@user_minimized())
@@ -113,16 +115,12 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-  log_output: =>
-    return "" unless @out()
-    x = for o in @out()
-      "#{CI.terminal.ansiToHtml(@htmlEscape(o.message))}"
-    x.join ""
-
   append_output: (new_out) =>
-    @out.push(o) for o in new_out
-    @final_out([@log_output()])
-    @trailing_out("")
+    console.log new_out
+    @final_out.push(@outputConverter.append(@htmlEscape((o.message for o in new_out).join "")))
+    console.log @final_out()
+    @trailing_out(@outputConverter.get_trailing())
+    console.log @trailing_out()
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')

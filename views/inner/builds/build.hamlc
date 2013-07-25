@@ -170,11 +170,10 @@
                           %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
                         Output:
 
-                        %pre.output.solarized
-                          /ko foreach: final_out
-                          %span{data-bind: "html: $data"}
-                          / /ko
-                          %span{data-bind: "html: trailing_out"}
+                        %pre.output.solarized{style: "white-space: normal;"}
+                          %span{data-bind: "foreach: final_out"}
+                            %span.pre{data-bind: "html: $data"}
+                          %span.pre{data-bind: "html: trailing_out"}
 
         %div{data-bind: "if: steps().length > 1"}
           = HAML.messages()
