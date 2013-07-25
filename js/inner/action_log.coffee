@@ -137,6 +137,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         type: "GET"
         success: (data) =>
           @retrieved_output(true)
+          ## reset the converter
+          @outputConverter = CI.terminal.ansiToHtmlConverter()
           @append_output(data)
         complete: (data, status) =>
           @retrieving_output(false)
