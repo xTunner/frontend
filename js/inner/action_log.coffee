@@ -11,7 +11,6 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     source: null
     type: null
     messages: []
-    out: []
     final_out: []
     trailing_out: ""
     step: null
@@ -116,14 +115,17 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-  append_one_output: (o) =>
-    if o.type == 'err'
-      @stderrConverter.append(@htmlEscape(o.message))
-    else
-      @stdoutConverter.append(@htmlEscape(o.message))
-
   append_output: (new_out) =>
-    @final_out.push((@append_one_output(o) for o in new_out).join "")
+    idx = 0
+    while idx < new_out.length
+      type = new_out[idx].type
+      converter = if type == 'err'
+                    @stderrConverter
+                  else
+                    @stdoutConverter
+      sequence = (o for o in new_out[idx..] when o.type is type)
+      @final_out.push(converter.append(@htmlEscape((o.message for o in sequence).join "")))
+      idx += sequence.length
     @trailing_out(@stdoutConverter.get_trailing() + @stderrConverter.get_trailing())
 
   report_build: () =>
@@ -141,7 +143,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         type: "GET"
         success: (data) =>
           @retrieved_output(true)
-          ## reset the converter
+          ## reset the converters
           @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
           @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
           @append_output(data)
