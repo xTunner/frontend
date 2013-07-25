@@ -8,6 +8,7 @@
   "../../components/knockout/build/output/knockout-latest.js"
   "../../components/sammy/lib/sammy.js"
   "../../components/moment/moment.js"
+  "../../components/underscore/underscore.js"
 
   "bootstrap.js.dieter"
 

@@ -3,36 +3,45 @@
     .navbar-inner
       %a.brand{href: "/"}
 
-      = (@crumbs or "")
+      = HAML.crumbs({})
 
       %ul.nav.pull-right{data-bind: "with: current_user"}
-        %li
+        %li.pane
           %a{href: "/docs", target: "_blank"}
             Documentation
 
         %li{data-bind: "if: showEnvironment"}
-          %a{data-bind: "text: environment, css: environmentColor"}
+          %a
+            %span{data-bind: "text: environment, css: environmentColor"}
 
-        %li.dropdown
+        %li.pane.dropdown
           %a.dropdown-toggle{data-toggle: "dropdown"}
-            %span{data-bind: "text: login"}
-            %b.caret
+            %span{data-bind: "ifnot: gravatar_url()"}
+              %span{data-bind: "text: login"}
+            %span{data-bind: "if: gravatar_url()"}
+              %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
+
+            %i.icon-caret-down
 
           %ul.dropdown-menu
             %li
               %a{href: '/account'}
+                %i.icon-gears
                 Settings
 
             %li{ data-bind: "ifnot: VM.from_heroku" }
               %a#logout-link{ href: '/logout'}
+                %i.icon-signout
                 Logout
 
             %li
               %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
+                %i.icon-bullhorn
                 Support
 
             %li
               %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+                %i.icon-comments
                 Chat support
 
 
