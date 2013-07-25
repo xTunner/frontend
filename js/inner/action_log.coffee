@@ -116,16 +116,18 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
   append_output: (new_out) =>
-    idx = 0
-    while idx < new_out.length
-      type = new_out[idx].type
+    i = 0
+    while i < new_out.length
+      type = new_out[i].type
       converter = if type == 'err'
                     @stderrConverter
                   else
                     @stdoutConverter
-      sequence = (o for o in new_out[idx..] when o.type is type)
+      offset = 0
+      sequence = (while (i + offset < new_out.length) and (new_out[i + offset].type is type)
+                    new_out[i + offset++])
       @final_out.push(converter.append(@htmlEscape((o.message for o in sequence).join "")))
-      idx += sequence.length
+      i += sequence.length
     @trailing_out(@stdoutConverter.get_trailing() + @stderrConverter.get_trailing())
 
   report_build: () =>
