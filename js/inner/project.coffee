@@ -315,19 +315,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
     false # dont bubble the event up
 
   save_dependencies: (data, event) =>
-    # Comment this out until changing settings doesn't kick off a new build
-    # $.ajax
-    #   type: "PUT"
-    #   event: event
-    #   url: "/api/v1/project/#{@project_name()}/settings"
-    #   data: JSON.stringify
-    #     setup: @setup()
-    #     dependencies: @dependencies()
-    #     post_dependencies: @post_dependencies()
-    true # bubble up so that we move to the test step
+    @save_specs data, event, =>
+      window.location.hash = "#tests"
 
-
-  save_specs: (data, event) =>
+  save_specs: (data, event, callback) =>
     $.ajax
       type: "PUT"
       event: event
@@ -338,9 +329,22 @@ CI.inner.Project = class Project extends CI.inner.Obj
         post_dependencies: @post_dependencies()
         test: @test()
         extra: @extra()
+      success: () =>
+        if callback
+          callback.call(data, event)
+    false # dont bubble the event up
+
+  create_settings_build: (data, event) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/tree/#{@settings_branch()}"
       success: (data) =>
         VM.visit_local_url data.build_url
     false # dont bubble the event up
+
+  save_and_create_settings_build: (data, event) =>
+    @save_specs data, event, @create_settings_build
 
   set_heroku_deploy_user: (data, event) =>
     $.ajax
