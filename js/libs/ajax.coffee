@@ -37,7 +37,10 @@ $(document).ajaxError (ev, xhr, settings, errorThrown) ->
   if xhr.status == 401
     error_object.message = "You've been logged out, <a href='#{CI.github.authUrl()}'>log back in</a> to continue."
     notifyError error_object
-  else if resp and (resp.indexOf("<!DOCTYPE") is 0 or resp.length > 500)
+  else if not resp and (xhr.statusText == "error" or xhr.statusText == "timeout")
+    error_object.message = "A network #{xhr.statusText} occurred, trying to talk with #{error_object.url}."
+    notifyError error_object
+  else if resp.indexOf("<!DOCTYPE") is 0 or resp.length > 500
     error_object.message = "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
     notifyError error_object
   else
