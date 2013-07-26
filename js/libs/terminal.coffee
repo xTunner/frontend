@@ -69,6 +69,7 @@ CI.terminal =
         else
           terminator = current.slice(line_end, line_end + next_line_start)
         input_line = current.slice(0, line_end + terminator.length)
+        original_input_line = input_line
         output_line = ""
 
         # loop over escape sequences within the line
@@ -98,7 +99,7 @@ CI.terminal =
 
         if not current.length
           ## the last line is "trailing"
-          trailing_raw = input_line
+          trailing_raw = original_input_line
           trailing_out = output_line
         else
           # don't write the output line if it ends with a carriage return, for primitive
