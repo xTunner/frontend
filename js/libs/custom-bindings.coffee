@@ -41,11 +41,17 @@ ko.bindingHandlers.typeahead = jQueryExt('typeahead')
 ## jQuery, but does less. Seems to work well for just spans.
 ko.bindingHandlers.fastHtml =
   init: () ->
-    # copied from ko.bindingHandlers.hmtl, don't really know what it does..
+    # copied from ko.bindingHandlers.html, don't really know what it does..
     {'controlsDescendentBindings': true }
 
   update: (el, valueAccessor) ->
-    el.innerHTML = valueAccessor()
+    html = ko.utils.unwrapObservable(valueAccessor())
+
+    if html?
+      if typeof html != 'string'
+        html = html.toString()
+
+      el.innerHTML = html
 
 ## Money custom binding
 
