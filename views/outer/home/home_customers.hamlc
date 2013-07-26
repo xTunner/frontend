@@ -1,6 +1,7 @@
-.container
-  %section.customers
+%section.customers
+  .container
     %h2 Happy Customers
+    %h3 TODO TODO TODO
     .row
       .well.customer.span4
         %p

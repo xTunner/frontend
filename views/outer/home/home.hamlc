@@ -9,8 +9,9 @@
 
   = HAML.home_customers()
   = HAML.home_features()
+  = HAML.home_technologies()
   = HAML.home_additional()
 
--# = HAML.home_technologies()
+
 -# = HAML.home_benefits()
 -# = HAML.home_get_started()
