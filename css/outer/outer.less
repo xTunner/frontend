@@ -34,8 +34,18 @@
     line-height: 29px;
   }
 
-  &.landing h2, &.security h2, &.privacy h2, &.about h2, &.pricing h2 {
+  &.landing h2, &.landing h2 ~ h3, &.security h2, &.privacy h2, &.about h2, &.pricing h2 {
     text-align: center;
+  }
+
+   &.landing h2 {
+      margin-bottom: 0;
+   }
+
+  &.landing h2 ~ h3 {
+    margin: 0 0 20px 0;
+    font-weight: normal;
+    color: lighten(@circleFont, 10%);
   }
 
   .content {
@@ -116,61 +126,8 @@
   @import "shared/footer.less";
   @import "home/customers.less";
   @import "home/features.less";
+  @import "home/additional.less";
 
-  // Additional
-
-  .additional {
-    padding: 10px 0 30px 0;
-    background: @circleBlueLight;
-
-    .span4 {
-      text-align: center;
-      border-left: 1px solid #add1df;
-      height: 200px;
-      width: 290px;
-      margin: 0;
-      padding: 0 10px;
-
-      &:first-of-type {
-        border: none;
-      }
-
-      p, li, span {
-        color: #6795a7;
-      }
-
-      span {
-        display: inline-block;
-        margin: 0 7px;
-        top: 5px;
-        position: relative;
-      }
-
-      li {
-        text-align: left;
-      }
-
-      h3 {
-        font-size: 16px;
-        text-align: center;
-        color: white;
-      }
-    }
-
-    .btn {
-      margin-top: 10px;
-    }
-
-    .btn:not(.btn-primary) {
-      color: #2a7593;
-      background: #b5d8e6;
-
-      &:hover {
-        background: darken(#b5d8e6, 5%);
-      }
-    }
-
-  }
 
   // Pages
 

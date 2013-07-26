@@ -38,7 +38,7 @@
 
 
 
-.technologies
+-#.technologies
   .container-fluid
     .row-fluid
       .span12

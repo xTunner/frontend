@@ -9,9 +9,11 @@
     .span4
       %h3 Try it right now
       %p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-      %a.btn.btn-primary{:href => ""} Try it
-      %span or
-      %a.btn{:href => "pricing.html"} See Pricing
+      %a.btn.btn-primary.btn-large Run your tests
+      %div
+        %p
+          or
+          %a.btn{:href => "pricing.html"} See Pricing
     .span4
       %h3 Learn more
       %p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus imperdiet at arcu in facilisis.
