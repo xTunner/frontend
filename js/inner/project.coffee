@@ -453,9 +453,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       data: JSON.stringify
         parallel: @parallel()
       success: (data) =>
-        build = new CI.inner.Build(data)
-        build.clean() # no need to update observables
-        @retried_build(build)
+        @show_test_new_settings(true)
       error: (data) =>
         @refresh()
         @load_paying_user()
