@@ -321,6 +321,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
   toggle_show_branch_input: (data, event) =>
     @show_branch_input(!@show_branch_input())
+    $(event.target).tooltip('hide')
     # hasfocus binding is bad here: closes the form when you click the button
     if @show_branch_input()
       $(event.target).siblings("input").focus()
