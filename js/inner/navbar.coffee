@@ -22,6 +22,10 @@ CI.inner.Navbar = class Navbar extends CI.inner.Obj
       sel.branch = new_val
       @selected(sel)
 
+    @display_branch = @komp =>
+      if @branch()?
+        CI.stringHelpers.trimMiddle(@branch(), 45)
+
     @project_path = @komp =>
       if @username() and @project()
         @projectPath(@username(), @project())

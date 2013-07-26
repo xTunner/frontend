@@ -17,10 +17,10 @@
             = HAML['fast_spinner']()
         %div{data-bind: "if: project_dashboard_ready"}
           %h2
-            %span{data-bind: "if: VM.selected().branch"}
+            %span{data-bind: "if: VM.selected().page == 'project_branch'"}
               Latest builds on
-              %span{data-bind: "text: VM.selected().branch"}
-            %span{data-bind: "ifnot: VM.selected().branch"}
+              %span{data-bind: "text: CI.stringHelpers.trimMiddle(VM.selected().branch, 45)"}
+            %span{data-bind: "ifnot: VM.selected().page == 'project_branch'"}
               Latest builds for
               %span{data-bind: "text: VM.selected().project_name"}
             %span{data-bind: "if: project().followed"}
