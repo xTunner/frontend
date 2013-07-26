@@ -71,6 +71,9 @@
           Use this to run commands that rely on the installed dependencies.
 
     .row
-      .offset1
-        %a.btn.btn-primary.btn-large{ href: "#tests", data-bind: "click: save_dependencies" }
+      .span5
+        %button.btn.btn-primary{name: "submit",
+                                type: "submit",
+                                data-bind: "click: save_dependencies",
+                                data-loading-text: "Saving.."}
           Now set up your tests =>
