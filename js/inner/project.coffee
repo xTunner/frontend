@@ -319,9 +319,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     false # dont bubble the event up
 
-  toggle_show_branch_input: () =>
-    console.log('toggled')
+  toggle_show_branch_input: (data, event) =>
     @show_branch_input(!@show_branch_input())
+    # hasfocus binding is bad here: closes the form when you click the button
+    if @show_branch_input()
+      $(event.target).siblings("input").focus()
 
   save_dependencies: (data, event) =>
     @save_specs data, event, =>
