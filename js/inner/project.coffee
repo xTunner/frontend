@@ -347,10 +347,13 @@ CI.inner.Project = class Project extends CI.inner.Obj
     false # dont bubble the event up
 
   create_settings_build: (data, event) =>
+    url = "/api/v1/project/#{@project_name()}"
+    if not _.isEmpty(@settings_branch())
+      url += "/tree/#{@settings_branch()}"
     $.ajax
       type: "POST"
       event: event
-      url: "/api/v1/project/#{@project_name()}/tree/#{@settings_branch()}"
+      url: url
       success: (data) =>
         VM.visit_local_url data.build_url
     false # dont bubble the event up
