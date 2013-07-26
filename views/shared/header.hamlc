@@ -8,9 +8,9 @@
         .span8
           .row
             %a#logo.span2{href: "/"}
-              %img{height: "26",
-                   src: "images/logo.svg",
-                   width: "106"}
+              %img{height: "40",
+                   src: "img/logo.svg",
+                   width: "130"}
             %nav.span6{role: "navigation"}
               %ul.nav.nav-pills
                 %li
