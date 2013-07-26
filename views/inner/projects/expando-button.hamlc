@@ -1,0 +1,10 @@
+%form.input-prepend.input-append.expando
+  %span.btn-group
+    %button.btn.btn-primary{type: "submit",
+                            name: "submit",
+                            data-bind: @button_binding,
+                            data-loading-text: @loading_text}
+      = @button_text
+    %input.input-medium{type: "text", data-bind: "value: settings_branch, visible: show_branch_input"}
+    %button.btn.btn-primary.dropdown-toggle{data-bind: "click: toggle_show_branch_input"}
+      %i.icon-caret-right{data-bind: "css: {'icon-rotate-180': show_branch_input}"}

@@ -40,6 +40,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     env_vars: []
     env_varName: ""
     env_varValue: ""
+    show_branch_input: false
+    settings_branch: null
+    show_test_new_settings: false
 
   constructor: (json) ->
 
@@ -60,6 +63,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @build_url = @komp =>
       @vcs_url() + '/build'
+
+    @settings_branch(@default_branch())
 
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
@@ -313,6 +318,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
 
     false # dont bubble the event up
+
+  toggle_show_branch_input: () =>
+    console.log('toggled')
+    @show_branch_input(!@show_branch_input())
 
   save_dependencies: (data, event) =>
     @save_specs data, event, =>

@@ -1,6 +1,6 @@
 %h1 Set up your tests
 
-%form.spec_form
+.spec_form
   %fieldset
 
     %label{ for: "test" }
@@ -45,9 +45,14 @@
 
 
     .row
-      .offset1
-        %a.btn.btn-primary.btn-large{type: "submit",
-                                     name: "submit",
-                                     data-bind: "click: save_specs",
-                                     data-loading-text: "Saving and starting tests..."}
-          Save and test your commands
+      .span5
+        %button.btn.btn-primary{type: "submit",
+                                 name: "submit",
+                                 data-bind: "click: save_specs",
+                                 data-loading-text: "Saving..."}
+          Save
+
+        = HAML.expando_button({                                      |
+            button_binding: "click: save_and_create_settings_build", |
+            loading_text: "Saving...",                               |
+            button_text: "Save and test"})                           |
