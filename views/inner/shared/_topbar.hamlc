@@ -12,7 +12,7 @@
 
         %li{data-bind: "if: showEnvironment"}
           %a
-            %span{data-bind: "text: environment, css: environmentColor"}
+            %span{data-bind: "text: environment, css: environmentColor, tooltip: {title: \"You're the best\", placement: 'left', trigger: 'click'}"}
 
         %li.pane.dropdown
           %a.dropdown-toggle{data-toggle: "dropdown"}
