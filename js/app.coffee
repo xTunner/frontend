@@ -68,6 +68,13 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
+    @favicon_updator = @komp noop
+
+    @selected.subscribe (selected) =>
+      if selected.favicon_updator?
+        @favicon_updator.dispose()
+        @favicon_updator = @komp selected.favicon_updator
+
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
     @about = new CI.outer.About("about", "About Us")
@@ -80,6 +87,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
+
+  build_favicon_updator: (build) =>
+    if build?
+      $("link[rel='icon']").attr('href', "/favicon-#{build.favicon_color()}.png?v=1")
+
+  build_array_favicon_updator: (observable_array) =>
+    console.log('1')
+    if observable_array().length
+      @build_favicon_updator(observable_array()[0])
 
   cleanObjs: (objs) ->
     $.each objs, (i, o) ->
@@ -411,6 +427,9 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/', (cx) =>
     VM.selected
       refresh_fn: VM.loadRecentBuilds
+      favicon_updator: =>
+        VM.build_array_favicon_updator(VM.recent_builds)
+
     VM.loadRootPage(cx)
 
   @get '^/add-projects', (cx) => VM.loadAddProjects cx
@@ -450,6 +469,8 @@ window.SammyApp = Sammy 'body', (n) ->
         branch: branch
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
+        favicon_updator: =>
+          VM.build_array_favicon_updator(VM.builds)
 
       if project_name is VM.selected().project_name and branch is VM.selected().branch
         sel = _.extend(VM.selected(), sel)
@@ -470,6 +491,9 @@ window.SammyApp = Sammy 'body', (n) ->
         refresh_fn: =>
           if VM.build() and VM.build().usage_queue_visible()
             VM.build().load_usage_queue_why()
+        favicon_updator: =>
+          VM.build_favicon_updator(VM.build())
+
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
@@ -485,6 +509,8 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
+        favicon_updator: =>
+          VM.build_array_favicon_updator(VM.builds)
 
       if project_name is VM.selected().project_name
         sel = _.extend(VM.selected(), sel)

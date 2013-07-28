@@ -84,6 +84,19 @@ CI.inner.Build = class Build extends CI.inner.Obj
         else
           false
 
+    @no_style = @komp =>
+      switch @status()
+        when "queued"
+          true
+        when "not_running"
+          true
+        when "scheduled"
+          true
+        when "retried"
+          true
+        else
+          false
+
     @style =
       "label-important": @important_style
       "label-warning": @warning_style
@@ -92,6 +105,18 @@ CI.inner.Build = class Build extends CI.inner.Obj
       "label-info": @info_style
       label: true
       build_status: true
+
+    @favicon_color = @komp =>
+      if @important_style()
+        'red'
+      else if @warning_style()
+        'orange'
+      else if @success_style()
+        'green'
+      else if @info_style()
+        'blue'
+      else if @no_style()
+        'grey'
 
     @canceled = @komp =>
       @status() == 'canceled'
