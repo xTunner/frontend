@@ -93,7 +93,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       $("link[rel='icon']").attr('href', "/favicon-#{build.favicon_color()}.png?v=1")
 
   build_array_favicon_updator: (observable_array) =>
-    console.log('1')
     if observable_array().length
       @build_favicon_updator(observable_array()[0])
 
