@@ -1,0 +1,129 @@
+&.docs {
+
+  article {
+    counter-reset: docs;
+
+    h2 {
+      margin-bottom: 5px;
+    }
+
+    .meta {
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .meta strong, .meta {
+      color: @grayLight;
+    }
+
+    ul {
+      margin: 30px 0 30px 30px;
+      list-style-type: none;
+
+      li {
+        counter-increment: docs;
+        position: relative;
+        margin: 10px 0;
+
+        &:before {
+          content: counter(docs);
+          position: absolute;
+          top: 0;
+          left: -30px;
+          color: white;
+          background: @circleBlueLight;
+          height: 20px;
+          width: 20px;
+          text-align: center;
+          font-size: 12px;
+          .border-radius(20px);
+        }
+      }
+
+    }
+
+    pre {
+      margin: 30px 0;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+  }
+
+  #searchDocs {
+    input[type=text] {
+      width: 86%;
+    }
+
+    button {
+      height: 38px;
+      width: 38px;
+      font-size: 18px;
+      margin-left: 5px;
+
+      .ss-icon {
+        top: 3px;
+        position: relative;
+      }
+    }
+
+    button, input {
+      float: left;
+    }
+  }
+
+  .span8 {
+    h2 {
+      margin-top: 10px;
+    }
+  }
+
+  .articles {
+    margin-top: 20px;
+    padding-bottom: 20px;
+    list-style-type: none;
+    border-bottom: 1px solid #eee;
+
+    &:last-of-type, &.span4 {
+      border: none;
+    }
+
+    &.span4 {
+      margin: 20px 0 0 0;
+      background: lighten(@grayLighter, 4%);
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      padding: 10px 20px 20px 20px;
+      .border-radius(3px);
+
+      &:first-of-type {
+        margin-right: 15px;
+      }
+    }
+
+    &:first-of-type:not(.span4) {
+      margin-top: 0;
+    }
+
+    li {
+
+      a {
+        display: block;
+        padding: 5px 7px;
+        text-decoration: none;
+
+        &:hover, .active {
+          .border-radius(3px);
+          background: lighten(@linkColor, 55%);
+        }
+      }
+    }
+
+    h4 {
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+  }
+
+}

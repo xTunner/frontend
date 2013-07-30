@@ -1,0 +1,62 @@
+&.about {
+
+  h4 {
+    margin-top: 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: @gray;
+  }
+
+  h2 {
+    margin-bottom: 50px;
+  }
+
+  .member {
+    position: relative;
+    padding-bottom: 30px;
+    margin-top: 30px;
+    border-bottom: 1px solid #eee;
+
+    &:last-of-type {
+      border: none;
+    }
+
+    h3 {
+      margin-bottom: 0;
+      line-height: 22px;
+    }
+
+    &.left {
+      .span9 {
+        padding-left: 20px;
+      }
+
+      ul {
+        left: 30px;
+      }
+    }
+
+    &.right {
+      .span9 {
+        padding-right: 20px;
+      }
+
+      ul {
+        right: 30px;
+      }
+    }
+
+    ul {
+      margin: 0;
+      position: absolute;
+      top: 170px;
+      li {
+        float: left;
+        margin: 0 5px;
+        font-size: 18px;
+        list-style-type: none;
+      }
+    }
+  }
+
+}
