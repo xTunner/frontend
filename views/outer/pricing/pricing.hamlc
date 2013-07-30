@@ -1,4 +1,4 @@
-%body.outer.page.pricing
+.page.pricing
   %header{role: "banner"}
     .container
       %h1 Plans and Pricing
