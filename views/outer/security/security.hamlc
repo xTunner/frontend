@@ -1,5 +1,5 @@
 .page.security
-  %header{:role => "banner"}
+  %header
     .container
       %h1 Security policy
       %h3 If we lose your code, we're out of business.

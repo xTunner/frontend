@@ -1,7 +1,7 @@
 %div{data-bind: "if: flash"}
   #flash{data-bind: "text: flash"}
 
-%header{role: "banner"}
+%header
   .bar
     .container
       .row

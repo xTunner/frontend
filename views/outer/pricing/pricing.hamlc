@@ -1,9 +1,9 @@
 .page.pricing
-  %header{role: "banner"}
+  %header
     .container
       %h1 Plans and Pricing
 
-.container.content{data-bind: "with: $root.billing"}
-  = HAML.pricing_plans()
-  = HAML.pricing_features()
-  = HAML.pricing_faq()
+  .container.content{data-bind: "with: $root.billing"}
+    = HAML.pricing_plans()
+    = HAML.pricing_features()
+    = HAML.pricing_faq()

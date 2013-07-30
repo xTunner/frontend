@@ -1,5 +1,5 @@
 .outer.page
-  %header{:role => "banner"}
+  %header
     .container
       %h1 We're hiring.
       %h3 We're currently looking for great designers and front-end developers.
