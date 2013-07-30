@@ -38,16 +38,6 @@
     text-align: center;
   }
 
-   &.landing h2 {
-      margin-bottom: 0;
-   }
-
-  &.landing h2 ~ h3 {
-    margin: 0 0 20px 0;
-    font-weight: normal;
-    color: lighten(@circleFont, 10%);
-  }
-
   .content {
     margin-bottom: 50px;
   }
@@ -114,49 +104,21 @@
     background: lighten(@circleAccent, 5%);
   }
 
-  &.landing header h1, &.landing header h3 {
-    text-align: center;
-  }
-
   h2 {
     margin: 30px 0;
   }
 
   @import "shared/header.less";
   @import "shared/footer.less";
-  @import "home/customers.less";
-  @import "home/features.less";
-  @import "home/additional.less";
+  @import "error/error.less";
   @import "page.less";
   @import "contact/contact.less";
   @import "about/about.less";
   @import "docs/docs.less";
   @import "jobs/jobs.less";
   @import "blog/blog.less";
+  @import "pricing/pricing.less";
   @import "privacy/privacy.less";
   @import "privacy/security.less";
   @import "privacy/changelog.less";
-
-  // 404
-
-  &.notfound {
-
-    h2, h3 {
-      text-align: center
-    }
-
-    h1 {
-      font-size: 120px;
-      line-height: 100px;
-    }
-
-    .content p {
-      font-size: 18px;
-      font-weight: normal;
-      line-height: 26px;
-      padding: 0 200px;
-      text-align: center;
-    }
-
-  }
 }
