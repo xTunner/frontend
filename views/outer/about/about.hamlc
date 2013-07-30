@@ -25,3 +25,6 @@
               %a.icon-github{href: "https://github.com/#{user.github}"}
             %li
               %a.icon-twitter{href: "https://twitter.com/#{user.twitter}"}
+          - for p in user.bio
+            %p
+              = p
