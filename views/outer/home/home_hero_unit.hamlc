@@ -10,20 +10,20 @@
 
     .span4
       %figure
-        %img{:height => "150", :src => "images/github.png", :width => "150"}/
+        %img{height: "150", src: "img/outer/home/github.png", width: "150"}
       %h4 Push your new code to GitHub
 
     .span4
       %figure
-        %img{:height => "150", :src => "images/github.png", :width => "150"}/
+        %img{height: "150", src: "img/outer/home/tests.png", width: "150"}
       %h4 Your tests run on the CircleCI platform
 
     .span4
       %figure
-        %img{:height => "150", :src => "images/deploy.png", :width => "150"}/
+        %img{height: "150", src: "img/outer/home/deploy.png", width: "150"}
       %h4 Deploy green builds to your servers
 
-  %a.btn.btn-primary.btn-large{:href => ""} Run your tests
+  %a.btn.btn-primary.btn-large{href: ""} Run your tests
 
 
 
