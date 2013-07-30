@@ -519,6 +519,10 @@ window.SammyApp = Sammy 'body', (n) ->
     mixpanel.track("View Privacy")
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/pricing.*", (cx) =>
+    # the pricing page has broken links if served from outer to a logged-in user;
+    # force them to inner.
+    if VM.current_user
+      return cx.redirect "/account/plans"
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
     VM.pricing.display(cx)
