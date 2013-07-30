@@ -1,59 +1,62 @@
-&.landing h2 {
-  margin-bottom: 0;
-}
+.landing {
 
-&.landing h2 ~ h3 {
-  margin: 0 0 20px 0;
-  font-weight: normal;
-  color: lighten(@circleFont, 10%);
-}
+  header {
 
-&.landing header h1, &.landing header h3 {
-  text-align: center;
-}
-
-header {
-  .how {
-    margin-top: 40px;
-    counter-reset: featureNum;
-
-    .span4:first-of-type {
-      margin: 0;
+    h2 {
+      margin-bottom: 0;
     }
 
-    h3 {
-      margin-bottom: 30px;
-      color: @circleBlueLight;
-    }
-
-    h4 {
-      font-size: 16px;
+    h2 ~ h3 {
+      margin: 0 0 20px 0;
       font-weight: normal;
-      text-align: center;
-      counter-increment: featureNum;
+      color: lighten(@circleFont, 10%);
+    }
 
-      &:before {
-        display: inline-block;
-        height: 20px;
-        width: 20px;
-        margin-right: 5px;
-        font-size: 13px;
-        text-align: center;
-        border-radius: 20px;
+    h1, h3 {
+      text-align: center;
+    }
+
+    .how {
+      margin-top: 40px;
+      counter-reset: featureNum;
+
+      .span4:first-of-type {
+        margin: 0;
+      }
+
+      h3 {
+        margin-bottom: 30px;
         color: @circleBlueLight;
-        background: @circleBlueDark;
-        content: counter(featureNum);
+      }
+
+      h4 {
+        font-size: 16px;
+        font-weight: normal;
+        text-align: center;
+        counter-increment: featureNum;
+
+        &:before {
+          display: inline-block;
+          height: 20px;
+          width: 20px;
+          margin-right: 5px;
+          font-size: 13px;
+          text-align: center;
+          border-radius: 20px;
+          color: @circleBlueLight;
+          background: @circleBlueDark;
+          content: counter(featureNum);
+        }
+      }
+
+      figure {
+        text-align: center;
       }
     }
-
-    figure {
-      text-align: center;
-    }
   }
+
+  @import "customers.less";
+  @import "features.less";
+  @import "additional.less";
+  @import "technology.less";
 }
-
-
-@import "home/customers.less";
-@import "home/features.less";
-@import "home/additional.less";
-@import "home/technology.less";
