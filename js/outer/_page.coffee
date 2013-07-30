@@ -30,6 +30,8 @@ CI.outer.Page = class Page
     if @useStickyFooter? and @useStickyFooter
       $('#main > div').wrapAll "<div id='wrap' />"
     $("#main").append HAML['footer'](params)
+    # only needed for pricing
+    $('.popoverClick').popover({trigger: 'hover'});
 
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"

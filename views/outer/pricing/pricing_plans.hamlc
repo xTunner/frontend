@@ -9,23 +9,45 @@
     %p
       %strong $19
       \/ month
+    %ul
+      %li 1 container
+      %li Parallelization up to 16x
+      %li 1 private repository
     %a.btn.btn-primary{:href => ""} Start your 14-day trial
+
   .span3.plan
     %h2 Startup
     %h4 For small teams
     %p
       %strong $49
       \/ month
+    %ul
+      %li 1 container
+      %li Parallelization up to 16x
+      %li 10 private repositories
+
     %a.btn.btn-primary{:href => ""} Start your 14-day trial
+
+
   .span3.plan
     %h2 Small business
     %h4 For established teams
     %p
       %strong $149
       \/ month
+
+    %ul
+      %li 2 containers
+      %li Parallelization up to 16x
+      %li Unlimited
     %a.btn.btn-primary{:href => ""} Start your 14-day trial
+
   .span3.plan
     %h2 Enterprise
     %h4 Enterprisy features
     %p Request a quote by contacting us
+    %ul
+      %li Unlimited
+      %li Parallelization up to 64x
+      %li Unlimited
     %a.btn{:href => ""} Contact us
