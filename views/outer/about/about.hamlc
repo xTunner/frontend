@@ -20,8 +20,8 @@
           %h4= user.role
           %ul.clearfix
             %li
-              %a.ss-icon.ss-social-regular{href: "mailto:#{user.email}"} email
+              %a.icon-envelope{href: "mailto:#{user.email}"}
             %li
-              %a.ss-icon.ss-social-regular{href: "https://github.com/#{user.github}"} github
+              %a.icon-github{href: "https://github.com/#{user.github}"}
             %li
-              %a.ss-icon.ss-social-regular{href: "https://twitter.com/#{user.twitter}"} twitter
+              %a.icon-twitter{href: "https://twitter.com/#{user.twitter}"}

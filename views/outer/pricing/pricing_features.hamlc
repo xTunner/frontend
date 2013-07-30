@@ -12,23 +12,23 @@
       %td.span4
         %strong.popoverClick{"data-content": "You email us question, we email you back. Simple as that."} Email support
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "We respond to support requests immediately, every day (yes, on weekends and holidays). Most requests are responded within an hour, 99% are responded to 12 hours. We're also available for live chat support."} Immediate support
       %td.span2
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "Our phone number is +1 415 341 2432. No-one ever calls because our email support is so good. But in theory, if you called, we'd answer. Try it."} Phone support
@@ -36,7 +36,7 @@
       %td.span2
       %td.span2
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "Naturally we never look at your code. We also have a great security policy, which gives us no rights whatsoever to your code. However, if you prefer that we sign your custom NDA, we'd be happy to."} Custom NDA
@@ -44,103 +44,103 @@
       %td.span2
       %td.span2
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "Our pricing is the same every month, no matter how often you push. There are no charges for using machine time."} Predictable Pricing
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "There's no limit to how often you can push. You queue them up, we'll knock 'em down."} Unlimited builds
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "Great testing means using Circle as much as possible. You don't want to weigh good testing against possible charges or monthly fees. So we have no limit, no per-hour cost, no overages."} Unlimited build time
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "We have the fastest infrastructure around. Running on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test device."} Lightning fast hardware
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "We've tuned every part of our test framework for incredibly fast tests, from our tuned kernel settings, to our caches, to our auto-scaling architecture, you won't wait for anything."} Incredible test optimizations
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "If your tests work, deploy straight to staging, production or QA server. Deploy anywhere, including Heroku, DotCloud, EngineYard, etc using Capistrano,  Fabric or custom commands."} Continuous deployment
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "You can literally set up your tests in 20 seconds. We support every test suite, database, library and language you need."} One-click setup
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "You don't care what John did in his feature branch, but you care what gets pushed to master. Who cares if tests pass yet again, you only want notifications when they fail. Circle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, FlowDock and webhooks."} Personalized notifications
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
     %tr
       %td.span4
         %strong.popoverClick{"data-content": "When your tests are broken, we help you get them fixed. We automatically warn you about common mistakes and document how to fix them. We provide all the information so you can reproduce locally. And if you can't, you can SSH into our VMs to debug yourself."} Debug with ease
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok
       %td.span2
-        %i.ss-icon.ss-standard check
+        %i.icon-ok

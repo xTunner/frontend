@@ -7,4 +7,4 @@
                                   data-bind: "typeahead: { source: VM.suggestArticles, updater: VM.performDocSearch }",
                                   type: "text"}
   %button{:type => "submit"}
-    %i.ss-icon.ss-symbolicons-block search
+    %i.icon-search

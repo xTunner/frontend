@@ -1,6 +1,6 @@
 .row.reason
   .span10.offset2
-    %i.ss-icon.ss-standard.ss-flask
+    %i.icon-beaker
     %h3 Cool Tech
     %p
       Our backend is written in Clojure. Everything from dev-ops to package management to serving our REST API is all done in Clojure. This allows us be really productive, handle concurrency without difficulty, and leads to beautiful manageable code. Clojure isn't just a fancy new language, its the most productive, powerful and elegant language we've ever used.

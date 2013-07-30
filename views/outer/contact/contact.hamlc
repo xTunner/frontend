@@ -21,21 +21,21 @@
         %ul
           %li
             %a.email{href: "mailto:sayhi@circleci.com"}
-              %i.ss-icon email
+              %i.icon-envelope
               sayhi@circleci.com
           %li
             %a{href: "https://www.hipchat.com/gjwkHcrD5"}
-              %i.ss-icon chat
+              %i.icon-comments
               Live Support
           %li
             %a{href: "https://twitter.com/circleci"}
-              %i.ss-icon.ss-social-regular twitter
+              %i.icon-twitter
               @circleci
           %li.tel
-            %i.ss-icon> phone
+            %i.icon-phone
             (800) 585-7075
           %li.adr
-            %i.ss-icon location
+            %i.icon-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
               = succeed ",", ->
                 %span.street-address 325 9th Street
