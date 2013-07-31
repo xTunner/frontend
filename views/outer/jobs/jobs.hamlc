@@ -1,4 +1,4 @@
-.outer.page
+.jobs.page
   %header
     .container
       %h1 We're hiring.
@@ -7,7 +7,7 @@
   .container.content
     .row
       %h2
-        GET ON BOARD WITH A YOUNG GROWING COMPANY, WITH A DEEPLY TECHNICAL TEAM, A FOCUS ON PRODUCTIVITY (FOR OUR CUSTOMERS AND OURSELVES), A FLAT ORGANIZATION, AN IMPORTANT MISSION, AND A GREAT CULTURE.
+        Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
 
       = HAML['jobs_intro']()
       = HAML['jobs_who']()
@@ -16,8 +16,3 @@
       = HAML['jobs_how']()
 
       %h2 No recruiters, thank you.
-
-
-  %script{:src => "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"}
-  %script{:src => "js/retina.js", :type => "text/javascript"}
-  %script{:src => "js/bootstrap.min.js", :type => "text/javascript"}
