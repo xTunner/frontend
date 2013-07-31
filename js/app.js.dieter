@@ -8,6 +8,8 @@
   "../../components/knockout/build/output/knockout-latest.js"
   "../../components/sammy/lib/sammy.js"
   "../../components/moment/moment.js"
+  "../../components/retina.js/src/retina_image_path.coffee"
+  "../../components/retina.js/src/retina_image.coffee"
   "../../components/retina.js/src/retina.coffee"
   "../../components/underscore/underscore.js"
 
