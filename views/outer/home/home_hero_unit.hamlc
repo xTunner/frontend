@@ -21,5 +21,6 @@
         %img{height: "150", src: "img/outer/home/deploy.png", width: "150"}
       %h4 Deploy green builds to your servers
 
-  .hero-unit-cta
-    = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
+  .row-fluid
+    .hero-unit-cta
+      = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
