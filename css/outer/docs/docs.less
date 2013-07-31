@@ -1,9 +1,20 @@
 .docs {
 
-  article {
-    counter-reset: docs;
+  .content h1 {
+    font-size: 30px;
+    line-height: 29px;
+  }
 
-    h2 {
+  .article_list {
+      margin-left: 3px;
+      li {
+        list-style-type: none;
+      }
+    }
+
+
+  article {
+    h1 {
       margin-bottom: 5px;
     }
 
@@ -18,15 +29,13 @@
 
     ul {
       margin: 30px 0 30px 30px;
-      list-style-type: none;
+      list-style-type: bullet;
 
       li {
-        counter-increment: docs;
         position: relative;
         margin: 10px 0;
 
         &:before {
-          content: counter(docs);
           position: absolute;
           top: 0;
           left: -30px;
@@ -40,6 +49,10 @@
         }
       }
 
+    }
+
+    .article_list {
+      list-style-type: none;
     }
 
     pre {
@@ -74,7 +87,7 @@
   }
 
   .span8 {
-    h2 {
+    h1 {
       margin-top: 10px;
     }
   }
@@ -82,7 +95,6 @@
   .articles {
     margin-top: 20px;
     padding-bottom: 20px;
-    list-style-type: none;
     border-bottom: 1px solid @grayLighter;
 
     &:last-of-type, &.span4 {
@@ -107,6 +119,7 @@
     }
 
     li {
+      list-style-type: none;
       a {
         display: block;
         padding: 5px 7px;
