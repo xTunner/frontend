@@ -411,6 +411,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/', (cx) =>
     VM.selected
       refresh_fn: VM.loadRecentBuilds
+      mention_branch: true
     VM.loadRootPage(cx)
 
   @get '^/add-projects', (cx) => VM.loadAddProjects cx
@@ -448,6 +449,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: project_name
         branch: branch
+        mention_branch: false
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
@@ -467,6 +469,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
+        mention_branch: true
         refresh_fn: =>
           if VM.build() and VM.build().usage_queue_visible()
             VM.build().load_usage_queue_why()
@@ -483,6 +486,7 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
+        mention_branch: true
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
 
@@ -519,6 +523,10 @@ window.SammyApp = Sammy 'body', (n) ->
     mixpanel.track("View Privacy")
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/pricing.*", (cx) =>
+    # the pricing page has broken links if served from outer to a logged-in user;
+    # force them to inner.
+    if VM.current_user
+      return cx.redirect "/account/plans"
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
     VM.pricing.display(cx)
