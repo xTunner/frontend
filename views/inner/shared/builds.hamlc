@@ -28,15 +28,15 @@
       / /ko
 
       %td.clickable
-        %a.text{data-bind: "attr: { href: url }, text: author()" }
+        %a.text{data-bind: "attr: { href: url }, text: author" }
 
       %td.clickable{style: "max-width: 45em;"}
         / ko if: body
-        %a.build_log{href: '#', data-bind: "text: subject(), attr: { title: body, href: url }"}
+        %a.build_log{href: '#', data-bind: "text: subject, attr: { title: body, href: url }"}
         / /ko
 
         / ko ifnot: body
-        %a.build_log.text{data-bind: "attr: { href: url }, text: subject()"}
+        %a.build_log.text{data-bind: "attr: { href: url }, text: subject"}
         / /ko
 
       / ko if: VM.current_user().admin && VM.selected().admin_builds
@@ -46,10 +46,10 @@
 
       / ko if: status() != 'not_run'
       %td.clickable
-        %a.text{data-bind: "attr: { href: url }, text: pretty_start_time()"}
+        %a.text{data-bind: "attr: { href: url }, text: pretty_start_time"}
 
       %td.clickable
-        %a.text{data-bind: "attr: { href: url }, text: duration()"}
+        %a.text{data-bind: "attr: { href: url }, text: duration"}
       / /ko
 
       / ko if: status() == 'not_run'
