@@ -13,7 +13,9 @@
       / ko foreach: planFeatures
       %tr
         %td.span4
-          %strong{data-bind: "text: headline, attr: {class: 'title ' + name}, popover: $parent.popover_options({title: headline, content: detail})"}
+          %span{data-bind: "popover: $parent.popover_options({title: headline, content: detail, placement: 'right'})"}
+            %strong{data-bind: "text: headline"}
+            %i.icon-info-sign
 
         / ko foreach: $parent.plans
         %td.span2{data-bind: "if: featureAvailableOuter($parent)"}

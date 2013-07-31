@@ -6,8 +6,8 @@
 
   / ko foreach: plans
   .span3.plan
-    %h2{data-bind: "text: name"} Solo
-    %h4{data-bind: "text: why"} For personal projects
+    %h2{data-bind: "text: name"}
+    %h4{data-bind: "text: why"}
     %p
       %span{data-bind: "ifnot: enterprise_p"}
         %strong
@@ -32,5 +32,8 @@
         %span{data-bind: "text: projects"}
         private repositories
 
-    %a.btn.btn-primary{:href => ""} Start your 14-day trial
+    %span{data-bind: "if: enterprise_p"}
+      %a.btn.btn-primary{href: "mailto:enterprise@circleci.com"} Contact us
+    %span{data-bind: "ifnot: enterprise_p"}
+      %a.btn.btn-primary{href: CI.github.authUrl()} Start your 14-day trial
   / /ko
