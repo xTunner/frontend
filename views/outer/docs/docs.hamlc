@@ -15,7 +15,6 @@
         = HAML.docs_title(@)
 
         - if @article.slug? and @article.slug == "front_page"
-          %br
           = HAML['docs_search_form'](@)
 
         .doc
