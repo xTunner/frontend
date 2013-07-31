@@ -1,19 +1,38 @@
 %section.additional
-  .container
+  .container-fluid
     .span4
       %h3 Contact us
-      %ul
-        %li Say hi through email
-        %li File an support issue
-        %li Call us at 1-800-CIRCLE
-    .span4
+      %p
+        Send us
+        %a an email
+      %p
+        Talk to us in our
+        %a live support channel
+      %p
+        Call us at 800 585-7075
+
+    .span4.try-it
       %h3 Try it right now
-      %p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-      %a.btn.btn-primary.btn-large Run your tests
-      %div
-        %p
-          or
-          %a.btn{:href => "pricing.html"} See Pricing
+      %p
+        Sign up using GitHub, and add your team's repo.
+        You're 30 seconds from running your tests on Circle.
+
+      = HAML.home_button({text: "Sign up now"})
+      %p
+        or
+        %a{href: "pricing.html"} See Pricing
+
     .span4
       %h3 Learn more
-      %p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus imperdiet at arcu in facilisis.
+      %p
+        Check out
+        %a our extensive docs
+      %p
+        Read our
+        %a privacy
+        and
+        %a security
+        policies
+      %p
+        Find out
+        %a who's behind Circle
