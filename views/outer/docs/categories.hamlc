@@ -1,5 +1,5 @@
-%ul.articles
-  - for category in @categories
+- for category in @categories
+  %ul.articles
     %li
       %a{href: "#{category.url}"}
         %h4
