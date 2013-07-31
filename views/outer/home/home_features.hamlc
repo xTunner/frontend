@@ -24,7 +24,7 @@
     .row
       .span4
         %h3 Convention Over Configuration
-        %p When your project follows best-practices, Circle can set up your project in three clicks. We'll install dependencies, configure databases and run your tests. For more complex setups, anything can be tweaked through our config file.
+        %p When your project follows best-practices, Circle can set up your project in three clicks. We'll install dependencies, configure databases and run your tests. For more complex setups, anything can be tweaked through the Circle site, or through a config file in your repo.
       .span4
         %h3 Deploy Anywhere
         %p When the tests pass, deploy easily to Heroku, AWS, EngineYard, Nodejitsu, Google App Engine, or to your own server, using capistrano, fabric or your own bash commands.
