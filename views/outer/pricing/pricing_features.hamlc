@@ -2,6 +2,13 @@
   %h2 Features
   %table.table
     %tr
+      %th.span4
+      %th.span2 Solo
+      %th.span2 Startup
+      %th.span2 Small business
+      %th.span2 Enterprise
+
+    %tr
       %td.span4
         %strong.popoverClick{"data-content": "We'll test code for all your collaborators - anyone with GitHub access to your organization's projects."} Collaborators
       %td.span2 Unlimited

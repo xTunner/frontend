@@ -15,7 +15,7 @@
       %li 1 private repository
     %a.btn.btn-primary{:href => ""} Start your 14-day trial
 
-  .span3.plan
+  .span3.plan.recommended
     %h2 Startup
     %h4 For small teams
     %p

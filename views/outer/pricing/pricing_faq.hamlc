@@ -35,5 +35,5 @@
     %h4 My team needs something not listed here
     %p
       Contact us at
-      %a{:href => "mailto:enterprise@circleci.com"} enterprise@circelci.com
+      %a{:href => "mailto:enterprise@circleci.com"} enterprise@circleci.com
       to discuss the benefits of an enterprise plan.
