@@ -1,7 +1,6 @@
 %section.customers
   .container
-    %h2 Happy Customers
-    %h3 TODO TODO TODO
+    %h2 Great companies trust CircleCI
     .row
       .well.customer.span4
         %p
