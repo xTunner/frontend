@@ -2,9 +2,9 @@
                                       action: "",
                                       data-bind: "submit: searchArticles"}
 
-  %input#searchQuery.search-query{name: "query",
-                                  placeholder: "Search",
-                                  data-bind: "typeahead: { source: VM.suggestArticles, updater: VM.performDocSearch }",
-                                  type: "text"}
-  %button{:type => "submit"}
+  %input#searchQuery{name: "query",
+                     placeholder: "What can we help you find?",
+                     data-bind: "typeahead: { source: VM.suggestArticles, updater: VM.performDocSearch }",
+                     type: "text"}
+  %button{type: "submit"}
     %i.icon-search
