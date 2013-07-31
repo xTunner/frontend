@@ -12,12 +12,13 @@
         - unless @article.slug? and @article.slug == "front_page"
           = HAML['docs_search_form']()
 
-        = HAML.docs_title(@)
+        %article
+          = HAML.docs_title(@)
 
-        - if @article.slug? and @article.slug == "front_page"
-          = HAML['docs_search_form'](@)
+          - if @article.slug? and @article.slug == "front_page"
+            = HAML['docs_search_form'](@)
 
-        .doc
+
           - if @article.category
             = HAML['article_list'](@)
           - else

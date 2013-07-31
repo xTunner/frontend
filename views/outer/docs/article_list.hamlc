@@ -1,4 +1,4 @@
-.article_list
+%ul.article_list
   - if @slug? # ignoring first pass
     - for child in @article.children
       %li
