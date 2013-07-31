@@ -5,7 +5,7 @@
       %strong free, 14-day trial
 
   / ko foreach: plans
-  .span3.plan
+  %div{data-bind: "attr: {class: 'span3 plan ' + (($data.name == 'Startup') && 'recommended')}"}
     %h2{data-bind: "text: name"}
     %h4{data-bind: "text: why"}
     %p
