@@ -1,4 +1,4 @@
-- klass = 'VM.ab().home_red_buttons() ? "btn btn-jumbo btn-action-red" : "btn btn-jumbo btn-action-orange"'
+- klass = '"btn btn-primary btn-large"'
 
 - toggle = 'VM.ab().github_warning_modal() ? "modal" : ""'
 - target = 'VM.ab().github_warning_modal() ? "#githubModal" : ""'

@@ -5,7 +5,7 @@
 
   %h3 Powerful Continuous Integration and Deployment for web applications.
 
-  .row.how
+  .row-fluid.how
     .span4
       %figure
         %img{height: "150", src: "img/outer/home/github.png", width: "150"}
@@ -23,5 +23,3 @@
 
   .hero-unit-cta
     = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
-
-//  %a.btn.btn-primary.btn-large{href: ""} Run your tests
