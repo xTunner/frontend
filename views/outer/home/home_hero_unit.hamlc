@@ -21,43 +21,7 @@
         %img{height: "150", src: "img/outer/home/deploy.png", width: "150"}
       %h4 Deploy green builds to your servers
 
-  %a.btn.btn-primary.btn-large{href: ""} Run your tests
+  .hero-unit-cta
+    = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
 
-
-
--# .hero-unit
--#   .container-fluid
--#     .row-fluid
--#       .span12
--#         %h1
--#           Ship better code, faster.
--#         %h2
--#           <span>TL;DR</span> CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
-
--# .how-it-works
--#   .container
--#     .row
--#       .span4
--#         .center
--#           = HAML.github_image()
-
--#         %h3
--#           %span 1
--#           Push your new code to GitHub
--#       .span4
--#         .center
--#           = HAML.watch_your_tests_image()
-
--#         %h3
--#           %span 2
--#           Your tests run on the CircleCI platform
--#       .span4
--#         .center
--#           = HAML.deploy_image()
-
--#         %h3
--#           %span 3
--#           Deploy green builds to your servers
-
--# .hero-unit-cta
--#   = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
+//  %a.btn.btn-primary.btn-large{href: ""} Run your tests
