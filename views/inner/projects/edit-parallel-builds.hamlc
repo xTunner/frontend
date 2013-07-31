@@ -88,15 +88,13 @@
                   %span{data-bind: "text: focused_parallel"}
         / /ko
 
-    .row-fluid{data-bind: "if: retried_build"}
+    .row-fluid{data-bind: "if: show_test_new_settings"}
       .span10
-        %a.btn.btn-success{type: "submit",
-                           name: "submit",
-                           data-bind: "click: retried_build().visit"}
-          View your latest build running at
-          != succeed "x", ->
-            %span{data-bind: "text: retried_build().parallel"}
-
+        - text = "Try out a build at <span data-bind='text: parallel'></span>x"
+        = HAML.expando_button({                              |
+            button_binding: "click: create_settings_build",  |
+            loading_text: "Starting...",                     |
+            button_text: text})                              |
 
     .row-fluid
       .span8
@@ -112,7 +110,7 @@
 
 
         %p
-          Each machine is completely separated (sanboxed and firewalled) from the others,
+          Each machine is completely separated (sandboxed and firewalled) from the others,
           so that your tests can't conflict with each other:
           separate databases, file systems, process space, memory, and databases.
 
@@ -139,7 +137,7 @@
               but does not support parallelism.
 
           %p
-            With 16 containers and a plan that supports 8x parallelism, you could run
+            With 16 containers you could run
             %ul
               %li
                 16 simultaneous builds at 1x parallelism
@@ -149,6 +147,8 @@
                 4 simultaneous builds at 4x parallelism
               %li
                 2 simultaneous builds at 8x parallelism
+              %li
+                1 build at 16x parallelism
 
     .row-fluid
       .span10

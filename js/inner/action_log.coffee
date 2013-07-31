@@ -10,7 +10,9 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     status: null
     source: null
     type: null
-    out: []
+    messages: []
+    final_out: []
+    trailing_out: ""
     step: null
     index: null
     has_output: null
@@ -36,7 +38,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       if @user_minimized()?
         @user_minimized()
       else
-        @success()
+        @success() and not @messages().length > 0
 
     if !@minimize()
       @maybe_retrieve_output()
@@ -45,7 +47,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       not @minimize()
 
     @has_content = @komp =>
-      @has_output() or ( @out()? and @out().length > 0) or @bash_command()
+      @has_output() or ( @final_out()? and @final_out().length > 0) or @bash_command()
 
     @action_header_style =
       # knockout CSS requires a boolean observable for each of these
@@ -74,7 +76,10 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       "#{@start_time()} to #{@end_time()}"
 
     @duration = @komp =>
-      CI.time.as_duration(@run_time_millis())
+      if @run_time_millis()
+        CI.time.as_duration(@run_time_millis())
+      else if @start_time()
+        CI.time.as_duration(@updatingDuration(@start_time()))
 
     @sourceText = @komp =>
       switch @source()
@@ -98,6 +103,9 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         when "db"
           "You specified this command on the project settings page"
 
+    @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
+    @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+
   toggle_minimize: =>
     if not @user_minimized?
       @user_minimized(!@user_minimized())
@@ -110,11 +118,20 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   htmlEscape: (str) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-  log_output: =>
-    return "" unless @out()
-    x = for o in @out()
-      "<p class='#{o.type}'><span class='bubble'></span>#{CI.terminal.ansiToHtml(@htmlEscape(o.message))}</p>"
-    x.join ""
+  append_output: (new_out) =>
+    i = 0
+    while i < new_out.length
+      type = new_out[i].type
+      converter = if type == 'err'
+                    @stderrConverter
+                  else
+                    @stdoutConverter
+      offset = 0
+      sequence = (while (i + offset < new_out.length) and (new_out[i + offset].type is type)
+                    new_out[i + offset++])
+      @final_out.push(converter.append(@htmlEscape((o.message for o in sequence).join "")))
+      i += sequence.length
+    @trailing_out(@stdoutConverter.get_trailing() + @stderrConverter.get_trailing())
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
@@ -131,7 +148,10 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         type: "GET"
         success: (data) =>
           @retrieved_output(true)
-          @out(data)
+          ## reset the converters
+          @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
+          @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+          @append_output(data)
         complete: (data, status) =>
           @retrieving_output(false)
 
@@ -139,6 +159,10 @@ class Step extends CI.inner.Obj
 
   observables: =>
     actions: []
+
+  clean: () =>
+    super
+    VM.cleanObjs(@actions())
 
   constructor: (json) ->
     json.actions = if json.actions? then (new CI.inner.ActionLog(j) for j in json.actions) else []

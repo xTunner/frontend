@@ -25,6 +25,15 @@ CI.inner.Build = class Build extends CI.inner.Obj
     retry_of: null
     subject: null
     parallel: null
+    usage_queued_at: null
+    usage_queue_why: null
+    usage_queue_visible: false
+
+  clean: () =>
+    super
+
+    VM.cleanObjs(@steps())
+    @clean_usage_queue_why()
 
   constructor: (json) ->
 
@@ -90,6 +99,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @queued = @komp =>
       @status() == 'queued'
 
+    @finished = @komp =>
+      @stop_time()? or @canceled()
+
     @status_icon_class =
       "icon-ok": @success_style
       "icon-remove": @komp => @important_style() || @warning_style() || @canceled()
@@ -153,26 +165,57 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @pretty_start_time = @komp =>
       if @start_time()
+        window.updator() # update every second
         CI.time.as_time_since(@start_time())
 
     @previous_build = @komp =>
       @previous()? and @previous().build_num
 
     @duration = @komp () =>
-      if @build_time_millis()?
-        CI.time.as_duration(@build_time_millis())
+      if @start_time() and @stop_time()
+        CI.time.as_duration(moment(@stop_time()).diff(moment(@start_time())))
       else
         if @status() == "canceled"
           # build was canceled from the queue
           "canceled"
-        else
-          "still running"
+        else if @start_time()
+          CI.time.as_duration(@updatingDuration(@start_time()))
+
+
+    # don't try to show queue information if the build is pre-usage_queue
+    @show_queued_p = @komp =>
+      @usage_queued_at()?
+
+    @usage_queued = @komp =>
+      not @finished() and not @queued_at()?
+
+    @run_queued = @komp =>
+      not @finished() and @queued_at()? and not @start_time()?
+
+    @run_queued_time = @komp =>
+      if @start_time() and @queued_at()
+        moment(@start_time()).diff(@queued_at())
+      else if @queued_at() and @stop_time() # canceled before left queue
+        moment(@stop_time()).diff(@queued_at())
+      else if @queued_at()
+        @updatingDuration(@queued_at())
+
+    @usage_queued_time = @komp =>
+      if @usage_queued_at() and @queued_at()
+        moment(@queued_at()).diff(@usage_queued_at())
+      else if @usage_queued_at() and @stop_time() # canceled before left queue
+        moment(@stop_time()).diff(@usage_queued_at())
+      else if @usage_queued_at()
+        @updatingDuration(@usage_queued_at())
 
     @queued_time = @komp =>
-      if @start_time() and @queued_at()
-        CI.time.as_duration(moment(@start_time()).diff(@queued_at()))
-      else if @queued_at() and @status() is "queued"
-        CI.time.as_time_since(@queued_at())
+      (@run_queued_time() || 0) + (@usage_queued_time() || 0)
+
+    @queued_time_summary = @komp =>
+      if @run_queued_time()
+        "#{CI.time.as_duration(@usage_queued_time())} waiting + #{CI.time.as_duration(@run_queued_time())} in queue"
+      else
+        "#{CI.time.as_duration(@usage_queued_time())} waiting for builds to finish"
 
     @branch_in_words = @komp =>
       return "(unknown)" unless @branch()
@@ -259,8 +302,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     if @shouldSubscribe()
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind 'pusher:subscription_error', (status) ->
-        if _rollbar? && _rollbar.push?
-          _rollbar.push status
+        _rollbar.push status
 
       @build_channel.bind('newAction', @newAction)
       @build_channel.bind('updateAction', @updateAction)
@@ -281,6 +323,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   newAction: (json) =>
     @fillActions(json.step, json.index)
+    if old = @steps()[json.step].actions()[json.index]
+      old.clean()
     @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
 
   updateAction: (json) =>
@@ -292,26 +336,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # adds output to the action
     @fillActions(json.step, json.index)
 
-    # @steps()[json.step].actions()[json.index].out.push(json.out)
-    out = @steps()[json.step].actions()[json.index].out
-    len = out().length
-    last = out()[len - 1]
-    payload = json.out
-    if last? and last.type == payload.type
-      out.valueWillMutate()
-      last.message += payload.message
-      out.valueHasMutated()
-    else
-      out.push(payload)
+    @steps()[json.step].actions()[json.index].append_output([json.out])
 
   maybeAddMessages: (json) =>
     existing = (message.message for message in @messages())
     (@messages.push(msg) if msg.message not in existing) for msg in json
 
-  trackRetryBuild: (build, clearCache, SSH) =>
+  trackRetryBuild: (data, clearCache, SSH) =>
     mixpanel.track("Trigger Build",
-      "vcs-url": build.project_name()
-      "build-num": build.build_num
+      "vcs-url": data.vcs_url.substring(19)
+      "build-num": data.build_num
       "retry?": true
       "clear-cache?": clearCache
       "ssh?": SSH)
@@ -325,9 +359,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       success: (data) =>
         console.log("retry build data", data)
         console.log("retry event", event)
-        build = new CI.inner.Build(data)
-        build.visit()
-        @trackRetryBuild build, clearCache, false
+        VM.visit_local_url data.build_url
+        @trackRetryBuild data, clearCache, false
     false
 
   clear_cache_and_retry_build: (data, event) =>
@@ -345,9 +378,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "POST"
       event: event
       success: (data) =>
-        build = new CI.inner.Build(data)
-        build.visit()
-        @trackRetryBuild build, false, true
+        VM.visit_local_url data.build_url
+        @trackRetryBuild data, false, true
     false
 
   cancel_build: (data, event) =>
@@ -356,6 +388,30 @@ CI.inner.Build = class Build extends CI.inner.Obj
       type: "POST"
       event: event
     false
+
+  toggle_usage_queue_why: () =>
+    if @usage_queue_visible()
+      @usage_queue_visible(!@usage_queue_visible())
+      @clean_usage_queue_why()
+      @usage_queue_why(null)
+    else
+      @load_usage_queue_why()
+      @usage_queue_visible(true)
+
+  clean_usage_queue_why: () =>
+    if @usage_queue_why()
+      VM.cleanObjs(@usage_queue_why())
+
+  load_usage_queue_why: () =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/usage-queue"
+      type: "GET"
+      success: (data) =>
+        @clean_usage_queue_why()
+        @usage_queue_why(new CI.inner.Build(build_data) for build_data in data.reverse())
+      complete: () =>
+        # stop the spinner if there was an error
+        @usage_queue_why([]) if not @usage_queue_why()
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')

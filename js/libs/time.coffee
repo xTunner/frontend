@@ -1,6 +1,6 @@
 CI.time =
   yesterday: () =>
-    moment(Date.now()).subtract("days", 1).sod()
+    moment(Date.now()).subtract("days", 1).startOf('day')
 
   ## takes two Dates, returns a human friendly string about how long it took
   as_time_since: (time_string) =>
@@ -17,7 +17,7 @@ CI.time =
       "1 second ago"
     else if seconds < 45
       "#{seconds} seconds ago"
-    else if date.clone().sod().diff(yesterday) == 0
+    else if date.clone().startOf('day').diff(yesterday) == 0
       "Yesterday at " + date.format "h:mma"
     else if minutes < 30
       date.from now # use instead of fromNow because fromNow isn't properly mocked by sinon

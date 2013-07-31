@@ -37,16 +37,6 @@ ko.bindingHandlers.popover = jQueryExt('popover')
 ko.bindingHandlers.tooltip = jQueryExt('tooltip')
 ko.bindingHandlers.typeahead = jQueryExt('typeahead')
 
-## copy of html binding. Uses innerHTML directly, which is faster than
-## jQuery, but does less. Seems to work well for just spans.
-ko.bindingHandlers.fastHtml =
-  init: () ->
-    # copied from ko.bindingHandlers.hmtl, don't really know what it does..
-    {'controlsDescendentBindings': true }
-
-  update: (el, valueAccessor) ->
-    el.innerHTML = valueAccessor()
-
 ## Money custom binding
 
 # Add helper that was minified
@@ -66,12 +56,12 @@ addCommas = (num) ->
   prefix + suffix
 
 # Copy of setTextContent in ko's utils
-setMoneyContent = (element, textContent) ->
+transformContent = (f, element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)
   if not value?
     value = ""
   else
-    value = "$#{addCommas(value)}"
+    value = f(value)
 
   if 'innerText' in element
     element.innerText = value
@@ -83,7 +73,13 @@ setMoneyContent = (element, textContent) ->
 
 ko.bindingHandlers.money =
   update: (el, valueAccessor) =>
-    setMoneyContent(el, valueAccessor())
+    f = (value) -> "$#{addCommas(value)}"
+    transformContent(f, el, valueAccessor())
+
+ko.bindingHandlers.duration =
+  update: (el, valueAccessor) =>
+    f = (value) -> CI.time.as_duration(value)
+    transformContent(f, el, valueAccessor())
 
 setLeadingZeroContent = (element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)

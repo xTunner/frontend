@@ -40,6 +40,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     env_vars: []
     env_varName: ""
     env_varValue: ""
+    show_branch_input: false
+    settings_branch: null
+    show_test_new_settings: false
 
   constructor: (json) ->
 
@@ -60,6 +63,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @build_url = @komp =>
       @vcs_url() + '/build'
+
+    @settings_branch(@default_branch())
 
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
@@ -282,7 +287,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (data) =>
         _gaq.push(['_trackEvent', 'Projects', 'Add']);
         if data.first_build
-          (new CI.inner.Build(data.first_build)).visit()
+          VM.visit_local_url data.build_url
         else
           $('html, body').animate({ scrollTop: 0 }, 0);
           @followed(data.followed)
@@ -314,20 +319,18 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     false # dont bubble the event up
 
+  toggle_show_branch_input: (data, event) =>
+    @show_branch_input(!@show_branch_input())
+    $(event.target).tooltip('hide')
+    # hasfocus binding is bad here: closes the form when you click the button
+    if @show_branch_input()
+      $(event.target).siblings("input").focus()
+
   save_dependencies: (data, event) =>
-    # Comment this out until changing settings doesn't kick off a new build
-    # $.ajax
-    #   type: "PUT"
-    #   event: event
-    #   url: "/api/v1/project/#{@project_name()}/settings"
-    #   data: JSON.stringify
-    #     setup: @setup()
-    #     dependencies: @dependencies()
-    #     post_dependencies: @post_dependencies()
-    true # bubble up so that we move to the test step
+    @save_specs data, event, =>
+      window.location.hash = "#tests"
 
-
-  save_specs: (data, event) =>
+  save_specs: (data, event, callback) =>
     $.ajax
       type: "PUT"
       event: event
@@ -338,9 +341,25 @@ CI.inner.Project = class Project extends CI.inner.Obj
         post_dependencies: @post_dependencies()
         test: @test()
         extra: @extra()
-      success: (data) =>
-        (new CI.inner.Build(data)).visit()
+      success: () =>
+        if callback
+          callback.call(data, event)
     false # dont bubble the event up
+
+  create_settings_build: (data, event) =>
+    url = "/api/v1/project/#{@project_name()}"
+    if not _.isEmpty(@settings_branch())
+      url += "/tree/#{@settings_branch()}"
+    $.ajax
+      type: "POST"
+      event: event
+      url: url
+      success: (data) =>
+        VM.visit_local_url data.build_url
+    false # dont bubble the event up
+
+  save_and_create_settings_build: (data, event) =>
+    @save_specs data, event, @create_settings_build
 
   set_heroku_deploy_user: (data, event) =>
     $.ajax
@@ -440,7 +459,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       data: JSON.stringify
         parallel: @parallel()
       success: (data) =>
-        @retried_build(new CI.inner.Build(data))
+        @show_test_new_settings(true)
       error: (data) =>
         @refresh()
         @load_paying_user()

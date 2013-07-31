@@ -33,7 +33,7 @@
               @circleci
           %li.tel
             %i.icon-phone
-            (800) 585-7075
+              800 585-7075 / +1 415 944-3995
           %li.adr
             %i.icon-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }

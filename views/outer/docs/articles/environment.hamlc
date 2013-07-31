@@ -1,5 +1,5 @@
 - @title = 'Test environment'
-- @lastUpdated = "Apr 13, 2013"
+- @lastUpdated = "Jul 23, 2013"
 
 %p
   Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
@@ -426,7 +426,9 @@
   %li
     %code elasticsearch 0.19.11
   %li
-    %code solr 4.2.1
+    %code
+      solr
+      = CI.Versions.solr
   %li
     %code beanstalkd 1.4.6
   %li

@@ -1,5 +1,7 @@
 CI.inner.Obj = class Obj
   constructor: (json={}, defaults={}) ->
+    @komps = []
+
     for k,v of @observables()
       @[k] = @observable(v)
 
@@ -8,9 +10,12 @@ CI.inner.Obj = class Obj
 
   observables: () => {}
 
+  komps: []
 
   komp: (args...) =>
-    ko.computed args...
+    comp = ko.computed args...
+    @komps.push(comp)
+    comp
 
   observable: (obj) ->
     if $.isArray obj
@@ -23,6 +28,17 @@ CI.inner.Obj = class Obj
       if @observables().hasOwnProperty(k)
         @[k](v)
 
+  # Meant to be used in a computed observable. Updates every second and returns
+  # the number of millis between now and start.
+  # It's best to put this behind a conditional, so that it stops evaluating
+  # after the duration no longer needs to update.
+  updatingDuration: (start) =>
+    window.updator()
+    moment().diff(start)
+
+  clean: () =>
+    for k in @komps
+      k.dispose()
 
 CI.inner.VcsUrlMixin = (obj) ->
   obj.vcs_url = ko.observable(if obj.vcs_url then obj.vcs_url else "")

@@ -20,6 +20,7 @@ CI.inner.User = class User extends CI.inner.Obj
     basic_email_prefs: "smart"
     plan: null
     parallelism: 1
+    gravatar_id: null
 
   constructor: (json) ->
     super json,
@@ -59,6 +60,11 @@ CI.inner.User = class User extends CI.inner.Obj
     @collaboratorsWithout = (login) =>
       @komp =>
         c for c in @collaboratorAccounts() when c.login isnt login
+
+    @gravatar_url = (size=200) =>
+      @komp =>
+        if @gravatar_id() and @gravatar_id() isnt ""
+          "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
 
   create_token: (data, event) =>
     $.ajax

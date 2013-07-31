@@ -1,5 +1,5 @@
 - @title = "Test with Solr"
-- @lastUpdated = "Feb 2, 2013"
+- @lastUpdated = "Jul 23, 2013"
 
 %p
   If your tests require a running solr instance, you will need to configure
@@ -23,7 +23,9 @@
 
 %p
   Even if we aren't able to do things automatically,
-  %code solr 4.2.1
+  %code
+    solr
+    = CI.Versions.solr
   is installed on your build system. It will need to be configured with your
   schema.xml, and booted via
   = succeed '.', ->
@@ -36,7 +38,7 @@
     :preserve
       database:
         post:
-          - cp -R /opt/solr-4.2.1 $HOME/solr
+          - cp -R /opt/solr-4.3.1 $HOME/solr
           - cp config/schema.xml $HOME/solr/example/solr/collection1/conf
           # optional: - cp config/solrconfig.xml $HOME/solr/example/solr/collection1/conf
           - nohup bash -c "cd $HOME/solr/example; java -jar start.jar &" &gt; $HOME/solr.log
@@ -48,7 +50,7 @@
   %ol
     %li
       Copy a skeletal solr installation from
-      %code /opt/solr-4.2.1
+      %code /opt/solr-4.3.1
       into your home directory.
     %li
       Copy your configuration (<code>schema.xml</code> at least, and

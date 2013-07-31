@@ -1,4 +1,4 @@
-%table.well.table-condensed.table.table-striped
+%table.builds-table
   %thead
     %tr
       %th Build
@@ -30,7 +30,7 @@
           %span.build_log{data-bind: "text: subject"}
 
       / ko if: VM.current_user().admin && VM.selected().admin_builds
-      %td{data-bind: "text: queued_time"}
+      %td{data-bind: "duration: queued_time"}
       / /ko
 
       / ko if: status() != 'not_run'

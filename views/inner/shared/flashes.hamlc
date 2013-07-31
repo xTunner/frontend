@@ -10,3 +10,4 @@
         If we can help,
         = succeed '.', ->
           = HAML['contact_us_inner']()
+    .offset11.span1

@@ -9,6 +9,7 @@
   "../../components/sammy/lib/sammy.js"
   "../../components/moment/moment.js"
   "../../components/retina.js/src/retina.coffee"
+  "../../components/underscore/underscore.js"
 
   "bootstrap.js.dieter"
 

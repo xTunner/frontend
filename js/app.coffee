@@ -32,7 +32,11 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @build_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
-    @selected = ko.observable({}) # Tracks what the dashboard is showing
+
+    # Tracks what page we're on (for pages we care about)
+    @selected = ko.observable({})
+
+    @navbar = ko.observable(new CI.inner.Navbar(@selected, @))
     @billing = ko.observable(new CI.inner.Billing)
 
     @dashboard_ready = @komp =>
@@ -51,8 +55,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
-      if _rollbarParams?
-        _rollbarParams.person = {id: @current_user().login}
+      _rollbarParams.person = {id: @current_user().login}
 
 
     @intercomUserLink = @komp =>
@@ -80,19 +83,21 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
+  cleanObjs: (objs) ->
+    $.each objs, (i, o) ->
+      o.clean()
+
+  visit_local_url: (url) =>
+    path = URI(url).path()
+    SammyApp.setLocation path
+
   authGitHubSlideDown: =>
     mixpanel.track("Auth GitHub Modal Why Necessary")
     $(".why_authenticate_github_modal").slideDown()
 
   refreshBuildState: () =>
     VM.loadProjects()
-    sel = VM.selected()
-    if sel.admin_builds
-      VM.refreshAdminRecentBuilds()
-    else if sel.project_name
-      VM.loadProject(sel.username, sel.project, sel.branch, true)
-    else
-      VM.loadRecentBuilds()
+    VM.selected().refresh_fn() if VM.selected().refresh_fn
 
   # Keep this until backend has a chance to fully deploy
   refreshDashboard: () =>
@@ -162,6 +167,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   loadRecentBuilds: () =>
     $.getJSON '/api/v1/recent-builds', (data) =>
+      @cleanObjs(@recent_builds())
       @recent_builds((new CI.inner.Build d for d in data))
       @recent_builds_have_been_loaded(true)
 
@@ -181,8 +187,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     if @current_user().repos().length == 0
       track_signup_conversion()
 
-
-
   loadProject: (username, project, branch, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
@@ -191,6 +195,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     settings_path = path + "/settings"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
+    @cleanObjs(@builds())
     if not refresh
       @builds.removeAll()
       @project_builds_have_been_loaded(false)
@@ -211,11 +216,13 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
+    @build().clean() if @build()
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
       @build().maybeSubscribe()
+
       mixpanel_data =
         "running": not @build().stop_time()?
         "build-num": @build().build_num
@@ -315,11 +322,13 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   loadAdminRecentBuilds: () =>
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @cleanObjs @recent_builds()
       @recent_builds((new CI.inner.Build d for d in data))
     @renderAdminPage "recent_builds"
 
   refreshAdminRecentBuilds: () =>
     $.getJSON '/api/v1/admin/recent-builds', (data) =>
+      @cleanObjs @recent_builds()
       @recent_builds((new CI.inner.Build d for d in data))
 
   adminRefreshIntercomData: (data, event) =>
@@ -390,105 +399,160 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
 window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
+  @bind 'run-route', (e, data) ->
+    VM.clearErrorMessage()
+    mixpanel.track_pageview(data.path)
 
-    @bind 'run-route', (e, data) ->
-      mixpanel.track_pageview(data.path)
+  # ignore forms with method ko, useful when using the knockout submit binding
+  @route 'ko', '.*', ->
+    false
 
-    # ignore forms with method ko, useful when using the knockout submit binding
-    @route 'ko', '.*', ->
-      false
+  @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
+  @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
 
-    @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
-    @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
+  @get '^/', (cx) =>
+    VM.selected
+      refresh_fn: VM.loadRecentBuilds
+    VM.loadRootPage(cx)
 
-    @get '^/', (cx) =>
-      VM.selected({})
-      VM.loadRootPage(cx)
+  @get '^/add-projects', (cx) => VM.loadAddProjects cx
+  @get '^/gh/:username/:project/edit(.*)',
+    (cx) ->
+      project_name = "#{cx.params.username}/#{cx.params.project}"
+      sel =
+        page: 'project_settings'
+        crumbs: true
+        username: cx.params.username
+        project: cx.params.project
+        project_name: project_name
 
-    @get '^/add-projects', (cx) => VM.loadAddProjects cx
-    @get '^/gh/:username/:project/edit(.*)',
-      (cx) -> VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
-    @get '^/account(.*)',
-      (cx) -> VM.loadAccountPage cx, cx.params.splat
-    @get '^/gh/:username/:project/tree/(.*)',
-      (cx) ->
-        # github allows '/' is branch names, so match more broadly and combine them
-        cx.params.branch = cx.params.splat.join('/')
-        VM.selected
-          username: cx.params.username
-          project: cx.params.project
-          project_name: "#{cx.params.username}/#{cx.params.project}"
-          branch: cx.params.branch
+      if project_name is VM.selected().project_name
+        sel = _.extend(VM.selected(), sel)
 
-        VM.loadProject cx.params.username, cx.params.project, cx.params.branch
+      VM.selected sel
 
-    @get '^/gh/:username/:project/:build_num',
-      (cx) -> VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
-    @get('^/gh/:username/:project',
-      (cx) ->
-        VM.selected
-          username: cx.params.username
-          project: cx.params.project
-          project_name: "#{cx.params.username}/#{cx.params.project}"
-
-        VM.loadProject cx.params.username, cx.params.project
-
-    @get '^/logout', (cx) -> VM.logout cx
-
-    @get '^/admin', (cx) -> VM.loadAdminPage cx
-    @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
-    @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx)
-    @get '^/admin/recent-builds', (cx) ->
-      VM.loadAdminRecentBuilds cx
+      VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+  @get '^/account(.*)',
+    (cx) ->
       VM.selected
-        admin_builds: true
+        page: "account"
+      VM.loadAccountPage cx, cx.params.splat
+  @get '^/gh/:username/:project/tree/(.*)',
+    (cx) ->
+      # github allows '/' is branch names, so match more broadly and combine them
+      branch = cx.params.splat.join('/')
+      project_name = "#{cx.params.username}/#{cx.params.project}"
 
-    @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
+      sel =
+        page: "project_branch"
+        crumbs: true
+        username: cx.params.username
+        project: cx.params.project
+        project_name: project_name
+        branch: branch
+        refresh_fn: =>
+          VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
-    # outer
-    @get "^/docs(.*)", (cx) =>
-      VM.docs.display(cx)
-      mixpanel.track("View Docs")
-    @get "^/about.*", (cx) =>
-      VM.about.display(cx)
-      mixpanel.track("View About")
-    @get "^/contact.*", (cx) =>
-      VM.contact.display(cx)
-      mixpanel.track("View Contact")
-    @get "^/privacy.*", (cx) =>
-      VM.privacy.display(cx)
-      mixpanel.track("View Privacy")
-    @get "^/security.*", (cx) =>
-      VM.security.display(cx)
-      mixpanel.track("View Security")
-    @get "^/jobs.*", (cx) => VM.jobs.display(cx)
-    @get "^/pricing.*", (cx) =>
-      VM.billing().loadPlans()
-      VM.billing().loadPlanFeatures()
-      VM.pricing.display(cx)
-      mixpanel.track("View Pricing Outer")
+      if project_name is VM.selected().project_name and branch is VM.selected().branch
+        sel = _.extend(VM.selected(), sel)
 
-    @post "^/heroku/resources", -> true
+      VM.selected sel
 
-    @get '^/api/.*', (cx) => false
+      VM.loadProject cx.params.username, cx.params.project, branch
 
-    @get '^(.*)', (cx) => VM.error.display(cx)
+  @get '^/gh/:username/:project/:build_num',
+    (cx) ->
+      VM.selected
+        page: "build"
+        crumbs: true
+        username: cx.params.username
+        project: cx.params.project
+        project_name: "#{cx.params.username}/#{cx.params.project}"
+        build_num: cx.params.build_num
+        refresh_fn: =>
+          if VM.build() and VM.build().usage_queue_visible()
+            VM.build().load_usage_queue_why()
 
-    # valid posts, allow to propegate
-    @post '^/logout', -> true
-    @post '^/admin/switch-user', -> true
-    @post "^/about/contact", -> true # allow to propagate
+      VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
-    @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
+  @get '^/gh/:username/:project',
+    (cx) ->
+      project_name = "#{cx.params.username}/#{cx.params.project}"
 
-    # Google analytics
-    @bind 'event-context-after', ->
-      if window._gaq? # we dont use ga in test mode
-        window._gaq.push @path
+      sel =
+        page: "project"
+        crumbs: true
+        username: cx.params.username
+        project: cx.params.project
+        project_name: "#{cx.params.username}/#{cx.params.project}"
+        refresh_fn: =>
+          VM.loadProject(cx.params.username, cx.params.project, null, true)
 
-    @bind 'error', (e, data) ->
-      if data? and data.error? and window.Airbrake?
-        window.notifyError data
+      if project_name is VM.selected().project_name
+        sel = _.extend(VM.selected(), sel)
+
+      VM.selected sel
+
+      VM.loadProject cx.params.username, cx.params.project
+
+  @get '^/logout', (cx) -> VM.logout cx
+
+  @get '^/admin', (cx) -> VM.loadAdminPage cx
+  @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
+  @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
+  @get '^/admin/recent-builds', (cx) ->
+    VM.loadAdminRecentBuilds cx
+    VM.selected
+      page: "admin"
+      admin_builds: true
+      refresh_fn: VM.refreshAdminRecentBuilds
+
+  @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
+
+  # outer
+  @get "^/docs(.*)", (cx) =>
+    VM.docs.display(cx)
+    mixpanel.track("View Docs")
+  @get "^/about.*", (cx) =>
+    VM.about.display(cx)
+    mixpanel.track("View About")
+  @get "^/contact.*", (cx) =>
+    VM.contact.display(cx)
+    mixpanel.track("View Contact")
+  @get "^/privacy.*", (cx) =>
+    VM.privacy.display(cx)
+    mixpanel.track("View Privacy")
+  @get "^/security.*", (cx) =>
+    VM.security.display(cx)
+    mixpanel.track("View Security")
+  @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  @get "^/pricing.*", (cx) =>
+    VM.billing().loadPlans()
+    VM.billing().loadPlanFeatures()
+    VM.pricing.display(cx)
+    mixpanel.track("View Pricing Outer")
+
+  @post "^/heroku/resources", -> true
+
+  @get '^/api/.*', (cx) => false
+
+  @get '^(.*)', (cx) => VM.error.display(cx)
+
+  # valid posts, allow to propegate
+  @post '^/logout', -> true
+  @post '^/admin/switch-user', -> true
+  @post "^/about/contact", -> true # allow to propagate
+
+  @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
+
+  # Google analytics
+  @bind 'event-context-after', ->
+    if window._gaq? # we dont use ga in test mode
+      window._gaq.push @path
+
+  @bind 'error', (e, data) ->
+    if data? and data.error? and window.Airbrake?
+      window.notifyError data
 
 
 $(document).ready () ->

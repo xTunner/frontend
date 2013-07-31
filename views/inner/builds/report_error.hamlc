@@ -1,9 +1,4 @@
 %span{data-bind: "if: failed() && !infrastructure_fail()"}
-  %span{data-bind: "if: messages.length"}
-    .alert.alert-danger
-      %span{data-bind: "foreach: messages"}
-        %span{data-bind: "html: message"}
-
   .alert.alert-danger
     %b Error!
 
@@ -11,13 +6,8 @@
       %a{href: "/docs/troubleshooting" } Check out common problems
 
     or
-    - if @build
-      = succeed ',', ->
-        %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
-
-    - else
-      = succeed ',', ->
-        %a{ data-bind: "attr: {href: $root.build().edit_link()}" } tweak your test settings
+    = succeed ',', ->
+      %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
 
     or
     %span.label.label-important#white{data-bind: "click: report_build",

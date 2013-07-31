@@ -1,0 +1,27 @@
+.row-fluid{data-bind: "visible: usage_queue_visible"}
+  .usage-queue-why.span12.well
+    .spinner-container{data-bind: "ifnot: usage_queue_why"}
+      = HAML.fast_spinner({})
+    %div{data-bind: "if: usage_queue_why"}
+      Your build
+      %span{data-bind: "text: usage_queued() ? 'has':''"}
+      spent
+      %strong{data-bind: "duration: usage_queued_time"}
+      in your queue waiting for your other builds to finish.
+      %div{data-bind: "ifnot: usage_queued"}
+        %p{data-bind: "if: run_queued"}
+          Circle has spent
+          %strong{data-bind: "duration: run_queued_time"}
+          acquiring containers to run your build.
+        %p{data-bind: "ifnot: run_queued"}
+          %span{data-bind: "if: run_queued_time"}
+            Circle spent
+            %strong{data-bind: "duration: run_queued_time"}
+            acquiring containers to run your build.
+
+      %div{data-bind: "if: usage_queue_why().length"}
+        %h5{data-bind: "if: usage_queued"}
+          Your build will start when some of these builds finish and free up containers:
+        %h5{data-bind: "ifnot: usage_queued"}
+          Your build was queued behind these builds:
+        = HAML.builds({builds: "usage_queue_why", mention_project: true})
