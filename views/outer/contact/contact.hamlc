@@ -14,7 +14,7 @@
           %label{for: "email"} Email address
           %input#email{name: "email", placeholder: "Your email address", type: "email"}
           %label{for: "message"} Message
-          %textarea{placeholder: "Your message"}
+          %textarea{placeholder: "Tell us what you're thinking"}
           %button.btn-primary{type: "submit"} Send
       .span6.vcard
         %h3 Don't like forms? Contact us anyway!
@@ -47,5 +47,6 @@
         %h3 Press Inquiries
         %p
           Drop a line to
-          = succeed ".", ->
+          = succeed ",", ->
             %a{href: "mailtopress@circleci.com"} press@circleci.com
+          or call Paul at +1 415 341 2432.
