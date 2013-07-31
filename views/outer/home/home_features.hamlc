@@ -1,7 +1,6 @@
 %section.features
   .container
-    %h2 Features
-    %h3 TODO TODO TODO
+    %h2 Can your CI server do this?
     .row
       %img.pull-left{height: "200", src: "img/outer/home/build.png", width: "400"}
       %h3 Keep the Build Green
