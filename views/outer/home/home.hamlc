@@ -1,5 +1,3 @@
-
-
 %div{ data-bind: "if: from_heroku" }
   = HAML.heroku_header()
 
@@ -8,11 +6,10 @@
     %header
       = HAML.home_hero_unit()
 
-    .container.content
-      = HAML.home_customers()
-      = HAML.home_features()
-      = HAML.home_technologies()
-      = HAML.home_additional()
+    = HAML.home_customers()
+    = HAML.home_features()
+    = HAML.home_technologies()
+    = HAML.home_additional()
 
 
   = HAML.home_github_modal()
