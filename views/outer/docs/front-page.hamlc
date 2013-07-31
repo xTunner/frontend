@@ -23,12 +23,11 @@
 .row
   %h4 Having problems? Check these sections
   %ul.articles.span4
-    %li
-      %h4 Getting started
-      - if VM?
-        = HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
+    %h4 Getting started
+    - if VM?
+      = HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
 
-    %li
-      %h4 Troubleshooting
-      - if VM?
-        = HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})
+  %ul.articles.span4
+    %h4 Troubleshooting
+    - if VM?
+      = HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})
