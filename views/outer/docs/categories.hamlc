@@ -1,8 +1,8 @@
 - for category in @categories
   %ul.articles
     %li
-      %a{href: "#{category.url}"}
-        %h4
+      %h4
+        %a{href: "#{category.url}"}
           = category.title
     - for c in category.children
       %li
