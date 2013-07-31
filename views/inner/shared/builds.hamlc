@@ -3,6 +3,9 @@
     %tr
       %th Build
       %th Revision
+      / ko if: VM.selected().mention_branch
+      %th Branch
+      / /ko
       %th Author
       %th Log
       / ko if: VM.current_user().admin && VM.selected().admin_builds
@@ -19,7 +22,10 @@
 
       %td
         %span{data-bind: "text: github_revision"}
+      / ko if: VM.selected().mention_branch
+      %td
         %span{data-bind: "text: branch_in_words"}
+      / /ko
 
       %td{data-bind: "text: author"}
 
