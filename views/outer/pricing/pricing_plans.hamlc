@@ -3,51 +3,34 @@
     All plans include
     = succeed ".", ->
       %strong free, 14-day trial
+
+  / ko foreach: plans
   .span3.plan
-    %h2 Solo
-    %h4 For personal projects
+    %h2{data-bind: "text: name"} Solo
+    %h4{data-bind: "text: why"} For personal projects
     %p
-      %strong $19
-      \/ month
+      %span{data-bind: "ifnot: enterprise_p"}
+        %strong
+          = precede '$', ->
+            %span{data-bind: "text: price"}<>
+        \/ month
+      %span{data-bind: "if: enterprise_p"}
+        Request a quote by contacting us
+
     %ul
-      %li 1 container
-      %li Parallelization up to 16x
-      %li 1 private repository
+      %li
+        Includes
+        %span{data-bind: "text: freeContainersDescription"}
+
+      %li
+        Up to
+        = succeed '-way', ->
+          %span{data-bind: "text: max_parallelism"}
+        parallelism
+
+      %li
+        %span{data-bind: "text: projects"}
+        private repositories
+
     %a.btn.btn-primary{:href => ""} Start your 14-day trial
-
-  .span3.plan.recommended
-    %h2 Startup
-    %h4 For small teams
-    %p
-      %strong $49
-      \/ month
-    %ul
-      %li 1 container
-      %li Parallelization up to 16x
-      %li 10 private repositories
-
-    %a.btn.btn-primary{:href => ""} Start your 14-day trial
-
-
-  .span3.plan
-    %h2 Small business
-    %h4 For established teams
-    %p
-      %strong $149
-      \/ month
-
-    %ul
-      %li 2 containers
-      %li Parallelization up to 16x
-      %li Unlimited
-    %a.btn.btn-primary{:href => ""} Start your 14-day trial
-
-  .span3.plan
-    %h2 Enterprise
-    %h4 Enterprisy features
-    %p Request a quote by contacting us
-    %ul
-      %li Unlimited
-      %li Parallelization up to 64x
-      %li Unlimited
-    %a.btn{:href => ""} Contact us
+  / /ko

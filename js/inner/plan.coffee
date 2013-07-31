@@ -32,7 +32,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
       "up to #{@max_parallelism}x"
 
     @freeContainersDescription = @komp =>
-      "#{@free_containers()}"
+      "#{@free_containers()} container" + (if @free_containers() == 1 then "" else "s")
 
     @containerCostDescription = @komp =>
       if @container_cost
@@ -53,15 +53,11 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
           else
             "Sign up now for $#{@price}/mo"
 
-    @outerPricingDescription = @komp =>
-      if not @price?
-        "Contact us for pricing"
-      else
-        "$#{@price} / month"
-
     @enterprise_p = @komp =>
       @name is "Enterprise"
 
+  featureAvailableOuter: (feature) =>
+    result = not feature.name? or feature.name in @features
 
   featureAvailable: (feature) =>
     result =
