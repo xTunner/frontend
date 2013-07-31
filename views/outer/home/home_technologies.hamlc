@@ -1,138 +1,99 @@
 %section.technology
   .container
-    %h2 Technology
-    %h3 We test your stack
-    %ul#tech.nav.nav-tabs
-      %li.active
-        %a{href: "#languages"} Languages
-      %li
-        %a{href: "#databases"} Databases
-      %li
-        %a{href: "#queue"} Queues
-      %li
-        %a{href: "#browsers"} Browsers
-      %li
-        %a{href: "#libraries"} Libraries
-      %li
-        %a{href: "#deployment"} Deployment
-      %li
-        %a{href: "#custom"} Custom
-    .tab-content
-      #languages.tab-pane.active
-        .logos.span6
+    %h2 We support your stack
+    .tabbable
+      .row
+        .offset2.span8
+          %ul#tech.nav.nav-tabs
+            %li.active
+              %a{href: "#languages", data-toggle: "tab"} Languages
+            %li
+              %a{href: "#databases", data-toggle: "tab"} Databases
+            %li
+              %a{href: "#queues", data-toggle: "tab"} Queues
+            %li
+              %a{href: "#browsers", data-toggle: "tab"} Browsers
+            %li
+              %a{href: "#libraries", data-toggle: "tab"} Libraries
+            %li
+              %a{href: "#deployment", data-toggle: "tab"} Deployment
+            %li
+              %a{href: "#custom", data-toggle: "tab"} Custom
+
+
+      .tab-content
+        #languages.tab-pane.active
           .row
-            = HAML.languages_image()
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/js.png", title: "Javascript", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/ruby.png", title: "Ruby", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/python.png", title: "Python", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/php.png", title: "PHP", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/rails.png", title: "Ruby on Rails", width: "60"}
-          -# .row
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/java.png", title: "Java", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/nodejs.png", title: "Nodejs", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/django.png", title: "Django", width: "60"}
+            .span6
+              = HAML.languages_image()
 
-        %p.span6
-          CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.
-          You can customize any step, or set up your test steps manually for PHP or other languages.
+            .span6
+              CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.
+              You can customize any step, or set up your test steps manually for PHP or other languages.
 
-      #databases.tab-pane
-        .logos.span6
+        #databases.tab-pane
           .row
-            = HAML.dbs_image()
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/mysql.png", title: "MySQL", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/postgres.png", title: "Postgres", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/redis.png", title: "Redis", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/mongodb.png", title: "MongoDB", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/riak.png", title: "Riak", width: "60"}
-          -# .row
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/sqlite.png", title: "SQLite", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/couchdb.png", title: "CouchDB", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/cassandra.png", title: "Cassandra", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/neo4j.png", title: "Neo4J", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/elastic.png", title: "Elastic Search", width: "60"}
-          -# .row
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/solr.png", title: "Solr", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/mem.png", title: "Memcached", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/couchbase.png", title: "Couchbase", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/lucene.png", title: "Lucene", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/thrift.png", title: "Thrift", width: "60"}
-          -# .row
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/sphinx.png", title: "Sphinx", width: "60"}
+            .span6
+              = HAML.dbs_image()
 
-        %p.span6
-          If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.
-          Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away.
+            .span6
+              If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.
+              Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away.
 
-      #queue.tab-pane
-        .span6.logos
+
+        #queues.tab-pane
           .row
-            = HAML.queues_image()
-            -# %img.span2{height: "30", src: "img/outer/home/tech/rabbit.png", title: "RabbitMQ", width: "140"}
-            -# %img.span2{height: "30", src: "img/outer/home/tech/beanstalkd.png", title: "Beanstalkd", width: "140"}
-            -# %img.span2{height: "30", src: "img/outer/home/tech/resque.png", title: "Resque", width: "140"}
+            .span6
+              = HAML.queues_image()
 
-        %p.span6
-          If need to test against queues, we have them installed on our boxes.
-          We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need.
+            .span6
+              If need to test against queues, we have them installed on our boxes.
+              We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need.
 
 
-      #browsers.tab-pane
-        .span6.logos
+        #browsers.tab-pane
           .row
-            = HAML.browsers_image()
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/chrome.png", title: "Chrome", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/firefox.png", title: "Firefox", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/safari.png", title: "Safari", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/selenium.png", title: "Selenium", width: "60"}
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/phantomjs.png", title: "Phantomjs", width: "60"}
-          -# .row
-          -#   %img.span1{height: "60", src: "img/outer/home/tech/casperjs.png", title: "Casperjs", width: "60"}
-          -#   %img.span2{height: "20", src: "img/outer/home/tech/capybara.png", title: "Capybara", width: "60"}
+            .span6
+              = HAML.browsers_image()
 
-        %p.span6
-          We support continuous integration testing in your apps against a wide range of browsers.
-          We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS.
-          Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber.
-
-      #libraries.tab-pane
-        %p
-          We run a recent version Ubuntu and have installed all of the libraries you need for development.
-          We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.
-          As new important libraries come out its trivial for us to add them for you.
+            .span6
+              We support continuous integration testing in your apps against a wide range of browsers.
+              We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS.
+              Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber.
 
 
-      #deployment.tab-pane
-        .logos.span6
+        #libraries.tab-pane
           .row
-            = HAML.deployment_image()
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/heroku.png", title: "Heroku", width: "140"}
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/dotcloud.png", title: "DotCloud", width: "140"}
-          -#   %img.span2.engine{height: "55", src: "img/outer/home/tech/engine.png", title: "Engine Yard", width: "100"}
-          -# .row
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/amazon.png", title: "Amazon Web Services", width: "140"}
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/joyent.png", title: "Joyent", width: "140"}
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/appfog.png", title: "AppFog", width: "140"}
-          -# .row
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/capistrano.png", title: "Capistrano", width: "140"}
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/nodejitsu.png", title: "Nodejitsu", width: "140"}
-          -#   %img.span2{height: "30", src: "img/outer/home/tech/rackspace.png", title: "Rackspace", width: "140"}
-
-        %p.span6
-          Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.
-          Many of our customers deploy directly after a green push to master or another branch.
-          We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3.
+            .offset2.span8
+              %p
+                We run a recent version Ubuntu and have installed all of the libraries you need for development.
+                We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.
+                As new important libraries come out its trivial for us to add them for you.
 
 
-      #custom.tab-pane
-        %p
-          Although we do our best to set up your tests in one click, occasionally developers have custom setups.
-          Need to use npm in your PHP project?
-          Using Haskell?
-          Use a specific Ruby patchset?
-          Do you depend on private repos?
-          We have support for dozens of different ways to customize, and we make it trivial to customize basically anything.
-          Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up.
+        #deployment.tab-pane
+          .row
+            .span6
+              = HAML.deployment_image()
+
+            .span6
+              Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.
+              Many of our customers deploy directly after a green push to master or another branch.
+              We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3.
+
+
+        #custom.tab-pane
+          .row
+            .offset2.span8
+              %p
+              Although we do our best to set up your tests in one click, occasionally developers have custom setups.
+                Need to use npm in your PHP project?
+                Using Haskell?
+                Use a specific Ruby patchset?
+                Do you depend on private repos?
+                We have support for dozens of different ways to customize, and we make it trivial to customize basically anything.
+                Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up.
+
 
   // TODO: combine all these images and try karolina' layout
   %div{ data-bind: "if: VM.ab().home_extra_ctas"}
