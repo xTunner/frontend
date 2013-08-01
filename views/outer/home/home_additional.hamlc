@@ -1,5 +1,5 @@
 %section.additional
-  .container-fluid
+  .row-fluid
     .span4
       %h3 Contact us
       %p
