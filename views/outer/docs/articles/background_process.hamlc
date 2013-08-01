@@ -1,4 +1,4 @@
-- @title = "Start a background processes from circle.yml"
+- @title = "Start background processes from circle.yml"
 - @lastUpdated = "May 2, 2013"
 
 %p
