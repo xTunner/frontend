@@ -183,9 +183,13 @@
     %li
       %code 1.9.3-p429
     %li
+      %code 1.9.3-p448
+    %li
       %code 2.0.0-p0
     %li
       %code 2.0.0-p195
+    %li
+      %code 2.0.0-p247
     %li
       %code jruby-1.6.5
     %li
@@ -194,6 +198,8 @@
       %code jruby-1.7.0
     %li
       %code jruby-1.7.3
+    %li
+      %code jruby-1.7.4
 
 %p
   By default we use
