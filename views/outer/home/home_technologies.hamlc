@@ -23,7 +23,7 @@
 
       .tab-content
         #languages.tab-pane.active
-          .row
+          .row-fluid
             .span6
               = HAML.languages_image()
 
@@ -32,7 +32,7 @@
               You can customize any step, or set up your test steps manually for PHP or other languages.
 
         #databases.tab-pane
-          .row
+          .row-fluid
             .span6
               = HAML.dbs_image()
 
@@ -42,7 +42,7 @@
 
 
         #queues.tab-pane
-          .row
+          .row.fluid
             .span6
               = HAML.queues_image()
 
@@ -52,7 +52,7 @@
 
 
         #browsers.tab-pane
-          .row
+          .row-fluid
             .span6
               = HAML.browsers_image()
 
@@ -63,7 +63,7 @@
 
 
         #libraries.tab-pane
-          .row
+          .row-fluid
             .offset2.span8
               %p
                 We run a recent version Ubuntu and have installed all of the libraries you need for development.
@@ -72,7 +72,7 @@
 
 
         #deployment.tab-pane
-          .row
+          .row-fluid
             .span6
               = HAML.deployment_image()
 
@@ -83,7 +83,7 @@
 
 
         #custom.tab-pane
-          .row
+          .row-fluid
             .offset2.span8
               %p
               Although we do our best to set up your tests in one click, occasionally developers have custom setups.
