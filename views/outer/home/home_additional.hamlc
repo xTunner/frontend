@@ -4,10 +4,10 @@
       %h3 Contact us
       %p
         Send us
-        %a an email
+        %a{href: "mailto:sayhi@circleci.com"} an email
       %p
         Talk to us in our
-        %a live support channel
+        %a{href: "https://www.hipchat.com/gjwkHcrD5"} live support channel
       %p
         Call us at 800 585-7075
 
@@ -20,19 +20,19 @@
       = HAML.home_button({text: "Sign up now"})
       %p
         or
-        %a{href: "pricing.html"} See Pricing
+        %a{href: "/pricing"} See Pricing
 
     .span4
       %h3 Learn more
       %p
         Check out
-        %a our extensive docs
+        %a{href: "/docs"} our extensive docs
       %p
         Read our
-        %a privacy
+        %a{href: "/privacy"} privacy
         and
-        %a security
+        %a{href: "/security"} security
         policies
       %p
         Find out
-        %a who's behind Circle
+        %a{href: "/about"} who's behind Circle
