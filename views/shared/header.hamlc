@@ -23,7 +23,7 @@
                   %a{href: "http://blog.circleci.com"} Blog
         .span4.controls
           %a.btn.btn-primary{href: CI.github.authUrl(),
-                             title: 'Sign up with Github',
+                             title: 'Sign in/sign up with Github',
                              data-bind: "track_link: 'Auth GitHub'"}
             %i.icon-github-alt
-            Sign up with Github
+            Sign up / sign in with Github
