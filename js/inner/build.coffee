@@ -218,12 +218,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
         "#{CI.time.as_duration(@usage_queued_time())} waiting for builds to finish"
 
     @branch_in_words = @komp =>
-      return "(unknown)" unless @branch()
+      return "unknown" unless @branch()
 
-      b = @branch()
-      b = b.replace(/^remotes\/origin\//, "")
-      b = CI.stringHelpers.trimMiddle(b, 23)
-      "(#{b})"
+      b = @branch().replace(/^remotes\/origin\//, "")
+      CI.stringHelpers.trimMiddle(b, 23)
+
 
     @github_url = @komp =>
       return unless @vcs_revision
