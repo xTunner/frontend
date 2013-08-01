@@ -3,7 +3,7 @@
     %h2 Can your CI server do this?
     .row
       %img.pull-left{height: "200", src: "img/outer/home/build.png", width: "400"}
-      %h3 Keep the Build Green
+      %h3 Tight GitHub integration
       %p When practicing continuous delivery you always want the build green. Circle tests GitHub Pull Requests, branches and forks, so you always know when code is ready to ship. Circle takes care of managing SSH keys and permissions, so you can get back to work. If a collaborator can see the project in GitHub, they can see it in Circle.
     .row.right
       %img.pull-right{height: "200", src: "img/outer/home/batteries.png", width: "400"}
