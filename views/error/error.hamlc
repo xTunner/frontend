@@ -1,8 +1,16 @@
-#title
-  %h1=@title
+.page.notfound
+  %header
+    .container
+      %h1= @error
+      %h3= @title
 
-#content
-  %section
-    .story
-      %h1=@error
-      %p=@message
+  .container.content
+    %h2= @message
+    %br
+    %br
+    %p
+      Do you need help? We've got you covered. See our
+      %a{href: "/docs"} documentation
+      or
+      = succeed ".", ->
+        %a{href: "https://www.hipchat.com/gjwkHcrD5"} get live support
