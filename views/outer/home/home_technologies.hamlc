@@ -93,8 +93,3 @@
                 Do you depend on private repos?
                 We have support for dozens of different ways to customize, and we make it trivial to customize basically anything.
                 Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up.
-
-
-  // TODO: combine all these images and try karolina' layout
-  %div{ data-bind: "if: VM.ab().home_extra_ctas"}
-    = HAML.home_cta({text: "Try it out for free"})
