@@ -56,7 +56,6 @@
           / /ko
         / /ko
 
-        / ko if: containers_p
         %tr.free-containers.more-info{title: "Included Containers",
                                       data-content: "You can use your containers to run more builds at once or to speed up your test suite. Learn more in the FAQ below.",
                                       data-bind: "popover: popover_options()"}
@@ -73,8 +72,6 @@
           %td{data-bind: "text: maxParallelismDescription"}
           / /ko
 
-        / /ko
-
         %tr.projects.more-info{title: "Private Repositories",
                                data-content: "Plans are only limited by the number of private repositories you want to test, not the number you have in GitHub. Forks are only counted once.",
                                data-bind: "popover: popover_options()"}
@@ -83,45 +80,13 @@
           %td{data-bind: "text: projects"}
           / /ko
 
-        %tr.collaborators.more-info{title: "Unlimited Collaborators",
-                                    data-content: "We'll test code for all your collaborators - anyone with GitHub access to your organization's projects.",
-                                    data-bind: "popover: popover_options(), css: { separator: containers_p }"}
+        %tr.collaborators.more-info.separator{title: "Unlimited Collaborators",
+                                              data-content: "We'll test code for all your collaborators - anyone with GitHub access to your organization's projects.",
+                                              data-bind: "popover: popover_options()"}
           %td.title Collaborators
           / ko foreach: plans
           %td Unlimited
           / /ko
-
-        / ko if: concurrency_p
-        %tr.concurrency.more-info{data-content: "Number of pushes that will be tested at the same time. The rest will be queued. If you need more, you can buy them later at $49 per concurrent push.",
-                                  title: "Concurrent builds",
-                                  data-bind: "popover: popover_options()"}
-          %td.title Concurrent builds
-          / ko foreach: plans
-          %td
-            = succeed '*', ->
-              %span{data-bind: "text: concurrency"}<>
-
-          / /ko
-        / /ko
-
-        / ko if: concurrency_p
-        %tr.available-parallelism.more-info{title: "Automatic parallelization",
-                                            data-content: "Automatically run your tests up to 64x faster.",
-                                            data-bind: "popover: popover_options()"}
-          %td.title Available parallelization
-          / ko foreach: plans
-          %td{data-bind: "text: maxParallelismDescription"}
-          / /ko
-
-        %tr.parallelism.more-info{title: "Included parallelization",
-                                  data-content: "Larger plans include more parallelism.",
-                                  data-bind: "popover: popover_options()"}
-          %td.title Included parallelization
-          / ko foreach: plans
-          %td{data-bind: "text: minParallelismDescription"}
-          / /ko
-        / /ko
-
 
         / ko foreach: planFeatures
         %tr.features.more-info{data-bind: "popover: $parent.popover_options({title: headline, content: detail})"}

@@ -1,5 +1,6 @@
 j = jasmine.getEnv()
 
+# TODO write these for container plans
 plans =
   p14:
     max_parallelism: 1
@@ -175,42 +176,6 @@ j.describe "setting project parallelism works", ->
     @expect(project.parallel_label_style(8).disabled()).toEqual(true)
 
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
-    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
-
-  j.it "should handle concurrency-type plans", ->
-    project = new CI.inner.Project
-      parallel: 2
-    project.billing.loadPlanData
-      plan:
-        max_parallelism: 3
-        price: null
-        type: "concurrency"
-      payor:
-        login: 'daniel'
-      concurrency: 5
-      parallelism: 2
-
-    @expect(project.paid_speed()).toEqual 2
-    @expect(project.plan_max_speed()).toEqual 3
-    @expect(project.payor_login()).toBe('daniel')
-    @expect(project.parallel_label_style(2).disabled()).toBe(false)
-    @expect(project.parallel_label_style(3).disabled()).toBe(true)
-    @expect(project.parallel_label_style(4).disabled()).toBe(true)
-    @expect(project.current_user_is_payor_p()).not.toBe(true)
-
-    # Don't tell them to upgrade for things they can click
-    project.focused_parallel(2)
-    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
-    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
-
-    # Don't tell them to upgrade their plan if it supports higher speed
-    project.focused_parallel(3)
-    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
-    @expect(project.show_parallel_upgrade_speed_p()).toBe(true)
-
-    # Don't tell them to upgrade their speed if their plan doesn't supports it
-    project.focused_parallel(4)
-    @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
 
   j.it "should handle container-type plans", ->

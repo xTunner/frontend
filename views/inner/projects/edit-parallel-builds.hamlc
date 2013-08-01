@@ -122,7 +122,7 @@
 
 
 
-        %div{data-bind: "if: containers_p"}
+        %div
           %h3 How containers work
           %p{data-bind: "with: billing"}
             Containers are what we call the virtual machines that your tests run in. Your current plan has
