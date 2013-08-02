@@ -22,6 +22,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     name: null
     branch: "unknown"
     previous: null
+    previous_successful_build: null
     retry_of: null
     subject: null
     parallel: null
@@ -204,8 +205,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
           # build was canceled from the queue
           "canceled"
         else if @start_time()
-          CI.time.as_duration(@updatingDuration(@start_time()))
-
+          duration_millis = @updatingDuration(@start_time())
+          CI.time.as_duration(duration_millis) + @estimated_time(duration_millis)
 
     # don't try to show queue information if the build is pre-usage_queue
     @show_queued_p = @komp =>
@@ -243,12 +244,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
         "#{CI.time.as_duration(@usage_queued_time())} waiting for builds to finish"
 
     @branch_in_words = @komp =>
-      return "(unknown)" unless @branch()
+      return "unknown" unless @branch()
 
-      b = @branch()
-      b = b.replace(/^remotes\/origin\//, "")
-      b = CI.stringHelpers.trimMiddle(b, 23)
-      "(#{b})"
+      b = @branch().replace(/^remotes\/origin\//, "")
+      CI.stringHelpers.trimMiddle(b, 23)
+
 
     @github_url = @komp =>
       return unless @vcs_revision
@@ -298,6 +298,20 @@ CI.inner.Build = class Build extends CI.inner.Obj
         break
 
     last? and not (last.type() == action.type())
+
+  estimated_time: (current_build_millis) =>
+    valid = (estimated_millis) ->
+      estimate_is_not_too_low = current_build_millis < estimated_millis * 1.5
+      estimate_is_positive = estimated_millis > 0
+
+      return estimate_is_positive and estimate_is_not_too_low
+
+    if @previous_successful_build()?
+      estimated_millis = @previous_successful_build().build_time_millis
+
+      if valid estimated_millis
+        return " of about " + moment().add('milliseconds', estimated_millis).fromNow(true)
+    ""
 
   urlForBuildNum: (num) =>
     "#{@project_path()}/#{num}"

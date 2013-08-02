@@ -111,12 +111,16 @@
 
 %h3 Ruby
 
+%p We use RVM to give you access to a wide variety of Ruby
+  versions. In general, we try to have most commonly used versions
+  installed. If there's a recently released version of ruby that's not
+  on this list, it's likely we already have it installed or we can
+  quickly install it for you.
+
 %p
-  We use RVM to give you access to a wide variety of Ruby versions.
   You can
   %a{ href: "/docs/configuration#ruby-version" }
-    choose the exact version you need
-  directly, from the following list:
+  choose the exact version you need directly, from the following list:
 
   %ul
     %li
@@ -183,9 +187,13 @@
     %li
       %code 1.9.3-p429
     %li
+      %code 1.9.3-p448
+    %li
       %code 2.0.0-p0
     %li
       %code 2.0.0-p195
+    %li
+      %code 2.0.0-p247
     %li
       %code jruby-1.6.5
     %li
@@ -194,6 +202,8 @@
       %code jruby-1.7.0
     %li
       %code jruby-1.7.3
+    %li
+      %code jruby-1.7.4
 
 %p
   By default we use

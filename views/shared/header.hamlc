@@ -1,5 +1,5 @@
 %div{data-bind: "if: flash"}
-  #flash{data-bind: "text: flash"}
+  #flash{data-bind: "html: flash"}
 
 %div
 #head
