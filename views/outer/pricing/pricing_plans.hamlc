@@ -5,14 +5,13 @@
       %strong free, 14-day trial
 
   / ko foreach: plans
-  %div{data-bind: "attr: {class: 'span3 plan ' + (($data.name == 'Startup') && 'recommended')}"}
+  %div.span3.plan{data-bind: "css: {recommended: $data.default}"}
     %h2{data-bind: "text: name"}
     %h4{data-bind: "text: why"}
     %p
       %span{data-bind: "ifnot: enterprise_p"}
         %strong
-          = precede '$', ->
-            %span{data-bind: "text: price"}<>
+          %span{data-bind: "money: price"}
         \/ month
       %span{data-bind: "if: enterprise_p"}
         Request a quote by contacting us
