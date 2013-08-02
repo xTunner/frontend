@@ -433,15 +433,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
   toggle_artifacts: () =>
     if @artifacts_visible()
       @artifacts_visible(!@artifacts_visible())
-      @clean_artifacts()
       @artifacts(null)
     else
       @load_artifacts()
       @artifacts_visible(true)
 
   clean_artifacts: () =>
-    if @artifacts()
-      VM.cleanObjs(@artifacts())
+    @artifacts(null)
 
   load_artifacts: () =>
     $.ajax
