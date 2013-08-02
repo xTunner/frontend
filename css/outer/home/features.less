@@ -39,7 +39,11 @@
   }
 
   img {
-    border: 2px solid rgba(255, 255, 255, .2);
+    @shadowSize: 5px;
+    @blurLength: 32px;
+    @shadowColor: rgba(0,0,0,0.4);
+    border-radius: 5px;
+    box-shadow: @shadowSize @shadowSize @blurLength @shadowColor, (-@shadowSize) (-@shadowSize) @blurLength @shadowColor;
 
     &.pull-left {
       margin-right: 50px;
