@@ -17,4 +17,4 @@
               %a{data-bind: "attr: { href: url }, text: node_index"}
 
             %td.clickable
-              %a{data-bind: "attr: { href: url }, text: path"}
+              %a{data-bind: "attr: { href: url }, text: pretty_path"}
