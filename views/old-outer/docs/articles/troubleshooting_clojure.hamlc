@@ -1,0 +1,4 @@
+- @children = ['clojure_12']
+- @title = "Clojure"
+
+= HAML['article_list'](@)

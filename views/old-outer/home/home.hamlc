@@ -1,0 +1,13 @@
+= HAML.home_github_modal()
+
+%div{ data-bind: "if: from_heroku" }
+  = HAML.heroku_header()
+
+%div{ data-bind: "ifnot: from_heroku" }
+
+  = HAML.home_hero_unit()
+
+  = HAML.home_customers()
+  = HAML.home_technologies()
+  = HAML.home_benefits()
+  = HAML.home_get_started()

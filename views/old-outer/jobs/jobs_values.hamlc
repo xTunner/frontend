@@ -1,0 +1,6 @@
+%section.values
+  %h2 Why you'll love working at Circle
+  = HAML.jobs_values_culture()
+  = HAML.jobs_values_tech()
+  = HAML.jobs_values_young()
+  = HAML.jobs_values_learn()
