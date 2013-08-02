@@ -3,18 +3,9 @@
     .spinner-container{data-bind: "ifnot: artifacts"}
       = HAML.fast_spinner({})
     %div{data-bind: "if: artifacts"}
-      The following artifacts were uploaded for this build:
-
-      %table.artifacts-table
-        %thead
-          %tr
-            %th Node
-            %th Path
-
-        %tbody.artifact-row{data-bind: "foreach: artifacts"}
-          %tr
-            %td.clickable
-              %a{data-bind: "attr: { href: url }, text: node_index"}
-
-            %td.clickable
-              %a{data-bind: "attr: { href: url }, text: pretty_path"}
+      %ul
+        %li.artifact{data-bind: "foreach: artifacts"}
+          %a{target: "_blank", data-bind: "attr: { href: url }"}
+            %span{data-bind: "text: pretty_path"}
+            = surround '(', ')', ->
+              %span{data-bind: "text: node_index"}<>
