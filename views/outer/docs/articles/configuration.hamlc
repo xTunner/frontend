@@ -379,7 +379,7 @@
 %p
 %p
   See
-  %a{href: "/doc/environment#python"} supported Python versions
+  %a{href: "/docs/environment#python"} supported Python versions
   for a complete list.
 
 %h3
