@@ -3,8 +3,8 @@
     .spinner-container{data-bind: "ifnot: artifacts"}
       = HAML.fast_spinner({})
     %div{data-bind: "if: artifacts"}
-      %ul
-        %li.artifact{data-bind: "foreach: artifacts"}
+      %ul{data-bind: "foreach: artifacts"}
+        %li.artifact
           %a{target: "_blank", data-bind: "attr: { href: url }"}
             %span{data-bind: "text: pretty_path"}
             = surround '(', ')', ->
