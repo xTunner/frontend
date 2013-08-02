@@ -1,50 +1,49 @@
 j = jasmine.getEnv()
 
+# TODO write these for container plans
 plans =
-  p14:
-    max_parallelism: 1
-    min_parallelism: 1
+  p18:
+    free_containers: ko.observable(1)
+    container_cost: 50
+    max_containers: ko.observable(100)
     price: 19
-    concurrency: 1
-    type: 'concurrency'
-  p15:
-    max_parallelism: 1
-    min_parallelism: 1
+    type: 'containers'
+  p19:
+    free_containers: ko.observable(1)
+    container_cost: 50
+    max_containers: ko.observable(100)
     price: 49
-    concurrency: 1
-    type: 'concurrency'
-  p16:
-    max_parallelism: 8
-    min_parallelism: 2
+    type: 'containers'
+  p20:
+    free_containers: ko.observable(2)
+    container_cost: 50
+    max_containers: ko.observable(100)
     price: 149
-    concurrency: 1
-    type: 'concurrency'
+    type: 'containers'
 
-testBilling = (plan, c, p, e) ->
-  @expect((new CI.inner.Billing()).calculateCost(plan, c, p)).toEqual e
+testBilling = (plan, c, e) ->
+  @expect((new CI.inner.Billing()).calculateCost(plan, c)).toEqual e
 
 j.describe "calculateCost", ->
-  j.it "should be correct for log2", ->
-    m = CI.math
-    @expect(m.log2 2).toEqual 1
-    @expect(m.log2 4).toEqual 2
-    @expect(m.log2 8).toEqual 3
-    @expect(m.log2 3).toEqual 1.5849625007211563
-
   j.it "should be the same as on the server", ->
-    testBilling(plans.p14, 1, 1, 19)
-    testBilling(plans.p15, 1, 1, 49)
-    testBilling(plans.p16, 1, 2, 149)
-    testBilling(plans.p14, 0, 0, 19)
-    testBilling(plans.p15, 0, 0, 49)
-    testBilling(plans.p16, 0, 0, 149)
-    testBilling(plans.p14, 2, 1, 68)
-    testBilling(plans.p15, 4, 1, 196)
-    testBilling(plans.p16, 4, 1, 296)
-    testBilling(plans.p16, 4, 2, 296)
-    testBilling(plans.p16, 4, 4, 395)
-    testBilling(plans.p16, 4, 8, 494)
-    testBilling(plans.p16, 4, 5, 427)
+    # no extra
+    testBilling(plans.p18, 1, 19)
+    testBilling(plans.p19, 1, 49)
+    testBilling(plans.p20, 1, 149)
+    testBilling(plans.p20, 2, 149)
+
+    # minimum price
+    testBilling(plans.p18, 0, 19)
+    testBilling(plans.p19, 0, 49)
+    testBilling(plans.p20, 0, 149)
+
+    # extras
+    testBilling(plans.p18, 2, 19 + 50 * 1)
+    testBilling(plans.p18, 40, 19 + 50 * 39)
+    testBilling(plans.p19, 2, 49 + 50 * 1)
+    testBilling(plans.p19, 40, 49 + 50 * 39)
+    testBilling(plans.p20, 4, 149 + 50 * 2)
+    testBilling(plans.p20, 40, 149 + 50 * 38)
 
 j.describe "ansiToHtml", ->
   t = CI.terminal
@@ -175,42 +174,6 @@ j.describe "setting project parallelism works", ->
     @expect(project.parallel_label_style(8).disabled()).toEqual(true)
 
     @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
-    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
-
-  j.it "should handle concurrency-type plans", ->
-    project = new CI.inner.Project
-      parallel: 2
-    project.billing.loadPlanData
-      plan:
-        max_parallelism: 3
-        price: null
-        type: "concurrency"
-      payor:
-        login: 'daniel'
-      concurrency: 5
-      parallelism: 2
-
-    @expect(project.paid_speed()).toEqual 2
-    @expect(project.plan_max_speed()).toEqual 3
-    @expect(project.payor_login()).toBe('daniel')
-    @expect(project.parallel_label_style(2).disabled()).toBe(false)
-    @expect(project.parallel_label_style(3).disabled()).toBe(true)
-    @expect(project.parallel_label_style(4).disabled()).toBe(true)
-    @expect(project.current_user_is_payor_p()).not.toBe(true)
-
-    # Don't tell them to upgrade for things they can click
-    project.focused_parallel(2)
-    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
-    @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
-
-    # Don't tell them to upgrade their plan if it supports higher speed
-    project.focused_parallel(3)
-    @expect(project.show_parallel_upgrade_plan_p()).not.toBe(true)
-    @expect(project.show_parallel_upgrade_speed_p()).toBe(true)
-
-    # Don't tell them to upgrade their speed if their plan doesn't supports it
-    project.focused_parallel(4)
-    @expect(project.show_parallel_upgrade_plan_p()).toBe(true)
     @expect(project.show_parallel_upgrade_speed_p()).not.toBe(true)
 
   j.it "should handle container-type plans", ->

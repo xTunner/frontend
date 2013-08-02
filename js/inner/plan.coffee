@@ -7,14 +7,6 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
   constructor: ->
     super
 
-    # Temporary limit so that users don't "block all builds forever"
-    @max_purchasable_parallelism  = @komp =>
-      Math.min(4, @max_parallelism)
-
-    # Change max_purchasable_parallelism to @max_parallelism when we can
-    # do unlimited parallelism
-    @parallelism_options = ko.observableArray([1..@max_purchasable_parallelism()])
-
     @concurrency_options = ko.observableArray([1..20])
 
     @container_options = ko.observableArray([@free_containers()..@max_containers()])
@@ -39,7 +31,6 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
         "$#{@container_cost} / container"
       else
         "Contact us"
-
 
     @pricingDescription = @komp =>
       if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id

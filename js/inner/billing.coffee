@@ -37,8 +37,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     organizations: {}
     chosenPlan: null
     plans: []
-    parallelism: 1
-    concurrency: 1
     containers: 1
     payor: null
     special_price_p: null
@@ -53,66 +51,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @wizardCompleted = @komp =>
       @wizardStep() > 3
 
-    # Handles the plan templates we send
-    @concurrency_p =  @komp =>
-      @plans()[0] and (@plans()[0].type is "concurrency")
-
-    @containers_p = @komp =>
-      @plans()[0] and (@plans()[0].type is "containers")
-
-    # Handles their current plan
-    @chosen_plan_concurrency_p = @komp =>
-      @chosenPlan() and (@chosenPlan().type is "concurrency")
-
-    @chosen_plan_containers_p = @komp =>
-      @chosenPlan() and ((@chosenPlan().type is "containers") or
-        @chosenPlan().type is "trial")
-
     @total = @komp =>
-      if @chosen_plan_concurrency_p()
-        @calculateCost(@chosenPlan(), parseInt(@concurrency()), parseInt(@parallelism()))
-      else if @chosen_plan_containers_p()
-        @calculateCost(@chosenPlan(), parseInt(@containers()))
+      @calculateCost(@chosenPlan(), parseInt(@containers()))
 
     @extra_containers = @komp =>
-      if @chosen_plan_containers_p()
+      if @chosenPlan()
         Math.max(0, @containers() - @chosenPlan().free_containers())
-
-  parallelism_option_text: (p) =>
-    "#{p}-way ($#{@parallelism_cost(@chosenPlan(), p)})"
-
-  concurrency_option_text: (c) =>
-    "#{c} build#{if c > 1 then 's' else ''} at a time ($#{@concurrency_cost(@chosenPlan(), c)})"
 
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
     "#{c} containers ($#{cost})"
-
-
-  parallelism_cost: (plan, p) =>
-    Math.max(0, @calculateCost(plan, null, p) - @calculateCost(plan))
-
-  # p2 > p1
-  parallelism_cost_difference: (plan, p1, p2) =>
-    @parallelism_cost(plan, p2) - @parallelism_cost(plan, p1)
-
-  concurrency_cost: (plan, c) ->
-    if plan.concurrency == "Unlimited"
-      0
-    else
-      Math.max(0, @calculateCost(plan, c) - @calculateCost(plan))
-
-  calculateCostConcurrency: (plan, concurrency, parallelism) ->
-    c = concurrency or 0
-    extra_c = Math.max(0, c - 1)
-
-    p = parallelism or 1
-    p = Math.max(p, 2)
-    extra_p = (CI.math.log2 p) - 1
-    extra_p = Math.max(0, extra_p)
-
-    plan.price + (extra_c * 49) + (Math.round(extra_p * 99))
 
   containerCost: (plan, containers) ->
     c = Math.min(containers or 0, plan.max_containers())
@@ -120,17 +69,11 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     Math.max(0, (c - free_c) * plan.container_cost)
 
-  calculateCostContainers: (plan, containers) =>
-    plan.price + @containerCost(plan, containers)
-
-  calculateCost: (plan, args...) =>
+  calculateCost: (plan, containers) =>
     unless plan
       0
     else
-      if plan.type is "concurrency"
-        @calculateCostConcurrency(plan, args...)
-      else if plan.type is "containers"
-        @calculateCostContainers(plan, args...)
+      plan.price + @containerCost(plan, containers)
 
   selectPlan: (plan, event) =>
     if plan.price?
@@ -240,7 +183,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   closeWizard: =>
     @wizardStep(4)
 
-
   loadStripe: () =>
     $.getScript "https://js.stripe.com/v1/"
     # Stripe has a bug in v3 that makes ajax sends use url/form-encoded
@@ -255,8 +197,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   loadPlanData: (data) =>
     @oldTotal(data.amount / 100)
     @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
-    @concurrency(data.concurrency or 1)
-    @parallelism(data.parallelism or 1)
     @containers(data.containers or 1)
     @payor(data.payor) if data.payor
     @special_price_p(@oldTotal() <  @total())
@@ -283,26 +223,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: =>
         @advanceWizard()
         mixpanel.track("Save Organizations")
-
-  saveSpeed: (data, event) =>
-    if @chosen_plan_containers_p()
-      @saveContainers(data, event)
-    else
-      @saveParallelism(data, event)
-
-  saveParallelism: (data, event) =>
-    $.ajax
-      type: "PUT"
-      event: event
-      url: "/api/v1/user/parallelism"
-      data: JSON.stringify
-        parallelism: @parallelism()
-        concurrency: @concurrency()
-      success: (data) =>
-        @oldTotal(@total())
-        @closeWizard()
-        @loadExistingPlans()
-        mixpanel.track("Save Parallelism")
 
   # TODO: make the API call return existing plan
   saveContainers: (data, event) =>

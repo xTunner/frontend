@@ -72,9 +72,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
     ## Parallelism
     @billing = new CI.inner.Billing
 
-    @containers_p = @komp =>
-      @billing.chosen_plan_containers_p()
-
     # Allows for user parallelism to trump the plan's max_parallelism
     @plan_max_speed = @komp =>
       if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
@@ -82,10 +79,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     # Trial speed is counted as paid here
     @paid_speed = @komp =>
-      if @containers_p()
-        Math.min @plan_max_speed(), @billing.containers()
-      else
-        @billing.parallelism()
+      Math.min @plan_max_speed(), @billing.containers()
 
     @focused_parallel = ko.observable @parallel()
 
@@ -102,8 +96,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       selected: @komp =>
         parseInt(num) is @parallel()
       bad_choice: @komp =>
-        if @containers_p()
-          parseInt(num) <= @paid_speed() && @billing.containers() % parseInt(num) isnt 0
+        parseInt(num) <= @paid_speed() && @billing.containers() % parseInt(num) isnt 0
 
     @show_parallel_upgrade_plan_p = @komp =>
       @plan_max_speed() && @plan_max_speed() < @focused_parallel()
@@ -112,15 +105,13 @@ CI.inner.Project = class Project extends CI.inner.Obj
       @paid_speed() && @plan_max_speed && (@paid_speed() < @focused_parallel() <= @plan_max_speed())
 
     @show_uneven_divisor_warning_p = @komp =>
-      if @containers_p()
-        @focused_parallel() <= @paid_speed() && @billing.containers() % @focused_parallel() isnt 0
+      @focused_parallel() <= @paid_speed() && @billing.containers() % @focused_parallel() isnt 0
 
     @simultaneous_builds = @komp =>
-      if @containers_p
-        Math.floor(@billing.containers() / @focused_parallel())
+      Math.floor(@billing.containers() / @focused_parallel())
 
     @show_number_of_simultaneous_builds_p = @komp =>
-      @containers_p && (@focused_parallel() <= @paid_speed())
+      @focused_parallel() <= @paid_speed()
 
     ## Sidebar
     @branch_names = @komp =>
