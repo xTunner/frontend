@@ -91,15 +91,14 @@
   .btn-primary, button.btn-primary {
     background: @circleAccent;
     color: @circleAccentText;
+    &:hover, &:focus {
+      background: lighten(@circleAccent, 5%);
+    }
 
     i {
       margin-right: 7px;
       font-size: 1.1em;
     }
-  }
-
-  .btn-primary:hover, .btn-primary:active {
-    background: lighten(@circleAccent, 5%);
   }
 
   h2 {
