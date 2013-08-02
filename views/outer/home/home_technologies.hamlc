@@ -2,23 +2,25 @@
   .container
     %h2 We support your stack
     .tabbable
-      .row
-        .offset2.span8
-          %ul#tech.nav.nav-tabs
-            %li.active
-              %a{href: "#languages", data-toggle: "tab"} Languages
-            %li
-              %a{href: "#databases", data-toggle: "tab"} Databases
-            %li
-              %a{href: "#queues", data-toggle: "tab"} Queues
-            %li
-              %a{href: "#browsers", data-toggle: "tab"} Browsers
-            %li
-              %a{href: "#libraries", data-toggle: "tab"} Libraries
-            %li
-              %a{href: "#deployment", data-toggle: "tab"} Deployment
-            %li
-              %a{href: "#custom", data-toggle: "tab"} Custom
+      .row-fluid
+        .offset1.span10#tech
+          .row-fluid
+            .offset1
+              %ul.nav.nav-tabs
+                %li.active
+                  %a{href: "#languages", data-toggle: "tab"} Languages
+                %li
+                  %a{href: "#databases", data-toggle: "tab"} Databases
+                %li
+                  %a{href: "#queues", data-toggle: "tab"} Queues
+                %li
+                  %a{href: "#browsers", data-toggle: "tab"} Browsers
+                %li
+                  %a{href: "#libraries", data-toggle: "tab"} Libraries
+                %li
+                  %a{href: "#deployment", data-toggle: "tab"} Deployment
+                %li
+                  %a{href: "#custom", data-toggle: "tab"} Custom
 
 
       .tab-content
