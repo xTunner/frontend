@@ -71,9 +71,12 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @favicon_updator = @komp noop
 
     @selected.subscribe (selected) =>
+      @favicon_updator.dispose()
+
       if selected.favicon_updator?
-        @favicon_updator.dispose()
         @favicon_updator = @komp selected.favicon_updator
+      else
+        @reset_favicon()
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
@@ -88,13 +91,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
 
+  set_favicon_color: (color) =>
+    $("link[rel='icon']").attr('href', "/favicon-#{color}.png?v=1")
+
   build_favicon_updator: (build) =>
     if build?
-      $("link[rel='icon']").attr('href', "/favicon-#{build.favicon_color()}.png?v=1")
+      @set_favicon_color(build.favicon_color())
 
-  build_array_favicon_updator: (observable_array) =>
-    if observable_array().length
-      @build_favicon_updator(observable_array()[0])
+  reset_favicon: () =>
+    @set_favicon_color() # undefined resets it
 
   cleanObjs: (objs) ->
     $.each objs, (i, o) ->
@@ -426,8 +431,6 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/', (cx) =>
     VM.selected
       refresh_fn: VM.loadRecentBuilds
-      favicon_updator: =>
-        VM.build_array_favicon_updator(VM.recent_builds)
 
     VM.loadRootPage(cx)
 
@@ -468,8 +471,6 @@ window.SammyApp = Sammy 'body', (n) ->
         branch: branch
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
-        favicon_updator: =>
-          VM.build_array_favicon_updator(VM.builds)
 
       if project_name is VM.selected().project_name and branch is VM.selected().branch
         sel = _.extend(VM.selected(), sel)
@@ -508,8 +509,6 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
-        favicon_updator: =>
-          VM.build_array_favicon_updator(VM.builds)
 
       if project_name is VM.selected().project_name
         sel = _.extend(VM.selected(), sel)
