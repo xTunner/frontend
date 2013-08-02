@@ -536,6 +536,10 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/api/.*', (cx) => false
 
+  @get '^/artifacts/.*', (cx) =>
+    # escape from sammy!
+    location.assign cx.path
+
   @get '^(.*)', (cx) => VM.error.display(cx)
 
   # valid posts, allow to propegate
