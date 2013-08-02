@@ -1,0 +1,20 @@
+.row-fluid{data-bind: "visible: artifacts_visible"}
+  .artifacts.span12.well
+    .spinner-container{data-bind: "ifnot: artifacts"}
+      = HAML.fast_spinner({})
+    %div{data-bind: "if: artifacts"}
+      The following artifacts were uploaded for this build:
+
+      %table.artifacts-table
+        %thead
+          %tr
+            %th Node
+            %th Path
+
+        %tbody.artifact-row{data-bind: "foreach: artifacts"}
+          %tr
+            %td.clickable
+              %a{data-bind: "attr: { href: url }, text: node_index"}
+
+            %td.clickable
+              %a{data-bind: "attr: { href: url }, text: path"}

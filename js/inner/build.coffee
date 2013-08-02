@@ -29,6 +29,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     usage_queued_at: null
     usage_queue_why: null
     usage_queue_visible: false
+    has_artifacts: false
+    artifacts: null
+    artifacts_visible: false
 
   clean: () =>
     super
@@ -426,6 +429,30 @@ CI.inner.Build = class Build extends CI.inner.Obj
       complete: () =>
         # stop the spinner if there was an error
         @usage_queue_why([]) if not @usage_queue_why()
+
+  toggle_artifacts: () =>
+    if @artifacts_visible()
+      @artifacts_visible(!@artifacts_visible())
+      @clean_artifacts()
+      @artifacts(null)
+    else
+      @load_artifacts()
+      @artifacts_visible(true)
+
+  clean_artifacts: () =>
+    if @artifacts()
+      VM.cleanObjs(@artifacts())
+
+  load_artifacts: () =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/#{@build_num}/artifacts"
+      type: "GET"
+      success: (data) =>
+        @clean_artifacts()
+        @artifacts(data)
+      complete: () =>
+        # stop the spinner if there was an error
+        @artifacts([]) if not @artifacts()
 
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
