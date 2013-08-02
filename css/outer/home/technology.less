@@ -4,22 +4,19 @@
     padding-bottom: 0px;
   }
 
-  #tech {
-    border-bottom: 1px solid #eee;
-    margin-bottom: 20px;
+  .nav-tabs-container {
+    text-align: center;
   }
 
   .nav-tabs {
-    border-bottom: 20px;
+    display: inline-block;
+    padding: 0px 60px 20px 60px;
+    border-bottom: 1px solid #eee;
+  }
 
-    a {
-      background: white;
-    }
-
-    .active > a, a:hover {
-      background: darken(@circleBlueLight, 20%);
-      color: white;
-      border-radius: 3px;
-    }
+  .active > a, a:hover {
+    background: darken(@circleBlueLight, 20%);
+    color: white;
+    border-radius: 3px;
   }
 }
