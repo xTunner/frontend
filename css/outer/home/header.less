@@ -69,6 +69,12 @@ header {
 
     figure {
       text-align: center;
+      img {
+        @s: 150px;
+        width: @s;
+        height: @s;
+        .border-radius(@s / 2);
+      }
     }
   }
 }

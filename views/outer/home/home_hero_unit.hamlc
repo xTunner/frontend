@@ -13,7 +13,7 @@
 
     .span4
       %figure
-        %img{height: "150", src: "img/outer/home/tests.png", width: "150"}
+        %img{height: "150", src: "img/outer/home/cucumber-output.png", width: "150"}
       %h4 Your tests run on the CircleCI platform
 
     .span4
