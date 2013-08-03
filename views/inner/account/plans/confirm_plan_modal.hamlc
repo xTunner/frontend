@@ -9,12 +9,7 @@
       = precede '$', ->
         = succeed '.', ->
           %span{data-bind: "text: oldTotal"}<>
-    %div{data-bind: "if: chosen_plan_concurrency_p"}
-      Your new total will be
-      = precede '$', ->
-        = succeed '.', ->
-          %span{data-bind: "text: total"}<>
-    %div{data-bind: "if: chosen_plan_containers_p"}
+    %div{data-bind: "if: chosenPlan"}
       Your new total will be
       %span{data-bind: "money: total"}
       = precede '(', ->
