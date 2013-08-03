@@ -14,7 +14,7 @@ exports.ab_test_definitions =
     number_one_instead_of_happy_customers_callout: [true, false]
     home_speed_level: ["4-way", "8-way", "12-way"]
     stripe_v3: [true, false]
-    use_ks_outer: [false]
+    use_ks_outer: [true, false]
 
   overrides:
     [
