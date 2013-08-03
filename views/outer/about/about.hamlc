@@ -28,3 +28,5 @@
           - for p in user.bio
             %p
               = p
+
+= HAML.contact()

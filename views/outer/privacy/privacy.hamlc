@@ -71,3 +71,5 @@
       %li
         %strong March 26, 2012
         Initial version.
+
+= HAML.security()

@@ -77,9 +77,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @error = new CI.outer.Error("error", "Error")
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
-    @contact = new CI.outer.Page("contact", "Contact us")
     @privacy = new CI.outer.Page("privacy", "Privacy")
-    @security = new CI.outer.Page("security", "Security")
+#    @contact = new CI.outer.Page("contact", "Contact us")
+#    @security = new CI.outer.Page("security", "Security")
 
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
