@@ -92,7 +92,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @query_results = ko.observableArray([])
 
   set_favicon_color: (color) =>
-    $("link[rel='icon']").attr('href', "/favicon-#{color}.png?v=1")
+    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=1"))
 
   build_favicon_updator: (build) =>
     if build?
