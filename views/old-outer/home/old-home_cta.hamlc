@@ -9,7 +9,7 @@
                 Plans start at $19 per month. All plans include a free 14 day trial.
 
           %p
-            = HAML.home_button({text: @text})
+            = HAML.old_home_button({text: @text})
 
           - if @first
             %div{data-bind: "if: VM.ab().home_cta_plan_price_trial"}

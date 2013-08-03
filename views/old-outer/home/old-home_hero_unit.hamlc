@@ -33,4 +33,4 @@
           Deploy green builds to your servers
 
 .hero-unit-cta
-  = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
+  = HAML.old_home_cta({first: true, text: "RUN YOUR TESTS"})

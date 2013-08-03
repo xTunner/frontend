@@ -1,0 +1,18 @@
+#title
+  %h1 We're <strong>hiring</strong>.
+
+#content
+  .headers
+    .container
+      = HAML['old_jobs_header']()
+
+  .container{role: "main"}
+    %section.jobs
+      = HAML['old_jobs_intro']()
+      = HAML['old_jobs_who']()
+      = HAML['old_jobs_values']()
+      = HAML['old_jobs_where']()
+      = HAML['old_jobs_how']()
+
+      %h2
+        <strong>No recruiters</strong>, thank you.

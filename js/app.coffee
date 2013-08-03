@@ -4,7 +4,8 @@ noop = () ->
 CI.ajax.init()
 
 setOuter = =>
-  $('html').removeClass('outer').addClass('inner')
+  $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
+
 display = (template, args) ->
   setOuter()
   $('#main').html(HAML[template](args))

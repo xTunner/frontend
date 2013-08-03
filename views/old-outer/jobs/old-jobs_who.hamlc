@@ -10,7 +10,7 @@
 
   #accordion-who
     .accordion
-      = HAML.jobs_everybody()
-      = HAML.jobs_backend()
-      = HAML.jobs_frontend()
-      = HAML.jobs_designers()
+      = HAML.old_jobs_everybody()
+      = HAML.old_jobs_backend()
+      = HAML.old_jobs_frontend()
+      = HAML.old_jobs_designers()

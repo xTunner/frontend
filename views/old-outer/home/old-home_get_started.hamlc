@@ -15,7 +15,7 @@
           .center
             .main-cta
               .ctabox
-                = HAML.home_button({text: "RUN YOUR TESTS"})
+                = HAML.old_home_button({text: "RUN YOUR TESTS"})
 
           %p.center
             %i
