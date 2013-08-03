@@ -33,7 +33,7 @@
             .row
               .span6
                 %p.center
-                  = HAML.old_languages_image()
+                  = HAML.languages_image()
                   -# %img{src: assetPath("img/outer/home/tech/ruby.png"),width:"50"}
                   -# %img{src: assetPath("img/outer/home/tech/python.png"),width:"70"}
                   -# %img{src: assetPath("img/outer/home/tech/javascript.png"),width:"55"}
@@ -51,7 +51,7 @@
             .row
               .span6
                 %p.center
-                  = HAML.old_dbs_image()
+                  = HAML.dbs_image()
                   -# %img{src: assetPath("img/outer/home/tech/mysql.png"),width:"75"}
                   -# %img{src: assetPath("img/outer/home/tech/postgres.png"),width:"80"}
                   -# %img{src: assetPath("img/outer/home/tech/mongodb.png"),width:"90"}
@@ -76,7 +76,7 @@
             .row
               .span6
                 %p.center
-                  = HAML.old_queues_image()
+                  = HAML.queues_image()
                   -# %img{src: assetPath("img/outer/home/tech/rabbitmq.png"),width:"120"}
                   -# %img{src: assetPath("img/outer/home/tech/beanstalkd.png"),width:"120"}
                   -# %img{src: assetPath("img/outer/home/tech/resque.png"),width:"90"}
@@ -88,7 +88,7 @@
             .row
               .span6
                 %p.center
-                  = HAML.old_browsers_image()
+                  = HAML.browsers_image()
                   -# %img{src: assetPath("img/outer/home/tech/chrome.png"),width:"80"}
                   -# %img{src: assetPath("img/outer/home/tech/firefox.png"),width:"80"}
                   -# %img{src: assetPath("img/outer/home/tech/webkit.png"),width:"80"}
@@ -111,7 +111,7 @@
             .row
               .span6
                 %p.center
-                  = HAML.old_deployment_image()
+                  = HAML.deployment_image()
                   -# %img{src: assetPath("img/outer/home/tech/heroku.png"),width:"100"}
                   -# %img{src: assetPath("img/outer/home/tech/dotcloud.png"),width:"120"}
                   -# %img{src: assetPath("img/outer/home/tech/engine_yard.png"),width:"40"}

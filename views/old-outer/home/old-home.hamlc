@@ -8,6 +8,6 @@
   = HAML.old_home_hero_unit()
 
   = HAML.old_home_customers()
-  = HAML.home_technologies()
+  = HAML.old_home_technologies()
   = HAML.old_home_benefits()
   = HAML.old_home_get_started()
