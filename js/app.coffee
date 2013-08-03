@@ -432,6 +432,7 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.selected
       refresh_fn: VM.loadRecentBuilds
       mention_branch: true
+      favicon_updator: noop
 
     VM.loadRootPage(cx)
 
@@ -445,6 +446,7 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
         project_name: project_name
+        favicon_updator: noop
 
       if project_name is VM.selected().project_name
         sel = _.extend(VM.selected(), sel)
@@ -456,6 +458,7 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       VM.selected
         page: "account"
+        favicon_updator: noop
       VM.loadAccountPage cx, cx.params.splat
   @get '^/gh/:username/:project/tree/(.*)',
     (cx) ->
@@ -471,6 +474,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: project_name
         branch: branch
         mention_branch: false
+        favicon_updator: noop
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
@@ -511,6 +515,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         mention_branch: true
+        favicon_updator: noop
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
 
