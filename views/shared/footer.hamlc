@@ -31,7 +31,7 @@
         Read our
         %a{href: "/privacy"} privacy
         and
-        %a{href: "/security"} security
+        %a{href: "/privacy#security"} security
         policies
       %p
         Find out
@@ -57,9 +57,9 @@
         %li
           %a{href: "/privacy"} Privacy
         %li
-          %a{href: "/security"} Security
+          %a{href: "/privacy#security"} Security
         %li
-          %a{href: "/contact"} Contact
+          %a{href: "/about#contact"} Contact
         %li
           %a{href: "https://www.hipchat.com/gjwkHcrD5"} Live Support
         %li.pull-right

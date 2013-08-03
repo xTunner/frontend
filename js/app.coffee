@@ -521,15 +521,15 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/about.*", (cx) =>
     VM.about.display(cx)
     mixpanel.track("View About")
-  @get "^/contact.*", (cx) =>
-    VM.contact.display(cx)
-    mixpanel.track("View Contact")
+  # @get "^/contact.*", (cx) =>
+  #   VM.contact.display(cx)
+  #   mixpanel.track("View Contact")
   @get "^/privacy.*", (cx) =>
     VM.privacy.display(cx)
     mixpanel.track("View Privacy")
-  @get "^/security.*", (cx) =>
-    VM.security.display(cx)
-    mixpanel.track("View Security")
+  # @get "^/security.*", (cx) =>
+  #   VM.security.display(cx)
+  #   mixpanel.track("View Security")
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
