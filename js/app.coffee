@@ -232,16 +232,27 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         project: project_name
         branch: branch
 
-  loadOrg: (username) =>
+  loadOrg: (username, refresh) =>
     @org_has_been_loaded(false)
     @org().clean() if @org()
     @org(null)
-    $.getJSON "/api/v1/organization/#{username}", (data) =>
-      @org(new CI.inner.Org data)
-      @org_has_been_loaded(true)
-      mixpanel.track("View Org", {"username": username})
 
-    display "org", {username: username}
+    if (refresh or !@org() or (@org().name() isnt username))
+      $.getJSON "/api/v1/organization/#{username}", (data) =>
+        @org(new CI.inner.Org data)
+        @org_has_been_loaded(true)
+        mixpanel.track("View Org", {"username": username})
+
+  loadOrgPage: (username, subpage) =>
+    @loadOrg(username, false)
+
+    subpage = subpage[0].replace('#', '').replace('-', '_')
+    subpage = subpage || "projects"
+
+    setOuter()
+    $('#main').html(HAML.org())
+    $('#subpage').html(HAML['org_' + subpage]({}))
+    ko.applyBindings(VM)
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
@@ -466,6 +477,7 @@ window.SammyApp = Sammy 'body', (n) ->
       VM.selected sel
 
       VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+
   @get '^/account(.*)',
     (cx) ->
       VM.selected
@@ -538,8 +550,7 @@ window.SammyApp = Sammy 'body', (n) ->
 
       VM.loadProject cx.params.username, cx.params.project
 
-  @get '^/gh/:username', (cx) ->
-    console.log("HI DANIEL")
+  @get '^/gh/:username(.*)', (cx) ->
     sel =
       page: "org"
       crumbs: false
@@ -548,7 +559,7 @@ window.SammyApp = Sammy 'body', (n) ->
 
     VM.selected sel
 
-    VM.loadOrg cx.params.username
+    VM.loadOrgPage cx.params.username, cx.params.splat
 
   @get '^/logout', (cx) -> VM.logout cx
 
