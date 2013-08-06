@@ -88,7 +88,7 @@
   / ko if: has_artifacts
   %dl.artifacts
 
-    %div{data-bind: "click: toggle_artifacts"}
+    %div.artifacts-def{data-bind: "click: toggle_artifacts"}
       %dt
         Build Artifacts
         %span
