@@ -92,7 +92,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @query_results = ko.observableArray([])
 
   set_favicon_color: (color) =>
-    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=1"))
+    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=27"))
 
   build_favicon_updator: (build) =>
     if build?
@@ -432,7 +432,7 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.selected
       refresh_fn: VM.loadRecentBuilds
       mention_branch: true
-      favicon_updator: noop
+      favicon_updator: VM.reset_favicon
 
     VM.loadRootPage(cx)
 
@@ -446,7 +446,7 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
         project_name: project_name
-        favicon_updator: noop
+        favicon_updator: VM.reset_favicon
 
       if project_name is VM.selected().project_name
         sel = _.extend(VM.selected(), sel)
@@ -458,7 +458,7 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       VM.selected
         page: "account"
-        favicon_updator: noop
+        favicon_updator: VM.reset_favicon
       VM.loadAccountPage cx, cx.params.splat
   @get '^/gh/:username/:project/tree/(.*)',
     (cx) ->
@@ -474,7 +474,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: project_name
         branch: branch
         mention_branch: false
-        favicon_updator: noop
+        favicon_updator: VM.reset_favicon
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
@@ -515,7 +515,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         mention_branch: true
-        favicon_updator: noop
+        favicon_updator: VM.reset_favicon
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
 
@@ -537,6 +537,7 @@ window.SammyApp = Sammy 'body', (n) ->
       page: "admin"
       admin_builds: true
       refresh_fn: VM.refreshAdminRecentBuilds
+      favicon_updator: VM.reset_favicon
 
   @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
 
