@@ -474,6 +474,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @clean_artifacts()
         data = for artifact in data
                  artifact.pretty_path = artifact.pretty_path.replace "$CIRCLE_ARTIFACTS/", ""
+                 artifact.pretty_path = CI.stringHelpers.trimMiddle artifact.pretty_path, 80
                  artifact
         @artifacts(data)
       complete: () =>
