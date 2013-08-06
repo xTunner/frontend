@@ -1,0 +1,19 @@
+= HAML._topbar()
+
+.container-fluid
+  .row-fluid
+    .span3
+      %ul.nav.nav-list.well
+        %li.nav-header
+          Organization settings
+        %li.divider
+
+    .span9
+      = HAML['flashes']({})
+
+      #subpage{data-bind: "with: org"}
+        %ul{data-bind: "foreach: {data: projects, as: 'project'}"}
+          %li
+            %span{data-bind: "text: vcs_url"}
+            %ul{data-bind: "foreach: {data: followers, as: 'follower'}"}
+              %li{data-bind: "text: follower.login"}

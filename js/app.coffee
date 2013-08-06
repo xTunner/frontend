@@ -26,10 +26,12 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @projects = ko.observableArray()
     @recent_builds = ko.observableArray()
     @build_state = ko.observable()
+    @org = ko.observable()
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
+    @org_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
 
@@ -230,6 +232,16 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         project: project_name
         branch: branch
 
+  loadOrg: (username) =>
+    @org_has_been_loaded(false)
+    @org().clean() if @org()
+    @org(null)
+    $.getJSON "/api/v1/organization/#{username}", (data) =>
+      @org(new CI.inner.Org data)
+      @org_has_been_loaded(true)
+      mixpanel.track("View Org", {"username": username})
+
+    display "org", {username: username}
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
@@ -525,6 +537,18 @@ window.SammyApp = Sammy 'body', (n) ->
       VM.selected sel
 
       VM.loadProject cx.params.username, cx.params.project
+
+  @get '^/gh/:username', (cx) ->
+    console.log("HI DANIEL")
+    sel =
+      page: "org"
+      crumbs: false
+      username: cx.params.username
+      favicon_updator: VM.reset_favicon
+
+    VM.selected sel
+
+    VM.loadOrg cx.params.username
 
   @get '^/logout', (cx) -> VM.logout cx
 
