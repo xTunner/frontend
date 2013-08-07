@@ -76,7 +76,7 @@
 
   = HAML.usage_queue_table({})
 
-  %dl.commit-log
+  %dl.clearfix.commit-log
 
     %dt Commit Log
     %dd
@@ -86,9 +86,9 @@
         %a{data-bind: "attr: { href: github_url }, text: subject"}}
 
   / ko if: has_artifacts
-  %dl.artifacts
+  %dl.clearfix.artifacts
 
-    %div{data-bind: "click: toggle_artifacts"}
+    %div.artifacts-def{data-bind: "click: toggle_artifacts"}
       %dt
         Build Artifacts
         %span
