@@ -24,7 +24,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @builds = ko.observableArray()
     @project = ko.observable()
     @projects = ko.observableArray()
-    @recent_builds = ko.observableArray()
     @build_state = ko.observable()
     @org = ko.observable()
     @admin = ko.observable()
@@ -32,9 +31,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
     @org_has_been_loaded = ko.observable(false)
-    @recent_builds_have_been_loaded = ko.observable(false)
-    @project_builds_have_been_loaded = ko.observable(false)
-    @org_builds_have_been_loaded = ko.observable(false)
+    @builds_have_been_loaded = ko.observable(false)
 
     # Tracks what page we're on (for pages we care about)
     @selected = ko.observable({})
@@ -43,10 +40,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @billing = ko.observable(new CI.inner.Billing)
 
     @dashboard_ready = @komp =>
-      @projects_have_been_loaded() and @recent_builds_have_been_loaded()
+      @projects_have_been_loaded() and @builds_have_been_loaded()
 
     @project_dashboard_ready = @komp =>
-      @project_builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
+      @builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
 
     if window.renderContext.current_user
       try
@@ -185,12 +182,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     else
       "/img/arrow_refresh.png"
 
-  loadRecentBuilds: () =>
-    $.getJSON '/api/v1/recent-builds', (data) =>
-      @cleanObjs(@recent_builds())
-      @recent_builds((new CI.inner.Build d for d in data))
-      @recent_builds_have_been_loaded(true)
-
   loadDashboard: (cx) =>
     @loadProjects()
     @loadRecentBuilds()
@@ -207,19 +198,26 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     if @current_user().repos().length == 0
       track_signup_conversion()
 
+  loadBuilds: (path, refresh) =>
+    @cleanObjs(@builds())
+
+    if not refresh
+      @builds.removeAll()
+      @builds_have_been_loaded(false)
+
+    $.getJSON path, (data) =>
+      @builds((new CI.inner.Build d for d in data))
+      @builds_have_been_loaded(true)
+
+  loadRecentBuilds: () =>
+    @loadBuilds('/api/v1/recent-builds')
+
   loadOrg: (username, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
     path = "/api/v1/organization/#{username}"
 
-    @cleanObjs(@builds())
-    if not refresh
-      @builds.removeAll()
-      @org_builds_have_been_loaded(false)
-
-    $.getJSON path, (data) =>
-      @builds((new CI.inner.Build d for d in data))
-      @org_builds_have_been_loaded(true)
+    @loadBuilds(path, refresh)
 
     if not refresh
       display "org",
@@ -233,14 +231,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     settings_path = path + "/settings"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @cleanObjs(@builds())
-    if not refresh
-      @builds.removeAll()
-      @project_builds_have_been_loaded(false)
-
-    $.getJSON path, (data) =>
-      @builds((new CI.inner.Build d for d in data))
-      @project_builds_have_been_loaded(true)
+    @loadBuilds(path, refresh)
 
     $.getJSON settings_path, (data) =>
       @project(new CI.inner.Project data)
@@ -379,16 +370,14 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @renderAdminPage "projects"
 
 
-  loadAdminRecentBuilds: () =>
-    $.getJSON '/api/v1/admin/recent-builds', (data) =>
-      @cleanObjs @recent_builds()
-      @recent_builds((new CI.inner.Build d for d in data))
-    @renderAdminPage "recent_builds"
+  loadAdminRecentBuilds: (refresh) =>
+
+    @loadBuilds '/api/v1/admin/recent-builds', refresh
+    if not refresh
+      @renderAdminPage "recent_builds"
 
   refreshAdminRecentBuilds: () =>
-    $.getJSON '/api/v1/admin/recent-builds', (data) =>
-      @cleanObjs @recent_builds()
-      @recent_builds((new CI.inner.Build d for d in data))
+    @loadAdminRecentBuilds(true)
 
   adminRefreshIntercomData: (data, event) =>
     $.ajax(
@@ -600,7 +589,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
   @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
   @get '^/admin/recent-builds', (cx) ->
-    VM.loadAdminRecentBuilds cx
+    VM.loadAdminRecentBuilds()
     VM.selected
       page: "admin"
       admin_builds: true

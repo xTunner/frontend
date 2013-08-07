@@ -45,4 +45,4 @@
                 %a{href: "/account/plans" }
                   Re-enable your tests.
 
-            = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+            = HAML['builds']({builds: "builds", mention_project: true, pagination: false})
