@@ -304,11 +304,6 @@
             "days_left_in_trial" : -238,
             "plan" : "p16",
             "trial_end" : "2011-12-28T22:02:15Z",
-            "tokens" : [ {
-              "label" : "CCMenu",
-              "token" : ":token",
-              "time" : "2012-05-27T05:26:21Z"
-            } ],
             "basic_email_prefs" : "smart",
             "admin" : true,
             "login" : "pbiggar"
