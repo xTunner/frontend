@@ -34,6 +34,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @org_has_been_loaded = ko.observable(false)
     @recent_builds_have_been_loaded = ko.observable(false)
     @project_builds_have_been_loaded = ko.observable(false)
+    @org_builds_have_been_loaded = ko.observable(false)
 
     # Tracks what page we're on (for pages we care about)
     @selected = ko.observable({})
@@ -46,7 +47,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
     @project_dashboard_ready = @komp =>
       @project_builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
-
 
     if window.renderContext.current_user
       try
@@ -207,6 +207,24 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     if @current_user().repos().length == 0
       track_signup_conversion()
 
+  loadOrg: (username, refresh) =>
+    if @projects().length is 0 then @loadProjects()
+
+    path = "/api/v1/organization/#{username}"
+
+    @cleanObjs(@builds())
+    if not refresh
+      @builds.removeAll()
+      @org_builds_have_been_loaded(false)
+
+    $.getJSON path, (data) =>
+      @builds((new CI.inner.Build d for d in data))
+      @org_builds_have_been_loaded(true)
+
+    if not refresh
+      display "org",
+        username: username
+
   loadProject: (username, project, branch, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
@@ -232,25 +250,25 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         project: project_name
         branch: branch
 
-  loadOrg: (username, refresh) =>
+  loadEditOrg: (username, refresh) =>
     @org_has_been_loaded(false)
     @org().clean() if @org()
     @org(null)
 
     if (refresh or !@org() or (@org().name() isnt username))
-      $.getJSON "/api/v1/organization/#{username}", (data) =>
+      $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
         @org(new CI.inner.Org data)
         @org_has_been_loaded(true)
         mixpanel.track("View Org", {"username": username})
 
-  loadOrgPage: (username, subpage) =>
-    @loadOrg(username, false)
+  loadEditOrgPage: (username, subpage) =>
+    @loadEditOrg(username, false)
 
     subpage = subpage[0].replace('#', '').replace('-', '_')
     subpage = subpage || "projects"
 
     setOuter()
-    $('#main').html(HAML.org())
+    $('#main').html(HAML.org_settings())
     $('#subpage').html(HAML['org_' + subpage]({}))
     ko.applyBindings(VM)
 
@@ -471,7 +489,20 @@ window.SammyApp = Sammy 'body', (n) ->
 
     VM.selected sel
 
-    VM.loadOrgPage cx.params.username, cx.params.splat
+    VM.loadEditOrgPage cx.params.username, cx.params.splat
+
+  # before any project pages so that it gets routed first
+  @get '^/gh/organizations/:username', (cx) ->
+    sel =
+      page: "org"
+      crumbs: false
+      username: cx.params.username
+      favicon_updator: VM.reset_favicon
+
+    VM.selected sel
+
+    VM.loadOrg cx.params.username
+
 
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->

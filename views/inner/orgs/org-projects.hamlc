@@ -17,13 +17,14 @@
 
 
 .row-fluid
-  %h2 Unfollowed projects
+  %h2 Untested repos
   .span6{data-bind: "foreach: {data: projects_without_followers, as: 'project'}"}
     .row-fluid
       .span12
         %h4
-          %a.edit-icon{data-bind: "attr: {href: edit_link}"}
-            %i.icon-gear
+          -# TOOD: Make sure that this does the expected thing.
+          %a.btn.btn-small.btn-primary{data-bind: "click: follow"}
+            Follow
           %a{data-bind: "attr: {href: project_path}, text: repo_name"}
           %a.github-icon-link{data-bind: "attr: {href: vcs_url}"}
             %i.icon-github

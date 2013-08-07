@@ -1,21 +1,27 @@
+= HAML.invite_form({})
+
 = HAML._topbar()
 
-.container-fluid.org-page
+.container-fluid#dashboard
   .row-fluid
-    .span3
-      %ul.nav.nav-list.well
-        %li.nav-header
-          Organization settings
-        %li.divider
+    .span-menu.menu-left
+      = HAML['followed_sidebar']({})
+      = HAML['action_sidebar']({})
 
-        %li.nav-header
-          Overview
-        %li
-          %a{href: "#projects"}
-            All projects
-
-    .span9
+    .span-flex
       = HAML['flashes']({})
 
-      #subpage{data-bind: "with: org"}
-        Loading...
+      .dashboard-main
+        %div{data-bind: "ifnot: org_builds_have_been_loaded"}
+          .centered-spinner
+            = HAML['fast_spinner']()
+        %div{data-bind: "if: org_builds_have_been_loaded"}
+          %h2
+            Latest builds for the
+            %span{data-bind: "text: VM.selected().username"}
+            organization
+            %span
+              %a.btn.pull-right#invite{data-toggle: "modal", data-target: "#inviteForm"}
+                Invite Collaborators
+
+          = HAML['builds']({builds: "builds", mention_project: true, pagination: false})
