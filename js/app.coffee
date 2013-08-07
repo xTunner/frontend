@@ -460,6 +460,19 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.loadRootPage(cx)
 
   @get '^/add-projects', (cx) => VM.loadAddProjects cx
+
+  # before any project pages so that it gets routed first
+  @get '^/gh/organizations/:username/settings(.*)', (cx) ->
+    sel =
+      page: "org_settings"
+      crumbs: false
+      username: cx.params.username
+      favicon_updator: VM.reset_favicon
+
+    VM.selected sel
+
+    VM.loadOrgPage cx.params.username, cx.params.splat
+
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
       project_name = "#{cx.params.username}/#{cx.params.project}"
@@ -549,17 +562,6 @@ window.SammyApp = Sammy 'body', (n) ->
       VM.selected sel
 
       VM.loadProject cx.params.username, cx.params.project
-
-  @get '^/gh/:username(.*)', (cx) ->
-    sel =
-      page: "org"
-      crumbs: false
-      username: cx.params.username
-      favicon_updator: VM.reset_favicon
-
-    VM.selected sel
-
-    VM.loadOrgPage cx.params.username, cx.params.splat
 
   @get '^/logout', (cx) -> VM.logout cx
 
