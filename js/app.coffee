@@ -188,7 +188,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
-    display "dashboard", {}
+    display "dashboard",
+      builds_table: 'user_builds_table'
 
 
   loadAddProjects: (cx) =>
@@ -220,8 +221,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @loadBuilds(path, refresh)
 
     if not refresh
-      display "org",
-        username: username
+      display "dashboard",
+        builds_table: 'org'
 
   loadProject: (username, project, branch, refresh) =>
     if @projects().length is 0 then @loadProjects()
@@ -237,9 +238,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @project(new CI.inner.Project data)
 
     if not refresh
-      display "project",
-        project: project_name
-        branch: branch
+      display "dashboard",
+        builds_table: 'project'
 
   loadEditOrg: (username, refresh) =>
     @org_has_been_loaded(false)
