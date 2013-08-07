@@ -214,7 +214,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @loadBuilds('/api/v1/recent-builds')
 
   loadOrg: (username, refresh) =>
-    if @projects().length is 0 then @loadProjects()
+    if !@projects_have_been_loaded() then @loadProjects()
 
     @loadBuilds("/api/v1/organization/#{username}", refresh)
 
@@ -223,7 +223,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         builds_table: 'org'
 
   loadProject: (username, project, branch, refresh) =>
-    if @projects().length is 0 then @loadProjects()
+    if !@projects_have_been_loaded() then @loadProjects()
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
