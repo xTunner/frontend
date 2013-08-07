@@ -299,6 +299,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
     if subpage.indexOf("notifications") == 0
       @current_user().syncGithub()
+    else if subpage is "api"
+      @current_user().load_tokens()
 
     setOuter()
     $('#main').html(HAML['account']({}))

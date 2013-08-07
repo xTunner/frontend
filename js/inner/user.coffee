@@ -66,16 +66,28 @@ CI.inner.User = class User extends CI.inner.Obj
         if @gravatar_id() and @gravatar_id() isnt ""
           "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
 
+  load_tokens: () =>
+    $.getJSON "/api/v1/user/token", (data) =>
+      @tokens(data)
+
   create_token: (data, event) =>
     $.ajax
-      type: "POST"
       event: event
-      url: "/api/v1/user/create-token"
-      data: JSON.stringify {label: @tokenLabel()}
+      type: "POST"
+      url: "/api/v1/user/token"
+      data: JSON.stringify
+        label: @tokenLabel()
       success: (result) =>
-        @tokens result
         @tokenLabel("")
-        true
+        @load_tokens()
+    false
+
+  delete_token: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      url: "/api/v1/user/token/#{data.token}",
+      success: (result) =>
+        @load_tokens()
     false
 
   create_user_key: (data, event) =>
