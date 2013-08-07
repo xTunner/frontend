@@ -468,25 +468,21 @@ window.SammyApp = Sammy 'body', (n) ->
 
   # before any project pages so that it gets routed first
   @get '^/gh/organizations/:username/settings(.*)', (cx) ->
-    sel =
+    VM.selected
       page: "org_settings"
       crumbs: false
       username: cx.params.username
       favicon_updator: VM.reset_favicon
 
-    VM.selected sel
-
     VM.loadEditOrgPage cx.params.username, cx.params.splat
 
   # before any project pages so that it gets routed first
   @get '^/gh/organizations/:username', (cx) ->
-    sel =
+    VM.selected
       page: "org"
       crumbs: false
       username: cx.params.username
       favicon_updator: VM.reset_favicon
-
-    VM.selected sel
 
     VM.loadOrg cx.params.username
 
