@@ -216,9 +216,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   loadOrg: (username, refresh) =>
     if @projects().length is 0 then @loadProjects()
 
-    path = "/api/v1/organization/#{username}"
-
-    @loadBuilds(path, refresh)
+    @loadBuilds("/api/v1/organization/#{username}", refresh)
 
     if not refresh
       display "dashboard",
