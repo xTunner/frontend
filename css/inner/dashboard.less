@@ -457,7 +457,8 @@
     border-top: 1px solid lighten(@grayLighter,2%);
   }
   table {
-    display: block;
+    //display: block;
+    width: 100%;
     background: #fbfbfb;
     border: 1px solid @grayLighter;
     .border-radius(4px);
@@ -466,10 +467,14 @@
     box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.13), 1px 2px 3px rgba(0, 0, 0, 0.05);
     margin: 0;
     th {
-      padding-bottom: 1em;
+      //padding-bottom: 1em;
+      padding: 1em 0;
     }
     td {
       padding: 10px 5px;
+      &:first-child {
+        padding-left: 1em;
+      }
     }
   }
 }
