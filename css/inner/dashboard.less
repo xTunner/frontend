@@ -477,19 +477,14 @@
       a {
         color: @grayLight;
       }
-      &:first-child {
-        padding-left: 2%;
-        text-align: left;
-        border-right: 1px dotted #eee;
+      &:nth-child(4n+1) a {
+        color: darken(@grayLight,20%);
       }
-      &:nth-child(5) {
+      &:nth-child(4n+1) {
         padding-left: 2%;
         text-align: left;
         border-left: 1px dashed @grayLighter;
         border-right: 1px dashed @grayLighter;
-      }
-      &:nth-child(odd) a {
-        color: darken(@grayLight,20%);
       }
     }
   }
