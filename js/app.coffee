@@ -470,7 +470,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/gh/organizations/:username/settings(.*)', (cx) ->
     VM.selected
       page: "org_settings"
-      crumbs: false
+      crumbs: ['org', 'org_settings']
       username: cx.params.username
       favicon_updator: VM.reset_favicon
 
@@ -479,7 +479,7 @@ window.SammyApp = Sammy 'body', (n) ->
   route_org_dashboard = (cx) ->
     VM.selected
       page: "org"
-      crumbs: false
+      crumbs: ['org', 'org_settings']
       username: cx.params.username
       favicon_updator: VM.reset_favicon
 
@@ -491,19 +491,13 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
-      project_name = "#{cx.params.username}/#{cx.params.project}"
-      sel =
+      VM.selected
         page: 'project_settings'
-        crumbs: true
+        crumbs: ['project', 'project_settings']
         username: cx.params.username
         project: cx.params.project
-        project_name: project_name
+        project_name: "#{cx.params.username}/#{cx.params.project}"
         favicon_updator: VM.reset_favicon
-
-      if project_name is VM.selected().project_name
-        sel = _.extend(VM.selected(), sel)
-
-      VM.selected sel
 
       VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
 
@@ -517,24 +511,20 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
       branch = cx.params.splat.join('/')
-      project_name = "#{cx.params.username}/#{cx.params.project}"
 
-      sel =
-        page: "project_branch"
-        crumbs: true
+      VM.selected
+        page: "branch"
+        crumbs: ['project', 'branch', 'project_settings']
         username: cx.params.username
         project: cx.params.project
-        project_name: project_name
+        project_name: "#{cx.params.username}/#{cx.params.project}"
         branch: branch
         mention_branch: false
         favicon_updator: VM.reset_favicon
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
-      if project_name is VM.selected().project_name and branch is VM.selected().branch
-        sel = _.extend(VM.selected(), sel)
-
-      VM.selected sel
+      console.log(VM.selected().branch)
 
       VM.loadProject cx.params.username, cx.params.project, branch
 
@@ -542,7 +532,7 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       VM.selected
         page: "build"
-        crumbs: true
+        crumbs: ['project', 'branch', 'build', 'project_settings']
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -561,9 +551,9 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       project_name = "#{cx.params.username}/#{cx.params.project}"
 
-      sel =
+      VM.selected
         page: "project"
-        crumbs: true
+        crumbs: ['project', 'project_settings']
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -571,11 +561,6 @@ window.SammyApp = Sammy 'body', (n) ->
         favicon_updator: VM.reset_favicon
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
-
-      if project_name is VM.selected().project_name
-        sel = _.extend(VM.selected(), sel)
-
-      VM.selected sel
 
       VM.loadProject cx.params.username, cx.params.project
 
