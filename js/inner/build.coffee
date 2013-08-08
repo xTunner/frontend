@@ -357,6 +357,14 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('updateObservables', @updateObservables)
       @build_channel.bind('maybeAddMessages', @maybeAddMessages)
 
+  maybeSubscribeObservables: () =>
+    if @shouldSubscribe()
+      @pusher_subscribed(true)
+      @build_channel = VM.pusher.subscribe(@pusherChannel())
+      @build_channel.bind 'pusher:subscription_error', (status) ->
+        _rollbar.push status
+      @build_channel.bind('updateObservables', @updateObservables)
+
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
     for i in [0..step]
@@ -459,6 +467,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       complete: () =>
         # stop the spinner if there was an error
         @usage_queue_why([]) if not @usage_queue_why()
+        _.each(@usage_queue_why(), ((b) -> b.maybeSubscribeObservables()))
 
   toggle_artifacts: () =>
     if @artifacts_visible()
