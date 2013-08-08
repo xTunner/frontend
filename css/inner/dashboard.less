@@ -165,9 +165,6 @@
 
     width: 100%;
 
-    &:hover .nav-menu-icon {
-      opacity: 1;
-    }
     .project-name {
       //font-size:1em;
       line-height: 1em;
@@ -186,31 +183,36 @@
 
       &:hover {
         color: @grayDark;
-        //.scale(1.01);
         .transition(color .1s ease-in-out);
       }
     }
+    &:hover .nav-menu-icon {
+      //.transition(opacity .1s ease-in);
+      opacity: 1;
+      -webkit-transform: scale(1);
+
+
+    }
     .nav-menu-icon {
+      //.transition(opacity .3s ease-in);
       opacity: 0;
-      //background: none;
-      //float: none;
-      //display: inline-block;
-      //margin: 0;
-      //padding: 1.2em 0 0;
+      -webkit-transition-property: opacity, -webkit-transform;
+      -webkit-transition-duration: .3s;
+      -webkit-transition-timing-function: ease-in-out;
+
+      -webkit-transform: scale(0);
+      -webkit-transform-origin: top right;
+
 
       float: right;
       display: block;
-
       padding: .34em;
       box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-      //margin-right: -1px;
-      //margin-top: -1px;
       border-radius: 2px;
       border-left: 1px solid #ddd;
       border-bottom: 1px solid #ddd;
       background: #fff;
 
-      .transition(opacity .2s ease-in);
       i {
         line-height: 1.1em;
         font-size: .9em;
