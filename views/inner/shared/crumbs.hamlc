@@ -1,24 +1,6 @@
-.crumbs{data-bind: "with: navbar"}
-  %ul.nav{data-bind: "if: crumbs"}
-    %li.meta.project
-      %a{data-bind: "attr: {href: project_path}"
-        %span.label{data-bind: "text: project_name, css: label_class('project')"}
-
-    / ko if: branch
-    %li.meta.branch
-      %a{data-bind: "attr: {href: project_branch_path}"}
-        %span.label{data-bind: "text: display_branch, css: label_class('project_branch')"}
-    / /ko
-
-    / ko if: build_num
-    %li.meta.build-no
-      %a{data-bind: "attr: {href: build_path}"}
-        %span.label{data-bind: "css: label_class('build')"}
-          build:
-          %span{data-bind: "text: build_num"}
-    / /ko
-
-    %li.meta.edit
-      %a{data-bind: "attr: {href: project_settings_path}"}
-        %span.label{data-bind: "css: label_class('project_settings')"}
-          Edit settings
+%div{data-bind: "with: navbar"}
+  %ul.nav.crumbs{data-bind: "foreach: {data: crumbs, as: 'crumb'}"}
+    %span{data-bind: "attr: {class: console.log(crumb)}"}
+    %li{data-bind: "attr: {class: crumb}"}
+      %a{data-bind: "attr: {href: $parent.crumb_path(crumb)}"}
+        %span.label{data-bind: "text: $parent.crumb_name(crumb), css: $parent.label_class(crumb)"}
