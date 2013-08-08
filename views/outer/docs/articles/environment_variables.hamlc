@@ -42,6 +42,13 @@
   %dd
     The build number, same as in circleci.com/gh/foo/bar/123
 
+  %dt
+    %code CIRCLE_ARTIFACTS
+  %dd
+    The directory whose contents are automatically saved as
+    = succeed '.', ->
+      %a{ href: "/docs/build-artifacts" } build artifacts
+
 %h3 Parallelism
 
 %p
