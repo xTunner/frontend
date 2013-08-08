@@ -476,8 +476,7 @@ window.SammyApp = Sammy 'body', (n) ->
 
     VM.loadEditOrgPage cx.params.username, cx.params.splat
 
-  # before any project pages so that it gets routed first
-  @get '^/gh/organizations/:username', (cx) ->
+  route_org_dashboard = (cx) ->
     VM.selected
       page: "org"
       crumbs: false
@@ -486,6 +485,9 @@ window.SammyApp = Sammy 'body', (n) ->
 
     VM.loadOrg cx.params.username
 
+  # before any project pages so that it gets routed first
+  @get '^/gh/organizations/:username', route_org_dashboard
+  @get '^/gh/:username', route_org_dashboard
 
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
