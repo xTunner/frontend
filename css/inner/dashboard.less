@@ -471,9 +471,25 @@
       padding: 1em 0;
     }
     td {
-      padding: 10px 5px;
+      //padding: 10px 5px;
+      padding: .5em 0;
+      text-align: center;
+      a {
+        color: @grayLight;
+      }
       &:first-child {
-        padding-left: 1em;
+        padding-left: 2%;
+        text-align: left;
+        border-right: 1px dotted #eee;
+      }
+      &:nth-child(5) {
+        padding-left: 2%;
+        text-align: left;
+        border-left: 1px dashed @grayLighter;
+        border-right: 1px dashed @grayLighter;
+      }
+      &:nth-child(odd) a {
+        color: darken(@grayLight,20%);
       }
     }
   }
