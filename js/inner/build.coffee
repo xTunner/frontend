@@ -32,10 +32,14 @@ CI.inner.Build = class Build extends CI.inner.Obj
     has_artifacts: false
     artifacts: null
     artifacts_visible: false
+    pusher_subscribed: false
 
   clean: () =>
-    super
+    # pusher fills the console with errors if you unsubscribe
+    # from a channel you weren't subscribed to
+    if @pusher_subscribed() then VM.pusher.unsubscribe(@pusherChannel())
 
+    super
     VM.cleanObjs(@steps())
     @clean_usage_queue_why()
 
@@ -342,6 +346,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   maybeSubscribe: () =>
     if @shouldSubscribe()
+      @pusher_subscribed(true)
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind 'pusher:subscription_error', (status) ->
         _rollbar.push status
