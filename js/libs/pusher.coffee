@@ -21,6 +21,9 @@ CI.Pusher = class Pusher
   subscribe: (args...) =>
     @pusher.subscribe.apply @pusher, args
 
+  unsubscribe: (channelName) =>
+    @pusher.unsubscribe(channelName)
+
   setupBindings: () =>
     @user_channel.bind "call", (data) =>
       VM[data.fn].apply(@, data.args)
