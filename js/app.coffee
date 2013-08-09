@@ -526,8 +526,6 @@ window.SammyApp = Sammy 'body', (n) ->
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
-      console.log(VM.selected().branch)
-
       VM.loadProject cx.params.username, cx.params.project, branch
 
   @get '^/gh/:username/:project/:build_num',
