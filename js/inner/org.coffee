@@ -14,13 +14,18 @@ CI.inner.Org = class Org extends CI.inner.Obj
 
     super json
 
-    @projects(new CI.inner.Project(project) for project in @projects())
-
     # projects that have been turned into Project objects
     @project_objs = @komp =>
       for project in @projects()
+        project.follower_logins = (u.login for u in project.followers)
         project.followers = (new CI.inner.User(u) for u in project.followers)
-        project
+        new CI.inner.Project(project)
+
+    # users that have been turned into User objects
+    @user_objs = @komp =>
+      for user in @users()
+        user.projects = _.filter @project_objs(), (p) -> user.login in p.follower_logins
+        new CI.inner.User(user)
 
     @projects_with_followers = @komp =>
       _.filter @project_objs(), ((p) -> p.followers.length)
