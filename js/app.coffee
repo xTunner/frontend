@@ -24,14 +24,14 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @builds = ko.observableArray()
     @project = ko.observable()
     @projects = ko.observableArray()
-    @recent_builds = ko.observableArray()
     @build_state = ko.observable()
+    @org = ko.observable()
     @admin = ko.observable()
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
-    @recent_builds_have_been_loaded = ko.observable(false)
-    @project_builds_have_been_loaded = ko.observable(false)
+    @org_has_been_loaded = ko.observable(false)
+    @builds_have_been_loaded = ko.observable(false)
 
     # Tracks what page we're on (for pages we care about)
     @selected = ko.observable({})
@@ -40,11 +40,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @billing = ko.observable(new CI.inner.Billing)
 
     @dashboard_ready = @komp =>
-      @projects_have_been_loaded() and @recent_builds_have_been_loaded()
+      @projects_have_been_loaded() and @builds_have_been_loaded()
 
     @project_dashboard_ready = @komp =>
-      @project_builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
-
+      @builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
 
     if window.renderContext.current_user
       try
@@ -183,19 +182,14 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     else
       "/img/arrow_refresh.png"
 
-  loadRecentBuilds: () =>
-    $.getJSON '/api/v1/recent-builds', (data) =>
-      @cleanObjs(@recent_builds())
-      @recent_builds((new CI.inner.Build d for d in data))
-      @recent_builds_have_been_loaded(true)
-
   loadDashboard: (cx) =>
     @loadProjects()
     @loadRecentBuilds()
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
-    display "dashboard", {}
+    display "dashboard",
+      builds_table: 'user_builds_table'
 
 
   loadAddProjects: (cx) =>
@@ -205,31 +199,67 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     if @current_user().repos().length == 0
       track_signup_conversion()
 
+  loadBuilds: (path, refresh) =>
+    @cleanObjs(@builds())
+
+    if not refresh
+      @builds.removeAll()
+      @builds_have_been_loaded(false)
+
+    $.getJSON path, (data) =>
+      @builds((new CI.inner.Build d for d in data))
+      @builds_have_been_loaded(true)
+
+  loadRecentBuilds: () =>
+    @loadBuilds('/api/v1/recent-builds')
+
+  loadOrg: (username, refresh) =>
+    if !@projects_have_been_loaded() then @loadProjects()
+
+    @loadBuilds("/api/v1/organization/#{username}", refresh)
+
+    if not refresh
+      display "dashboard",
+        builds_table: 'org'
+
   loadProject: (username, project, branch, refresh) =>
-    if @projects().length is 0 then @loadProjects()
+    if !@projects_have_been_loaded() then @loadProjects()
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     settings_path = path + "/settings"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @cleanObjs(@builds())
-    if not refresh
-      @builds.removeAll()
-      @project_builds_have_been_loaded(false)
-
-    $.getJSON path, (data) =>
-      @builds((new CI.inner.Build d for d in data))
-      @project_builds_have_been_loaded(true)
+    @loadBuilds(path, refresh)
 
     $.getJSON settings_path, (data) =>
       @project(new CI.inner.Project data)
 
     if not refresh
-      display "project",
-        project: project_name
-        branch: branch
+      display "dashboard",
+        builds_table: 'project'
 
+  loadEditOrg: (username, refresh) =>
+    @org_has_been_loaded(false)
+    @org().clean() if @org()
+    @org(null)
+
+    if (refresh or !@org() or (@org().name() isnt username))
+      $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
+        @org(new CI.inner.Org data)
+        @org_has_been_loaded(true)
+        mixpanel.track("View Org", {"username": username})
+
+  loadEditOrgPage: (username, subpage) =>
+    @loadEditOrg(username, false)
+
+    subpage = subpage[0].replace('#', '').replace('-', '_')
+    subpage = subpage || "projects"
+
+    setOuter()
+    $('#main').html(HAML.org_settings())
+    $('#subpage').html(HAML['org_' + subpage]({}))
+    ko.applyBindings(VM)
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
@@ -340,16 +370,14 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @renderAdminPage "projects"
 
 
-  loadAdminRecentBuilds: () =>
-    $.getJSON '/api/v1/admin/recent-builds', (data) =>
-      @cleanObjs @recent_builds()
-      @recent_builds((new CI.inner.Build d for d in data))
-    @renderAdminPage "recent_builds"
+  loadAdminRecentBuilds: (refresh) =>
+
+    @loadBuilds '/api/v1/admin/recent-builds', refresh
+    if not refresh
+      @renderAdminPage "recent_builds"
 
   refreshAdminRecentBuilds: () =>
-    $.getJSON '/api/v1/admin/recent-builds', (data) =>
-      @cleanObjs @recent_builds()
-      @recent_builds((new CI.inner.Build d for d in data))
+    @loadAdminRecentBuilds(true)
 
   adminRefreshIntercomData: (data, event) =>
     $.ajax(
@@ -439,23 +467,42 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.loadRootPage(cx)
 
   @get '^/add-projects', (cx) => VM.loadAddProjects cx
+
+  # before any project pages so that it gets routed first
+  @get '^/gh/organizations/:username/settings(.*)', (cx) ->
+    VM.selected
+      page: "org_settings"
+      crumbs: ['org', 'org_settings']
+      username: cx.params.username
+      favicon_updator: VM.reset_favicon
+
+    VM.loadEditOrgPage cx.params.username, cx.params.splat
+
+  route_org_dashboard = (cx) ->
+    VM.selected
+      page: "org"
+      crumbs: ['org', 'org_settings']
+      username: cx.params.username
+      favicon_updator: VM.reset_favicon
+
+    VM.loadOrg cx.params.username
+
+  # before any project pages so that it gets routed first
+  @get '^/gh/organizations/:username', route_org_dashboard
+  @get '^/gh/:username', route_org_dashboard
+
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
-      project_name = "#{cx.params.username}/#{cx.params.project}"
-      sel =
+      VM.selected
         page: 'project_settings'
-        crumbs: true
+        crumbs: ['project', 'project_settings']
         username: cx.params.username
         project: cx.params.project
-        project_name: project_name
+        project_name: "#{cx.params.username}/#{cx.params.project}"
         favicon_updator: VM.reset_favicon
 
-      if project_name is VM.selected().project_name
-        sel = _.extend(VM.selected(), sel)
-
-      VM.selected sel
-
       VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+
   @get '^/account(.*)',
     (cx) ->
       VM.selected
@@ -466,24 +513,20 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
       branch = cx.params.splat.join('/')
-      project_name = "#{cx.params.username}/#{cx.params.project}"
 
-      sel =
-        page: "project_branch"
-        crumbs: true
+      VM.selected
+        page: "branch"
+        crumbs: ['project', 'branch', 'project_settings']
         username: cx.params.username
         project: cx.params.project
-        project_name: project_name
+        project_name: "#{cx.params.username}/#{cx.params.project}"
         branch: branch
         mention_branch: false
         favicon_updator: VM.reset_favicon
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
-      if project_name is VM.selected().project_name and branch is VM.selected().branch
-        sel = _.extend(VM.selected(), sel)
-
-      VM.selected sel
+      console.log(VM.selected().branch)
 
       VM.loadProject cx.params.username, cx.params.project, branch
 
@@ -491,7 +534,7 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       VM.selected
         page: "build"
-        crumbs: true
+        crumbs: ['project', 'branch', 'build', 'project_settings']
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -510,9 +553,9 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       project_name = "#{cx.params.username}/#{cx.params.project}"
 
-      sel =
+      VM.selected
         page: "project"
-        crumbs: true
+        crumbs: ['project', 'project_settings']
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
@@ -520,11 +563,6 @@ window.SammyApp = Sammy 'body', (n) ->
         favicon_updator: VM.reset_favicon
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
-
-      if project_name is VM.selected().project_name
-        sel = _.extend(VM.selected(), sel)
-
-      VM.selected sel
 
       VM.loadProject cx.params.username, cx.params.project
 
@@ -534,7 +572,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
   @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
   @get '^/admin/recent-builds', (cx) ->
-    VM.loadAdminRecentBuilds cx
+    VM.loadAdminRecentBuilds()
     VM.selected
       page: "admin"
       admin_builds: true

@@ -1,0 +1,21 @@
+= HAML._topbar()
+
+.container-fluid.org-page
+  .row-fluid
+    .span3
+      %ul.nav.nav-list.well
+        %li.nav-header
+          Organization settings
+        %li.divider
+
+        %li.nav-header
+          Overview
+        %li
+          %a{href: "#projects"}
+            All projects
+
+    .span9
+      = HAML['flashes']({})
+
+      #subpage{data-bind: "with: org"}
+        Loading...

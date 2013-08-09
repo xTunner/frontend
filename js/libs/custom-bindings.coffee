@@ -58,6 +58,7 @@ addCommas = (num) ->
 # Copy of setTextContent in ko's utils
 transformContent = (f, element, textContent) ->
   value = ko.utils.unwrapObservable(textContent)
+
   if not value?
     value = ""
   else
@@ -81,26 +82,10 @@ ko.bindingHandlers.duration =
     f = (value) -> CI.time.as_duration(value)
     transformContent(f, el, valueAccessor())
 
-setLeadingZeroContent = (element, textContent) ->
-  value = ko.utils.unwrapObservable(textContent)
-  if not value?
-    value = ""
-  else if value >= 0 and value < 10
-    value = "0#{value}"
-
-  if 'innerText' in element
-    element.innerText = value
-  else
-    element.textContent = value
-
-  if (ieVersion >= 9)
-    element.style.display = element.style.display
-
 ko.bindingHandlers.leadingZero =
   update: (el, valueAccessor) =>
-    setLeadingZeroContent(el, valueAccessor())
-
-
+    f = (value) -> "0#{value}"
+    transformContent(f, el, valueAccessor())
 
 ko.observableArray["fn"].setIndex = (index, newItem) ->
   @valueWillMutate()
