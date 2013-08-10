@@ -22,4 +22,4 @@
       = HAML['flashes']({})
 
       #subpage{data-bind: "with: org"}
-        Loading...
+        = HAML["org_#{@subpage}"]()

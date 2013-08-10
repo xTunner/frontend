@@ -256,15 +256,12 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       if callback? then callback()
 
   loadEditOrgPage: (username, subpage) =>
-    @loadEditOrg(username, false)
-
     subpage = subpage[0].replace('#', '').replace('-', '_')
     subpage = subpage || "projects"
+    @loadEditOrg(username, false, () => @org().subpage(subpage))
 
-    setOuter()
-    $('#main').html(HAML.org_settings())
-    $('#subpage').html(HAML['org_' + subpage]({}))
-    ko.applyBindings(VM)
+    display 'org_settings',
+      subpage: subpage
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
