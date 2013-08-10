@@ -5,7 +5,6 @@
 
 #dashboard {
   min-width: 960px;
-  //max-width: 1300px;
   margin: 0 auto;
   a, span, td {
     color: @result-grayDark;
@@ -48,8 +47,6 @@
       .transition(all .2s ease-in-out);
       color: #fefefe;
       .box-sizing(border-box);
-      //font-size: .9em;
-      //line-height: 1em;
       padding: 1em .5em;
       float: left;
       width: 50%;
@@ -78,7 +75,6 @@
     }
   }
   .projects {
-    //display: block;
     padding: 0;
     margin: 0;
     background: #fbfbfb;
@@ -109,21 +105,6 @@
     font-size: 3em;
     line-height: 2em;
   }
-  //.nav-menu {
-  //  margin-left: 0;
-  //}
-  /*.nav-menu-row {
-    .clearfix();
-    .box-sizing(border-box);
-    display: block;
-    padding: 1em;
-    padding: 1.2em 1.2em 1em;
-    vertical-align: middle;
-    width: 100%;
-    a {
-      text-shadow: none;
-    }
-  }*/
   .selected {
     background-color: none;
     .build-circles {
@@ -141,12 +122,6 @@
     .project-name {
       //font-size:1em;
       line-height: 1em;
-      //color: @result-grayDark;
-      //padding: 1.2em 0 1em 1.2em;
-      //float: none;
-      //display: inline-block;
-      //margin: 0;
-
       display: block;
       padding: 1em;
       box-sizing: border-box;
@@ -160,14 +135,12 @@
       }
     }
     &:hover .nav-menu-icon {
-      //.transition(opacity .1s ease-in);
       opacity: 1;
       -webkit-transform: scale(1);
 
 
     }
     .nav-menu-icon {
-      //.transition(opacity .3s ease-in);
       opacity: 0;
       -webkit-transition-property: opacity, -webkit-transform;
       -webkit-transition-duration: .3s;
@@ -204,12 +177,8 @@
   .branch {
     padding: 0;
     box-shadow:none;
-    //font-size: .9em;
-    //line-height: 1.1em;
     line-height: 1em;
 
-    //display: table;
-    //text-align: right;
 
     display: block;
 
@@ -218,13 +187,9 @@
       color: @result-gray;
       background:none;
       margin: 0;
-      //padding: 0 0 1em 3em;
       padding: 1em 0 1em 3em;
-      //float:none;
       overflow: hidden;
 
-      //text-align: left;
-      //width: 100%;
       box-sizing: border-box;
       display: block;
 
@@ -243,20 +208,7 @@
   .default {
     font-weight: bold;
   }
-  /*.nav-menu-item {
-    padding: 0;
-    float: left;
-    margin: 0;
-    color: #333;
     background:none;
-    //.transition(all .2s ease-in);
-    &:hover {
-      text-decoration: none;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
-      background-clip: content-box;
-      //.transition(all .3s ease-in);
-    }
-  }*/
   .toggle-show-branches {
     a {
       margin-top: 4px;
@@ -290,15 +242,8 @@
     }
   }
   .build-circles {
-    //z-index: 100;
-    //margin: 0 1em 0 0;
     padding: 0;
-    //display: table;
-    //float: right;
 
-    //display: table-cell;
-    //vertical-align: middle;
-    //display: block;
     float: right;
 
     margin: 0;
@@ -308,13 +253,10 @@
       display: inline-block;
     }
     .build-circle-container {
-      //float: left;
-      //margin-left: 1px;
 
       box-sizing: border-box;
       display: inline-block;
       padding: 0;
-      //margin: 0;
       margin: 0 0 0 -4px;
 
       i {
@@ -328,7 +270,6 @@
 
         display: inline-block;
         box-sizing: border-box;
-        //padding: 1em;
         padding: 1em .21em;
 
         &:hover {
@@ -363,8 +304,6 @@
         }
       }
       &.no_tests, &.failed, &.timedout {
-        //padding: 0 1px;
-        //margin-left: 2px;
         &:hover > a > i {
           color: @red;
         }
@@ -384,7 +323,6 @@
         }
       }
       &.running {
-        //padding: 0 1px;
         &:hover i {
           color: @blueDark;
         }
@@ -425,14 +363,12 @@
       }
     }
   }
-  //table-style-hotfixes
   .table-striped tbody > tr:nth-child(odd) > td, td {
     background: #fbfbfb;
     border: none;
     border-top: 1px solid lighten(@grayLighter,2%);
   }
   table {
-    //display: block;
     width: 100%;
     background: #fbfbfb;
     border: 1px solid @grayLighter;
@@ -442,11 +378,9 @@
     box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.13), 1px 2px 3px rgba(0, 0, 0, 0.05);
     margin: 0;
     th {
-      //padding-bottom: 1em;
       padding: 1em 0;
     }
     td {
-      //padding: 10px 5px;
       padding: .5em 0;
       text-align: center;
       a {
