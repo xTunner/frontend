@@ -239,26 +239,28 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       display "dashboard",
         builds_table: 'project'
 
-  loadEditOrg: (username, refresh, callback) =>
-    if refresh
-      @org_has_been_loaded(false)
+  loadOrgSettings: (username, callback) =>
+    $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
       @org().clean() if @org()
-      @org(null)
-
-    if refresh or !@org() or (@org().name() isnt username)
-      $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
-        @org().clean() if @org()
-        @org(new CI.inner.Org data)
-        @org_has_been_loaded(true)
-        mixpanel.track("View Org", {"username": username})
-        if callback? then callback()
-    else
+      @org(new CI.inner.Org data)
+      @org_has_been_loaded(true)
+      mixpanel.track("View Org", {"username": username})
       if callback? then callback()
 
   loadEditOrgPage: (username, subpage) =>
     subpage = subpage[0].replace('#', '').replace('-', '_')
     subpage = subpage || "projects"
-    @loadEditOrg(username, false, () => @org().subpage(subpage))
+
+    subpage_callback = () => @org().subpage(subpage)
+
+    if !@org() or (@org().name() isnt username)
+      @org_has_been_loaded(false)
+      @org().clean() if @org()
+      @org(null)
+
+      @loadOrgSettings(username, subpage_callback)
+    else
+      subpage_callback()
 
     display 'org_settings',
       subpage: subpage
