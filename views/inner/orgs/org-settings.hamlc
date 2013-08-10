@@ -2,12 +2,15 @@
 
 .container-fluid.org-page
   .row-fluid
-    .span3{data-bind: "with: org"}
+    .span3
       %ul.nav.nav-list.well
         %li.nav-header
           Organization settings
+          %span.pull-right{data-bind: "ifnot: VM.org_has_been_loaded"}
+            = HAML.fast_spinner()
         %li.divider
 
+        / ko with: org
         %li.nav-header
           Overview
         %li{data-bind: "css: {active: subpage() == 'projects'}"}
@@ -16,10 +19,17 @@
         %li{data-bind: "css: {active: subpage() == 'users'}"}
           %a{href: "#users"}
             Users
+        / /ko
 
 
     .span9
       = HAML['flashes']({})
 
-      #subpage{data-bind: "with: org"}
-        = HAML["org_#{@subpage}"]()
+      #subpage
+        %div{data-bind: "ifnot: VM.org_has_been_loaded"}
+          .spinner-container
+            = HAML.fast_spinner()
+
+        %div{data-bind: "if: VM.org_has_been_loaded"}
+          %div{data-bind: "with: org"}
+            = HAML["org_#{@subpage}"]()
