@@ -30,8 +30,6 @@ CI.inner.Org = class Org extends CI.inner.Obj
           .sortBy((p) -> p.repo_name())
           .value()
 
-        console.log(user.projects)
-
         new CI.inner.User(user)
 
       _.sortBy users, (u) -> -1 * u.projects.length

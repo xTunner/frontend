@@ -1,6 +1,5 @@
 %div{data-bind: "with: navbar"}
   %ul.nav.crumbs{data-bind: "foreach: {data: crumbs, as: 'crumb'}"}
-    %span{data-bind: "attr: {class: console.log(crumb)}"}
     %li{data-bind: "attr: {class: crumb}"}
       %a{data-bind: "attr: {href: $parent.crumb_path(crumb)}"}
         %span.label{data-bind: "text: $parent.crumb_name(crumb), css: $parent.label_class(crumb)"}
