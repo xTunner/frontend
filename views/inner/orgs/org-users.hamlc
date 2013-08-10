@@ -8,7 +8,7 @@
       / ko if: ($index() % 2 == 0)
       %span.row-fluid
       / /ko
-      .span6.well
+      .span6.well{data-bind: "css: {success: user.projects.length, fail: !user.projects.length}"}
         .row-fluid
           .span2
             %img.gravatar{data-bind: "attr: {src: gravatar_url(45, true)}"}

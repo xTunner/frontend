@@ -1,7 +1,7 @@
 .row-fluid.followed-projects
   %h2 Followed projects
   .span8{data-bind: "foreach: {data: projects_with_followers, as: 'project'}"}
-    .row-fluid.well
+    .row-fluid.well.success
       .span12{data-bind: "equalizeWidth: '.follower-container'"}
         %h4
           %a{data-bind: "attr: {href: project_path}, text: repo_name"}
@@ -18,8 +18,8 @@
 
 .row-fluid
   %h2 Untested repos
-  .span6{data-bind: "foreach: {data: projects_without_followers, as: 'project'}"}
-    .row-fluid
+  .span8{data-bind: "foreach: {data: projects_without_followers, as: 'project'}"}
+    .row-fluid.well.fail
       .span12
         %h4
           -# TOOD: Make sure that this does the expected thing.

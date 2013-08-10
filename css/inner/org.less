@@ -1,5 +1,17 @@
 .org-page {
   #subpage {
+    .well {
+      &.success {
+        border-left: 5px solid @green;
+      }
+      &.fail {
+        border-left: 5px solid @lightRed;
+      }
+      .border-radius(0px);
+      border: 1px solid #eee;
+      background-color: white;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
     ul { list-style-type: none; }
 
     .followed-projects {
