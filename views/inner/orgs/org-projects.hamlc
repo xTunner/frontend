@@ -1,18 +1,18 @@
-.row-fluid.followed-projectsj
+.row-fluid.followed-projects
   %h2 Followed projects
-  .span6{data-bind: "foreach: {data: projects_with_followers, as: 'project'}"}
-    .row-fluid
-      .span12
+  .span8{data-bind: "foreach: {data: projects_with_followers, as: 'project'}"}
+    .row-fluid.well
+      .span12{data-bind: "equalizeWidth: '.follower-container'"}
         %h4
+          %a{data-bind: "attr: {href: project_path}, text: repo_name"}
           %a.edit-icon{data-bind: "attr: {href: edit_link}"}
             %i.icon-gear
-          %a{data-bind: "attr: {href: project_path}, text: repo_name"}
           %a.github-icon-link{data-bind: "attr: {href: vcs_url}"}
             %i.icon-github
         .row-fluid.followers-container
           .span12{data-bind: "foreach: {data: followers, as: 'follower'}"}
-            .follower-container{style: "display: inline-block"}
-              %img{data-bind: "attr: {src: gravatar_url(20)}"}
+            %span.follower-container{style: "display: inline-block"}
+              %img.gravatar{data-bind: "attr: {src: gravatar_url(30, true)}"}
               %span{data-bind: "text: login"}
 
 
