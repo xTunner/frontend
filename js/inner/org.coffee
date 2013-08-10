@@ -5,6 +5,7 @@ CI.inner.Org = class Org extends CI.inner.Obj
     users: []
     paid: false
     plan: null
+    subpage: "projects"
 
   clean: () ->
     super

@@ -2,7 +2,7 @@
 
 .container-fluid.org-page
   .row-fluid
-    .span3
+    .span3{data-bind: "with: org"}
       %ul.nav.nav-list.well
         %li.nav-header
           Organization settings
@@ -10,10 +10,10 @@
 
         %li.nav-header
           Overview
-        %li
+        %li{data-bind: "css: {active: subpage() == 'projects'}"}
           %a{href: "#projects"}
             Projects
-        %li
+        %li{data-bind: "css: {active: subpage() == 'users'}"}
           %a{href: "#users"}
             Users
 
