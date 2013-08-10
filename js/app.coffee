@@ -240,15 +240,16 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
         builds_table: 'project'
 
   loadEditOrg: (username, refresh) =>
-    @org_has_been_loaded(false)
-    @org().clean() if @org()
-    @org(null)
+    if refresh
+      @org_has_been_loaded(false)
+      @org().clean() if @org()
+      @org(null)
 
-    if (refresh or !@org() or (@org().name() isnt username))
-      $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
-        @org(new CI.inner.Org data)
-        @org_has_been_loaded(true)
-        mixpanel.track("View Org", {"username": username})
+    $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
+      @org().clean() if @org()
+      @org(new CI.inner.Org data)
+      @org_has_been_loaded(true)
+      mixpanel.track("View Org", {"username": username})
 
   loadEditOrgPage: (username, subpage) =>
     @loadEditOrg(username, false)
