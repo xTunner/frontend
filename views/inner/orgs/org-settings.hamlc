@@ -12,7 +12,11 @@
           Overview
         %li
           %a{href: "#projects"}
-            All projects
+            Projects
+        %li
+          %a{href: "#users"}
+            Users
+
 
     .span9
       = HAML['flashes']({})

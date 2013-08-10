@@ -24,9 +24,17 @@ CI.inner.Org = class Org extends CI.inner.Obj
 
     # users that have been turned into User objects
     @user_objs = @komp =>
-      for user in @users()
-        user.projects = _.filter @project_objs(), (p) -> user.login in p.follower_logins
+      users = for user in @users()
+        user.projects = _.chain(@project_objs())
+          .filter((p) -> user.login in p.follower_logins)
+          .sortBy((p) -> p.repo_name())
+          .value()
+
+        console.log(user.projects)
+
         new CI.inner.User(user)
+
+      _.sortBy users, (u) -> -1 * u.projects.length
 
     @projects_with_followers = @komp =>
       _.chain(@project_objs())
