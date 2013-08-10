@@ -189,6 +189,9 @@
   }
   .default {
     font-weight: bold;
+  .branch:hover span:last-child {
+    i { -webkit-text-stroke: 1px #ddd; -webkit-text-fill-color: #fbfbfb; }
+    &:hover i { -webkit-text-stroke: 0; -webkit-text-fill-color: currentcolor; }
   }
     background:none;
   .toggle-show-branches {
@@ -224,27 +227,26 @@
     }
   }
   .build-circles {
-    padding: 0;
     float: right;
-
-    margin: 0;
-
-    i.build-circle {
-      margin: 0;
-      display: inline-block;
-    }
     .build-circle-container {
-      box-sizing: border-box;
       display: inline-block;
-      padding: 0;
       margin: 0 0 0 -4px;
       i {
         display: inline-block;
         color: @result-gray;
         transition: all .2s ease-in-out;
+
+        -webkit-text-stroke: 1px #ddd;
+        -webkit-text-fill-color: #fbfbfb;
+      }
+      &:hover i {
+        .scale(1.2);
+        text-shadow: 0 1px 1px rgba(0,0,0,.21), 0 2px 1px rgba(0,0,0,.13);
+
+        -webkit-text-stroke: 0;
+        -webkit-text-fill-color: currentcolor;
       }
       a {
-
         transition-duration: .2s;
         transition-property: color;
         transition-timing-function: ease-in-out;
@@ -261,9 +263,8 @@
       }
       &:last-child i {
         padding-right: 1em;
-      }
-      &:hover i {
-        .scale(1.2);
+        -webkit-text-fill-color: currentcolor;
+        -webkit-text-stroke: 0;
       }
       &.success, &.fixed {
         &:hover i      { color            : @green            ;}
