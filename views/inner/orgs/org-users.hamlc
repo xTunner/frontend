@@ -5,6 +5,7 @@
     organization
   .span10
     .row-fluid{data-bind: "foreach: {data: user_objs, as: 'user'}"}
+      -# handle wrapping divs to next line when they're different heights
       / ko if: ($index() % 2 == 0)
       %span.row-fluid
       / /ko
