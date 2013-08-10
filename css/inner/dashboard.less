@@ -274,81 +274,32 @@
         .scale(1.2);
       }
       &.success, &.fixed {
-        &:hover i {
-          color: @green;
-        }
-        .tooltip {
-          .tooltip-arrow {
-            border-top-color: darken(@green,5%);
-          }
-          .tooltip-inner {
-            background-color: @green;
-            border: 1px solid darken(@green,5%);
-          }
-        }
-        &:last-child {
-          i {
-          color: @green;
-          }
-        }
+        &:hover i      { color            : @green            ;}
+        .tooltip-arrow { border-top-color : darken(@green,5%) ;}
+        .tooltip-inner { background-color : @green            ;
+                         border-color     : darken(@green,5%) ;}
+        &:last-child i { color            : @green            ;}
       }
       &.no_tests, &.failed, &.timedout {
-        &:hover > a > i {
-          color: @red;
-        }
-        .tooltip {
-          .tooltip-arrow {
-            border-top-color: darken(@red,5%);
-          }
-          .tooltip-inner {
-            background-color: @red;
-            border: 1px solid darken(@red,5%);
-          }
-        }
-        &:last-child {
-          i {
-            color: @red;
-          }
-        }
+        &:hover i      { color            : @red            ;}
+        .tooltip-arrow { border-top-color : darken(@red,5%) ;}
+        .tooltip-inner { background-color : @red            ;
+                         border-color     : darken(@red,5%) ;}
+        &:last-child i { color            : @red            ;}
       }
       &.running {
-        &:hover i {
-          color: @blueDark;
-        }
-        .tooltip {
-          .tooltip-arrow {
-            border-top-color: darken(@blueDark,5%);
-          }
-          .tooltip-inner {
-            background-color: @blueDark;
-            border: 1px solid darken(@blueDark,5%);
-          }
-        }
-        &:last-child {
-          i {
-            color: @blueDark;;
-          }
-        }
+        &:hover i      { color            : @blueDark            ;}
+        .tooltip-arrow { border-top-color : darken(@blueDark,5%) ;}
+        .tooltip-inner { background-color : @blueDark            ;
+                         border-color     : darken(@blueDark,5%) ;}
+        &:last-child i { color            : @blueDark            ;}
       }
       &.queued, &.canceled {
-        padding: 0 1px;
-        &:hover i {
-          color: @result-grayDark;
-        }
-        .tooltip {
-          .tooltip-arrow {
-            border-top-color: darken(@result-grayDark,5%);
-          }
-          .tooltip-inner {
-            background-color: @result-grayDark;
-            border: 1px solid darken(@result-grayDark,5%);
-          }
-        }
-        &:last-child {
-          i {
-            color: @result-grayDark;
-          }
-        }
+        &:hover i      { color            : @result-grayDark            ;}
+        .tooltip-arrow { border-top-color : darken(@result-grayDark,5%) ;}
+        .tooltip-inner { background-color : @result-grayDark            ;
+                         border-color     : darken(@result-grayDark,5%) ;}
+        &:last-child i { color            : @result-grayDark            ;}
       }
     }
   }
