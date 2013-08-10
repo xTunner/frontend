@@ -47,3 +47,8 @@ CI.inner.Org = class Org extends CI.inner.Obj
         .reject((p) -> p.followers.length)
         .sortBy((p) -> p.repo_name())
         .value()
+
+  followProjectHandler: (project) =>
+    callback = (data) =>
+      VM.loadEditOrg(@name())
+    (data, event) => project.follow(data, event, callback)
