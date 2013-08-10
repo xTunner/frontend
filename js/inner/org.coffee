@@ -49,5 +49,5 @@ CI.inner.Org = class Org extends CI.inner.Obj
 
   followProjectHandler: (project) =>
     callback = (data) =>
-      VM.loadEditOrg(@name())
+      VM.loadOrgSettings(@name())
     (data, event) => project.follow(data, event, callback)
