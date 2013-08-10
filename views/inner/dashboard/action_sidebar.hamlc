@@ -1,5 +1,4 @@
 %li.nav-header
-  %h2 Projects
   %span{data-bind: "ifnot: projects_have_been_loaded"}
     = HAML['fast_spinner']()
 .side-actions
