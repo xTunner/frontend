@@ -1,4 +1,5 @@
 
+@grayBorder: #e3e3e3;
 @border-color: #ddd;
 @result-gray: #ccc;
 @result-grayDark: #666;
@@ -6,33 +7,33 @@
 #dashboard {
   min-width: 960px;
   margin: 0 auto;
+  a {
     color: @result-grayDark;
     font-weight: normal;
     text-decoration: none;
+    transition-duration: .3s;
+    transition-property: color;
+    transition-timing-function: ease-in-out;
+    &:hover {
+      color: #3e7bbe;
+      transition-duration: .1s;
+      transition-property: color;
+      transition-timing-function: ease-in-out;
+    }
+  }
+  li {
+    line-height: 1em;
   }
   aside {
     float: left;
     width: 300px;
   }
-  .build_status span {
-      color: #fff;
-      text-transform: capitalize;
-      padding: .3em .5em;
-      min-width: 50px;
-      text-align: center;
-    }
   .side-actions {
     display: inline-block;
     width: 100%;
-    padding: 1em 1em;
+    padding: 1em;
     box-sizing: border-box;
-    .border-radius(4px 4px 0 0);
-    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.05) inset;
     float: left;
-    background: #fbfbfb;
-    border: 1px solid #eee;
-    border-bottom: none;
-    .box-shadow(1px 1px 0 #fff inset);
     button {
       #gradient.vertical(rgba(255,255,255,.05),rgba(0,0,0,.08));
       background-repeat: repeat-x;
@@ -86,11 +87,15 @@
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
     box-sizing: border-box;
+    box-shadow: 0 1px 0 #fff inset,
+                1px 1px 0 @grayBorder,
+                2px 2px 0 @grayBorder,
+                3px 3px 0 darken(@grayBorder,2%);
   }
   .shadow-bulge {
     height: 55px;
     background: none;
-    border-radius: ~"100% / 21px";
+    border-radius: ~"100% / 21px"; // produces round looking shadow, 21 comes from trial/error
     box-shadow: 0 8px 3px -5px rgba(0,0,0,.13);
     margin-top: -55px;
     z-index: -1;
@@ -110,20 +115,14 @@
   .project {
     padding: 0;
     display: inline-block;
-    border-top: 1px solid lighten(@grayLighter,2%);
+    border-top: 1px solid lighten(@grayBorder,5%);
     width: 100%;
     box-shadow: 1px 1px 0 #fff inset;
     .project-name {
-      //font-size:1em;
       line-height: 1em;
       display: block;
       padding: 1em;
       box-sizing: border-box;
-      color: darken(@grayLight,20%);
-      .transition(color .3s ease-in-out);
-      &:hover {
-        color: @grayDark;
-      }
     }
     &:hover .nav-menu-icon {
       transition: opacity .1s ease-in-out;
@@ -134,66 +133,37 @@
       opacity: 0;
       float: right;
       display: block;
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
       padding: 5px;
       border-radius: 2px;
-      border-left: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-      background: #fff;
-
+      border-left: 1px solid @grayBorder;
+      border-bottom: 1px solid @grayBorder;
       i {
         line-height: 1.1em;
         font-size: 12px;
         float: left;
-        color: @result-grayDark;
         .scale(1);
         transition: all .2s ease-in;
       }
       &:hover i {
-        color: darken(@result-grayDark,21%);
-        .scale(1.2);
+        .scale(1.1);
         transition: all .4s ease-in;
       }
     }
   }
-  .branch {
-    padding: 0;
-    box-shadow:none;
-    line-height: 1em;
-
-
-    display: block;
-
-    .branch-name {
-      font-weight: normal;
-      color: @result-gray;
-      background:none;
-      margin: 0;
-      padding: 1em 0 1em 3em;
-      overflow: hidden;
-
-      box-sizing: border-box;
-      display: block;
-
-      .transition(color .3s ease-in-out);
-
-      &:last-child {
-        //margin-bottom: 1em;
-      }
-
-      &:hover {
-        color: @result-grayDark;
-        .transition(color .1s ease-in-out);
-      }
-    }
-  }
-  .default {
-    font-weight: bold;
   .branch:hover span:last-child {
     i { -webkit-text-stroke: 1px #ddd; -webkit-text-fill-color: #fbfbfb; }
     &:hover i { -webkit-text-stroke: 0; -webkit-text-fill-color: currentcolor; }
   }
+  .branch-name {
+    font-weight: normal;
+    color: #aaa;
     background:none;
+    margin: 0;
+    padding: 1em 0 1em 3em;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: block;
+  }
   .toggle-show-branches {
     a {
       margin-top: 4px;
@@ -204,26 +174,24 @@
       color: #999;
       font-size: 18px;
       .transition(color 600ms);
-    }
-    i:hover {
-      color: #777;
-      text-decoration: none;
+      &:hover {
+        color: #777;
+        text-decoration: none;
+      }
     }
   }
   .tooltip {
     text-shadow:none;
-    font-size: 1em;
     text-transform: capitalize;
     .tooltip-arrow {
       border-top-color: darken(@result-gray,5%);
     }
     .tooltip-inner {
       #gradient.vertical(rgba(255,255,255,.08),rgba(0,0,0,.08));
-      background-color: @result-gray;
-      padding: 1em;
+      box-shadow: 0 1px 0 rgba(255,255,255,.21) inset;
       border-radius: 3px;
+      padding: 10px;
       border: 1px solid darken(@result-gray,5%);
-      box-shadow: 0 1px 0 rgba(255,255,255,.13) inset;
     }
   }
   .build-circles {
@@ -388,5 +356,5 @@
   width: 8px;
   height: 8px;
   padding: 0;
-  .border-radius(10px);
+  border-radius: 10px;
 }
