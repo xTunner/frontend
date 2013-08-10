@@ -33,11 +33,13 @@ ko.bindingHandlers.track_link =
 # Approach here: https://github.com/knockout/knockout/wiki/Bindings%3A-runafter
 ko.bindingHandlers.equalizeWidth =
   update: (el, valueAccessor) =>
+    $(el).css('visibility', 'hidden')
     setTimeout () ->
       selector = valueAccessor()
       els = $(el).find(selector)
       max = Math.max.apply(null, $.map(els, (e) -> $(e).width()))
       $.each(els, (i, e) -> $(e).width(max))
+      $(el).css('visibility', 'visible')
 
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 jQueryExt = (type) =>
