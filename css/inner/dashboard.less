@@ -302,38 +302,81 @@
       }
     }
   }
-  .table-striped tbody > tr:nth-child(odd) > td, td {
-    background: #fbfbfb;
-    border: none;
-    border-top: 1px solid lighten(@grayLighter,2%);
-  }
   table {
+    border-collapse: separate;
     width: 100%;
+    color: @grayBorder;
     background: #fbfbfb;
-    border: 1px solid @grayLighter;
-    padding: 1em;
     box-sizing: border-box;
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.13), 1px 2px 3px rgba(0, 0, 0, 0.05);
     margin: 0;
-    th {
-      padding: 1em 0;
+    overflow: hidden;
+    border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
+    box-shadow: 0 1px 0 #fff inset,
+                1px 1px 0 @grayBorder,
+                2px 2px 0 @grayBorder,
+                3px 3px 0 darken(@grayBorder,2%);
+  }
+  th {
+    padding: 4px 0;
+    padding: .5em 2.2em;
+    font-weight: normal;
+    font-size: 12px;
+    text-align: left;
+    color: transparent;
+    width: 1%;
+    white-space: nowrap;
+    &:nth-child(4n+1),
+    &:nth-child(4){
+      width: auto;
+      color: inherit;
     }
-    td {
-      padding: .5em 0;
+    &:last-child {
+      padding: 0;
       text-align: center;
-      a {
-        color: @grayLight;
-      }
-      &:nth-child(4n+1) a {
-        color: darken(@grayLight,20%);
-      }
-      &:nth-child(4n+1) {
-        padding-left: 2%;
-        text-align: left;
-        border-left: 1px dashed @grayLighter;
-        border-right: 1px dashed @grayLighter;
-      }
+    }
+  }
+  tr {
+    border-top: 1px solid @grayBorder;
+    &:hover td {
+      background-color: lighten(@grayBorder,8%);
+      box-shadow: 0 1px 1px lighten(@grayBorder,3%) inset;
+      transition-duration: .1s;
+      transition-property: background-color;
+      transition-timing-function: ease-in-out;
+    }
+  }
+  td {
+    border-top: 1px solid lighten(@grayBorder,5%);
+    box-shadow: 0 1px 0 @white inset;
+    text-align: left;
+    padding: 0;
+    transition-duration: .2s;
+    transition-property: background-color;
+    transition-timing-function: ease-in-out;
+    a {
+      display: block;
+      white-space: nowrap;
+      padding: .5em 2em;
+    }
+  }
+  .build_status {
+    text-align: center;
+    padding: 0 .5em;
+    span {
+      display: block;
+      color: @white;
+      font-weight: normal;
+      text-transform: capitalize;
+      text-shadow: none;
+      padding: .3em .7em;
+      text-align: center;
+      border-radius: 25px;
+      box-shadow: 0  2px 0px rgba(0, 0, 0, 0.08) inset,
+                  0 -1px 0px rgba(255, 255, 255, 0.08) inset;
+    }
+    a {
+      padding: 0;
     }
   }
 }
