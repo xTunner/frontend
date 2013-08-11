@@ -389,7 +389,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
 
   loadJasmineTests: (cx) =>
-    $.getScript "/assets/js/tests/inner-tests.js.dieter"
+    $.getScript "/assets/js/tests/inner-tests.js.stefon"
 
   raiseIntercomDialog: (message) =>
     unless intercomJQuery?
