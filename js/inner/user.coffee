@@ -61,10 +61,12 @@ CI.inner.User = class User extends CI.inner.Obj
       @komp =>
         c for c in @collaboratorAccounts() when c.login isnt login
 
-    @gravatar_url = (size=200) =>
+    @gravatar_url = (size=200, force=false) =>
       @komp =>
         if @gravatar_id() and @gravatar_id() isnt ""
           "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
+        else if force
+          "https://secure.gravatar.com/avatar/00000000000000000000000000000000?s=#{size}"
 
   load_tokens: () =>
     $.getJSON "/api/v1/user/token", (data) =>

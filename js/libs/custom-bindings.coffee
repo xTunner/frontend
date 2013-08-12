@@ -25,6 +25,23 @@ ko.bindingHandlers.track_link =
         clearTimeout(backup_redirect)
         redirect()
 
+# Takes a css selector, finds all child elements matching that selector and
+# sets the width of all of the elements to the width of the max element
+# Example:
+# %div{data-bind: "foreach: items, equalizeWidth: '.item'"}
+#   .item{data-bind: "text: $data"}
+# Approach here: https://github.com/knockout/knockout/wiki/Bindings%3A-runafter
+ko.bindingHandlers.equalizeWidth =
+  update: (el, valueAccessor, allBindingsAccessor) =>
+    ko.toJS(allBindingsAccessor()) # wait for other bindings to finish
+    $(el).css('visibility', 'hidden')
+    setTimeout () ->
+      selector = valueAccessor()
+      els = $(el).find(selector)
+      max = Math.max.apply(null, $.map(els, (e) -> $(e).width()))
+      $.each(els, (i, e) -> $(e).width(max))
+      $(el).css('visibility', 'visible')
+
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 jQueryExt = (type) =>
   init: (el, valueAccessor) =>
