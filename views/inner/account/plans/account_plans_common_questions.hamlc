@@ -12,11 +12,13 @@
 
     %h3 How do containers work?
     %p
-      Every time you push to GitHub, we checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes queue up until other builds finish.
+      Every time you push to GitHub, we checkout your code and run your build inside of a container.
+      If you don't have enough free containers available, then your pushes queue up until other builds finish.
     %p
       You can buy containers at $50 each to run multiple builds simultaneously.
     %p
-      If your plan supports it, you can use our parallelism to speed up your test suite. We automatically split your tests across multiple containers, finishing your build in a fraction of the time.
+      You can also use our parallelism to speed up your test suite.
+      We automatically split your tests across multiple containers, finishing your build in a fraction of the time.
     %p
       For example, with 4 containers you can run 4 simultaneous builds at 1x parallelism or 2 simultaneous builds in half the time at 2x parallelism.
 
