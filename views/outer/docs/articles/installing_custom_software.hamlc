@@ -29,6 +29,7 @@
   The tradeoff is you need to
   = HAML.contact_us()
   for <code>sudo</code> commands.
+  We plan to address this in the future.
 
 
 %h2 Installing via the circle.yml
