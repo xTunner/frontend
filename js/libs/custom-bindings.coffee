@@ -32,7 +32,8 @@ ko.bindingHandlers.track_link =
 #   .item{data-bind: "text: $data"}
 # Approach here: https://github.com/knockout/knockout/wiki/Bindings%3A-runafter
 ko.bindingHandlers.equalizeWidth =
-  update: (el, valueAccessor) =>
+  update: (el, valueAccessor, allBindingsAccessor) =>
+    ko.toJS(allBindingsAccessor()) # wait for other bindings to finish
     $(el).css('visibility', 'hidden')
     setTimeout () ->
       selector = valueAccessor()
