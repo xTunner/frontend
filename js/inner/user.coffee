@@ -1,5 +1,6 @@
 CI.inner.User = class User extends CI.inner.Obj
   observables: =>
+    admin: false
     organizations: []
     collaboratorAccounts: []
     loadingOrganizations: false
@@ -24,13 +25,12 @@ CI.inner.User = class User extends CI.inner.Obj
 
   constructor: (json) ->
     super json,
-      admin: false
       login: ""
 
     @environment = window.renderContext.env
 
     @showEnvironment = @komp =>
-      @admin || (@environment is "staging") || (@environment is "development")
+      @admin() || (@environment is "staging") || (@environment is "development")
 
     @environmentColor = @komp =>
       result = {}
