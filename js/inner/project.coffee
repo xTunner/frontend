@@ -270,21 +270,26 @@ CI.inner.Project = class Project extends CI.inner.Obj
         _gaq.push(['_trackEvent', 'Projects', 'Remove']);
         VM.loadProjects() # refresh sidebar
 
-  follow: (data, event) =>
+  follow: (data, event, callback) =>
     $.ajax
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        _gaq.push(['_trackEvent', 'Projects', 'Add']);
-        if data.first_build
-          VM.visit_local_url data.build_url
-        else
-          $('html, body').animate({ scrollTop: 0 }, 0);
-          @followed(data.followed)
-          VM.loadRecentBuilds()
-        VM.loadProjects() # refresh sidebar
+        _gaq.push(['_trackEvent', 'Projects', 'Add'])
+        if callback? then callback()
 
+  follow_and_maybe_visit: (data, event) =>
+    callback = (data) =>
+      if data.first_build
+        VM.visit_local_url data.build_url
+      else
+        $('html, body').animate({ scrollTop: 0 }, 0);
+        @followed(data.followed)
+        VM.loadRecentBuilds()
+      VM.loadProjects() # refresh sidebar
+
+    @follow(data, event, callback)
 
   save_hooks: (data, event) =>
     $.ajax

@@ -23,8 +23,5 @@
   If that were possible, then we could delay asking for write-permission until we actually needed it.
 
 %p
-  Similarly, while adding an SSH key to your user is only occasionally needed, finding out your email address currently requires write-access in GitHub's model.
-
-%p
   We feel strongly about only asking for the permissions we need, and have asked GitHub to help a number of times.
   If you also feel strongly, please reach out to GitHub and tell them it's important to you.
