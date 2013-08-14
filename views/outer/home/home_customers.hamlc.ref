@@ -13,8 +13,7 @@
             .happy-customers
               .callout
 
-          = HAML.happy_customers_image()
-          -# %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
+          %img{alt: "CircleCI's Happy Customers", src: '(data-uri "img/outer/home/circleci-customer-logos.png")'}
 
 .customer-quotes
   .container-fluid
