@@ -28,8 +28,7 @@
             %span.mark-end "
             %br
           %span.avatar
-            = HAML.john_collison_image()
-            -# %img{:src => assetPath("img/outer/home/john-collison-2.png")}
+            %img{src: '(data-uri "img/outer/home/john-collison-2.png")'}
           %strong.name
             John Collison
           %i
@@ -44,8 +43,7 @@
             is a big timesaver.
             %span.mark-end "
           %span.avatar
-            = HAML.jon_crawford_image()
-            -# %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
+            %img{src: '(data-uri "img/outer/home/jon-crawford-2.png")'}
           %strong.name
             Jon Crawford
           %i
@@ -59,8 +57,7 @@
             CircleCI was super simple to set up and we started reaping the benefits immediately. CircleCI lets us ship code quickly and confidently. <strong>CircleCI's customer support is outstanding.</strong> We get quick, thorough answers to all our questions.
             %span.mark-end "
           %span.avatar
-            = HAML.aaron_suggs_image()
-            -# %img{:src => assetPath("img/outer/home/aaron-suggs.jpg")}
+            %img{src: '(data-uri "img/outer/home/aaron-suggs.jpg")'}
           %strong.name
             Aaron Suggs
           %i
