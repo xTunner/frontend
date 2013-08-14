@@ -22,6 +22,7 @@ CI.inner.User = class User extends CI.inner.Obj
     plan: null
     parallelism: 1
     gravatar_id: null
+    github_id: null
 
   constructor: (json) ->
     super json,
@@ -64,7 +65,12 @@ CI.inner.User = class User extends CI.inner.Obj
     @gravatar_url = (size=200, force=false) =>
       @komp =>
         if @gravatar_id() and @gravatar_id() isnt ""
-          "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
+          url = "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
+          if @github_id()
+            hash = CryptoJS.MD5(@github_id().toString()).toString()
+            d = URI.encode("https://identicons.github.com/#{hash}.png")
+            url += "&d=#{d}"
+          url
         else if force
           "https://secure.gravatar.com/avatar/00000000000000000000000000000000?s=#{size}"
 
