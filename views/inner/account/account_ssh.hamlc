@@ -42,11 +42,10 @@
       Each deploy key is valid for only one repository, and cannot be used to access other repositories.
 
     %p
-      By contrast, <i>User keys</i> have access to all of your repositories.
-      Some tests need to access many repositories.
-      This particularly happens when using private Ruby Gems using the
-      %code git
-      syntax.
+      By contrast, <i>User keys</i> have access to all of your
+      repositories.  Some tests need to access many repositories.
+      This particularly happens when bundle, npm or pip depend on
+      projects in private git repos
 
     %h3 When do we use user-keys?
 
