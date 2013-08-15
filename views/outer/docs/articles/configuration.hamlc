@@ -736,7 +736,7 @@
 %p
   This example sends a JSON packet to the specified URL.
   The JSON packet is identical to the result of the
-  %a{ href: "/docs/reference-api#build" } Build API
+  %a{ href: "/docs/api#build" } Build API
   call for the same build.
 
 
