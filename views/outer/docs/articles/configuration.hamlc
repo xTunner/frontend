@@ -405,7 +405,7 @@
 %p
   Circle supports a large number of
   <a href="/docs/environment#databases">databases and other services</a>.
-  Most popular ones are running by default on our build machines, including Postgres, MySQL, Redis and MongoDB.
+  Most popular ones are running by default on our build machines (bound to localhost), including Postgres, MySQL, Redis and MongoDB.
 
 %p
   You can enable other databases and services from the
