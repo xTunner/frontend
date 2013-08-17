@@ -392,9 +392,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     false
 
 
-  loadJasmineTests: (cx) =>
-    $.getScript "/assets/js/tests/inner-tests.js.dieter"
-
   raiseIntercomDialog: (message) =>
     unless intercomJQuery?
       notifyError "Uh-oh, our Help system isn't available. Please email us instead, at <a href='mailto:sayhi@circleci.com'>sayhi@circleci.com</a>!"
@@ -460,7 +457,8 @@ window.SammyApp = Sammy 'body', (n) ->
     false
 
   @before '/.*', (cx) -> VM.maybeRouteErrorPage(cx)
-  @get '^/tests/inner', (cx) -> VM.loadJasmineTests(cx)
+  @get '^/tests/inner', (cx) ->
+    # do nothing, tests will load later
 
   @get '^/', (cx) =>
     VM.selected
