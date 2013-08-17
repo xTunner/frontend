@@ -33,6 +33,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     artifacts: null
     artifacts_visible: false
     pusher_subscribed: false
+    ssh_enabled: false
+    node: []
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -179,6 +181,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
             @job_name
           else
             "unknown"
+
+    @ssh_enabled_now = @komp =>
+        (n for n in @node() when n.ssh_enabled).length > 0
 
     @can_cancel = @komp =>
       if @status() == "canceled"
