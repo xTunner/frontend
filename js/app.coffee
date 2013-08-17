@@ -210,8 +210,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       @builds((new CI.inner.Build d for d in data))
       @builds_have_been_loaded(true)
 
-  loadRecentBuilds: () =>
-    @loadBuilds('/api/v1/recent-builds')
+  loadRecentBuilds: (refresh) =>
+    @loadBuilds('/api/v1/recent-builds', refresh)
 
   loadOrg: (username, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
@@ -375,7 +375,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
 
   loadAdminRecentBuilds: (refresh) =>
-
     @loadBuilds '/api/v1/admin/recent-builds', refresh
     if not refresh
       @renderAdminPage "recent_builds"
@@ -462,7 +461,8 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/', (cx) =>
     VM.selected
-      refresh_fn: VM.loadRecentBuilds
+      refresh_fn: =>
+        VM.loadRecentBuilds(true)
       mention_branch: true
       favicon_updator: VM.reset_favicon
 
