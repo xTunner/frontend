@@ -183,7 +183,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
             "unknown"
 
     @ssh_enabled_now = @komp =>
-        (n for n in @node() when n.ssh_enabled).length > 0
+      @node() and _.some(@node(), (n) -> n.ssh_enabled)
 
     @can_cancel = @komp =>
       if @status() == "canceled"
