@@ -667,6 +667,23 @@
             - ./merge_to_master.sh
 %p
 
+  The <i>branch</i> can also contain regular expressions, surrounded with
+  %code /
+  (e.g.
+  %code /feature_.*/
+  ):
+
+%pre
+  %code.bash<>
+    :preserves
+      deployment:
+        feature:
+          branch: /feature_.*/
+          commands:
+            - ./deploy_feature.sh
+
+%p
+
 
 %h3
   SSH Keys
