@@ -34,6 +34,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       when "/wrong-commands" then "/wrong-ruby-commands"
       when "/configure-php" then "/language-php"
       when "/reference-api" then "/api"
+      when "/reference-api#build" then "/api#build"
 
       else false
 

@@ -6,7 +6,7 @@
     .table-condensed;
     .well;
     td.clickable {
-      padding: 0px;
+      padding: 0px 2px 0px 2px;
       height: 100%;
       a {
         display: inline-table;
@@ -167,6 +167,14 @@
       background-color: @blueDark;
     }
   }
+  .success { color: @green; }
+  .fixed { color: @green; }
+  .failed { color: @red; }
+  .running { color: @blueRunning; }
+  .timedout { color: @red; }
+  .queued { color: @gray; }
+  .canceled { color: @gray; }
+  .no_tests { color: @red; }
 }
 
 .dashboard-main {
@@ -191,15 +199,6 @@
   padding: 0;
   .border-radius(10px);
 }
-
-.success { color: @green; }
-.fixed { color: @green; }
-.failed { color: @red; }
-.running { color: @blueRunning; }
-.timedout { color: @red; }
-.queued { color: @gray; }
-.canceled { color: @gray; }
-.no_tests { color: @red; }
 
 .build-circles {
   font-size: 5px;

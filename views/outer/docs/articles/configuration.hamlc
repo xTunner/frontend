@@ -405,7 +405,7 @@
 %p
   Circle supports a large number of
   <a href="/docs/environment#databases">databases and other services</a>.
-  Most popular ones are running by default on our build machines, including Postgres, MySQL, Redis and MongoDB.
+  Most popular ones are running by default on our build machines (bound to localhost), including Postgres, MySQL, Redis and MongoDB.
 
 %p
   You can enable other databases and services from the
@@ -440,8 +440,8 @@
     :preserves
       checkout:
         post:
-          - git submodule init
-          - git submodule update
+          - git submodule sync
+          - git submodule update --init
 %p
 
 .top-caption
@@ -667,6 +667,23 @@
             - ./merge_to_master.sh
 %p
 
+  The <i>branch</i> field can also specify regular expressions, surrounded with
+  %code /
+  (e.g.
+  %code /feature_.*/
+  ):
+
+%pre
+  %code.bash<>
+    :preserves
+      deployment:
+        feature:
+          branch: /feature_.*/
+          commands:
+            - ./deploy_feature.sh
+
+%p
+
 
 %h3
   SSH Keys
@@ -736,7 +753,7 @@
 %p
   This example sends a JSON packet to the specified URL.
   The JSON packet is identical to the result of the
-  %a{ href: "/docs/reference-api#build" } Build API
+  %a{ href: "/docs/api#build" } Build API
   call for the same build.
 
 

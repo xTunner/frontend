@@ -13,7 +13,7 @@
 ;  "../../components/retina.js/src/retina.coffee"
   "../../components/underscore/underscore.js"
 
-  "bootstrap.js.dieter"
+  "bootstrap.js.stefon"
 
   "../vendor/md5.js"
   "../vendor/stickyMojo.js"

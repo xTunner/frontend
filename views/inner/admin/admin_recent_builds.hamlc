@@ -1,2 +1,2 @@
 .row.admin-recent-builds
-  = HAML['builds']({builds: "recent_builds", mention_project: true, pagination: false})
+  = HAML['builds']({builds: "builds", mention_project: true, pagination: false})

@@ -1,6 +1,6 @@
 [
   ;; use the order from the Makefile build task
-  ;; prefix "../" paths with "./", because that makes the dieter regexes slightly less retarded, and avoids triggering a file-ordering bug
+  ;; prefix "../" paths with "./", because that makes the stefon regexes slightly less retarded, and avoids triggering a file-ordering bug
 
   "../../components/bootstrap/js/bootstrap-transition.js"
   "../../components/bootstrap/js/bootstrap-alert.js"

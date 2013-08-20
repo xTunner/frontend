@@ -8,12 +8,14 @@
       / /ko
       %th Author
       %th Log
-      / ko if: VM.current_user().admin && VM.selected().admin_builds
+      / ko if: VM.current_user().admin() && VM.selected().admin_builds
       %th Queued
       / /ko
       %th Started at
       %th Length
       %th Status
+      - if @actions
+        %th Actions
 
   %tbody.build-row{data-bind: "foreach: { data: #{@builds} }"}
     %tr{data-bind: "css: { dont_build: dont_build }"}
@@ -39,7 +41,7 @@
         %a.build_log.text{data-bind: "attr: { href: url }, text: subject"}
         / /ko
 
-      / ko if: VM.current_user().admin && VM.selected().admin_builds
+      / ko if: VM.current_user().admin() && VM.selected().admin_builds
       %td.clickable
         %a.text{data-bind: "attr: { href: url }, duration: queued_time"}
       / /ko
@@ -60,6 +62,7 @@
         %a{data-bind: "attr: { href: url }"}
           %span{href: "#", data-bind: "text: status_words, css: style"} / href is needed to preserve style
 
-
--#- if @pagination
--#  = paginate @builds
+      - if @actions
+        %td.build_actions{data-bind: "if: can_cancel"}
+          %button.btn.btn-small.btn-danger{data-bind: "click: cancel_build"}
+            Cancel

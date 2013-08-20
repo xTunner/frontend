@@ -184,6 +184,25 @@
           } ],
         }
         """
+    'project/:username/:project/:build_num/artifacts':
+      description: "List the artifacts produced by a given build."
+      method: "GET"
+      response: """
+        [
+          {
+            node_index: 0,
+            path: "/tmp/circle-artifacts.NHQxLku/cherry-pie.png",
+            pretty_path: "$CIRCLE_ARTIFACTS/cherry-pie.png",
+            url: "https://circleci.com/gh/circleci/mongofinil/22/artifacts/0/tmp/circle-artifacts.NHQxLku/cherry-pie.png"
+          },
+          {
+            node_index: 0,
+            path: "/tmp/circle-artifacts.NHQxLku/rhubarb-pie.png",
+            pretty_path: "$CIRCLE_ARTIFACTS/rhubarb-pie.png",
+            url: "https://circleci.com/gh/circleci/mongofinil/22/artifacts/0/tmp/circle-artifacts.NHQxLku/rhubarb-pie.png"
+          }
+        ]
+        """
     'project/:username/:project/:build_num/retry':
       description: "Retries the build, returns a summary of the new build."
       method: "POST"
@@ -304,11 +323,6 @@
             "days_left_in_trial" : -238,
             "plan" : "p16",
             "trial_end" : "2011-12-28T22:02:15Z",
-            "tokens" : [ {
-              "label" : "CCMenu",
-              "token" : ":token",
-              "time" : "2012-05-27T05:26:21Z"
-            } ],
             "basic_email_prefs" : "smart",
             "admin" : true,
             "login" : "pbiggar"
@@ -370,6 +384,8 @@
 %h2#build Single Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num'})
 
+%h2#build-artifacts Artifacts of a Build
+= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/artifacts'})
 
 %h2#retry-build Retry a Build
 = HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/retry'})
