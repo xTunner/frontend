@@ -128,13 +128,14 @@
             Containers are what we call the virtual machines that your tests run in. Your current plan has
             %span{data-bind: "text: containers"}
             containers
-            %span{data-bind: "if: chosenPlan().allowsParallelism"}
-              and supports up to
-              = succeed "x", ->
-                %span{data-bind: "text: chosenPlan().max_parallelism"}
-              paralellism.
-            %span{data-bind: "ifnot: chosenPlan().allowsParallelism"}
-              but does not support parallelism.
+            %span{data-bind: "with: chosenPlan"}
+              %span{data-bind: "if: allowsParallelism"}
+                and supports up to
+                = succeed "x", ->
+                  %span{data-bind: "text: max_parallelism"}
+                paralellism.
+              %span{data-bind: "ifnot: allowsParallelism"}
+                but does not support parallelism.
 
           %p
             With 16 containers you could run
