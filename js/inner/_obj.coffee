@@ -48,6 +48,13 @@ CI.inner.VcsUrlMixin = (obj) ->
   obj.project_name = obj.komp ->
     obj.vcs_url().substring(19)
 
+  # slashes aren't allowed in github org/user names or project names
+  obj.org_name = obj.komp ->
+    obj.project_name().split("/")[0]
+
+  obj.repo_name = obj.komp ->
+    obj.project_name().split("/")[1]
+
   obj.project_display_name = obj.komp ->
     obj.project_name().replace("/", '/\u200b')
 

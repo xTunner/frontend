@@ -85,6 +85,13 @@
       %span{data-bind: "ifnot: body"}
         %a{data-bind: "attr: { href: github_url }, text: subject"}}
 
+  / ko if: ssh_enabled_now()
+  %dl.clearfix.ssh_info
+    %dt SSH Info
+    %dd
+      = HAML.ssh_info_table({})
+  / /ko
+
   / ko if: has_artifacts
   %dl.clearfix.artifacts
 

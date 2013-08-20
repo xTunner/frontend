@@ -36,8 +36,12 @@
 
         margin: 0 5px;
 
+      }
+
+      &.crumbs {
+
         // crumb elements
-        &.meta {
+        li {
 
           a, span {
             display: inline-block;
@@ -64,26 +68,26 @@
             background: @navDarkestBlue;
           }
 
-        }
+          &.build, &.branch, &.rev, &.project_settings, &.org_settings {
+            &:before {
+              content: '/';
+              position: absolute;
+              left: -6px;
+              top: 1px;
+              color: white;
+              font-size: 1.2em;
+            }
+          }
 
-        &.build-no, &.branch, &.rev, &.edit {
-          &:before {
-            content: '/';
-            position: absolute;
-            left: -6px;
-            top: 1px;
-            color: white;
-            font-size: 1.2em;
+          &.project, &.org {
+            .label {
+              font-size: 15px;
+              padding: 8px;
+            }
           }
         }
-
-        &.meta.project {
-          .label {
-            font-size: 15px;
-            padding: 8px;
-          }
-        }
-
+      }
+      li {
         // rightside nav elements
         &.pane:hover {
           background: @navDarkBlue;

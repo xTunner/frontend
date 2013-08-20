@@ -32,10 +32,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
     has_artifacts: false
     artifacts: null
     artifacts_visible: false
+    pusher_subscribed: false
+    ssh_enabled: false
+    node: []
 
   clean: () =>
-    super
+    # pusher fills the console with errors if you unsubscribe
+    # from a channel you weren't subscribed to
+    if @pusher_subscribed() then VM.pusher.unsubscribe(@pusherChannel())
 
+    super
     VM.cleanObjs(@steps())
     @clean_usage_queue_why()
 
@@ -176,6 +182,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
             @job_name
           else
             "unknown"
+
+    @ssh_enabled_now = @komp =>
+      # ssh_enabled is undefined before Enabled SSH is completed
+      @ssh_enabled() and @node() and _.every(@node(), (n) -> n.ssh_enabled != false)
 
     @can_cancel = @komp =>
       if @status() == "canceled"
@@ -343,6 +353,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   maybeSubscribe: () =>
     if @shouldSubscribe()
+      @pusher_subscribed(true)
       @build_channel = VM.pusher.subscribe(@pusherChannel())
       @build_channel.bind 'pusher:subscription_error', (status) ->
         _rollbar.push status
@@ -352,6 +363,14 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('appendAction', @appendAction)
       @build_channel.bind('updateObservables', @updateObservables)
       @build_channel.bind('maybeAddMessages', @maybeAddMessages)
+
+  maybeSubscribeObservables: () =>
+    if @shouldSubscribe()
+      @pusher_subscribed(true)
+      @build_channel = VM.pusher.subscribe(@pusherChannel())
+      @build_channel.bind 'pusher:subscription_error', (status) ->
+        _rollbar.push status
+      @build_channel.bind('updateObservables', @updateObservables)
 
   fillActions: (step, index) =>
     # fills up steps and actions such that step and index are valid
@@ -455,6 +474,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       complete: () =>
         # stop the spinner if there was an error
         @usage_queue_why([]) if not @usage_queue_why()
+        _.each(@usage_queue_why(), ((b) -> b.maybeSubscribeObservables()))
 
   toggle_artifacts: () =>
     if @artifacts_visible()

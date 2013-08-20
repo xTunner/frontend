@@ -14,7 +14,7 @@
   With X set up on your system,
   %a{href: '/docs/ssh-build'} start an SSH build
   to a Circle VM, using the
-  %code -x
+  %code -X
   flag to set up forwarding:
 
 %pre

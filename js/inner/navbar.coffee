@@ -9,40 +9,58 @@ CI.inner.Navbar = class Navbar extends CI.inner.Obj
     @current_build_branch = @komp =>
       if @current_build() then @current_build().branch()
 
-    @page = @komp => @selected().page
+    # unpack selected
     @crumbs = @komp => @selected().crumbs
+    @page = @komp => @selected().page
     @username = @komp => @selected().username
     @project = @komp => @selected().project
     @project_name = @komp => @selected().project_name
-    @branch = @komp => @selected().branch
+    @sel_branch = @komp => @selected().branch
     @build_num = @komp => @selected().build_num
+
+    @branch = @komp => @sel_branch() or "..."
 
     @current_build_branch.subscribe (new_val) =>
       sel = @selected()
       sel.branch = new_val
       @selected(sel)
 
-    @display_branch = @komp =>
-      if @branch()?
-        CI.stringHelpers.trimMiddle(@branch(), 45)
-
     @project_path = @komp =>
       if @username() and @project()
         @projectPath(@username(), @project())
 
+    @branch_name = @komp =>
+      if @branch()?
+        CI.stringHelpers.trimMiddle(@branch(), 45)
+
+    @branch_path = @komp =>
+      @projectPath(@username(), @project(), @branch())
+
+    @project_settings_name = @komp => "Edit settings"
+
     @project_settings_path = @komp => @project_path() + '/edit'
 
-    @project_branch_path = @komp =>
-      if @username() and @project()
-        @projectPath(@username(), @project(), @branch())
-
     @build_path = @komp =>
-      if @username() and @project() and @build_num()
-        "#{@project_path()}/#{@build_num()}"
+      "#{@project_path()}/#{@build_num()}"
+
+    @build_name = @komp =>
+      "build: #{@build_num()}"
+
+    @org_name = @komp => @username()
+    @org_path = @komp => "/gh/#{@username()}"
+
+    @org_settings_name = @komp => "Organization settings"
+    @org_settings_path = @komp => "/gh/organizations/#{@username()}/settings"
 
     @label_class = (page) =>
       @komp =>
         'label-active': @page() is page
+
+  crumb_path: (crumb) =>
+    @["#{crumb}_path"]
+
+  crumb_name: (crumb) =>
+    @["#{crumb}_name"]
 
   projectPath: (username, project, branch) ->
     project_name = "#{username}/#{project}"

@@ -73,6 +73,19 @@
     padding-top: 1%;
     border-top: 1px solid #D7DCE3;
   }
+  .ssh-info-table {
+    dt {
+      width: 20px;
+    }
+    dd {
+      margin-left: 0px;
+      font-family: monospace;
+      color: lightgray;
+    }
+    .connected {
+      color: #666;
+    }
+  }
 }
 
 .action-source {
@@ -130,8 +143,6 @@
     &.success > .ah_wrapper:before { background: @green; }
     &.failed > .ah_wrapper:before { background: @red; }
     &.running > .ah_wrapper:before { background: @yellow; }
-    @lightRed: rgba(157, 38, 29, 0.7);
-    @lightYellow: rgba(255, 196, 13, 0.2);
 
     &.failed .header.failed { background: @lightRed; }
     &.failed .header.running { background: @lightYellow; }

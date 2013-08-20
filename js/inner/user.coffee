@@ -1,5 +1,6 @@
 CI.inner.User = class User extends CI.inner.Obj
   observables: =>
+    admin: false
     organizations: []
     collaboratorAccounts: []
     loadingOrganizations: false
@@ -21,16 +22,16 @@ CI.inner.User = class User extends CI.inner.Obj
     plan: null
     parallelism: 1
     gravatar_id: null
+    github_id: null
 
   constructor: (json) ->
     super json,
-      admin: false
       login: ""
 
     @environment = window.renderContext.env
 
     @showEnvironment = @komp =>
-      @admin || (@environment is "staging") || (@environment is "development")
+      @admin() || (@environment is "staging") || (@environment is "development")
 
     @environmentColor = @komp =>
       result = {}
@@ -61,21 +62,40 @@ CI.inner.User = class User extends CI.inner.Obj
       @komp =>
         c for c in @collaboratorAccounts() when c.login isnt login
 
-    @gravatar_url = (size=200) =>
+    @gravatar_url = (size=200, force=false) =>
       @komp =>
         if @gravatar_id() and @gravatar_id() isnt ""
-          "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
+          url = "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
+          if @github_id()
+            hash = CryptoJS.MD5(@github_id().toString()).toString()
+            d = URI.encode("https://identicons.github.com/#{hash}.png")
+            url += "&d=#{d}"
+          url
+        else if force
+          "https://secure.gravatar.com/avatar/00000000000000000000000000000000?s=#{size}"
+
+  load_tokens: () =>
+    $.getJSON "/api/v1/user/token", (data) =>
+      @tokens(data)
 
   create_token: (data, event) =>
     $.ajax
-      type: "POST"
       event: event
-      url: "/api/v1/user/create-token"
-      data: JSON.stringify {label: @tokenLabel()}
+      type: "POST"
+      url: "/api/v1/user/token"
+      data: JSON.stringify
+        label: @tokenLabel()
       success: (result) =>
-        @tokens result
         @tokenLabel("")
-        true
+        @load_tokens()
+    false
+
+  delete_token: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      url: "/api/v1/user/token/#{data.token}",
+      success: (result) =>
+        @load_tokens()
     false
 
   create_user_key: (data, event) =>

@@ -1,0 +1,31 @@
+- @children = []
+- @title = "Build artifacts"
+- @lastUpdated = "August 8, 2013"
+
+%p
+  If your build produces persistent artifacts such as screenshots, coverage reports, or
+  deployment tarballs, we can automatically save and link them for you.
+
+%p
+  Before each build, we create an empty directory and export its path in the
+  %code
+    $CIRCLE_ARTIFACTS
+  = succeed ".", ->
+    %a{ href: "/docs/environment-variables" }<
+      environment variable
+  After the build finishes, everything in this directory is saved and linked to the build.
+
+%p
+  You'll find links to the artifacts at the top of the build page. You can also consume them
+  via our 
+  = succeed ".", ->
+    %a{ href: "/docs/api#build-artifacts" }<
+      API
+
+%p
+  That's all there is to it!
+
+%p
+  Feel free to
+  = HAML['contact_us']()
+  if you have any questions or feedback!
