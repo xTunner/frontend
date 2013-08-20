@@ -2,7 +2,7 @@
 
 = HAML['_topbar']({})
 
-.container-fluid#dashboard
+#dashboard
 
   %aside
     = HAML['action_sidebar']({})
