@@ -11,7 +11,7 @@
             = surround '(', ')', ->
               %span{data-bind: "text: node_index"}<>
           / /ko
-          / ko if: VM.current_user().admin and circleAdminImpersonating
+          / ko if: VM.current_user().admin
           %span{data-bind: "text: pretty_path"}
           = surround '(', ')', ->
             %span{data-bind: "text: node_index"}<>
