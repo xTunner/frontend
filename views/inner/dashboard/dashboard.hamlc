@@ -2,13 +2,43 @@
 
 = HAML['_topbar']({})
 
-.container-fluid#dashboard
-  .row-fluid
-    .span-menu.menu-left
-      = HAML['followed_sidebar']({})
-      = HAML['action_sidebar']({})
+#dashboard
 
-    .span-flex
-      = HAML['flashes']({})
+  %aside
+    = HAML['action_sidebar']({})
+    = HAML['followed_sidebar']({})
 
-      = HAML[@builds_table]({})
+  .dash-wrap.clearfix
+    = HAML['flashes']({})
+
+    .dashboard-main
+      %div{data-bind: "ifnot: dashboard_ready"}
+        .centered-spinner
+          = HAML['fast_spinner']()
+
+      %div{data-bind: "if: dashboard_ready"}
+
+        %div{data-bind: "if: has_no_followed_projects()"}
+          %h2 You don't have any projects in CircleCI!
+          %p
+            Why don't you add a repository or two on
+            %a{href: "/add-projects"} the Manage Projects page?
+
+        %div{data-bind: "if: has_followed_projects()"}
+
+          .offset5#days-in-trial{data-bind: "with: current_user"}
+            %b{data-bind: "if: in_trial"}
+              You have
+              %span{data-bind: "text: days_left_in_trial"}
+              days left in your trial.
+              %a{href: "/account/plans" }
+                Sign up now.
+
+            %b{data-bind: "if: trial_over"}
+              Your trial ended
+              %span{data-bind: "text: (-1 * days_left_in_trial)"}
+              days ago.
+              %a{href: "/account/plans" }
+                Re-enable your tests.
+
+          = HAML['builds']({builds: "builds", mention_project: true, pagination: false})

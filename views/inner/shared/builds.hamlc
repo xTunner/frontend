@@ -19,20 +19,20 @@
 
   %tbody.build-row{data-bind: "foreach: { data: #{@builds} }"}
     %tr{data-bind: "css: { dont_build: dont_build }"}
-      %td.clickable
+      %td
         %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
 
-      %td.clickable
+      %td
         %a.text{data-bind: "attr: { href: url }, text: github_revision"}
       / ko if: VM.selected().mention_branch
-      %td.clickable
+      %td
         %a.text{data-bind: "attr: { href: url }, text: branch_in_words"}
       / /ko
 
-      %td.clickable
+      %td
         %a.text{data-bind: "attr: { href: url }, text: author" }
 
-      %td.clickable{style: "max-width: 45em;"}
+      %td
         / ko if: body
         %a.build_log{href: '#', data-bind: "text: subject, attr: { title: body, href: url }"}
         / /ko
@@ -41,16 +41,16 @@
         %a.build_log.text{data-bind: "attr: { href: url }, text: subject"}
         / /ko
 
-      / ko if: VM.current_user().admin() && VM.selected().admin_builds
-      %td.clickable
+      / ko if: VM.current_user().admin && VM.selected().admin_builds
+      %td
         %a.text{data-bind: "attr: { href: url }, duration: queued_time"}
       / /ko
 
       / ko if: status() != 'not_run'
-      %td.clickable
+      %td
         %a.text{data-bind: "attr: { href: url }, text: pretty_start_time"}
 
-      %td.clickable
+      %td
         %a.text{data-bind: "attr: { href: url }, text: duration"}
       / /ko
 
@@ -58,7 +58,7 @@
       = HAML['not_run_message']()
       / /ko
 
-      %td.build_status.clickable
+      %td.build_status
         %a{data-bind: "attr: { href: url }"}
           %span{href: "#", data-bind: "text: status_words, css: style"} / href is needed to preserve style
 
