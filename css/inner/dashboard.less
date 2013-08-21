@@ -130,11 +130,11 @@
       padding: 1em;
       box-sizing: border-box;
     }
-    &:hover .nav-menu-icon {
+    &:hover .nav-menu-icon, &:hover .toggle-show-branches {
       transition: opacity .1s ease-in-out;
       opacity: 1;
     }
-    .nav-menu-icon {
+    .nav-menu-icon, .toggle-show-branches {
       transition: opacity .3s ease-in;
       opacity: 0;
       float: right;
@@ -146,13 +146,36 @@
       i {
         line-height: 1.1em;
         font-size: 12px;
-        float: left;
-        .scale(1);
+        //float: left;
         transition: all .2s ease-in;
+      }
+      &:first-child {
+        border-radius: 0;
       }
       &:hover i {
         .scale(1.1);
         transition: all .4s ease-in;
+      }
+    }
+    .toggle-show-branches {
+      box-sizing: border-box;
+      padding: 0;
+      cursor: pointer;
+      a {
+        display: block;
+        box-sizing: border-box;
+        padding: 5px;
+        span {
+          display: block;
+          box-sizing: border-box;
+          &:first-child i {
+            padding: 0 2px 0 1px;
+          }
+          i {
+            padding: 0 3px;
+            box-sizing: border-box;
+          }
+        }
       }
     }
   }
@@ -170,22 +193,34 @@
     box-sizing: border-box;
     display: block;
   }
+  /*
   .toggle-show-branches {
+    float: right;
+    transition: opacity 0.3s ease-in;
+    //opacity: 0;
+    float: right;
+    display: block;
+    padding: 0 5px;
+    border-left: 1px solid #e3e3e3;
+    border-bottom: 1px solid #e3e3e3;
+    box-sizing: border-box;
     a {
       margin-top: 4px;
       cursor: pointer;
     }
     i {
-      margin-left: -3px;
-      color: #999;
-      font-size: 18px;
-      .transition(color 600ms);
+      //margin-left: -3px;
+      //color: #999;
+      line-height: 1.3em;
+      font-size: 14px;
+      transition: all .2s ease-in;
       &:hover {
-        color: #777;
-        text-decoration: none;
+        //color: #777;
+        //text-decoration: none;
       }
     }
   }
+  */
   .tooltip {
     text-shadow:none;
     text-transform: capitalize;
