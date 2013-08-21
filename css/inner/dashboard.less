@@ -227,14 +227,15 @@
     text-shadow:none;
     text-transform: capitalize;
     .tooltip-arrow {
-      border-top-color: darken(@result-gray,5%);
+      border-top-color: darken(@gray,5%);
     }
     .tooltip-inner {
       #gradient.vertical(rgba(255,255,255,.08),rgba(0,0,0,.08));
+      background-color: @gray;
       box-shadow: 0 1px 0 rgba(255,255,255,.21) inset;
       border-radius: 3px;
       padding: 10px;
-      border: 1px solid darken(@result-gray,5%);
+      border: 1px solid darken(@gray,5%);
     }
   }
   .build-circles {
