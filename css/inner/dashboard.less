@@ -341,20 +341,24 @@
     border-top: 1px solid @grayBorder;
     &:hover td {
       background-color: lighten(@grayBorder,8%);
-      box-shadow: 0 1px 1px lighten(@grayBorder,3%) inset;
+      box-shadow: 0 1px lighten(@grayBorder,3%) inset;
       transition-duration: .1s;
-      transition-property: background-color;
-      transition-timing-function: ease-in-out;
+    }
+    &:active td, &:focus td {
+      background-color: lighten(@grayBorder,5%);
+      box-shadow: 0 1px 1px lighten(@grayBorder,1%) inset;
+      transition-duration: .1s;
     }
   }
   td {
     border-top: 1px solid lighten(@grayBorder,5%);
-    box-shadow: 0 1px 0 @white inset;
+    box-shadow: 0 1px @white inset;
     text-align: left;
     padding: 0;
     transition-duration: .2s;
-    transition-property: background-color;
-    transition-timing-function: ease-in-out;
+    transition-property: background-color, box-shadow;
+    position: relative;
+    box-sizing: border-box;
     a {
       display: block;
       white-space: nowrap;
@@ -363,6 +367,24 @@
       overflow: hidden;
       box-sizing: border-box;
       text-overflow: ellipsis;
+    }
+    &:first-child:before, &:last-child:before {
+      content: "";
+      background: inherit;
+      box-shadow: inherit;
+      border-top: inherit;
+      width: 5px;
+      height: 100%;
+      top: -1px;
+      position: absolute;
+      box-sizing: border-box;
+      transition: inherit;
+    }
+    &:first-child:before {
+      left: -5px;
+    }
+    &:last-child:before {
+      right: -5px;
     }
     &:first-child a {
       max-width: 750px;
