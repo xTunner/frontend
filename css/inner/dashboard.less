@@ -5,9 +5,7 @@
 @result-grayDark: #666;
 
 #dashboard {
-  min-width: 960px;
   padding: 0 3em;
-  margin: 0 auto;
   a {
     color: @result-grayDark;
     font-weight: normal;
@@ -28,6 +26,11 @@
   aside {
     float: left;
     width: 300px;
+  }
+  .dashboard-main {
+    padding: 3px;
+    overflow-x: auto;
+    box-sizing: border-box;
   }
   .side-actions {
     display: inline-block;
@@ -401,7 +404,6 @@
 .dash-wrap {
   margin-left: 300px;
   padding-left: 2em;
-  overflow-x: auto;
 }
 .status-circle {
   a:hover {
