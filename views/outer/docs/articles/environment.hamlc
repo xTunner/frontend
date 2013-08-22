@@ -252,16 +252,20 @@
   %li
     %code 0.8.12
   %li
+    %code 0.8.19
+  %li
     %code 0.8.22
   %li
     %code 0.10.0
+  %li
+    %code 0.10.5
+  %li
+    %code 0.10.11
 
 %p
   If you do not specify a version, we use
   = succeed '.', ->
     %code= CI.Versions.default_node
-
-
 
 
 %h3  Clojure
@@ -412,7 +416,7 @@
 
 %ul
   %li
-    %code postgresql 9.1.8
+    %code postgresql 9.2.0
     (including postgis 2.0 extensions)
 
   %li
@@ -430,7 +434,7 @@
   %li
     %code sphinx 2.0.4-release
   %li
-    %code elasticsearch 0.19.11
+    %code elasticsearch 0.90.2
   %li
     %code
       solr
