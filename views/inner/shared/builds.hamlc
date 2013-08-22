@@ -20,7 +20,7 @@
   %tbody.build-row{data-bind: "foreach: { data: #{@builds} }"}
     %tr{data-bind: "css: { dont_build: dont_build }"}
       %td
-        %a{data-bind: "attr: { href: url }, text: description(#{@mention_project})"}
+        %a{data-bind: "attr: { href: url, title: description(#{@mention_project}) }, text: description(#{@mention_project})"}
 
       %td
         %a.text{data-bind: "attr: { href: url }, text: github_revision"}
@@ -48,10 +48,10 @@
 
       / ko if: status() != 'not_run'
       %td
-        %a.text{data-bind: "attr: { href: url }, text: pretty_start_time"}
+        %a.text{data-bind: "attr: { href: url, title: pretty_start_time }, text: pretty_start_time"}
 
       %td
-        %a.text{data-bind: "attr: { href: url }, text: duration"}
+        %a.text{data-bind: "attr: { href: url, title: duration }, text: duration"}
       / /ko
 
       / ko if: status() == 'not_run'
