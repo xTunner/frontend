@@ -1,20 +1,21 @@
 
-@grayBorder: #e3e3e3;
-@border-color: #ddd;
-@result-gray: #ccc;
-@result-grayDark: #666;
+@grayBorder:   #e3e3e3;
+@border-color:    #ddd;
+@dash-gray:       #888;
+@dash-grayDark:   #444;
+@link-blue:    #3e7bbe;
 
 #dashboard {
   padding: 0 1em;
   a {
-    color: @result-grayDark;
+    color: @dash-grayDark;
     font-weight: normal;
     text-decoration: none;
     transition-duration: .3s;
     transition-property: color;
     transition-timing-function: ease-in-out;
     &:hover {
-      color: #3e7bbe;
+      color: @link-blue;
       transition-duration: .1s;
       transition-property: color;
       transition-timing-function: ease-in-out;
@@ -26,6 +27,9 @@
   aside {
     float: left;
     width: 270px;
+    a {
+      color: @dash-gray;
+    }
   }
   .dashboard-main {
     padding: 0 3px 3px 0;
@@ -62,7 +66,7 @@
         box-shadow: 0 0 rgba(0,0,0,0);
         background-size: 300%;
         transition-duration: (1s/8s);
-        color: #fefefe;
+        color: @white;
         text-shadow: 0 0 rgba(0,0,0,0);
       }
       &:active, &:focus {
@@ -134,6 +138,7 @@
       .box-sizing(border-box);
       text-overflow: ellipsis;
       white-space: nowrap;
+      color: @dash-grayDark;
     }
     &:hover .nav-menu-icon, &:hover .toggle-show-branches {
       transition: opacity .1s ease-in-out;
@@ -190,7 +195,6 @@
   .branch-name {
     font-weight: normal;
     line-height: 1.13em;
-    color: #aaa;
     background:none;
     margin: 0;
     padding: 1em 0 1em 3em;
@@ -224,7 +228,7 @@
       margin: 0 0 0 -4px;
       i {
         display: inline-block;
-        color: @result-gray;
+        color: @dash-gray;
         transition: all .2s ease-in-out;
 
         -webkit-text-stroke: 1px #ddd;
@@ -277,11 +281,11 @@
         &:last-child i { color            : @blueDark            ;}
       }
       &.queued, &.canceled {
-        &:hover i      { color            : @result-grayDark            ;}
-        .tooltip-arrow { border-top-color : darken(@result-grayDark,5%) ;}
-        .tooltip-inner { background-color : @result-grayDark            ;
-                         border-color     : darken(@result-grayDark,5%) ;}
-        &:last-child i { color            : @result-grayDark            ;}
+        &:hover i      { color            : @dash-grayDark            ;}
+        .tooltip-arrow { border-top-color : darken(@dash-grayDark,5%) ;}
+        .tooltip-inner { background-color : @dash-grayDark            ;
+                         border-color     : darken(@dash-grayDark,5%) ;}
+        &:last-child i { color            : @dash-grayDark            ;}
       }
     }
   }
@@ -289,7 +293,7 @@
     padding: 0 .5em;
     border-collapse: separate;
     width: 100%;
-    color: @grayLight;
+    color: lighten(@dash-gray,13%);
     background: @grayLightest;
     .box-sizing(border-box);
     margin: 0;
