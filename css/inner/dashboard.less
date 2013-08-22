@@ -91,7 +91,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    background: #fbfbfb;
+    background: @grayLightest;
     width: 100%;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
@@ -182,7 +182,7 @@
     }
   }
   .branch:hover span:last-child {
-    i { -webkit-text-stroke: 1px #ddd; -webkit-text-fill-color: #fbfbfb; }
+    i { -webkit-text-stroke: 1px #ddd; -webkit-text-fill-color: @grayLightest; }
     &:hover i { -webkit-text-stroke: 0; -webkit-text-fill-color: currentcolor; }
   }
   .branch-name {
@@ -223,7 +223,7 @@
         transition: all .2s ease-in-out;
 
         -webkit-text-stroke: 1px #ddd;
-        -webkit-text-fill-color: #fbfbfb;
+        -webkit-text-fill-color: @grayLightest;
       }
       &:hover i {
         .scale(1.2);
@@ -285,7 +285,7 @@
     border-collapse: separate;
     width: 100%;
     color: @grayBorder;
-    background: #fbfbfb;
+    background: @grayLightest;
     box-sizing: border-box;
     margin: 0;
     overflow: hidden;
