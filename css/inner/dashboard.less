@@ -196,9 +196,10 @@
     padding: 1em 0 1em 3em;
     overflow: hidden;
     box-sizing: border-box;
-    display: block;
+    //display: block;  // firefox doesn't like blocks pushing floating elements
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: inline-block; // fix for firefox block/float bug
   }
   .tooltip {
     text-shadow:none;
