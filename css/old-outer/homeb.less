@@ -535,49 +535,48 @@ body#home-page {
 
     p { margin: 0; }
 
-    a.btn-jumbo {
-      margin: 12px 0 4px 0;
-      font-family: Arial, Helvetica, Sans-Serif;
-      font-size: 28px;
-      font-weight: bold;
-      padding: 20px 25px;
-      .border-radius(32px);
-    }
-
     i {
       font-size: 14px;
       margin: 0;
     }
 
-    .btn-action-prototype {
-      background-repeat: repeat-x;
-      color: #ffffff ;
-      text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
-      -webkit-font-smoothing: antialiased;
-    }
+  }
+  .btn-action-prototype {
+    background-repeat: repeat-x;
+    color: #ffffff ;
+    text-shadow: 0 1px 3px rgba(180, 76, 0, 0.75);
+    -webkit-font-smoothing: antialiased;
+  }
 
-    .btn-action-orange {
-      .btn-action-prototype;
-      background-color: #ff6d02;
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ff6d02");
-      background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ff6d02));
-      background-image: -moz-linear-gradient(top, #feb401, #ff6d02);
-      background-image: -ms-linear-gradient(top, #feb401, #ff6d02);
-      background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #feb401), color-stop(100%, #ec7702));
-      background-image: -webkit-linear-gradient(top, #feb401, #ff6d02);
-      background-image: -o-linear-gradient(top, #fe8800, #ff6d02);
-      background-image: linear-gradient(#fe8800, #ff6d02);
-      border-color: #feb401 #ffa405 #ff6d02;
-    }
+  .btn-action-orange {
+    .btn-action-prototype;
+    background-color: #ff6d02;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#feb401", endColorstr="#ff6d02");
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#feb401), to(#ff6d02));
+    background-image: -moz-linear-gradient(top, #feb401, #ff6d02);
+    background-image: -ms-linear-gradient(top, #feb401, #ff6d02);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #feb401), color-stop(100%, #ec7702));
+    background-image: -webkit-linear-gradient(top, #feb401, #ff6d02);
+    background-image: -o-linear-gradient(top, #fe8800, #ff6d02);
+    background-image: linear-gradient(#fe8800, #ff6d02);
+    border-color: #feb401 #ffa405 #ff6d02;
+  }
 
-    .btn-action {
-      .btn-action-orange;
-    }
+  .btn-action {
+    .btn-action-orange;
+  }
 
-    .btn-action-red {
-      // Use bootstrap's default red, until we get our own style
-      .btn-action-prototype;
-      .btn-danger;
-    }
+  .btn-action-red { // Use bootstrap's default red, until we get our own style
+    .btn-action-prototype;
+    .btn-danger;
+  }
+
+  a.btn-jumbo {
+    margin: 12px 0 4px 0;
+    font-family: Arial, Helvetica, Sans-Serif;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 20px 25px;
+    .border-radius(32px);
   }
 }
