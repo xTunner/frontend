@@ -13,7 +13,6 @@
       .span4
         .center
           = HAML.github_image()
-
         %h3
           %span 1
           Push your new code to GitHub

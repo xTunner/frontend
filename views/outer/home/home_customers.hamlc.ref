@@ -6,44 +6,56 @@
         %p
           CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go.
           %strong I'm a huge fan.
-        %img{:alt => "John Collison", :height => "50", :src => "img/outer/home/john-collison-circle.png", :width => "50"}
+        = HAML.john_collison_image()
         %h4 John Collison
         %p
           Founder at
-          %a{:alt => "Stripe", :href => "https://stripe.com/", :title => "Stripe"} Stripe
+          %a{alt-there: "Stripe", href: "https://stripe.com/", title: "Stripe"} Stripe
       .well.customer.span4
         %p
           It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.
           %strong The first time it happened, my team cheered.
           The fact that we don't have to admin the server ourselves is a big timesaver.
-        %img{:alt => "Jon Crawford", :height => "50", :src => "img/outer/home/jon-crawford-circle.png", :width => "50"}
+        = HAML.jon_crawford_image()
         %h4 Jon Crawford
         %p
           CEO of
-          %a{:alt => "Storenvy", :href => "http://www.storenvy.com/", :title => "Storenvy"} Storenvy
+          %a{alt: "Storenvy", href: "http://www.storenvy.com/", title: "Storenvy"} Storenvy
       .well.customer.span4
         %p
           CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently.
           %strong CircleCI's customer support is outstanding.
           We get quick, thorough answers to all our questions.
-        %img{:alt => "Aaron Suggs", :height => "50", :src => "img/outer/home/aaron-suggs-circle.png", :width => "50"}
+        = HAML.aaron_suggs_image()
         %h4 Aaron Suggs
         %p
           Operations Engineer at
-          %a{:alt => "Kickstarter", :href => "http://www.kickstarter.com/", :title => "Kickstarter"} Kickstarter
+          %a{alt: "Kickstarter", href: "http://www.kickstarter.com/", title: "Kickstarter"} Kickstarter
     .row.logos
-      %a.span2{:href => "http://www.storenvy.com/"}
-        %img{:height => "27", :src => "img/outer/home/logos/storenvy.png", :title => "Storenvy", :width => "140"}
-      %a.span2{:href => "http://www.tapjoy.com/"}
-        %img{:height => "64", :src => "img/outer/home/logos/tapjoy.png", :title => "Tapjoy", :width => "140"}
-      %a.span2{:href => "http://www.kickstarter.com/"}
-        %img{:height => "16", :src => "img/outer/home/logos/kickstarter.png", :title => "Kickstarter", :width => "140"}
-      %a.span2{:href => "https://stripe.com/"}
-        %img{:height => "57", :src => "img/outer/home/logos/stripe.png", :title => "Stripe", :width => "140"}
-      %a.span2{:href => "http://www.redbull.com/en"}
-        %img{:height => "84", :src => "img/outer/home/logos/redbull.png", :title => "RedBull", :width => "140"}
-      %a.span2{:href => "https://www.mongohq.com/home"}
-        %img{:height => "41", :src => "img/outer/home/logos/mongohq.png", :title => "MongoHQ", :width => "140"}
+      %a.span2{href: "http://www.storenvy.com/"}
+        %img{height: "27", width: "140",
+             src: '(data-uri "img/outer/home/logos/storenvy.png" 140 27)',
+             title: "Storenvy"}
+      %a.span2{href: "http://www.tapjoy.com/"}
+        %img{height: "64", width: "140",
+             src: '(data-uri "img/outer/home/logos/tapjoy.png" 140 64)',
+             title: "Tapjoy"}
+      %a.span2{href: "http://www.kickstarter.com/"}
+        %img{height: "16", width: "140",
+             src: '(data-uri "img/outer/home/logos/kickstarter.png" 140 16)',
+             title: "Kickstarter"
+      %a.span2{href: "https://stripe.com/"}
+        %img{height: "57", width: "140",
+             src: '(data-uri "img/outer/home/logos/stripe.png" 140 57)',
+             title: "Stripe"}
+      %a.span2{href: "http://www.redbull.com/en"}
+        %img{height: "84", width: "140",
+             src: '(data-uri "img/outer/home/logos/redbull.png" 140 84)',
+             title: "RedBull"}
+      %a.span2{href: "https://www.mongohq.com/home"}
+        %img{height: "41", width: "140",
+             src: '(data-uri "img/outer/home/logos/mongohq.png" 140 41)',
+             title: "MongoHQ"}
 
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
     = HAML.home_cta({text: "Start your 14-day free trial now"})

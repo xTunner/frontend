@@ -13,8 +13,7 @@
             .happy-customers
               .callout
 
-          = HAML.happy_customers_image()
-          -# %img{:src => assetPath("img/outer/home/circleci-customer-logos.png")}
+          %img{src: '(data-uri "img/outer/home/circleci-customer-logos.png")'}
 
 .customer-quotes
   .container-fluid
@@ -30,7 +29,6 @@
             %br
           %span.avatar
             = HAML.john_collison_image()
-            -# %img{:src => assetPath("img/outer/home/john-collison-2.png")}
           %strong.name
             John Collison
           %i
@@ -46,7 +44,6 @@
             %span.mark-end "
           %span.avatar
             = HAML.jon_crawford_image()
-            -# %img{:src => assetPath("img/outer/home/jon-crawford-2.png")}
           %strong.name
             Jon Crawford
           %i
@@ -61,7 +58,6 @@
             %span.mark-end "
           %span.avatar
             = HAML.aaron_suggs_image()
-            -# %img{:src => assetPath("img/outer/home/aaron-suggs.jpg")}
           %strong.name
             Aaron Suggs
           %i
