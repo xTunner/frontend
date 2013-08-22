@@ -1,16 +1,15 @@
-- klass = '"btn btn-primary btn-large"'
-
-- toggle = 'VM.ab().github_warning_modal() ? "modal" : ""'
-- target = 'VM.ab().github_warning_modal() ? "#githubModal" : ""'
-- track = 'VM.ab().github_warning_modal() ? "Modal Join Open" : "Auth Github"'
-
-- @modal = @modal != false # nil and true are OK, false means don't nest
-
-- bind = "class: #{klass}"
-- bind += ", track_link: #{track}" if @modal
-- bind += ", \"data-toggle\": #{toggle}" if @modal
-- bind += ", \"data-target\": #{target}" if @modal
-
-
-%a{href: CI.github.authUrl(), data-bind: "attr: { #{bind} }", title: @text}
+/ ko if: VM.ab().github_warning_modal
+%a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
+                             data-bind: "track: 'Modal Join Open'",
+                             data-toggle: "modal",
+                             data-target: "#githubModal",
+                             title: @text}
   = @text
+/ /ko
+
+/ ko ifnot: VM.ab().github_warning_modal
+%a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
+                             data-bind: "track_link: 'Auth Github'",
+                             title: @text}
+  = @text
+/ /ko
