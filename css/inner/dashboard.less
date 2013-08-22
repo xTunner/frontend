@@ -30,13 +30,13 @@
   .dashboard-main {
     padding: 0 3px 3px 0;
     overflow-x: auto;
-    box-sizing: border-box;
+    .box-sizing(border-box);
   }
   .side-actions {
     display: inline-block;
     width: 100%;
     padding: 1em;
-    box-sizing: border-box;
+    .box-sizing(border-box);
     float: left;
     button {
       #gradient.vertical(rgba(255,255,255,.05),rgba(0,0,0,.08));
@@ -48,7 +48,7 @@
       border-radius: 3px;
       box-shadow: 0 1px 1px rgba(0,0,0,.21);
       color: #eee;
-      box-sizing: border-box;
+      .box-sizing(border-box);
       padding: 1em .5em;
       float: left;
       width: 50%;
@@ -95,7 +95,7 @@
     width: 100%;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
-    box-sizing: border-box;
+    .box-sizing(border-box);
     box-shadow: 0 1px 0 #fff inset,
                 1px 1px 0 @grayBorder,
                 2px 2px 0 @grayBorder,
@@ -131,7 +131,7 @@
       line-height: 1em;
       display: block;
       padding: 1em;
-      box-sizing: border-box;
+      .box-sizing(border-box);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -162,22 +162,22 @@
       }
     }
     .toggle-show-branches {
-      box-sizing: border-box;
+      .box-sizing(border-box);
       padding: 0;
       cursor: pointer;
       a {
         display: block;
-        box-sizing: border-box;
+        .box-sizing(border-box);
         padding: 5px;
         span {
           display: block;
-          box-sizing: border-box;
+          .box-sizing(border-box);
           &:first-child i {
             padding: 0 2px 0 1px;
           }
           i {
             padding: 0 3px;
-            box-sizing: border-box;
+            .box-sizing(border-box);
           }
         }
       }
@@ -195,7 +195,7 @@
     margin: 0;
     padding: 1em 0 1em 3em;
     overflow: hidden;
-    box-sizing: border-box;
+    .box-sizing(border-box);
     //display: block;  // firefox doesn't like blocks pushing floating elements
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -241,7 +241,7 @@
         transition-property: color;
         transition-timing-function: ease-in-out;
         display: inline-block;
-        box-sizing: border-box;
+        .box-sizing(border-box);
         padding: 1em .21em;
         &:hover {
           text-decoration: none;
@@ -291,7 +291,7 @@
     width: 100%;
     color: @grayBorder;
     background: @grayLightest;
-    box-sizing: border-box;
+    .box-sizing(border-box);
     margin: 0;
     overflow: hidden;
     border: 1px solid darken(@grayBorder,1%);
@@ -337,14 +337,14 @@
     transition-duration: .2s;
     transition-property: background-color, box-shadow;
     position: relative;
-    box-sizing: border-box;
+    .box-sizing(border-box);
     a {
       display: block;
       white-space: nowrap;
       padding: .5em;
       max-width: 125px;
       overflow: hidden;
-      box-sizing: border-box;
+      .box-sizing(border-box);
       text-overflow: ellipsis;
     }
     &:first-child:before, &:last-child:before {
@@ -356,7 +356,7 @@
       height: 100%;
       top: -1px;
       position: absolute;
-      box-sizing: border-box;
+      .box-sizing(border-box);
       transition: inherit;
     }
     &:first-child:before {
