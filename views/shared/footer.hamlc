@@ -42,7 +42,7 @@
   .container.row
     %nav.span12{role: "navigation"}
       %a.span1.logo{href: "/"}
-        %img{height: "45", src: "/img/logo-small.svg", width: "60"}
+        %img{height: "45", src: assetPath("/img/logo-small.svg"), width: "60"}
       %ul.nav.nav-pills
         %li
           %a{href: "/about"} About
