@@ -94,7 +94,6 @@
   margin-right: 10px; // move back from the right edge
 
   padding: 0px 4px; // padding, but without increasing the height
-  background: #fff;
   // background-color: rgba(255, 255, 255, 0.2); // make slightly lighter
 
   font-style: italic;
@@ -117,7 +116,7 @@
   margin: 30px 0 7px;
 
   span {
-    background: white;
+    background: @bodyBackground;
     color: #777;
     font-size: 16px;
     padding: 0 10px;
@@ -131,6 +130,7 @@
   }
 }
 .build-output  {
+  background-color: @grayLightest;
   .border-radius;
 
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
