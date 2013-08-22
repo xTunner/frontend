@@ -38,7 +38,7 @@
 %p
   The build VM will remain available for
   %b
-    15 minutes after the build finishes running
+    30 minutes after the build finishes running
   and then automatically shut down. (Or you can cancel it.)
 
 %h4 Parallelism and SSH Builds
