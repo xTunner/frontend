@@ -110,21 +110,6 @@
     list-style: none;
     margin: 0;
   }
-  .shadow-bulge {
-    height: 55px;
-    background: none;
-    border-radius: ~"100% / 21px"; // produces round looking shadow, 21 comes from trial/error
-    box-shadow: 0 8px 3px -5px rgba(0,0,0,.13);
-    margin-top: -55px;
-    z-index: -1;
-    position: relative;
-  }
-  .selected {
-    background-color: none;
-    .build-circles {
-      background-color: none;
-    }
-  }
   .project {
     padding: 0;
     display: inline-block;
@@ -198,10 +183,6 @@
         }
       }
     }
-  }
-  .branch:hover span:last-child {
-    i { -webkit-text-stroke: 1px #ddd; -webkit-text-fill-color: @grayLightest; }
-    &:hover i { -webkit-text-stroke: 0; -webkit-text-fill-color: currentcolor; }
   }
   .branch {
     padding: 0 1.5em;
