@@ -73,6 +73,8 @@
       transition-duration       : (1s/3s);
       transition-timing-function: ease-in-out;
       text-shadow: 0 -1px 1px darken(saturate(@blueDark,8%),13%);
+      line-height: 1em;
+      padding: 1em 0;
       &:hover {
         background-color: darken(saturate(@blueDark,3%),3%);
         border-color: @blueDark;
@@ -136,9 +138,9 @@
     width: 100%;
     box-shadow: 1px 1px 0 #fff inset;
     .project-name {
-      line-height: 1em;
+      line-height: 3em;
       display: block;
-      padding: 1em;
+      padding-left: 1em;
       .box-sizing(border-box);
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -198,7 +200,7 @@
   }
   .branch-name {
     font-weight: normal;
-    line-height: 1.13em;
+    line-height: 2em;
     background:none;
     margin: 0;
     padding: 1em 0 1em 3em;
@@ -222,12 +224,13 @@
       border-radius: 3px;
       padding: 10px;
       border: 1px solid darken(@gray,5%);
+      line-height: 1em;
     }
   }
   .build-circles {
     float: right;
-    padding-right: 1em;
     .build-circle-container {
+      line-height: 2em;
       display: inline-block;
       margin: 0 0 0 -4px;
       i {
