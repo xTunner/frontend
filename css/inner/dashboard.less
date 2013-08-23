@@ -50,11 +50,8 @@
     .box-sizing(border-box);
   }
   .side-actions {
-    display: inline-block;
-    width: 100%;
     padding: 1em;
     .box-sizing(border-box);
-    float: left;
     button {
       #gradient.vertical(rgba(255,255,255,.05),rgba(0,0,0,.08));
       background-repeat: repeat-x;
@@ -66,8 +63,6 @@
       box-shadow: 0 1px 1px rgba(0,0,0,.21);
       color: #eee;
       .box-sizing(border-box);
-      padding: 1em .5em;
-      float: left;
       width: 50%;
       background-size: 100%;
       transition-duration       : (1s/3s);
@@ -76,6 +71,7 @@
       line-height: 1em;
       padding: 1em 0;
       margin-right: -4px; //removes hidden txt margin from browser
+      display: inline-block;
       &:hover {
         background-color: darken(saturate(@blueDark,3%),3%);
         border-color: @blueDark;
@@ -204,13 +200,13 @@
     line-height: 2em;
     background:none;
     margin: 0;
-    padding: 1em 0 1em 3em;
     overflow: hidden;
     .box-sizing(border-box);
     //display: block;  // firefox doesn't like blocks pushing floating elements
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block; // fix for firefox block/float bug
+    width: 66%;
     margin-right: -4px; //removes hidden txt margin from browser
   }
   .tooltip {
@@ -230,7 +226,6 @@
     }
   }
   .build-circles {
-    float: right;
     .build-circle-container {
       line-height: 2em;
       display: inline-block;
