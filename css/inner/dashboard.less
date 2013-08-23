@@ -246,9 +246,7 @@
       }
     }
     a {
-      transition-duration: .2s;
-      transition-property: color;
-      transition-timing-function: ease-in-out;
+      transition-duration: color .2s ease-in-out;
       display: inline-block;
       .box-sizing(border-box);
       margin: 0 0 0 -4px;
@@ -257,8 +255,6 @@
         text-decoration: none;
         color: inherit;
         transition-duration: .4s;
-        transition-property: color;
-        transition-timing-function: ease-in-out;
       }
       &:hover i:not(.icon-refresh) {
         -webkit-text-stroke: 0;
