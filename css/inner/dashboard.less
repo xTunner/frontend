@@ -72,6 +72,9 @@
       padding: 1em 0;
       margin-right: -4px; //removes hidden txt margin from browser
       display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       &:hover {
         background-color: darken(saturate(@blueDark,3%),3%);
         border-color: @blueDark;
@@ -140,6 +143,9 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       color: @dash-grayDark;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       &:hover {
         color: @link-blue;
         transition-duration: .1s;
