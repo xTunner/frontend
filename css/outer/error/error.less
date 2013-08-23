@@ -1,40 +1,23 @@
-#error-page {
+.notfound {
 
-  // Message box
-  #content {
-    background: #F2F2F2;
-    background: rgba(0, 0, 0, 0.02);
-    position: relative;
-    height: 225px;
-    width: 100%;
-    top: 75px;
-    border: 1px solid #E6E6E6;
-
-    & > section {
-      .container;
-      padding-bottom: 75px;
+  h2, h3 {
+    a {
+      text-decoration: underline;
     }
+    font-size: 36px;
+    text-align: center;
+  }
 
-    .story { margin-top: 28px; }
+  h1 {
+    font-size: 90px;
+    line-height: 80px;
+  }
 
-    h1 {
-      line-height: normal;
-      font-size: 92px;
-      margin: 0 auto 0;
-      color: #444;
-      text-align: center;
-      text-shadow: 0 1px 1px white;
-
-      & + p {
-        color: #444;
-        margin-top: 0;
-        margin-bottom: 0;
-        font-weight: 400;
-        font-size: 24px;
-        line-height: 54px;
-        text-align: center;
-        text-shadow: 0 1px 1px white;
-      }
-    }
+  .content p {
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 26px;
+    padding: 0 200px;
+    text-align: center;
   }
 }

@@ -1,0 +1,26 @@
+.container
+  %h1
+    Ship better code,
+    %em faster
+
+  %h3 Powerful Continuous Integration and Deployment for web applications.
+
+  .row-fluid.how
+    .span4
+      %figure
+        %img{height: "150", src: '(data-uri "img/outer/home/github.png" 150 150)', width: "150"}
+      %h4 Push your new code to GitHub
+
+    .span4
+      %figure
+        %img{height: "150", src: '(data-uri "img/outer/home/cucumber-output.png" 150 150)', width: "150"}
+      %h4 Your tests run on the CircleCI platform
+
+    .span4
+      %figure
+        %img{height: "150", src: '(data-uri "img/outer/home/deploy.png" 150 150)', width: "150"}
+      %h4 Deploy green builds to your servers
+
+  .row-fluid
+    .hero-unit-cta
+      = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})

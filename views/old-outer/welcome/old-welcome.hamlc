@@ -1,0 +1,4 @@
+= HAML.old_home_github_modal()
+
+%div{ data-bind:"if: from_heroku" }
+  = HAML.old_heroku_header()

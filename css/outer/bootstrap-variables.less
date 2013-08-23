@@ -22,8 +22,6 @@
 @grayDark:              #333;
 @gray:                  #555;
 @grayLight:             #999;
-@gray:                  #777; // circle
-@grayLight:             #ccc; // circle
 @grayLighter:           #eee;
 @white:                 #fff;
 
@@ -32,11 +30,6 @@
 // -------------------------
 @blue:                  #049cdb;
 @blueDark:              #0064cd;
-@blueDarker:            #1b4f8a; // circle
-@blueDark:              #366aa4; // circle
-@blue:                  #586e8a; // circle
-@blueLight:             #d7dce3; // circle
-@blueLighter:           #eff2f6; // circle
 @green:                 #46a546;
 @red:                   #9d261d;
 @yellow:                #ffc40d;
@@ -55,27 +48,21 @@
 // -------------------------
 @linkColor:             #08c;
 @linkColorHover:        darken(@linkColor, 15%);
-@linkColor:               @blueDark; // circle
-@linkColorHover:          @blueDarker; // circle
 
 
 // Typography
 // -------------------------
 @sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
-@sansFontFamily:        "Open Sans", sans-serif; // circle
+@sansFontFamily:        'Ubuntu', sans-serif; // circle
 @serifFontFamily:       Georgia, "Times New Roman", Times, serif;
 @monoFontFamily:        Monaco, Menlo, Consolas, "Courier New", monospace;
-@monoFontFamily:        Menlo, Monaco, Consolas, "Courier New", monospace; // circle
 
 @baseFontSize:          14px;
-@baseFontSize:          15px; // circle
 @baseFontFamily:        @sansFontFamily;
 @baseLineHeight:        20px;
-@baseLineHeight:        18px; // circle
 @altFontFamily:         @serifFontFamily;
 
 @headingsFontFamily:    inherit; // empty to use BS default, @baseFontFamily
-@headingsFontFamily:    "Lato", sans-serif; // circle
 @headingsFontWeight:    bold;    // instead of browser default, bold
 @headingsColor:         inherit; // empty to use BS default, @textColor
 
@@ -109,6 +96,7 @@
 @btnBackground:                     @white;
 @btnBackgroundHighlight:            darken(@white, 10%);
 @btnBorder:                         #bbb;
+@btnBorder:                         #ccc; // circle
 
 @btnPrimaryBackground:              @linkColor;
 @btnPrimaryBackgroundHighlight:     spin(@btnPrimaryBackground, 20%);

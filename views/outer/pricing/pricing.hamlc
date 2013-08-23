@@ -1,7 +1,9 @@
-#title
-  %h1 Plans and Pricing
+.page.pricing
+  %header
+    .container
+      %h1 Plans and Pricing
 
-#content.row{data-bind: "with: $root.billing"}
-  #billing.offset1
-    = HAML['account_plans_table']()
-    = HAML['account_plans_common_questions']()
+  .container.content{data-bind: "with: $root.billing"}
+    = HAML.pricing_plans()
+    = HAML.pricing_features()
+    = HAML.pricing_faq()

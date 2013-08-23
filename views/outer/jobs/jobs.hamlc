@@ -1,18 +1,18 @@
-#title
-  %h1 We're <strong>hiring</strong>.
-
-#content
-  .headers
+.jobs.page
+  %header
     .container
-      = HAML['jobs_header']()
+      %h1 We're hiring.
+      %h3 We're currently looking for great designers and front-end developers.
 
-  .container{role: "main"}
-    %section.jobs
+  .container.content
+    .row
+      %h2
+        Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
+
       = HAML['jobs_intro']()
       = HAML['jobs_who']()
       = HAML['jobs_values']()
       = HAML['jobs_where']()
       = HAML['jobs_how']()
 
-      %h2
-        <strong>No recruiters</strong>, thank you.
+      %h2 No recruiters, thank you.

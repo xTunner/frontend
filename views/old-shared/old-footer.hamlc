@@ -1,0 +1,40 @@
+#footer
+  %footer
+    %span &copy; 2013 CircleCI.com
+
+    %nav
+      %ul
+        %li
+          %a{ href: '/', title: 'Go to the Circle homepage' }
+            Home
+        -#%li
+          %a{ href: 'http://twitter.com/circleci', title: 'Check for status updates on our twitter feed' }
+            Status
+        %li
+          %a{ href: 'https://www.hipchat.com/gjwkHcrD5', target: "_blank", title: 'Go to our pre-sales support chatroom' }
+            Live support
+        %li
+          %a{ href: '/privacy#privacy', title: 'Read our Privacy Policy' }
+            Privacy
+        %li
+          %a{ href: '/privacy#security', title: 'Read our Security Policy' }
+            Security
+        %li
+          %a{ href: '/about#contact', title: 'Contact us in more ways' }
+            Contact
+        %li{ data-bind:"ifnot: from_heroku" }
+          %a{ href: '/pricing', title: 'See our plans and prices' }
+            Pricing
+        %li
+          %a{ href: '/docs', title: 'Documentation' }
+            Docs
+        %li
+          %a{ href: '/jobs', title: 'Come work at CircleCI' }
+            Jobs
+        %li
+          %a.ficon.em{ href: 'mailto:sayhi@circleci.com' }
+            Email
+        %li.twitter-follow
+          %a.twitter-follow-template{ style: "display:none;", href: "//twitter.com/CircleCI", data-show-count: "false"}
+            Follow @CircleCI
+          #twitter-follow-template-div

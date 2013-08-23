@@ -1,28 +1,25 @@
-#title
-  %h1
-    %a{href: "/docs"} Documentation
+.page.docs
+  %header
+    .container
+      %h1 Documentation
 
-#content
-  %section.article
-    = HAML['categories']({categories: @categories})
-    %article
-      - unless @article.slug? and @article.slug == "front_page"
-        = HAML['docs_search_form']()
+  .container.content
+    .row
+      %aside.span3
+        = HAML['categories']({categories: @categories})
 
-      .title
-        %h1= @article.title
-        - if @article.lastUpdated
-          %p.lastupdated
-            Last Updated:
-            = @article.lastUpdated
+      .span8.offset1
+        - unless @article.slug? and @article.slug == "front_page"
+          = HAML['docs_search_form']()
+
+        %article
+          = HAML.docs_title(@)
+
+          - if @article.slug? and @article.slug == "front_page"
+            = HAML['docs_search_form'](@)
 
 
-      - if @article.slug? and @article.slug == "front_page"
-        %br
-        = HAML['docs_search_form']()
-
-      .doc
-        - if @article.category
-          = HAML['article_list'](@)
-        - else
-          = HAML[@article.slug](@)
+          - if @article.category
+            = HAML['article_list'](@)
+          - else
+            = HAML[@article.slug](@)

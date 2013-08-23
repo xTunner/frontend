@@ -19,14 +19,15 @@
           %a{data-bind: "attr: { href: url }"}
             %span{data-bind: "text: title"}
 
-%div.article_list.problems
-  %h4 Having problems? You'll probably need these:
-  .box
-    %h5 Getting started
+
+.row
+  %h4 Having problems? Check these sections
+  %ul.articles.span4
+    %h4 Getting started
     - if VM?
       = HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
 
-  .box
-    %h5 Troubleshooting
+  %ul.articles.span4
+    %h4 Troubleshooting
     - if VM?
       = HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})
