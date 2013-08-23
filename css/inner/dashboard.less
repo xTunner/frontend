@@ -222,9 +222,9 @@
     .box-sizing(border-box);
     text-align: right;
     display: inline-block;
-    &:hover a:last-child i {
-      -webkit-text-stroke: 1px #ddd;
+    &:hover a:last-child i:not(.icon-spin) {
       -webkit-text-fill-color: @grayLightest;
+      -webkit-text-stroke: 1px #ddd;
     }
     i {
       color: @grayLighter;
@@ -240,8 +240,8 @@
       -webkit-perspective: 1000;
          -moz-perspective: 1000;
               perspective: 1000;
-      &:hover {
-        .scale(1.3);
+      &:not(.icon-refresh):hover {
+        .scale(1.34);
         text-shadow: 0 1px #ddd, 0 2px #f3f3f3, 0 3px #f9f9f9;
       }
     }
@@ -251,16 +251,20 @@
       .box-sizing(border-box);
       margin-right: -4px;
       width: 20%;
-      &:hover {
+      &:not(.running):hover {
         text-decoration: none;
         color: inherit;
         transition-duration: .4s;
       }
       &:hover i:not(.icon-refresh) {
-        -webkit-text-stroke: 0;
         -webkit-text-fill-color: currentcolor;
+        -webkit-text-stroke: 0;
       }
-      &:last-child i {
+      &:last-child i:not(.icon-spin) {
+        -webkit-text-fill-color: currentcolor;
+        -webkit-text-stroke: 0;
+      }
+      &:last-child:hover i:not(.icon-spin) {
         -webkit-text-fill-color: currentcolor;
         -webkit-text-stroke: 0;
       }
