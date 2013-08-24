@@ -23,4 +23,4 @@
 
   .row-fluid
     .hero-unit-cta
-      = HAML.home_cta({first: true, text: VM.ab().first_cta_button_text()})
+      = HAML.home_cta({first: true, text: CI.outer.Home.cta_text()})
