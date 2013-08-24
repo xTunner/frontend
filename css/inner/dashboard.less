@@ -362,24 +362,6 @@
       line-height: 2.75em;
       padding: 0 .5em;
     }
-    &:first-child:before, &:last-child:before {
-      content: "";
-      background: inherit;
-      box-shadow: inherit;
-      border-top: inherit;
-      width: 5px;
-      height: 100%;
-      top: -1px;
-      position: absolute;
-      .box-sizing(border-box);
-      transition: inherit;
-    }
-    &:first-child:before {
-      left: -5px;
-    }
-    &:last-child:before {
-      right: -5px;
-    }
   }
   .build_status {
     text-align: center;
