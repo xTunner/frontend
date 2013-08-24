@@ -8,7 +8,7 @@
     = HAML['action_sidebar']({})
     = HAML['followed_sidebar']({})
 
-  .dash-wrap.clearfix
+  .dash-wrap
     = HAML['flashes']({})
 
     .dashboard-main
