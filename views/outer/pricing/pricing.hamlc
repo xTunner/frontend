@@ -1,7 +1,13 @@
 .page.pricing
   %header
     .container
+      / ko if: VM.ab().pricing_maintain_infrastructure
+      %h1 Why Waste Expensive Time Maintaining Build Infrastructure?
+      / /ko
+      / ko ifnot: VM.ab().pricing_maintain_infrastructure
       %h1 Plans and Pricing
+      / /ko
+
 
   .container.content{data-bind: "with: $root.billing"}
     = HAML.pricing_plans()

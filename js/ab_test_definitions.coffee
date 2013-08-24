@@ -15,6 +15,7 @@ exports.ab_test_definitions =
     stripe_v3: [true, false]
     use_ks_outer: [true, false]
     first_cta_button_text: ["RUN YOUR TESTS", "Take 14 days to try us out - Start Here", HAML.home_first_cta3()]
+    pricing_maintain_infrastructure: [true, false]
 
   overrides:
     [
