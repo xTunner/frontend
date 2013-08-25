@@ -252,6 +252,8 @@
       &.icon-refresh {
         -webkit-text-fill-color: currentcolor;
         -webkit-text-stroke: 0;
+        -webkit-transform-origin: 52% 48%;
+                transform-origin: 52% 48%;
       }
       &:not(.icon-spin) {
         transition: all .1s ease-in-out;
@@ -268,6 +270,7 @@
       .box-sizing(border-box);
       margin-left: -4px;
       width: 20%;
+      overflow: hidden;
       &:not(.running):hover {
         text-decoration: none;
         color: inherit;
