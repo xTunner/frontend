@@ -312,20 +312,16 @@
     }
   }
   table {
-    padding: 0 .5em;
     border-collapse: separate;
-    width: 100%;
     color: lighten(@dash-gray,13%);
     background: @grayLightest;
-    .box-sizing(border-box);
-    margin: 0;
     overflow: hidden;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
-    box-shadow: 0 1px 0 #fff inset,
-                1px 1px 0 @grayBorder,
-                2px 2px 0 @grayBorder,
-                3px 3px 0 darken(@grayBorder,2%);
+    box-shadow: 0   1px @white inset,
+                1px 1px @grayBorder,
+                2px 2px @grayBorder,
+                3px 3px darken(@grayBorder,2%);
   }
   th {
     padding: .5em;
