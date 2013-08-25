@@ -249,6 +249,10 @@
       -webkit-perspective: 1000;
          -moz-perspective: 1000;
               perspective: 1000;
+      &.icon-refresh {
+        -webkit-text-fill-color: currentcolor;
+        -webkit-text-stroke: 0;
+      }
       &:not(.icon-spin) {
         transition: all .1s ease-in-out;
       }
@@ -269,11 +273,11 @@
         color: inherit;
         transition-duration: .4s;
       }
-      &:hover i:not(.icon-refresh) {
+      &:hover i {
         -webkit-text-fill-color: currentcolor;
         -webkit-text-stroke: 0;
       }
-      &:last-child i:not(.icon-spin) {
+      &:last-child i {
         -webkit-text-fill-color: currentcolor;
         -webkit-text-stroke: 0;
       }
