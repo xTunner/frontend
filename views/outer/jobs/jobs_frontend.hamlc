@@ -1,14 +1,12 @@
 .accordion-group
   .accordion-heading
-    %h3
-      %a.accordion-toggle{data-toggle: "collapse",
-                          data-parent: "#accordion-who",
-                          href: "#collapseFrontend"}
-        %i.icon-caret-right
-        For frontend devs
+    %a.accordion-toggle{"data-parent" => "#openings",
+                        "data-toggle" => "collapse",
+                        :href => "#jobThree"} For front-end developers
 
-  .accordion-body.collapse#collapseFrontend
+  #jobThree.accordion-body.collapse
     .accordion-inner
+      %h4 What our perfect front-end developer will have:
       %ul
         %li knowledge of common HTML5 implementation strategies,
         %li experience building fat JS apps,
@@ -18,6 +16,4 @@
         %li good knowledge of algorithmic design and CS theory (informally, CS degree not required),
         %li good UX sensibilities,
         %li preferred if you aren't awful at visual design so that prototypes can be shipped and iterated on afterwards.
-
-      %p
-        Backend knowledge is not required, but we expect that you're not helpless if a change requires simple backend changes.
+      %p Backend knowledge is not required, but we expect that you're not helpless if a change requires simple backend changes.

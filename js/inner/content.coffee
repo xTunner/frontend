@@ -34,8 +34,7 @@ You queue them up, we'll knock 'em down."
   },
   {
     headline: "Lightning fast hardware",
-    detail: "We have the fastest test infrastructure around.
-Running on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test service."
+    detail: "We have the fastest test infrastructure around. Running on Sandybridge Xeons, with tons of RAM, and hardcore IO tuning for your databases, you won't find a faster test service."
   },
   {
     headline: "Incredible test optimizations",

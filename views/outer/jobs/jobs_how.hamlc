@@ -1,21 +1,18 @@
-%section
-  %h2 How to apply
+%section.clearfix
+  %h3 How to apply
+  %p
+    Send an email to
+    = succeed ",", ->
+      %a{:href => "jobs@circleci.com"} jobs@circleci.com
+    including a resume. We're mostly interested in seeing proof that you're brilliant. This might include great projects you've worked on, a portfolio, open source you've contributed to, your grades at MIT, that you got hired by Google, or anything that hints that you might be particularly brilliant. We're also interested in reading about technologies you've worked with in the past, and what you did with them.
 
   %p
-    Send an email to <a href="mailto:jobs@circleci.com">jobs@circleci.com</a>, including a resume.
-    We're mostly interested in seeing proof that you're brilliant.
-    This might include great projects you've worked on, a portfolio, open source you've contributed to, your grades at MIT, that you got hired by Google, or anything that hints that you might be particularly brilliant.
-    We're also interested in reading about technologies you've worked with in the past, and what you did with them.
+    The best applicants pitch us as to why they should work at Circle. This is both why you're interested, and why you think you'd be a good part of the team. (We know this is a great market for developers, but we like folks who know why they want to work here). If all goes well we're going to spend a lot of time together, so its worth it for both of us to discuss this in advance.
 
   %p
-    The best applicants pitch us as to why they should work at Circle.
-    This is both why you're interested, and why you think you'd be a good part of the team.
-    (We know this is a great market for developers, but we like folks who know why they want to work here).
-    If all goes well we're going to spend a lot of time together, so its worth it for both of us to discuss this in advance.
+    Naturally, this goes both ways. We're happy to answer any questions you have about Circle, where we're going, why it's a great place to work, and what we're doing to keep it that way.
 
-  %p
-    Naturally, this goes both ways.
-    We're happy to answer any questions you have about Circle, where we're going, why it's a great place to work, and what we're doing to keep it that way.
+
 
 -# %section.application
 -#   %h2 The application process

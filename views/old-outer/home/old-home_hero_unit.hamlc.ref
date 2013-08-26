@@ -13,7 +13,6 @@
       .span4
         .center
           = HAML.github_image()
-
         %h3
           %span 1
           Push your new code to GitHub
@@ -33,4 +32,4 @@
           Deploy green builds to your servers
 
 .hero-unit-cta
-  = HAML.home_cta({first: true, text: "RUN YOUR TESTS"})
+  = HAML.old_home_cta({first: true, text: "RUN YOUR TESTS"})

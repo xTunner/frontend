@@ -1,0 +1,38 @@
+.row
+  %p.intro
+    All plans include
+    = succeed ".", ->
+      %strong free, 14-day trial
+
+  / ko foreach: plans
+  %div.span3.plan{data-bind: "css: {recommended: $data.default}"}
+    %h2{data-bind: "text: name"}
+    %h4{data-bind: "text: why"}
+    %p
+      %span{data-bind: "ifnot: enterprise_p"}
+        %strong
+          %span{data-bind: "money: price"}
+        \/ month
+      %span{data-bind: "if: enterprise_p"}
+        Request a quote by contacting us
+
+    %ul
+      %li
+        Includes
+        %span{data-bind: "text: freeContainersDescription"}
+
+      %li
+        Up to
+        = succeed '-way', ->
+          %span{data-bind: "text: max_parallelism"}
+        parallelism
+
+      %li
+        %span{data-bind: "text: projects"}
+        private repositories
+
+    %span{data-bind: "if: enterprise_p"}
+      %a.btn.btn-primary{href: "mailto:enterprise@circleci.com"} Contact us
+    %span{data-bind: "ifnot: enterprise_p"}
+      %a.btn.btn-primary{href: CI.github.authUrl()} Start your 14-day trial
+  / /ko

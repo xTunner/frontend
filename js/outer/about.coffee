@@ -27,12 +27,12 @@ CI.outer.About = class About extends CI.outer.Page
       github: "dlowe"
       twitter: "j_david_lowe"
       email: "dlowe@circleci.com"
-      photo: "david"
+      photo: "dlowe"
       bio: ["David is responsible for all of the bugs. He wrote his first buggy code in BASIC with a pencil and paper, and he's been getting better at it ever since. These days, he likes to split his time between telling kids to get off his lawn, introducing new bugs, and baking pies.",
             "David drank the automated testing kool-aid years ago. After introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle to do the same on a much larger scale."]
     ,
       name: "Jenneviere Villegas"
-      photo: "jenneviere"
+      photo: "jenn"
       visible: true
       role: "Operations"
       github: "jenneviere"

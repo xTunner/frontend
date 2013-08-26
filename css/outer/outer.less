@@ -1,60 +1,123 @@
-// Bootstrap
-// -------------------------
-@import "bootstrap-variables.less";
-@import "../shared/bootstrap-files.less";
+//
+// CircleCi branding
+// --------------------------------------------------
 
-// Image path helper
-// -------------------------
-@imgPath: "../../img";
+// Brand Colors
 
-// Navbar
-// -------------------------
-.navbar {
-  background: #134374;
+@circleBlue:        #084963;
+@circleBlueDark:    #04394e;
+@circleBlueLight:   #9ec5d4;
+@circleFont:        #646464;
+@circleAccent:      #d34913;
+@circleAccentText:  #fed8c9;
 
-  .container {
-    height: 50px;
+.outer {
+
+  a {
+    color: darken(@circleBlueLight, 20%);
   }
-}
 
-.navbar-inner {
-  margin-top: 4px;
-
-  .navbar-inverse & {
-    background-color: #4e7297;
-    background-image: url("@{imgPath}/navbar-texture.png");
-    background-position-y: 1px;
-    border-bottom: 1px solid #214062;
-    border-top: 1px solid #0d2e50;
+  p, li {
+    color: @circleFont;
   }
+
+  strong {
+    color: #333;
+  }
+
+  h1 {
+    font-size: 44px;
+  }
+
+  h2 {
+    font-size: 30px;
+    line-height: 29px;
+  }
+
+  .landing h2, .landing h2 ~ h3, .security h2, .privacy h2, .about h2, .pricing h2 {
+    text-align: center;
+  }
+
+  .content {
+    margin-bottom: 50px;
+  }
+
+  form {
+    margin: 20px 0 0 0;
+  }
+
+  input[type=text], input[type=email] {
+    height: 30px;
+  }
+
+  input[type=text], input[type=email], textarea {
+    margin-bottom: 20px;
+    padding: 4px 10px;
+    background-color: lighten(@grayLighter, 3%);
+    border: none;
+    resize: none;
+    box-shadow: none;
+  }
+
+  label {
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    color: @gray;
+  }
+
+  button {
+    .border-radius(3px);
+  }
+
+  .btn {
+    line-height: 30px;
+  }
+
+  .btn, button {
+    border: none;
+    height: 30px;
+    text-shadow: none;
+    background: @circleBlue;
+    color: #6a93a3;
+  }
+
+  .btn:hover, .btn:focus, button:hover {
+    background: lighten(@circleBlue, 5%);
+    color: white;
+  }
+
+  .btn-primary, button.btn-primary {
+    background: @circleAccent;
+    color: @circleAccentText;
+    &:hover, &:focus {
+      background: lighten(@circleAccent, 5%);
+    }
+
+    i {
+      margin-right: 7px;
+      font-size: 1.1em;
+    }
+  }
+
+  h2 {
+    margin: 30px 0;
+  }
+
+  @import "shared/header.less";
+  @import "shared/footer.less";
+  @import "shared/flash.less";
+  @import "error/error.less";
+  @import "page.less";
+  @import "contact/contact.less";
+  @import "home/home.less";
+  @import "about/about.less";
+  @import "docs/docs.less";
+  @import "jobs/jobs.less";
+  @import "blog/blog.less";
+  @import "pricing/pricing.less";
+  @import "privacy/privacy.less";
+  @import "privacy/security.less";
+  @import "privacy/changelog.less";
 }
-
-html { height: 100%; }
-body {
-  padding: 0;
-  margin: 0;
-}
-
-// Legacy imports
-// -------------------------
-@import "../shared/grid";
-@import "../shared/blocks/header";
-@import "../shared/blocks/footer";
-@import "../shared/blocks/title";
-@import "../shared/blocks/flash";
-@import "../shared/blocks/wrap";
-@import "../shared/blocks/content";
-@import "../shared/syntax/solarized_light";
-
-@import "about/team";
-@import "jobs/jobs";
-@import "about/contact";
-@import "privacy/privacy";
-@import "docs/article";
-@import "docs/categories";
-@import "docs/sidebar";
-@import "docs/related";
-@import "error/error";
-@import "homeb.less"; // TODO: rename to home
-@import "../shared/functions";
-@import "../inner/billing";

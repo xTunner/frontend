@@ -3,7 +3,7 @@ CI.outer.Error = class Error extends CI.outer.Page
     @name = "error"
     @status = renderContext.status or 404
     @url = renderContext.githubPrivateAuthURL
-    @useStickyFooter = true
+
 
   title: =>
     titles =

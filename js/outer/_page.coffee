@@ -22,14 +22,22 @@ CI.outer.Page = class Page
     {}
 
   render: (cx) =>
-    params = $.extend renderContext, @viewContext(cx)
-    $('html').addClass('outer').removeClass('inner')
-    $('body').attr("id", "#{@name}-page")
-    $("#main").html HAML['header'](params)
-    $("#main").append HAML[@name](params)
-    if @useStickyFooter? and @useStickyFooter
-      $('#main > div').wrapAll "<div id='wrap' />"
-    $("#main").append HAML['footer'](params)
+    if VM.ab().use_ks_outer()
+      params = $.extend renderContext, @viewContext(cx)
+      $('html').addClass('outer').removeClass('inner')
+      $("#main").html HAML['header'](params)
+      $("#main").append HAML[@name](params)
+      $("#main").append HAML['footer'](params)
+    else
+      params = $.extend renderContext, @viewContext(cx)
+      $('html').addClass('old-outer').removeClass('inner')
+      $('body').attr("id", "#{@name}-page")
+      $("#main").html HAML['old_header'](params)
+      $("#main").append HAML["old_#{@name}"](params)
+      if @useStickyFooter? and @useStickyFooter
+        $('#main > div').wrapAll "<div id='wrap' />"
+      $("#main").append HAML['old_footer'](params)
+
 
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"
