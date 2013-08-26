@@ -26,7 +26,7 @@
 
         %div{data-bind: "if: has_followed_projects()"}
 
-          .offset5#days-in-trial{data-bind: "with: current_user"}
+          #days-in-trial{data-bind: "with: current_user"}
             %b{data-bind: "if: in_trial"}
               You have
               %span{data-bind: "text: days_left_in_trial"}
