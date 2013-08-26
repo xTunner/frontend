@@ -5,26 +5,33 @@
 @dash-grayDark:   #444;
 @link-blue:    #3e7bbe;
 
+.dark-links {
+  color: @dash-grayDark;
+  font-weight: normal;
+  text-decoration: none;
+  transition-duration: .3s;
+  transition-property: color;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    color: @link-blue;
+    transition-duration: .1s;
+    transition-property: color;
+    transition-timing-function: ease-in-out;
+  }
+}
+
 #dashboard {
   .clearfix();
   padding: 0 1%;
   padding: 0 1vw;
-  a {
-    color: @dash-grayDark;
-    font-weight: normal;
-    text-decoration: none;
-    transition-duration: .3s;
-    transition-property: color;
-    transition-timing-function: ease-in-out;
-    &:hover {
-      color: @link-blue;
-      transition-duration: .1s;
-      transition-property: color;
-      transition-timing-function: ease-in-out;
-    }
-  }
+
   li {
     line-height: 1em;
+  }
+  .builds-table {
+    a {
+      .dark-links;
+    }
   }
   aside {
     position: relative;
@@ -38,6 +45,7 @@
     border-radius: 4px;
     .box-sizing(border-box);
     a {
+      .dark-links;
       color: @dash-gray;
     }
     & > span {
