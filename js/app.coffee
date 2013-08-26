@@ -176,6 +176,12 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   has_no_followed_projects: () => @komp =>
     @followed_projects()().length == 0
 
+  show_add_projects: () => @komp =>
+    @has_no_followed_projects()() && _.isEmpty(@builds())
+
+  show_build_table: () => @komp =>
+    @has_followed_projects()() || not _.isEmpty(@builds())
+
   refresh_project_src: () => @komp =>
     if @refreshing_projects()
       "/img/ajax-loader.gif"

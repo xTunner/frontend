@@ -19,13 +19,13 @@
 
       %div{data-bind: "if: dashboard_ready"}
 
-        %div{data-bind: "if: has_no_followed_projects()"}
+        %div{data-bind: "if: show_add_projects()"}
           %h2 You don't have any projects in CircleCI!
           %p
             Why don't you add a repository or two on
             %a{href: "/add-projects"} the Manage Projects page?
 
-        %div{data-bind: "if: has_followed_projects()"}
+        %div{data-bind: "if: show_build_table()"}
 
           #days-in-trial{data-bind: "with: current_user"}
             %b{data-bind: "if: in_trial"}
