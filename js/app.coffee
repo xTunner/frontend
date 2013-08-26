@@ -43,9 +43,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
 
-    @project_dashboard_ready = @komp =>
-      @builds_have_been_loaded() && @project() && @project().project_name() is @selected().project_name
-
     if window.renderContext.current_user
       try
         olark 'api.box.hide'
