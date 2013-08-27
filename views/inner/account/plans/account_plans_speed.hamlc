@@ -59,6 +59,6 @@
         / /ko
 
         / ko if: total() < oldTotal()
-          We'll refund your card today, for the prorated difference between your new and old plans.
         %span.help-block
+          We'll credit your account, for the prorated difference between your new and old plans.
         / /ko
