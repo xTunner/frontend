@@ -1,0 +1,5 @@
+%span
+  It's Fast! Give it a Try
+%span{style: "display: block; padding-top: 5px"}
+  %em{style: "font-size: 14px"}
+    Next: Authorize GitHub

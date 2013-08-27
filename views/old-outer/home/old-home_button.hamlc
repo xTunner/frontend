@@ -2,14 +2,12 @@
 %a.btn.btn-jumbo.btn-action-orange{href: CI.github.authUrl(),
    data-bind: "track: 'Modal Join Open'",
    data-toggle: "modal",
-   data-target: "#githubModal",
-   title: @text}
+   data-target: "#githubModal"}
   = @text
 / /ko
 
 / ko ifnot: VM.ab().github_warning_modal
 %a.btn.btn-jumbo.btn-action-orange{href: CI.github.authUrl(),
-   data-bind: "track_link: 'Auth Github'",
-   title: @text}
+   data-bind: "track_link: 'Auth Github'"}
   = @text
 / /ko
