@@ -52,7 +52,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     CI.inner.VcsUrlMixin(@)
 
-    @parallelism_options = [1..24]
     # Make sure @parallel remains an integer
     @editParallel = @komp
       read: ->
@@ -76,6 +75,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @plan_max_speed = @komp =>
       if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
         @billing.chosenPlan().max_parallelism
+
+    @parallelism_options = @komp =>
+      if @plan_max_speed()
+        [1..Math.max(@plan_max_speed(), 24)]
+      else
+        [1..24]
 
     # Trial speed is counted as paid here
     @paid_speed = @komp =>
