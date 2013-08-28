@@ -25,4 +25,5 @@ exports.ab_test_definitions =
         github_warning_modal: false
         stripe_v3: false
         use_ks_outer: false
+        pricing_maintain_infrastructure: false
     ]
