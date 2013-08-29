@@ -31,11 +31,11 @@
   %li
     %code Kernel version: 3.2
   %li
-    %code git 1.7.9.5
+    %code= CI.Versions.v('git')
   %li
-    %code gcc 4.6.3-1ubuntu5
+    %code= CI.Versions.v('gcc')
   %li
-    %code g++ 4.6.3-1ubuntu5
+    %code= CI.Versions.v('g++')
   %li
     %code GNU make 3.81
 
@@ -87,7 +87,7 @@
   You do not need to anything to set this up.
   We have
   <code>phantomjs 1.9.0</code>,
-  %code casperjs 1.0.2
+  %code= CI.Versions.v('casperjs')
   and
   %code libwebkit (2.2.1-1ubuntu4)
   pre-installed,
@@ -121,117 +121,36 @@
   You can
   %a{ href: "/docs/configuration#ruby-version" }
   choose the exact version you need directly, from the following list:
-
   %ul
-    %li
-      %code 1.8.7-p302
-    %li
-      %code 1.8.7-p334
-    %li
-      %code 1.8.7-p352
-    %li
-      %code 1.8.7-p357
-    %li
-      %code 1.8.7-p358
-    %li
-      %code 1.8.7-p370
-    %li
-      %code 1.8.7-p371
-    %li
-      %code ree-1.8.7-2011.02
-    %li
-      %code ree-1.8.7-2011.03
-    %li
-      %code ree-1.8.7-2011.12
-    %li
-      %code ree-1.8.7-2012.02
-    %li
-      %code 1.9.2-p0
-      (should be avoided due to security problems)
-    %li
-      %code 1.9.2-p136
-    %li
-      %code 1.9.2-p180
-    %li
-      %code 1.9.2-p290
-    %li
-      %code 1.9.2-p320
-    %li
-      %code 1.9.3-p0-falcon
-    %li
-      %code 1.9.3-p0
-    %li
-      %code 1.9.3-p125
-    %li
-      %code 1.9.3-p125-perf
-    %li
-      %code 1.9.3-p194
-    %li
-      %code 1.9.3-p194-perf
-    %li
-      %code 1.9.3-p194-falcon
-    %li
-      %code 1.9.3-p286
-    %li
-      %code 1.9.3-p327
-    %li
-      %code 1.9.3-p327-falcon
-    %li
-      %code 1.9.3-p362
-    %li
-      %code 1.9.3-p374
-    %li
-      %code 1.9.3-p385
-    %li
-      %code 1.9.3-p392
-    %li
-      %code 1.9.3-p429
-    %li
-      %code 1.9.3-p448
-    %li
-      %code 2.0.0-p0
-    %li
-      %code 2.0.0-p195
-    %li
-      %code 2.0.0-p247
-    %li
-      %code jruby-1.7.0
-    %li
-      %code jruby-1.7.3
-    %li
-      %code jruby-1.7.4
+    - for v in CI.Versions.rubies
+      %li
+        %code= v
 
 %p
   By default we use
-  %code
+  %code<
     Ruby
     = CI.Versions.default_ruby
   unless we detect that you need Ruby 1.8.7, in which case we'll use
   = succeed '.', ->
-    %code
-      = CI.Versions.old_ruby
+    %code= CI.Versions.old_ruby
   This is installed via
   RVM (stable).
 
 %p
   We also have a number of Ruby commands pre-installed if you need to use them directly. They use Ruby
   = succeed '.', ->
-    = CI.Versions.default_ruby
+    %code= CI.Versions.default_ruby
 
 %ul
   %li
-    %code bundler 1.3.2
+    %code= CI.Versions.v('bundler')
   %li
-    %code cucumber 1.2.0
+    %code= CI.Versions.v('cucumber')
   %li
-    %code rspec 2.13
+    %code= CI.Versions.v('rspec')
   %li
-    %code rake 0.10.0.3
-
-
-
-
-
+    %code= CI.Versions.v('rake')
 
 
 %h3#nodejs node.js
