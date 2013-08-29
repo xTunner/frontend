@@ -1,5 +1,6 @@
 - @title = 'Test environment'
 - @lastUpdated = "Jul 23, 2013"
+- @v = CI.Versions
 
 %p
   Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
@@ -31,11 +32,11 @@
   %li
     %code Kernel version: 3.2
   %li
-    %code= CI.Versions.v('git')
+    %code= @v.v('git')
   %li
-    %code= CI.Versions.v('gcc')
+    %code= @v.v('gcc')
   %li
-    %code= CI.Versions.v('g++')
+    %code= @v.v('g++')
   %li
     %code GNU make 3.81
 
@@ -87,7 +88,7 @@
   You do not need to anything to set this up.
   We have
   <code>phantomjs 1.9.0</code>,
-  %code= CI.Versions.v('casperjs')
+  %code= @v.v('casperjs')
   and
   %code libwebkit (2.2.1-1ubuntu4)
   pre-installed,
@@ -122,35 +123,35 @@
   %a{ href: "/docs/configuration#ruby-version" }
   choose the exact version you need directly, from the following list:
   %ul
-    - for v in CI.Versions.rubies
+    - for r in @v.rubies
       %li
-        %code= v
+        %code= r
 
 %p
   By default we use
   %code<
     Ruby
-    = CI.Versions.default_ruby
+    = @v.default_ruby
   unless we detect that you need Ruby 1.8.7, in which case we'll use
   = succeed '.', ->
-    %code= CI.Versions.old_ruby
+    %code= @v.old_ruby
   This is installed via
   RVM (stable).
 
 %p
   We also have a number of Ruby commands pre-installed if you need to use them directly. They use Ruby
   = succeed '.', ->
-    %code= CI.Versions.default_ruby
+    %code= @v.default_ruby
 
 %ul
   %li
-    %code= CI.Versions.v('bundler')
+    %code= @v.v('bundler')
   %li
-    %code= CI.Versions.v('cucumber')
+    %code= @v.v('cucumber')
   %li
-    %code= CI.Versions.v('rspec')
+    %code= @v.v('rspec')
   %li
-    %code= CI.Versions.v('rake')
+    %code= @v.v('rake')
 
 
 %h3#nodejs node.js
@@ -164,39 +165,26 @@
   Currently we have
 
 %ul
-  %li
-    %code 0.6.18
-  %li
-    %code 0.8.2
-  %li
-    %code 0.8.12
-  %li
-    %code 0.8.19
-  %li
-    %code 0.8.22
-  %li
-    %code 0.10.0
-  %li
-    %code 0.10.5
-  %li
-    %code 0.10.11
+  - for n in @v.nodes
+    %li
+      %code= n
 
 %p
   If you do not specify a version, we use
   = succeed '.', ->
-    %code= CI.Versions.default_node
+    %code= @v.default_node
 
 
 %h3  Clojure
 %p
   We use
-  %code lein 2.0.0
+  %code= @v.v('lein')
   by default, and you can also use
   = succeed ",", ->
     %code lein16
   which is version
   = succeed ".", ->
-    1.6.1.1
+    = @v.lein_old
 
 %p
   You should specify your Clojure version in your
@@ -209,15 +197,15 @@
 %p
   We use
   = succeed ",", ->
-    %code python 2.7.3
+    %code= @v.v('python')
   by default, although you can
   = succeed '.', ->
     %a{href: "/docs/configuration#python-version"} control the version in your circle.yml file
   Packages can be installed using
-  %code pip 1.0
+  %code= @v.v('pip')
   and
   = succeed ".", ->
-    %code virtualenv 1.7.1.2
+    %code= @v.v('virtualenv')
 
 %p
   Supported versions are:
@@ -246,7 +234,7 @@
 %p
   We use
   = succeed ",", ->
-    %code php 5.3.10-1ubuntu3.5
+    %code= @v.v('php')
   by default, although you can
   = succeed '.', ->
     %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file
@@ -357,7 +345,7 @@
   %li
     %code
       solr
-      = CI.Versions.solr
+      = @v.solr
   %li
     %code beanstalkd 1.4.6
   %li

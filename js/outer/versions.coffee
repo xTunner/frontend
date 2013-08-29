@@ -3,6 +3,7 @@ CI.Versions =
     "#{v} #{CI.Versions[v]}"
 
   default_ruby: "1.9.3-p448"
+  old_ruby: "1.8.7-p358"
   rubies: [
     "1.8.7-p302",
     "1.8.7-p334",
@@ -42,16 +43,40 @@ CI.Versions =
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4"]
+  bundler: "1.3.2"
+  cucumber: "1.2.0"
+  rspec: "2.13"
+  rake: "0.10.0.3"
 
-  old_ruby: "1.8.7-p358"
+
   default_node: "0.8.12"
+  nodes: [
+    "0.6.18",
+    "0.8.2",
+    "0.8.12",
+    "0.8.19",
+    "0.8.22",
+    "0.10.0",
+    "0.10.5",
+    "0.10.11"]
+
+
+  lein: "2.0.0"
+  lein_old: "1.6.1.1"
+
+
+  default_python: "1.7.3"
+  python: "1.7.3"
+  pip: "1.0"
+  virtualenv: "1.7.1.2"
+
+
   default_php: "5.3.10-1ubuntu3.5"
+  php: "5.3.10-1ubuntu3.5"
+
+
   solr: "4.3.1"
   git: "1.8.3"
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.2"
-  bundler: "1.3.2"
-  cucumber: "1.2.0"
-  rspec: "2.13"
-  rake: "0.10.0.3"
