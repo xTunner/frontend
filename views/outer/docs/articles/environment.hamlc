@@ -243,7 +243,7 @@
 
 %p
   Supported versions are:
-  - php_versions = ["5.3.3", "5.3.10", "5.3.20", "5.3.25", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10", "5.4.11", "5.4.12", "5.4.13", "5.4.14", "5.4.15"]
+  - php_versions = @v.phps
   .row
     - cols = 4
     - per_col = (Math.ceil(php_versions.length / 4.0))
@@ -276,9 +276,9 @@
   %li
     %code openjdk6
   %li
-    %code ant 1.8.2
+    %code= @v.v('ant')
   %li
-    %code maven 3.0.4
+    %code= @v.v('maven')
 
 %p
   You can specify the following Java versions in your <code>circle.yml</code> file:
@@ -308,13 +308,13 @@
   We currently have a number of packages installed to help you test your backend applications, including:
 %ul
   %li
-    %code gcc 4.6.3-1ubuntu5
+    %code= @v.v('gcc')
   %li
-    %code g++ 4.6.3-1ubuntu5
+    %code= @v.v('g++')
   %li
-    %code golang go1
+    %code= @v.v('golang')
   %li
-    %code erlang r14b04
+    %code= @v.v('erlang')
 
 %h2#databases Databases and Services
 
@@ -323,39 +323,37 @@
 
 %ul
   %li
-    %code postgresql 9.2.0
+    %code= @v.v('postgresql')
     (including postgis 2.0 extensions)
 
   %li
-    %code mysql 5.5.29
+    %code= @v.v('mysql')
   %li
-    %code mongodb 2.4.1
+    %code= @v.v('mongodb')
   %li
-    %code riak 1.2.1
+    %code= @v.v('riak')
   %li
-    %code cassandra 1.2.2
+    %code= @v.v('cassandra')
   %li
-    %code redis 2.6.10
+    %code= @v.v('redis')
   %li
-    %code memcache 1.4.13-0ubuntu2
+    %code= @v.v('memcache')
   %li
-    %code sphinx 2.0.4-release
+    %code= @v.v('sphinx')
   %li
-    %code elasticsearch 0.90.2
+    %code= @v.v('elasticsearch')
   %li
-    %code
-      solr
-      = @v.solr
+    %code= @v.v('solr')
   %li
-    %code beanstalkd 1.4.6
+    %code= @v.v('beanstalkd')
   %li
-    %code couchbase 2.0.0
+    %code= @v.v('couchbase')
   %li
-    %code couchdb 1.2.1
+    %code= @v.v('couchdb')
   %li
-    %code neo4j 1.8.2
+    %code= @v.v('neo4j')
   %li
-    %code rabbitmq 3.0.3
+    %code= @v.v('rabbitmq')
 
 %p
   Both

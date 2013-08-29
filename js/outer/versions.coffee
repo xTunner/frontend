@@ -48,7 +48,6 @@ CI.Versions =
   rspec: "2.13"
   rake: "0.10.0.3"
 
-
   default_node: "0.8.12"
   nodes: [
     "0.6.18",
@@ -60,22 +59,40 @@ CI.Versions =
     "0.10.5",
     "0.10.11"]
 
-
   lein: "2.0.0"
   lein_old: "1.6.1.1"
-
+  ant: "1.8.2"
+  maven: "3.0.4"
 
   default_python: "1.7.3"
   python: "1.7.3"
   pip: "1.0"
   virtualenv: "1.7.1.2"
 
-
   default_php: "5.3.10-1ubuntu3.5"
   php: "5.3.10-1ubuntu3.5"
+  phps: ["5.3.3", "5.3.10", "5.3.20", "5.3.25", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10", "5.4.11", "5.4.12", "5.4.13", "5.4.14", "5.4.15"]
 
+  golang: 'go1'
+  erlang: 'r14b04'
 
   solr: "4.3.1"
+  postgresql: "9.2.0"
+  mysql: "5.5.29"
+  mongodb: "2.4.1"
+  riak: "1.2.1"
+  cassandra: "1.2.2"
+  redis: "2.6.10"
+  memcache: "1.4.13-0ubuntu2"
+  sphinx: "2.0.4-release"
+  elasticsearch: "0.90.2"
+  beanstalkd: "1.4.6"
+  couchbase: "2.0.0"
+  couchdb: "1.2.1"
+  neo4j: "1.8.2"
+  rabbitmq: "3.0.3"
+
+
   git: "1.8.3"
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
