@@ -64,8 +64,8 @@ CI.Versions =
   ant: "1.8.2"
   maven: "3.0.4"
 
-  default_python: "1.7.3"
-  python: "1.7.3"
+  default_python: "2.7.3"
+  python: "2.7.3"
   pip: "1.0"
   virtualenv: "1.7.1.2"
 
