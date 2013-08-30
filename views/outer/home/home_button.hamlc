@@ -8,6 +8,6 @@
 
 / ko ifnot: VM.ab().github_warning_modal
 %a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
-                             data-bind: "track_link: 'Auth Github'"}
+                             data-bind: "track_link: 'Auth GitHub'"}
   = @text
 / /ko
