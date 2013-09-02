@@ -16,6 +16,7 @@ exports.ab_test_definitions =
     use_ks_outer: [true, false]
     first_cta_button_text: ["A", "B", "C"]
     pricing_maintain_infrastructure: [true, false]
+    a_is_a: [true, false]
 
   overrides:
     [
