@@ -6,6 +6,7 @@ CI.inner.Org = class Org extends CI.inner.Obj
     paid: false
     plan: null
     subpage: "projects"
+    billing: null
 
   clean: () ->
     super
@@ -14,6 +15,9 @@ CI.inner.Org = class Org extends CI.inner.Obj
   constructor: (json) ->
 
     super json
+
+    @billing new CI.inner.Billing
+      organization: @name()
 
     # projects that have been turned into Project objects
     @project_objs = @komp =>

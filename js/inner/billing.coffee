@@ -18,6 +18,7 @@ CI.inner.Invoice = class Invoice extends CI.inner.Obj
   invoice_date: =>
     "#{@as_string(@date)}"
 
+# TODO: strip out most of billing and move it to Plan and Card
 CI.inner.Billing = class Billing extends CI.inner.Obj
   observables: =>
     stripeToken: null
@@ -41,8 +42,28 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     payor: null
     special_price_p: null
 
+    # org-plan data
+    organization: null
+    extra_ogranizations: []
+    trial_end: null
+    billing_name: null
+    billing_email: null
+    extra_data: null
+
+    # loaded (there has to be a better way)
+    plans_loaded: false
+    card_loaded: false
+    invoices_loaded: false
+    existing_plan_loaded: false
+    orgs_loaded: false
+    stripe_loaded: false
+
   constructor: ->
     super
+
+    @loaded = @komp =>
+      _.every ['plans', 'card', 'invoices', 'existing_plan', 'orgs', 'stripe'], (type) =>
+        @["#{type}_loaded"].call()
 
     @savedCardNumber = @komp =>
       return "" unless @cardInfo()
@@ -58,6 +79,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       if @chosenPlan()
         Math.max(0, @containers() - @chosenPlan().free_containers())
 
+    @paid = @komp =>
+      @chosenPlan() and @chosenPlan().type isnt 'trial'
+
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
@@ -70,42 +94,43 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     Math.max(0, (c - free_c) * plan.container_cost)
 
   calculateCost: (plan, containers) =>
-    unless plan
-      0
-    else
+    if plan
       plan.price + @containerCost(plan, containers)
+    else
+      0
 
   selectPlan: (plan, event) =>
     if plan.price?
-      if @wizardCompleted()
+      if @paid() # TODO: better way to get this info
         @oldPlan(@chosenPlan())
         @chosenPlan(plan)
-        $("#confirmForm").modal({keyboard: false})
+        $("#confirmForm").modal({keyboard: false}) # TODO: eww
       else
-        @createCard(plan, event)
+        #@createCard(plan, event)
+        @newPlan(plan, event)
     else
       VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
 
   cancelUpdate: (data, event) =>
-    $('#confirmForm').modal('hide')
+    $('#confirmForm').modal('hide') # TODO: eww
     @chosenPlan(@oldPlan())
 
   doUpdate: (data, event) =>
     @recordStripeTransaction event, null
-    $('#confirmForm').modal('hide')
+    $('#confirmForm').modal('hide') # TODO: eww
     if @wizardCompleted() # go to the speed nav
       # fight jQuery plugins with more jQuery
-      $("#speed > a").click()
+      $("#speed > a").click() # TODO: eww
 
   ajaxSetCard: (event, token, type) =>
     $.ajax
       type: type
-      url: "/api/v1/user/pay/card"
+      url: @apiURL("card")
       event: event
       data: JSON.stringify
         token: token
-      success: =>
-        @loadExistingCard()
+      success: (data) =>
+        @cardInfo(data)
 
   stripeDefaults: () =>
     key: @stripeKey()
@@ -133,30 +158,53 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     StripeCheckout.open($.extend @stripeDefaults(), vals)
 
+  ajaxNewPlan: (plan, token, event) =>
+    $.ajax
+      url: @apiURL('plan')
+      event: event
+      type: 'POST'
+      data: JSON.stringify
+        token: token
+        plan: plan.id
+      success: (data) =>
+        @chosenPlan(new CI.inner.Plan(data.template_properties, @))
+
+
+  newPlan: (plan, event) =>
+    vals =
+      panelLabel: 'Pay' # TODO: better label (?)
+      price: 100 * plan.price
+      description: "#{plan.name} plan"
+      token: (token) =>
+        @ajaxNewPlan(plan, token, event)
+
+    StripeCheckout.open(_.extend @stripeDefaults(), vals)
 
   load: (hash="small") =>
-    unless @loaded
+    # TODO: Make loaded meaningful, right now it just means that
+    # we triggered all the API calls
+    unless @loaded()
       @loadPlans()
       @loadPlanFeatures()
       @loadExistingCard()
       @loadInvoices()
       @loadExistingPlans()
-      @loadOrganizations()
+      @loadOrganizations()#
       @loadStripe()
-      @loaded = true
-
 
   stripeKey: () =>
     switch renderContext.env
       when "production" then "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
 
-
+  apiURL: (suffix) =>
+    "/api/v1/organization/#{@organization()}/#{suffix}"
 
   recordStripeTransaction: (event, stripeInfo) =>
+    # TODO: ewwwwwwwwwwww
     $('button').attr('disabled','disabled') # disable other buttons during payment
-    $.ajax(
-      url: "/api/v1/user/pay"
+    $.ajax
+      url: @apiURL('plan')
       event: event
       type: if stripeInfo then "POST" else "PUT"
       data: JSON.stringify
@@ -164,6 +212,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         plan: @chosenPlan().id
 
       success: () =>
+        # TODO: ew
         $('button').removeAttr('disabled') # payment done, reenable buttons
         @cardInfo(stripeInfo.card) if stripeInfo?
         @oldTotal(@total())
@@ -174,7 +223,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
         @advanceWizard()
         mixpanel.track("Paid")
-    )
     false
 
   advanceWizard: =>
@@ -190,28 +238,32 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     # can't change their containers. If we want a true result, we'll
     # have to restart the test with a different name.
     if false #VM.ab().stripe_v3()
-      $.getScript "https://checkout.stripe.com/v3/checkout.js"
+      $.getScript("https://checkout.stripe.com/v3/checkout.js")
+        .success(() => @stripe_loaded(true))
     else
-      $.getScript "https://checkout.stripe.com/v2/checkout.js"
+      $.getScript("https://checkout.stripe.com/v2/checkout.js")
+        .success(() => @stripe_loaded(true))
 
   loadPlanData: (data) =>
     @oldTotal(data.amount / 100)
-    @chosenPlan(new CI.inner.Plan(data.plan)) if data.plan
+    @chosenPlan(new CI.inner.Plan(data.template_properties, @)) if data.template_properties
     @containers(data.containers or 1)
-    @payor(data.payor) if data.payor
     @special_price_p(@oldTotal() <  @total())
 
   loadExistingPlans: () =>
-    $.getJSON '/api/v1/user/existing-plans', (data) =>
-      @loadPlanData data
-      if @chosenPlan()
-        @closeWizard()
+    $.getJSON @apiURL('plan'), (data) =>
+      @loadPlanData data if data
+      @existing_plan_loaded(true)
+      # TODO: figure out how I want to do this
+      # if @chosenPlan()
+      #   @closeWizard()
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
     $.getJSON '/api/v1/user/stripe-organizations', (data) =>
       @loadingOrganizations(false)
       @organizations(data)
+      @orgs_loaded(true)
 
   saveOrganizations: (data, event) =>
     $.ajax
@@ -239,18 +291,21 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         @loadExistingPlans()
 
   loadExistingCard: () =>
-    $.getJSON '/api/v1/user/pay/card', (card) =>
+    $.getJSON @apiURL('card'), (card) =>
       @cardInfo card
+      @card_loaded(true)
 
   loadInvoices: () =>
-    $.getJSON '/api/v1/user/pay/invoices', (invoices) =>
+    $.getJSON @apiURL('invoices'), (invoices) =>
       if invoices
         @invoices(new Invoice(i) for i in invoices)
+      @invoices_loaded(true)
 
 
   loadPlans: () =>
     $.getJSON '/api/v1/plans', (data) =>
-      @plans((new CI.inner.Plan(d) for d in data))
+      @plans((new CI.inner.Plan(d, @) for d in data))
+      @plans_loaded(true)
 
   loadPlanFeatures: () =>
     @planFeatures(CI.content.pricing_features)

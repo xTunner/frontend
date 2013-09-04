@@ -31,8 +31,11 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
-    @org_has_been_loaded = ko.observable(false)
     @builds_have_been_loaded = ko.observable(false)
+    @org_has_been_loaded = @komp =>
+      # TODO: extract the billing portion from the project/users portion
+      @org() && @org().billing() && @org().billing().loaded()
+
 
     # Tracks what page we're on (for pages we care about)
     @selected = ko.observable({})
@@ -249,7 +252,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
       @org().clean() if @org()
       @org(new CI.inner.Org data)
-      @org_has_been_loaded(true)
+      @org().billing().load()
       mixpanel.track("View Org", {"username": username})
       if callback? then callback()
 
@@ -260,7 +263,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     subpage_callback = () => @org().subpage(subpage)
 
     if !@org() or (@org().name() isnt username)
-      @org_has_been_loaded(false)
       @org().clean() if @org()
       @org(null)
 
@@ -296,9 +298,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
   loadExtraEditPageData: (subpage) =>
     if subpage is "parallel_builds"
-      @project().load_paying_user()
-      @project().load_billing()
-      @billing().load()
+      # TODO: fix this so that it loads billing info
+      # @project().load_paying_user()
+      # @project().load_billing()
+      # @billing().load()
     else if subpage is "api"
       @project().load_tokens()
     else if subpage is "env_vars"
@@ -334,8 +337,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     subpage or= "notifications"
     hash or= "meta"
 
-    if subpage.indexOf("plans") == 0
-      @billing().load()
+    # TODO: Tell the user that plan has been moved to the organization
+    # if subpage.indexOf("plans") == 0
+    #   @billing().load()
 
     if subpage.indexOf("notifications") == 0
       @current_user().syncGithub()
@@ -609,6 +613,8 @@ window.SammyApp = Sammy 'body', (n) ->
     # force them to inner.
     if VM.current_user
       return cx.redirect "/account/plans"
+
+    # TODO: move this out of billing somehow
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
     VM.pricing.display(cx)

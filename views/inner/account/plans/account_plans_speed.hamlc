@@ -8,7 +8,7 @@
         Other pushes will queue up waiting to be tested.
 
       %form
-        %select.span3{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
+        %select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
 
 
       %p.help-block

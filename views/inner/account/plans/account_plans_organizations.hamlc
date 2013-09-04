@@ -14,6 +14,7 @@
       %label.checkbox
         %input{type: "checkbox", data-bind: "checked: enabled"}
           %span{data-bind: "text: name"}
+      %a{data-bind: "attr: {href: '/gh/organizations/' + name + '/settings#credit-card'}, text: name"}
 
 
     .row
