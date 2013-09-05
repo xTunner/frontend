@@ -123,6 +123,10 @@
   .projects {
     list-style: none;
     margin: 0;
+    li:hover .nav-menu-icon, li:hover .toggle-show-branches {
+      transition: opacity .1s ease-in-out;
+      opacity: 1;
+    }
   }
   .project {
     padding: 0;
@@ -149,10 +153,6 @@
         color: @link-blue;
         transition-duration: .1s;
       }
-    }
-    &:hover .nav-menu-icon, &:hover .toggle-show-branches {
-      transition: opacity .1s ease-in-out;
-      opacity: 1;
     }
     .nav-menu-icon, .toggle-show-branches {
       transition: opacity .3s ease-in;
@@ -231,94 +231,109 @@
     }
   }
   .build-circles {
-    width: 34%;
-    .box-sizing(border-box);
-    float: right;
-    text-align: right;
     display: inline-block;
-    &:hover a:last-child i:not(.icon-spin) {
-      -webkit-text-fill-color: @grayLightest;
-      -webkit-text-stroke: 1px #ddd;
+    vertical-align: top;
+    text-align: right;
+    width: 34%;
+    height: 1.2em;
+    position: relative;
+    margin: .4em 0;
+    &:hover span:last-child a:not(:hover) {
+      color: @grayLightest;
+      text-shadow: 0  1px @grayLight,
+                   0 -1px @grayLight,
+                   1px  0 @grayLight,
+                  -1px  0 @grayLight;
     }
-    i {
-      color: @grayLighter;
-      display: block;
-      line-height: 2em;
+    span, a, i, i:before {
+      position: absolute;
+      height: 0;
+      top: 0;
+      left: 0;
       text-align: center;
-      -webkit-text-stroke: 1px #ddd;
-      -webkit-text-fill-color: @grayLightest;
-      -webkit-backface-visibility: hidden;
-         -moz-backface-visibility: hidden;
-              backface-visibility: hidden;
-      -webkit-perspective: 1000;
-         -moz-perspective: 1000;
-              perspective: 1000;
-      &.icon-refresh {
-        -webkit-text-fill-color: currentcolor;
-        -webkit-text-stroke: 0;
-        -webkit-transform-origin: 52% 48%;
-      }
-      &:not(.icon-spin) {
-        transition: all .1s ease-in-out;
-      }
-      &:not(.icon-refresh):hover {
-        .scale(1.34);
-        text-shadow: 0 1px #ddd, 0 2px #f3f3f3, 0 3px #f9f9f9;
-        transition-duration: .3s;
+      padding-bottom: 20%;
+      width: 20%;
+    }
+    span {
+      top: 50%;
+      -webkit-transform: translate3d(0, -50%, 0);
+              transform: translate3d(0, -50%, 0);
+      &:nth-last-of-type(5) {left:  0%;}
+      &:nth-last-of-type(4) {left: 20%;}
+      &:nth-last-of-type(3) {left: 40%;}
+      &:nth-last-of-type(2) {left: 60%;}
+      &:nth-last-of-type(1) {left: 80%;}
+      &:not(:last-child) a:not(:hover) {
+        color: @grayLightest;
+        text-shadow: 0  1px @grayLight,
+                     0 -1px @grayLight,
+                     1px  0 @grayLight,
+                    -1px  0 @grayLight;
       }
     }
     a {
-      transition: color .2s ease-in-out;
-      display: inline-block;
-      .box-sizing(border-box);
-      margin-left: -4px;
-      width: 20%;
-      overflow: hidden;
-      &:not(.running):hover {
-        text-decoration: none;
-        color: inherit;
-        transition-duration: .4s;
+      color: @grayLighter;
+      padding-bottom: 100%;
+      width: 100%;
+    }
+    i {
+      padding-bottom: 195%;
+      width: 195%;
+      left: -50%;
+      top: -50%;
+      font-size: 2em;
+      transition: -webkit-transform .1s ease-in;
+      transition:         transform .1s linear;
+      -webkit-transform: scale3d(.6, .6, 1);
+              transform: scale3d(.6, .6, 1);
+      &:hover {
+      transition-duration: .2s;
+      transition-timing-function: cubic-bezier(.55,-2,.55,3);
+        -webkit-transform: scale3d(.8, .8, 8);
+                transform: scale3d(.8, .8, 8);
       }
-      &:hover i {
-        -webkit-text-fill-color: currentcolor;
-        -webkit-text-stroke: 0;
+      &:active {
+      transition-timing-function: cubic-bezier(0,1,0,1);
+        -webkit-transform: scale3d(.7, .7, 7);
+                transform: scale3d(.7, .7, 7);
       }
-      &:last-child i {
-        -webkit-text-fill-color: currentcolor;
-        -webkit-text-stroke: 0;
+      &:before {
+        width: 100%;
+        padding-bottom: 100%;
+        line-height: 1.2em;
       }
-      &:last-child:hover i:not(.icon-spin) {
-        -webkit-text-fill-color: currentcolor;
-        -webkit-text-stroke: 0;
+      &.icon-refresh:before {
+        -webkit-animation: spin 1s infinite linear;
+                animation: spin 1s infinite linear;
       }
     }
     .success, .fixed {
-      &:hover i      { color            : @green            ;}
+      &:hover a      { color            : @green            ;}
       .tooltip-arrow { border-top-color : darken(@green,5%) ;}
       .tooltip-inner { background-color : @green            ;
                        border-color     : darken(@green,5%) ;}
-      &:last-child i { color            : @green            ;}
+      &:last-child a { color            : @green            ;}
     }
     .no_tests, .failed, .timedout, .canceled {
-      &:hover i      { color            : @red            ;}
+      &:hover a      { color            : @red            ;}
       .tooltip-arrow { border-top-color : darken(@red,5%) ;}
       .tooltip-inner { background-color : @red            ;
                        border-color     : darken(@red,5%) ;}
-      &:last-child i { color            : @red            ;}
+      &:last-child a { color            : @red            ;}
     }
     .running {
-      &:hover i      { color            : @blueDark            ;}
+      &:hover a      { color            : @blueDark            ;}
       .tooltip-arrow { border-top-color : darken(@blueDark,5%) ;}
       .tooltip-inner { background-color : @blueDark            ;
                        border-color     : darken(@blueDark,5%) ;}
-      &:last-child i { color            : @blueDark            ;}
+      &:last-child a { color            : @blueDark            ;}
     }
     .queued {
-      &:hover i      { color            : @dash-grayDark            ;}
+      &:hover a      { color            : @dash-grayDark            ;}
       .tooltip-arrow { border-top-color : darken(@dash-grayDark,5%) ;}
       .tooltip-inner { background-color : @dash-grayDark            ;
                        border-color     : darken(@dash-grayDark,5%) ;}
-      &:last-child i { color            : @dash-grayDark            ;}
+      &:last-child a { color            : @dash-grayDark            ;}
     }
   }
   table {
