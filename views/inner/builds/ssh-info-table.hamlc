@@ -1,5 +1,6 @@
-You can SSH into this build. Use the same SSH public key that you use for
-GitHub.
+%p
+  You can SSH into this build. Use the same SSH public key that you use for
+  GitHub.
 
 %div.ssh-info-table
   %dl.dl-horizontal{data-bind: "foreach: node"}
@@ -7,5 +8,6 @@ GitHub.
     %dd{data-bind: "css: { connected: $data.ssh_enabled }"
       %span.hi-daniel{data-bind: "text: $parent.ssh_connection_string($data)"}
 
-SSH boxes will stay up for 30 minutes. This build takes up one of your
-concurrent builds, so cancel it when you're done.
+%p
+  SSH boxes will stay up for 30 minutes. This build takes up one of your
+  concurrent builds, so cancel it when you're done.
