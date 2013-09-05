@@ -1,9 +1,11 @@
 .side-actions
-  %button#add-projects{onclick: "window.location='/add-projects';"}
-    %i.icon-plus
-      Projects
-  %button#invite{data-toggle: "modal", data-target: "#inviteForm"}
-    %i.icon-plus
-      Collaborator
+  %button#add-projects
+    %a{href: "/add-projects"}
+      %i.icon-plus
+      &nbsp;Projects
+  %button#invite
+    %a{data-toggle: "modal", data-target: "#inviteForm"}
+      .icon-plus
+      &nbsp;Collaborator
 %span{data-bind: "ifnot: projects_have_been_loaded"}
   = HAML['fast_spinner']()

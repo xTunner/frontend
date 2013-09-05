@@ -83,7 +83,7 @@
       transition-timing-function: ease-in-out;
       text-shadow: 0 -1px 1px darken(saturate(@blueDark,8%),13%);
       line-height: 1em;
-      padding: 1em 0;
+      padding: 0;
       margin-right: -4px; //removes hidden txt margin from browser
       display: inline-block;
       white-space: nowrap;
@@ -104,6 +104,21 @@
         background-size: 300%;
         text-shadow: 0 0 rgba(0,0,0,0);
         transition-duration: .1s;
+      }
+      a {
+        display: block;
+        line-height: 2.5em;
+        text-decoration: none;
+        color: darken(@white, 13%);
+        text-shadow: 0 -1px 1px darken(saturate(@blueDark,8%),13%);
+        &:hover {
+          color: @white;
+          text-shadow: 0 0 rgba(0,0,0,0);
+        }
+        &:active {
+          color: darken(@white, 5%);
+          text-shadow: 0 0 rgba(0,0,0,0);
+        }
       }
     }
   }
