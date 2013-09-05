@@ -404,13 +404,15 @@
       line-height: 1.5em;
       padding: .5em 0 .5em .5em;
     }
-    &:first-child {
-      padding-left: 1em;
+    &:first-child a {
       padding-left: 1vw;
     }
-    &:last-child a {
-      padding-right: .5em;
-      padding-right: .5vw;
+    &:last-child {
+      vertical-align: middle;
+      a {
+        padding: 0 5px;
+      }
+    }
     &:not(:last-child) a:after {
       content: "\000";
     }
