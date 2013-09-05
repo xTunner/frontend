@@ -22,7 +22,7 @@ CI.outer.Page = class Page
     {}
 
   render: (cx) =>
-    if VM.ab().use_ks_outer()
+    if VM.ab().new_outer_old_copy()
       params = $.extend renderContext, @viewContext(cx)
       $('html').addClass('outer').removeClass('inner')
       $("#main").html HAML['header'](params)

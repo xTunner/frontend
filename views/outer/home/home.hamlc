@@ -3,8 +3,7 @@
 
 .landing
   %div{ data-bind: "ifnot: from_heroku" }
-    %header
-      = HAML.home_hero_unit()
+    = HAML.home_hero_unit()
 
     = HAML.home_customers()
     = HAML.home_features()
