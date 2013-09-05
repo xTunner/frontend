@@ -6,8 +6,7 @@
     = HAML.home_hero_unit()
 
     = HAML.home_customers()
-    = HAML.home_features()
     = HAML.home_technologies()
-
+    = HAML.home_features()
 
   = HAML.home_github_modal()
