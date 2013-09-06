@@ -64,6 +64,3 @@
         %p
           Operations Engineer at
           %a{alt: "Kickstarter", href: "http://www.kickstarter.com/", title: "Kickstarter"} Kickstarter
-
-  %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    = HAML.home_cta({text: "Start your 14-day free trial now"})

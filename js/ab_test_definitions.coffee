@@ -8,7 +8,6 @@ exports = this
 exports.ab_test_definitions =
   options:
     github_warning_modal: [true, false]
-    home_extra_ctas: [true, false]
     home_speed_level: ["4-way", "8-way", "12-way"]
     stripe_v3: [true, false]
     new_outer_old_copy: [true, false]
