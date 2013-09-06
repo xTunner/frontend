@@ -1,8 +1,19 @@
 .row
+  / ko if: VM.ab().pricing_maintain_infrastructure
+  %div.intro
+    If your time is worth just $50 an hour, CircleCI pays for itself dozens of times over...
+    %em
+      each month!
+    %div
+      %strong
+        Free trial! No credit card required! Choose any plan - and cancel, downgrade or upgrade easily...
+  / /ko
+  / ko ifnot: VM.ab().pricing_maintain_infrastructure
   %p.intro
     All plans include
-    = succeed ".", ->
-      %strong free, 14-day trial
+    %strong free, 14-day trial.
+  / /ko
+
 
   / ko foreach: plans
   %div.span3.plan{data-bind: "css: {recommended: $data.default}"}

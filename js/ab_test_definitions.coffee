@@ -14,6 +14,9 @@ exports.ab_test_definitions =
     home_speed_level: ["4-way", "8-way", "12-way"]
     stripe_v3: [true, false]
     use_ks_outer: [true, false]
+    first_cta_button_text: ["A", "B", "C"]
+    pricing_maintain_infrastructure: [true, false]
+    a_is_a: [true, false]
 
   overrides:
     [
@@ -23,4 +26,5 @@ exports.ab_test_definitions =
         github_warning_modal: false
         stripe_v3: false
         use_ks_outer: false
+        pricing_maintain_infrastructure: false
     ]

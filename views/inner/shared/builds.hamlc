@@ -23,14 +23,14 @@
         %a{data-bind: "attr: { href: url, title: description(#{@mention_project}) }, text: description(#{@mention_project})"}
 
       %td
-        %a.text{data-bind: "attr: { href: url }, text: github_revision"}
+        %a.text{data-bind: "attr: { href: url, title: github_revision }, text: github_revision"}
       / ko if: VM.selected().mention_branch
       %td
-        %a.text{data-bind: "attr: { href: url }, text: branch_in_words"}
+        %a.text{data-bind: "attr: { href: url, title: branch_in_words }, text: branch_in_words"}
       / /ko
 
       %td
-        %a.text{data-bind: "attr: { href: url }, text: author" }
+        %a.text{data-bind: "attr: { href: url, title: author }, text: author" }
 
       %td
         / ko if: body
@@ -59,7 +59,7 @@
       / /ko
 
       %td.build_status
-        %a{data-bind: "attr: { href: url }"}
+        %a{data-bind: "attr: { href: url, title: status_words }"}
           %span{href: "#", data-bind: "text: status_words, css: style"} / href is needed to preserve style
 
       - if @actions
