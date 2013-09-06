@@ -27,7 +27,7 @@ CI.outer.Page = class Page
       $('html').addClass('outer').removeClass('inner')
       $("#main").html HAML['header'](params)
       $("#main").append HAML[@name](params)
-      $("#main").append HAML['footer'](params)
+      $("#main").append HAML['footer_nav'](params)
     else
       params = $.extend renderContext, @viewContext(cx)
       $('html').addClass('old-outer').removeClass('inner')
