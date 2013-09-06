@@ -4,6 +4,6 @@
   %p
     Circle supports deploying to any server, using custom commands.
     See
-    %a{ href: "https://circleci.com/docs/configuration#deployment"}
+    %a{href: "https://circleci.com/docs/configuration#deployment", target: "_blank"}<
       our deployment documentation
     to set it up.

@@ -4,6 +4,6 @@
   %p
     Circle supports saving files from any build.
     See
-    %a{ href: "/docs/build-artifacts"}
+    %a{ target: "_blank", href: "/docs/build-artifacts" }<
       our build artifact documentation
     to set it up.
