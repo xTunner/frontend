@@ -281,6 +281,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
+        @followed(data.followed)
         _gaq.push(['_trackEvent', 'Projects', 'Add'])
         if callback? then callback()
 
