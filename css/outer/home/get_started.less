@@ -3,11 +3,21 @@
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 18px;
     line-height: 28px;
-    background: #0066ff;  // url("@{imgPath}/outer/home/concentric-bg-3.png") no-repeat center -100px;
+    background: #04394e;
 
     .box {
+      text-align: center;
+      a.btn {
+        background-color: #d34913;
+        color: #eee;
+        &:hover {
+          background-color: #ea5116;
+          color: @white;
+        }
+      }
       ol {
         margin: 10px 0px 15px 17%;
+        text-align: left;
         li {
           font-size: 22px;
           line-height: 32px;
