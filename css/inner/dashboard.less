@@ -66,48 +66,10 @@
   .side-actions {
     padding: 1em;
     .box-sizing(border-box);
-    button {
-      #gradient.vertical(rgba(255,255,255,.05),rgba(0,0,0,.08));
-      background-repeat: repeat-x;
-      background-color: @blueDark;
-      border-style: solid;
-      border-color: darken(@blueDark,8%);
-      border-width: 1px;
-      border-radius: 3px;
-      box-shadow: 0 1px 1px rgba(0,0,0,.21);
-      color: #eee;
-      .box-sizing(border-box);
-      width: 50%;
-      background-size: 100%;
-      transition-duration       : (1s/3s);
-      transition-timing-function: ease-in-out;
-      text-shadow: 0 -1px 1px darken(saturate(@blueDark,8%),13%);
-      line-height: 1em;
-      padding: 1em 0;
-      margin-right: -4px; //removes hidden txt margin from browser
-      display: inline-block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      &:hover {
-        background-color: darken(saturate(@blueDark,3%),3%);
-        border-color: @blueDark;
-        box-shadow: 0 0 rgba(0,0,0,0);
-        background-size: 300%;
-        transition-duration: (1s/8s);
-        color: @white;
-        text-shadow: 0 0 rgba(0,0,0,0);
-      }
-      &:active, &:focus {
-        background-color: darken(saturate(@blueDark,5%),8%);
-        box-shadow: 0 2px 3px rgba(0,0,0,.34) inset;
-        background-size: 300%;
-        text-shadow: 0 0 rgba(0,0,0,0);
-        transition-duration: .1s;
-      }
-    }
+    button { .button; }
   }
   #add-projects {
+    width: 50%;
     border-radius: 3px 0 0 3px;
     border-right-color: transparent;
     &:active, &:focus {
@@ -115,6 +77,7 @@
     }
   }
   #invite {
+    width: 50%;
     border-radius: 0 3px 3px 0;
     &:hover {
       border-left-color: darken(@blueDark,5%);
