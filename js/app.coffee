@@ -591,19 +591,26 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/docs(.*)", (cx) =>
     VM.docs.display(cx)
     mixpanel.track("View Docs")
+
   @get "^/about.*", (cx) =>
     VM.about.display(cx)
     mixpanel.track("View About")
+
   # @get "^/contact.*", (cx) =>
   #   VM.contact.display(cx)
   #   mixpanel.track("View Contact")
+
   @get "^/privacy.*", (cx) =>
     VM.privacy.display(cx)
     mixpanel.track("View Privacy")
+
   # @get "^/security.*", (cx) =>
   #   VM.security.display(cx)
   #   mixpanel.track("View Security")
-  @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+
+  @get "^/jobs.*", (cx) =>
+    VM.jobs.display(cx)
+
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
     # force them to inner.
@@ -627,7 +634,7 @@ window.SammyApp = Sammy 'body', (n) ->
   # valid posts, allow to propegate
   @post '^/logout', -> true
   @post '^/admin/switch-user', -> true
-  @post "^/about/contact", -> true # allow to propagate
+  @post "^/about/contact", -> true
 
   @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
 
