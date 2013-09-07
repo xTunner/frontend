@@ -43,6 +43,11 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
 
+    # user is looking at the project's summary, but hasn't followed it
+    @show_follow_project_button = @komp =>
+      @project() && !@project().followed() && @project().project_name() is @selected().project_name
+
+
     if window.renderContext.current_user
       try
         olark 'api.box.hide'
