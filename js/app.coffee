@@ -77,15 +77,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
-    @about = new CI.outer.About("about", "About Us")
-    @pricing = new CI.outer.Page("pricing", "Plans and Pricing")
-    @docs = new CI.outer.Docs("docs", "Documentation")
+    @about = new CI.outer.About("about", "About Us", "View About")
+    @pricing = new CI.outer.Page("pricing", "Plans and Pricing", "View Pricing Outer")
+    @docs = new CI.outer.Docs("docs", "Documentation", "View Docs")
     @error = new CI.outer.Error("error", "Error")
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
-    @privacy = new CI.outer.Page("privacy", "Privacy")
-#    @contact = new CI.outer.Page("contact", "Contact us")
-#    @security = new CI.outer.Page("security", "Security")
+    @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
+#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
+#    @security = new CI.outer.Page("security", "Security", "View Security")
 
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
@@ -590,23 +590,18 @@ window.SammyApp = Sammy 'body', (n) ->
   # outer
   @get "^/docs(.*)", (cx) =>
     VM.docs.display(cx)
-    mixpanel.track("View Docs")
 
   @get "^/about.*", (cx) =>
     VM.about.display(cx)
-    mixpanel.track("View About")
 
   # @get "^/contact.*", (cx) =>
   #   VM.contact.display(cx)
-  #   mixpanel.track("View Contact")
 
   @get "^/privacy.*", (cx) =>
     VM.privacy.display(cx)
-    mixpanel.track("View Privacy")
 
   # @get "^/security.*", (cx) =>
   #   VM.security.display(cx)
-  #   mixpanel.track("View Security")
 
   @get "^/jobs.*", (cx) =>
     VM.jobs.display(cx)
@@ -619,7 +614,7 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
     VM.pricing.display(cx)
-    mixpanel.track("View Pricing Outer")
+
 
   @post "^/heroku/resources", -> true
 
