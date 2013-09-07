@@ -87,9 +87,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 #    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
 #    @security = new CI.outer.Page("security", "Security", "View Security")
 
-    @query_results_query = ko.observable(null)
-    @query_results = ko.observableArray([])
-
   set_favicon_color: (color) =>
     $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=27"))
 
@@ -119,32 +116,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   # Keep this until backend has a chance to fully deploy
   refreshDashboard: () =>
     @refreshBuildState()
-
-  performDocSearch: (query) =>
-    $.ajax
-      url: "/search-articles"
-      type: "GET"
-      data:
-        query: query
-      success: (results) =>
-        window.SammyApp.setLocation("/docs")
-        @query_results results.results
-        @query_results_query results.query
-    query
-
-  searchArticles: (form) =>
-    @performDocSearch($(form).find('.search-query').val())
-    return false
-
-  suggestArticles: (query, process) =>
-    $.ajax
-      url: "/autocomplete-articles"
-      type: "GET"
-      data:
-        query: query
-      success: (autocomplete) =>
-        process autocomplete.suggestions
-    null
 
   testCall: (arg) =>
     alert(arg)
