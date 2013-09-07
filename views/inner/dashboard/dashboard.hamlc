@@ -10,9 +10,10 @@
     .shadowX
 
   .dash-wrap
-    = HAML['flashes']({})
-
     .dashboard-main
+
+      = HAML['flashes']({})
+
       %div{data-bind: "ifnot: dashboard_ready"}
         .centered-spinner
           = HAML['fast_spinner']()
