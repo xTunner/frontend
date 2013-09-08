@@ -1,7 +1,3 @@
-#billing{data-bind: "with: $root.billing"}
+Plans have moved to the Organizations settings page.
 
-  .paid{data-bind: "if: wizardCompleted"}
-    = HAML['account_plans_view']()
-
-  .not-paid{data-bind: "ifnot: wizardCompleted"}
-    = HAML['account_plans_wizard']()
+-# TODO: more info and links to their org settings pages
