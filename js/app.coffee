@@ -65,10 +65,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
-  authGitHubSlideDown: =>
-    mixpanel.track("Auth GitHub Modal Why Necessary")
-    $(".why_authenticate_github_modal").slideDown()
-
   refreshBuildState: () =>
     VM.loadProjects()
     VM.selected().refresh_fn() if VM.selected().refresh_fn
