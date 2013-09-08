@@ -33,7 +33,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @projects = ko.observableArray()
     @build_state = ko.observable()
     @org = ko.observable()
-    @admin = ko.observable()
+    @users = ko.observable()
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
@@ -273,18 +273,18 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     ko.applyBindings(VM)
 
 
-  loadAdminPage: (cx, subpage) =>
-    if subpage
-      subpage = subpage.replace('/', '')
-      $.getJSON "/api/v1/admin/#{subpage}", (data) =>
-        @admin(data)
-    @renderAdminPage subpage
+  loadAdminPage: (cx) =>
+    @renderAdminPage ""
+
+  loadAdminUsers: (cx) =>
+    $.getJSON "/api/v1/admin/users", (data) =>
+      @users(data)
+    @renderAdminPage "users"
 
   loadAdminBuildState: () =>
     $.getJSON '/api/v1/admin/build-state', (data) =>
       @build_state(data)
     @renderAdminPage "build_state"
-
 
   loadAdminProjects: (cx) =>
     $.getJSON '/api/v1/admin/projects', (data) =>
@@ -439,7 +439,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/logout', (cx) -> VM.logout cx
 
   @get '^/admin', (cx) -> VM.loadAdminPage cx
-  @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
+  @get '^/admin/users', (cx) -> VM.loadAdminUsers cx
   @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
   @get '^/admin/recent-builds', (cx) ->
     VM.loadAdminRecentBuilds()
