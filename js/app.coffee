@@ -1,6 +1,3 @@
-noop = () ->
-  null
-
 CI.ajax.init()
 
 setOuter = =>
@@ -11,14 +8,23 @@ display = (template, args) ->
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
 
+class CI.inner.CircleViewModel extends CI.inner.Foundation
 
-class CI.inner.CircleViewModel extends CI.inner.Obj
   constructor: ->
-    @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
-    @error_message = ko.observable(null)
-    @turbo_mode = ko.observable(false)
-    @from_heroku = ko.observable(window.renderContext.from_heroku)
-    @flash = ko.observable(window.renderContext.flash)
+    super()
+    @favicon = new CI.inner.Favicon(@selected)
+
+    # outer
+    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
+    @about = new CI.outer.About("about", "About Us", "View About")
+    @pricing = new CI.outer.Page("pricing", "Plans and Pricing", "View Pricing Outer")
+    @docs = new CI.outer.Docs("docs", "Documentation", "View Docs")
+    @error = new CI.outer.Error("error", "Error")
+
+    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
+#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
+#    @security = new CI.outer.Page("security", "Security", "View Security")
 
     # inner
     @build = ko.observable()
@@ -33,12 +39,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @build_has_been_loaded = ko.observable(false)
     @org_has_been_loaded = ko.observable(false)
     @builds_have_been_loaded = ko.observable(false)
-
-    # Tracks what page we're on (for pages we care about)
-    @selected = ko.observable({})
-
-    @navbar = ko.observable(new CI.inner.Navbar(@selected, @))
+    @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
     @billing = ko.observable(new CI.inner.Billing)
+
 
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
@@ -65,46 +68,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
-    @favicon_updator = @komp noop
-
-    @selected.subscribe (selected) =>
-      @favicon_updator.dispose()
-
-      if selected.favicon_updator?
-        @favicon_updator = @komp selected.favicon_updator
-      else
-        @reset_favicon()
-
-    # outer
-    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
-    @about = new CI.outer.About("about", "About Us", "View About")
-    @pricing = new CI.outer.Page("pricing", "Plans and Pricing", "View Pricing Outer")
-    @docs = new CI.outer.Docs("docs", "Documentation", "View Docs")
-    @error = new CI.outer.Error("error", "Error")
-
-    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
-    @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
-#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
-#    @security = new CI.outer.Page("security", "Security", "View Security")
-
-  set_favicon_color: (color) =>
-    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=27"))
-
-  build_favicon_updator: (build) =>
-    if build?
-      @set_favicon_color(build.favicon_color())
-
-  reset_favicon: () =>
-    @set_favicon_color() # undefined resets it
-
-  cleanObjs: (objs) ->
-    $.each objs, (i, o) ->
-      o.clean()
-
-  visit_local_url: (url) =>
-    path = URI(url).path()
-    SammyApp.setLocation path
-
   authGitHubSlideDown: =>
     mixpanel.track("Auth GitHub Modal Why Necessary")
     $(".why_authenticate_github_modal").slideDown()
@@ -116,20 +79,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   # Keep this until backend has a chance to fully deploy
   refreshDashboard: () =>
     @refreshBuildState()
-
-  testCall: (arg) =>
-    alert(arg)
-
-  clearErrorMessage: () =>
-    @error_message null
-
-  setErrorMessage: (message) =>
-    if message == "" or not message?
-      message = "Unknown error"
-    if message.slice(-1) != '.'
-      message += '.'
-    @error_message message
-    $('html, body').animate({ scrollTop: 0 }, 0);
 
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
@@ -367,60 +316,12 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     )
     false
 
-
-  raiseIntercomDialog: (message) =>
-    unless intercomJQuery?
-      notifyError "Uh-oh, our Help system isn't available. Please email us instead, at <a href='mailto:sayhi@circleci.com'>sayhi@circleci.com</a>!"
-      return
-
-    jq = intercomJQuery
-    jq("#IntercomTab").click()
-    unless jq('#IntercomNewMessageContainer').is(':visible')
-      jq('.new_message').click()
-    jq('#newMessageBody').focus()
-    if message
-      jq('#newMessageBody').text(message)
-
-  logout: (cx) =>
-    # TODO: add CSRF protection
-    $.post('/logout', () =>
-       window.location = "/")
-
-  unsupportedRoute: (cx) =>
-    throw("Unsupported route: " + cx.params.splat)
-
-  goDashboard: (data, event) =>
-    # signature so this can be used as knockout click handler
-    window.SammyApp.setLocation("/")
-
-  # use in ko submit binding, expects button to submit form
-  mockFormSubmit: (cb) =>
-    (formEl) =>
-      $formEl = $(formEl)
-      $formEl.find('button').addClass 'disabled'
-      if cb? then cb.call()
-      false
-
   loadRootPage: (cx) =>
     if VM.current_user
       VM.loadDashboard cx
     else
       VM.home.display cx
 
-  # For error pages, we are passed the status from the server, stored in renderContext.
-  # Because that will remain true when we navigate in-app, we need to make all links cause
-  # a page reload, by running SammyApp.unload(). However, the first time this is run is
-  # actually before Sammy 0.7.2 loads the click handlers, so unload doesn't help. To combat
-  # this, we disable sammy after a second, by which time the handlers must surely have run.
-  maybeRouteErrorPage: (cx) =>
-    if renderContext.status
-      @error.display(cx)
-      setInterval( =>
-        window.SammyApp.unload()
-      , 1000)
-      return false
-
-    return true
 
 window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
@@ -488,6 +389,7 @@ window.SammyApp = Sammy 'body', (n) ->
         page: "account"
         favicon_updator: VM.reset_favicon
       VM.loadAccountPage cx, cx.params.splat
+
   @get '^/gh/:username/:project/tree/(.*)',
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
@@ -521,15 +423,13 @@ window.SammyApp = Sammy 'body', (n) ->
           if VM.build() and VM.build().usage_queue_visible()
             VM.build().load_usage_queue_why()
         favicon_updator: =>
-          VM.build_favicon_updator(VM.build())
+          VM.favicon.build_updator(VM.build())
 
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
   @get '^/gh/:username/:project',
     (cx) ->
-      project_name = "#{cx.params.username}/#{cx.params.project}"
-
       VM.selected
         page: "project"
         crumbs: ['project', 'project_settings']
