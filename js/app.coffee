@@ -320,6 +320,9 @@ window.SammyApp = Sammy 'body', (n) ->
   @bind 'run-route', (e, data) ->
     VM.clearErrorMessage()
     mixpanel.track_pageview(data.path)
+    if window._gaq? # we dont use ga in test mode
+      window._gaq.push data.path
+
 
   # ignore forms with method ko, useful when using the knockout submit binding
   @route 'ko', '.*', ->
@@ -483,11 +486,6 @@ window.SammyApp = Sammy 'body', (n) ->
   @post "^/about/contact", -> true
 
   @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
-
-  # Google analytics
-  @bind 'event-context-after', ->
-    if window._gaq? # we dont use ga in test mode
-      window._gaq.push @path
 
   @bind 'error', (e, data) ->
     if data? and data.error? and window.Airbrake?
