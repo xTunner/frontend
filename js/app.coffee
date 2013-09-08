@@ -1,10 +1,10 @@
 CI.ajax.init()
 
-setOuter = =>
+setInner = =>
   $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
 
 display = (template, args) ->
-  setOuter()
+  setInner()
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
 
@@ -233,7 +233,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     else
         VM.loadExtraEditPageData subpage
 
-    setOuter()
+    setInner()
     $('#main').html(HAML['edit']({project: project_name}))
     $('#subpage').html(HAML['edit_' + subpage]({}))
     ko.applyBindings(VM)
@@ -255,7 +255,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     else if subpage is "api"
       @current_user().load_tokens()
 
-    setOuter()
+    setInner()
     $('#main').html(HAML['account']({}))
     $('#subpage').html(HAML['account_' + subpage]({}))
     $("##{subpage}").addClass('active')
@@ -266,7 +266,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
 
   renderAdminPage: (subpage) =>
-    setOuter()
+    setInner()
     $('#main').html(HAML['admin']({}))
     if subpage
       $('#subpage').html(HAML['admin_' + subpage]())
