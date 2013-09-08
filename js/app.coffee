@@ -1,11 +1,15 @@
 CI.ajax.init()
 
-setInner = =>
+display = (template, args, subpage, hash) ->
   $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
-
-display = (template, args) ->
-  setInner()
   $('#main').html(HAML[template](args))
+  if subpage
+    $('#subpage').html(HAML["#{template}_#{subpage}"](args))
+    $("##{subpage}").addClass('active')
+  if $('#hash').length
+    $("##{hash}").addClass('active')
+    $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
+
   ko.applyBindings(VM)
 
 splitSplat = (cx) ->
@@ -237,11 +241,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     else
         VM.loadExtraEditPageData subpage
 
-    setInner()
-    $('#main').html(HAML['edit']({project: project_name}))
-    $('#subpage').html(HAML['edit_' + subpage]({}))
-    ko.applyBindings(VM)
-
+    display "edit", {project: project_name}, subpage
 
   loadAccountPage: (cx, [subpage, hash]) =>
     subpage or= "notifications"
@@ -255,23 +255,11 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     else if subpage is "api"
       @current_user().load_tokens()
 
-    setInner()
-    $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage]({}))
-    $("##{subpage}").addClass('active')
-    if $('#hash').length
-      $("##{hash}").addClass('active')
-      $('#hash').html(HAML['account_' + subpage + "_" + hash]({}))
-    ko.applyBindings(VM)
+    display "account", {}, subpage, hash
 
 
   renderAdminPage: (subpage) =>
-    setInner()
-    $('#main').html(HAML['admin']({}))
-    if subpage
-      $('#subpage').html(HAML['admin_' + subpage]())
-    ko.applyBindings(VM)
-
+    display "admin", {}, subpage
 
   loadAdminPage: (cx) =>
     @renderAdminPage ""
