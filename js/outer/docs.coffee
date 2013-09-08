@@ -162,6 +162,10 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
     jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
 
+
+  ####################
+  # search
+  ####################
   performDocSearch: (query) =>
     $.ajax
       url: "/search-articles"
