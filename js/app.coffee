@@ -47,10 +47,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @projects_have_been_loaded() and @builds_have_been_loaded()
 
     if window.renderContext.current_user
-      try
-        olark 'api.box.hide'
-      catch error
-        console.error 'Tried to hide olark, but it threw:', error
+      CI.olark.disable()
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)
