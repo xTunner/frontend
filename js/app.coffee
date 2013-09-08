@@ -292,7 +292,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @projects(data)
     @renderAdminPage "projects"
 
-
   loadAdminRecentBuilds: (refresh) =>
     @loadBuilds '/api/v1/admin/recent-builds', refresh
     if not refresh
@@ -441,6 +440,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/admin', (cx) -> VM.loadAdminPage cx
   @get '^/admin/users', (cx) -> VM.loadAdminUsers cx
   @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
+  @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
   @get '^/admin/recent-builds', (cx) ->
     VM.loadAdminRecentBuilds()
     VM.selected
@@ -449,26 +449,13 @@ window.SammyApp = Sammy 'body', (n) ->
       refresh_fn: VM.refreshAdminRecentBuilds
       favicon_updator: VM.reset_favicon
 
-  @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
-
   # outer
-  @get "^/docs(.*)", (cx) =>
-    VM.docs.display(cx)
-
-  @get "^/about.*", (cx) =>
-    VM.about.display(cx)
-
-  # @get "^/contact.*", (cx) =>
-  #   VM.contact.display(cx)
-
-  @get "^/privacy.*", (cx) =>
-    VM.privacy.display(cx)
-
-  # @get "^/security.*", (cx) =>
-  #   VM.security.display(cx)
-
-  @get "^/jobs.*", (cx) =>
-    VM.jobs.display(cx)
+  @get "^/docs(.*)", (cx) => VM.docs.display(cx)
+  @get "^/about.*", (cx) => VM.about.display(cx)
+  @get "^/privacy.*", (cx) => VM.privacy.display(cx)
+  @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  # @get "^/contact.*", (cx) => VM.contact.display(cx)
+  # @get "^/security.*", (cx) => VM.security.display(cx)
 
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
