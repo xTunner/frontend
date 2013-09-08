@@ -8,6 +8,12 @@ display = (template, args) ->
   $('#main').html(HAML[template](args))
   ko.applyBindings(VM)
 
+splitSplat = (cx) ->
+  p = cx.params.splat[0]
+  p = p.replace(/-/g, '_').replace(/\//g, '')
+  p.split('#')
+
+
 class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   constructor: ->
@@ -166,9 +172,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       mixpanel.track("View Org", {"username": username})
       if callback? then callback()
 
-  loadEditOrgPage: (username, subpage) =>
-    subpage = subpage[0].replace('#', '').replace('-', '_')
-    subpage = subpage || "projects"
+  loadEditOrgPage: (username, [_, subpage]) =>
+    subpage or= "projects"
 
     subpage_callback = () => @org().subpage(subpage)
 
@@ -217,11 +222,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     else if subpage is "env_vars"
       @project().load_env_vars()
 
-  loadEditPage: (cx, username, project, subpage) =>
-    project_name = "#{username}/#{project}"
+  loadEditPage: (cx, username, project, [_, subpage]) =>
+    subpage or= "settings"
 
-    subpage = subpage[0].replace('#', '').replace('-', '_')
-    subpage = subpage || "settings"
+    project_name = "#{username}/#{project}"
 
     # if we're already on this page, dont reload
     if (not @project() or
@@ -239,11 +243,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     ko.applyBindings(VM)
 
 
-  loadAccountPage: (cx, subpage) =>
-    subpage = subpage[0].replace(/\//, '') # first one
-    subpage = subpage.replace(/\//g, '_')
-    subpage = subpage.replace(/-/g, '_')
-    [subpage, hash] = subpage.split('#')
+  loadAccountPage: (cx, [subpage, hash]) =>
     subpage or= "notifications"
     hash or= "meta"
 
@@ -351,7 +351,7 @@ window.SammyApp = Sammy 'body', (n) ->
       username: cx.params.username
       favicon_updator: VM.reset_favicon
 
-    VM.loadEditOrgPage cx.params.username, cx.params.splat
+    VM.loadEditOrgPage cx.params.username, splitSplat(cx)
 
   route_org_dashboard = (cx) ->
     VM.selected
@@ -376,14 +376,14 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         favicon_updator: VM.reset_favicon
 
-      VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+      VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
 
   @get '^/account(.*)',
     (cx) ->
       VM.selected
         page: "account"
         favicon_updator: VM.reset_favicon
-      VM.loadAccountPage cx, cx.params.splat
+      VM.loadAccountPage cx, splitSplat(cx)
 
   @get '^/gh/:username/:project/tree/(.*)',
     (cx) ->
