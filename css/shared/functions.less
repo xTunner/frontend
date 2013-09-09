@@ -17,6 +17,7 @@
 
 .buttonDark(@buttonColor: @blueDark) {
   padding: 0;
+  margin-left: -4px;
   border-radius: 4px;
   background-size: 100%;
   background-repeat: repeat-x;
@@ -43,9 +44,9 @@
   }
   > a {
     display: block;
-    padding: 0 2em;
-    font-size: 1.5em;
-    line-height: 4em;
+    padding: 0 1em;
+    white-space: nowrap;
+    line-height: 3em;
     text-decoration: none;
     color: darken(@white, 13%);
     text-shadow: 0 -1px 1px darken(saturate(@buttonColor,8%),13%);
