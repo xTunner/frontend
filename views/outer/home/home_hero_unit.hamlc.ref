@@ -1,7 +1,7 @@
 #hero
   .container
     %h1
-      Ship better code, <em>faster</em>
+      Ship better code, faster
 
     %h3 CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
 
