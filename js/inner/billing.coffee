@@ -44,7 +44,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     # org-plan data
     organization: null
-    extra_ogranizations: []
+    extra_organizations: []
     trial_end: null
     billing_name: null
     billing_email: null
