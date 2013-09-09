@@ -60,3 +60,18 @@
     }
   }
 }
+
+.scale3d (@x, @y: 0, @z: 0) {
+  -webkit-transform: scale3d(@x, @y, @z);
+          transform: scale3d(@x, @y, @z);
+}
+
+.transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
+  transition: -webkit-transform @duration @timing-function @delay;
+  transition:         transform @duration @timing-function @delay;
+}
+
+.translate3d (@x, @y: 0, @z: 0) {
+  -webkit-transform: translate3d(@x, @y, @z);
+          transform: translate3d(@x, @y, @z);
+}
