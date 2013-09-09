@@ -115,13 +115,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     $('#confirmForm').modal('hide') # TODO: eww
     @chosenPlan(@oldPlan())
 
-  doUpdate: (data, event) =>
-    @recordStripeTransaction event, null
-    $('#confirmForm').modal('hide') # TODO: eww
-    if @wizardCompleted() # go to the speed nav
-      # fight jQuery plugins with more jQuery
-      $("#speed > a").click() # TODO: eww
-
   ajaxSetCard: (event, token, type) =>
     $.ajax
       type: type
@@ -158,17 +151,28 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     StripeCheckout.open($.extend @stripeDefaults(), vals)
 
-  ajaxNewPlan: (plan, token, event) =>
+  ajaxNewPlan: (plan_id, token, event) =>
     $.ajax
       url: @apiURL('plan')
       event: event
       type: 'POST'
       data: JSON.stringify
         token: token
-        plan: plan.id
+        plan: plan_id
       success: (data) =>
+        mixpanel.track('Paid')
         @chosenPlan(new CI.inner.Plan(data.template_properties, @))
 
+  ajaxUpdatePlan: (changed_attributes, event) =>
+    $.ajax
+      url: @apiURL('plan')
+      event: event
+      type: 'PUT'
+      data: JSON.stringify(changed_attributes)
+      success: (data) =>
+        @oldTotal(@total())
+        @chosenPlan(new CI.inner.Plan(data.template_properties, @))
+        @containers(data.containers)
 
   newPlan: (plan, event) =>
     vals =
@@ -176,9 +180,21 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       price: 100 * plan.price
       description: "#{plan.name} plan"
       token: (token) =>
-        @ajaxNewPlan(plan, token, event)
+        @ajaxNewPlan(plan.id, token, event)
 
     StripeCheckout.open(_.extend @stripeDefaults(), vals)
+
+  updatePlan: (data, event) =>
+    @ajaxUpdatePlan {"base-template-id": @chosenPlan().id}, event
+    $('#confirmForm').modal('hide') # TODO: eww
+    if @wizardCompleted() # go to the speed nav
+      # fight jQuery plugins with more jQuery
+      $("#speed > a").click() # TODO: eww
+
+  # TODO: make the API call return existing plan
+  saveContainers: (data, event) =>
+    mixpanel.track("Save Containers")
+    @ajaxUpdatePlan {containers: @containers()}, event
 
   load: (hash="small") =>
     # TODO: Make loaded meaningful, right now it just means that
@@ -199,31 +215,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   apiURL: (suffix) =>
     "/api/v1/organization/#{@organization()}/#{suffix}"
-
-  recordStripeTransaction: (event, stripeInfo) =>
-    # TODO: ewwwwwwwwwwww
-    $('button').attr('disabled','disabled') # disable other buttons during payment
-    $.ajax
-      url: @apiURL('plan')
-      event: event
-      type: if stripeInfo then "POST" else "PUT"
-      data: JSON.stringify
-        token: stripeInfo
-        plan: @chosenPlan().id
-
-      success: () =>
-        # TODO: ew
-        $('button').removeAttr('disabled') # payment done, reenable buttons
-        @cardInfo(stripeInfo.card) if stripeInfo?
-        @oldTotal(@total())
-
-        # just to be sure
-        @loadExistingCard()
-        @loadInvoices()
-
-        @advanceWizard()
-        mixpanel.track("Paid")
-    false
 
   advanceWizard: =>
     @wizardStep(@wizardStep() + 1)
@@ -275,20 +266,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: =>
         @advanceWizard()
         mixpanel.track("Save Organizations")
-
-  # TODO: make the API call return existing plan
-  saveContainers: (data, event) =>
-    $.ajax
-      type: "PUT"
-      event: event
-      url: "/api/v1/user/containers"
-      data: JSON.stringify
-        containers: @containers()
-      success: (data) =>
-        @oldTotal(@total())
-        @closeWizard()
-        mixpanel.track("Save Containers")
-        @loadExistingPlans()
 
   loadExistingCard: () =>
     $.getJSON @apiURL('card'), (card) =>

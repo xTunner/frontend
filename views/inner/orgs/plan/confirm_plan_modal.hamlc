@@ -36,5 +36,5 @@
   .modal-footer
     %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: cancelUpdate"}
       Cancel
-    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: doUpdate"}
+    %button.btn.btn-primary{"aria-hidden" => "true", data-bind: "click: updatePlan"}
       Confirm plan change

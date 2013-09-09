@@ -42,7 +42,8 @@
         %span{data-bind: "text: oldTotal"}<>
         %span.grandfather{data-bind: "if: special_price_p"}
           (grandfathered
-          %i.icon-question-sign{data-bind: "tooltip: {animation: false, title: \"We've changed plan prices since you signed up, so you're grandfathered in at the old price!\"}"}
+          %i.icon-question-sign{title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!",
+                                data-bind: "tooltip: {animation: false}"}
           %span<>
             )
 
