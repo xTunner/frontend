@@ -1,29 +1,7 @@
-%div{data-bind: "if: flash"}
-  #flash{data-bind: "html: flash"}
-
-%header
-  .bar
-    .container
-      .row
-        .span8
-          .row
-            %a#logo.span2{href: "/"}
-              %img{height: "40", src: assetPath("/img/logo.svg"), width: "130"}
-            %nav.span6{role: "navigation"}
-              %ul.nav.nav-pills
-                %li
-                  %a{href: "/about"} About
-                %li{data-bind: "ifnot: from_heroku" }
-                  %a{href: "/pricing"} Pricing
-                %li
-                  %a{href: "/docs"} Documentation
-                %li
-                  %a{href: "/jobs"} Jobs
-                %li
-                  %a{href: "http://blog.circleci.com"} Blog
-        .span4.controls
-          %a.btn.btn-primary{href: CI.github.authUrl(),
-                             title: 'Sign in with Github',
-                             data-bind: "track_link: 'Auth GitHub'"}
-            %i.icon-github-alt
-            Sign in with Github
+%div{ data-bind: "if: VM.current_user" }
+  = HAML._topbar()
+%div{ data-bind: "ifnot: VM.current_user" }
+  %div{ data-bind: "if: VM.ab().use_ks_outer" }
+    = HAML.outer_header()
+  %div{ data-bind: "ifnot: VM.ab().use_ks_outer" }
+    = HAML.old_header()

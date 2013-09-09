@@ -38,7 +38,7 @@ CI.outer.Page = class Page
       params = $.extend renderContext, @viewContext(cx)
       $('html').addClass('old-outer').removeClass('inner')
       $('body').attr("id", "#{@name}-page")
-      $("#main").html HAML['old_header'](params)
+      $("#main").html HAML['header'](params)
       $("#main").append HAML["old_#{@name}"](params)
       if @useStickyFooter? and @useStickyFooter
         $('#main > div').wrapAll "<div id='wrap' />"

@@ -2,7 +2,7 @@ CI.ajax.init()
 
 display = (template, args, subpage, hash) ->
   $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
-  $('#main').html(HAML._topbar())
+  $('#main').html(HAML.header())
   $('#main').append(HAML[template](args))
   if subpage
     $('#subpage').html(HAML["#{template}_#{subpage}"](args))
