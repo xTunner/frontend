@@ -1,4 +1,0 @@
-.row-fluid.plans{data-bind: "with: billing"}
-  .span12
-    = HAML['plan_update_card']()
-    = HAML['plan_invoices']()
