@@ -52,6 +52,10 @@
     %p
       After adding a user key, we will use it to test your pushes to any private repository you're a member of.
       We won't use your user key for public projects, and we don't use it when another member of your project pushed.
+    %p
+      If you'd like to use it for all builds on a project, you can set yourself as the "GitHub user" for the project from the project's
+      %strong Edit Settings > GitHub user
+      page.
 
     %h3 What about security?
 

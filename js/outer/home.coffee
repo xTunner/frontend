@@ -3,6 +3,10 @@ class CI.outer.Home extends CI.outer.Page
     _gaq.push(['_trackPageview', '/homepage'])
     mixpanel.track("Outer Home Page")
 
+  authGitHubSlideDown: =>
+    mixpanel.track("Auth GitHub Modal Why Necessary")
+    $(".why_authenticate_github_modal").slideDown()
+
   viewContext: =>
     features: [
       icon: "icon-magic"

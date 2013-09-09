@@ -5,7 +5,12 @@
       &nbsp;Projects
   %button#invite
     %a{data-toggle: "modal", data-target: "#inviteForm"}
-      .icon-plus
+      %i.icon-plus
       &nbsp;Collaborator
+  %div{data-bind: "if: show_follow_project_button"}
+    %button#follow-project-button{data-bind: "click: project().follow"}
+      %i.icon-plus
+      Follow
+      %span{data-bind: "text: project().project_name"}
 %span{data-bind: "ifnot: projects_have_been_loaded"}
   = HAML['fast_spinner']()

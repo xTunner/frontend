@@ -1,8 +1,10 @@
 CI.outer.Page = class Page
-  constructor: (@name, @_title) ->
+  constructor: (@name, @_title, @mixpanelID=null) ->
 
   display: (cx) =>
     @setPageTitle(cx)
+
+    @maybeTrackMixpanel()
 
     # Render content
     @clearIntercom()
@@ -17,6 +19,10 @@ CI.outer.Page = class Page
     @lib() if @lib?
 
     ko.applyBindings(VM)
+
+  maybeTrackMixpanel: () =>
+    if @mixpanelID?
+      mixpanel.track @mixpanelID
 
   viewContext: (cx) =>
     {}

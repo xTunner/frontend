@@ -258,10 +258,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @branch_in_words = @komp =>
       return "unknown" unless @branch()
+      @branch().replace(/^remotes\/origin\//, "")
 
-      b = @branch().replace(/^remotes\/origin\//, "")
-      CI.stringHelpers.trimMiddle(b, 23)
-
+    @trimmed_branch_in_words = @komp =>
+      CI.stringHelpers.trimMiddle(@branch_in_words(), 23)
 
     @github_url = @komp =>
       return unless @vcs_revision
@@ -517,3 +517,12 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   update: (json) =>
     @status(json.status)
+
+  ssh_connection_string: (node) =>
+    str = "ssh "
+    [port, username, ip] = [node.port, node.username, node.public_ip_addr || node.ip_addr]
+    if port
+      str += "-p #{port} "
+    if username
+      str += "#{username}@#{ip}"
+    str

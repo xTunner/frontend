@@ -26,7 +26,7 @@
         %a.text{data-bind: "attr: { href: url, title: github_revision }, text: github_revision"}
       / ko if: VM.selected().mention_branch
       %td
-        %a.text{data-bind: "attr: { href: url, title: branch_in_words }, text: branch_in_words"}
+        %a.text{data-bind: "attr: { href: url, title: branch_in_words }, text: trimmed_branch_in_words"}
       / /ko
 
       %td

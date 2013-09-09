@@ -14,3 +14,48 @@
     -webkit-text-shadow: @size1 @size2 @size3 @color;
     text-shadow:-@size1 @size2 @size3 @color;
 }
+
+.buttonDark(@buttonColor: @blueDark) {
+  padding: 0;
+  border-radius: 4px;
+  background-size: 100%;
+  background-repeat: repeat-x;
+  background-color: @buttonColor;
+  background-image: linear-gradient(to bottom,
+                      fadeout(@white, 95%) 0%,
+                      fadeout(@black, 92%) 100%);
+  border: 1px solid darken(@buttonColor,8%);
+  box-shadow: 0 1px 1px fadeout(@black, 79%);
+  transition: all .3s linear;
+  &:hover {
+    background-size: 300%;
+    background-color: darken(saturate(@buttonColor,3%),3%);
+    border-color: darken(saturate(@buttonColor,3%),3%);
+    box-shadow: 0 0 fadeout(@black, 100%);
+    transition: all .1s ease-in-out;
+  }
+  &:active {
+    background-size: 300%;
+    background-color: darken(saturate(@buttonColor,5%),8%);
+    border-color: darken(saturate(@buttonColor,3%),3%);
+    box-shadow: 0 2px 3px rgba(0,0,0,.34) inset;
+    transition: all .2s ease-in-out;
+  }
+  > a {
+    display: block;
+    padding: 0 2em;
+    font-size: 1.5em;
+    line-height: 4em;
+    text-decoration: none;
+    color: darken(@white, 13%);
+    text-shadow: 0 -1px 1px darken(saturate(@buttonColor,8%),13%);
+    &:hover {
+      color: @white;
+      text-shadow: 0 0 rgba(0,0,0,0);
+    }
+    &:active {
+      color: darken(@white, 5%);
+      text-shadow: 0 0 rgba(0,0,0,0);
+    }
+  }
+}
