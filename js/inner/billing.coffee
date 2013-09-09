@@ -35,7 +35,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     loadingOrganizations: false
 
     # new data
-    organizations: {}
+    organizations: []
     chosenPlan: null
     plans: []
     containers: 1
@@ -81,6 +81,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     @paid = @komp =>
       @chosenPlan() and @chosenPlan().type isnt 'trial'
+
+    @all_orgs = @komp =>
+      _.chain(@extra_organizations().concat(@organizations()))
+        .sort()
+        .uniq()
+        .without(@organization())
+        .value()
 
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
@@ -236,9 +243,11 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         .success(() => @stripe_loaded(true))
 
   loadPlanData: (data) =>
+    # update containers, extra_orgs, and extra invoice info
+    @updateObservables(data)
+
     @oldTotal(data.amount / 100)
     @chosenPlan(new CI.inner.Plan(data.template_properties, @)) if data.template_properties
-    @containers(data.containers or 1)
     @special_price_p(@oldTotal() <  @total())
 
   loadExistingPlans: () =>
@@ -251,21 +260,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadOrganizations: () =>
     @loadingOrganizations(true)
-    $.getJSON '/api/v1/user/stripe-organizations', (data) =>
+    $.getJSON '/api/v1/user/organizations', (data) =>
       @loadingOrganizations(false)
-      @organizations(data)
+      @organizations(org.login for org in data)
       @orgs_loaded(true)
 
   saveOrganizations: (data, event) =>
-    $.ajax
-      type: "PUT"
-      event: event
-      url: "/api/v1/user/organizations"
-      data: JSON.stringify
-        organizations: @organizations()
-      success: =>
-        @advanceWizard()
-        mixpanel.track("Save Organizations")
+    mixpanel.track("Save Organizations")
+    @ajaxUpdatePlan {'extra-organizations': @extra_organizations()}, event
 
   loadExistingCard: () =>
     $.getJSON @apiURL('card'), (card) =>

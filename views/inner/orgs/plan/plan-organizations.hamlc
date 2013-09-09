@@ -1,21 +1,25 @@
 %h2 Select organizations
 
 %p
-  We'll use your plan to test any followed repositories (including private forks) in the following organizations:
+  Your plan covers all repositories (including private forks) in the
+  %strong{data-bind: "text: organization"}
+  organization.
+
+%p
+  You can extend your plan to cover any of the organizations you have access to:
 
 %div{data-bind: "if: loadingOrganizations"}
   Loading organization list...
 
+-# TODO: explanation about how extra-organizations can't change plan attributes
+-# TODO: plan display for orgs in extra-organizations
+
 %div{data-bind: "ifnot: loadingOrganizations"}
   %form
-
-    %label Organizations:
-    %div.controls{data-bind: "foreach: organizations"}
+    %div.controls{data-bind: "foreach: all_orgs"}
       %label.checkbox
-        %input{type: "checkbox", data-bind: "checked: enabled"}
-          %span{data-bind: "text: name"}
-      %a{data-bind: "attr: {href: '/gh/organizations/' + name + '/settings#credit-card'}, text: name"}
-
+        %input{type: "checkbox", data-bind: "value: $data, checked: $parent.extra_organizations"}
+          %span{data-bind: "text: $data"}
 
     .row-fluid
       .span7
@@ -24,4 +28,4 @@
                                        type: "submit",
                                        data-loading-text: "Saving...",
                                        data-success-text: "Saved"}
-            Pay for these organizations
+            Also pay for these organizations
