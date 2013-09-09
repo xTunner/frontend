@@ -17,7 +17,7 @@
       %a{data-bind: "attr: {href: '/gh/organizations/' + name + '/settings#credit-card'}, text: name"}
 
 
-    .row
+    .row-fluid
       .span7
         .form-actions
           %a.btn.btn-primary.btn-large{data-bind: "click: saveOrganizations",

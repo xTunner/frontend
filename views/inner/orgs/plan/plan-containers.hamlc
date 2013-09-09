@@ -1,6 +1,6 @@
-.row
+.row-fluid
   %div
-    .offset1.span4
+    .span4
       %h3 Containers
 
       %p
@@ -30,7 +30,7 @@
 
 
 
-  .offset1.span4
+  .span4
     .form
       -# pricing calc table
       %h3

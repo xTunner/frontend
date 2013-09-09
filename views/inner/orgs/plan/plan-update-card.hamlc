@@ -1,4 +1,4 @@
-.row.card
+.row-fluid.card
   %h3 Card on file
   .span8
     %table.table.table-condensed{data-bind: "with: cardInfo"}
@@ -18,7 +18,7 @@
           \/
           %span{data-bind: "text: exp_year"}<>
 
-.row
+.row-fluid
   .span3
     %form
       .form-actions
