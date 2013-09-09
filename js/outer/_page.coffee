@@ -7,7 +7,6 @@ CI.outer.Page = class Page
     @maybeTrackMixpanel()
 
     # Render content
-    @clearIntercom()
     @render(cx)
 
     # Land at the right anchor on the page
@@ -55,9 +54,6 @@ CI.outer.Page = class Page
 
   setPageTitle: (cx) =>
     document.title = @title(cx) + " - CircleCI"
-
-  clearIntercom: =>
-    $('#IntercomTab').text "" # clear the intercom tab
 
   placeholder: () =>
     $("input, textarea").placeholder()
