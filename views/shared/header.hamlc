@@ -1,7 +1,10 @@
 %div{ data-bind: "if: VM.current_user" }
-  = HAML._topbar()
+  .inner
+    = HAML._topbar()
 %div{ data-bind: "ifnot: VM.current_user" }
   %div{ data-bind: "if: VM.ab().use_ks_outer" }
-    = HAML.outer_header()
+    .outer
+      = HAML.outer_header()
   %div{ data-bind: "ifnot: VM.ab().use_ks_outer" }
-    = HAML.old_header()
+    .old-outer
+      = HAML.old_header()
