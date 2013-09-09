@@ -1,6 +1,9 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
     @name = "docs"
+    @query_results_query = ko.observable(null)
+    @query_results = ko.observableArray([])
+
 
   rewrite_old_name: (name) =>
     switch name
@@ -158,3 +161,33 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
 
     jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
+
+
+  ####################
+  # search
+  ####################
+  performDocSearch: (query) =>
+    $.ajax
+      url: "/search-articles"
+      type: "GET"
+      data:
+        query: query
+      success: (results) =>
+        window.SammyApp.setLocation("/docs")
+        @query_results results.results
+        @query_results_query results.query
+    query
+
+  searchArticles: (form) =>
+    @performDocSearch($(form).find('.search-query').val())
+    return false
+
+  suggestArticles: (query, process) =>
+    $.ajax
+      url: "/autocomplete-articles"
+      type: "GET"
+      data:
+        query: query
+      success: (autocomplete) =>
+        process autocomplete.suggestions
+    null

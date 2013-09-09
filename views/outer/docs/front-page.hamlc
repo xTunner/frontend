@@ -1,20 +1,20 @@
 - @title = "What can we help you with?"
 
-%div{data-bind: "if: query_results_query"}
+%div{data-bind: "if: VM.docs.query_results_query"}
   .article_list
-    %div{data-bind: "ifnot: query_results().length"}
+    %div{data-bind: "ifnot: VM.docs.query_results().length"}
       %p
         No articles found matching
         "
-        %strong{data-bind: "text: query_results_query"}>
+        %strong{data-bind: "text: VM.docs.query_results_query"}>
         "
-    %div{data-bind: "if: query_results().length"}
+    %div{data-bind: "if: VM.docs.query_results().length"}
       %h5
         Articles matching
         "
-        %span{data-bind: "text: query_results_query"}>
+        %span{data-bind: "text: VM.docs.query_results_query"}>
         "
-      %ul.query_results{data-bind: "foreach: query_results"}
+      %ul.query_results{data-bind: "foreach: VM.docs.query_results"}
         %li
           %a{data-bind: "attr: { href: url }"}
             %span{data-bind: "text: title"}
