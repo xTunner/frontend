@@ -185,6 +185,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify(changed_attributes)
       success: (data) =>
         @loadPlanData(data)
+        $('#confirmForm').modal('hide') # TODO: eww
+        VM.org().subpage('add-containers')
+
 
   newPlan: (plan, event) =>
     vals =
@@ -198,10 +201,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   updatePlan: (data, event) =>
     @ajaxUpdatePlan {"base-template-id": @chosenPlan().id}, event
-    $('#confirmForm').modal('hide') # TODO: eww
-    if @wizardCompleted() # go to the speed nav
-      # fight jQuery plugins with more jQuery
-      $("#speed > a").click() # TODO: eww
 
   # TODO: make the API call return existing plan
   saveContainers: (data, event) =>
