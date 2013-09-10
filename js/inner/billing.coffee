@@ -185,8 +185,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify(changed_attributes)
       success: (data) =>
         @loadPlanData(data)
-        $('#confirmForm').modal('hide') # TODO: eww
-        VM.org().subpage('add-containers')
+        if VM.org().subpage() is 'choose_plan'
+          $('#confirmForm').modal('hide') # TODO: eww
+          VM.org().subpage('add_containers')
 
 
   newPlan: (plan, event) =>
