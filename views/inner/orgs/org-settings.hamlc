@@ -48,4 +48,4 @@
 
         %div{data-bind: "if: VM.org_has_been_loaded"}
           %div{data-bind: "with: org"}
-            = HAML["org_#{@subpage}"]()
+            %div{data-bind: "haml: {template: 'org_' + subpage(), args: {}}"}
