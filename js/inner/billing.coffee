@@ -83,6 +83,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       if @chosenPlan()
         Math.max(0, @containers() - @chosenPlan().free_containers())
 
+    @trial = @komp =>
+      @chosenPlan() and @chosenPlan().type is 'trial'
+
+    @trial_over = @komp =>
+      if @trial() && @trial_end()
+        moment().diff(@trial_end()) > 0
+
+    @trial_days = @komp =>
+      if @trial() && @trial_end()
+        moment(@trial_end()).diff(moment(), 'days')
+
     @paid = @komp =>
       @chosenPlan() and @chosenPlan().type isnt 'trial'
 

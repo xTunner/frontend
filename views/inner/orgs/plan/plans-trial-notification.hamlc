@@ -1,0 +1,18 @@
+.row-fluid
+  .offset1.span10
+    %div{data-bind: "if: trial_over"}
+      .alert.alert-error
+        %p
+          Your 2-week trial is over!
+        %p
+          Do you need an extension?
+          = HAML.contact_us_inner()
+    %div{data-bind: "ifnot: trial_over"}
+      .alert.alert-success
+        %p
+          You have
+          %span{data-bind: "text: trial_days"}
+          days left in your trial.
+
+        %p
+          The trial is equivalent to the Solo plan with 6 containers.
