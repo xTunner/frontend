@@ -85,7 +85,7 @@
   = succeed '.', ->
     xvfb
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
-  You do not need to anything to set this up.
+  You do not need to do anything to set this up.
   We have
   <code>phantomjs 1.9.0</code>,
   %code= @v.v('casperjs')

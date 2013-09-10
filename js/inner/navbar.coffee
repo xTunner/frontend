@@ -1,13 +1,7 @@
 CI.inner.Navbar = class Navbar extends CI.inner.Obj
-  constructor: (selected, vm) ->
-    @vm = vm # local pointer so we can get the build
-
-    # we're sharing these observables with the VM
-    @selected = selected
-    @current_build = @vm.build
-
-    @current_build_branch = @komp =>
-      if @current_build() then @current_build().branch()
+  constructor: (@selected, @build) -> # we're sharing these observables with the VM
+    @build_branch = @komp =>
+      if @build() then @build().branch()
 
     # unpack selected
     @crumbs = @komp => @selected().crumbs
@@ -20,7 +14,7 @@ CI.inner.Navbar = class Navbar extends CI.inner.Obj
 
     @branch = @komp => @sel_branch() or "..."
 
-    @current_build_branch.subscribe (new_val) =>
+    @build_branch.subscribe (new_val) =>
       sel = @selected()
       sel.branch = new_val
       @selected(sel)

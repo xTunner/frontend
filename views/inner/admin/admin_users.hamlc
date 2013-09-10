@@ -4,7 +4,7 @@
     %td Name
     %td Sign in count
     %td Member since
-  %tbody{data-bind: "foreach: admin"}
+  %tbody{data-bind: "foreach: users"}
     %tr
       %td{data-bind: "text: login"}
       %td{data-bind: "text: name"}

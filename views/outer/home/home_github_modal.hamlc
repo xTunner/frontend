@@ -8,7 +8,7 @@
       %br
       This is necessary so that CircleCI can run your tests.
       %br
-      %a.why_authenticate_github_link{ href:"#", data-bind: "click: authGitHubSlideDown"}
+      %a.why_authenticate_github_link{ href:"#", data-bind: "click: VM.home.authGitHubSlideDown"}
         Why is this necessary?
     %div.hide.why_authenticate_github_modal{style:'text-align:left;'}
       %p
