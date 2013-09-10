@@ -27,21 +27,47 @@ CI.outer.Page = class Page
     {}
 
   render: (cx) =>
-    if VM.ab().use_ks_outer()
-      params = $.extend renderContext, @viewContext(cx)
-      $('html').addClass('outer').removeClass('inner')
-      $("#main").html HAML['header'](params)
-      $("#main").append HAML[@name](params)
-      $("#main").append HAML['footer'](params)
-    else
-      params = $.extend renderContext, @viewContext(cx)
-      $('html').addClass('old-outer').removeClass('inner')
-      $('body').attr("id", "#{@name}-page")
-      $("#main").html HAML['header'](params)
-      $("#main").append HAML["old_#{@name}"](params)
+    template = @name
+    footer_name = "footer"
+    klass = "outer"
+
+    unless VM.ab().use_ks_outer()
+      template = "old_#{@name}"
+      footer_name = "old_footer"
+      klass = "old-outer"
+
+    args = $.extend renderContext, @viewContext(cx)
+    header =
+      $("<div></div>")
+        .attr('id', 'header')
+        .append(HAML.header(args))
+    content =
+      $("<div></div>")
+        .attr('id', 'content')
+        .removeClass('outer')
+        .removeClass('new-outer')
+        .removeClass('inner')
+        .addClass(klass)
+        .append(HAML[template](args))
+    footer =
+      $("<div></div>")
+        .attr('id', 'footer')
+        .addClass(klass)
+        .append(HAML[footer_name](args))
+
+
+    $('body').attr("id", "#{template}-page")
+    $('#main')
+      .append(header)
+      .append(content)
+      .append(footer)
+
+
+    unless VM.ab().use_ks_outer()
       if @useStickyFooter? and @useStickyFooter
         $('#main > div').wrapAll "<div id='wrap' />"
-      $("#main").append HAML['old_footer'](params)
+
+
 
 
   scroll: (hash) =>

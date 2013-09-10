@@ -1,15 +1,35 @@
 CI.ajax.init()
 
 display = (template, args, subpage, hash) ->
-  $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
-  $('#main').html(HAML.header())
-  $('#main').append(HAML[template](args))
+  klass = 'inner'
+
+  header =
+    $("<div></div>")
+      .attr('id', 'header')
+      .append(HAML.header(args))
+
+  content =
+    $("<div></div>")
+      .attr('id', 'content')
+      .removeClass('outer')
+      .removeClass('new-outer')
+      .removeClass('inner')
+      .addClass(klass)
+      .append(HAML[template](args))
+
+  $('#main')
+    .html("")
+    .append(header)
+    .append(content)
+
+
   if subpage
     $('#subpage').html(HAML["#{template}_#{subpage}"](args))
     $("##{subpage}").addClass('active')
   if $('#hash').length
-    $("##{hash}").addClass('active')
     $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
+    $("##{hash}").addClass('active')
+
 
   ko.applyBindings(VM)
 
