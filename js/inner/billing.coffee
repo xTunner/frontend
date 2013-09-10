@@ -43,6 +43,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     special_price_p: null
 
     # org-plan data
+    base_template_id: null
     organization: null # org that is paying for the plan
     extra_organizations: []
     trial_end: null
@@ -94,6 +95,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     @covered_under_other_plan = @komp =>
       @org_name() && @organization() && @org_name() isnt @organization()
+
+    @organization_plan_path = @komp =>
+      "/gh/organizations/#{@organization()}/settings#choose-plan"
+
+    @other_plan_name = @komp =>
+      if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
+        plan.name
 
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
