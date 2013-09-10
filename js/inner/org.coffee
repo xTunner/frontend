@@ -17,7 +17,7 @@ CI.inner.Org = class Org extends CI.inner.Obj
     super json
 
     @billing new CI.inner.Billing
-      organization: @name()
+      org_name: @name()
 
     # Note: we don't create the org until we have the user/projects data
     @loaded = @komp =>

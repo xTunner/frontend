@@ -43,12 +43,15 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     special_price_p: null
 
     # org-plan data
-    organization: null
+    organization: null # org that is paying for the plan
     extra_organizations: []
     trial_end: null
     billing_name: null
     billing_email: null
     extra_data: null
+
+    # make it work
+    org_name: null # organization that instantiated the billing class
 
     # loaded (there has to be a better way)
     plans_loaded: false
@@ -221,7 +224,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
 
   apiURL: (suffix) =>
-    "/api/v1/organization/#{@organization()}/#{suffix}"
+    "/api/v1/organization/#{@org_name()}/#{suffix}"
 
   advanceWizard: =>
     @wizardStep(@wizardStep() + 1)
