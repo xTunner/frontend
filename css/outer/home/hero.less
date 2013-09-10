@@ -1,9 +1,31 @@
-header {
-  background: @circleBlue;
+#hero {
+  // background: @circleBlue;
   padding-bottom: 30px;
+  // color: @white;
 
-  h1, h3, h4 {
-    color: white;
+  .span4 {
+    text-align: center;
+  }
+
+  .how {
+    margin-top: 5em;
+  }
+
+  h1 {
+    font-family: 'Source Sans Pro',sans-serif;
+    font-size: 82px;
+    font-weight: 600;
+    line-height: 92px;
+  }
+
+  h1,
+ h3 {
+    text-align: center;
+  }
+
+  h3 {
+    font-size: 22px;
+    color: #747474;
   }
 
   h1 em {
@@ -52,4 +74,20 @@ header {
     margin-top: 40px;
   }
 
+  .hero-unit-cta {
+    margin-top: 5em;
+    padding-top: 40px;
+    border-top: dotted 1px @circleFont;
+
+    .ctabox {
+      text-align: center;
+      p {
+        color: @circleBlueLight;
+      }
+      .btn {
+        margin: 10px 0;
+      }
+    }
+
+  }
 }

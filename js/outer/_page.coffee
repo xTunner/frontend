@@ -31,7 +31,7 @@ CI.outer.Page = class Page
     footer_name = "footer"
     klass = "outer"
 
-    unless VM.ab().use_ks_outer()
+    unless VM.ab().new_outer_old_copy()
       template = "old_#{@name}"
       footer_name = "old_footer"
       klass = "old-outer"
@@ -64,7 +64,7 @@ CI.outer.Page = class Page
       .append(footer)
 
 
-    unless VM.ab().use_ks_outer()
+    unless VM.ab().new_outer_old_copy()
       if @useStickyFooter? and @useStickyFooter
         $('#main > div').wrapAll "<div id='wrap' />"
 

@@ -4,7 +4,7 @@
       .center
         .ctabox{class: @first and "line"}
           - if @first
-            %div{data-bind: "if: VM.ab().home_cta_plan_price_trial"}
+            %div
               %p
                 Plans start at $19 per month. All plans include a free 14 day trial.
 
@@ -12,7 +12,7 @@
             = HAML.old_home_button({text: @text})
 
           - if @first
-            %div{data-bind: "if: VM.ab().home_cta_plan_price_trial"}
+            %div
               %p
                 %i
                   CircleCI keeps your code safe.

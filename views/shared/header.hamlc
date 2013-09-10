@@ -2,9 +2,9 @@
   .inner
     = HAML._topbar()
 %div{ data-bind: "ifnot: VM.current_user" }
-  %div{ data-bind: "if: VM.ab().use_ks_outer" }
+  %div{ data-bind: "if: VM.ab().new_outer_old_copy" }
     .outer
       = HAML.outer_header()
-  %div{ data-bind: "ifnot: VM.ab().use_ks_outer" }
+  %div{ data-bind: "ifnot: VM.ab().new_outer_old_copy" }
     .old-outer
       = HAML.old_header()

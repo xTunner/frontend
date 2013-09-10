@@ -1,5 +1,5 @@
 .benefits
-  .container-fluid
+  .container
     .row-fluid
       .span12
         %h2 Features &amp; Benefits of CircleCI
