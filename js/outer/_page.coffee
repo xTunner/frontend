@@ -28,12 +28,12 @@ CI.outer.Page = class Page
     {}
 
   render: (cx) =>
-    if VM.ab().use_ks_outer()
+    if VM.ab().new_outer_old_copy()
       params = $.extend renderContext, @viewContext(cx)
       $('html').addClass('outer').removeClass('inner')
       $("#main").html HAML['header'](params)
       $("#main").append HAML[@name](params)
-      $("#main").append HAML['footer'](params)
+      $("#main").append HAML['footer_nav'](params)
     else
       params = $.extend renderContext, @viewContext(cx)
       $('html').addClass('old-outer').removeClass('inner')
