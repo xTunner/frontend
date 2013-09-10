@@ -174,7 +174,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         plan: plan_id
       success: (data) =>
         mixpanel.track('Paid')
-        @chosenPlan(new CI.inner.Plan(data.template_properties, @))
+        @loadPlanData(data)
 
   ajaxUpdatePlan: (changed_attributes, event) =>
     $.ajax
@@ -183,9 +183,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       type: 'PUT'
       data: JSON.stringify(changed_attributes)
       success: (data) =>
-        @oldTotal(@total())
-        @chosenPlan(new CI.inner.Plan(data.template_properties, @))
-        @containers(data.containers)
+        @loadPlanData(data)
 
   newPlan: (plan, event) =>
     vals =
