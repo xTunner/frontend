@@ -174,8 +174,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         plan: plan_id
       success: (data) =>
         mixpanel.track('Paid')
-        VM.org().subpage('add-containers')
         @loadPlanData(data)
+        VM.org().subpage('add-containers')
 
   ajaxUpdatePlan: (changed_attributes, event) =>
     $.ajax
