@@ -43,9 +43,10 @@ CI.outer.Page = class Page
         .append(HAML.header(args))
     content =
       $("<div></div>")
-        .attr('id', 'content')
+        .addClass('content')
+        .attr("id", "#{@name}-page")
         .removeClass('outer')
-        .removeClass('new-outer')
+        .removeClass('old-outer')
         .removeClass('inner')
         .addClass(klass)
         .append(HAML[template](args))
@@ -56,8 +57,8 @@ CI.outer.Page = class Page
         .append(HAML[footer_name](args))
 
 
-    $('body').attr("id", "#{template}-page")
     $('#main')
+      .html("")
       .append(header)
       .append(content)
       .append(footer)
