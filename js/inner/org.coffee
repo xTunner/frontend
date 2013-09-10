@@ -55,6 +55,9 @@ CI.inner.Org = class Org extends CI.inner.Obj
         .sortBy((p) -> p.repo_name())
         .value()
 
+    @can_edit_plan = @komp =>
+      @billing().paid() && not @billing().covered_under_other_plan()
+
   followProjectHandler: (project) =>
     callback = (data) =>
       VM.loadOrgSettings(@name())

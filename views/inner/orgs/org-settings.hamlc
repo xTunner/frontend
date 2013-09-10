@@ -24,13 +24,13 @@
         %li{data-bind: "css: {active: subpage() == 'choose_plan'}"}
           %a{href: "#choose-plan"}
             Choose plan
-        / ko if: billing().paid
+        / ko if: can_edit_plan
         %li{data-bind: "css: {active: subpage() == 'add_containers'}"}
           %a{href: "#add-containers"}
             Add containers
         %li{data-bind: "css: {active: subpage() == 'extra_organizations'}"}
           %a{href: "#extra-organizations"}
-            Extra Organizations
+            Organizations
         %li{data-bind: "css: {active: subpage() == 'credit_card'}"}
           %a{href: "#credit-card"}
             Credit card and invoices

@@ -1,3 +1,7 @@
 .row-fluid.plans#billing{data-bind: "with: billing"}
+  / ko if: covered_under_other_plan
+  %div
+    You're covered under another plan
+  / /ko
   = HAML.plans_table()
   = HAML.plans_common_questions()

@@ -92,6 +92,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         .without(@organization())
         .value()
 
+    @covered_under_other_plan = @komp =>
+      @org_name() && @organization() && @org_name() isnt @organization()
+
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
