@@ -34,7 +34,7 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @builds_have_been_loaded = ko.observable(false)
     @org_has_been_loaded = @komp =>
       # TODO: extract the billing portion from the project/users portion
-      @org() && @org().billing() && @org().billing().loaded()
+      @org() && @org().loaded()
 
 
     # Tracks what page we're on (for pages we care about)

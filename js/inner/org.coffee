@@ -19,6 +19,10 @@ CI.inner.Org = class Org extends CI.inner.Obj
     @billing new CI.inner.Billing
       organization: @name()
 
+    # Note: we don't create the org until we have the user/projects data
+    @loaded = @komp =>
+      @billing().loaded()
+
     # projects that have been turned into Project objects
     @project_objs = @komp =>
       for project in @projects()
