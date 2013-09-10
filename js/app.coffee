@@ -248,30 +248,26 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       display "dashboard",
         builds_table: 'project'
 
-  loadOrgSettings: (username, callback) =>
+  loadOrgSettings: (username, subpage) =>
     $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
       @org().clean() if @org()
       @org(new CI.inner.Org data)
       @org().billing().load()
+      @org().subpage(subpage)
       mixpanel.track("View Org", {"username": username})
-      if callback? then callback()
 
   loadEditOrgPage: (username, subpage) =>
     subpage = subpage[0].replace('#', '').replace('-', '_')
     subpage = subpage || "projects"
 
-    subpage_callback = () => @org().subpage(subpage)
-
     if !@org() or (@org().name() isnt username)
       @org().clean() if @org()
       @org(null)
-
-      @loadOrgSettings(username, subpage_callback)
+      @loadOrgSettings(username, subpage)
     else
-      subpage_callback()
+      @org().subpage(subpage)
 
-    display 'org_settings',
-      subpage: subpage
+    display 'org_settings'
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)

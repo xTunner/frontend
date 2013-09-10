@@ -58,6 +58,10 @@ CI.inner.Org = class Org extends CI.inner.Obj
     @can_edit_plan = @komp =>
       @billing().paid() && not @billing().covered_under_other_plan()
 
+    @subpage.subscribe (new_val) =>
+      if new_val
+        window.location.hash = new_val.replace('_', '-')
+
   followProjectHandler: (project) =>
     callback = (data) =>
       VM.loadOrgSettings(@name())
