@@ -59,14 +59,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     card_loaded: false
     invoices_loaded: false
     existing_plan_loaded: false
-    orgs_loaded: false
     stripe_loaded: false
 
   constructor: ->
     super
 
     @loaded = @komp =>
-      _.every ['plans', 'card', 'invoices', 'existing_plan', 'orgs', 'stripe'], (type) =>
+      _.every ['plans', 'card', 'invoices', 'existing_plan', 'stripe'], (type) =>
         @["#{type}_loaded"].call()
 
     @savedCardNumber = @komp =>
@@ -287,7 +286,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     $.getJSON '/api/v1/user/organizations', (data) =>
       @loadingOrganizations(false)
       @organizations(org.login for org in data)
-      @orgs_loaded(true)
 
   saveOrganizations: (data, event) =>
     mixpanel.track("Save Organizations")
