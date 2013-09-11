@@ -28,7 +28,7 @@ CI.outer.Page = class Page
 
   render: (cx) =>
     template = @name
-    footer_name = "footer"
+    footer_name = "footer_nav" # dont show the full nav yet
     klass = "outer"
 
     unless VM.ab().new_outer_old_copy()
