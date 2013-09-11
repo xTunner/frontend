@@ -29,3 +29,9 @@
                                        data-loading-text: "Saving...",
                                        data-success-text: "Saved"}
             Also pay for these organizations
+
+    .row-fluid
+      .span7
+        Note: Admins for the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
+        = succeed ".", ->
+          %span{data-bind: "text: org_name"}<
