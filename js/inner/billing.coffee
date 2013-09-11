@@ -32,10 +32,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     # metadata
     wizardStep: 1
     planFeatures: []
-    loadingOrganizations: false
 
     # new data
-    organizations: []
     chosenPlan: null
     plans: []
     containers: 1
@@ -63,6 +61,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   constructor: ->
     super
+
+    # This will get set to current_user.loadingOrganizations at load time
+    @loadingOrganizations = false
 
     @loaded = @komp =>
       _.every ['plans', 'card', 'invoices', 'existing_plan', 'stripe'], (type) =>
@@ -96,13 +97,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @paid = @komp =>
       @chosenPlan() and @chosenPlan().type isnt 'trial'
 
-    @all_orgs = @komp =>
-      _.chain(@extra_organizations().concat(@organizations()))
-        .sort()
-        .uniq()
-        .without(@organization())
-        .value()
-
+    # array of all organization logins that this user should see on the
+    # select organizations page
     @covered_under_other_plan = @komp =>
       @org_name() && @organization() && @org_name() isnt @organization()
 
@@ -112,6 +108,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @other_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
         plan.name
+
+    @all_orgs = ko.computed
+      read: () =>
+        user_orgs = (org.login for org in VM.current_user().organizations_plus_user())
+        _.chain(@extra_organizations().concat(user_orgs))
+          .sort()
+          .uniq()
+          .without(@organization())
+          .value()
+      # VM won't be defined when we instantiate VM.billing() for outer
+      deferEvaluation: true
 
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
@@ -282,10 +289,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       #   @closeWizard()
 
   loadOrganizations: () =>
-    @loadingOrganizations(true)
-    $.getJSON '/api/v1/user/organizations', (data) =>
-      @loadingOrganizations(false)
-      @organizations(org.login for org in data)
+    @loadingOrganizations = VM.current_user.loadingOrganizations
+    VM.current_user().loadOrganizations()
 
   saveOrganizations: (data, event) =>
     mixpanel.track("Save Organizations")
