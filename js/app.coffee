@@ -257,9 +257,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     subpage or= "notifications"
     hash or= "meta"
 
-    # TODO: Tell the user that plan has been moved to the organization
-    # if subpage.indexOf("plans") == 0
-    #   @billing().load()
+    if subpage.indexOf("plans") == 0
+      @current_user().loadOrganizations()
 
     if subpage.indexOf("notifications") == 0
       @current_user().syncGithub()

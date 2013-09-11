@@ -1,3 +1,23 @@
-Plans have moved to the Organizations settings page.
+.row-fluid.plans
+  .row-fluid
+    .span8.offset2
+      .alert.alert-info
+        %p
+          Plans have moved to the Organizations settings page. You can select a plan from the organization's settings page on any organization that you're an admin on.
+        %p
+          If you previously had a plan on your account, it has moved to your "personal" org. You can edit the plan from
+          = succeed ".", ->
+            %a{data-bind: "attr: {href: CI.Paths.org_settings(VM.current_user().login, 'choose-plan')}"}<
+              its settings page
+  .row-fluid
+    .span8.offset2
+      %h4 Set up a plan for one of your Organizations:
+      %p You can set up plans for any organization that you admin.
+      %div{data-bind: "foreach: organizations_plus_user"}
+        %p
+          %a{data-bind: "attr: {href: CI.Paths.org_settings(login, 'choose-plan')}"}
+            %img{width: 25, height: 25, data-bind: "attr: {src: avatar_url}"}
+
+            %span{data-bind: "text: login"}
 
 -# TODO: more info and links to their org settings pages
