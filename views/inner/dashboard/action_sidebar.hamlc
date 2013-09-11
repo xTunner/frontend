@@ -11,7 +11,7 @@
     %button#follow-project-button{data-bind: "click: project().follow"}
       %a{href: "#", data-bind: "click: project().follow"}
         %i.icon-plus
-        Add
+        %span Follow
         %span{data-bind: "text: project().project_name"}
 %span{data-bind: "ifnot: projects_have_been_loaded"}
   = HAML['fast_spinner']()
