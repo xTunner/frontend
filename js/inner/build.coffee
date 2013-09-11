@@ -142,7 +142,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
       "icon-remove": @komp => @important_style() || @warning_style() || @canceled()
       "icon-time": @komp => @queued()
       "icon-refresh": @komp => @info_style()
-      "icon-spin": @komp => @info_style()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
