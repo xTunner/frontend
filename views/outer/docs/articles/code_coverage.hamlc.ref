@@ -105,7 +105,7 @@
 
 %h2 Using a Code Coverage service
 
-%h3 Using Code Coverage with CircleCI and Coveralls
+%h3#coveralls Using Code Coverage with CircleCI and Coveralls
 
 %p
   If you're a Coveralls customer, follow
@@ -121,7 +121,7 @@
   if you'd like to use this.
 
 
-%h3 Using Code Coverage with CircleCI and Code Climate
+%h3#code-climate Using Code Coverage with CircleCI and Code Climate
 
 %p
   If you're a Code Climate customer, follow the instructions under
