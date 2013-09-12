@@ -3,8 +3,11 @@
 - @short_title = "Code Coverage"
 
 %p
-  Circle provides a number of different options for code coverage,
-  either using built-in CircleCI features combined with open source libraries,
+  Code Coverage tells you how much of your application is tested.
+
+%p
+  CircleCI provides a number of different options for code coverage reporting,
+  using built-in CircleCI features combined with open source libraries,
   or using partners.
 
 %h2 See coverage in CircleCI
@@ -98,7 +101,6 @@
   you can see beautifully rendered HTML in the UI.
 
 %img{src: assetPath('(asset-path "img/outer/docs/coverage_example.png")')}
-
 
 
 %h2 Using a Code Coverage service
