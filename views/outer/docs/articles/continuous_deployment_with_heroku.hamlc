@@ -50,6 +50,11 @@
   command.
   Upon a successful build, we'll automatically deploy to the app in the section that matches the push, should there be one.
 
+%p
+  <b>Note</b>: If you are deploying several projects from CircleCI consider
+  using different keys for each one. Heroku enforces a rate-limit of 75 git
+  requests per hour per key.
+
 %h2#pre-or-post Heroku with pre- or post-deployment steps
 
 %p
