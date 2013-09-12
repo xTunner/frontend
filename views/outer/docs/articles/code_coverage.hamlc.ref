@@ -110,7 +110,7 @@
   %a{href: "https://coveralls.io/docs"} their guide to set up your coverage stats.
   You'll need to add
   %code COVERALLS_REPO_TOKEN
-  to your
+  to your CircleCI
   %a{ href: "https://circleci.com/docs/environment-variables"} environment variables.
 
 %p
