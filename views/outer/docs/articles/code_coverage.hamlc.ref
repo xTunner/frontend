@@ -116,7 +116,7 @@
   %a{ href: "https://circleci.com/docs/environment-variables"} environment variables.
 
 %p
-  Coveralls does not currently use Circle's parallelization.
+  Coveralls does not currently support CircleCI's parallelization.
   = HAML.contact_us({wording: "Contact us"})
   if you'd like to use this.
 
@@ -133,7 +133,7 @@
   %a{ href: "https://circleci.com/docs/environment-variables"} environment variables.
 
 %p
-  Code Climate does not currently use Circle's parallelization.
+  Code Climate does not currently support CircleCI's parallelization.
   = HAML.contact_us({wording: "Contact us"})
   if you'd like to use this.
 
