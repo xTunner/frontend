@@ -98,14 +98,6 @@
 %img{src: assetPath('(asset-path "img/outer/docs/coverage_example.png")')}
 
 
-%h2 Tighter integration
-
-%p
-  We're working on tighter UI integration for code coverage,
-  including better support for code coverage and parallelization.
-  = HAML.contact_us({wording: "Let us know"})
-  how you'd like to use them as part of your build.
-
 
 %h2 Using a Code Coverage service
 
@@ -140,3 +132,12 @@
   Code Climate does not currently use Circle's parallelization.
   = HAML.contact_us({wording: "Contact us"})
   if you'd like to use this.
+
+
+%h2 Under construction
+
+%p
+  Code coverage is an area where our support is evolving.
+  We'd love to have your feedback about how we could support it better.
+  = HAML.contact_us({wording: "Let us know"})
+  how you're using it, how you'd like to use it, and what we could do better!
