@@ -1,7 +1,7 @@
 %form.input-prepend.input-append.expando
   %span.btn-group
     %button.btn.btn-primary{type: "submit",
-                            name: "submit",
+                            name: "save-and-test",
                             data-bind: @button_binding,
                             data-loading-text: @loading_text}
       = @button_text
