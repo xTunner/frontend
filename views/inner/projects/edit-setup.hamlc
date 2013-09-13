@@ -76,4 +76,7 @@
                                 type: "submit",
                                 data-bind: "click: save_dependencies",
                                 data-loading-text: "Saving.."}
-          Now set up your tests =>
+          Now set up your tests
+          %span
+            &nbsp;
+            %i.icon-long-arrow-right
