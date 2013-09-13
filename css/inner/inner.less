@@ -1,8 +1,21 @@
 .inner {
+  font-family: "Open Sans", sans-serif;
 
-  @import "bootstrap-variables.less";
-  @import "../shared/bootstrap-files.less";
+  &, div, span {
+    // fighting bootstrap for specificity
+    font-size: 13px;
+  }
 
+
+  pre, code {
+    font-familt: Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+
+  .btn-primary {
+    @btnPrimaryBackground: #1f4d80;
+    @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
+    .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
+  }
 
   &#content {
     padding-bottom: 70px; // Fix for the intercom help button obscuring text
@@ -16,7 +29,6 @@
   h2 {
     color: #366aa4;
   }
-
 
   @import "../shared/variables.less";
   @import "labels.less";
@@ -32,5 +44,4 @@
   @import "admin.less";
   @import "org.less";
   @import "../shared/general.less";
-
 }

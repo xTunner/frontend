@@ -6,15 +6,18 @@ html {
   min-height: 100%;
   position: relative;
 }
+
+
+@import "bootstrap-variables.less";
+@import "shared/bootstrap-files.less";
+@import "shared/variables.less";
+
+
 @import "old-shared/blocks/wrap";
 @imgPath: "../../img";
 @import "../vendor/old-intercom.less";
 
 
-@import "outer/bootstrap-variables.less";
 @import "outer/outer.less";
-@import "shared/bootstrap-files.less";
-
-
 @import "inner/inner.less";
 @import "old-outer/outer.less";

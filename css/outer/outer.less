@@ -1,17 +1,24 @@
-//
-// CircleCi branding
-// --------------------------------------------------
+body .outer {
+  // override bootstrap
+  font-family: 'Ubuntu', sans-serif;
+}
 
-// Brand Colors
-
-@circleBlue:        #084963;
-@circleBlueDark:    #04394e;
-@circleBlueLight:   #9ec5d4;
-@circleFont:        #646464;
-@circleAccent:      #d34913;
-@circleAccentText:  #fed8c9;
 
 .outer {
+  @circleBlue:        #084963;
+  @circleBlueDark:    #04394e;
+  @circleBlueLight:   #9ec5d4;
+  @circleFont:        #646464;
+  @circleAccent:      #d34913;
+  @circleAccentText:  #fed8c9;
+
+
+  .btn {
+    // override bootstrap
+    @btnBorder: #ccc;
+    border-color: @btnBorder;
+    border-bottom-color: darken(@btnBorder, 10%);
+  }
 
   a {
     color: darken(@circleBlueLight, 20%);

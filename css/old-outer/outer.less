@@ -4,17 +4,21 @@
 
 .old-outer {
 
-  // Bootstrap
-  // -------------------------
-  @import "bootstrap-variables.less";
-  @import "../shared/bootstrap-files.less";
+  @gray:                  #777;
+  @grayLight:             #ccc;
+  @blueDarker:            #1b4f8a; // circle
+  @blueDark:              #366aa4; // circle
+  @blue:                  #586e8a; // circle
+  @blueLight:             #d7dce3; // circle
+  @blueLighter:           #eff2f6; // circle
+  @linkColor:               @blueDark; // circle
+  @linkColorHover:          @blueDarker; // circle
+  @sansFontFamily:        "Open Sans", sans-serif; // circle
+  @monoFontFamily:        Menlo, Monaco, Consolas, "Courier New", monospace; // circle
+  @baseFontSize:          15px; // circle
+  @baseLineHeight:        18px; // circle
+  @headingsFontFamily:    "Lato", sans-serif; // circle
 
-  // Image path helper
-  // -------------------------
-  @imgPath: "../../img";
-
-  // Navbar
-  // -------------------------
   .navbar {
     background: #134374;
 
@@ -23,7 +27,6 @@
     }
 
   }
-
 
   .navbar-inner {
     margin-top: 4px;
@@ -68,5 +71,4 @@
   @import "../old-shared/functions";
   @import "../inner/billing";
   @import "../old-shared/pricing.less";
-
 }
