@@ -43,7 +43,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     # org-plan data
     base_template_id: null
     org_name: null # org that is paying for the plan
-    extra_organizations: []
+    piggieback_orgs: []
     trial_end: null
     billing_name: null
     billing_email: null
@@ -112,7 +112,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @all_orgs = ko.computed
       read: () =>
         user_orgs = (org.login for org in VM.current_user().organizations_plus_user())
-        _.chain(@extra_organizations().concat(user_orgs))
+        _.chain(@piggieback_orgs().concat(user_orgs))
           .sort()
           .uniq()
           .without(@org_name())
@@ -294,7 +294,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   saveOrganizations: (data, event) =>
     mixpanel.track("Save Organizations")
-    @ajaxUpdatePlan {'extra-organizations': @extra_organizations()}, event
+    @ajaxUpdatePlan {'piggieback-orgs': @piggieback_orgs()}, event
 
   loadExistingCard: () =>
     $.getJSON @apiURL('card'), (card) =>

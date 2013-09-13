@@ -18,7 +18,7 @@
   %form
     %div.controls{data-bind: "foreach: all_orgs"}
       %label.checkbox
-        %input{type: "checkbox", data-bind: "value: $data, checked: $parent.extra_organizations"}
+        %input{type: "checkbox", data-bind: "value: $data, checked: $parent.piggieback_orgs"}
           %span{data-bind: "text: $data"}
 
     .row-fluid
