@@ -45,7 +45,7 @@ ko.bindingHandlers.equalizeWidth =
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 jQueryExt = (type) =>
   init: (el, valueAccessor) =>
-    options = valueAccessor()
+    options = ko.toJS(valueAccessor())
     $el = $(el)
     $el[type].call($el, options)
 

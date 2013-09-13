@@ -43,10 +43,10 @@ CI.Versions =
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4"]
-  bundler: "1.3.2"
+  bundler: "1.3.5"
   cucumber: "1.2.0"
-  rspec: "2.13"
-  rake: "0.10.0.3"
+  rspec: "2.14.4"
+  rake: "10.1.0"
 
   default_node: "0.8.12"
   nodes: [
@@ -59,17 +59,17 @@ CI.Versions =
     "0.10.5",
     "0.10.11"]
 
-  lein: "2.0.0"
+  lein: "2.3.1"
   lein_old: "1.6.1.1"
   ant: "1.8.2"
-  maven: "3.0.4"
+  maven: "3.0.5"
 
   default_python: "2.7.3"
   python: "2.7.3"
-  pip: "1.0"
+  pip: "1.4.1"
   virtualenv: "1.7.1.2"
 
-  default_php: "5.3.10-1ubuntu3.5"
+  default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.5"
   phps: ["5.3.3", "5.3.10", "5.3.20", "5.3.25", "5.4.4", "5.4.5", "5.4.6", "5.4.7", "5.4.8", "5.4.9", "5.4.10", "5.4.11", "5.4.12", "5.4.13", "5.4.14", "5.4.15"]
 
@@ -77,23 +77,23 @@ CI.Versions =
   erlang: 'r14b04'
 
   solr: "4.3.1"
-  postgresql: "9.2.0"
-  mysql: "5.5.29"
-  mongodb: "2.4.1"
+  postgresql: "9.2.4"
+  mysql: "5.5.32"
+  mongodb: "2.4.6"
   riak: "1.2.1"
-  cassandra: "1.2.2"
-  redis: "2.6.10"
+  cassandra: "1.2.8"
+  redis: "2.6.16"
   memcache: "1.4.13-0ubuntu2"
   sphinx: "2.0.4-release"
   elasticsearch: "0.90.2"
   beanstalkd: "1.4.6"
   couchbase: "2.0.0"
-  couchdb: "1.2.1"
+  couchdb: "1.3.0"
   neo4j: "1.8.2"
   rabbitmq: "3.0.3"
 
 
-  git: "1.8.3"
+  git: "1.8.3.4"
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.2"
