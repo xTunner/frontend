@@ -2,7 +2,7 @@
 
 %p
   Your plan covers all repositories (including private forks) in the
-  %strong{data-bind: "text: organization"}
+  %strong{data-bind: "text: org_name"}
   organization.
 
 %p
@@ -34,4 +34,4 @@
       .span7
         Note: Admins for the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
         = succeed ".", ->
-          %span{data-bind: "text: org_name"}<
+          %span{data-bind: "text: current_org_name"}<

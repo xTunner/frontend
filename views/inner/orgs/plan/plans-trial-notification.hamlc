@@ -11,7 +11,7 @@
       .alert.alert-success
         %p
           The
-          %strong{data-bind: "text: org_name"}
+          %strong{data-bind: "text: current_org_name"}
           organization has
           %span{data-bind: "text: trial_days"}
           days left in its trial.

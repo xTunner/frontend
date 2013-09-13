@@ -42,7 +42,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     # org-plan data
     base_template_id: null
-    organization: null # org that is paying for the plan
+    org_name: null # org that is paying for the plan
     extra_organizations: []
     trial_end: null
     billing_name: null
@@ -50,7 +50,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     extra_data: null
 
     # make it work
-    org_name: null # organization that instantiated the billing class
+    current_org_name: null # organization that instantiated the billing class
 
     # loaded (there has to be a better way)
     plans_loaded: false
@@ -100,10 +100,10 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     # array of all organization logins that this user should see on the
     # select organizations page
     @covered_under_other_plan = @komp =>
-      @org_name() && @organization() && @org_name() isnt @organization()
+      @current_org_name() && @org_name() && @current_org_name() isnt @org_name()
 
     @organization_plan_path = @komp =>
-      "/gh/organizations/#{@organization()}/settings#choose-plan"
+      "/gh/organizations/#{@org_name()}/settings#choose-plan"
 
     @other_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
@@ -115,7 +115,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         _.chain(@extra_organizations().concat(user_orgs))
           .sort()
           .uniq()
-          .without(@organization())
+          .without(@org_name())
           .value()
       # VM won't be defined when we instantiate VM.billing() for outer
       deferEvaluation: true
@@ -251,7 +251,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       else 'pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD'
 
   apiURL: (suffix) =>
-    "/api/v1/organization/#{@org_name()}/#{suffix}"
+    "/api/v1/organization/#{@current_org_name()}/#{suffix}"
 
   advanceWizard: =>
     @wizardStep(@wizardStep() + 1)
