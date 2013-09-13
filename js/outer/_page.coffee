@@ -31,11 +31,6 @@ CI.outer.Page = class Page
     footer_name = "footer_nav" # dont show the full nav yet
     klass = "outer"
 
-    unless VM.ab().new_outer_old_copy()
-      template = "old_#{@name}"
-      footer_name = "old_footer"
-      klass = "old-outer"
-
     args = $.extend renderContext, @viewContext(cx)
     header =
       $("<div></div>")
@@ -62,12 +57,6 @@ CI.outer.Page = class Page
       .append(header)
       .append(content)
       .append(footer)
-
-
-    unless VM.ab().new_outer_old_copy()
-      if @useStickyFooter? and @useStickyFooter
-        $('#main > div').wrapAll "<div id='wrap' />"
-
 
 
 
