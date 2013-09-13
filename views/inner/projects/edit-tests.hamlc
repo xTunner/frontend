@@ -46,7 +46,7 @@
 
     .row
       .span5
-        %a.btn.btn-primary{type: "submit",
+        %button.btn.btn-primary{type: "submit",
                            name: "submit",
                            data-bind: "click: save_specs",
                            data-loading-text: "Saving..."}
