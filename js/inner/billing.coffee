@@ -186,7 +186,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         mixpanel.track('Paid')
         @loadPlanData(data)
-        @loadExistingCard()
         @loadInvoices()
         VM.org().subpage('add-containers')
 
@@ -203,13 +202,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
           $('#confirmForm').modal('hide') # TODO: eww
           VM.org().subpage('add_containers')
 
-
   newPlan: (plan, event) =>
     vals =
       panelLabel: 'Pay' # TODO: better label (?)
       price: 100 * plan.price
       description: "#{plan.name} plan"
       token: (token) =>
+        @cardInfo(token.card)
         @ajaxNewPlan(plan.id, token, event)
 
     StripeCheckout.open(_.extend @stripeDefaults(), vals)
