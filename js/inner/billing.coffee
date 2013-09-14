@@ -47,7 +47,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     billing_name: null
     billing_email: null
     extra_data: null
-    max_parallelism: 1
 
     # make it work
     current_org_name: null # organization that instantiated the billing class
