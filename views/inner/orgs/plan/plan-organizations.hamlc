@@ -14,24 +14,25 @@
 -# TODO: explanation about how extra-organizations can't change plan attributes
 -# TODO: plan display for orgs in extra-organizations
 
-%div{data-bind: "ifnot: loadingOrganizations"}
-  %form
-    %div.controls{data-bind: "foreach: all_orgs"}
-      %label.checkbox
-        %input{type: "checkbox", data-bind: "value: $data, checked: $parent.piggieback_orgs"}
-          %span{data-bind: "text: $data"}
+.row-fluid
+  .span8
+    %div{data-bind: "ifnot: loadingOrganizations"}
+      %form
+        .controls{data-bind: "foreach: all_orgs"}
+          .control
+            %label.checkbox
+              %input{type: "checkbox", data-bind: "value: $data, checked: $parent.piggieback_orgs"}
+                %span{data-bind: "text: $data"}
 
-    .row-fluid
-      .span7
-        .form-actions
-          %a.btn.btn-primary.btn-large{data-bind: "click: saveOrganizations",
-                                       type: "submit",
-                                       data-loading-text: "Saving...",
-                                       data-success-text: "Saved"}
+        .form-actions.span6
+          %button.btn.btn-large.btn-primary{data-bind: "click: saveOrganizations",
+                                            type: "submit",
+                                            data-loading-text: "Saving...",
+                                            data-success-text: "Saved"}
             Also pay for these organizations
 
-    .row-fluid
-      .span7
-        Note: Admins for the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
-        = succeed ".", ->
-          %span{data-bind: "text: current_org_name"}<
+.row-fluid
+  .span6
+    Note: Admins for the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
+    = succeed ".", ->
+      %span{data-bind: "text: current_org_name"}<
