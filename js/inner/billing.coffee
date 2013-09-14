@@ -200,6 +200,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         mixpanel.track('Paid')
         @loadPlanData(data)
+        @loadExistingCard()
+        @loadInvoices()
         VM.org().subpage('add-containers')
 
   ajaxUpdatePlan: (changed_attributes, event) =>
@@ -210,6 +212,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify(changed_attributes)
       success: (data) =>
         @loadPlanData(data)
+        @loadInvoices()
         if VM.org().subpage() is 'choose_plan'
           $('#confirmForm').modal('hide') # TODO: eww
           VM.org().subpage('add_containers')
