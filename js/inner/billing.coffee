@@ -84,7 +84,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         Math.max(0, @containers() - @chosenPlan().free_containers())
 
     @trial = @komp =>
-      @chosenPlan() and @chosenPlan().type is 'trial'
+      @chosenPlan() and @chosenPlan().type() is 'trial'
 
     @trial_over = @komp =>
       if @trial() && @trial_end()
@@ -95,7 +95,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         moment(@trial_end()).diff(moment(), 'days')
 
     @paid = @komp =>
-      @chosenPlan() and @chosenPlan().type isnt 'trial'
+      @chosenPlan() and @chosenPlan().type() isnt 'trial'
 
     # array of all organization logins that this user should see on the
     # select organizations page

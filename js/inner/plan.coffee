@@ -3,6 +3,8 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
     free_containers: 1
     max_containers: 1
     billing: null
+    max_parallelism: 1
+    type: 'trial'
 
   constructor: (json, billing) ->
     super json
@@ -12,7 +14,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
     @container_options = ko.observableArray([@free_containers()..@max_containers()])
 
     @allowsParallelism = @komp =>
-      @max_parallelism > 1
+      @max_parallelism() > 1
 
     @projectsTitle = @komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
@@ -21,7 +23,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
       "#{@min_parallelism}x"
 
     @maxParallelismDescription = @komp =>
-      "up to #{@max_parallelism}x"
+      "up to #{@max_parallelism()}x"
 
     @freeContainersDescription = @komp =>
       "#{@free_containers()} container" + (if @free_containers() == 1 then "" else "s")
