@@ -227,10 +227,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   loadExtraEditPageData: (subpage) =>
     if subpage is "parallel_builds"
-      # TODO: fix this so that it loads billing info
-      # @project().load_paying_user()
-      # @project().load_billing()
-      # @billing().load()
+      @project().load_billing()
     else if subpage is "api"
       @project().load_tokens()
     else if subpage is "env_vars"

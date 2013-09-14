@@ -28,8 +28,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loading_users: false
     users: []
     parallel: 1
-    paying_user: null
-    loaded_paying_user: null
     retried_build: null
     branches: null
     default_branch: null
@@ -70,11 +68,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     ## Parallelism
     @billing = new CI.inner.Billing
+      org_name: @org_name()
 
     # Allows for user parallelism to trump the plan's max_parallelism
     @plan_max_speed = @komp =>
-      if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
-        @billing.chosenPlan().max_parallelism
+      @billing.max_parallelism()
 
     @parallelism_options = @komp =>
       if @plan_max_speed()
@@ -88,12 +86,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @focused_parallel = ko.observable @parallel()
 
-    @payor_login = @komp =>
-      @billing.payor() && @billing.payor().login
-
-    @current_user_is_payor_p = @komp =>
-      @payor_login() is VM.current_user().login
-
     @parallel_label_style = (num) =>
       disabled: @komp =>
         # weirdly sends num as string when num is same as parallel
@@ -103,10 +95,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       bad_choice: @komp =>
         parseInt(num) <= @paid_speed() && @billing.containers() % parseInt(num) isnt 0
 
-    @show_parallel_upgrade_plan_p = @komp =>
+    @show_upgrade_plan = @komp =>
       @plan_max_speed() && @plan_max_speed() < @focused_parallel()
 
-    @show_parallel_upgrade_speed_p = @komp =>
+    @show_add_containers = @komp =>
       @paid_speed() && @plan_max_speed && (@paid_speed() < @focused_parallel() <= @plan_max_speed())
 
     @show_uneven_divisor_warning_p = @komp =>
@@ -255,15 +247,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/plan"
       success: (result) =>
         @billing.loadPlanData(result)
-
-  load_paying_user: =>
-    $.ajax
-      type: "GET"
-      url: "/api/v1/project/#{@project_name()}/paying_user"
-      success: (result) =>
-        if result?
-          @paying_user(new CI.inner.User(result))
-          @loaded_paying_user(true)
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -467,7 +450,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
         @show_test_new_settings(true)
       error: (data) =>
         @refresh()
-        @load_paying_user()
     true
 
   parallel_input_id: (num) =>

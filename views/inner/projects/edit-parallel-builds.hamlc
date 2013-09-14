@@ -40,52 +40,34 @@
             Tip
           You can run more simultaneous builds if you choose a speed that divides your total containers evenly.
 
-        %div{data-bind: "ifnot: billing.payor"}
+        %div{data-bind: "if: billing.trial"}
           .alert.alert-warning
-            %a{href: '/account/plans#organizations'} Select a plan
-            to increase your maximum build speed
+            %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'choose_plan')}"} Select a plan
+            to increase your paralellism.
 
-        / ko if: billing.payor
-        %div{data-bind: "if: show_parallel_upgrade_plan_p"}
+        / ko if: billing.paid
+        %div{data-bind: "if: show_upgrade_plan"}
           .alert.alert-warning
-            Your plan's max speed is only
+            Your plan's max parallelism is only
             != succeed "x.", ->
               %strong{data-bind: "text: plan_max_speed"}
 
-            %span{data-bind: "if: current_user_is_payor_p"}
-              %a{href: "/account/plans#edit"} Upgrade your plan
-              to unlock more speed.
+            %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'choose_plan')}"} Upgrade your plan
+            to unlock more parallelism.
 
-            %span{data-bind: "ifnot: current_user_is_payor_p"}
-              Send
-              %span{data-bind: "text: payor_login"}
-              to
-              %a{href: "/account/plans#edit"} https://circleci.com/account/plans#edit
-              to upgrade your plan.
-
-        %div{data-bind: "if: show_parallel_upgrade_speed_p"}
+        %div{data-bind: "if: show_add_containers"}
           .alert.alert-warning
             %p
-              You can only go up to
-              != succeed "x!", ->
-                %span{data-bind: "text: paid_speed"}
+              You only have
+              %span{data-bind: "text: billing.containers"}
+              containers.
 
-            %p{data-bind: "if: current_user_is_payor_p"}
-              %a{href: "/account/plans#speed"} Increase your speed
-              up to
-              %strong
-                != succeed "x.", ->
-                  %span{data-bind: "text: focused_parallel"}
+            %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'add_containers')}"} Increase your parallelism
+            up to
 
-            %p{data-bind: "ifnot: current_user_is_payor_p"}
-              Send
-              %span{data-bind: "text: payor_login"}
-              to
-              %a{href: "/account/plans#speed"} https://circleci.com/account/plans#speed
-              to increase your speed up to
-              %strong
-                != succeed "x.", ->
-                  %span{data-bind: "text: focused_parallel"}
+            %strong
+              != succeed "x.", ->
+                %span{data-bind: "text: plan_max_speed"}
         / /ko
 
     .row-fluid{data-bind: "if: show_test_new_settings"}
