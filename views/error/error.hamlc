@@ -1,0 +1,9 @@
+.page.notfound
+  %header
+    .container
+      %h1=@error
+      %h3=@title
+
+
+  .container.content
+    %p=@message
