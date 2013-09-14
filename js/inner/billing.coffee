@@ -143,7 +143,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         @chosenPlan(plan)
         $("#confirmForm").modal({keyboard: false}) # TODO: eww
       else
-        #@createCard(plan, event)
         @newPlan(plan, event)
     else
       VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
@@ -167,18 +166,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     name: "CircleCI"
     address: false
     email: VM.current_user().selected_email()
-
-  createCard: (plan, event) =>
-    vals =
-      panelLabel: 'Add card',
-      price: 100 * plan.price
-      description: "#{plan.name} plan"
-      token: (token) =>
-        @chosenPlan(plan)
-        @recordStripeTransaction event, token
-
-    StripeCheckout.open($.extend @stripeDefaults(), vals)
-
 
   updateCard: (data, event) =>
     vals =
