@@ -182,7 +182,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       type: 'POST'
       data: JSON.stringify
         token: token
-        plan: plan_id
+        'base-template-id': plan_id
+        'billing-email': @billing_email() || VM.current_user().selected_email()
+        'billing-name': @billing_name() || @org_name()
       success: (data) =>
         mixpanel.track('Paid')
         @loadPlanData(data)
