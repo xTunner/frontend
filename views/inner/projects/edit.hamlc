@@ -14,7 +14,7 @@
       %li.nav-header
         Tweaks
       %li
-        %a{ href: "edit#parallel-builds" } Build speed
+        %a{ href: "edit#parallel-builds" } Parallelism
       %li
         %a{ href: "edit#env-vars" } Environment variables
       %li.divider

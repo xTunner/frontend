@@ -11,7 +11,7 @@
               %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().editParallel, disable: $root.project().disable_parallel_input($data), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
 
 
-      .span6.well.focused-label{data-bind: "css: speed_description_style()"}
+      .span6.well.focused-label{data-bind: "css: parallelism_description_style()"}
 
         %span{data-bind: "if: focused_parallel() == 1"}
           At 1x parallelism, all of your tests will run sequentially on the same machine.
@@ -50,7 +50,7 @@
           .alert.alert-warning
             Your plan's max parallelism is only
             != succeed "x.", ->
-              %strong{data-bind: "text: plan_max_speed"}
+              %strong{data-bind: "text: plan().max_parallelism"}
 
             %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'choose_plan')}"} Upgrade your plan
             to unlock more parallelism.
@@ -67,7 +67,7 @@
 
             %strong
               != succeed "x.", ->
-                %span{data-bind: "text: plan_max_speed"}
+                %span{data-bind: "text: plan().max_parallelism"}
         / /ko
 
     .row-fluid{data-bind: "if: show_test_new_settings"}
