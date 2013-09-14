@@ -1,8 +1,0 @@
-#title
-  %h1=@title
-
-#content
-  %section
-    .story
-      %h1=@error
-      %p=@message
