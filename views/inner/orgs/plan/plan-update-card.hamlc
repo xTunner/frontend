@@ -1,6 +1,7 @@
 .row-fluid.card
-  %h3 Card on file
-  .span8
+  %legend.span8 Card on file
+.row-fluid
+  .span6.offset1
     %table.table.table-condensed{data-bind: "with: cardInfo"}
       %thead
         %th Name
@@ -19,12 +20,13 @@
           %span{data-bind: "text: exp_year"}<>
 
 .row-fluid
-  .span3
-    %form
-      .form-actions
-        %button.btn.btn-primary.btn-large.submit-button#charge-button{type: "submit",
-                                                                      data-bind: "click: updateCard",
-                                                                      data-loading-text: "Updating",
-                                                                      data-failed-text: "Failed",
-                                                                      data-success-text: "Success"}
-          Update Card
+  .offset1.span7
+    %form.form-horizontal
+      .control-group
+        .control
+          %button.btn.btn-primary.submit-button#charge-button{type: "submit",
+                                                              data-bind: "click: updateCard",
+                                                              data-loading-text: "Updating",
+                                                              data-failed-text: "Failed",
+                                                              data-success-text: "Success"}
+            Change credit card

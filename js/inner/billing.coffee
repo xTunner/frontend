@@ -46,7 +46,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     trial_end: null
     billing_name: null
     billing_email: null
-    extra_data: null
+    extra_billing_data: null
 
     # make it work
     current_org_name: null # organization that instantiated the billing class
@@ -217,6 +217,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   updatePlan: (data, event) =>
     @ajaxUpdatePlan {"base-template-id": @chosenPlan().id}, event
+
+  update_billing_info: (data, event) =>
+    billing_data =
+      'billing-email': @billing_email()
+      'billing-name': @billing_name()
+      'extra-billing-data': @extra_billing_data()
+    @ajaxUpdatePlan billing_data, event
 
   # TODO: make the API call return existing plan
   saveContainers: (data, event) =>

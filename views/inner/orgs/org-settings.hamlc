@@ -33,7 +33,7 @@
             Organizations
         %li{data-bind: "css: {active: subpage() == 'credit_card'}"}
           %a{href: "#credit-card"}
-            Credit card and invoices
+            Billing info
         / /ko
         / /ko
 
