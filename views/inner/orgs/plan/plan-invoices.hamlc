@@ -1,14 +1,25 @@
 .row-fluid
   .span8
-    %h3 Invoices
+    %legend Invoices
     %table.table-striped.table.table-bordered
       %theader
         %tr
           %th Invoice date
           %th Time period covered
           %th Total
+          %th
+            Actions
+            %i.icon-question-sign{title: 'Resend an invoice to the billing email above.',
+                                  data-bind: 'tooltip: {animation: false}'}
       %tbody{data-bind: "foreach: invoices"}
         %tr
           %td{data-bind: "text: invoice_date()"}
           %td{data-bind: "text: time_period()"}
           %td{data-bind: "text: total()"}
+          %td
+            %span
+              %button.btn.btn-mini.btn-primary{data-bind: 'click: resend',
+                                               data-loading-text: 'Sending...',
+                                               data-success-text: 'Sent',
+                                               data-failed-text: 'Failed'}
+                Resend

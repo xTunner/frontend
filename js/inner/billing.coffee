@@ -18,6 +18,14 @@ CI.inner.Invoice = class Invoice extends CI.inner.Obj
   invoice_date: =>
     "#{@as_string(@date)}"
 
+  resend: (data, event) =>
+    $.ajax
+      url: "/api/v1/organization/#{VM.org().name()}/invoice/resend"
+      event: event
+      type: 'POST'
+      data: JSON.stringify
+        id: @id
+
 # TODO: strip out most of billing and move it to Plan and Card
 CI.inner.Billing = class Billing extends CI.inner.Obj
   observables: =>
