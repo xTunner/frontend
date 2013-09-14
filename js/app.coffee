@@ -90,6 +90,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       mixpanel.identify(@current_user().login)
       _rollbarParams.person = {id: @current_user().login}
 
+    @logged_in = @komp =>
+      @current_user?()
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -323,7 +325,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     false
 
   loadRootPage: (cx) =>
-    if VM.current_user
+    if @logged_in()
       VM.loadDashboard cx
     else
       VM.home.display cx
@@ -477,7 +479,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
     # force them to inner.
-    if VM.current_user
+    if VM.logged_in()
       return cx.redirect "/account/plans"
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
