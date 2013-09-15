@@ -4,8 +4,8 @@
   = HAML.plans_trial_notification()
   / /ko
 
-  / ko if: covered_under_other_plan
-  = HAML.plans_other_plan_notification()
+  / ko if: piggieback_plan_p
+  = HAML.plans_piggieback_plan_notification()
   / /ko
 
   = HAML.plans_table()

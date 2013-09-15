@@ -104,18 +104,18 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @paid = @komp =>
       @chosenPlan() and @chosenPlan().type() isnt 'trial'
 
-    # array of all organization logins that this user should see on the
-    # select organizations page
-    @covered_under_other_plan = @komp =>
+    @piggieback_plan_p = @komp =>
       @current_org_name() && @org_name() && @current_org_name() isnt @org_name()
 
     @organization_plan_path = @komp =>
       "/gh/organizations/#{@org_name()}/settings#choose-plan"
 
-    @other_plan_name = @komp =>
+    @piggieback_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
         plan.name
 
+    # array of all organization logins that this user should see on the
+    # select organizations page
     @all_orgs = ko.computed
       read: () =>
         user_orgs = (org.login for org in VM.current_user().organizations_plus_user())
@@ -146,7 +146,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   selectPlan: (plan, event) =>
     if plan.price?
-      if @paid() # TODO: better way to get this info
+      if @paid() and !@piggieback_plan_p()
         @oldPlan(@chosenPlan())
         @chosenPlan(plan)
         $("#confirmForm").modal({keyboard: false}) # TODO: eww

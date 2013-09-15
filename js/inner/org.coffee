@@ -56,7 +56,7 @@ CI.inner.Org = class Org extends CI.inner.Obj
         .value()
 
     @can_edit_plan = @komp =>
-      @billing().paid() && not @billing().covered_under_other_plan()
+      @billing().paid() && not @billing().piggieback_plan_p()
 
     @subpage.subscribe (new_val) =>
       if new_val

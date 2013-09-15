@@ -18,10 +18,10 @@
         You can create a separate plan for
         %span{data-bind: "text: current_org_name"}
         by selecting from the plans below.
-      %p{data-bind: "if: other_plan_name"}
+      %p{data-bind: "if: piggieback_plan_name"}
         %span{data-bind: "text: org_name"}<
         is on the
-        %strong{data-bind: "text: other_plan_name"}
+        %strong{data-bind: "text: piggieback_plan_name"}
         plan with
         %span{data-bind: "text: containers"}
         containers.
