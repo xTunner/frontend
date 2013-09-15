@@ -116,7 +116,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         plan.name
 
     @usable_containers = @komp =>
-      Math.max @containers_override(), @containers()
+      free_containers = if @chosenPlan() then @chosenPlan().free_containers()
+      Math.max @containers_override(), @containers(), free_containers
 
     # array of all organization logins that this user should see on the
     # select organizations page
