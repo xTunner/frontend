@@ -60,6 +60,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     # make it work
     current_org_name: null # organization that instantiated the billing class
 
+    transfer_org_name: null
+
     # loaded (there has to be a better way)
     plans_loaded: false
     card_loaded: false
@@ -123,13 +125,22 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     # select organizations page
     @all_orgs = ko.computed
       read: () =>
-        user_orgs = (org.login for org in VM.current_user().organizations_plus_user())
-        _.chain(@piggieback_orgs().concat(user_orgs))
+        user_orgs = VM.current_user().organizations_plus_user()
+
+        _.chain(@piggieback_orgs().concat(_.pluck(user_orgs, 'login')))
           .sort()
           .uniq()
           .without(@org_name())
           .value()
       # VM won't be defined when we instantiate VM.billing() for outer
+      deferEvaluation: true
+
+    # Only orgs that the user is a member of
+    @transferable_orgs = ko.computed
+      read: () =>
+        user_orgs = VM.current_user().organizations_plus_user()
+
+        _.without(_.pluck(user_orgs, 'login'), @org_name())
       deferEvaluation: true
 
   containers_option_text: (c) =>
@@ -243,14 +254,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @ajaxUpdatePlan {containers: @containers()}, event
 
   load: (hash="small") =>
-    unless @loaded()
-      @loadPlans()
-      @loadPlanFeatures()
-      @loadExistingCard()
-      @loadInvoices()
-      @loadExistingPlans()
-      @loadOrganizations()#
-      @loadStripe()
+    @loadPlans()
+    @loadPlanFeatures()
+    @loadExistingCard()
+    @loadInvoices()
+    @loadExistingPlans()
+    @loadOrganizations()#
+    @loadStripe()
 
   stripeKey: () =>
     switch renderContext.env
@@ -299,6 +309,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   saveOrganizations: (data, event) =>
     mixpanel.track("Save Organizations")
     @ajaxUpdatePlan {'piggieback-orgs': @piggieback_orgs()}, event
+
+  transferPlan: (data, event) =>
+    $.ajax
+      type: 'PUT'
+      url: @apiURL('transfer-plan')
+      event: event
+      data: JSON.stringify
+        'org-name': @transfer_org_name()
+      success: (data) =>
+        VM.org().subpage('choose-plan')
+        @load()
 
   loadExistingCard: () =>
     $.getJSON @apiURL('card'), (card) =>

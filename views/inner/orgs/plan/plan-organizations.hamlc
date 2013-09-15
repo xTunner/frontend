@@ -1,35 +1,40 @@
-%h2 Select organizations
-
-%p
-  Your plan covers all repositories (including private forks) in the
-  %strong{data-bind: "text: org_name"}
-  organization.
-
-%p
-  You can extend your plan to cover any of the organizations you have access to:
-
-%div{data-bind: "if: loadingOrganizations"}
-  Loading organization list...
-
 .row-fluid
   .span8
-    %div{data-bind: "ifnot: loadingOrganizations"}
-      %form
-        .controls{data-bind: "foreach: all_orgs"}
-          .control
-            %label.checkbox
-              %input{type: "checkbox", data-bind: "value: $data, checked: $parent.piggieback_orgs"}
-                %span{data-bind: "text: $data"}
+    %legend Select organizations
 
-        .form-actions.span6
-          %button.btn.btn-large.btn-primary{data-bind: "click: saveOrganizations",
-                                            type: "submit",
-                                            data-loading-text: "Saving...",
-                                            data-success-text: "Saved"}
-            Also pay for these organizations
+    %p
+      Your plan covers all repositories (including private forks) in the
+      %strong{data-bind: "text: org_name"}
+      organization.
 
-.row-fluid
-  .span6
-    Note: Admins for the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
-    = succeed ".", ->
-      %span{data-bind: "text: current_org_name"}<
+    %p
+      You can extend your plan to cover any of the organizations you have access to:
+
+    %p
+      %span.label.label-info Note:
+      Members of the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
+        = succeed ".", ->
+          %span{data-bind: "text: current_org_name"}<
+
+
+    %div{data-bind: "if: loadingOrganizations"}
+      Loading organization list...
+
+
+
+    .row-fluid
+      .span12
+        %div{data-bind: "ifnot: loadingOrganizations"}
+          %form
+            .controls{data-bind: "foreach: all_orgs"}
+              .control
+                %label.checkbox
+                  %input{type: "checkbox", data-bind: "value: $data, checked: $parent.piggieback_orgs"}
+                    %span{data-bind: "text: $data"}
+
+            .form-actions.span6
+              %button.btn.btn-large.btn-primary{data-bind: "click: saveOrganizations",
+                                                type: "submit",
+                                                data-loading-text: "Saving...",
+                                                data-success-text: "Saved"}
+                Also pay for these organizations

@@ -1,0 +1,31 @@
+.row-fluid
+  .span8
+    %legend Transfer plan to a different organization
+
+    .alert.alert-warning
+      %strong Warning!
+      If you're not an admin on the organization you transfer to, then you won't be able to transfer the plan back.
+
+
+    %div{data-bind: "if: loadingOrganizations"}
+      Loading organization list...
+
+    .row-fluid
+      .span12
+        %div{data-bind: "ifnot: loadingOrganizations"}
+          %form
+            .controls{data-bind: "foreach: transferable_orgs"}
+              .control
+                %label.radio{data-bind: "attr: {name: $data}"}
+                  %input{type: "radio", data-bind: "value: $data, checked: $parent.transfer_org_name"}
+                    %span{data-bind: "text: $data"}
+
+            .form-actions.span6
+              %button.btn.btn-large.btn-danger{data-bind: "click: transferPlan, css: {disabled: !transfer_org_name()}",
+                                               type: "submit",
+                                               data-loading-text: "Tranferring...",
+                                               data-success-text: "Transferred"}
+                Transfer plan
+                %span{data-bind: "if: transfer_org_name"}
+                  to
+                  %span{data-bind: "text: transfer_org_name"}
