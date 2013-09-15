@@ -21,14 +21,13 @@
           %span{data-bind: "money: chosenPlan().container_cost"}
           each.
 
-      %div{data-bind: "with: chosenPlan"}
-        Your new plan includes
-        %span{data-bind: "text: free_containers"}
-        free containers and you can buy up to
-        %span{data-bind: "text: max_containers"}
-        total for
-        %span{data-bind: "money: container_cost"}
-        each.
+      Your new plan includes
+      %span{data-bind: "text: chosenPlan().free_containers"}
+      free containers and you can buy up to
+      %span{data-bind: "text: chosenPlan().max_containers"}
+      total for
+      %span{data-bind: "money: chosenPlan().container_cost"}
+      each.
       %div
         You can change your number of containers on the next page.
 

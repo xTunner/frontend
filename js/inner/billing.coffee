@@ -108,7 +108,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @current_org_name() && @org_name() && @current_org_name() isnt @org_name()
 
     @organization_plan_path = @komp =>
-      "/gh/organizations/#{@org_name()}/settings#choose-plan"
+      CI.Paths.org_settings(@org_name(), 'choose_plan')
 
     @piggieback_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
@@ -233,14 +233,11 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       'extra-billing-data': @extra_billing_data()
     @ajaxUpdatePlan billing_data, event
 
-  # TODO: make the API call return existing plan
   saveContainers: (data, event) =>
     mixpanel.track("Save Containers")
     @ajaxUpdatePlan {containers: @containers()}, event
 
   load: (hash="small") =>
-    # TODO: Make loaded meaningful, right now it just means that
-    # we triggered all the API calls
     unless @loaded()
       @loadPlans()
       @loadPlanFeatures()

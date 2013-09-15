@@ -19,5 +19,3 @@
             %img{width: 25, height: 25, data-bind: "attr: {src: avatar_url}"}
 
             %span{data-bind: "text: login"}
-
--# TODO: more info and links to their org settings pages

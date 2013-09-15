@@ -11,9 +11,6 @@
 %div{data-bind: "if: loadingOrganizations"}
   Loading organization list...
 
--# TODO: explanation about how extra-organizations can't change plan attributes
--# TODO: plan display for orgs in extra-organizations
-
 .row-fluid
   .span8
     %div{data-bind: "ifnot: loadingOrganizations"}
