@@ -79,7 +79,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     # Trial parallelism is counted as paid here
     @paid_parallelism = @komp =>
-      Math.min @plan().max_parallelism(), @billing.containers()
+      Math.min @plan().max_parallelism(), @billing.usable_containers()
 
     @focused_parallel = ko.observable @parallel()
 
@@ -90,7 +90,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       selected: @komp =>
         parseInt(num) is @parallel()
       bad_choice: @komp =>
-        parseInt(num) <= @paid_parallelism() && @billing.containers() % parseInt(num) isnt 0
+        parseInt(num) <= @paid_parallelism() && @billing.usable_containers() % parseInt(num) isnt 0
 
     @show_upgrade_plan = @komp =>
       @plan().max_parallelism() < @focused_parallel()
@@ -99,10 +99,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       @paid_parallelism() < @focused_parallel() <= @plan().max_parallelism()
 
     @show_uneven_divisor_warning_p = @komp =>
-      @focused_parallel() <= @paid_parallelism() && @billing.containers() % @focused_parallel() isnt 0
+      @focused_parallel() <= @paid_parallelism() && @billing.usable_containers() % @focused_parallel() isnt 0
 
     @simultaneous_builds = @komp =>
-      Math.floor(@billing.containers() / @focused_parallel())
+      Math.floor(@billing.usable_containers() / @focused_parallel())
 
     @show_number_of_simultaneous_builds_p = @komp =>
       @focused_parallel() <= @paid_parallelism()

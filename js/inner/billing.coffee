@@ -45,6 +45,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     chosenPlan: null
     plans: []
     containers: 1
+    containers_override: null
     special_price_p: null
 
     # org-plan data
@@ -113,6 +114,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @piggieback_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
         plan.name
+
+    @usable_containers = @komp =>
+      Math.max @containers_override(), @containers()
 
     # array of all organization logins that this user should see on the
     # select organizations page

@@ -28,8 +28,8 @@
 
         %p{data-bind: "if: show_number_of_simultaneous_builds_p"}
           You have
-          %span{data-bind: "text: billing.containers"}
-          containers, so you can run
+          %span{data-bind: "text: billing.usable_containers"}
+          containers available, so you can run
           %span{data-bind: "text: simultaneous_builds"}
           builds at once at
           = succeed 'x.', ->
@@ -59,7 +59,7 @@
           .alert.alert-warning
             %p
               You only have
-              %span{data-bind: "text: billing.containers"}
+              %span{data-bind: "text: billing.usable_containers"}
               containers.
 
             %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'add_containers')}"} Increase your parallelism
