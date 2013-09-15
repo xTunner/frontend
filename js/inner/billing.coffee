@@ -291,9 +291,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     $.getJSON @apiURL('plan'), (data) =>
       @loadPlanData data if data
       @existing_plan_loaded(true)
-      # TODO: figure out how I want to do this
-      # if @chosenPlan()
-      #   @closeWizard()
 
   loadOrganizations: () =>
     @loadingOrganizations = VM.current_user.loadingOrganizations
