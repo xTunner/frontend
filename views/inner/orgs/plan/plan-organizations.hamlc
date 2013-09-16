@@ -32,7 +32,7 @@
                   %input{type: "checkbox", data-bind: "value: $data, checked: $parent.piggieback_orgs"}
                     %span{data-bind: "text: $data"}
 
-            .form-actions.span6
+            .form-actions.span7
               %button.btn.btn-large.btn-primary{data-bind: "click: saveOrganizations",
                                                 type: "submit",
                                                 data-loading-text: "Saving...",

@@ -10,7 +10,7 @@
       .controls
         %input.span10{type: 'text', data-bind: "value: billing_name"}
     .control-group
-      %label.control-label{for: 'extra_billing_data'} Extra billing data
+      %label.control-label{for: 'extra_billing_data'} Extra data to include in your invoice
       .controls
         %textarea.span10{name: 'extra_billing_data',
                          rows: 3,
