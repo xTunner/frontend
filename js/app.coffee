@@ -12,7 +12,6 @@ display = (template, args, subpage, hash) ->
     $("<div></div>")
       .attr('id', 'content')
       .removeClass('outer')
-      .removeClass('new-outer')
       .removeClass('inner')
       .addClass(klass)
       .append(HAML[template](args))
