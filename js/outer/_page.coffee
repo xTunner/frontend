@@ -28,7 +28,6 @@ CI.outer.Page = class Page
 
   render: (cx) =>
     template = @name
-    footer_name = "footer_nav" # dont show the full nav yet
     klass = "outer"
 
     args = $.extend renderContext, @viewContext(cx)
@@ -36,6 +35,7 @@ CI.outer.Page = class Page
       $("<div></div>")
         .attr('id', 'header')
         .append(HAML.header(args))
+
     content =
       $("<div></div>")
         .addClass('content')
@@ -49,7 +49,7 @@ CI.outer.Page = class Page
       $("<div></div>")
         .attr('id', 'footer')
         .addClass(klass)
-        .append(HAML[footer_name](args))
+        .append(HAML["footer_nav"](args))
 
 
     $('#main')
