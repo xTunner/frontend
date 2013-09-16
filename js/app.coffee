@@ -16,10 +16,17 @@ display = (template, args, subpage, hash) ->
       .addClass(klass)
       .append(HAML[template](args))
 
+  footer =
+    $("<div></div>")
+      .attr('id', 'footer')
+      .addClass(klass)
+      .append(HAML["footer_nav"](args))
+
   $('#main')
     .html("")
     .append(header)
     .append(content)
+    .append(footer)
 
 
   if subpage
