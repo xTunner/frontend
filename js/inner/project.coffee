@@ -26,6 +26,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     ssh_keys: []
     followed: null
     loading_users: false
+    loading_billing: false
     users: []
     parallel: 1
     retried_build: null
@@ -239,11 +240,13 @@ CI.inner.Project = class Project extends CI.inner.Obj
     num > @paid_parallelism()
 
   load_billing: =>
+    @loading_billing(true)
     $.ajax
       type: "GET"
       url: "/api/v1/project/#{@project_name()}/plan"
       success: (result) =>
         @billing.loadPlanData(result)
+        @loading_billing(false)
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"

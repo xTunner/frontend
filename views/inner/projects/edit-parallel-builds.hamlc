@@ -1,6 +1,9 @@
 %div
   %h1 Change parallelism for this project
-  %div
+  %div{data-bind: "if: loading_billing"}
+    .row-fluid.centered-spinner
+      = HAML.fast_spinner()
+  %div{data-bind: "ifnot: loading_billing"}
     .row-fluid{style: "min-height: 250px"}
       .span5
         %p
