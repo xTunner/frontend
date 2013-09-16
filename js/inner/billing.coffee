@@ -110,6 +110,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @piggieback_plan_p = @komp =>
       @current_org_name() && @org_name() && @current_org_name() isnt @org_name()
 
+    @can_edit_plan = @komp =>
+      @paid() && !@piggieback_plan_p()
+
     @organization_plan_path = @komp =>
       CI.Paths.org_settings(@org_name(), 'choose_plan')
 
@@ -162,7 +165,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   selectPlan: (plan, event) =>
     if plan.price?
-      if @paid() and !@piggieback_plan_p()
+      if @can_edit_plan()
         @oldPlan(@chosenPlan())
         @chosenPlan(plan)
         $("#confirmForm").modal({keyboard: false}) # TODO: eww
@@ -318,7 +321,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify
         'org-name': @transfer_org_name()
       success: (data) =>
-        VM.org().subpage('choose-plan')
+        VM.org().subpage('choose_plan')
         @load()
 
   loadExistingCard: () =>

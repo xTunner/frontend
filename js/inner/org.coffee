@@ -62,6 +62,16 @@ CI.inner.Org = class Org extends CI.inner.Obj
       if new_val
         window.location.hash = new_val.replace('_', '-')
 
+    @billing_subpages = ['choose_plan', 'add_containers', 'extra_organizations', 'credit_card']
+
+    # This is a computed observable that only exists for its side-effects
+    @redirect_to_choose_plan = ko.computed
+      read: () =>
+        if @billing().loaded() && _.contains(@billing_subpages, @subpage())
+          if !@billing().can_edit_plan()
+            @subpage('choose_plan')
+      deferEvaluation: false # insurance in case we make true the default
+
   followProjectHandler: (project) =>
     callback = (data) =>
       VM.loadOrgSettings(@name())
