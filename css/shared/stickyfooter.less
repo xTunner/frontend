@@ -1,0 +1,23 @@
+// sticky - see http://mystrd.at/modern-clean-css-sticky-footer/
+
+@footerHeight: 50px;
+@footerPadding: 20px;
+@bodyRealMargin: (@footerHeight + 2 * @footerPadding);
+
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+body {
+  margin: 0 0 @bodyRealMargin 0;
+}
+
+#footer {
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  height: @footerHeight;
+  width: 100%;
+  padding: @footerPadding 0;
+}
