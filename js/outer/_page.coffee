@@ -41,10 +41,10 @@ CI.outer.Page = class Page
         .addClass('content')
         .attr("id", "#{@name}-page")
         .removeClass('outer')
-        .removeClass('old-outer')
         .removeClass('inner')
         .addClass(klass)
         .append(HAML[template](args))
+
     footer =
       $("<div></div>")
         .attr('id', 'footer')
