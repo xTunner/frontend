@@ -1,3 +1,3 @@
 - @category = "troubleshooting"
-- @children = ['troubleshooting_browsers', 'file_ordering', 'filesystem', 'oom', 'ssh_build', 'time_date', 'troubleshooting_clojure', 'troubleshooting_python', 'troubleshooting_ruby', 'troubleshooting_php']
+- @children = ['troubleshooting_browsers', 'file_ordering', 'filesystem', 'oom', 'ssh_build', 'time_date', 'troubleshooting_clojure', 'troubleshooting_python', 'troubleshooting_ruby', 'troubleshooting_php', 'troubleshooting_nodejs']
 - @title = 'Troubleshooting'
