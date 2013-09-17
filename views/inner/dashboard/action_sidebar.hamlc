@@ -6,7 +6,7 @@
     %i.icon-plus
     %span Collaborator
   %div{data-bind: "if: show_follow_project_button"}
-    %a#follow-project-button{href: "#", data-bind: "click: project().follow"}
+    %button#follow-project-button{href: "#", data-bind: "click: project().follow"}
       %i.icon-plus
       %span Follow
       %span{data-bind: "text: project().project_name"}
