@@ -114,7 +114,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @paid() && !@piggieback_plan_p()
 
     @organization_plan_path = @komp =>
-      CI.Paths.org_settings(@org_name(), 'choose_plan')
+      CI.Paths.org_settings(@org_name(), 'plan')
 
     @piggieback_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())
@@ -216,7 +216,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         mixpanel.track('Paid')
         @loadPlanData(data)
         @loadInvoices()
-        VM.org().subpage('add-containers')
+        VM.org().subpage('containers')
 
   ajaxUpdatePlan: (changed_attributes, event) =>
     $.ajax
@@ -227,9 +227,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       success: (data) =>
         @loadPlanData(data)
         @loadInvoices()
-        if VM.org().subpage() is 'choose_plan'
+        if VM.org().subpage() is 'plan'
           $('#confirmForm').modal('hide') # TODO: eww
-          VM.org().subpage('add_containers')
+          VM.org().subpage('containers')
 
   newPlan: (plan, event) =>
     vals =
@@ -321,7 +321,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify
         'org-name': @transfer_org_name()
       success: (data) =>
-        VM.org().subpage('choose_plan')
+        VM.org().subpage('plan')
         @load()
 
   loadExistingCard: () =>

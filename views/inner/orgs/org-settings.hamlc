@@ -21,18 +21,18 @@
             Users
         %li.nav-header
           Plan
-        %li{data-bind: "css: {active: subpage() == 'choose_plan'}"}
-          %a{href: "#choose-plan"}
+        %li{data-bind: "css: {active: subpage() == 'plan'}"}
+          %a{href: "#plan"}
             Choose plan
         / ko if: can_edit_plan
-        %li{data-bind: "css: {active: subpage() == 'add_containers'}"}
-          %a{href: "#add-containers"}
+        %li{data-bind: "css: {active: subpage() == 'containers'}"}
+          %a{href: "#containers"}
             Add containers
-        %li{data-bind: "css: {active: subpage() == 'extra_organizations'}"}
-          %a{href: "#extra-organizations"}
+        %li{data-bind: "css: {active: subpage() == 'organizations'}"}
+          %a{href: "#organizations"}
             Organizations
-        %li{data-bind: "css: {active: subpage() == 'credit_card'}"}
-          %a{href: "#credit-card"}
+        %li{data-bind: "css: {active: subpage() == 'billing'}"}
+          %a{href: "#billing"}
             Billing info
         / /ko
         / /ko
