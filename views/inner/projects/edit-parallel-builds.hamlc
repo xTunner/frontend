@@ -45,7 +45,7 @@
 
         %div{data-bind: "if: billing.trial"}
           .alert.alert-warning
-            %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'plan')}"} Select a plan
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"} Select a plan
             to increase your paralellism.
 
         / ko if: billing.paid
@@ -55,7 +55,7 @@
             != succeed "x.", ->
               %strong{data-bind: "text: plan().max_parallelism"}
 
-            %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'plan')}"} Upgrade your plan
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"} Upgrade your plan
             to unlock more parallelism.
 
         %div{data-bind: "if: show_add_containers"}
@@ -65,7 +65,7 @@
               %span{data-bind: "text: billing.usable_containers"}
               containers.
 
-            %a{data-bind: "attr: {href: CI.Paths.org_settings(org_name(), 'containers')}"} Increase your parallelism
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Increase your parallelism
             up to
 
             %strong

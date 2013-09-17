@@ -114,7 +114,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       @paid() && !@piggieback_plan_p()
 
     @organization_plan_path = @komp =>
-      CI.Paths.org_settings(@org_name(), 'plan')
+      CI.paths.org_settings(@org_name(), 'plan')
 
     @piggieback_plan_name = @komp =>
       if plan = _.first(_.filter @plans(), (p) => p.id is @base_template_id())

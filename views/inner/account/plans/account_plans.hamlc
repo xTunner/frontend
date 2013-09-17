@@ -7,7 +7,7 @@
         %p
           If you previously had a plan on your account, it has moved to your "personal" org. You can edit the plan from
           = succeed ".", ->
-            %a{data-bind: "attr: {href: CI.Paths.org_settings(VM.current_user().login, 'plan')}"}<
+            %a{data-bind: "attr: {href: CI.paths.org_settings(VM.current_user().login, 'plan')}"}<
               its settings page
   .row-fluid
     .span8.offset2
@@ -15,7 +15,7 @@
       %p You can set up plans for any organization that you admin.
       %div{data-bind: "foreach: organizations_plus_user"}
         %p
-          %a{data-bind: "attr: {href: CI.Paths.org_settings(login, 'plan')}"}
+          %a{data-bind: "attr: {href: CI.paths.org_settings(login, 'plan')}"}
             %img{width: 25, height: 25, data-bind: "attr: {src: avatar_url}"}
 
             %span{data-bind: "text: login"}
