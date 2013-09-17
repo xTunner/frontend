@@ -107,7 +107,7 @@
         }, ... ]
         """
     'project/:username/:project/:build_num':
-      description: "Full details for a single build, including the output for all actions. The response includes all of the fields from the build summary."
+      description: "Full details for a single build. The response includes all of the fields from the build summary."
       method: "GET"
       response: """
         {
@@ -124,7 +124,6 @@
               "name" : "configure the build",
               "command" : "configure the build",
               "exit_code" : null,
-              "out" : [ ],
               "type" : "infrastructure",
               "index" : 0,
               "status" : "success",
@@ -139,11 +138,6 @@
               "messages" : [ ],
               "step" : 1,
               "exit_code" : 0,
-              "out" : [ {
-                "type" : "out",
-                "time" : "2013-02-12T21:33:54Z",
-                "message" : "Retrieving org/clojure ... from clojars\\r\\n"
-              } ],
               "end_time" : "2013-02-12T21:33:54Z",
               "index" : 0,
               "status" : "success",
@@ -163,15 +157,6 @@
               "messages" : [ ],
               "step" : 6,
               "exit_code" : 1,
-              "out" : [ {
-                "type" : "out",
-                "time" : "2013-02-12T21:34:01Z",
-                "message" : "'midje' is not a task. See 'lein help'.\\r\\n\\r\\nDid you mean this?\\r\\n         do\\r\\n"
-              }, {
-                "type" : "err",
-                "time" : "2013-02-12T21:34:01Z",
-                "message" : "((lein2 :trampoline :midje)) returned exit code 1"
-              } ],
               "end_time" : "2013-02-12T21:34:01Z",
               "index" : 0,
               "status" : "failed",

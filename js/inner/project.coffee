@@ -123,6 +123,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
       names = (k for own k, v of @branches())
       names.sort()
 
+    @pretty_branch_names = @komp =>
+      decodeURIComponent(name) for name in @branch_names()
+
     @personal_branch_p = (branch_name) =>
       if branch_name is @default_branch()
         true
@@ -351,7 +354,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
   create_settings_build: (data, event) =>
     url = "/api/v1/project/#{@project_name()}"
     if not _.isEmpty(@settings_branch())
-      url += "/tree/#{@settings_branch()}"
+      url += "/tree/#{encodeURIComponent(@settings_branch())}"
     $.ajax
       type: "POST"
       event: event

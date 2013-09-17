@@ -1,5 +1,6 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
+    super
     @name = "docs"
     @query_results_query = ko.observable(null)
     @query_results = ko.observableArray([])
