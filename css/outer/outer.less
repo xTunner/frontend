@@ -70,28 +70,25 @@ body .outer {
     color: @gray;
   }
 
-  button {
-    .border-radius(3px);
-  }
-
-  .btn {
-    line-height: 30px;
-  }
-
+  // high specificity
   .btn, button {
-    border: none;
-    min-height: 30px;
-    text-shadow: none;
-    background: @circleBlue;
-    color: #6a93a3;
+    &:not(.close) {
+      .border-radius(3px);
+      line-height: 30px;
+      border: none;
+      min-height: 30px;
+      text-shadow: none;
+      background: @circleBlue;
+      color: #6a93a3;
+      &:hover, &:focus {
+        background: lighten(@circleBlue, 5%);
+        color: white;
+      }
+    }
   }
 
-  .btn:hover, .btn:focus, button:hover {
-    background: lighten(@circleBlue, 5%);
-    color: white;
-  }
-
-  .btn-primary, button.btn-primary {
+  // higher specificity than .btn/button
+  .btn.btn-primary, button.btn-primary {
     background: @circleAccent;
     color: @circleAccentText;
     &:hover, &:focus {
