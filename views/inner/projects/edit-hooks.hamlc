@@ -83,6 +83,15 @@
       .help-inline
       (e.g. #clojure)
 
+  -# hide until fully deployed
+  / ko if: VM.current_user().admin
+  .control-group
+    %label.control-label{for: "irc-notify-prefs"} Fixed/Failed Only
+      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+    .controls
+      %input.span1#irc-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)" }
+  / /ko
+
   .control-group
     %label.control-label{for: "irc_keyword"} Keyword
     .controls
