@@ -1,4 +1,4 @@
-.page.notfound
+.page.error
   %header
     .container
       %h1=@error
