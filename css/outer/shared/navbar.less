@@ -1,50 +1,31 @@
 #navbar {
-  background: @circleBlue;
-  padding-bottom: 30px;
+  background: @circleBlueDark;
 
-  h1, h3, h4 {
-    color: white;
+  padding: 15px 0;
+
+  #logo {
+    display: block;
+    height: 40px;
+    width: 130px;
+    margin: -7px 0 0 0;
   }
 
-  h1 em {
-    color: @circleBlueLight;
+  nav {
+    li {
+      a:hover, a:focus, .active {
+        background: @circleBlue;
+      }
+    }
   }
 
-  h3 {
+  .nav-pills {
     margin: 0;
-    font-size: 20px;
-    font-weight: 200;
-    line-height: 26px;
+    a {
+	    color: #84aebe;
+    }
   }
 
-  .bar {
-    padding: 15px 0;
-    background: @circleBlueDark;
-
-    #logo {
-      display: block;
-      height: 40px;
-      width: 130px;
-      margin: -7px 0 0 0;
-    }
-
-    nav {
-      li {
-        a:hover, a:focus, .active {
-          background: @circleBlue;
-        }
-      }
-    }
-
-    .nav-pills {
-      margin: 0;
-      a {
-	      color: #84aebe;
-      }
-    }
-
-    .controls {
-      text-align: right;
-    }
+  .controls {
+    text-align: right;
   }
 }

@@ -2,6 +2,7 @@
   = HAML.heroku_header()
 
 .landing.page
+  .banner
   %div{ data-bind: "ifnot: from_heroku" }
     = HAML.home_hero_unit()
 
