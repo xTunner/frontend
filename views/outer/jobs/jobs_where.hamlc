@@ -1,5 +1,5 @@
 %section.clearfix
-  %h3 Where do we work?
+  %h2 Where do we work?
   %p We hire both local and remote folks.
   .span6
     %h4 Local
