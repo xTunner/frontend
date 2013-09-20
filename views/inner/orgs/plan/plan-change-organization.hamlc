@@ -4,7 +4,14 @@
 
     .alert.alert-warning
       %strong Warning!
-      If you're not an admin on the organization you transfer to, then you won't be able to transfer the plan back.
+      %p
+        If you're not an admin on the organization you transfer to, then you won't be able to transfer the plan back or edit the plan.
+      %p
+        If you want to keep running builds for
+        %span{data-bind: "text: org_name"}
+        after the transfer, then you'll have to get an admin from the other organization to extend the plan to cover
+        = succeed '.', ->
+          %span{data-bind: "text: org_name"}
 
 
     %div{data-bind: "if: loadingOrganizations"}
