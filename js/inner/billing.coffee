@@ -344,6 +344,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
   loadPlanFeatures: () =>
     @planFeatures(CI.content.pricing_features)
 
+  transfer_plan_button_text: () =>
+    str = "Transfer plan"
+    if @transfer_org_name()
+      str += " to #{@transfer_org_name()}"
+    str
+
   popover_options: (extra) =>
     options =
       html: true
