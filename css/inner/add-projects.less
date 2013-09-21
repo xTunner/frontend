@@ -97,25 +97,25 @@
   a {
     font-size: 1em;
     border-radius: 4px;
-    line-height: 5em;
-    // border: 1px solid @grayDark;
-    border: 1px solid transparent;
+    line-height: 3em;
     color: @grayDark;
     display: block;
     margin: 0 1vw;
-    text-align: center;
     transition: all .3s ease-in-out;
     font-weight: normal;
     text-decoration: none;
     background-color: transparent;
     &:hover {
       text-decoration: none;
-      background-color: @white;
-      // border: 1px solid @link-blue;
-      border: 1px solid darken(@grayBorder,1%);
       color: @link-blue;
       transition: .1s;
     }
+  }
+  h3 {
+    margin: 0 1vw;
+    font-weight: normal;
+    color: #555;
+    line-height: 1.25em;
   }
 }
 .proj-wrapper {
@@ -126,6 +126,7 @@
   background: @grayLightest;
   border-radius: 4px;
   border: 1px solid darken(@grayBorder,1%);
+  margin-bottom: 10%;
   // padding: 1vw; (for later use with tabbing visual)
   .box-sizing(border-box);
 }
@@ -193,7 +194,7 @@
     line-height: 3em;
     text-decoration: none;
     transition: all .2s ease-in-out;
-    color: @dash-grayDark;
+    color: #555;
     font-weight: normal;
     text-decoration: none;
     box-shadow: 0 1px @white inset;
@@ -211,6 +212,7 @@
   }
   i {
     padding: 0 1em;
+    color: @gray;
   }
   &:not(:first-child) a {
     border-top: 1px solid lighten(@grayBorder,5%);
@@ -221,6 +223,30 @@
   display: inline-block;
   float: left;
   width: 100%;
+}
+.repo-unfollow i {
+  color: @grayDark;
+}
+.repo-nofollow {
+  a {
+    color: #555;
+    &:hover {
+      color: #555;
+    }
+  }
+  a:after {
+    content: "not admin";
+    color: #ffffff;
+    font-size: 0.615em;
+    padding: 5px;
+    border-radius: 5em;
+    text-transform: uppercase;
+    font-weight: bold;
+    float: right;
+    background: #ddd;
+    margin: 1.3em 2em;
+    line-height: 1em;
+  }
 }
 .centered-spinner i {
   margin: 25vh 0;
