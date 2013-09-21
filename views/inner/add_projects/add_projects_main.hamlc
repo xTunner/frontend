@@ -10,6 +10,9 @@
       %strong Follow a repo to get started.
 
 
+        %i{class: "icon-check-empty"}
+        %i{class: "icon-check"}
+        %i{class: "icon-check-empty"}
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
