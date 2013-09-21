@@ -201,6 +201,7 @@
     font-weight: normal;
     text-decoration: none;
     box-shadow: 0 1px @white inset;
+    padding-left: 3em;
     &:hover {
       background-color: lighten(@grayBorder,8%);
       box-shadow: 0 1px lighten(@grayBorder,3%) inset;
@@ -214,8 +215,12 @@
     }
   }
   i {
-    padding: 0 1em;
+    // padding: 0 1em;
+    margin-left: -2em;
     color: @gray;
+  }
+  span {
+    padding-left: 1em;
   }
   &:not(:first-child) a {
     border-top: 1px solid lighten(@grayBorder,5%);
