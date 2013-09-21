@@ -3,6 +3,7 @@
 %div{data-bind: "with: current_user"}
   = HAML['flashes']({})
   .side-return
+    %h3 Add any of the following projects to your dashboard
     %a{data-bind: "click: $root.goDashboard", href: "#"} <i class="icon-circle-arrow-left"></i> Return to dashboard
   .proj-wrapper
     %div{data-bind: "if: showLoading"}
