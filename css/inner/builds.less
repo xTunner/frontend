@@ -163,6 +163,11 @@
       margin-right: 10px;
       font-weight: normal;
     }
+
+    &.contents {
+      // only show the cursor if clicking gets you anywhere
+      cursor: pointer;
+    }
   }
 
   .alert {
@@ -232,9 +237,6 @@
       width: 5px;
     }
 
-    .header {
-      cursor: pointer;
-    }
     min-height: 40px;
     position: relative;
     border: 1px solid #eee;
@@ -319,7 +321,6 @@ td.build_status {
     width: 96%;
   }
 
-  top: -14px;
   top: -1vw;
   position: relative;
 

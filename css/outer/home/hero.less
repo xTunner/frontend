@@ -1,77 +1,33 @@
 #hero {
-  // background: @circleBlue;
+  @subheadColor: #747474;
   padding-bottom: 30px;
-  // color: @white;
-
-  .span4 {
-    text-align: center;
-  }
-
-  .how {
-    margin-top: 5em;
-  }
 
   h1 {
     font-family: 'Source Sans Pro',sans-serif;
     font-size: 82px;
     font-weight: 600;
     line-height: 92px;
-  }
-
-  h1,
- h3 {
     text-align: center;
+    em {
+      color: @circleBlueLight;
+    }
   }
 
   h3 {
+    text-align: center;
     font-size: 22px;
-    color: #747474;
-  }
-
-  h1 em {
-    color: @circleBlueLight;
-  }
-
-  h3 {
+    color: @subheadColor;
     margin: 0;
     font-size: 20px;
     font-weight: 200;
     line-height: 26px;
   }
 
-  .bar {
-    padding: 15px 0;
-    background: @circleBlueDark;
-
-    #logo {
-      display: block;
-      height: 40px;
-      width: 130px;
-      margin: -7px 0 0 0;
+  .how {
+    margin-top: 5em;
+    .span4 {
+      text-align: center;
     }
-
-    nav {
-      li {
-        a:hover, a:focus, .active {
-          background: @circleBlue;
-        }
-      }
-    }
-
-    .nav-pills {
-      margin: 0;
-      a {
-	color: #84aebe;
-      }
-    }
-
-    .controls {
-      text-align: right;
-    }
-  }
-
-  .container:nth-child(2) {
-    margin-top: 40px;
   }
 
   .hero-unit-cta {
@@ -88,6 +44,5 @@
         margin: 10px 0;
       }
     }
-
   }
 }

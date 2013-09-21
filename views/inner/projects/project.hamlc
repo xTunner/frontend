@@ -1,7 +1,5 @@
 = HAML.invite_form({})
 
-= HAML._topbar()
-
 .container-fluid#dashboard
 
   %aside

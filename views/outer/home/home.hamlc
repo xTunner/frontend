@@ -1,7 +1,8 @@
 %div{ data-bind: "if: from_heroku" }
   = HAML.heroku_header()
 
-.landing
+.landing.page
+  .banner
   %div{ data-bind: "ifnot: from_heroku" }
     = HAML.home_hero_unit()
 

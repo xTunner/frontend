@@ -1,14 +1,41 @@
 CI.ajax.init()
 
 display = (template, args, subpage, hash) ->
-  $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
-  $('#main').html(HAML[template](args))
+  klass = 'inner'
+
+  header =
+    $("<div></div>")
+      .attr('id', 'header')
+      .append(HAML.header(args))
+
+  content =
+    $("<div></div>")
+      .attr('id', 'content')
+      .removeClass('outer')
+      .removeClass('inner')
+      .addClass(klass)
+      .append(HAML[template](args))
+
+  footer =
+    $("<div></div>")
+      .attr('id', 'footer')
+      .addClass(klass)
+      .append(HAML["footer_nav"](args))
+
+  $('#main')
+    .html("")
+    .append(header)
+    .append(content)
+    .append(footer)
+
+
   if subpage
     $('#subpage').html(HAML["#{template}_#{subpage}"](args))
     $("##{subpage}").addClass('active')
   if $('#hash').length
-    $("##{hash}").addClass('active')
     $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
+    $("##{hash}").addClass('active')
+
 
   ko.applyBindings(VM)
 
@@ -69,6 +96,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       mixpanel.identify(@current_user().login)
       _rollbarParams.person = {id: @current_user().login}
 
+    @logged_in = @komp =>
+      @current_user?()
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -302,7 +331,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     false
 
   loadRootPage: (cx) =>
-    if VM.current_user
+    if @logged_in()
       VM.loadDashboard cx
     else
       VM.home.display cx
@@ -456,7 +485,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
     # force them to inner.
-    if VM.current_user
+    if VM.logged_in()
       return cx.redirect "/account/plans"
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()

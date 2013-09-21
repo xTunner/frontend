@@ -24,7 +24,7 @@
           %td{data-bind: "text: why"}
           / /ko
 
-        / ko if: $root.current_user
+        / ko if: $root.logged_in
         %tr.price
           %td.title
           / ko foreach: plans
@@ -36,7 +36,7 @@
           / /ko
         / /ko
 
-        / ko ifnot: $root.current_user
+        / ko ifnot: $root.logged_in
         %tr.reason
           %td.title
           / ko foreach: plans

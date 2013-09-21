@@ -1,5 +1,5 @@
 .page.about
-  %header
+  .banner
     .container
       %h1 About us
       %h3 CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools.
