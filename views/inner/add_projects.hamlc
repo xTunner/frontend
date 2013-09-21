@@ -1,20 +1,13 @@
 = HAML['_topbar']({})
 
-.container-fluid{data-bind: "with: current_user"}
-  .row
-    = HAML['flashes']({})
-  .row-fluid
-    .span3
-      = HAML['org_sidebar']({})
-    .span9
-      .row-fluid
-        %h1
-          Choose a repository
-          %button.btn.btn-success.btn-large.pull-right{data-bind: "click: $root.goDashboard"}
-            Back to Dashboard
-      .row-fluid
-        %div{data-bind: "if: showLoading"}
-          .centered-spinner
-            = HAML['fast_spinner']()
-        %div{data-bind: "ifnot: showLoading"}
-          = HAML['add_projects_main']({})
+%div{data-bind: "with: current_user"}
+  = HAML['flashes']({})
+  .side-return
+    %a{data-bind: "click: $root.goDashboard", href: "#"} <i class="icon-circle-arrow-left"></i> Return to dashboard
+  .proj-wrapper
+    %div{data-bind: "if: showLoading"}
+      .centered-spinner
+        = HAML['fast_spinner']()
+    %div{data-bind: "ifnot: showLoading"}
+      = HAML['add_projects_main']({})
+  = HAML['org_sidebar']({})
