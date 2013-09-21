@@ -10,9 +10,20 @@
       %strong Follow a repo to get started.
 
 
+.proj-list{data-bind: "foreach: repos"}
+  .repo
+    .repo-follow{data-bind: "if: canFollow"}
+      %a{data-bind: "click: follow", data-loading-text: "Following...", href: "#"}
         %i{class: "icon-check-empty"}
+        %span{data-bind: "text: displayName"}
+    .repo-unfollow{data-bind: "if: following"}
+      %a{data-bind: "click: unfollow", data-loading-text: "Unfollowing...", href: "#"}
         %i{class: "icon-check"}
+        %span{data-bind: "text: displayName"}
+    .repo-nofollow{data-bind: "if: requiresInvite"}
+      %a{data-toggle: "modal", data-target: "#inviteForm", href: "#"}
         %i{class: "icon-check-empty"}
+        %span{data-bind: "text: displayName"}
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
