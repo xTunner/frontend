@@ -10,25 +10,6 @@
       %strong Follow a repo to get started.
 
 
-%table#add-projects-main.well.table.table-striped.table-hover
-  %thead
-  %tbody.build-row{data-bind: "foreach: repos"}
-    %tr
-      %td{data-bind: "text: displayName",
-          style: "width: 90%"}
-      %td
-        %span{data-bind: "if: canFollow"}
-          %a.btn.btn-primary.btn-small{data-bind: "click: follow",
-                                       data-loading-text: "Following..."}
-            Follow
-        %span{data-bind: "if: following"}
-          %a.btn.btn-small{data-bind: "click: unfollow",
-                           data-loading-text: "Unfollowing..."}
-            Unfollow
-        %span{data-bind: "if: requiresInvite"}
-          %a.btn.btn-small.btn-danger{data-toggle: "modal",
-                                      data-target: "#inviteForm"}
-            Follow
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
