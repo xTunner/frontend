@@ -1,38 +1,32 @@
-#org-sidebar.nav.nav-list.span3
-  %li.nav-header
-    Organizations
+.side-list
+  %li.add-orgs Your Organizations
 
   :plain
     <!-- ko foreach: organizations -->
 
-  %li
-    %a{data-bind: "click: $root.current_user().setActiveOrganization"}
+  %li.side-item
+    %a{data-bind: "click: $root.current_user().setActiveOrganization", href: "#"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
       %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
-      %i.icon-chevron-right
 
   :plain
     <!-- /ko -->
 
-  %li.nav-header
-    You
-  %li{data-bind: "with: collaborator(login)"}
-    %a{data-bind: "click: $root.current_user().setActiveOrganization"}
+  %li.add-you Your Projects
+  %li.side-item{data-bind: "with: collaborator(login)"}
+    %a{data-bind: "click: $root.current_user().setActiveOrganization", href: "#"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
       %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
-      %i.icon-chevron-right
 
-  %li.nav-header
-    Your Collaborators
+  %li.add-collabs Your Collaborators
     %span.explanation
       %i.icon-question-sign{data-bind: "tooltip: { title: 'These are the collaborators for all of your repos and forks'}"}
   :plain
     <!-- ko foreach: collaboratorsWithout(login) -->
-  %li
-    %a{data-bind: "click: $root.current_user().setActiveOrganization"}
+  %li.side-item
+    %a{data-bind: "click: $root.current_user().setActiveOrganization", href: "#"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
       %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
-      %i.icon-chevron-right
 
   :plain
     <!-- /ko -->
