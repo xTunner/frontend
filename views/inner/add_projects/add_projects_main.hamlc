@@ -13,11 +13,11 @@
 .proj-list{data-bind: "foreach: repos"}
   .repo
     .repo-follow{data-bind: "if: canFollow"}
-      %a{data-bind: "click: follow", data-loading-text: "Following...", href: "#"}
+      %a{data-bind: "click: follow", data-loading-text: "Adding to dashboard...", href: "#"}
         %i{class: "icon-check-empty"}
         %span{data-bind: "text: displayName"}
     .repo-unfollow{data-bind: "if: following"}
-      %a{data-bind: "click: unfollow", data-loading-text: "Unfollowing...", href: "#"}
+      %a{data-bind: "click: unfollow", data-loading-text: "Removing from dashboard...", href: "#"}
         %i{class: "icon-check"}
         %span{data-bind: "text: displayName"}
     .repo-nofollow{data-bind: "if: requiresInvite"}
