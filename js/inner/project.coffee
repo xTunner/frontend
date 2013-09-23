@@ -21,6 +21,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     irc_keyword: null
     irc_username: null
     irc_password: null
+    irc_notify_prefs: null
     github_user: null
     heroku_deploy_user: null
     ssh_keys: []
@@ -303,7 +304,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         irc_keyword: @irc_keyword()
         irc_username: @irc_username()
         irc_password: @irc_password()
-
+        irc_notify_prefs: @irc_notify_prefs()
 
     false # dont bubble the event up
 

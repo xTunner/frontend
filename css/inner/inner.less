@@ -1,40 +1,48 @@
-// Bootstrap
-// -------------------------
-@import "bootstrap-variables.less";
-@import "../shared/bootstrap-files.less";
-
-// Image path helper
-// -------------------------
-@imgPath: "../../img";
-
-#app {
-   //background:  url(../../../img/outer/bg_pattern.png);
-   min-width: 960px;
-
-
-   // Fix for the intercom help button obscuring text
-   padding-bottom: 70px;
+body {
+  // the specificity on outer beats this
+  background-color: #f8f8f8;
 }
 
-// Basic Typography
-h1 {
-  color: #1c508b;
+.inner {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+
+  pre, code {
+    font-familt: Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+
+  .btn-primary {
+    @btnPrimaryBackground: #1f4d80;
+    @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
+    .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
+  }
+
+  &#content {
+    padding-bottom: 70px; // Fix for the intercom help button obscuring text
+    min-width: 960px;
+    padding-top: 13px;
+  }
+
+  // Basic Typography
+  h1 {
+    color: #1c508b;
+  }
+  h2 {
+    color: #366aa4;
+  }
+
+  @import "../shared/variables.less";
+  @import "../shared/functions.less";
+  @import "../shared/general.less";
+  @import "navbar.less";
+  @import "labels.less";
+  @import "terminal.less";
+  @import "builds.less";
+  @import "billing.less";
+  @import "settings.less";
+  @import "add-projects.less";
+  @import "dashboard.less";
+  @import "edit-project-settings.less";
+  @import "admin.less";
+  @import "org.less";
 }
-h2 {
-  color: #366aa4;
-}
-@import "../shared/variables.less";
-@import "../../vendor/old-intercom.less";
-@import "labels.less";
-@import "../shared/functions.less";
-@import "terminal.less";
-@import "navbar.less";
-@import "builds.less";
-@import "billing.less";
-@import "settings.less";
-@import "add-projects.less";
-@import "dashboard.less";
-@import "edit-project-settings.less";
-@import "admin.less";
-@import "org.less";
-@import "../shared/general.less";

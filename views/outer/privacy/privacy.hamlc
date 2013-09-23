@@ -1,7 +1,7 @@
 = HAML.security()
 
 .page.privacy
-  %header
+  .banner
     .container
       %h1 Privacy Policy
       %h3 We will never sell your private information.

@@ -1,5 +1,3 @@
-= HAML._topbar()
-
 .container-fluid.org-page
   .row-fluid
     .span3

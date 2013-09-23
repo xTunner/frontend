@@ -1,14 +1,45 @@
 CI.ajax.init()
 
 display = (template, args, subpage, hash) ->
-  $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
-  $('#main').html(HAML[template](args))
+  klass = 'inner'
+
+  header =
+    $("<div></div>")
+      .attr('id', 'header')
+      .append(HAML.header(args))
+
+  content =
+    $("<div></div>")
+      .attr('id', 'content')
+      .removeClass('outer')
+      .removeClass('inner')
+      .addClass(klass)
+      .append(HAML[template](args))
+
+  footer =
+    $("<div></div>")
+      .attr('id', 'footer')
+      .addClass(klass)
+      .append(HAML["footer_nav"](args))
+
+  $('#main')
+    .html("")
+    .append(header)
+    .append(content)
+    .append(footer)
+
+
   if subpage
     $('#subpage').html(HAML["#{template}_#{subpage}"](args))
     $("##{subpage}").addClass('active')
   if $('#hash').length
-    $("##{hash}").addClass('active')
     $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
+    $("##{hash}").addClass('active')
+
+  if VM.selected().title
+    document.title = "#{VM.selected().title} - CircleCI"
+  else
+    document.title = "Continuous Integration and Deployment - CircleCI"
 
   ko.applyBindings(VM)
 
@@ -78,6 +109,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       mixpanel.identify(@current_user().login)
       _rollbarParams.person = {id: @current_user().login}
 
+    @logged_in = @komp =>
+      @current_user?()
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -304,7 +337,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     false
 
   loadRootPage: (cx) =>
-    if VM.current_user
+    if @logged_in()
       VM.loadDashboard cx
     else
       VM.home.display cx
@@ -333,6 +366,7 @@ window.SammyApp = Sammy 'body', (n) ->
         VM.loadRecentBuilds(true)
       mention_branch: true
       favicon_updator: VM.reset_favicon
+      title: "Dashboard"
 
     VM.loadRootPage(cx)
 
@@ -345,6 +379,7 @@ window.SammyApp = Sammy 'body', (n) ->
       crumbs: ['org', 'org_settings']
       username: cx.params.username
       favicon_updator: VM.reset_favicon
+      title: "Org settings - #{cx.params.username}"
 
     VM.loadEditOrgPage cx.params.username, splitSplat(cx)
 
@@ -354,6 +389,7 @@ window.SammyApp = Sammy 'body', (n) ->
       crumbs: ['org', 'org_settings']
       username: cx.params.username
       favicon_updator: VM.reset_favicon
+      title: "#{cx.params.username}"
 
     VM.loadOrg cx.params.username
 
@@ -370,6 +406,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         favicon_updator: VM.reset_favicon
+        title: "Edit settings - #{cx.params.username}/#{cx.params.project}"
 
       VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
 
@@ -378,6 +415,7 @@ window.SammyApp = Sammy 'body', (n) ->
       VM.selected
         page: "account"
         favicon_updator: VM.reset_favicon
+        title: "Account"
       VM.loadAccountPage cx, splitSplat(cx)
 
   @get '^/gh/:username/:project/tree/(.*)',
@@ -394,6 +432,7 @@ window.SammyApp = Sammy 'body', (n) ->
         branch: branch
         mention_branch: false
         favicon_updator: VM.reset_favicon
+        title: "#{branch} - #{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
@@ -409,6 +448,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
         mention_branch: true
+        title: "##{cx.params.build_num} - #{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           if VM.build() and VM.build().usage_queue_visible()
             VM.build().load_usage_queue_why()
@@ -428,6 +468,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         mention_branch: true
         favicon_updator: VM.reset_favicon
+        title: "#{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
 
@@ -446,6 +487,7 @@ window.SammyApp = Sammy 'body', (n) ->
       admin_builds: true
       refresh_fn: VM.refreshAdminRecentBuilds
       favicon_updator: VM.reset_favicon
+      title: "Admin recent builds"
 
   # outer
   @get "^/docs(.*)", (cx) => VM.docs.display(cx)
@@ -458,7 +500,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
     # force them to inner.
-    if VM.current_user
+    if VM.logged_in()
       return cx.redirect "/account/plans"
 
     # TODO: move this out of billing somehow

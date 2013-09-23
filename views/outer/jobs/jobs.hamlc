@@ -1,12 +1,12 @@
-.jobs.page
-  %header
+.page.jobs
+  .banner
     .container
       %h1 We're hiring.
       %h3 We're currently looking for great designers and front-end developers.
 
   .container.content
     .row
-      %h2
+      %h2.aside
         Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
 
       = HAML['jobs_intro']()
@@ -15,4 +15,4 @@
       = HAML['jobs_where']()
       = HAML['jobs_how']()
 
-      %h2 No recruiters, thank you.
+      %h2.aside No recruiters, thank you.

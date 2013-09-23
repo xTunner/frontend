@@ -62,13 +62,14 @@
   }
   .side-actions {
     padding: 1em;
+    margin-left: 4px;
     .box-sizing(border-box);
-    button {
-      .buttonDark;
-    }
+  }
+  #invite, #add-projects{
+    .buttonDark;
+    width: 50%;
   }
   #add-projects {
-    width: 50%;
     border-radius: 3px 0 0 3px;
     border-right-color: transparent;
     &:active, &:focus {
@@ -76,7 +77,6 @@
     }
   }
   #invite {
-    width: 50%;
     border-radius: 0 3px 3px 0;
     &:hover {
       border-left-color: darken(@blueDark,5%);
@@ -86,6 +86,7 @@
     width: 100%;
     margin-top: 1em;
     .buttonDark(@green);
+    border-radius: 3px;
   }
   .projects {
     list-style: none;

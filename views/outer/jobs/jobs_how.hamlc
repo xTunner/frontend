@@ -1,5 +1,5 @@
 %section.clearfix
-  %h3 How to apply
+  %h2 How to apply
   %p
     Send an email to
     = succeed ",", ->
