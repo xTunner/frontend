@@ -18,7 +18,6 @@ exports.ab_test_definitions =
       override_p: ->
         window.circleEnvironment is 'test'
       options:
-        github_warning_modal: false
         stripe_v3: false
         pricing_maintain_infrastructure: false
     ]
