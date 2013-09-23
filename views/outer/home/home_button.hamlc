@@ -1,3 +1,4 @@
+- console.log("home_button source:", @source)
 %a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
-                             data-bind: "track_link: 'Auth GitHub'"}
+                             data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': '#{@source}'}}"}
   = @text

@@ -23,6 +23,6 @@
       .span4.controls
         %a#login.btn.btn-primary{href: CI.github.authUrl(),
                                  title: 'Sign in with Github',
-                                 data-bind: "track_link: 'Auth GitHub'"}
+                                 data-bind: "track_link: {event: 'Auth GitHub', properties: {'button': 'header'}}"}
           %i.icon-github-alt
           Sign in with Github
