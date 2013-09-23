@@ -1,10 +1,17 @@
-#billing {
-  #plans-table {
-
-    // Inner and outer should share the same fonts for this page to make the layout work
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 18px;
+.plans {
+  .modal-footer {
+    button { margin-left: 5px; }
+  }
+  .btn-primary {
+    .buttonDark;
+  }
+  .btn-danger {
+    .buttonDark(@red);
+  }
+  .btn-mini {
+    .btn-mini;
+    line-height: 2em;
+  }
 
   // 14 day free trial button
   a.btn {
