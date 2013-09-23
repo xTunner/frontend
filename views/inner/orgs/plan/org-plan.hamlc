@@ -1,4 +1,4 @@
-.row-fluid.plans#billing{data-bind: "with: billing"}
+.row-fluid.plans.pricing#billing{data-bind: "with: billing"}
 
   / ko if: trial
   = HAML.plans_trial_notification()
@@ -8,5 +8,8 @@
   = HAML.plans_piggieback_plan_notification()
   / /ko
 
-  = HAML.plans_table()
-  = HAML.plans_common_questions()
+  = HAML.pricing_plans()
+  = HAML.pricing_features()
+  = HAML.pricing_faq()
+
+  = HAML.confirm_plan_modal()
