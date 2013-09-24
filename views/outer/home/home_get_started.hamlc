@@ -15,7 +15,9 @@
           .center
             .main-cta
               .ctabox
-                = HAML.old_home_button({text: "RUN YOUR TESTS"})
+                %a.btn.btn-jumbo.btn-action-orange{href: CI.github.authUrl(),
+                   data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'get_started_section'}}"}
+                  RUN YOUR TESTS
 
           %p.center
             %i

@@ -3,12 +3,23 @@
   h2 {
     margin: 1em 0;
     font-size: 40px;
+    text-align: center;
+  }
+
+  h2 ~ h3 {
+    text-align: center;
   }
 
   h2, h3 {
     color: #555;
     line-height: 2em;
     margin: 0;
+  }
+
+  .banner {
+    // empty, with a total height of 30
+    padding: 0px;
+    height: 30px;
   }
 
   .container {
@@ -19,11 +30,11 @@
     text-align: center;
   }
 
-  @import "header.less";
+  @import "hero.less";
   @import "customers.less";
+
 //  @import "features.less";
   @import "features_old.less";
   @import "get_started.less";
-  @import "additional.less";
   @import "technology.less";
 }

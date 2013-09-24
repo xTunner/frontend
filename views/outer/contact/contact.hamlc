@@ -1,5 +1,5 @@
 .page.contact
-  %header
+  .banner
     .container
       %h1 Contact us
       %h3 We'd love to hear from you.

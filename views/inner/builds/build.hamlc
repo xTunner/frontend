@@ -1,5 +1,3 @@
-= HAML._topbar()
-
 #build-log-container
 
   %div{data-bind: "ifnot: build_has_been_loaded"}
