@@ -47,7 +47,7 @@
           %a.btn.btn-primary{href: "mailto:enterprise@circleci.com"} Contact us
         %span{data-bind: "ifnot: enterprise_p"}
           %span{data-bind: "if: $root.logged_in"}
-            %a.btn.btn-primary{data-bind: "text: pricingDescription, click: function (d,e) { $parent.selectPlan($data, e)}",
+            %button.btn.btn-primary{data-bind: "text: pricingDescription, click: function (d,e) { $parent.selectPlan($data, e)}",
                                data-success-text: "Paid!",
                                data-failed-text: "Failed!",
                                data-loading-text: "Paying..."}

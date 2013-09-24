@@ -41,7 +41,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
         if not @price?
           "Contact us for pricing"
         else
-          if @billing() and @billing().chosenPlan()?
+          if @billing() and @billing().can_edit_plan()
             "Switch plan $#{@price}/mo"
           else
             "Sign up now for $#{@price}/mo"
