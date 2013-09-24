@@ -748,7 +748,7 @@
 %p
   In addition to these per-user emails, Circle sends notifications on a per-project basis.
   Circle supports sending webhooks when your build completes.
-  Circle also supports HipChat, Campfire, and Flowdock notifications; you configure these notifications from your project's
+  Circle also supports HipChat, Campfire, Flowdock and IRC notifications; you configure these notifications from your project's
   <b>Edit settings > Notifications </b> page.
 
 

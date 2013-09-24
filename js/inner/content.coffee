@@ -50,7 +50,7 @@ You queue them up, we'll knock 'em down."
   },
   {
     headline: "Personalized notifications",
-    detail: "You don't care what John did in his feature branch, but you care what gets pushed to master. Who cares if the tests pass yet again, you only want notifications when they fail. Circle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, FlowDock and webhooks."
+    detail: "You don't care what John did in his feature branch, but you care what gets pushed to master. Who cares if the tests pass yet again, you only want notifications when they fail. Circle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, FlowDock, IRC and webhooks."
   },
   {
     headline: "Debug with ease",
