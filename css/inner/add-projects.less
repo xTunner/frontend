@@ -214,33 +214,6 @@
 }
 .repo-nofollow {
   a {
-    color: #555;
-    &:hover {
-      color: #555;
-      &:after {
-        margin-right: .5em;
-        transition-duration: .2s;
-      }
-      &:before {
-        margin-right: 1em;
-        transition-duration: .2s;
-      }
-    }
-    &:after, &:before {
-      color: @grayLight;
-      float: right;
-      -webkit-font-smoothing: antialiased;
-      transition: margin .4s ease-in-out;
-    }
-    &:after {
-      content: "\f06a";
-      font-family: 'fontawesome';
-      margin-right: 1em;
-    }
-    &:before {
-      content: "admin needed";
-      margin-right: -10%;
-    }
   }
 }
 .centered-spinner i {
