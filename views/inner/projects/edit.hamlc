@@ -27,9 +27,12 @@
 
 
       %li.nav-header
-        Hooks
+        Notifications
       %li
-        %a{ href: "edit#hooks" } Notifications
+        %a{ href: "edit#hooks" } Chatroom
+      %li
+        %a{ href: "edit#webhooks" } Webhooks
+
       %li.divider
 
       %li.nav-header
@@ -52,7 +55,7 @@
       %li.nav-header
         Continuous Deployment
       %li
-        %a{ href: "edit#heroku" } Heroku settings
+        %a{ href: "edit#heroku" } Heroku
       %li
         %a{ href: "edit#deployment" } Other deployments
 
