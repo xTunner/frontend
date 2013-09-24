@@ -29,7 +29,7 @@
       %li.nav-header
         Notifications
       %li
-        %a{ href: "edit#hooks" } Chatroom
+        %a{ href: "edit#hooks" } Chatrooms
       %li
         %a{ href: "edit#webhooks" } Webhooks
 
