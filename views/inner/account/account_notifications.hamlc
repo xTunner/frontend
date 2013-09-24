@@ -1,7 +1,7 @@
 %h1 Personal notifications
 
 .row
-  .span7
+  .span8
     %form.well
       %legend
         Email notifications
@@ -17,17 +17,21 @@
         %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
           %span No email
 
-    %form#email_address.form-horizontal.well
-      %legend
-        Email Address
-      %div{data-bind: "foreach: all_emails"}
-        %label.radio
-          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
-          %span{data-bind: "text: $data"}
+    .well
+      %form#email_address.form-horizontal
+        %legend
+          Email Address
+        %div{data-bind: "foreach: all_emails"}
+          %label.radio
+            %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
+            %span{data-bind: "text: $data"}
+      %div
+        %i To add more email addresses, add them on GitHub, then log out from Circle and log back in.
+
 
     %form.well
       %legend
         Project preferences
-      %p Projects can be individually configured, from a project's <b>edit</b> page.
+      %p Projects can be individually configured, from a project's <b>Edit settings</b> page.
 
       %p Instant message settings are per-project; edit a project to set them.
