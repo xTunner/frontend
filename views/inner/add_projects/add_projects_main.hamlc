@@ -10,8 +10,8 @@
       %strong Follow a repo to get started.
 
 
-.proj-list{data-bind: "foreach: repos"}
-  .repo
+%ul.proj-list{data-bind: "foreach: repos"}
+  %li.repo
     .repo-watch{data-bind: "if: canFollow"}
       %a{data-bind: "click: follow", data-loading-text: "Adding to dashboard...", href: "#"}
         %i.icon-eye-close
