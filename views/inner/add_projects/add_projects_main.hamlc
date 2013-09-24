@@ -14,16 +14,20 @@
   .repo
     .repo-follow{data-bind: "if: canFollow"}
       %a{data-bind: "click: follow", data-loading-text: "Adding to dashboard...", href: "#"}
-        %i{class: "icon-check-empty"}
-        %span{data-bind: "text: displayName"}
+        %i.icon-eye-close
+        %span.proj-name{data-bind: "text: displayName"}
+        %span.hvr-msg Start watching this repo?
     .repo-unfollow{data-bind: "if: following"}
       %a{data-bind: "click: unfollow", data-loading-text: "Removing from dashboard...", href: "#"}
-        %i{class: "icon-check"}
-        %span{data-bind: "text: displayName"}
+        %i.icon-eye-open
+        %span.proj-name{data-bind: "text: displayName"}
+        %span.hvr-msg Stop watching this repo?
     .repo-nofollow{data-bind: "if: requiresInvite"}
       %a{data-toggle: "modal", data-target: "#inviteForm", href: "#"}
-        %i{class: "icon-check-empty"}
-        %span{data-bind: "text: displayName"}
+        %i.icon-eye-close
+        %span.proj-name{data-bind: "text: displayName"}
+        %i.icon-exclamation-sign
+        %span.hvr-msg You must be an admin to watch this repo.
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
