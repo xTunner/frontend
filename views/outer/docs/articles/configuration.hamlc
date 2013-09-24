@@ -571,6 +571,8 @@
 
 %p
   Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
+  However, this section has one minor difference: all test commands will run, even if one fails.
+  This allows our test output to tell you about all the tests that fail, not just the first error.
 
 
 .top-caption
