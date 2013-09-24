@@ -11,5 +11,5 @@
       = HAML['add_projects_main']({})
   .side-return
     %h3 Start watching your projects
-    %p Choose a repo from your Github and we'll watch it for you. Choose any repo from one of your organiations, your own repos, or repos you share with others. We'll show you the first build immediately; come back here to watch more.
+    %p Choose a repo from your Github and we'll watch it for you. Choose any repo from one of your organizations, your own repos, or repos you share with others. We'll show you the first build immediately; come back here to watch more.
     %a{data-bind: "click: $root.goDashboard", href: "#"} <i class="icon-circle-arrow-left"></i> Return to dashboard
