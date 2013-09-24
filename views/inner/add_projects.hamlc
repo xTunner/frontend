@@ -2,14 +2,14 @@
 
 %div{data-bind: "with: current_user"}
   = HAML['flashes']({})
-  .side-return
-    %h3 Add projects to dashboard
-    %p Add any of the following projects to your dashboard and we'll show you the results as they happen.
-    %a{data-bind: "click: $root.goDashboard", href: "#"} <i class="icon-circle-arrow-left"></i> Return to dashboard
+  = HAML['org_sidebar']({})
   .proj-wrapper
     %div{data-bind: "if: showLoading"}
       .centered-spinner
         = HAML['fast_spinner']()
     %div{data-bind: "ifnot: showLoading"}
       = HAML['add_projects_main']({})
-  = HAML['org_sidebar']({})
+  .side-return
+    %h3 Start watching your projects
+    %p Choose a repo from your Github and we'll watch it for you. Choose any repo from one of your organiations, your own repos, or repos you share with others. We'll show you the first build immediately; come back here to watch more.
+    %a{data-bind: "click: $root.goDashboard", href: "#"} <i class="icon-circle-arrow-left"></i> Return to dashboard
