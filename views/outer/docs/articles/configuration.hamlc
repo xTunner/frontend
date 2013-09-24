@@ -754,19 +754,35 @@
 
 %p
   This example sends a JSON packet to the specified URL.
-  The JSON packet is identical to the result of the
-  %a{ href: "/docs/api#build" } Build API
-  call for the same build.
-
-
 
 %pre
   %code<>
     :preserves
       notify:
         webhooks:
-          # A list of hashes representing hooks. Only the url field is supported.
+          # A list of hook hashes, containing the url field
           - url: https://example.com/hooks/circle
+
+%p
+  The JSON packet is identical to the result of the
+  %a{ href: "/docs/api#build" }
+    Build API
+  call for the same build, except that it is wrapped in a "payload" key:
+
+%pre
+  %code<>
+    :preserves
+      {
+        "payload": {
+          "vcs_url" : "https://github.com/circleci/mongofinil",
+          "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+          "build_num" : 22,
+          "branch" : "master",
+          ...
+        }
+      }
+
+
 %p
 
 
