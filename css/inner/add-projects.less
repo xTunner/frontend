@@ -163,6 +163,7 @@
     text-decoration: none;
     box-shadow: 0 1px @white inset;
     padding-left: 3em;
+    overflow: hidden;
     &:hover {
       background-color: lighten(@grayBorder,8%);
       box-shadow: 0 1px lighten(@grayBorder,3%) inset;
@@ -181,17 +182,21 @@
       transition-duration: .1s;
     }
   }
-  i {
-    // padding: 0 1em;
+  i:first-child {
     margin-left: -2em;
-    color: @gray;
   }
-  span {
-    padding-left: 1em;
+  .icon-exclamation-sign {
+    float: right;
+    margin-right: 1em;
+    line-height: 3em;
+    color: @grayLight;
   }
   &:not(:first-child) a {
     border-top: 1px solid lighten(@grayBorder,5%);
   }
+}
+.proj-name {
+  padding-left: 1em;
 }
 .hvr-msg {
   float: right;
@@ -209,11 +214,9 @@
   float: left;
   width: 100%;
 }
-.repo-unfollow i {
-  color: @grayDark;
-}
-.repo-nofollow {
+.repo-follow, .repo-nofollow {
   a {
+    color: @grayLight;
   }
 }
 .centered-spinner i {
