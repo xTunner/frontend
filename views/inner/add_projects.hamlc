@@ -1,5 +1,3 @@
-= HAML['_topbar']({})
-
 %div{data-bind: "with: current_user"}
   = HAML['flashes']({})
   = HAML['org_sidebar']({})
