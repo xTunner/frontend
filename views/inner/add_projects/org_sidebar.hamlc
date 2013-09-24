@@ -18,9 +18,8 @@
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
       %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
 
-  %li.add-collabs Your Collaborators
-    %span.explanation
-      %i.icon-question-sign{data-bind: "tooltip: { title: 'These are the collaborators for all of your repos and forks'}"}
+  %li.add-collabs{data-bind: "tooltip: { title: 'For all repos &amp; forks'}", data-placement: "bottom"} Your Collaborators
+
   :plain
     <!-- ko foreach: collaboratorsWithout(login) -->
   %li.side-item
