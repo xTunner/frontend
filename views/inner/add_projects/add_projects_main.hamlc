@@ -12,17 +12,17 @@
 
 .proj-list{data-bind: "foreach: repos"}
   .repo
-    .repo-follow{data-bind: "if: canFollow"}
+    .repo-watch{data-bind: "if: canFollow"}
       %a{data-bind: "click: follow", data-loading-text: "Adding to dashboard...", href: "#"}
         %i.icon-eye-close
         %span.proj-name{data-bind: "text: displayName"}
         %span.hvr-msg Start watching this repo?
-    .repo-unfollow{data-bind: "if: following"}
+    .repo-unwatch{data-bind: "if: following"}
       %a{data-bind: "click: unfollow", data-loading-text: "Removing from dashboard...", href: "#"}
         %i.icon-eye-open
         %span.proj-name{data-bind: "text: displayName"}
         %span.hvr-msg Stop watching this repo?
-    .repo-nofollow{data-bind: "if: requiresInvite"}
+    .repo-nowatch{data-bind: "if: requiresInvite"}
       %a{data-toggle: "modal", data-target: "#inviteForm", href: "#"}
         %i.icon-eye-close
         %span.proj-name{data-bind: "text: displayName"}
