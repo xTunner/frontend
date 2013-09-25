@@ -37,7 +37,7 @@
       Cancel
     %button.btn.btn-primary{"aria-hidden" => "true",
                             data-bind: "click: updatePlan",
-                            data-loading-text: "Saving Plan Change...",
+                            data-loading-text: "Saving plan change...",
                             data-success-text: "Saved!",
                             data-failed-text: "Failed!"}
       Confirm plan change
