@@ -21,4 +21,4 @@
     :preserve
       dependencies:
         pre:
-          \- android update sdk --no-ui --filter "android-16"
+          \- android update sdk --no-ui --filter "android-18"

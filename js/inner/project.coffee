@@ -21,6 +21,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     irc_keyword: null
     irc_username: null
     irc_password: null
+    irc_notify_prefs: null
     github_user: null
     heroku_deploy_user: null
     ssh_keys: []
@@ -122,6 +123,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @branch_names = @komp =>
       names = (k for own k, v of @branches())
       names.sort()
+
+    @pretty_branch_names = @komp =>
+      decodeURIComponent(name) for name in @branch_names()
 
     @personal_branch_p = (branch_name) =>
       if branch_name is @default_branch()
@@ -317,7 +321,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         irc_keyword: @irc_keyword()
         irc_username: @irc_username()
         irc_password: @irc_password()
-
+        irc_notify_prefs: @irc_notify_prefs()
 
     false # dont bubble the event up
 
@@ -351,7 +355,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
   create_settings_build: (data, event) =>
     url = "/api/v1/project/#{@project_name()}"
     if not _.isEmpty(@settings_branch())
-      url += "/tree/#{@settings_branch()}"
+      url += "/tree/#{encodeURIComponent(@settings_branch())}"
     $.ajax
       type: "POST"
       event: event

@@ -1,26 +1,23 @@
-.container
-  %h1
-    Ship better code,
-    %em faster
+#hero
+  .container
+    %h1
+      Ship better code, faster
 
-  %h3 Powerful Continuous Integration and Deployment for web applications.
+    %h3 CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
 
-  .row-fluid.how
-    .span4
-      %figure
-        %img{height: "150", src: '(data-uri "img/outer/home/github.png" 150 150)', width: "150"}
-      %h4 Push your new code to GitHub
+    .row-fluid.how
+      .span4
+        %img{height: "150", src: '(data-uri "img/outer/home/octocat.png" 150 150)', width: "150"}
+        %h4 Push your new code to GitHub
 
-    .span4
-      %figure
-        %img{height: "150", src: '(data-uri "img/outer/home/cucumber-output.png" 150 150)', width: "150"}
-      %h4 Your tests run on the CircleCI platform
+      .span4
+        %img{height: "150", src: '(data-uri "img/outer/home/test-output.png" 150 150)', width: "150"}
+        %h4 Your tests run on the CircleCI platform
 
-    .span4
-      %figure
+      .span4
         %img{height: "150", src: '(data-uri "img/outer/home/deploy.png" 150 150)', width: "150"}
-      %h4 Deploy green builds to your servers
+        %h4 Deploy green builds to your servers
 
-  .row-fluid
-    .hero-unit-cta
-      = HAML.home_cta({first: true, text: CI.outer.Home.cta_text()})
+    .row-fluid
+      .hero-unit-cta
+        = HAML.home_cta({first: true, text: CI.outer.Home.cta_text(), source: "hero"})

@@ -15,43 +15,58 @@
     text-shadow:-@size1 @size2 @size3 @color;
 }
 
-
-.button (@buttonColor: @blueDark) {
-  #gradient.vertical(rgba(255,255,255,.05),rgba(0,0,0,.08));
+.buttonDark(@buttonColor: @blueDark) {
+  text-align: center;
+  margin-left: -4px;
+  border-radius: 4px;
+  background-size: 100%;
   background-repeat: repeat-x;
   background-color: @buttonColor;
-  border-style: solid;
-  border-color: darken(@buttonColor,8%);
-  border-width: 1px;
-  border-radius: 3px;
-  box-shadow: 0 1px 1px rgba(0,0,0,.21);
-  color: #eee;
-  .box-sizing(border-box);
-  background-size: 100%;
-  transition-duration       : (1s/3s);
-  transition-timing-function: ease-in-out;
-  text-shadow: 0 -1px 1px darken(saturate(@buttonColor,8%),13%);
-  line-height: 1em;
-  padding: 1em 0;
-  margin-right: -4px; //removes hidden txt margin from browser
+  background-image: linear-gradient(to bottom,
+                      fadeout(@white, 95%) 0%,
+                      fadeout(@black, 92%) 100%);
+  border: 1px solid darken(@buttonColor,8%);
+  box-shadow: 0 1px 1px fadeout(@black, 79%);
+  transition: all .3s linear;
   display: inline-block;
+  padding: 0 1em;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 3em;
+  text-decoration: none;
+  color: darken(@white, 13%);
+  text-shadow: 0 -1px 1px darken(saturate(@buttonColor,8%),13%);
+  .box-sizing(border-box);
   &:hover {
-    background-color: darken(saturate(@buttonColor,3%),3%);
-    border-color: @buttonColor;
-    box-shadow: 0 0 rgba(0,0,0,0);
     background-size: 300%;
-    transition-duration: (1s/8s);
+    background-color: darken(saturate(@buttonColor,3%),3%);
+    border-color: darken(saturate(@buttonColor,3%),3%);
+    box-shadow: 0 0 fadeout(@black, 100%);
+    transition: all .1s ease-in-out;
     color: @white;
     text-shadow: 0 0 rgba(0,0,0,0);
   }
-  &:active, &:focus {
-    background-color: darken(saturate(@buttonColor,5%),8%);
-    box-shadow: 0 2px 3px rgba(0,0,0,.34) inset;
+  &:active {
     background-size: 300%;
+    background-color: darken(saturate(@buttonColor,5%),8%);
+    border-color: darken(saturate(@buttonColor,3%),3%);
+    box-shadow: 0 2px 3px rgba(0,0,0,.34) inset;
+    transition: all .2s ease-in-out;
+    color: darken(@white, 5%);
     text-shadow: 0 0 rgba(0,0,0,0);
-    transition-duration: .1s;
   }
+}
+
+.scale3d (@x, @y: 0, @z: 0) {
+  -webkit-transform: scale3d(@x, @y, @z);
+          transform: scale3d(@x, @y, @z);
+}
+
+.transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
+  transition: -webkit-transform @duration @timing-function @delay;
+  transition:         transform @duration @timing-function @delay;
+}
+
+.translate3d (@x, @y: 0, @z: 0) {
+  -webkit-transform: translate3d(@x, @y, @z);
+          transform: translate3d(@x, @y, @z);
 }

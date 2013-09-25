@@ -1,11 +1,12 @@
 CI.outer.Page = class Page
-  constructor: (@name, @_title) ->
+  constructor: (@name, @_title, @mixpanelID=null) ->
 
   display: (cx) =>
     @setPageTitle(cx)
 
+    @maybeTrackMixpanel()
+
     # Render content
-    @clearIntercom()
     @render(cx)
 
     # Land at the right anchor on the page
@@ -18,25 +19,45 @@ CI.outer.Page = class Page
 
     ko.applyBindings(VM)
 
+  maybeTrackMixpanel: () =>
+    if @mixpanelID?
+      mixpanel.track @mixpanelID
+
   viewContext: (cx) =>
     {}
 
   render: (cx) =>
-    if VM.ab().use_ks_outer()
-      params = $.extend renderContext, @viewContext(cx)
-      $('html').addClass('outer').removeClass('inner')
-      $("#main").html HAML['header'](params)
-      $("#main").append HAML[@name](params)
-      $("#main").append HAML['footer'](params)
-    else
-      params = $.extend renderContext, @viewContext(cx)
-      $('html').addClass('old-outer').removeClass('inner')
-      $('body').attr("id", "#{@name}-page")
-      $("#main").html HAML['old_header'](params)
-      $("#main").append HAML["old_#{@name}"](params)
-      if @useStickyFooter? and @useStickyFooter
-        $('#main > div').wrapAll "<div id='wrap' />"
-      $("#main").append HAML['old_footer'](params)
+    template = @name
+    klass = "outer"
+
+    args = $.extend renderContext, @viewContext(cx)
+    header =
+      $("<div></div>")
+        .attr('id', 'header')
+        .append(HAML.header(args))
+
+    content =
+      $("<div></div>")
+        .addClass('content')
+        .attr("id", "#{@name}-page")
+        .removeClass('outer')
+        .removeClass('inner')
+        .addClass(klass)
+        .append(HAML[template](args))
+
+    footer =
+      $("<div></div>")
+        .attr('id', 'footer')
+        .addClass(klass)
+        .append(HAML["footer_nav"](args))
+
+
+    $('#main')
+      .html("")
+      .append(header)
+      .append(content)
+      .append(footer)
+
 
 
   scroll: (hash) =>
@@ -49,9 +70,6 @@ CI.outer.Page = class Page
 
   setPageTitle: (cx) =>
     document.title = @title(cx) + " - CircleCI"
-
-  clearIntercom: =>
-    $('#IntercomTab').text "" # clear the intercom tab
 
   placeholder: () =>
     $("input, textarea").placeholder()

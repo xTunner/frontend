@@ -84,6 +84,12 @@
       (e.g. #clojure)
 
   .control-group
+    %label.control-label{for: "irc-notify-prefs"} Fixed/Failed Only
+      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+    .controls
+      %input.span1#irc-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)" }
+
+  .control-group
     %label.control-label{for: "irc_keyword"} Keyword
     .controls
       %input.span4#irc_keyword{ type: "text", data-bind: "value: irc_keyword" }

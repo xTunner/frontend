@@ -68,6 +68,20 @@
       %code CIRCLE_BUILD_NUM
     %dd
       The build number, same as in circleci.com/gh/foo/bar/123
+    %dt
+      %code CIRCLE_PROJECT_USERNAME
+    %dd
+      The username of the github repo, 'foo' in github.com/foo/bar
+    %dt
+      %code CIRCLE_PROJECT_REPONAME
+    %dd
+      The repo name of the github repo, 'bar' in github.com/foo/bar
+    %dt
+      %code CIRCLE_USERNAME
+    %dd
+      The github login of the user who triggered the build
+
+
 
 %p
   You can use the

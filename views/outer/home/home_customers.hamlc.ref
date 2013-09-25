@@ -1,6 +1,39 @@
 %section.customers
   .container
-    %h2 Great companies trust CircleCI
+    .row.span12
+    .center
+      .were-number-one
+        %h2
+          CircleCI is the #1 hosted continuous deployment provider.
+          But don't take our word for it, read what our awesome customers have to say.
+
+    .row.span12.logos
+      %a.span2{href: "http://www.storenvy.com/"}
+        %img{height: "27", width: "140",
+             src: '(data-uri "img/outer/home/logos/storenvy-color.png" 140 27)',
+             title: "Storenvy"}
+      %a.span2{href: "https://www.mongohq.com/home"}
+        %img{height: "70", width: "140",
+             src: '(data-uri "img/outer/home/logos/mongohq-color.png" 140 70)',
+             title: "MongoHQ"}
+      %a.span2{href: "http://www.tapjoy.com/"}
+        %img{height: "64", width: "140",
+             src: '(data-uri "img/outer/home/logos/tapjoy-color.png" 140 64)',
+             title: "Tapjoy"}
+      %a.span2{href: "http://www.kickstarter.com/"}
+        %img{height: "16", width: "140",
+             src: '(data-uri "img/outer/home/logos/kickstarter-color.png" 140 16)',
+             title: "Kickstarter"}
+      %a.span2{href: "http://www.redbull.com/en"}
+        %img{height: "84", width: "140",
+             src: '(data-uri "img/outer/home/logos/red-bull-color.png" 140 84)',
+             title: "RedBull"}
+      %a.span2{href: "https://stripe.com/"}
+        %img{height: "57", width: "140",
+             src: '(data-uri "img/outer/home/logos/stripe.png" 140 57)',
+             title: "Stripe"}
+
+  .container
     .row
       .well.customer.span4
         %p
@@ -31,31 +64,5 @@
         %p
           Operations Engineer at
           %a{alt: "Kickstarter", href: "http://www.kickstarter.com/", title: "Kickstarter"} Kickstarter
-    .row.logos
-      %a.span2{href: "http://www.storenvy.com/"}
-        %img{height: "27", width: "140",
-             src: '(data-uri "img/outer/home/logos/storenvy.png" 140 27)',
-             title: "Storenvy"}
-      %a.span2{href: "http://www.tapjoy.com/"}
-        %img{height: "64", width: "140",
-             src: '(data-uri "img/outer/home/logos/tapjoy.png" 140 64)',
-             title: "Tapjoy"}
-      %a.span2{href: "http://www.kickstarter.com/"}
-        %img{height: "16", width: "140",
-             src: '(data-uri "img/outer/home/logos/kickstarter.png" 140 16)',
-             title: "Kickstarter"
-      %a.span2{href: "https://stripe.com/"}
-        %img{height: "57", width: "140",
-             src: '(data-uri "img/outer/home/logos/stripe.png" 140 57)',
-             title: "Stripe"}
-      %a.span2{href: "http://www.redbull.com/en"}
-        %img{height: "84", width: "140",
-             src: '(data-uri "img/outer/home/logos/redbull.png" 140 84)',
-             title: "RedBull"}
-      %a.span2{href: "https://www.mongohq.com/home"}
-        %img{height: "41", width: "140",
-             src: '(data-uri "img/outer/home/logos/mongohq.png" 140 41)',
-             title: "MongoHQ"}
-
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    = HAML.home_cta({text: "Start your 14-day free trial now"})
+    = HAML.home_cta({text: "Start your 14-day free trial now", source: "customers_cta"})

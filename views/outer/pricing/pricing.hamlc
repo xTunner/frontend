@@ -1,5 +1,5 @@
 .page.pricing
-  %header
+  .banner
     .container
       / ko if: VM.ab().pricing_maintain_infrastructure
       %h1 Why Waste Expensive Time Maintaining Build Infrastructure?

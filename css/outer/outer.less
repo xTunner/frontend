@@ -1,17 +1,17 @@
-//
-// CircleCi branding
-// --------------------------------------------------
+body .outer {
+  // override bootstrap
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
 
-// Brand Colors
-
-@circleBlue:        #084963;
-@circleBlueDark:    #04394e;
-@circleBlueLight:   #9ec5d4;
-@circleFont:        #646464;
-@circleAccent:      #d34913;
-@circleAccentText:  #fed8c9;
+}
 
 .outer {
+  @circleBlue:        #084963;
+  @circleBlueDark:    #04394e;
+  @circleBlueLight:   #9ec5d4;
+  @circleFont:        #646464;
+  @circleAccent:      #d34913;
+  @circleAccentText:  #fed8c9;
 
   a {
     color: darken(@circleBlueLight, 20%);
@@ -25,21 +25,44 @@
     color: #333;
   }
 
+  // Monaco looks shit at lower sizes
+  code, pre {
+    font-size: 14px;
+  }
+
+  h1, h2, h3 {line-height: 40px;}
+  h4, h5, h6 {line-height: 20px;}
+
   h1 {
     font-size: 44px;
+    small{font-size:24.5px;}
   }
 
   h2 {
     font-size: 30px;
     line-height: 29px;
+    margin: 30px 0;
+    small{font-size:17.5px;}
   }
 
-  .landing h2, .landing h2 ~ h3, .security h2, .privacy h2, .about h2, .pricing h2 {
-    text-align: center;
+  h3 {
+    line-height: 26px;
+    font-size: 20px;
+    small{font-size:14px;}
   }
+
+  h4 {
+    font-size: 17.5px;
+    small{font-size:14px;}
+  }
+
+  h5 {font-size: 14px;}
+  h6 {font-size: 11.9px;}
+
 
   .content {
-    margin-bottom: 50px;
+    padding-top: 20px;
+    padding-bottom: 50px;
   }
 
   form {
@@ -67,57 +90,53 @@
     color: @gray;
   }
 
-  button {
-    .border-radius(3px);
-  }
-
-  .btn {
-    line-height: 30px;
-  }
-
+  // high specificity, hence all the hacks
   .btn, button {
-    border: none;
-    min-height: 30px;
-    text-shadow: none;
-    background: @circleBlue;
-    color: #6a93a3;
-  }
-
-  .btn:hover, .btn:focus, button:hover {
-    background: lighten(@circleBlue, 5%);
-    color: white;
-  }
-
-  .btn-primary, button.btn-primary {
-    background: @circleAccent;
-    color: @circleAccentText;
-    &:hover, &:focus {
-      background: lighten(@circleAccent, 5%);
+    &:not(.close) {
+      @btnBorder: #ccc;
+      border-color: @btnBorder;
+      border-bottom-color: darken(@btnBorder, 10%);
+      border: none;
+      text-shadow: none;
+      background: @circleBlue;
+      color: #6a93a3;
+      &:hover, &:focus {
+        background: lighten(@circleBlue, 5%);
+        color: white;
+      }
     }
+    &:not(.btn-large) {
+      font-size: 14px;
+      border-radius: 3px;
+      line-height: 30px;
+      min-height: 30px;
+    }
+    &.btn-primary {
+      background: @circleAccent;
+      color: @circleAccentText;
+      &:hover, &:focus {
+        background: lighten(@circleAccent, 5%);
+      }
 
-    i {
-      margin-right: 7px;
-      font-size: 1.1em;
+      i {
+        margin-right: 7px;
+        font-size: 1.1em;
+      }
     }
   }
 
-  h2 {
-    margin: 30px 0;
-  }
 
-  @import "shared/header.less";
-  @import "shared/footer.less";
-  @import "shared/flash.less";
-  @import "error/error.less";
-  @import "page.less";
-  @import "contact/contact.less";
+  @import "shared/banner.less";
+  @import "shared/navbar.less";
+  @import "shared/additional.less";
   @import "home/home.less";
   @import "about/about.less";
-  @import "docs/docs.less";
-  @import "jobs/jobs.less";
   @import "blog/blog.less";
+  @import "contact/contact.less";
+  @import "docs/docs.less";
+  @import "error/error.less";
+  @import "jobs/jobs.less";
   @import "pricing/pricing.less";
   @import "privacy/privacy.less";
-  @import "privacy/security.less";
   @import "privacy/changelog.less";
 }

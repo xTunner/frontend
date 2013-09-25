@@ -1,30 +1,32 @@
 %ul.projects
 
   / ko foreach: {data: followed_projects(), as: 'project'}
-  %li.project{data-bind: "css: project.active_style(project.project_name())"}
+  %li
+    .project{data-bind: "css: project.active_style(project.project_name())"}
 
-    %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
-      %i.icon-cog
+      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+        %i.icon-cog
 
-    %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
-      %a{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, tooltip: {animation: false}"}
-        %span{data-bind: "if: show_all_branches"}
-          %i.icon-caret-down
-        %span{data-bind: "ifnot: show_all_branches"}
-          %i.icon-caret-right
+      %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
+        %a{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, tooltip: {animation: false}"}
+          %span{data-bind: "if: show_all_branches"}
+            %i.icon-caret-down
+          %span{data-bind: "ifnot: show_all_branches"}
+            %i.icon-caret-right
 
-    %a.nav-menu-item.project-name{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
+      %a.nav-menu-item.project-name{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
 
 
-  / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
-  %li.branch{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
+    / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
+    .branch{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
 
-    %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
+      %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
 
-    .build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
-      %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status"}
-        %i.build-circle{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
+      .build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
+        %span{data-bind: "css: status"}
+          %a{data-bind: "attr: {href: project.build_path(build_num)}, tooltip: {title: tooltip_title, animation: false}"}
+            %i{data-bind: "css: status_icon_class"}
 
-  / /ko
+    / /ko
   / /ko

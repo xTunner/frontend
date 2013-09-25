@@ -1,4 +1,3 @@
-= HAML['_topbar']({})
 = HAML['flashes']({})
 
 .container-fluid
@@ -27,5 +26,8 @@
 
     .span9
       #subpage
-        %p
-          Click to load
+        %p Switch user
+        %form.form-inline{data-bind: "", action: "/admin/switch-user", method: "post"}
+          %input.input-medium{type: "text", name: "login"}
+          %button.btn.btn-primary{type: "submit", value: "Switch user"}
+            Switch user

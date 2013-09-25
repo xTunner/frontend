@@ -1,0 +1,9 @@
+%h1 Build artifacts
+
+.doc
+  %p
+    Circle supports saving files from any build.
+    See
+    %a{ target: "_blank", href: "/docs/build-artifacts" }<
+      our build artifact documentation
+    to set it up.

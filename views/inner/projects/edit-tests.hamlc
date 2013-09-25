@@ -46,10 +46,10 @@
 
     .row
       .span5
-        %a.btn.btn-primary{type: "submit",
-                           name: "submit",
-                           data-bind: "click: save_specs",
-                           data-loading-text: "Saving..."}
+        %button.btn.btn-primary{type: "submit",
+                                name: "save",
+                                data-bind: "click: save_specs",
+                                data-loading-text: "Saving..."}
           Save
 
         = HAML.expando_button({                                      |

@@ -1,24 +1,71 @@
-noop = () ->
-  null
-
 CI.ajax.init()
 
-setOuter = =>
-  $('html').removeClass('outer').removeClass('new-outer').addClass('inner')
+display = (template, args, subpage, hash) ->
+  klass = 'inner'
 
-display = (template, args) ->
-  setOuter()
-  $('#main').html(HAML[template](args))
+  header =
+    $("<div></div>")
+      .attr('id', 'header')
+      .append(HAML.header(args))
+
+  content =
+    $("<div></div>")
+      .attr('id', 'content')
+      .removeClass('outer')
+      .removeClass('inner')
+      .addClass(klass)
+      .append(HAML[template](args))
+
+  footer =
+    $("<div></div>")
+      .attr('id', 'footer')
+      .addClass(klass)
+      .append(HAML["footer_nav"](args))
+
+  $('#main')
+    .html("")
+    .append(header)
+    .append(content)
+    .append(footer)
+
+
+  if subpage
+    $('#subpage').html(HAML["#{template}_#{subpage}"](args))
+    $("##{subpage}").addClass('active')
+  if $('#hash').length
+    $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
+    $("##{hash}").addClass('active')
+
+  if VM.selected().title
+    document.title = "#{VM.selected().title} - CircleCI"
+  else
+    document.title = "Continuous Integration and Deployment - CircleCI"
+
   ko.applyBindings(VM)
 
+splitSplat = (cx) ->
+  p = cx.params.splat[0]
+  p = p.replace(/-/g, '_').replace(/\//g, '')
+  p.split('#')
 
-class CI.inner.CircleViewModel extends CI.inner.Obj
+
+class CI.inner.CircleViewModel extends CI.inner.Foundation
+
   constructor: ->
-    @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
-    @error_message = ko.observable(null)
-    @turbo_mode = ko.observable(false)
-    @from_heroku = ko.observable(window.renderContext.from_heroku)
-    @flash = ko.observable(window.renderContext.flash)
+    super()
+    @favicon = new CI.inner.Favicon(@selected)
+
+    # outer
+    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
+    @about = new CI.outer.About("about", "About Us", "View About")
+    @pricing = new CI.outer.Page("pricing", "Plans and Pricing", "View Pricing Outer")
+    @docs = new CI.outer.Docs("docs", "Documentation", "View Docs")
+    @error = new CI.outer.Error("error", "Error")
+
+    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
+#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
+#    @security = new CI.outer.Page("security", "Security", "View Security")
 
     # inner
     @build = ko.observable()
@@ -27,18 +74,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     @projects = ko.observableArray()
     @build_state = ko.observable()
     @org = ko.observable()
-    @admin = ko.observable()
+    @users = ko.observable()
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
     @org_has_been_loaded = ko.observable(false)
     @builds_have_been_loaded = ko.observable(false)
-
-    # Tracks what page we're on (for pages we care about)
-    @selected = ko.observable({})
-
-    @navbar = ko.observable(new CI.inner.Navbar(@selected, @))
+    @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
     @billing = ko.observable(new CI.inner.Billing)
+
 
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
@@ -49,16 +93,15 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
 
 
     if window.renderContext.current_user
-      try
-        olark 'api.box.hide'
-      catch error
-        console.error 'Tried to hide olark, but it threw:', error
+      CI.olark.disable()
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
       _rollbarParams.person = {id: @current_user().login}
 
+    @logged_in = @komp =>
+      @current_user?()
 
     @intercomUserLink = @komp =>
       @build() and @build() and @projects() # make it update each time the URL changes
@@ -70,53 +113,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
-    @favicon_updator = @komp noop
-
-    @selected.subscribe (selected) =>
-      @favicon_updator.dispose()
-
-      if selected.favicon_updator?
-        @favicon_updator = @komp selected.favicon_updator
-      else
-        @reset_favicon()
-
-    # outer
-    @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
-    @about = new CI.outer.About("about", "About Us")
-    @pricing = new CI.outer.Page("pricing", "Plans and Pricing")
-    @docs = new CI.outer.Docs("docs", "Documentation")
-    @error = new CI.outer.Error("error", "Error")
-
-    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
-    @privacy = new CI.outer.Page("privacy", "Privacy")
-#    @contact = new CI.outer.Page("contact", "Contact us")
-#    @security = new CI.outer.Page("security", "Security")
-
-    @query_results_query = ko.observable(null)
-    @query_results = ko.observableArray([])
-
-  set_favicon_color: (color) =>
-    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=27"))
-
-  build_favicon_updator: (build) =>
-    if build?
-      @set_favicon_color(build.favicon_color())
-
-  reset_favicon: () =>
-    @set_favicon_color() # undefined resets it
-
-  cleanObjs: (objs) ->
-    $.each objs, (i, o) ->
-      o.clean()
-
-  visit_local_url: (url) =>
-    path = URI(url).path()
-    SammyApp.setLocation path
-
-  authGitHubSlideDown: =>
-    mixpanel.track("Auth GitHub Modal Why Necessary")
-    $(".why_authenticate_github_modal").slideDown()
-
   refreshBuildState: () =>
     VM.loadProjects()
     VM.selected().refresh_fn() if VM.selected().refresh_fn
@@ -124,46 +120,6 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
   # Keep this until backend has a chance to fully deploy
   refreshDashboard: () =>
     @refreshBuildState()
-
-  performDocSearch: (query) =>
-    $.ajax
-      url: "/search-articles"
-      type: "GET"
-      data:
-        query: query
-      success: (results) =>
-        window.SammyApp.setLocation("/docs")
-        @query_results results.results
-        @query_results_query results.query
-    query
-
-  searchArticles: (form) =>
-    @performDocSearch($(form).find('.search-query').val())
-    return false
-
-  suggestArticles: (query, process) =>
-    $.ajax
-      url: "/autocomplete-articles"
-      type: "GET"
-      data:
-        query: query
-      success: (autocomplete) =>
-        process autocomplete.suggestions
-    null
-
-  testCall: (arg) =>
-    alert(arg)
-
-  clearErrorMessage: () =>
-    @error_message null
-
-  setErrorMessage: (message) =>
-    if message == "" or not message?
-      message = "Unknown error"
-    if message.slice(-1) != '.'
-      message += '.'
-    @error_message message
-    $('html, body').animate({ scrollTop: 0 }, 0);
 
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
@@ -258,9 +214,8 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
       mixpanel.track("View Org", {"username": username})
       if callback? then callback()
 
-  loadEditOrgPage: (username, subpage) =>
-    subpage = subpage[0].replace('#', '').replace('-', '_')
-    subpage = subpage || "projects"
+  loadEditOrgPage: (username, [_, subpage]) =>
+    subpage or= "projects"
 
     subpage_callback = () => @org().subpage(subpage)
 
@@ -309,11 +264,10 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     else if subpage is "env_vars"
       @project().load_env_vars()
 
-  loadEditPage: (cx, username, project, subpage) =>
-    project_name = "#{username}/#{project}"
+  loadEditPage: (cx, username, project, [_, subpage]) =>
+    subpage or= "settings"
 
-    subpage = subpage[0].replace('#', '').replace('-', '_')
-    subpage = subpage || "settings"
+    project_name = "#{username}/#{project}"
 
     # if we're already on this page, dont reload
     if (not @project() or
@@ -325,17 +279,9 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     else
         VM.loadExtraEditPageData subpage
 
-    setOuter()
-    $('#main').html(HAML['edit']({project: project_name}))
-    $('#subpage').html(HAML['edit_' + subpage]({}))
-    ko.applyBindings(VM)
+    display "edit", {project: project_name}, subpage
 
-
-  loadAccountPage: (cx, subpage) =>
-    subpage = subpage[0].replace(/\//, '') # first one
-    subpage = subpage.replace(/\//g, '_')
-    subpage = subpage.replace(/-/g, '_')
-    [subpage, hash] = subpage.split('#')
+  loadAccountPage: (cx, [subpage, hash]) =>
     subpage or= "notifications"
     hash or= "meta"
 
@@ -347,43 +293,30 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     else if subpage is "api"
       @current_user().load_tokens()
 
-    setOuter()
-    $('#main').html(HAML['account']({}))
-    $('#subpage').html(HAML['account_' + subpage]({}))
-    $("##{subpage}").addClass('active')
-    if $('#hash').length
-      $("##{hash}").addClass('active')
-      $('#hash').html(HAML['account_' + subpage + "_" + hash]({}))
-    ko.applyBindings(VM)
+    display "account", {}, subpage, hash
 
 
   renderAdminPage: (subpage) =>
-    setOuter()
-    $('#main').html(HAML['admin']({}))
-    if subpage
-      $('#subpage').html(HAML['admin_' + subpage]())
-    ko.applyBindings(VM)
+    display "admin", {}, subpage
 
+  loadAdminPage: (cx) =>
+    @renderAdminPage ""
 
-  loadAdminPage: (cx, subpage) =>
-    if subpage
-      subpage = subpage.replace('/', '')
-      $.getJSON "/api/v1/admin/#{subpage}", (data) =>
-        @admin(data)
-    @renderAdminPage subpage
+  loadAdminUsers: (cx) =>
+    $.getJSON "/api/v1/admin/users", (data) =>
+      @users(data)
+    @renderAdminPage "users"
 
   loadAdminBuildState: () =>
     $.getJSON '/api/v1/admin/build-state', (data) =>
       @build_state(data)
     @renderAdminPage "build_state"
 
-
   loadAdminProjects: (cx) =>
     $.getJSON '/api/v1/admin/projects', (data) =>
       data = (new CI.inner.Project d for d in data)
       @projects(data)
     @renderAdminPage "projects"
-
 
   loadAdminRecentBuilds: (refresh) =>
     @loadBuilds '/api/v1/admin/recent-builds', refresh
@@ -401,66 +334,21 @@ class CI.inner.CircleViewModel extends CI.inner.Obj
     )
     false
 
-
-  raiseIntercomDialog: (message) =>
-    unless intercomJQuery?
-      notifyError "Uh-oh, our Help system isn't available. Please email us instead, at <a href='mailto:sayhi@circleci.com'>sayhi@circleci.com</a>!"
-      return
-
-    jq = intercomJQuery
-    jq("#IntercomTab").click()
-    unless jq('#IntercomNewMessageContainer').is(':visible')
-      jq('.new_message').click()
-    jq('#newMessageBody').focus()
-    if message
-      jq('#newMessageBody').text(message)
-
-  logout: (cx) =>
-    # TODO: add CSRF protection
-    $.post('/logout', () =>
-       window.location = "/")
-
-  unsupportedRoute: (cx) =>
-    throw("Unsupported route: " + cx.params.splat)
-
-  goDashboard: (data, event) =>
-    # signature so this can be used as knockout click handler
-    window.SammyApp.setLocation("/")
-
-  # use in ko submit binding, expects button to submit form
-  mockFormSubmit: (cb) =>
-    (formEl) =>
-      $formEl = $(formEl)
-      $formEl.find('button').addClass 'disabled'
-      if cb? then cb.call()
-      false
-
   loadRootPage: (cx) =>
-    if VM.current_user
+    if @logged_in()
       VM.loadDashboard cx
     else
       VM.home.display cx
 
-  # For error pages, we are passed the status from the server, stored in renderContext.
-  # Because that will remain true when we navigate in-app, we need to make all links cause
-  # a page reload, by running SammyApp.unload(). However, the first time this is run is
-  # actually before Sammy 0.7.2 loads the click handlers, so unload doesn't help. To combat
-  # this, we disable sammy after a second, by which time the handlers must surely have run.
-  maybeRouteErrorPage: (cx) =>
-    if renderContext.status
-      @error.display(cx)
-      setInterval( =>
-        window.SammyApp.unload()
-      , 1000)
-      return false
-
-    return true
 
 window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
   @bind 'run-route', (e, data) ->
     VM.clearErrorMessage()
     mixpanel.track_pageview(data.path)
+    if window._gaq? # we dont use ga in test mode
+      window._gaq.push data.path
+
 
   # ignore forms with method ko, useful when using the knockout submit binding
   @route 'ko', '.*', ->
@@ -476,6 +364,7 @@ window.SammyApp = Sammy 'body', (n) ->
         VM.loadRecentBuilds(true)
       mention_branch: true
       favicon_updator: VM.reset_favicon
+      title: "Dashboard"
 
     VM.loadRootPage(cx)
 
@@ -488,8 +377,9 @@ window.SammyApp = Sammy 'body', (n) ->
       crumbs: ['org', 'org_settings']
       username: cx.params.username
       favicon_updator: VM.reset_favicon
+      title: "Org settings - #{cx.params.username}"
 
-    VM.loadEditOrgPage cx.params.username, cx.params.splat
+    VM.loadEditOrgPage cx.params.username, splitSplat(cx)
 
   route_org_dashboard = (cx) ->
     VM.selected
@@ -497,6 +387,7 @@ window.SammyApp = Sammy 'body', (n) ->
       crumbs: ['org', 'org_settings']
       username: cx.params.username
       favicon_updator: VM.reset_favicon
+      title: "#{cx.params.username}"
 
     VM.loadOrg cx.params.username
 
@@ -513,15 +404,18 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         favicon_updator: VM.reset_favicon
+        title: "Edit settings - #{cx.params.username}/#{cx.params.project}"
 
-      VM.loadEditPage cx, cx.params.username, cx.params.project, cx.params.splat
+      VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
 
   @get '^/account(.*)',
     (cx) ->
       VM.selected
         page: "account"
         favicon_updator: VM.reset_favicon
-      VM.loadAccountPage cx, cx.params.splat
+        title: "Account"
+      VM.loadAccountPage cx, splitSplat(cx)
+
   @get '^/gh/:username/:project/tree/(.*)',
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
@@ -536,6 +430,7 @@ window.SammyApp = Sammy 'body', (n) ->
         branch: branch
         mention_branch: false
         favicon_updator: VM.reset_favicon
+        title: "#{branch} - #{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
@@ -551,19 +446,18 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
         mention_branch: true
+        title: "##{cx.params.build_num} - #{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           if VM.build() and VM.build().usage_queue_visible()
             VM.build().load_usage_queue_why()
         favicon_updator: =>
-          VM.build_favicon_updator(VM.build())
+          VM.favicon.build_updator(VM.build())
 
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
   @get '^/gh/:username/:project',
     (cx) ->
-      project_name = "#{cx.params.username}/#{cx.params.project}"
-
       VM.selected
         page: "project"
         crumbs: ['project', 'project_settings']
@@ -572,6 +466,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         mention_branch: true
         favicon_updator: VM.reset_favicon
+        title: "#{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
 
@@ -580,8 +475,9 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/logout', (cx) -> VM.logout cx
 
   @get '^/admin', (cx) -> VM.loadAdminPage cx
-  @get '^/admin/users', (cx) -> VM.loadAdminPage cx, "users"
+  @get '^/admin/users', (cx) -> VM.loadAdminUsers cx
   @get '^/admin/projects', (cx) -> VM.loadAdminProjects cx
+  @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
   @get '^/admin/recent-builds', (cx) ->
     VM.loadAdminRecentBuilds()
     VM.selected
@@ -589,35 +485,25 @@ window.SammyApp = Sammy 'body', (n) ->
       admin_builds: true
       refresh_fn: VM.refreshAdminRecentBuilds
       favicon_updator: VM.reset_favicon
-
-  @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
+      title: "Admin recent builds"
 
   # outer
-  @get "^/docs(.*)", (cx) =>
-    VM.docs.display(cx)
-    mixpanel.track("View Docs")
-  @get "^/about.*", (cx) =>
-    VM.about.display(cx)
-    mixpanel.track("View About")
-  # @get "^/contact.*", (cx) =>
-  #   VM.contact.display(cx)
-  #   mixpanel.track("View Contact")
-  @get "^/privacy.*", (cx) =>
-    VM.privacy.display(cx)
-    mixpanel.track("View Privacy")
-  # @get "^/security.*", (cx) =>
-  #   VM.security.display(cx)
-  #   mixpanel.track("View Security")
+  @get "^/docs(.*)", (cx) => VM.docs.display(cx)
+  @get "^/about.*", (cx) => VM.about.display(cx)
+  @get "^/privacy.*", (cx) => VM.privacy.display(cx)
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  # @get "^/contact.*", (cx) => VM.contact.display(cx)
+  # @get "^/security.*", (cx) => VM.security.display(cx)
+
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
     # force them to inner.
-    if VM.current_user
+    if VM.logged_in()
       return cx.redirect "/account/plans"
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
     VM.pricing.display(cx)
-    mixpanel.track("View Pricing Outer")
+
 
   @post "^/heroku/resources", -> true
 
@@ -632,14 +518,9 @@ window.SammyApp = Sammy 'body', (n) ->
   # valid posts, allow to propegate
   @post '^/logout', -> true
   @post '^/admin/switch-user', -> true
-  @post "^/about/contact", -> true # allow to propagate
+  @post "^/about/contact", -> true
 
   @post '^/circumvent-sammy', (cx) -> true # dont show an error when posting
-
-  # Google analytics
-  @bind 'event-context-after', ->
-    if window._gaq? # we dont use ga in test mode
-      window._gaq.push @path
 
   @bind 'error', (e, data) ->
     if data? and data.error? and window.Airbrake?

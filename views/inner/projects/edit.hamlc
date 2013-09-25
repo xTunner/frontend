@@ -1,5 +1,3 @@
-= HAML._topbar()
-
 .container-fluid
   .span3
 
@@ -45,11 +43,19 @@
       %li
         %a{ href: "edit#api" } API tokens
 
+      %li.nav-header
+        Build artifacts
+      %li
+        %a{ href: "edit#artifacts" } Artifacts
+
 
       %li.nav-header
         Continuous Deployment
       %li
         %a{ href: "edit#heroku" } Heroku settings
+      %li
+        %a{ href: "edit#deployment" } Other deployments
+
 
 
     .well.follow-status{data-bind: "with: project"}
