@@ -7,7 +7,6 @@ exports = this
 
 exports.ab_test_definitions =
   options:
-    github_warning_modal: [true, false]
     home_speed_level: ["4-way", "8-way", "12-way"]
     stripe_v3: [true, false]
     first_cta_button_text: ["A", "B", "C"]
@@ -19,7 +18,6 @@ exports.ab_test_definitions =
       override_p: ->
         window.circleEnvironment is 'test'
       options:
-        github_warning_modal: false
         stripe_v3: false
         pricing_maintain_infrastructure: false
     ]

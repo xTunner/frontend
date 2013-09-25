@@ -1,13 +1,4 @@
-/ ko if: VM.ab().github_warning_modal
+- console.log("home_button source:", @source)
 %a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
-                             data-bind: "track: 'Modal Join Open'",
-                             data-toggle: "modal",
-                             data-target: "#githubModal"}
+                             data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': '#{@source}'}}"}
   = @text
-/ /ko
-
-/ ko ifnot: VM.ab().github_warning_modal
-%a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
-                             data-bind: "track_link: 'Auth GitHub'"}
-  = @text
-/ /ko

@@ -15,19 +15,9 @@
           .center
             .main-cta
               .ctabox
-                / ko if: VM.ab().github_warning_modal
                 %a.btn.btn-jumbo.btn-action-orange{href: CI.github.authUrl(),
-                   data-bind: "track: 'Modal Join Open'",
-                   data-toggle: "modal",
-                   data-target: "#githubModal"}
+                   data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'get_started_section'}}"}
                   RUN YOUR TESTS
-                / /ko
-
-                / ko ifnot: VM.ab().github_warning_modal
-                %a.btn.btn-jumbo.btn-action-orange{href: CI.github.authUrl(),
-                   data-bind: "track_link: 'Auth GitHub'"}
-                  RUN YOUR TESTS
-                / /ko
 
           %p.center
             %i

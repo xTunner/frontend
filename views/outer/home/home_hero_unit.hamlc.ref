@@ -20,4 +20,4 @@
 
     .row-fluid
       .hero-unit-cta
-        = HAML.home_cta({first: true, text: CI.outer.Home.cta_text()})
+        = HAML.home_cta({first: true, text: CI.outer.Home.cta_text(), source: "hero"})
