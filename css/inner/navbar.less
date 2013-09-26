@@ -12,16 +12,17 @@
     @navbarHeight: 50px;
 
     // the bar itself
-    background: #1f4d80 url(../../../img/topbar-bg.png) repeat-x;
-    border-top: 4px solid @navDarkBlue;
+    background: #00384b;
     height: @navbarHeight + 2;
     min-width: 500px;
+    border-top: none;
 
     // circle logo
     a.brand {
       margin-top: 4px;
       margin-left: 20px;
-      background: url(../../../img/circleci-top-logo.png) no-repeat;
+      background: url(../../../img/logo.svg) no-repeat;
+      background-size: contain;
       width: 150px;
       height: 20px;
     }
@@ -57,6 +58,7 @@
           &:hover {
             span.label {
               background: @navDarkBlue;
+              background: #004b64;
               .box-shadow(inset 0 0 3px darken(@navDarkBlue, 10%));
             }
             span.label-active {
@@ -65,6 +67,7 @@
           }
           span.label-active {
             background: @navDarkestBlue;
+            background: #004b64;
           }
 
           &.build, &.branch, &.rev, &.project_settings, &.org_settings {
@@ -90,10 +93,10 @@
         // rightside nav elements
         &.pane:hover {
           background: @navDarkBlue;
+          background: #004b64;
         }
 
         position: relative;
-        font-family: 'Open Sans', sans-serif;
         a {
           cursor: pointer;
           line-height: @navbarHeight; // keeps this nav from overflowing the box
@@ -109,13 +112,12 @@
         // dropbox header
         &.open > a.dropdown-toggle {
           background-color: @navDarkBlue;
-          height: 48px;
+          background-color: #004b64;
         }
 
         .dropdown-toggle {
           .gravatar {
-            .border-radius(5px);
-            border: 1px solid white;
+            border-radius: 5em;
             margin-right: 5px;
             width: 30px;
             height: 30px;
@@ -128,6 +130,7 @@
 
         ul.dropdown-menu {
           margin-top: 0;
+          border-top: none;
           &:after {
             display: none; // get rid of caret
           }
@@ -136,7 +139,6 @@
         // dropdown menu elements
         .dropdown-menu li {
           margin: 0;
-          border-top: 1px solid lighten(@navDarkestBlue,4%);
           &:first-child {
             border: none;
           }
@@ -148,6 +150,7 @@
             padding: 0 10px;
             &:hover {
               background: @navDarkestBlue;
+              background: #007196;
             }
             i {
               font-size: .8em;
@@ -168,6 +171,7 @@
           padding: 0;
           border-radius: 0;
           background: @navDarkBlue;
+          background: #004b64;
 
         }
 
@@ -181,7 +185,7 @@
 
         .env-production { @prodRed: #c45b23; background-color: @prodRed; }
         .env-staging { @stagingYellow: #e2c256; background-color: @stagingYellow; color: black;}
-        .env-development { background-color: @navDarkestBlue; }
+        .env-development { background-color: #004b64; }
         .env-test { @testGreen: #178261; background-color: @testGreen; }
 
       }
