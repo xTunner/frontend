@@ -7,11 +7,14 @@
       %p
         If you're not an admin on the organization you transfer to, then you won't be able to transfer the plan back or edit the plan.
       %p
-        If you want to keep running builds for
+        The transferred plan will be extended to cover projects in the
         %span{data-bind: "text: org_name"}
-        after the transfer, then you'll have to get an admin from the other organization to extend the plan to cover
-        = succeed '.', ->
-          %span{data-bind: "text: org_name"}
+        organization, but only admins of
+        %span{data-bind: "if: transfer_org_name"}
+          %strong{data-bind: "text: transfer_org_name"}
+        %span{data-bind: "ifnot: transfer_org_name"}
+          the organization you transfer to
+        will be able to edit the plan.
 
 
     %div{data-bind: "if: loadingOrganizations"}
