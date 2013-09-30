@@ -1,4 +1,4 @@
-.side-list
+%ul.side-list
   %li.add-orgs Your Organizations
 
   :plain
@@ -13,7 +13,7 @@
     <!-- /ko -->
 
   %li.add-you Your Projects
-  %li.side-item{data-bind: "with: collaborator(login)"}
+  %li.side-item{data-bind: "with: collaborator(login), css: {active: $root.current_user().activeOrganization() == login}"}
     %a{data-bind: "click: $root.current_user().setActiveOrganization", href: "#"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
       %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
