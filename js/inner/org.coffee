@@ -5,8 +5,9 @@ CI.inner.Org = class Org extends CI.inner.Obj
     users: []
     paid: false
     plan: null
-    subpage: "projects"
+    subpage: 'projects'
     billing: null
+    unauthorized: null
 
   clean: () ->
     super
@@ -19,9 +20,8 @@ CI.inner.Org = class Org extends CI.inner.Obj
     @billing new CI.inner.Billing
       current_org_name: @name()
 
-    # Note: we don't create the org until we have the user/projects data
     @loaded = @komp =>
-      @billing().loaded()
+      @unauthorized() || @billing().loaded()
 
     # projects that have been turned into Project objects
     @project_objs = @komp =>
@@ -73,9 +73,15 @@ CI.inner.Org = class Org extends CI.inner.Obj
       deferEvaluation: false # insurance in case we make true the default
 
   loadSettings: () =>
-    $.getJSON "/api/v1/organization/#{@name()}/settings", (data) =>
-      @updateObservables(data)
-      @billing().load()
+    $.ajax
+      type: "GET"
+      url: "/api/v1/organization/#{@name()}/settings"
+      success: (data) =>
+        @updateObservables(data)
+        @billing().load()
+      error: (data) =>
+        if data.status is 404
+          @unauthorized(true)
 
   followProjectHandler: (project) =>
     callback = (data) =>

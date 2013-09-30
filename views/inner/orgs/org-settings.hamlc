@@ -46,4 +46,7 @@
 
         %div{data-bind: "if: VM.org_has_been_loaded"}
           %div{data-bind: "with: org"}
-            %div{data-bind: "haml: {template: 'org_' + subpage(), args: {}}"}
+            %div{data-bind: "if: unauthorized"}
+              = HAML.org_non_admin_plan()
+            %div{data-bind: "ifnot: unauthorized"}
+              %div{data-bind: "haml: {template: 'org_' + subpage(), args: {}}"}
