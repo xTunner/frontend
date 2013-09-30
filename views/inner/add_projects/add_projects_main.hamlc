@@ -12,22 +12,22 @@
 
 %ul.proj-list{data-bind: "foreach: repos"}
   %li.repo
-    .repo-watch{data-bind: "if: canFollow"}
-      %a{data-bind: "click: follow", data-loading-text: "Adding to dashboard...", href: "#"}
-        %i.icon-eye-close
-        %span.proj-name{data-bind: "text: displayName"}
-        %span.hvr-msg Start watching this repo?
-    .repo-unwatch{data-bind: "if: following"}
-      %a{data-bind: "click: unfollow", data-loading-text: "Removing from dashboard...", href: "#"}
-        %i.icon-eye-open
-        %span.proj-name{data-bind: "text: displayName"}
-        %span.hvr-msg Stop watching this repo?
-    .repo-nowatch{data-bind: "if: requiresInvite"}
-      %a{data-toggle: "modal", data-target: "#inviteForm", href: "#"}
-        %i.icon-eye-close
-        %span.proj-name{data-bind: "text: displayName"}
-        %i.icon-exclamation-sign
-        %span.hvr-msg You must be an admin to watch this repo.
+    .repo-follow{data-bind: "if: canFollow"}
+      %a{data-bind: "click: follow, text: displayName", data-loading-text: "Following repo...", href: "#"}
+      %object{data: "../../../img/switchOff.svg"}
+      %span Start <i class="icon-circle-arrow-right"></i>
+    .repo-unfollow{data-bind: "if: following"}
+      %a{data-bind: "click: unfollow, text: displayName", data-loading-text: "Unfollowing repo...", href: "#"}
+      %object{data: "../../../img/switchOn.svg"}
+      %span Stop <i class="icon-circle-arrow-right"></i>
+    .repo-nofollow{data-bind: "if: requiresInvite"}
+      %a{data-bind: "text: displayName", data-toggle: "modal", data-target: "#inviteForm", href: "#"}
+      %object{data: "../../../img/switchOff.svg"}
+      %span Need admin <i class="icon-exclamation-sign"></i>
+    .repo-1stfollow{data-bind: "if: shouldDoFirstFollowerBuild"}
+      %a{data-bind: "click: follow, text: displayName", data-loading-text: "Starting first build...", href: "#"}
+      %object{data: "../../../img/switchOff.svg"}
+      %span Begin building! <i class="icon-long-arrow-right"></i>
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
