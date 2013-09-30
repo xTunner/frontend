@@ -72,6 +72,11 @@ CI.inner.Org = class Org extends CI.inner.Obj
             @subpage('plan')
       deferEvaluation: false # insurance in case we make true the default
 
+  loadSettings: () =>
+    $.getJSON "/api/v1/organization/#{@name()}/settings", (data) =>
+      @updateObservables(data)
+      @billing().load()
+
   followProjectHandler: (project) =>
     callback = (data) =>
       VM.loadOrgSettings(@name())

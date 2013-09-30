@@ -215,21 +215,17 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       display "dashboard",
         builds_table: 'project'
 
-  loadOrgSettings: (username, subpage) =>
-    $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
-      @org().clean() if @org()
-      @org(new CI.inner.Org data)
-      @org().billing().load()
-      @org().subpage(subpage)
-      mixpanel.track("View Org", {"username": username})
-
   loadEditOrgPage: (username, [_, subpage]) =>
     subpage or= "projects"
 
     if !@org() or (@org().name() isnt username)
       @org().clean() if @org()
       @org(null)
-      @loadOrgSettings(username, subpage)
+      @org new CI.inner.Org
+        name: username
+        subpage: subpage
+      @org().loadSettings()
+      mixpanel.track("View Org", {"username": username})
     else
       @org().subpage(subpage)
 
