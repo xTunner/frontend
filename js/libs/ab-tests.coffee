@@ -68,3 +68,10 @@ CI.ABTests = class ABTests
         first_page_load: true
     else
       mixpanel.unregister 'first_page_load'
+
+    if mixpanel.get_property('mp_name_tag')
+      mixpanel.register
+        existing_user: true
+    else
+      mixpanel.register
+        existing_user: false
