@@ -70,3 +70,9 @@
   -webkit-transform: translate3d(@x, @y, @z);
           transform: translate3d(@x, @y, @z);
 }
+
+.animation(@arguments) {
+  -webkit-animation: @arguments;
+     -moz-animation: @arguments;
+          animation: @arguments;
+}
