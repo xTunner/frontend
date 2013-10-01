@@ -26,7 +26,7 @@
             %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
             %span{data-bind: "text: $data"}
       %div
-        %i To add more email addresses, add them on GitHub, then log out from Circle and log back in.
+        %i To add more email addresses, add them on GitHub, then refresh this page.
 
 
     %form.well
