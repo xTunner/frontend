@@ -56,6 +56,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     billing_name: null
     billing_email: null
     extra_billing_data: null
+    account_balance: null # stripe credit
 
     # make it work
     current_org_name: null # organization that instantiated the billing class

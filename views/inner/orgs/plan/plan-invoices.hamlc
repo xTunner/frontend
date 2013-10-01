@@ -1,6 +1,15 @@
 .row-fluid
   .span8
     %legend Invoices
+    %dl.dl-horizontal
+      %dt
+        Account balance
+        %i.icon-question-sign{title: "Account balance",
+                              data-content: "<p>This is the credit you have with Stripe. If your credit is positive, then Stripe will use it before charging your credit card.</p><p>Contact us if you'd like us to send you a refund for the money.</p>",
+                              data-bind: "popover: {animation: false, trigger: 'hover', html: true}"}
+
+      %dd
+        %span{data-bind: "money: account_balance"}
     %table.table-striped.table.table-bordered
       %theader
         %tr
