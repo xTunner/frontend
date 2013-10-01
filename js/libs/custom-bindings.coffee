@@ -11,7 +11,11 @@ ko.bindingHandlers.slider =
 ko.bindingHandlers.track =
   init: (el, valueAccessor) =>
     $(el).click ->
-      mixpanel.track(valueAccessor())
+      val = valueAccessor()
+      if _.isString(val)
+        mixpanel.track(val)
+      else
+        mixpanel.track(val.event, val.properties)
 
 # Prefer track_link for links to external sites, like github, because the redirect prevents JS from running/completing
 ko.bindingHandlers.track_link =

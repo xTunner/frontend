@@ -6,20 +6,19 @@
         .span12.nav-tabs-container
           %ul#tech.nav.nav-tabs
             %li.active
-              %a{href: "#languages", data-toggle: "tab"} Languages
+              %a{href: "#languages", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'language'}}"} Languages
             %li
-              %a{href: "#databases", data-toggle: "tab"} Databases
+              %a{href: "#databases", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'databases'}}"} Databases
             %li
-              %a{href: "#queues", data-toggle: "tab"} Queues
+              %a{href: "#queues", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'queues'}}"} Queues
             %li
-              %a{href: "#browsers", data-toggle: "tab"} Browsers
+              %a{href: "#browsers", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'browsers'}}"} Browsers
             %li
-              %a{href: "#libraries", data-toggle: "tab"} Libraries
+              %a{href: "#libraries", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'libraries'}}"} Libraries
             %li
-              %a{href: "#deployment", data-toggle: "tab"} Deployment
+              %a{href: "#deployment", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'deployment'}}"} Deployment
             %li
-              %a{href: "#custom", data-toggle: "tab"} Custom
-
+              %a{href: "#custom", data-toggle: "tab", data-bind: "track: {event: 'Test Stack', properties: {tab: 'custom'}}"} Custom
 
       .tab-content
         #languages.tab-pane.active

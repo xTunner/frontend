@@ -13,9 +13,10 @@
     this API key must be set before proceeding.
 
 %p
-  Step 1: Enter the API key (if not autofilled) and click <b>Save</b>.
+  %strong Step 1:
+  Enter the API key (if not autofilled) and click <b>Save</b>.
 
-%img{src: assetPath("/img/docs/heroku-step1.png")}
+%img{src: assetPath('(asset-path "img/docs/heroku-step1.png")')}
 
 %p
   If this key has already been added to your <b>Edit settings > Heroku settings</b> page,
@@ -26,13 +27,17 @@
   <b>Note</b>: Heroku's architecture and security model require that you deploy as a particular user.
   A member of your project&mdash;possibly you&mdash;needs to register as that user as the second step in this process.
 
-%img{src: assetPath("/img/docs/heroku-step2.png")}
+%p
+  %strong Step 2:
+  Click the button to set the registered person as the Heroku deploy user
+  and to associate a Heroku SSH key with the deploy user's account.
+
+%img{src: assetPath('(asset-path "img/docs/heroku-step2.png")')}
+
 
 %p
-  Step 2: Click the button to set the registered person as the Heroku deploy user
-  and to associate a Heroku SSH key with the deploy user's account.
-%p
-  Step 3: Specify the app using the
+  %strong Step 3:
+  Specify the app using the
   %code appname
   key.
 
