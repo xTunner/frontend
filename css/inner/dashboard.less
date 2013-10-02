@@ -1,19 +1,15 @@
 
-@grayBorder:   #e3e3e3;
-@border-color:    #ddd;
-@dash-gray:       #888;
-@dash-grayDark:   #444;
-@link-blue:    #3e7bbe;
+@grayBorder:   lighten(@gray,55.50%); //#e3e3e3
 
 .dark-links {
-  color: @dash-grayDark;
+  color: @gray;
   font-weight: normal;
   text-decoration: none;
   transition-duration: .3s;
   transition-property: color;
   transition-timing-function: ease-in-out;
   &:hover {
-    color: @link-blue;
+    color: @blueLight;
     transition-duration: .1s;
     transition-property: color;
     transition-timing-function: ease-in-out;
@@ -38,13 +34,13 @@
     float: left;
     width: 250px;
     margin-right: 1vw;
-    background: @grayLightest;
+    background: @whiten;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
     .box-sizing(border-box);
     a {
       .dark-links;
-      color: @dash-gray;
+      color: @grayLight;
     }
     & > span {
       text-align: center;
@@ -73,13 +69,13 @@
     border-radius: 3px 0 0 3px;
     border-right-color: transparent;
     &:active, &:focus {
-      border-right-color: darken(#004b64,8%);
+      border-right-color: darken(@blueDark,8%);
     }
   }
   #invite {
     border-radius: 0 3px 3px 0;
     &:hover {
-      border-left-color: darken(#004b64,5%);
+      border-left-color: darken(@blueDark,5%);
     }
   }
   #follow-project-button {
@@ -100,7 +96,7 @@
     display: inline-block;
     border-top: 1px solid lighten(@grayBorder,5%);
     width: 100%;
-    box-shadow: 1px 1px 0 #fff inset;
+    box-shadow: 1px 1px 0 @white inset;
     margin-top: .5em;
     &:first-child {
       margin-top: 0;
@@ -112,12 +108,12 @@
       .box-sizing(border-box);
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: @dash-grayDark;
+      color: @gray;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       &:hover {
-        color: @link-blue;
+        color: @blueLight;
         transition-duration: .1s;
       }
     }
@@ -173,12 +169,11 @@
     line-height: 2em;
     overflow: hidden;
     .box-sizing(border-box);
-    //display: block;  // firefox doesn't like blocks pushing floating elements
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: inline-block; // fix for firefox block/float bug
+    display: inline-block;
     width: 66%;
-    margin-right: -4px; //removes hidden txt margin from browser
+    margin-right: -4px;
   }
   .tooltip {
     text-shadow:none;
@@ -206,7 +201,7 @@
     position: relative;
     margin: .4em 0;
     &:hover span:last-child a:not(:hover) {
-      color: @grayLightest;
+      color: @whiten;
       text-shadow: 0  1px @grayLight,
                    0 -1px @grayLight,
                    1px  0 @grayLight,
@@ -230,7 +225,7 @@
       &:nth-last-of-type(2) {left: 60%;}
       &:nth-last-of-type(1) {left: 80%;}
       &:not(:last-child) a:not(:hover) {
-        color: @grayLightest;
+        color: @whiten;
         text-shadow: 0  1px @grayLight,
                      0 -1px @grayLight,
                      1px  0 @grayLight,
@@ -291,17 +286,17 @@
       &:last-child a { color            : @blueDark            ;}
     }
     .queued {
-      &:hover a      { color            : @dash-grayDark            ;}
-      .tooltip-arrow { border-top-color : darken(@dash-grayDark,5%) ;}
-      .tooltip-inner { background-color : @dash-grayDark            ;
-                       border-color     : darken(@dash-grayDark,5%) ;}
-      &:last-child a { color            : @dash-grayDark            ;}
+      &:hover a      { color            : @gray            ;}
+      .tooltip-arrow { border-top-color : darken(@gray,5%) ;}
+      .tooltip-inner { background-color : @gray            ;
+                       border-color     : darken(@gray,5%) ;}
+      &:last-child a { color            : @gray            ;}
     }
   }
   table {
     border-collapse: separate;
-    color: lighten(@dash-gray,13%);
-    background: @grayLightest;
+    color: lighten(@grayLight,13%);
+    background: @whiten;
     overflow: hidden;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
