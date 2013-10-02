@@ -163,11 +163,6 @@
       margin-right: 10px;
       font-weight: normal;
     }
-
-    &.contents {
-      // only show the cursor if clicking gets you anywhere
-      cursor: pointer;
-    }
   }
 
   .alert {
@@ -180,6 +175,7 @@
     //    overflow: scroll;
     margin-top: 5px;
   }
+
   .detail {
     margin: 0 1% 1% 1%;
     text-shadow: none;
@@ -188,10 +184,9 @@
     .bash-command {
       color: #839496;
     }
-
   }
-  .command {
 
+  .command {
     .status {
       float: left;
       margin-right: 15px;
@@ -237,6 +232,11 @@
       width: 5px;
     }
 
+    .header.contents {
+      // only show the cursor if clicking gets you anywhere
+      cursor: pointer;
+    }
+
     min-height: 40px;
     position: relative;
     border: 1px solid #eee;
@@ -272,7 +272,6 @@
       color: #f0ffff;
     }
   }
-
 
   .time {
     font-size: 13px;
