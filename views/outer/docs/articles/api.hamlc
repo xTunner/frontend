@@ -107,13 +107,29 @@
         }, ... ]
         """
     'project/:username/:project/:build_num':
-      description: "Full details for a single build. The response includes all of the fields from the build summary."
+      description: "Full details for a single build. The response includes all of the fields from the build summary. This is also the payload for the <a href='/docs/configuration#notify'>notification webhooks</a>, in which case this object is the value to a key named 'payload'."
       method: "GET"
       response: """
         {
           "vcs_url" : "https://github.com/circleci/mongofinil",
           "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
           "build_num" : 22,
+          "branch" : "master",
+          "vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+          "committer_name" : "Allen Rohner",
+          "committer_email" : "arohner@gmail.com",
+          "subject" : "Don't explode when the system clock shifts backwards",
+          "body" : "", // commit message body
+          "why" : "github", // short string explaining the reason the build ran
+          "dont_build" : null, // reason why we didn't build, if we didn't build
+          "queued_at" : "2013-02-12T21:33:30Z" // time build was queued
+          "start_time" : "2013-02-12T21:33:38Z", // time build started
+          "stop_time" : "2013-02-12T21:34:01Z", // time build finished
+          "build_time_millis" : 23505,
+          "lifecycle" : "finished",
+          "outcome" : "success", // all successful builds have "success"
+          "status" : "success",
+          "retry_of" : null, // build_num of the build this is a retry of
           "steps" : [ {
             "name" : "configure the build",
             "actions" : [ {
@@ -167,6 +183,7 @@
               "failed" : true
             } ]
           } ],
+          ...
         }
         """
     'project/:username/:project/:build_num/artifacts':

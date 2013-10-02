@@ -16,7 +16,7 @@
   %strong Step 1:
   Enter the API key (if not autofilled) and click <b>Save</b>.
 
-%img{src: '(asset-path "img/docs/heroku-step1.png")'}
+%img{src: assetPath('(asset-path "img/docs/heroku-step1.png")')}
 
 %p
   If this key has already been added to your <b>Edit settings > Heroku settings</b> page,
@@ -32,7 +32,7 @@
   Click the button to set the registered person as the Heroku deploy user
   and to associate a Heroku SSH key with the deploy user's account.
 
-%img{src: '(asset-path "img/docs/heroku-step2.png")'}
+%img{src: assetPath('(asset-path "img/docs/heroku-step2.png")')}
 
 
 %p
@@ -75,7 +75,8 @@
           branch: production
           commands:
             - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
-            - heroku run rake db:migrate --app foo-bar-123
+            - heroku run rake db:migrate --app foo-bar-123:
+                timeout: 400 # if your deploys take a long time
 %p
 
 %h2#maintenance-mode Heroku's maintenance mode
