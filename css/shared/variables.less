@@ -50,7 +50,7 @@
 
 // Text
 @successText:                   @green;
-@errorText:                       @red;
+@errorText:                  @redLight;
 
 // Links
 @link:                          @gray;
@@ -64,3 +64,13 @@
 @columns:                           12;
 @column-width:                      60;
 @gutter-width:                      20;
+
+
+
+@errorText:               #b94a48;
+@errorBackground:         #f2dede;
+@errorBorder:             darken(spin(@errorBackground, -10), 3%);
+
+@errorText:               @redLightest;
+@errorBackground:         @redLight;
+@errorBorder:             darken(spin(@errorBackground, -10), 3%);

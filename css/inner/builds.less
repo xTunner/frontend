@@ -151,10 +151,10 @@
   .action_header {
 
     &.success > .ah_wrapper:before { background: @green; }
-    &.failed > .ah_wrapper:before { background: @red; }
+    &.failed > .ah_wrapper:before { background: @redLight; }
     &.running > .ah_wrapper:before { background: @yellow; }
 
-    &.failed .header.failed { background: @red; }
+    &.failed .header.failed { background: @redLight; }
     &.failed .header.running { background: @lightYellow; }
 
     .time {
@@ -206,7 +206,7 @@
           background: @green;
         }
         &.failure {
-          background: @red;
+          background: @redLight;
         }
       }
     }
@@ -389,5 +389,15 @@ td.build_status {
     font-size: 20px;
     text-align: center;
 
+  }
+}
+
+.alert {
+  &.alert-danger {
+    text-shadow: none;
+    a {
+      color: @white;
+      font-weight: bold;
+    }
   }
 }
