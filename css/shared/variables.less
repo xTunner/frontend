@@ -34,13 +34,13 @@
 @greenLightest:                #c8fac8;
 
 // Reds
-@redLightest:                  #fac8c8;
-@redLighter:                   #df5959;
-@redLight:                     #c13737;
 @red:                          #992222;
-@redDark:                      #741515;
-@redDarker:                    #550d0d;
-@redDarkest:                   #2b0505;
+  @redLightest:                lighten(   saturate(@red, 19),  51.5); // #fac8c8
+  @redLighter:                 lighten(   saturate(@red,  4),  24.6); // #df5959
+  @redLight:                   lighten( desaturate(@red,  8),    12); // #c13737
+  @redDark:                     darken(   saturate(@red,  5),   9.8); // #741515
+  @redDarker:                   darken(   saturate(@red,  9), 17.34); // #550d0d
+  @redDarkest:                  darken(   saturate(@red, 15),  27.3); // #2b0505
 
 // Orange(s)
 @orange:                       #e95900;
