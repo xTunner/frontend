@@ -60,7 +60,7 @@
 
       %td.build_status
         %a{data-bind: "attr: { href: url, title: status_words }"}
-          %span{href: "#", data-bind: "text: status_words, css: style"} / href is needed to preserve style
+          %span{data-bind: "text: status_words, css: style"}
 
       - if @actions
         %td.build_actions{data-bind: "if: can_cancel"}
