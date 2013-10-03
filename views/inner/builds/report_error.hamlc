@@ -1,6 +1,6 @@
 %span{data-bind: "if: failed() && !infrastructure_fail()"}
   .alert.alert-danger
-    %b Error!
+    Error!
 
     = succeed ',', ->
       %a{href: "/docs/troubleshooting" } Check out common problems
@@ -10,7 +10,7 @@
       %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
 
     or
-    %span.label.label-important#white{data-bind: "click: report_build",
+    %span{data-bind: "click: report_build",
                                       title: "Report an error in how Circle ran this build"}
       %a{href: "#"}<> report this issue
     and we'll investigate.
