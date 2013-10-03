@@ -1,3 +1,5 @@
+@sideLineWidth: 5px;
+
 .usage-queue-why {
   margin-top: 20px;
   .spinner-container {
@@ -151,14 +153,11 @@
   .action_header {
 
     &.success > .ah_wrapper:before { background: @green; }
-    &.failed > .ah_wrapper:before { background: @red; }
+    &.failed > .ah_wrapper:before { background: @redLight; }
     &.running > .ah_wrapper:before { background: @yellow; }
-
-    &.failed .header.failed { background: @red; }
     &.failed .header.running { background: @lightYellow; }
 
     .time {
-      color: #D4D4D4;
       float: right;
       margin-right: 10px;
       font-weight: normal;
@@ -177,10 +176,12 @@
   }
 
   .detail {
-    margin: 0 1% 1% 1%;
+    // margin: 0 1% 1% 1%;
     text-shadow: none;
     border-top: 1px solid #eee;
-    padding: 10px 10px 0 10px;
+    // padding: 10px 10px 0 10px;
+    padding: 1vw;
+    margin-left: @sideLineWidth;
     .bash-command {
       color: #839496;
     }
@@ -206,7 +207,7 @@
           background: @green;
         }
         &.failure {
-          background: @red;
+          background: @redLight;
         }
       }
     }
@@ -229,7 +230,7 @@
       top: 0;
       left: 0;
       height: 100%;
-      width: 5px;
+      width: @sideLineWidth;
     }
 
     .header.contents {
@@ -255,10 +256,6 @@
       height: 30px; // the button has no size without this
       width: 30px; // the button has no size without this
 
-      i {
-        color: #D4D4D4;
-      }
-
     }
 
     .command {
@@ -269,7 +266,7 @@
       padding: 10px 0 10px 10px;
     }
     .contents.failed {
-      color: #f0ffff;
+      color: @redLight;
     }
   }
 
@@ -389,5 +386,16 @@ td.build_status {
     font-size: 20px;
     text-align: center;
 
+  }
+}
+
+.alert {
+  &.alert-danger {
+    text-shadow: none;
+    color: @redLightest;
+    a {
+      color: @white;
+      font-weight: bold;
+    }
   }
 }
