@@ -17,12 +17,12 @@
 
 // Blues
 @blue:                         #007196;
-@blueDarkest:                   darken(             spin( @blue,   -1), 19.7)       ; // #002632
-@blueDarker:                    darken(                   @blue, 14.8)              ; // #00384b
-@blueDark:                      darken(                   @blue,  9.8)              ; // #004b64
-@blueLight:                    lighten(                   @blue, 9.75)              ; // #0096c8
-@blueLighter:                  lighten(             spin( @blue,   .6), 19.7)       ; // #00bafa
-@blueLightest:                 lighten( desaturate( spin( @blue,  -15),   17), 58.9); // #c8fafa
+  @blueDarkest:                 darken(             spin( @blue,   -1), 19.7)       ; // #002632
+  @blueDarker:                  darken(                   @blue, 14.8)              ; // #00384b
+  @blueDark:                    darken(                   @blue,  9.8)              ; // #004b64
+  @blueLight:                  lighten(                   @blue, 9.75)              ; // #0096c8
+  @blueLighter:                lighten(             spin( @blue,   .6), 19.7)       ; // #00bafa
+  @blueLightest:               lighten( desaturate( spin( @blue,  -15),   17), 58.9); // #c8fafa
 
 // Greens
 @green:                        #229922;
@@ -71,6 +71,6 @@
 @errorBackground:         #f2dede;
 @errorBorder:             darken(spin(@errorBackground, -10), 3%);
 
-@errorText:               @redLightest;
+// @errorText:               @redLightest;
 @errorBackground:         @redLight;
 @errorBorder:             darken(spin(@errorBackground, -10), 3%);
