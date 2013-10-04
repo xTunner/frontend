@@ -143,6 +143,7 @@
 }
 .build-output  {
   background-color: @whiten;
+  .rotate3d(0, 0, 0, 0deg);
   .border-radius;
 
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
@@ -218,6 +219,9 @@
       float: left;
       max-width: 90%;
       line-height: 18px;
+  .minimize .ah_wrapper {
+    .icon-chevron-up {
+      .rotate3d(0, 0, 1, 180deg);
     }
   }
 
@@ -258,6 +262,15 @@
 
     }
 
+    .icon-chevron-up {
+      color: @whiten;
+      display: inline-block;
+      transition: all .25s cubic-bezier(0.55, 0, 0.55, 2);
+      text-shadow: 1px 0   @gray,
+                  -1px 0   @gray,
+                   0   1px @gray,
+                   0  -1px @gray;
+    }
     .command {
       color: #666;
       font-weight: bold;
