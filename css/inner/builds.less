@@ -23,6 +23,11 @@
 }
 
 #action-log-messages {
+  border-radius: 5px;
+  overflow: hidden;
+  .pull-right {
+    margin: 1em;
+  }
   #build-messages {
     margin-top: -20px;
     margin-bottom: -35px;
@@ -163,10 +168,11 @@
   .output {
     margin: 0;
     border: none;
-    border-radius: 0 0 3px 3px;
   }
   pre {
     margin: 0;
+    border-radius: 0;
+    padding: 1em;
   }
 
   .detail {
@@ -178,7 +184,6 @@
     .bash-command {
       color: #839496;
       margin: 0;
-      border-radius: 3px 3px 0 0;
       border: none;
       padding-bottom: 0;
       &:before {
