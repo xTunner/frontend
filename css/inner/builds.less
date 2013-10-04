@@ -396,9 +396,22 @@ td.build_status {
   &.alert-danger {
     text-shadow: none;
     color: @redLightest;
+    padding: 1em;
+    border-bottom-color: transparent;
+    margin: 3em 0;
     a {
       color: @white;
       font-weight: bold;
     }
   }
+  &.alert-info {
+    margin: 3em 0;
+  }
+  .close {
+    right: 0;
+  }
+}
+.alert-wrap {
+  text-align: center;
+  margin: 0 auto;
 }
