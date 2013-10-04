@@ -49,9 +49,9 @@ CI.time =
       display_minutes = "0" + display_minutes
 
     if hours > 0
-      "#{hours}:#{display_minutes}:#{display_seconds}"
+      "#{hours}h #{display_minutes}m"
     else if minutes >= 1
-      "#{minutes}:#{display_seconds}"
+      "#{minutes}m #{display_seconds}s"
     else
       "#{seconds}s"
 
