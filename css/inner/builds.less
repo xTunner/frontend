@@ -169,6 +169,11 @@
     margin: 20px 0;
   }
 
+  .output {
+    margin: 0;
+    border: none;
+    border-radius: 0 0 3px 3px;
+  }
   pre {
     // not yet
     //    max-height: 250px;
@@ -185,6 +190,14 @@
     margin-left: @sideLineWidth;
     .bash-command {
       color: #839496;
+      margin: 0;
+      border-radius: 3px 3px 0 0;
+      border: none;
+      padding-bottom: 0;
+      &:before {
+        content: "$";
+        margin-right: 1ex;
+      }
     }
   }
 
@@ -215,10 +228,6 @@
 
     font-weight: bold;
     font-size: 15px;
-    .command-text {
-      float: left;
-      max-width: 90%;
-      line-height: 18px;
   .minimize .ah_wrapper {
     .icon-chevron-up {
       .rotate3d(0, 0, 1, 180deg);
