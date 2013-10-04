@@ -292,6 +292,16 @@
                        border-color     : darken(@gray,5%) ;}
       &:last-child a { color            : @gray            ;}
     }
+    span.queued a:not(:hover) {
+      color: @grayLight;
+      font-size: .8em;
+      text-shadow: none;
+    }
+    span.scheduled a:not(:hover) {
+      color: @grayLight;
+      font-size: .8em;
+      text-shadow: none;
+    }
   }
   table {
     border-collapse: separate;
