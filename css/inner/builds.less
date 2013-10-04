@@ -140,7 +140,7 @@
   }
 }
 .build-output  {
-  background-color: @grayLightest;
+  background-color: @whiten;
   .border-radius;
 
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
@@ -154,7 +154,7 @@
     &.failed > .ah_wrapper:before { background: @red; }
     &.running > .ah_wrapper:before { background: @yellow; }
 
-    &.failed .header.failed { background: @lightRed; }
+    &.failed .header.failed { background: @red; }
     &.failed .header.running { background: @lightYellow; }
 
     .time {
@@ -162,11 +162,6 @@
       float: right;
       margin-right: 10px;
       font-weight: normal;
-    }
-
-    &.contents {
-      // only show the cursor if clicking gets you anywhere
-      cursor: pointer;
     }
   }
 
@@ -180,6 +175,7 @@
     //    overflow: scroll;
     margin-top: 5px;
   }
+
   .detail {
     margin: 0 1% 1% 1%;
     text-shadow: none;
@@ -188,10 +184,9 @@
     .bash-command {
       color: #839496;
     }
-
   }
-  .command {
 
+  .command {
     .status {
       float: left;
       margin-right: 15px;
@@ -237,6 +232,11 @@
       width: 5px;
     }
 
+    .header.contents {
+      // only show the cursor if clicking gets you anywhere
+      cursor: pointer;
+    }
+
     min-height: 40px;
     position: relative;
     border: 1px solid #eee;
@@ -272,7 +272,6 @@
       color: #f0ffff;
     }
   }
-
 
   .time {
     font-size: 13px;

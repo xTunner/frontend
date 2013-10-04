@@ -571,6 +571,8 @@
 
 %p
   Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
+  However, this section has one minor difference: all test commands will run, even if one fails.
+  This allows our test output to tell you about all the tests that fail, not just the first error.
 
 
 .top-caption
@@ -746,25 +748,41 @@
 %p
   In addition to these per-user emails, Circle sends notifications on a per-project basis.
   Circle supports sending webhooks when your build completes.
-  Circle also supports HipChat, Campfire, and Flowdock notifications; you configure these notifications from your project's
+  Circle also supports HipChat, Campfire, Flowdock and IRC notifications; you configure these notifications from your project's
   <b>Edit settings > Notifications </b> page.
 
 
 %p
   This example sends a JSON packet to the specified URL.
-  The JSON packet is identical to the result of the
-  %a{ href: "/docs/api#build" } Build API
-  call for the same build.
-
-
 
 %pre
   %code<>
     :preserves
       notify:
         webhooks:
-          # A list of hashes representing hooks. Only the url field is supported.
+          # A list of hook hashes, containing the url field
           - url: https://example.com/hooks/circle
+
+%p
+  The JSON packet is identical to the result of the
+  %a{ href: "/docs/api#build" }
+    Build API
+  call for the same build, except that it is wrapped in a "payload" key:
+
+%pre
+  %code<>
+    :preserves
+      {
+        "payload": {
+          "vcs_url" : "https://github.com/circleci/mongofinil",
+          "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+          "build_num" : 22,
+          "branch" : "master",
+          ...
+        }
+      }
+
+
 %p
 
 

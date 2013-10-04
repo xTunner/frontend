@@ -1,0 +1,9 @@
+%h1 Webhooks
+
+.doc
+  %p
+    Circle also support webhooks, which run at the end of a build.
+    They can be configured in your
+    = succeed '.', ->
+      %a{href: "https://circleci.com/docs/configuration#notify", target: "_blank"}<
+        circle.yml file
