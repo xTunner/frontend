@@ -13,7 +13,7 @@
       = HAML.flashes({})
 
       .row-fluid
-        .offset2.span8
+        .offset1.span10
           %div{data-bind: "if: messages().length"}
             = HAML['messages']()
           %div{data-bind: "ifnot: messages().length"}

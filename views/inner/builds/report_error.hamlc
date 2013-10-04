@@ -1,19 +1,20 @@
-%span{data-bind: "if: failed() && !infrastructure_fail()"}
+%div{data-bind: "if: failed() && !infrastructure_fail()"}
   .alert.alert-danger
-    Error!
+    .alert-wrap
+      Error!
 
-    = succeed ',', ->
-      %a{href: "/docs/troubleshooting" } Check out common problems
+      = succeed ',', ->
+        %a{href: "/docs/troubleshooting" } Check out common problems
 
-    or
-    = succeed ',', ->
-      %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
+      or
+      = succeed ',', ->
+        %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
 
-    or
-    %span{data-bind: "click: report_build",
-          title: "Report an error in how Circle ran this build"}
-      %a{href: "#"}<> report this issue
-    and we'll investigate.
+      or
+      %span{data-bind: "click: report_build",
+            title: "Report an error in how Circle ran this build"}
+        %a{href: "#"}<> report this issue
+      and we'll investigate.
 
 
 %span{data-bind: "if: infrastructure_fail()"}
