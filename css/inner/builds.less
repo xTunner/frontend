@@ -25,6 +25,7 @@
 #action-log-messages {
   border-radius: 5px;
   overflow: hidden;
+  width: 100%;
   .pull-right {
     margin: 1em;
     color: @grayLightest;
@@ -179,9 +180,8 @@
 
   .detail {
     text-shadow: none;
-    border-top: 1px solid lighten(@gray,55.50%);
     box-shadow: 0 1px @white inset;
-    padding: 1vw;
+    padding: 0 1em 1em 1em;
     margin-left: @sideLineWidth;
     .bash-command {
       color: @white;
@@ -278,7 +278,8 @@
       color: #666;
       height: inherit;
       overflow: hidden; // put to the left of .button
-      padding: 10px 0 10px 10px;
+      // padding: 10px 0 10px 10px;
+      line-height: 3em;
     }
   }
 
