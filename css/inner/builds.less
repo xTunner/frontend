@@ -38,8 +38,8 @@
 .build-table {
   background: @whiten;
   top: 83px;
-  padding: 3em 0;
   color: @gray;
+  padding-top: 1em;
   box-shadow: 0 1px lighten(@gray,55.50%);
   h4 {
     border-bottom: 1px solid #D7DCE3;
@@ -80,7 +80,8 @@
     }
   }
   .commit-log {
-    padding-top: 1%;
+    padding-top: 1em;
+    margin: 1em 0;
     border-top: 1px solid lighten(@gray,55.50%);
   }
   .artifacts {
@@ -307,14 +308,6 @@ td.build_status {
   text-transform: uppercase;
   vertical-align: middle;
 }
-
-
-#build-log-header {
-	dt, dd {
-		padding: 3px 0 3px 0;
-	}
-}
-
 
 #build-log-container {
 
