@@ -268,14 +268,13 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     project_name = "#{username}/#{project}"
 
     # if we're already on this page, dont reload
-    if (not @project() or
-    (@project().vcs_url() isnt "https://github.com/#{project_name}"))
-      $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
-        @project(new CI.inner.Project data)
-        @project().get_users()
-        VM.loadExtraEditPageData subpage
-    else
-        VM.loadExtraEditPageData subpage
+    if !@project() or (@project().project_name() isnt project_name)
+      if @project() then @project().clean()
+      @project new CI.inner.Project
+        vcs_url: "https://github.com/#{project_name}"
+
+    @project().maybe_load_settings()
+    VM.loadExtraEditPageData subpage
 
     display "edit", {project: project_name}, subpage
 
