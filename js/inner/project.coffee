@@ -43,6 +43,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     show_branch_input: false
     settings_branch: null
     show_test_new_settings: false
+    loaded_settings: false
 
   constructor: (json) ->
 
@@ -516,3 +517,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (result) =>
         @load_env_vars()
     false
+
+  maybe_load_settings: () =>
+    if not @loaded_settings()
+      @load_settings()
+
+  load_settings: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
+      @updateObservables(data)
+      @loaded_settings(true)
