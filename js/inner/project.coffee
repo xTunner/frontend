@@ -241,6 +241,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
   disable_parallel_input: (num) =>
     num > @paid_parallelism()
 
+  maybe_load_billing: =>
+    if not @billing.existing_plan_loaded()
+      @load_billing()
+
   load_billing: =>
     @loading_billing(true)
     $.ajax
@@ -248,6 +252,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/plan"
       success: (result) =>
         @billing.loadPlanData(result)
+        @billing.existing_plan_loaded(true)
         @loading_billing(false)
 
   checkbox_title: =>
