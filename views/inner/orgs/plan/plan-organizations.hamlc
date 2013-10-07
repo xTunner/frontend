@@ -12,9 +12,9 @@
 
     %p
       %span.label.label-info Note:
-      Members of the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
-        = succeed ".", ->
-          %span{data-bind: "text: current_org_name"}<
+      Members of the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the
+      %span{data-bind: "text: current_org_name"}
+      org.
 
 
     %div{data-bind: "if: loadingOrganizations"}
