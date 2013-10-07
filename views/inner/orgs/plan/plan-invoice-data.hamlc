@@ -20,6 +20,6 @@
       .controls
         %button.btn.btn-primary{data-bind: 'click: update_billing_info',
                                         type: 'submit',
-                                        data-loading-text: 'Saving billing info...',
-                                        data-success-text: 'Saved billing info'}
-          Save billing info
+                                        data-loading-text: 'Saving invoice data...',
+                                        data-success-text: 'Saved invoice data'}
+          Save invoice data
