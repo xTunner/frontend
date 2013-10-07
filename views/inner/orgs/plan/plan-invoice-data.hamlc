@@ -14,7 +14,7 @@
       .controls
         %textarea.span10{name: 'extra_billing_data',
                          rows: 3,
-                         placeholder: 'Extra information that will appear at the bottom of your invoice',
+                         placeholder: 'Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.',
                          data-bind: "value: extra_billing_data"}
     .control-group
       .controls
