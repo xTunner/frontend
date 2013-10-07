@@ -210,6 +210,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     $.getJSON settings_path, (data) =>
       @project(new CI.inner.Project data)
+      # load data needed to show trial information
+      @project().maybe_load_billing()
 
     if not refresh
       display "dashboard",
