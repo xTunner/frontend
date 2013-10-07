@@ -26,19 +26,6 @@
 
         %div{data-bind: "if: show_build_table()"}
 
-          #days-in-trial{data-bind: "with: current_user"}
-            %b{data-bind: "if: in_trial"}
-              You have
-              %span{data-bind: "text: days_left_in_trial"}
-              days left in your trial.
-              %a{href: "/account/plans" }
-                Sign up now.
-
-            %b{data-bind: "if: trial_over"}
-              Your trial ended
-              %span{data-bind: "text: (-1 * days_left_in_trial)"}
-              days ago.
-              %a{href: "/account/plans" }
-                Re-enable your tests.
+          = HAML.project_trial_notice()
 
           = HAML['builds']({builds: "builds", mention_project: true, pagination: false})

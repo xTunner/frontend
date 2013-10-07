@@ -6,6 +6,7 @@
       = HAML['fast_spinner']()
 
   %div{data-bind: "if: build_has_been_loaded"}
+
     %div{data-bind: "with: build"}
 
       = HAML.build_top_table({})
@@ -18,6 +19,8 @@
             = HAML['messages']()
           %div{data-bind: "ifnot: messages().length"}
             = HAML['report_error']({build: true})
+
+          = HAML.project_trial_notice()
 
         -# coming soon
         -#%aside.stages.span2
