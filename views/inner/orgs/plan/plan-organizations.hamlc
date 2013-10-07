@@ -3,7 +3,7 @@
     %legend Select organizations
 
     %p
-      Your plan covers all repositories (including private forks) in the
+      Your plan covers all repositories (including forks) in the
       %strong{data-bind: "text: org_name"}
       organization.
 
