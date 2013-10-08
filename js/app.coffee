@@ -122,6 +122,9 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
+  refreshBuildState: () =>
+    VM.loadProjects()
+    VM.selected().refresh_fn() if VM.selected().refresh_fn
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
       projects = (new CI.inner.Project d for d in data)
