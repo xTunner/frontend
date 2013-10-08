@@ -110,7 +110,7 @@
         = succeed ".", ->
           %a{:href => "mailto:security@circleci.com"} security@circleci.com
         We will do everything in our power to respond and fix the problem immediately. If possible, please encrypt your message using
-        %a{:href => "https://circleci.com/circleci-security.pub"} our security team's GPG key
+        %a{href: "/circleci-security.pub", target: '_blank' } our security team's GPG key
         (ID: 0xC3D1C4F6, fingerprint: B5BB 2E59 534D 89CD F9BA 45D1 0EEA E040 C3D1 C4F6).
 
 
@@ -128,7 +128,7 @@
       %p
         We take security incredibly seriously. If you have any suggestions for how we could improve our security, or improve this policy, please contact us at
         = succeed ".", ->
-          %a{:href => "security@circleci.com"} security@circleci.com
+          %a{:href => "mailto:security@circleci.com"} security@circleci.com
         We will act immediately to deal with the issue.
 
 
