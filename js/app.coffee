@@ -122,14 +122,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
-  refreshBuildState: () =>
-    VM.loadProjects()
-    VM.selected().refresh_fn() if VM.selected().refresh_fn
-
-  # Keep this until backend has a chance to fully deploy
-  refreshDashboard: () =>
-    @refreshBuildState()
-
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
       projects = (new CI.inner.Project d for d in data)
@@ -358,8 +350,6 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/', (cx) =>
     VM.selected
-      refresh_fn: =>
-        VM.loadRecentBuilds(true)
       mention_branch: true
       favicon_updator: VM.reset_favicon
       title: "Dashboard"
@@ -427,10 +417,7 @@ window.SammyApp = Sammy 'body', (n) ->
         project_name: "#{cx.params.username}/#{cx.params.project}"
         branch: branch
         mention_branch: false
-        favicon_updator: VM.reset_favicon
         title: "#{branch} - #{cx.params.username}/#{cx.params.project}"
-        refresh_fn: =>
-          VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
       VM.loadProject cx.params.username, cx.params.project, branch
 
@@ -445,12 +432,6 @@ window.SammyApp = Sammy 'body', (n) ->
         build_num: cx.params.build_num
         mention_branch: true
         title: "##{cx.params.build_num} - #{cx.params.username}/#{cx.params.project}"
-        refresh_fn: =>
-          if VM.build() and VM.build().usage_queue_visible()
-            VM.build().load_usage_queue_why()
-        favicon_updator: =>
-          VM.favicon.build_updator(VM.build())
-
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
@@ -481,8 +462,6 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.selected
       page: "admin"
       admin_builds: true
-      refresh_fn: VM.refreshAdminRecentBuilds
-      favicon_updator: VM.reset_favicon
       title: "Admin recent builds"
 
   # outer
