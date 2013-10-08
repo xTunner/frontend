@@ -12,7 +12,7 @@
               %span{data-bind: "ifnot: trial_over"}
                 The
                 %span{data-bind: "text: org_name"}
-                org has
+                organization has
                 %span{data-bind: "pluralize: [trial_days, 'day', 'days']"}
                 left in its trial.
 
