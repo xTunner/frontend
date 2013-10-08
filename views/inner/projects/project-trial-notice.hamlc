@@ -6,15 +6,15 @@
           .offset2.span8
             .alert{data-bind: "css: {'alert-error': trial_over(), 'alert-success': !trial_over()}"}
               %span{data-bind: "if: trial_over"}
-                Your trial for the
+                The
                 %span{data-bind: "text: org_name"}
-                org is over.
+                organization's trial is over.
               %span{data-bind: "ifnot: trial_over"}
                 The
                 %span{data-bind: "text: org_name"}
                 org has
-                %span{data-bind: "text: trial_days"}
-                days left in its trial.
+                %span{data-bind: "pluralize: [trial_days, 'day', 'days']"}
+                left in its trial.
 
               %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"}<
                 Add a plan
