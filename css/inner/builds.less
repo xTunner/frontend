@@ -160,8 +160,6 @@
 
     .time {
       float: right;
-      margin-right: 10px;
-      font-weight: normal;
     }
   }
 
@@ -180,7 +178,6 @@
 
   .detail {
     text-shadow: none;
-    box-shadow: 0 1px @white inset;
     padding: 0 1em 1em 1em;
     margin-left: @sideLineWidth;
     .bash-command {
@@ -197,7 +194,11 @@
   }
 
   .command {
-    font-weight: bolder;
+    padding-left: @sideLineWidth;
+    .command-text {
+      font-weight: bolder;
+      margin: 0 1em;
+    }
     .status {
       float: left;
       margin-right: 15px;
@@ -224,7 +225,7 @@
   }
   .minimize .ah_wrapper {
     .icon-chevron-up {
-      .rotate3d(0, 0, 1, 180deg);
+      .rotate3d(1, 0, 0, 180deg);
     }
   }
   .ah_wrapper {
@@ -248,7 +249,7 @@
     position: relative;
     border: 1px solid lighten(@gray,55.50%);
     border-radius: 0 3px 3px 0;
-    border-left: 1px solid white;
+    border-left-color: transparent;
     text-shadow: 0 1px 0 rgba(255,255,255,.1);
     box-shadow: 0 1px @white inset;
     overflow: hidden; // put the contents beside each other
@@ -268,7 +269,7 @@
     .icon-chevron-up {
       color: @whiten;
       display: inline-block;
-      transition: all .25s cubic-bezier(0.55, 0, 0.55, 2);
+      transition: all .2s cubic-bezier(0.55, 0, 0.55, 2.33);
       text-shadow: 1px 0   @gray,
                   -1px 0   @gray,
                    0   1px @gray,
@@ -278,14 +279,8 @@
       color: #666;
       height: inherit;
       overflow: hidden; // put to the left of .button
-      // padding: 10px 0 10px 10px;
       line-height: 3em;
     }
-  }
-
-  .time {
-    font-size: 1em;
-    color: @gray;
   }
 }
 
