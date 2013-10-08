@@ -158,8 +158,12 @@
     &.running > .ah_wrapper:before { background: @yellow; }
     &.failed .header.running { background: @lightYellow; }
 
+   &.failed .header.failed { background: @redLight; height: 40px; }
+   &.failed .header.running { background: @lightYellow; }
+
     .time {
       float: right;
+      margin: 0 1em;
     }
   }
 
@@ -178,7 +182,7 @@
 
   .detail {
     text-shadow: none;
-    padding: 0 1em 1em 1em;
+    padding: 1em;
     margin-left: @sideLineWidth;
     .bash-command {
       color: @white;
@@ -192,7 +196,14 @@
       }
     }
   }
-
+  .failed {
+    .command-text, .time {
+      color: @whiten;
+    }
+    .button i.icon-chevron-up {
+      text-shadow: none;
+    }
+  }
   .command {
     padding-left: @sideLineWidth;
     .command-text {
