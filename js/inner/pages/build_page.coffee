@@ -1,7 +1,6 @@
 CI.inner.BuildPage = class BuildPage extends CI.inner.Page
-
   observables: =>
-    _.extend CI.inner.Page().observables()
+    _.extend super,
       name: "build"
       username: null
       project: null
