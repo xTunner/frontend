@@ -17,7 +17,12 @@
       %p{data-bind: "if: trial_over() || trial_days() < 3"}
         Need more time to decide?
 
+        / ko if: window.renderContext.env == 'production'
+        = HAML.contact_us()
+        / /ko
+        / ko ifnot: window.renderContext.env == 'production'
         %button.btn.btn-success.btn-mini{data-bind: "click: extendTrial",
                              data-loading-text: "Extending...",
                              data-success-text: "Extended!"}
           Extend your trial
+        / /ko
