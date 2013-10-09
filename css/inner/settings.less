@@ -31,3 +31,67 @@
     position: relative;
   }
 }
+
+#act-settings {
+  color: @gray;
+  margin-top: -1vw;
+  a {
+    .dark-links;
+    color: @blue;
+  }
+  p {
+    color: @grayLight;
+  }
+  .act-top {
+    border-bottom: 1px solid #ddd;
+  }
+  .nav {
+    border: none;
+    max-width: 940px;
+    margin: 0 auto;
+    &.nav-tabs {
+      .active a {
+        // background-color: #f8f8f8;
+        background: none;
+        border-bottom: 2px solid @blue;
+        color: @blue;
+      }
+    }
+    a {
+      color: @gray;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      margin-left: -4px;
+      line-height: 5em;
+      border-radius: 1px;
+      padding: 0 1em;
+      &:hover {
+        color: @blue;
+        background: none;
+        border: none;
+        border-bottom: 2px solid @blue;
+      }
+    }
+  }
+  legend, h2 {
+    font-size: 2em;
+    line-height: 1.5em;
+    font-weight: 200;
+    color: @gray;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  h4 {
+    font-weight: lighter;
+  }
+}
+.settings-item {
+  .settings-item-inner {
+    max-width: 940px;
+    margin: 2vw auto;
+  }
+}
