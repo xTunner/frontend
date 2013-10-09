@@ -182,6 +182,26 @@ CI.inner.Project = class Project extends CI.inner.Obj
         write: (newVal) ->
           if newVal then pref_observable("smart") else pref_observable(null)
 
+    @show_trial_notice = @komp =>
+      @billing.existing_plan_loaded() &&
+        @billing.trial() &&
+          @billing.trial_end() &&
+            @billing.trial_days() < 15 # we probably hacked the db here
+
+    @trial_notice_text = @komp =>
+      org_name = @billing.org_name()
+      plan_path = CI.paths.org_settings org_name, 'plan'
+      days = @billing.trial_days()
+      if @billing.trial_over()
+        "The #{org_name} organization's trial is over. <a href='#{plan_path}'>Add a plan to continue running your builds</a>."
+      else if days > 7
+        "The #{org_name} organization is in its 2-week trial, enjoy! <a href='#{plan_path}'>Check out our plans</a>."
+      else if days > 1
+        "The #{org_name} organization has #{days} days left in its trial.  <a href='#{plan_path}'>Check out our plans</a>."
+      else
+        "The #{org_name} organization's trial is over in #{@billing.pretty_trial_time()}.  <a href='#{plan_path}'>Add a plan</a> to keep running your builds."
+
+
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
       if l.latest_build().build_num > r.latest_build().build_num then -1 else 1

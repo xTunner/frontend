@@ -1,22 +1,6 @@
 %div{data-bind: "with: $root.project"}
-  %div{data-bind: "with: billing"}
-    %div{data-bind: "if: existing_plan_loaded"}
-      %div{data-bind: "if: trial() && trial_end()"}
-        .row-fluid
-          .offset2.span8
-            .alert{data-bind: "css: {'alert-error': trial_over(), 'alert-success': !trial_over()}"}
-              %span{data-bind: "if: trial_over"}
-                The
-                %span{data-bind: "text: org_name"}
-                organization's trial is over.
-              %span{data-bind: "ifnot: trial_over"}
-                The
-                %span{data-bind: "text: org_name"}
-                organization has
-                %span{data-bind: "pluralize: [trial_days, 'day', 'days']"}
-                left in its trial.
-
-              %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"}<
-                Add a plan
-              %span
-                to continue running your builds.
+  %div{data-bind: "if: show_trial_notice"}
+    .row-fluid
+      .offset2.span8
+        .alert.alert-success{data-bind: "css: {'alert-error': billing.trial_over()}"}
+          %span{data-bind: "html: trial_notice_text"}
