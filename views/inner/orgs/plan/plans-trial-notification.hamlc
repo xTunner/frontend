@@ -1,20 +1,23 @@
 .row-fluid
   .offset1.span10
-    %div{data-bind: "if: trial_over"}
-      .alert.alert-error
-        %p
+    .alert.alert-success{data-bind: "css: {'alert-error': trial_over()}"}
+      %p
+        %span{data-bind: "if: trial_over"}
           Your 2-week trial is over!
-        %p
-          Do you need an extension?
-          = HAML.contact_us_inner()
-    %div{data-bind: "ifnot: trial_over"}
-      .alert.alert-success
-        %p
+        %span{data-bind: "ifnot: trial_over"}
           The
           %strong{data-bind: "text: current_org_name"}
           organization has
           %span{data-bind: "text: trial_days"}
           days left in its trial.
 
-        %p
-          The trial is equivalent to the Solo plan with 6 containers.
+      %p
+        The trial plan is equivalent to the Solo plan with 6 containers.
+
+      %p{data-bind: "if: trial_over() || trial_days() < 3"}
+        Need more time to decide?
+
+        %button.btn.btn-success.btn-mini{data-bind: "click: extendTrial",
+                             data-loading-text: "Extending...",
+                             data-success-text: "Extended!"}
+          Extend your trial
