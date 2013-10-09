@@ -84,14 +84,9 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       # TODO: extract the billing portion from the project/users portion
       @org() && @org().loaded()
 
-
-    # Tracks what page we're on (for pages we care about)
-    @selected = ko.observable({})
-
     @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
 
     @billing = ko.observable(new CI.inner.Billing)
-
 
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
