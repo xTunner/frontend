@@ -1,6 +1,6 @@
 .row-fluid
   .span8
-    %legend Piggieback organizations
+    %legend Extra organizations
 
     %p
       Your plan covers all repositories (including forks) in the
