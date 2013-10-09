@@ -5,13 +5,21 @@
     .alert.alert-warning
       %strong Warning!
       %p
-        If you're not an admin on the organization you transfer to, then you won't be able to transfer the plan back or edit the plan.
-      %p
-        The transferred plan will be extended to cover projects in the
-        %span{data-bind: "text: org_name"}
-        organization, but only admins of
+        If you're not an admin on the
         %span{data-bind: "if: transfer_org_name"}
           %strong{data-bind: "text: transfer_org_name"}
+          organization,
+        %span{data-bind: "ifnot: transfer_org_name"}
+          organization you transfer to,
+        then you won't be able to transfer the plan back or edit the plan.
+      %p
+        The transferred plan will be extended to include the
+        %span{data-bind: "text: org_name"}
+        organization, so your builds will continue to run.
+        Only admins of the
+        %span{data-bind: "if: transfer_org_name"}
+          %strong{data-bind: "text: transfer_org_name"}
+          org
         %span{data-bind: "ifnot: transfer_org_name"}
           the organization you transfer to
         will be able to edit the plan.

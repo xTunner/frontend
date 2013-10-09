@@ -5,7 +5,7 @@
       %dt
         Account balance
         %i.icon-question-sign{title: "Account balance",
-                              data-content: "<p>This is the credit you have with Stripe. If your credit is positive, then Stripe will use it before charging your credit card.</p><p>Contact us if you'd like us to send you a refund for the money.</p>",
+                              data-content: "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p><p>Contact us if you'd like us to send you a refund for the balance.</p><p>This amount may take a few hours to refresh.</p>",
                               data-bind: "popover: {animation: false, trigger: 'hover', html: true}"}
 
       %dd
