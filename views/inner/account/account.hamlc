@@ -19,7 +19,7 @@
 
       %li#plans{ data-bind:"ifnot: from_heroku" }
         %a{href: '/account/plans'}
-          Pricing
+          Plan Pricing
 
       %li#close
         %a{href: '/account/close'}
