@@ -206,3 +206,49 @@
     }
   }
 }
+#sett-ssh {
+  form {
+    display: inline-block;
+    margin: 0;
+    .btn-primary {
+      .buttonDark(@buttonColor: @blueDark);
+    }
+    .btn-danger {
+      .buttonDark(@buttonColor: @redLight);
+    }
+    .btn {
+      margin-left: -4px;
+      border-radius: 0 4px 4px 0;
+      font-size: 1em;
+      line-height: 1.5em;
+      padding: 1em 1.5em;
+      min-width: 150px;
+    }
+  }
+  .no-ssh {
+    textarea {
+      cursor: default;
+      color: inherit;
+      &:active, &:focus {
+        border-color: inherit;
+      }
+    }
+  }
+  textarea {
+    .box-sizing(border-box);
+    resize: none;
+    background: none;
+    box-shadow: none;
+    cursor: copy;
+    padding: 1em;
+    color: @blue;
+    display: inline-block;
+    white-space: nowrap;
+    width: auto;
+    overflow: hidden;
+    height: auto;
+    margin: 0;
+    text-align: center;
+    border-radius: 4px 0 0 4px;
+  }
+}
