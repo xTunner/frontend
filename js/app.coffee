@@ -54,6 +54,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
   constructor: ->
     super()
     @favicon = new CI.inner.Favicon(@selected)
+    @current_page = ko.observable()
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
@@ -125,6 +126,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
   refreshBuildState: () =>
     VM.loadProjects()
     VM.selected().refresh_fn() if VM.selected().refresh_fn
+
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
       projects = (new CI.inner.Project d for d in data)
@@ -424,12 +426,11 @@ window.SammyApp = Sammy 'body', (n) ->
       VM.selected
         page: "build"
         crumbs: ['project', 'branch', 'build', 'project_settings']
+
+      VM.current_page new CI.inner.BuildPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
-        mention_branch: true
-        title: "##{cx.params.build_num} - #{cx.params.username}/#{cx.params.project}"
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
