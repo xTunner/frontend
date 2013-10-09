@@ -7,23 +7,23 @@
 
       %li#api
         %a{href: '/account/api'}
-          API
+          API Tokens
 
       %li#ssh
         %a{href: '/account/ssh'}
-          SSH
+          SSH Keys
 
       %li#heroku
         %a{href: '/account/heroku'}
-          Heroku
+          Heroku Key
 
       %li#plans{ data-bind:"ifnot: from_heroku" }
         %a{href: '/account/plans'}
-          Plans
+          Pricing
 
       %li#close
         %a{href: '/account/close'}
-          Close account
+          Close Account
   .row
     = HAML['flashes']({})
   .settings-item{data-bind: "with: current_user"}
