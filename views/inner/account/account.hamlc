@@ -1,30 +1,31 @@
-%div
-  %ul.nav.nav-tabs
-    %li#notifications
-      %a{href: '/account/notifications'}
-        Notifications
+#act-settings
+  .act-top
+    %ul.nav.nav-tabs
+      %li#notifications
+        %a{href: '/account/notifications'}
+          Notifications
 
-    %li#api
-      %a{href: '/account/api'}
-        API
+      %li#api
+        %a{href: '/account/api'}
+          API
 
-    %li#ssh
-      %a{href: '/account/ssh'}
-        SSH
+      %li#ssh
+        %a{href: '/account/ssh'}
+          SSH
 
-    %li#heroku
-      %a{href: '/account/heroku'}
-        Heroku
+      %li#heroku
+        %a{href: '/account/heroku'}
+          Heroku
 
-    %li#plans{ data-bind:"ifnot: from_heroku" }
-      %a{href: '/account/plans'}
-        Plans
+      %li#plans{ data-bind:"ifnot: from_heroku" }
+        %a{href: '/account/plans'}
+          Plans
 
-    %li#close
-      %a{href: '/account/close'}
-        Close account
-.row
-  = HAML['flashes']({})
-.row{data-bind: "with: current_user"}
-  .offset1
-    #subpage
+      %li#close
+        %a{href: '/account/close'}
+          Close account
+  .row
+    = HAML['flashes']({})
+  .settings-item{data-bind: "with: current_user"}
+    .settings-item-inner
+      #subpage
