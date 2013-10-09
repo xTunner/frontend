@@ -354,7 +354,6 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/', (cx) =>
     VM.selected
       mention_branch: true
-      favicon_updator: VM.reset_favicon
       title: "Dashboard"
 
     VM.loadRootPage(cx)
@@ -367,7 +366,6 @@ window.SammyApp = Sammy 'body', (n) ->
       page: "org_settings"
       crumbs: ['org', 'org_settings']
       username: cx.params.username
-      favicon_updator: VM.reset_favicon
       title: "Org settings - #{cx.params.username}"
 
     VM.loadEditOrgPage cx.params.username, splitSplat(cx)
@@ -377,7 +375,6 @@ window.SammyApp = Sammy 'body', (n) ->
       page: "org"
       crumbs: ['org', 'org_settings']
       username: cx.params.username
-      favicon_updator: VM.reset_favicon
       title: "#{cx.params.username}"
 
     VM.loadOrg cx.params.username
@@ -394,7 +391,6 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
-        favicon_updator: VM.reset_favicon
         title: "Edit settings - #{cx.params.username}/#{cx.params.project}"
 
       VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
@@ -403,7 +399,6 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       VM.selected
         page: "account"
-        favicon_updator: VM.reset_favicon
         title: "Account"
       VM.loadAccountPage cx, splitSplat(cx)
 
@@ -447,7 +442,6 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         project_name: "#{cx.params.username}/#{cx.params.project}"
         mention_branch: true
-        favicon_updator: VM.reset_favicon
         title: "#{cx.params.username}/#{cx.params.project}"
         refresh_fn: =>
           VM.loadProject(cx.params.username, cx.params.project, null, true)
