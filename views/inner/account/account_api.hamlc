@@ -9,7 +9,7 @@
                          data-bind: "value: tokenLabel"}
 
       %input.submit.btn.btn-primary.float-left{type: "submit",
-                             value: "Create Token",
+                             value: "Create",
                              data-bind: "click: create_token",
                              data-loading-text: "Creating...",
                              data-success-text: "Created",
