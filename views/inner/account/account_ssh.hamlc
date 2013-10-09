@@ -3,22 +3,22 @@
     %h2 SSH user keys
 
     .with-ssh{data-bind: "if: user_key_fingerprint"}
+      %textarea{data-bind: "text: user_key_fingerprint", readonly: "readonly", rows: "1", cols: "70"}
       %form.api
         %input.btn.btn-danger{type: "submit",
                               value: "Delete Key",
                               data-bind: "click: delete_user_key",
                               data-loading-text: "Deleting...",
                               data-success-text: "Deleted"}
-      %textarea{data-bind: "text: user_key_fingerprint", readonly: "readonly", rows: "1", cols: "50"}
 
     .no-ssh{data-bind: "ifnot: user_key_fingerprint"}
+      %textarea{rows: "1", cols: "70", readonly: "readonly"} No user key created yet...
       %form.api
         %input.btn.btn-primary{type: "submit",
                                value: "Create Key",
                                data-bind: "click: create_user_key",
                                data-loading-text: "Creating...",
                                data-success-text: "Created"}
-      %textarea{rows: "1", cols: "50", readonly: "readonly"} No user key yet...
 
   .ssh-item
 
