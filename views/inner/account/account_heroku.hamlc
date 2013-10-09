@@ -5,7 +5,7 @@
     %form.api.form-inline
       %input{type: "text",
              name: "apikey",
-             placeholder: "Set Heroku API key...",
+             placeholder: "Enter Heroku API Key...",
              data-bind: "value: herokuApiKeyInput"}
       %input.btn.btn-primary{type: "submit",
                              value: "Save",

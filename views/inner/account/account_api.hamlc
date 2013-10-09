@@ -5,7 +5,7 @@
     %form.form-inline
       %input.enter-label{type: "text",
                          name: "label",
-                         placeholder: "Label the token...",
+                         placeholder: "Enter token label...",
                          data-bind: "value: tokenLabel"}
 
       %input.submit.btn.btn-primary.float-left{type: "submit",
