@@ -46,7 +46,7 @@
               = HAML.queues_image()
 
             .span6
-              If need to test against queues, we have them installed on our boxes.
+              If you need to test against queues, we have them installed on our boxes.
               We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need.
 
 
