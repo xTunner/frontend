@@ -53,8 +53,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   constructor: ->
     super()
-    @favicon = new CI.inner.Favicon(@selected)
-    @current_page = ko.observable()
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
@@ -90,7 +88,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @selected = ko.observable({})
     @current_page = ko.observable(new CI.inner.Page)
 
-    @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
+    @navbar = ko.observable(new CI.inner.Navbar(@current_page, @build))
+    @favicon = new CI.inner.Favicon(@current_page)
 
     @billing = ko.observable(new CI.inner.Billing)
 

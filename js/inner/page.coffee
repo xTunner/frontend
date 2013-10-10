@@ -4,3 +4,7 @@ CI.inner.Page = class InnerPage extends CI.inner.Obj
     @title = "Continuous Integration and Deployment - CircleCI"
     @name = null
     @crumbs = []
+
+  favicon_color: =>
+    # undefined is what Favicon expects for 'default color'
+    undefined
