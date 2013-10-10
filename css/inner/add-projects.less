@@ -193,7 +193,7 @@
       box-shadow: 0 1px 1px lighten(@grayBorder,1%) inset;
     }
   }
-  &:hover [class^="repo-"]:not(.repo-1stfollow) span {
+  &:hover [class^="repo-"] span {
     opacity: 1;
     .translate3d(0,0,0);
     transition: opacity .2s linear .1s, -webkit-transform .1s ease-in 0;
@@ -207,7 +207,7 @@
     float: right;
     pointer-events: none;
   }
-  [class^="repo-"]:not(.repo-1stfollow) span {
+  [class^="repo-"] span {
     color: @gray;
     opacity: 0;
     .translate3d(0,100%,0);
@@ -221,39 +221,42 @@
     margin-right: 6em;
     pointer-events: none;
   }
-}
-[class^="repo-"] {
-  overflow: hidden;
-}
-.repo-follow span {
-  color: @green;
-}
-.repo-unfollow span {
-  color: @grayLight;
-}
-.repo-nofollow span {
-  color: @red;
-}
-.repo-1stfollow {
-  object {
-    .animation(waiting 1s ease-in-out 0 infinite);
-    animation: waiting 1s ease-in-out 0 infinite;
+  [class^="repo-"] {
+    overflow: hidden;
   }
-  span {
-    color: @orange;
+  .repo-follow span {
+    color: @green;
+  }
+  .repo-unfollow span {
+    color: @grayLight;
+  }
+  .repo-nofollow {
+    object {
+      opacity: .34;
+    }
+    span {
+      color: @red;
+    }
+  }
+  .repo-1stfollow {
+    object {
+      .animation(waiting 1s ease-in-out 0 infinite);
+    }
+    span {
+      color: @orange;
+    }
+  }
+  .centered-spinner i {
+    margin: 25vh 0;
   }
 }
-.centered-spinner i {
-  margin: 25vh 0;
-}
-
 @-webkit-keyframes waiting {
-    0% {opacity: .55;}
-   50% {opacity: .89;}
-  100% {opacity: .55;}
+    0% {opacity: .66;}
+   50% {opacity:   1;}
+  100% {opacity: .66;}
 }
 @keyframes waiting {
-    0% {opacity: .55;}
-   50% {opacity: .89;}
-  100% {opacity: .55;}
+    0% {opacity: .66;}
+   50% {opacity:   1;}
+  100% {opacity: .66;}
 }
