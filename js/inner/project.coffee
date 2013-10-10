@@ -193,13 +193,15 @@ CI.inner.Project = class Project extends CI.inner.Obj
       plan_path = CI.paths.org_settings org_name, 'plan'
       days = @billing.trial_days()
       if @billing.trial_over()
-        "The #{org_name} organization's trial is over. <a href='#{plan_path}'>Add a plan to continue running your builds</a>."
+        "#{org_name}'s trial is over. <a href='#{plan_path}'>Add a plan to continue running your builds</a>."
+      else if days > 10
+        "#{org_name} is in a 2-week trial, enjoy! (or check out <a href='#{plan_path}'>our plans</a>)"
       else if days > 7
-        "The #{org_name} organization is in its 2-week trial, enjoy! <a href='#{plan_path}'>Check out our plans</a>."
-      else if days > 1
-        "The #{org_name} organization has #{days} days left in its trial.  <a href='#{plan_path}'>Check out our plans</a>."
+        "#{org_name}'s trial has #{days} days left. <a href='#{plan_path}'>Check out our plans</a>."
+      else if days > 4
+        "#{org_name}'s trial has #{days} days left. <a href='#{plan_path}'>Add a plan</a> to keep running your builds."
       else
-        "The #{org_name} organization's trial is over in #{@billing.pretty_trial_time()}.  <a href='#{plan_path}'>Add a plan</a> to keep running your builds."
+        "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
 
   @sidebarSort: (l, r) ->
