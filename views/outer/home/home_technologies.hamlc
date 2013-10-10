@@ -46,7 +46,7 @@
               = HAML.queues_image()
 
             .span6
-              If need to test against queues, we have them installed on our boxes.
+              If you need to test against queues, we have them installed on our boxes.
               We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need.
 
 
@@ -67,7 +67,7 @@
               %p
                 We run a recent version Ubuntu and have installed all of the libraries you need for development.
                 We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.
-                As new important libraries come out its trivial for us to add them for you.
+                As new important libraries come out it's trivial for us to add them for you.
 
 
         #deployment.tab-pane

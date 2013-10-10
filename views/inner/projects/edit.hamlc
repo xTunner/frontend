@@ -12,7 +12,7 @@
       %li.nav-header
         Tweaks
       %li
-        %a{ href: "edit#parallel-builds" } Build speed
+        %a{ href: "edit#parallel-builds" } Parallelism
       %li
         %a{ href: "edit#env-vars" } Environment variables
       %li.divider
@@ -27,9 +27,12 @@
 
 
       %li.nav-header
-        Hooks
+        Notifications
       %li
-        %a{ href: "edit#hooks" } Notifications
+        %a{ href: "edit#hooks" } Chatrooms
+      %li
+        %a{ href: "edit#webhooks" } Webhooks
+
       %li.divider
 
       %li.nav-header
@@ -52,7 +55,7 @@
       %li.nav-header
         Continuous Deployment
       %li
-        %a{ href: "edit#heroku" } Heroku settings
+        %a{ href: "edit#heroku" } Heroku
       %li
         %a{ href: "edit#deployment" } Other deployments
 
@@ -64,7 +67,7 @@
           %button.followed.btn.btn-primary.btn-large{ data-bind: 'click: unfollow' }
             Unfollow
         %p
-          You are following this project, and will receive build emails.
+          You are following this project, and will receive personalized build emails.
 
 
       %div{data-bind: "ifnot: followed"}
@@ -72,7 +75,7 @@
           %button.btn.btn-primary.btn-large{data-bind: 'click: follow_and_maybe_visit'}
             Follow
         %p
-          You are not following this project, and will not receive build emails.
+          You are not following this project, and will not receive personalized build emails.
           Projects are only tested if they have a follower.
 
   .span9

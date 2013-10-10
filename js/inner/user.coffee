@@ -74,6 +74,14 @@ CI.inner.User = class User extends CI.inner.Obj
         else if force
           "https://secure.gravatar.com/avatar/00000000000000000000000000000000?s=#{size}"
 
+    @organizations_plus_user = @komp =>
+      user_org =
+        login: @login
+        org: false
+        avatar_url: @gravatar_url()
+
+      _.sortBy @organizations().concat(user_org), 'login'
+
   load_tokens: () =>
     $.getJSON "/api/v1/user/token", (data) =>
       @tokens(data)

@@ -1,8 +1,8 @@
 .row-fluid.followed-projects
   %h2 Followed projects
   .span8{data-bind: "foreach: {data: projects_with_followers, as: 'project'}"}
-    .row-fluid.well.success
-      .span12{data-bind: "equalizeWidth: '.follower-container'"}
+    .row-fluid
+      .span12.well.success{data-bind: "equalizeWidth: '.follower-container'"}
         .row-fluid
           .span12
             %h4
@@ -21,8 +21,8 @@
 .row-fluid
   %h2 Untested repos
   .span8{data-bind: "foreach: {data: projects_without_followers, as: 'project'}"}
-    .row-fluid.well.fail
-      .span12
+    .row-fluid
+      .span12.well.fail
         %h4
           %a{data-bind: "attr: {href: project_path}, text: repo_name"}
           %a.github-icon-link{data-bind: "attr: {href: vcs_url}"}

@@ -111,6 +111,22 @@ ko.bindingHandlers.leadingZero =
     f = (value) -> "0#{value}"
     transformContent(f, el, valueAccessor())
 
+# Specify a haml template that depends on an observable
+# Example: %div{data-bind: "haml: {template: myObservable, args: {}}"}
+#   Renders the HAML.myObservable() template and will re-render when the
+#   observable changes.
+ko.bindingHandlers.haml =
+  init: () =>
+    {controlsDescendantBindings: true}
+
+  update: (el, valueAccessor, allBindingsAccessor, viewModel, bindingContext) =>
+    options = valueAccessor()
+    template = ko.utils.unwrapObservable(options.template)
+    args = ko.utils.unwrapObservable(options.args)
+
+    $(el).html HAML[template].call(args)
+    ko.applyBindingsToDescendants bindingContext, el
+
 ko.observableArray["fn"].setIndex = (index, newItem) ->
   @valueWillMutate()
   result = @()[index] = newItem

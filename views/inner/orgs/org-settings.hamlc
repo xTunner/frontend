@@ -17,6 +17,22 @@
         %li{data-bind: "css: {active: subpage() == 'users'}"}
           %a{href: "#users"}
             Users
+        %li.nav-header
+          Plan
+        %li{data-bind: "css: {active: subpage() == 'plan'}"}
+          %a{href: "#plan"}
+            Choose plan
+        / ko if: can_edit_plan
+        %li{data-bind: "css: {active: subpage() == 'containers'}"}
+          %a{href: "#containers"}
+            Add containers
+        %li{data-bind: "css: {active: subpage() == 'organizations'}"}
+          %a{href: "#organizations"}
+            Organizations
+        %li{data-bind: "css: {active: subpage() == 'billing'}"}
+          %a{href: "#billing"}
+            Billing info
+        / /ko
         / /ko
 
 
@@ -30,4 +46,7 @@
 
         %div{data-bind: "if: VM.org_has_been_loaded"}
           %div{data-bind: "with: org"}
-            = HAML["org_#{@subpage}"]()
+            %div{data-bind: "if: unauthorized"}
+              = HAML.org_non_admin_plan()
+            %div{data-bind: "ifnot: unauthorized"}
+              %div{data-bind: "haml: {template: 'org_' + subpage(), args: {}}"}
