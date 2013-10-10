@@ -106,7 +106,7 @@
   float: left;
   width: 15%;
   display: inline-block;
-  padding: 0 1vw;
+  margin: 0;
   .box-sizing(border-box);
   a {
     .dark-links;
@@ -125,6 +125,9 @@
   }
   .tooltip {
     white-space: normal;
+  }
+  li {
+    padding: 0 1vw;
   }
 }
 .add-orgs, .add-collabs, .add-you {
@@ -149,6 +152,9 @@
   display: inline-block;
   width: 100%;
   margin-right: -4px;
+  &.active {
+    background: red;
+  }
 }
 .orgname {
   display: inline-block;
@@ -158,70 +164,96 @@
   .clearfix();
   a {
     display: block;
-    line-height: 3em;
+    line-height: 1em;
     text-decoration: none;
     transition: all .2s ease-in-out;
     color: #555;
     font-weight: normal;
     text-decoration: none;
     box-shadow: 0 1px @white inset;
-    padding-left: 3em;
+    padding: 0 1vw;
+    line-height: 3em;
     overflow: hidden;
     &:hover {
       background-color: lighten(@grayBorder,8%);
-      box-shadow: 0 1px lighten(@grayBorder,3%) inset;
       color: @link-blue;
       transition-duration: .1s;
-      .hvr-msg {
-        .translate3d(0,0,0);
-        transition: opacity .2s linear .1s, -webkit-transform .2s ease-in 0;
-        transition: opacity .2s linear .1s,         transform .2s ease-in 0;
-        opacity: 1;
-      }
     }
     &:active {
       background-color: lighten(@grayBorder,5%);
-      box-shadow: 0 1px 1px lighten(@grayBorder,1%) inset;
       transition-duration: .1s;
     }
   }
-  i:first-child {
-    margin-left: -2em;
-  }
-  .icon-exclamation-sign {
-    float: right;
-    margin-right: 1em;
-    line-height: 3em;
-    color: @grayLight;
-  }
   &:not(:first-child) a {
-    border-top: 1px solid lighten(@grayBorder,5%);
+    box-shadow: 0 1px #f0f0f0 inset, 0 2px #ffffff inset;
+    &:hover {
+      box-shadow: 0 1px lighten(@grayBorder,3%) inset;
+    }
+    &:active {
+      box-shadow: 0 1px 1px lighten(@grayBorder,1%) inset;
+    }
+  }
+  &:hover [class^="repo-"]:not(.repo-1stfollow) span {
+    opacity: 1;
+    .translate3d(0,0,0);
+    transition: opacity .2s linear .1s, -webkit-transform .1s ease-in 0;
+    transition: opacity .2s linear .1s,         transform .1s ease-in 0;
+  }
+  object {
+    height: 2em;
+    margin-top: -2.5em;
+    margin-right: 1em;
+    display: inline-block;
+    float: right;
+    pointer-events: none;
+  }
+  [class^="repo-"]:not(.repo-1stfollow) span {
+    color: @gray;
+    opacity: 0;
+    .translate3d(0,100%,0);
+    transition: opacity .1s linear 0, -webkit-transform .3s ease-out 0;
+    transition: opacity .1s linear 0,         transform .3s ease-out 0;
+  }
+  span {
+    line-height: 3em;
+    float: right;
+    margin-top: -3em;
+    margin-right: 6em;
+    pointer-events: none;
   }
 }
-.proj-name {
-  padding-left: 1em;
+[class^="repo-"] {
+  overflow: hidden;
 }
-.hvr-msg {
-  float: right;
-  margin-left: 1em;
-  margin-right: 1em;
-  .translate3d(0,100%,0);
-  transition: opacity .1s linear 0, -webkit-transform .3s ease-out 0;
-  transition: opacity .1s linear 0,         transform .3s ease-out 0;
-  display: inline-block;
+.repo-follow span {
+  color: @green;
+}
+.repo-unfollow span {
   color: @grayLight;
-  opacity: 0;
 }
-.repo-watch, .repo-unwatch, .repo-nowatch {
-  display: inline-block;
-  float: left;
-  width: 100%;
+.repo-nofollow span {
+  color: @red;
 }
-.repo-watch, .repo-nowatch {
-  a {
-    color: @grayLight;
+.repo-1stfollow {
+  object {
+    .animation(waiting 1s ease-in-out 0 infinite);
+    animation: waiting 1s ease-in-out 0 infinite;
+  }
+  span {
+    color: @orange;
   }
 }
 .centered-spinner i {
   margin: 25vh 0;
+}
+
+@-webkit-keyframes waiting {
+    0% {opacity: .55;}
+   50% {opacity: .89;}
+  100% {opacity: .55;}
+}
+@keyframes waiting {
+    0% {opacity: .55;}
+   50% {opacity: .89;}
+  100% {opacity: .55;}
 }
