@@ -1,7 +1,5 @@
 CI.inner.BuildPage = class BuildPage extends CI.inner.Page
   observables: =>
-    _.extend super,
-      name: "build"
       username: null
       project: null
       project_name: null
@@ -10,5 +8,7 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
 
   constructor: (properties) ->
     super(properties)
-    title = @komp =>
-      "##{@build_num} - #{@username}/#{@project}"
+    @name = "build"
+    @title = "##{@build_num()} - #{@username()}/#{@project()}"
+
+    @crumbs = ['project', 'branch', 'build', 'project_settings']

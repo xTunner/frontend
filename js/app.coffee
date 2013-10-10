@@ -36,8 +36,8 @@ display = (template, args, subpage, hash) ->
     $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
     $("##{hash}").addClass('active')
 
-  if VM.selected().title
-    document.title = "#{VM.selected().title} - CircleCI"
+  if VM.current_page().title
+    document.title = "#{VM.current_page().title} - CircleCI"
   else
     document.title = "Continuous Integration and Deployment - CircleCI"
 
@@ -88,6 +88,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     # Tracks what page we're on (for pages we care about)
     @selected = ko.observable({})
+    @current_page = ko.observable(new CI.inner.Page)
 
     @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
 
