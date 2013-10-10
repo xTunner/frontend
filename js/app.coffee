@@ -78,11 +78,15 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @refreshing_projects = ko.observable(false)
     @projects_have_been_loaded = ko.observable(false)
     @build_has_been_loaded = ko.observable(false)
-    @org_has_been_loaded = ko.observable(false)
     @builds_have_been_loaded = ko.observable(false)
-    @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
-    @billing = ko.observable(new CI.inner.Billing)
 
+    @org_has_been_loaded = @komp =>
+      # TODO: extract the billing portion from the project/users portion
+      @org() && @org().loaded()
+
+    @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
+
+    @billing = ko.observable(new CI.inner.Billing)
 
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
@@ -206,30 +210,21 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       display "dashboard",
         builds_table: 'project'
 
-  loadOrgSettings: (username, callback) =>
-    $.getJSON "/api/v1/organization/#{username}/settings", (data) =>
-      @org().clean() if @org()
-      @org(new CI.inner.Org data)
-      @org_has_been_loaded(true)
-      mixpanel.track("View Org", {"username": username})
-      if callback? then callback()
-
   loadEditOrgPage: (username, [_, subpage]) =>
     subpage or= "projects"
 
-    subpage_callback = () => @org().subpage(subpage)
-
     if !@org() or (@org().name() isnt username)
-      @org_has_been_loaded(false)
       @org().clean() if @org()
       @org(null)
-
-      @loadOrgSettings(username, subpage_callback)
+      @org new CI.inner.Org
+        name: username
+        subpage: subpage
+      @org().loadSettings()
+      mixpanel.track("View Org", {"username": username})
     else
-      subpage_callback()
+      @org().subpage(subpage)
 
-    display 'org_settings',
-      subpage: subpage
+    display 'org_settings'
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
@@ -256,9 +251,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   loadExtraEditPageData: (subpage) =>
     if subpage is "parallel_builds"
-      @project().load_paying_user()
       @project().load_billing()
-      @billing().load()
     else if subpage is "api"
       @project().load_tokens()
     else if subpage is "env_vars"
@@ -286,7 +279,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     hash or= "meta"
 
     if subpage.indexOf("plans") == 0
-      @billing().load()
+      @current_user().loadOrganizations()
 
     if subpage.indexOf("notifications") == 0
       @current_user().syncGithub()
@@ -500,6 +493,8 @@ window.SammyApp = Sammy 'body', (n) ->
     # force them to inner.
     if VM.logged_in()
       return cx.redirect "/account/plans"
+
+    # TODO: move this out of billing somehow
     VM.billing().loadPlans()
     VM.billing().loadPlanFeatures()
     VM.pricing.display(cx)

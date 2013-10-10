@@ -2,17 +2,19 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
   observables: =>
     free_containers: 1
     max_containers: 1
-    containers: null
+    billing: null
+    max_parallelism: 1
+    type: 'trial'
 
-  constructor: ->
-    super
+  constructor: (json, billing) ->
+    super json
 
-    @concurrency_options = ko.observableArray([1..20])
+    @billing(billing)
 
     @container_options = ko.observableArray([@free_containers()..@max_containers()])
 
     @allowsParallelism = @komp =>
-      @max_parallelism > 1
+      @max_parallelism() > 1
 
     @projectsTitle = @komp =>
       "#{@projects} project" + (if @projects == 1 then "" else "s")
@@ -21,7 +23,7 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
       "#{@min_parallelism}x"
 
     @maxParallelismDescription = @komp =>
-      "up to #{@max_parallelism}x"
+      "up to #{@max_parallelism()}x"
 
     @freeContainersDescription = @komp =>
       "#{@free_containers()} container" + (if @free_containers() == 1 then "" else "s")
@@ -33,13 +35,13 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
         "Contact us"
 
     @pricingDescription = @komp =>
-      if VM.billing().chosenPlan()? and @.id == VM.billing().chosenPlan().id
+      if @billing() and @billing().chosenPlan()? and @.id == @billing().chosenPlan().id
         "Your current plan"
       else
         if not @price?
           "Contact us for pricing"
         else
-          if VM.billing().chosenPlan()?
+          if @billing() and @billing().can_edit_plan()
             "Switch plan $#{@price}/mo"
           else
             "Sign up now for $#{@price}/mo"

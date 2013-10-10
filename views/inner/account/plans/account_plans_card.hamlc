@@ -1,2 +1,0 @@
-= HAML['account_plans_update_card']()
-= HAML['account_plans_invoices']()

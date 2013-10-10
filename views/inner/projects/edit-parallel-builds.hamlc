@@ -1,6 +1,9 @@
 %div
   %h1 Change parallelism for this project
-  %div
+  %div{data-bind: "if: loading_billing"}
+    .row-fluid.centered-spinner
+      = HAML.fast_spinner()
+  %div{data-bind: "ifnot: loading_billing"}
     .row-fluid{style: "min-height: 250px"}
       .span5
         %p
@@ -11,7 +14,7 @@
               %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().editParallel, disable: $root.project().disable_parallel_input($data), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
 
 
-      .span6.well.focused-label{data-bind: "css: speed_description_style()"}
+      .span6.well.focused-label{data-bind: "css: parallelism_description_style()"}
 
         %span{data-bind: "if: focused_parallel() == 1"}
           At 1x parallelism, all of your tests will run sequentially on the same machine.
@@ -28,8 +31,8 @@
 
         %p{data-bind: "if: show_number_of_simultaneous_builds_p"}
           You have
-          %span{data-bind: "text: billing.containers"}
-          containers, so you can run
+          %span{data-bind: "text: billing.usable_containers"}
+          containers available, so you can run
           %span{data-bind: "text: simultaneous_builds"}
           builds at once at
           = succeed 'x.', ->
@@ -40,52 +43,34 @@
             Tip
           You can run more simultaneous builds if you choose a speed that divides your total containers evenly.
 
-        %div{data-bind: "ifnot: billing.payor"}
+        %div{data-bind: "if: billing.trial"}
           .alert.alert-warning
-            %a{href: '/account/plans#organizations'} Select a plan
-            to increase your maximum build speed
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"} Select a plan
+            to increase your paralellism.
 
-        / ko if: billing.payor
-        %div{data-bind: "if: show_parallel_upgrade_plan_p"}
+        / ko if: billing.paid
+        %div{data-bind: "if: show_upgrade_plan"}
           .alert.alert-warning
-            Your plan's max speed is only
+            Your plan's max parallelism is only
             != succeed "x.", ->
-              %strong{data-bind: "text: plan_max_speed"}
+              %strong{data-bind: "text: plan().max_parallelism"}
 
-            %span{data-bind: "if: current_user_is_payor_p"}
-              %a{href: "/account/plans#edit"} Upgrade your plan
-              to unlock more speed.
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"} Upgrade your plan
+            to unlock more parallelism.
 
-            %span{data-bind: "ifnot: current_user_is_payor_p"}
-              Send
-              %span{data-bind: "text: payor_login"}
-              to
-              %a{href: "/account/plans#edit"} https://circleci.com/account/plans#edit
-              to upgrade your plan.
-
-        %div{data-bind: "if: show_parallel_upgrade_speed_p"}
+        %div{data-bind: "if: show_add_containers"}
           .alert.alert-warning
             %p
-              You can only go up to
-              != succeed "x!", ->
-                %span{data-bind: "text: paid_speed"}
+              You only have
+              %span{data-bind: "text: billing.usable_containers"}
+              containers.
 
-            %p{data-bind: "if: current_user_is_payor_p"}
-              %a{href: "/account/plans#speed"} Increase your speed
-              up to
-              %strong
-                != succeed "x.", ->
-                  %span{data-bind: "text: focused_parallel"}
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Increase your parallelism
+            up to
 
-            %p{data-bind: "ifnot: current_user_is_payor_p"}
-              Send
-              %span{data-bind: "text: payor_login"}
-              to
-              %a{href: "/account/plans#speed"} https://circleci.com/account/plans#speed
-              to increase your speed up to
-              %strong
-                != succeed "x.", ->
-                  %span{data-bind: "text: focused_parallel"}
+            %strong
+              != succeed "x.", ->
+                %span{data-bind: "text: plan().max_parallelism"}
         / /ko
 
     .row-fluid{data-bind: "if: show_test_new_settings"}

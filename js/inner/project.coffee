@@ -27,10 +27,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     ssh_keys: []
     followed: null
     loading_users: false
+    loading_billing: false
     users: []
     parallel: 1
-    paying_user: null
-    loaded_paying_user: null
     retried_build: null
     branches: null
     default_branch: null
@@ -71,53 +70,44 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     ## Parallelism
     @billing = new CI.inner.Billing
+      org_name: @org_name()
 
-    # Allows for user parallelism to trump the plan's max_parallelism
-    @plan_max_speed = @komp =>
-      if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
-        @billing.chosenPlan().max_parallelism
+    # use safe defaults in case chosenPlan is null
+    @plan = @komp =>
+      @billing.chosenPlan() || new CI.inner.Plan
 
     @parallelism_options = @komp =>
-      if @plan_max_speed()
-        [1..Math.max(@plan_max_speed(), 24)]
-      else
-        [1..24]
+      [1..Math.max(@plan().max_parallelism(), 24)]
 
-    # Trial speed is counted as paid here
-    @paid_speed = @komp =>
-      Math.min @plan_max_speed(), @billing.containers()
+    # Trial parallelism is counted as paid here
+    @paid_parallelism = @komp =>
+      Math.min @plan().max_parallelism(), @billing.usable_containers()
 
     @focused_parallel = ko.observable @parallel()
-
-    @payor_login = @komp =>
-      @billing.payor() && @billing.payor().login
-
-    @current_user_is_payor_p = @komp =>
-      @payor_login() is VM.current_user().login
 
     @parallel_label_style = (num) =>
       disabled: @komp =>
         # weirdly sends num as string when num is same as parallel
-        parseInt(num) > @paid_speed()
+        parseInt(num) > @paid_parallelism()
       selected: @komp =>
         parseInt(num) is @parallel()
       bad_choice: @komp =>
-        parseInt(num) <= @paid_speed() && @billing.containers() % parseInt(num) isnt 0
+        parseInt(num) <= @paid_parallelism() && @billing.usable_containers() % parseInt(num) isnt 0
 
-    @show_parallel_upgrade_plan_p = @komp =>
-      @plan_max_speed() && @plan_max_speed() < @focused_parallel()
+    @show_upgrade_plan = @komp =>
+      @plan().max_parallelism() < @focused_parallel()
 
-    @show_parallel_upgrade_speed_p = @komp =>
-      @paid_speed() && @plan_max_speed && (@paid_speed() < @focused_parallel() <= @plan_max_speed())
+    @show_add_containers = @komp =>
+      @paid_parallelism() < @focused_parallel() <= @plan().max_parallelism()
 
     @show_uneven_divisor_warning_p = @komp =>
-      @focused_parallel() <= @paid_speed() && @billing.containers() % @focused_parallel() isnt 0
+      @focused_parallel() <= @paid_parallelism() && @billing.usable_containers() % @focused_parallel() isnt 0
 
     @simultaneous_builds = @komp =>
-      Math.floor(@billing.containers() / @focused_parallel())
+      Math.floor(@billing.usable_containers() / @focused_parallel())
 
     @show_number_of_simultaneous_builds_p = @komp =>
-      @focused_parallel() <= @paid_speed()
+      @focused_parallel() <= @paid_parallelism()
 
     ## Sidebar
     @branch_names = @komp =>
@@ -244,27 +234,20 @@ CI.inner.Project = class Project extends CI.inner.Obj
   retry_latest_build: =>
     @latest_build().retry_build()
 
-  speed_description_style: =>
+  parallelism_description_style: =>
     'selected-label': @focused_parallel() == @parallel()
 
   disable_parallel_input: (num) =>
-    num > @paid_speed()
+    num > @paid_parallelism()
 
   load_billing: =>
+    @loading_billing(true)
     $.ajax
       type: "GET"
       url: "/api/v1/project/#{@project_name()}/plan"
       success: (result) =>
         @billing.loadPlanData(result)
-
-  load_paying_user: =>
-    $.ajax
-      type: "GET"
-      url: "/api/v1/project/#{@project_name()}/paying_user"
-      success: (result) =>
-        if result?
-          @paying_user(new CI.inner.User(result))
-          @loaded_paying_user(true)
+        @loading_billing(false)
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -468,7 +451,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
         @show_test_new_settings(true)
       error: (data) =>
         @refresh()
-        @load_paying_user()
     true
 
   parallel_input_id: (num) =>

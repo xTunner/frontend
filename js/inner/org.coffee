@@ -5,7 +5,9 @@ CI.inner.Org = class Org extends CI.inner.Obj
     users: []
     paid: false
     plan: null
-    subpage: "projects"
+    subpage: 'projects'
+    billing: null
+    unauthorized: null
 
   clean: () ->
     super
@@ -14,6 +16,12 @@ CI.inner.Org = class Org extends CI.inner.Obj
   constructor: (json) ->
 
     super json
+
+    @billing new CI.inner.Billing
+      current_org_name: @name()
+
+    @loaded = @komp =>
+      @unauthorized() || @billing().loaded()
 
     # projects that have been turned into Project objects
     @project_objs = @komp =>
@@ -46,6 +54,34 @@ CI.inner.Org = class Org extends CI.inner.Obj
         .reject((p) -> p.followers.length)
         .sortBy((p) -> p.repo_name())
         .value()
+
+    @can_edit_plan = @komp =>
+      @billing().paid() && not @billing().piggieback_plan_p()
+
+    @subpage.subscribe (new_val) =>
+      if new_val
+        window.location.hash = new_val.replace('_', '-')
+
+    @billing_subpages = ['plan', 'containers', 'organizations', 'billing']
+
+    # This is a computed observable that only exists for its side-effects
+    @redirect_to_plan = ko.computed
+      read: () =>
+        if @billing().loaded() && _.contains(@billing_subpages, @subpage())
+          if !@billing().can_edit_plan()
+            @subpage('plan')
+      deferEvaluation: false # insurance in case we make true the default
+
+  loadSettings: () =>
+    $.ajax
+      type: "GET"
+      url: "/api/v1/organization/#{@name()}/settings"
+      success: (data) =>
+        @updateObservables(data)
+        @billing().load()
+      error: (data) =>
+        if data.status is 404
+          @unauthorized(true)
 
   followProjectHandler: (project) =>
     callback = (data) =>
