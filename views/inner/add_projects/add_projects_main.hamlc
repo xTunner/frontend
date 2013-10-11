@@ -27,7 +27,8 @@
     .repo-1stfollow{data-bind: "if: shouldDoFirstFollowerBuild"}
       %a{data-bind: "click: follow, text: displayName", data-loading-text: "Starting first build...", href: "#"}
       %object{data: "../../../img/switchOff.svg"}
-      %span Begin building! <i class="icon-long-arrow-right"></i>
+      %i.icon-caret-right
+      %span Begin building!
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
