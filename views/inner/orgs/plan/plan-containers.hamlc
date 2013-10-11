@@ -1,4 +1,6 @@
-%h2 Add containers
+.row-fluid
+  .span8
+    %legend Add containers
 
 .row-fluid
   .span4

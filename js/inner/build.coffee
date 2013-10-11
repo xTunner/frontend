@@ -134,6 +134,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @queued = @komp =>
       @status() == 'queued'
 
+    @scheduled = @komp =>
+      @status() == 'scheduled'
+
     @finished = @komp =>
       @stop_time()? or @canceled()
 
@@ -142,6 +145,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       "icon-remove": @komp => @important_style() || @warning_style() || @canceled()
       "icon-time": @komp => @queued()
       "icon-refresh": @komp => @info_style()
+      "icon-calendar-empty": @komp => @scheduled()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"

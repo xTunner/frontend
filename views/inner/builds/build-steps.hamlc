@@ -12,7 +12,7 @@
             .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
               .button{data-bind: "css: action_header_button_style"}
                 %span{data-bind: "if: has_content"}
-                  %i{data-bind: "css: collapse_icon"}
+                  %i.icon-chevron-up
               .command{data-bind: "css: action_header_style"}
                 %span.command-text
                   %span{data-bind: "if: $data.bash_command() == $data.name()"}
@@ -23,8 +23,7 @@
                       %span{data-bind: "text: index"}<>
                 %span.time
                   %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
-                  %span{data-bind: "if: timedout"}
-                    %b (TIMED OUT)
+                  %span{data-bind: "if: timedout"}&nbsp;(timed out)
                 %span.action-source
                   %span.action-source-inner{data-bind: "text: sourceText, attr: {title: sourceTitle}"}
 
@@ -39,7 +38,6 @@
                   = HAML.messages()
 
                   %span{data-bind: "if: bash_command"}
-                    Command:
                     %span.pull-right{data-bind: "if: exit_code() != null" }
                       Exit code:
                       %span{data-bind: "text: exit_code"}

@@ -327,6 +327,15 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     mixpanel.track("Save Organizations")
     @ajaxUpdatePlan {'piggieback-orgs': @piggieback_orgs()}, event
 
+  extendTrial: (data, event) =>
+    $.ajax
+      type: 'POST'
+      url: @apiURL('extend-trial')
+      event: event
+      success: (data) =>
+        @loadPlanData(data)
+        mixpanel.track("Extend trial")
+
   transferPlan: (data, event) =>
     $.ajax
       type: 'PUT'
