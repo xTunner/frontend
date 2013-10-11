@@ -188,6 +188,11 @@ CI.inner.Project = class Project extends CI.inner.Obj
           @billing.trial_end() &&
             @billing.trial_days() < 15 # we probably hacked the db here
 
+    @show_build_page_trial_notice = @komp =>
+      @show_trial_notice() &&
+       !@billing.trial_over() &&
+         @billing.trial_days() < 4
+
     @trial_notice_text = @komp =>
       org_name = @billing.org_name()
       plan_path = CI.paths.org_settings org_name, 'plan'

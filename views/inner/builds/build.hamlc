@@ -20,7 +20,8 @@
           %div{data-bind: "ifnot: messages().length"}
             = HAML['report_error']({build: true})
 
-          = HAML.project_trial_notice()
+          %div{data-bind: "if: $root.project() && $root.project().show_build_page_trial_notice"}
+            = HAML.project_trial_notice()
 
         -# coming soon
         -#%aside.stages.span2
