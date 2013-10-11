@@ -111,6 +111,12 @@ ko.bindingHandlers.leadingZero =
     f = (value) -> "0#{value}"
     transformContent(f, el, valueAccessor())
 
+ko.bindingHandlers.shaOne =
+  update: (el, valueAccessor) =>
+    f = (value) -> value.slice(0,7)
+    transformContent(f, el, valueAccessor())
+    $(el).attr("title", valueAccessor())
+
 # Specify a haml template that depends on an observable
 # Example: %div{data-bind: "haml: {template: myObservable, args: {}}"}
 #   Renders the HAML.myObservable() template and will re-render when the
