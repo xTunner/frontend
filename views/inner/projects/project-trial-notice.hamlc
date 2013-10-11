@@ -1,0 +1,6 @@
+%div{data-bind: "with: $root.project"}
+  %div{data-bind: "if: show_trial_notice"}
+    .row-fluid
+      .offset2.span8
+        .alert.alert-success{data-bind: "css: {'alert-error': billing.trial_over()}"}
+          %span{data-bind: "html: trial_notice_text"}

@@ -132,3 +132,13 @@ ko.observableArray["fn"].setIndex = (index, newItem) ->
   result = @()[index] = newItem
   @valueHasMutated()
   result
+
+# Simple pluralizer, may want to look at
+# https://github.com/jeremyruppel/underscore.inflection
+ko.bindingHandlers.pluralize =
+  update: (el, valueAccessor) =>
+    f = (val) ->
+      [number, singular, plural] = ko.toJS(val)
+      "#{number} #{if number is 1 then singular else plural}"
+
+    transformContent f, el, valueAccessor()

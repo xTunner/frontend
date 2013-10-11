@@ -8,8 +8,8 @@
           The
           %strong{data-bind: "text: current_org_name"}
           organization has
-          %span{data-bind: "text: trial_days"}
-          days left in its trial.
+          %span{data-bind: "text: pretty_trial_time"}
+          left in its trial.
 
       %p
         The trial plan is equivalent to the Solo plan with 6 containers.
@@ -17,12 +17,7 @@
       %p{data-bind: "if: trial_over() || trial_days() < 3"}
         Need more time to decide?
 
-        / ko if: window.renderContext.env == 'production'
-        = HAML.contact_us()
-        / /ko
-        / ko ifnot: window.renderContext.env == 'production'
         %button.btn.btn-success.btn-mini{data-bind: "click: extendTrial",
                              data-loading-text: "Extending...",
                              data-success-text: "Extended!"}
           Extend your trial
-        / /ko
