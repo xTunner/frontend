@@ -259,4 +259,17 @@
     0% {opacity: .66;}
    50% {opacity:   1;}
   100% {opacity: .66;}
+@-webkit-keyframes broll {
+    0% {-webkit-transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
+   50% {-webkit-transform: rotate3d(0, 0, 0,  0deg) translate3d(5px,0,0);}
+   94% {-webkit-transform: rotate3d(0, 0, 0,  0deg);}
+   97% {-webkit-transform: rotate3d(1, 0, 0, 90deg);}
+  100% {-webkit-transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
+}
+@keyframes broll {
+    0% {transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
+   50% {transform: rotate3d(0, 0, 0,  0deg) translate3d(5px,0,0);}
+   94% {transform: rotate3d(0, 0, 0,  0deg);}
+   97% {transform: rotate3d(1, 0, 0, 90deg);}
+  100% {transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
 }
