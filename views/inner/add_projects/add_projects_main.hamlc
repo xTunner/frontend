@@ -15,15 +15,12 @@
     .repo-follow{data-bind: "if: canFollow"}
       %a{data-bind: "click: follow, text: displayName", data-loading-text: "Following repo...", href: "#"}
       %object{data: "../../../img/switchOff.svg"}
-      %span Start <i class="icon-circle-arrow-right"></i>
     .repo-unfollow{data-bind: "if: following"}
       %a{data-bind: "click: unfollow, text: displayName", data-loading-text: "Unfollowing repo...", href: "#"}
       %object{data: "../../../img/switchOn.svg"}
-      %span Stop <i class="icon-circle-arrow-right"></i>
     .repo-nofollow{data-bind: "if: requiresInvite"}
       %a{data-bind: "text: displayName", data-toggle: "modal", data-target: "#inviteForm", href: "#"}
       %object{data: "../../../img/switchOff.svg"}
-      %span Need admin <i class="icon-exclamation-sign"></i>
     .repo-1stfollow{data-bind: "if: shouldDoFirstFollowerBuild"}
       %a{data-bind: "click: follow, text: displayName", data-loading-text: "Starting first build...", href: "#"}
       %object{data: "../../../img/switchOff.svg"}
