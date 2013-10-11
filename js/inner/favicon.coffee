@@ -8,7 +8,6 @@ CI.inner.Favicon = class Favicon extends CI.inner.Obj
     @current_page.subscribe (current_page) =>
       @favicon_updator.dispose()
 
-      console.log("favicon current_page subscribe:", current_page)
       @set_color(current_page.favicon_color())
 
   set_color: (color) =>

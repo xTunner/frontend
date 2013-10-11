@@ -3,3 +3,12 @@ CI.paths =
     path = "/gh/organizations/#{org_name}/settings"
     path += "##{subpage.replace('_', '-')}" if subpage
     path
+
+  project_path: (username, project) ->
+    "/gh/#{username}/#{project}"
+
+  project_branch_path: (username, project, branch) ->
+    "/gh/#{username}/#{project}/tree/#{encodeURIComponent(branch)}"
+
+  build_path: (username, project, build_num) ->
+    "/gh/#{username}/#{project}/#{build_num}"

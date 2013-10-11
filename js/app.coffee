@@ -99,7 +99,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     # user is looking at the project's summary, but hasn't followed it
     @show_follow_project_button = @komp =>
-      @project() && !@project().followed() && @project().project_name() is @selected().project_name
+      @project() && !@project().followed() && @project().project_name() is @current_page().project_name
 
 
     if window.renderContext.current_user
@@ -354,9 +354,7 @@ window.SammyApp = Sammy 'body', (n) ->
     # do nothing, tests will load later
 
   @get '^/', (cx) =>
-    VM.selected
-      mention_branch: true
-      title: "Dashboard"
+    VM.current_page new CI.inner.DashboardPage
 
     VM.loadRootPage(cx)
 
@@ -364,17 +362,13 @@ window.SammyApp = Sammy 'body', (n) ->
 
   # before any project pages so that it gets routed first
   @get '^/gh/organizations/:username/settings(.*)', (cx) ->
-    VM.selected
-      page: "org_settings"
-      crumbs: ['org', 'org_settings']
-      username: cx.params.username
-      title: "Org settings - #{cx.params.username}"
+    VM.current_page new CI.inner.OrgSettingsPage
+      org_name: cx.params.username
 
     VM.loadEditOrgPage cx.params.username, splitSplat(cx)
 
   route_org_dashboard = (cx) ->
     VM.selected
-      page: "org"
       crumbs: ['org', 'org_settings']
       username: cx.params.username
       title: "#{cx.params.username}"
@@ -387,14 +381,7 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
-      VM.selected
-        page: 'project_settings'
-        crumbs: ['project', 'project_settings']
-        username: cx.params.username
-        project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
-        title: "Edit settings - #{cx.params.username}/#{cx.params.project}"
-
+      VM.current_page new CI.inner.ProjectSettingsPage
       VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
 
   @get '^/account(.*)',
