@@ -1,0 +1,30 @@
+%dl.clearfix.commit-log
+  %dt
+    Commit Log
+  -# can delete first dd when backend fully deploys
+  %dd{data-bind: "ifnot: head_commits().length"}
+    %span{data-bind: "if: body"}
+      %a{href: '#', data-bind: "attr: { href: github_url }, text: subject, tooltip: {title: body}"}}
+    %span{data-bind: "ifnot: body"}
+      %a{data-bind: "attr: { href: github_url }, text: subject"}}
+
+  %dd{data-bind: "if: head_commits().length"}
+    %div{data-bind: "foreach: head_commits"}
+      %div
+        %span{data-bind: "attr: { href: commit_url }, text: subject, tooltip: {animation: false, title: body, placement: 'bottom'}"}
+        (
+        %a{data-bind: "attr: {href: commit_url}"}<>
+          %span{data-bind: "shaOne: commit"}
+          %i.icon-github
+        )
+    .rest-commits{data-bind: "if: rest_commits().length, click: toggle_rest_commits"}
+      %span{data-bind: "text: rest_commits().length"}
+      more...
+      %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': rest_commits_visible}"}
+    %div{data-bind: "if: rest_commits_visible"}
+      %div{data-bind: "foreach: rest_commits"}
+        %div
+          %span{data-bind: "attr: { href: commit_url }, text: subject, tooltip: {animation: false, title: body, placement: 'bottom'}"}
+          (
+          %a{data-bind: "attr: {href: commit_url}, shaOne: commit"}<>
+          )

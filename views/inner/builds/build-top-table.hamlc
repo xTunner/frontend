@@ -77,14 +77,7 @@
 
     = HAML.usage_queue_table({})
 
-    %dl.clearfix.commit-log
-
-      %dt Commit Log
-      %dd
-        %span{data-bind: "if: body"}
-          %a{href: '#', data-bind: "attr: { href: github_url }, text: subject, tooltip: {title: body}"}}
-        %span{data-bind: "ifnot: body"}
-          %a{data-bind: "attr: { href: github_url }, text: subject"}}
+    = HAML.build_commit_log()
 
     / ko if: ssh_enabled_now()
     %dl.clearfix.ssh_info

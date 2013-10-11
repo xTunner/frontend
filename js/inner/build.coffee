@@ -2,6 +2,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
   observables: =>
     messages: []
     build_time_millis: null
+    all_commit_details: []
     committer_name: null
     committer_email: null
     committer_date: null
@@ -34,6 +35,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     artifacts_visible: false
     pusher_subscribed: false
     ssh_enabled: false
+    rest_commits_visible: false
     node: []
 
   clean: () =>
@@ -296,9 +298,14 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @author_isnt_committer = @komp =>
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
+    @head_commits = @komp =>
+      @all_commit_details().slice(0,5)
+
+    @rest_commits = @komp =>
+      @all_commit_details().slice(5)
+
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
-
 
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
@@ -462,6 +469,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     else
       @load_usage_queue_why()
       @usage_queue_visible(true)
+
+  toggle_rest_commits: () =>
+    @rest_commits_visible(!@rest_commits_visible())
 
   clean_usage_queue_why: () =>
     if @usage_queue_why()
