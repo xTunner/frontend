@@ -6,8 +6,6 @@
         = c.subject
     - else
       = c.subject
-    (
-    %a{href: c.commit_url, title: c.commit}<>
+    %a.sha-one{href: c.commit_url, title: c.commit}
       = c.commit.slice(0,7)
       %i.icon-github
-    )
