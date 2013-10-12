@@ -43,6 +43,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     show_branch_input: false
     settings_branch: null
     show_test_new_settings: false
+    loaded_settings: false
 
   constructor: (json) ->
 
@@ -181,6 +182,33 @@ CI.inner.Project = class Project extends CI.inner.Obj
         write: (newVal) ->
           if newVal then pref_observable("smart") else pref_observable(null)
 
+    @show_trial_notice = @komp =>
+      @billing.existing_plan_loaded() &&
+        @billing.trial() &&
+          @billing.trial_end() &&
+            @billing.trial_days() < 15 # we probably hacked the db here
+
+    @show_build_page_trial_notice = @komp =>
+      @show_trial_notice() &&
+       !@billing.trial_over() &&
+         @billing.trial_days() < 4
+
+    @trial_notice_text = @komp =>
+      org_name = @billing.org_name()
+      plan_path = CI.paths.org_settings org_name, 'plan'
+      days = @billing.trial_days()
+      if @billing.trial_over()
+        "#{org_name}'s trial is over. <a href='#{plan_path}'>Add a plan to continue running your builds</a>."
+      else if days > 10
+        "#{org_name} is in a 2-week trial, enjoy! (or check out <a href='#{plan_path}'>our plans</a>)"
+      else if days > 7
+        "#{org_name}'s trial has #{days} days left. <a href='#{plan_path}'>Check out our plans</a>."
+      else if days > 4
+        "#{org_name}'s trial has #{days} days left. <a href='#{plan_path}'>Add a plan</a> to keep running your builds."
+      else
+        "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
+
+
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
       if l.latest_build().build_num > r.latest_build().build_num then -1 else 1
@@ -240,6 +268,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
   disable_parallel_input: (num) =>
     num > @paid_parallelism()
 
+  maybe_load_billing: =>
+    if not @billing.existing_plan_loaded()
+      @load_billing()
+
   load_billing: =>
     @loading_billing(true)
     $.ajax
@@ -247,6 +279,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/plan"
       success: (result) =>
         @billing.loadPlanData(result)
+        @billing.existing_plan_loaded(true)
         @loading_billing(false)
 
   checkbox_title: =>
@@ -516,3 +549,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (result) =>
         @load_env_vars()
     false
+
+  maybe_load_settings: () =>
+    if not @loaded_settings()
+      @load_settings()
+
+  load_settings: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
+      @updateObservables(data)
+      @loaded_settings(true)

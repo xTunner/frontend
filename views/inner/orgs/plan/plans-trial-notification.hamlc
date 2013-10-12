@@ -8,8 +8,8 @@
           The
           %strong{data-bind: "text: current_org_name"}
           organization has
-          %span{data-bind: "text: trial_days"}
-          days left in its trial.
+          %span{data-bind: "text: pretty_trial_time"}
+          left in its trial.
 
       %p
         The trial plan is equivalent to the Solo plan with 6 containers.

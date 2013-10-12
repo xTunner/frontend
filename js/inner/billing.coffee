@@ -103,7 +103,20 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     @trial_days = @komp =>
       if @trial() && @trial_end()
-        moment(@trial_end()).diff(moment(), 'days')
+        moment(@trial_end()).diff(moment(), 'days') + 1
+
+    @pretty_trial_time = @komp =>
+      if @trial() && @trial_end()
+        days = moment(@trial_end()).diff(moment(), 'days')
+        hours = moment(@trial_end()).diff(moment(), 'hours')
+        if hours > 24
+          "#{days + 1} days"
+        else if hours > 1
+          "#{hours} hours"
+        else
+          "#{moment(@trial_end()).diff(moment(), 'minutes')} minutes"
+
+
 
     @paid = @komp =>
       @chosenPlan() and @chosenPlan().type() isnt 'trial'
