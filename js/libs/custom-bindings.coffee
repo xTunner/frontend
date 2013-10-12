@@ -127,10 +127,10 @@ ko.bindingHandlers.haml =
 
   update: (el, valueAccessor, allBindingsAccessor, viewModel, bindingContext) =>
     options = valueAccessor()
-    template = ko.utils.unwrapObservable(options.template)
-    args = ko.utils.unwrapObservable(options.args)
+    template = ko.toJS(options.template)
+    args = ko.toJS(options.args)
 
-    $(el).html HAML[template].call(args)
+    $(el).html HAML[template].call(undefined, args)
     ko.applyBindingsToDescendants bindingContext, el
 
 ko.observableArray["fn"].setIndex = (index, newItem) ->
