@@ -1,5 +1,5 @@
-#act-settings
-  .act-top
+#account-settings
+  .account-top
     %ul.nav.nav-tabs
       %li#notifications
         %a{href: '/account/notifications'}

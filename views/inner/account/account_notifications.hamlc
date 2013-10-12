@@ -1,5 +1,5 @@
-#sett-notif
-  .notif-item
+#settings-notification
+  .notification-item
     %form
       %legend
         Email notifications
@@ -15,7 +15,7 @@
         %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
           %span Don't send me personalize emails.
 
-  .notif-item
+  .notification-item
     %form#email_address.form-horizontal
       %legend
         Email Address
@@ -27,7 +27,7 @@
       %i To add more email addresses, add them on GitHub, then refresh this page.
 
 
-  .notif-item
+  .notification-item
     %form
       %legend
         Project preferences

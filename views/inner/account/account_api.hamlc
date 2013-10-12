@@ -1,5 +1,5 @@
-#sett-tokens
-  .tokens-item
+#settings-api
+  .api-item
     %h2 API Tokens
 
     %form.form-inline
@@ -19,7 +19,7 @@
       Create and revoke API tokens to access this account's details using our API.
       Apps using these tokens can act as you, and have full read- and write-permissions!
 
-  .tokens-item{data-bind: "if: tokens().length"}
+  .api-item{data-bind: "if: tokens().length"}
     %h2 User API Tokens
 
     %table.table
