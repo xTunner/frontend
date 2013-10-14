@@ -382,6 +382,9 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
       VM.current_page new CI.inner.ProjectSettingsPage
+        username: cx.params.username
+        project: cx.params.project
+
       VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
 
   @get '^/account(.*)',

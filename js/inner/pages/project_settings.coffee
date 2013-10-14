@@ -1,9 +1,7 @@
-CI.inner.ProjectSettingsPage = class ProjectSettingsPage extends CI.inner.Page
+CI.inner.ProjectSettingsPage = class ProjectSettingsPage extends CI.inner.ProjectPage
   constructor: (properties) ->
-    @crumbs = ['project', 'project_settings']
-    @username = null
-    @project = null
-
     super(properties)
-    @project_name = "#{@username}/#{@project}"
+    @crumbs = [new CI.inner.ProjectCrumb(@username, @project),
+               new CI.inner.ProjectSettingsCrumb(@username, @project, {active: true})]
+
     @title = "Edit settings - #{@username}/#{@project}"
