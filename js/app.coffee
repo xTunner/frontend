@@ -85,10 +85,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
 
     # Tracks what page we're on (for pages we care about)
-    @selected = ko.observable({})
     @current_page = ko.observable(new CI.inner.Page)
 
-    @navbar = ko.observable(new CI.inner.Navbar(@current_page, @build))
     @favicon = new CI.inner.Favicon(@current_page)
 
     @billing = ko.observable(new CI.inner.Billing)
