@@ -121,6 +121,7 @@ ko.bindingHandlers.shaOne =
 # Example: %div{data-bind: "haml: {template: myObservable, args: {}}"}
 #   Renders the HAML.myObservable() template and will re-render when the
 #   observable changes.
+# Careful with performance: don't iterate in a haml binding in place of a knockout foreach loop if the array you're iterating over is an observableArray that is modified with knockout's array manipulation functions
 ko.bindingHandlers.haml =
   init: () =>
     {controlsDescendantBindings: true}
