@@ -387,9 +387,9 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/account(.*)',
     (cx) ->
-      VM.selected
-        page: "account"
+      VM.current_page new CI.inner.AccountPage
         title: "Account"
+
       VM.loadAccountPage cx, splitSplat(cx)
 
   @get '^/gh/:username/:project/tree/(.*)',
