@@ -429,10 +429,8 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
   @get '^/admin/recent-builds', (cx) ->
     VM.loadAdminRecentBuilds()
-    VM.selected
-      page: "admin"
-      admin_builds: true
-      title: "Admin recent builds"
+    VM.current_page new CI.inner.AdminRecentBuildsPage
+      title: "Admin Recent Builds"
 
   # outer
   @get "^/docs(.*)", (cx) => VM.docs.display(cx)
