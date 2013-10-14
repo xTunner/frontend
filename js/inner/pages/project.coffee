@@ -11,5 +11,7 @@ CI.inner.ProjectPage = class ProjectPage extends CI.inner.Page
     @project_name = "#{@username}/#{@project}"
     @title = "#{@username}/#{@project}"
 
+    @show_branch = true
+
   refresh: () ->
     VM.loadProject(@username, @project, null, true)

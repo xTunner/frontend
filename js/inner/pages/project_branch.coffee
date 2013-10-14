@@ -1,5 +1,8 @@
-CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.ProjectPage
+CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.Page
   constructor: (properties) ->
+    @username = null
+    @project = null
+
     super(properties)
 
     @crumbs = [new CI.inner.ProjectCrumb(@username, @project),
