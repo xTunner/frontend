@@ -1,10 +1,12 @@
 CI.inner.Crumb = class Crumb extends CI.inner.Obj
-  constructor: () ->
-    @page = null # a CI.inner.Page, used for setting css style
+  constructor: (options) ->
+    @active = false
+    if options? and options.active?
+      @active = options.active
 
   styles: () =>
     @komp =>
-      'label-active': @page? and VM.current_page() instanceof @page
+      'label-active': @active
 
   name: () =>
     # user-visible name of this crumb. must override
@@ -17,8 +19,8 @@ CI.inner.Crumb = class Crumb extends CI.inner.Obj
 
 CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
 
-  constructor: (@username, @project) ->
-    super()
+  constructor: (@username, @project, options) ->
+    super(options)
     @page = CI.inner.ProjectPage
 
   name: () =>
@@ -30,8 +32,8 @@ CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
 
 CI.inner.BuildCrumb = class BuildCrumb extends Crumb
 
-  constructor: (@username, @project, @build_num) ->
-    super()
+  constructor: (@username, @project, @build_num, options) ->
+    super(options)
     @page = CI.inner.BuildPage
 
   name: () =>

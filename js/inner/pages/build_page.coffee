@@ -11,7 +11,7 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
     @project_name = "#{@username}/#{@project}"
     @title = "##{@build_num} - #{@project_name}"
 
-    @crumbs = [new CI.inner.BuildCrumb(@username, @project, @build_num),
+    @crumbs = [new CI.inner.BuildCrumb(@username, @project, @build_num, {active: true}),
                new CI.inner.ProjectCrumb(@username, @project)
 
         # 'project', 'branch', 'build', 'project_settings'
