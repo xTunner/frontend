@@ -61,3 +61,23 @@ CI.inner.BuildCrumb = class BuildCrumb extends Crumb
 
   path: () =>
     CI.paths.build_path(@username, @project, @build_num)
+
+CI.inner.OrgCrumb = class OrgCrumb extends Crumb
+  constructor: (@username, options) ->
+    super(options)
+
+  name: () =>
+    @username
+
+  path: () =>
+    CI.paths.org_dashboard_path(@username)
+
+CI.inner.OrgSettingsCrumb = class OrgSettingsCrumb extends Crumb
+  constructor: (@username, options) ->
+    super(options)
+
+  name: () =>
+    "Organization settings"
+
+  path: () =>
+    CI.paths.org_settings_path(@username)

@@ -368,10 +368,8 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.loadEditOrgPage cx.params.username, splitSplat(cx)
 
   route_org_dashboard = (cx) ->
-    VM.selected
-      crumbs: ['org', 'org_settings']
+    VM.current_page new CI.inner.OrgDashboardPage
       username: cx.params.username
-      title: "#{cx.params.username}"
 
     VM.loadOrg cx.params.username
 

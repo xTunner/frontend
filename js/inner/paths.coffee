@@ -15,3 +15,9 @@ CI.paths =
 
   build_path: (username, project, build_num) ->
     "/gh/#{username}/#{project}/#{build_num}"
+
+  org_dashboard_path: (username) =>
+    "/gh/#{username}"
+
+  org_settings_path: (username) =>
+    "/gh/organizations/#{username}/settings"
