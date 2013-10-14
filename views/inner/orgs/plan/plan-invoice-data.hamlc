@@ -14,12 +14,12 @@
       .controls
         %textarea.span10{name: 'extra_billing_data',
                          rows: 3,
-                         placeholder: 'Extra information that will appear at the bottom of your invoice',
+                         placeholder: 'Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.',
                          data-bind: "value: extra_billing_data"}
     .control-group
       .controls
         %button.btn.btn-primary{data-bind: 'click: update_billing_info',
                                         type: 'submit',
-                                        data-loading-text: 'Saving billing info...',
-                                        data-success-text: 'Saved billing info'}
-          Save billing info
+                                        data-loading-text: 'Saving invoice data...',
+                                        data-success-text: 'Saved invoice data'}
+          Save invoice data

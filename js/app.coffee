@@ -83,14 +83,11 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       # TODO: extract the billing portion from the project/users portion
       @org() && @org().loaded()
 
-
-    # Tracks what page we're on (for pages we care about)
     @current_page = ko.observable(new CI.inner.Page)
 
     @favicon = new CI.inner.Favicon(@current_page)
 
     @billing = ko.observable(new CI.inner.Billing)
-
 
     @dashboard_ready = @komp =>
       @projects_have_been_loaded() and @builds_have_been_loaded()
@@ -205,6 +202,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     $.getJSON settings_path, (data) =>
       @project(new CI.inner.Project data)
+      # load data needed to show trial information
+      @project().maybe_load_billing()
 
     if not refresh
       display "dashboard",
@@ -226,9 +225,19 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     display 'org_settings'
 
+  maybeLoadProjectBilling: (project_name) =>
+    if @project() and @project().project_name() is project_name
+      @project().maybe_load_billing()
+    else
+      @project().clean() if @project()
+      @project new CI.inner.Project
+        vcs_url: "https://github.com/#{project_name}"
+      @project().maybe_load_billing()
+
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
+    @maybeLoadProjectBilling(project_name)
     @build().clean() if @build()
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
@@ -263,14 +272,13 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     project_name = "#{username}/#{project}"
 
     # if we're already on this page, dont reload
-    if (not @project() or
-    (@project().vcs_url() isnt "https://github.com/#{project_name}"))
-      $.getJSON "/api/v1/project/#{project_name}/settings", (data) =>
-        @project(new CI.inner.Project data)
-        @project().get_users()
-        VM.loadExtraEditPageData subpage
-    else
-        VM.loadExtraEditPageData subpage
+    if !@project() or (@project().project_name() isnt project_name)
+      if @project() then @project().clean()
+      @project new CI.inner.Project
+        vcs_url: "https://github.com/#{project_name}"
+
+    @project().maybe_load_settings()
+    VM.loadExtraEditPageData subpage
 
     display "edit", {project: project_name}, subpage
 

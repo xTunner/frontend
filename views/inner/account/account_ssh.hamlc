@@ -1,73 +1,45 @@
-%h2 SSH user keys
+#settings-ssh
+  .ssh-item
+    %h2 SSH user keys
 
-.row
-  %p
-  .span5.offset0
-    %div{data-bind: "if: user_key_fingerprint"}
-      %h3 Existing User Key
-      %p
-      .well
-        %span{data-bind: "text: user_key_fingerprint"}
-        %p
-        %form.api
-          %input.btn.btn-danger{type: "submit",
-                                value: "Delete User Key",
-                                data-bind: "click: delete_user_key",
-                                data-loading-text: "Deleting...",
-                                data-success-text: "Deleted"}
+    .with-ssh{data-bind: "if: user_key_fingerprint"}
+      %textarea{data-bind: "text: user_key_fingerprint", readonly: "readonly", rows: "1", cols: "70"}
+      %form.api
+        %input.btn.btn-danger{type: "submit",
+                              value: "Delete Key",
+                              data-bind: "click: delete_user_key",
+                              data-loading-text: "Deleting...",
+                              data-success-text: "Deleted"}
 
-    %div{data-bind: "ifnot: user_key_fingerprint"}
-      %h3 No User Key
-      %p
-      %form.api.well
+    .no-ssh{data-bind: "ifnot: user_key_fingerprint"}
+      %textarea{rows: "1", cols: "70", readonly: "readonly"} No user key created yet...
+      %form.api
         %input.btn.btn-primary{type: "submit",
-                               value: "Create User Key",
+                               value: "Create Key",
                                data-bind: "click: create_user_key",
                                data-loading-text: "Creating...",
                                data-success-text: "Created"}
 
-  %span.span8.offset1
+  .ssh-item
 
-    %h3 About user keys
-    %p
-      If you wish to access multiple GitHub repositories from a single project, you'll need us to add a <i>User key</i> to your GitHub account.
+    %h2 About user keys
+    %p If you wish to access multiple GitHub repositories from a single project, you'll need us to add a <i>User key</i> to your GitHub account.
 
-    %h3 What is a user key?
+    %h4 What is a user key?
+    %p When you add a repository to Circle, we add a <i>deploy key</i> to your repository on GitHub. This allows us to checkout the repository from GitHub. Each deploy key is valid for only one repository, and cannot be used to access other repositories.
+    %p By contrast, <i>User keys</i> have access to all of your repositories. Some tests need to access many repositories. This particularly happens when bundle, npm or pip depend on projects in private git repos.
 
-    %p
-      When you add a repository to Circle, we add a
-      %i deploy key
-      to your repository on GitHub.
-      This allows us to checkout the repository from GitHub.
-      Each deploy key is valid for only one repository, and cannot be used to access other repositories.
+    %h4 When do we use user-keys?
+    %p After adding a user key, we will use it to test your pushes to any private repository you're a member of. We won't use your user key for public projects, and we don't use it when another member of your project pushed.
+    %p If you'd like to use it for all builds on a project, you can set yourself as the "GitHub user" for the project from the project's <strong>Edit Settings > GitHub user</strong> page.
 
-    %p
-      By contrast, <i>User keys</i> have access to all of your
-      repositories.  Some tests need to access many repositories.
-      This particularly happens when bundle, npm or pip depend on
-      projects in private git repos
+    %h4 What about security?
+    %p A user key is pretty similar to your own SSH key, and should be treated as such. Just like you wouldn't run code on your personal machine which you didn't trust, you also shouldn't push code to Circle that you don't trust.
 
-    %h3 When do we use user-keys?
-
-    %p
-      After adding a user key, we will use it to test your pushes to any private repository you're a member of.
-      We won't use your user key for public projects, and we don't use it when another member of your project pushed.
-    %p
-      If you'd like to use it for all builds on a project, you can set yourself as the "GitHub user" for the project from the project's
-      %strong Edit Settings > GitHub user
-      page.
-
-    %h3 What about security?
-
-    %p
-      A user key is pretty similar to your own SSH key, and should be treated as such.
-      Just like you wouldn't run code on your personal machine which you didn't trust, you also shouldn't push code to Circle that you don't trust.
-
-    %h3 What SSH keys do I currently have?
-
+    %h4 What SSH keys do I currently have?
     %p
       Your current Circle user key is listed below.
-      You other user keys are listed in your
+      Your other user keys are listed in your
       = succeed '.', ->
         %a{href: "https://github.com/settings/ssh"}<
           GitHub account

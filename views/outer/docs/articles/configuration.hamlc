@@ -424,6 +424,7 @@
           - beanstalkd
           - couchbase-server
           - neo4j
+          - sphinxsearch
 
 
 %h2#checkout Code checkout from GitHub

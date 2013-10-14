@@ -1,20 +1,19 @@
 .row-fluid
   .span8
-    %legend Select organizations
+    %legend Extra organizations
 
     %p
-      Your plan covers all repositories (including private forks) in the
+      Your plan covers all repositories (including forks) in the
       %strong{data-bind: "text: org_name"}
-      organization.
+      organization by default.
 
     %p
-      You can extend your plan to cover any of the organizations you have access to:
-
+      You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan.
     %p
       %span.label.label-info Note:
-      Members of the organizations you add here will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on
-        = succeed ".", ->
-          %span{data-bind: "text: current_org_name"}<
+      Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the
+      %span{data-bind: "text: current_org_name"}
+      org.
 
 
     %div{data-bind: "if: loadingOrganizations"}

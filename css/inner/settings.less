@@ -1,33 +1,80 @@
 
-.follow-align {
-   padding-bottom: 10px;
-   text-align: center;
-}
-
-.follow-status {
-   margin-top: 15px
-}
-
+.follow-align { padding-bottom: 10px; text-align: center; }
+.follow-status { margin-top: 15px }
+.collaborators-table td { vertical-align: middle; }
+.spec_form textarea { position: relative; }
 .settings-list {
-   h2 {
-      margin-top: 40px;
-      margin-bottom: 10px;
-   }
-
-   li {
-      font-size: 16px;
-      padding: 10px;
-   }
+   h2 { margin-top: 40px; margin-bottom: 10px; }
+   li { font-size: 16px; padding: 10px; }
 }
-
-.collaborators-table {
-  td {
-    vertical-align: middle;
+#account-settings {
+  color: @gray;
+  margin-top: -1vw;
+  a {
+    .dark-links;
+    color: @blue;
+  }
+  p {
+    color: @grayLight;
+  }
+  .account-top {
+    border-bottom: 1px solid #ddd;
+    padding: 0 3vw;
+  }
+  .nav {
+    border: none;
+    max-width: 940px;
+    margin: 0 auto;
+    &.nav-tabs {
+      .active a {
+        background: none;
+        border-bottom: 2px solid @blue;
+        color: @blue;
+      }
+    }
+    a {
+      color: @gray;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      margin-left: -4px;
+      line-height: 5em;
+      border-radius: 1px;
+      padding: 0 1em;
+      &:hover {
+        color: @blue;
+        background: none;
+        border: none;
+        border-bottom: 2px solid @blue;
+      }
+    }
+  }
+  legend, h2 {
+    font-size: 2em;
+    line-height: 1.5em;
+    font-weight: 200;
+    color: @gray;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  h4 {
+    font-weight: lighter;
   }
 }
-
-.spec_form {
-  textarea {
-    position: relative;
+.settings-item {
+  padding: 0 3vw;
+  .settings-item-inner {
+    max-width: 940px;
+    margin: 2vw auto;
   }
 }
+.notification-item, .tokens-item, .ssh-item, .heroku-item {
+  margin: 3vw 0;
+}
+
+@import "settings/api.less";
+@import "settings/ssh.less";
+@import "settings/heroku.less";

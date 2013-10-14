@@ -59,10 +59,6 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       running: @komp => @running()
       success: @komp => @success()
 
-    @collapse_icon =
-      "icon-chevron-up": @komp => !@minimize()
-      "icon-chevron-down": @minimize
-
     @action_header_button_style = @komp =>
       if @has_content()
         @action_header_style

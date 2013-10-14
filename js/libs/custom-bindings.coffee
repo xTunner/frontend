@@ -111,20 +111,27 @@ ko.bindingHandlers.leadingZero =
     f = (value) -> "0#{value}"
     transformContent(f, el, valueAccessor())
 
+ko.bindingHandlers.shaOne =
+  update: (el, valueAccessor) =>
+    f = (value) -> value.slice(0,7)
+    transformContent(f, el, valueAccessor())
+    $(el).attr("title", valueAccessor())
+
 # Specify a haml template that depends on an observable
 # Example: %div{data-bind: "haml: {template: myObservable, args: {}}"}
 #   Renders the HAML.myObservable() template and will re-render when the
 #   observable changes.
+# Careful with performance: don't iterate in a haml binding in place of a knockout foreach loop if the array you're iterating over is an observableArray that is modified with knockout's array manipulation functions
 ko.bindingHandlers.haml =
   init: () =>
     {controlsDescendantBindings: true}
 
   update: (el, valueAccessor, allBindingsAccessor, viewModel, bindingContext) =>
     options = valueAccessor()
-    template = ko.utils.unwrapObservable(options.template)
-    args = ko.utils.unwrapObservable(options.args)
+    template = ko.toJS(options.template)
+    args = ko.toJS(options.args)
 
-    $(el).html HAML[template].call(args)
+    $(el).html HAML[template].call(undefined, args)
     ko.applyBindingsToDescendants bindingContext, el
 
 ko.observableArray["fn"].setIndex = (index, newItem) ->
@@ -132,3 +139,13 @@ ko.observableArray["fn"].setIndex = (index, newItem) ->
   result = @()[index] = newItem
   @valueHasMutated()
   result
+
+# Simple pluralizer, may want to look at
+# https://github.com/jeremyruppel/underscore.inflection
+ko.bindingHandlers.pluralize =
+  update: (el, valueAccessor) =>
+    f = (val) ->
+      [number, singular, plural] = ko.toJS(val)
+      "#{number} #{if number is 1 then singular else plural}"
+
+    transformContent f, el, valueAccessor()
