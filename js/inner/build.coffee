@@ -299,10 +299,12 @@ CI.inner.Build = class Build extends CI.inner.Obj
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
     @head_commits = @komp =>
-      @all_commit_details().slice(0,3)
+      # careful not to modify the all_commit_details array here
+      @all_commit_details().slice(-3).reverse()
 
     @rest_commits = @komp =>
-      @all_commit_details().slice(3)
+      # careful not to modify the all_commit_details array here
+      @all_commit_details().slice(0,-3).reverse()
 
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
