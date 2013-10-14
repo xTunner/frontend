@@ -194,9 +194,6 @@
     }
   }
   .failed {
-    .command-text, .time {
-      color: @whiten;
-    }
     .button i.icon-chevron-up {
       text-shadow: none;
     }
@@ -288,6 +285,9 @@
       height: inherit;
       overflow: hidden; // put to the left of .button
       line-height: 3em;
+      &.failed {
+        color: @whiten;
+      }
     }
   }
 }
