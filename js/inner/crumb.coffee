@@ -18,10 +18,8 @@ CI.inner.Crumb = class Crumb extends CI.inner.Obj
 
 
 CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
-
   constructor: (@username, @project, options) ->
     super(options)
-    @page = CI.inner.ProjectPage
 
   name: () =>
     "#{@username}/#{@project}"
@@ -29,12 +27,34 @@ CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
   path: () =>
     CI.paths.project_path(@username, @project)
 
+CI.inner.ProjectSettingsCrumb = class ProjectCrumb extends Crumb
+  constructor: (@username, @project, options) ->
+    super(options)
+
+  name: () =>
+    "Edit settings"
+
+  path: () =>
+    CI.paths.project_settings_path(@username, @project)
+
+CI.inner.ProjectBranchCrumb = class ProjectBranchCrumb extends Crumb
+  constructor: (@username, @project, @branch, options) ->
+    super(options)
+
+    # FIXME: branch is a computed observable because of the BuildPage definition
+
+  name: () =>
+    if @branch()
+      CI.stringHelpers.trimMiddle(@branch(), 45)
+    else
+      "..."
+
+  path: () =>
+    CI.paths.project_branch_path(@username, @project, @branch())
 
 CI.inner.BuildCrumb = class BuildCrumb extends Crumb
-
   constructor: (@username, @project, @build_num, options) ->
     super(options)
-    @page = CI.inner.BuildPage
 
   name: () =>
     "build #{@build_num}"

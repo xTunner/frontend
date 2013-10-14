@@ -125,7 +125,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   refreshBuildState: () =>
     VM.loadProjects()
-    VM.selected().refresh_fn() if VM.selected().refresh_fn
+    VM.current_page().refresh()
 
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
@@ -396,24 +396,15 @@ window.SammyApp = Sammy 'body', (n) ->
       # github allows '/' is branch names, so match more broadly and combine them
       branch = cx.params.splat.join('/')
 
-      VM.selected
-        page: "branch"
-        crumbs: ['project', 'branch', 'project_settings']
+      VM.current_page new CI.inner.ProjectBranchPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
         branch: branch
-        mention_branch: false
-        title: "#{branch} - #{cx.params.username}/#{cx.params.project}"
 
       VM.loadProject cx.params.username, cx.params.project, branch
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
-      VM.selected
-        page: "build"
-        crumbs: ['project', 'branch', 'build', 'project_settings']
-
       VM.current_page new CI.inner.BuildPage
         username: cx.params.username
         project: cx.params.project
@@ -423,16 +414,9 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/gh/:username/:project',
     (cx) ->
-      VM.selected
-        page: "project"
-        crumbs: ['project', 'project_settings']
+      VM.current_page new CI.inner.ProjectPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
-        mention_branch: true
-        title: "#{cx.params.username}/#{cx.params.project}"
-        refresh_fn: =>
-          VM.loadProject(cx.params.username, cx.params.project, null, true)
 
       VM.loadProject cx.params.username, cx.params.project
 

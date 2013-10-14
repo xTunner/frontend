@@ -8,3 +8,6 @@ CI.inner.Page = class InnerPage extends CI.inner.Obj
   favicon_color: =>
     # undefined is what Favicon expects for 'default color'
     undefined
+
+  refresh: () ->
+    null

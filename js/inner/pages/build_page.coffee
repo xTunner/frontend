@@ -11,12 +11,17 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
     @project_name = "#{@username}/#{@project}"
     @title = "##{@build_num} - #{@project_name}"
 
-    @crumbs = [new CI.inner.BuildCrumb(@username, @project, @build_num, {active: true}),
-               new CI.inner.ProjectCrumb(@username, @project)
-
-        # 'project', 'branch', 'build', 'project_settings'
-    ]
+    @crumbs = [new CI.inner.ProjectCrumb(@username, @project),
+               new CI.inner.ProjectBranchCrumb(@username, @project, ko.computed =>
+                 if VM.build()?
+                   VM.build().branch())
+               new CI.inner.BuildCrumb(@username, @project, @build_num, {active: true}),
+               new CI.inner.ProjectSettingsCrumb(@username, @project)]
 
   favicon_color: =>
     if VM.build()?
       VM.build().favicon_color()
+
+  refresh: =>
+    if VM.build() and VM.build().usage_queue_visible()
+      VM.build().load_usage_queue_why()

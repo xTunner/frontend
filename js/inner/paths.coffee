@@ -10,5 +10,8 @@ CI.paths =
   project_branch_path: (username, project, branch) ->
     "/gh/#{username}/#{project}/tree/#{encodeURIComponent(branch)}"
 
+  project_settings_path: (username, project) ->
+    @project_path(username, project) + "/edit"
+
   build_path: (username, project, build_num) ->
     "/gh/#{username}/#{project}/#{build_num}"
