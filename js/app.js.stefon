@@ -22,7 +22,6 @@
   "../views/"
   "libs/"
   "inner/"
-  "inner/pages/"
   "outer/"
 
   "ab_test_definitions.coffee"
