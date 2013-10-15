@@ -5,9 +5,9 @@ CI.inner.Page = class InnerPage extends CI.inner.Obj
     @name = null
     @crumbs = []
 
-  favicon_color: =>
-    # undefined is what Favicon expects for 'default color'
-    undefined
+    @favicon_color = @komp =>
+      # undefined is what Favicon expects for 'default color'
+      undefined
 
   refresh: () ->
     null

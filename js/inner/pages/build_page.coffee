@@ -18,9 +18,9 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
                new CI.inner.BuildCrumb(@username, @project, @build_num, {active: true}),
                new CI.inner.ProjectSettingsCrumb(@username, @project)]
 
-  favicon_color: =>
-    if VM.build()?
-      VM.build().favicon_color()
+    @favicon_color = @komp =>
+      if VM.build()?
+        VM.build().favicon_color()
 
   refresh: =>
     if VM.build() and VM.build().usage_queue_visible()
