@@ -28,6 +28,7 @@ CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
   path: () =>
     CI.paths.project_path(@username, @project)
 
+
 CI.inner.ProjectSettingsCrumb = class ProjectCrumb extends Crumb
   constructor: (@username, @project, options) ->
     super(options)
@@ -37,6 +38,7 @@ CI.inner.ProjectSettingsCrumb = class ProjectCrumb extends Crumb
 
   path: () =>
     CI.paths.project_settings_path(@username, @project)
+
 
 CI.inner.ProjectBranchCrumb = class ProjectBranchCrumb extends Crumb
   constructor: (@username, @project, @branch, options) ->
@@ -53,6 +55,7 @@ CI.inner.ProjectBranchCrumb = class ProjectBranchCrumb extends Crumb
   path: () =>
     CI.paths.project_branch_path(@username, @project, @branch())
 
+
 CI.inner.BuildCrumb = class BuildCrumb extends Crumb
   constructor: (@username, @project, @build_num, options) ->
     super(options)
@@ -63,6 +66,7 @@ CI.inner.BuildCrumb = class BuildCrumb extends Crumb
   path: () =>
     CI.paths.build_path(@username, @project, @build_num)
 
+
 CI.inner.OrgCrumb = class OrgCrumb extends Crumb
   constructor: (@username, options) ->
     super(options)
@@ -72,6 +76,7 @@ CI.inner.OrgCrumb = class OrgCrumb extends Crumb
 
   path: () =>
     CI.paths.org_dashboard_path(@username)
+
 
 CI.inner.OrgSettingsCrumb = class OrgSettingsCrumb extends Crumb
   constructor: (@username, options) ->
