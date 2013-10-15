@@ -9,12 +9,13 @@ CI.inner.Crumb = class Crumb extends CI.inner.Obj
       'label-active': @active
 
   name: () =>
-    # user-visible name of this crumb. must override
+    # user-visible name of this crumb
+    throw Error("must override")
     null
 
   path: () =>
     # url-path to where this crumb goes when you click it
-    null
+    throw Error("must override")
 
 
 CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
