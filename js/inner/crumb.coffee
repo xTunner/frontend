@@ -44,7 +44,7 @@ CI.inner.ProjectBranchCrumb = class ProjectBranchCrumb extends Crumb
   constructor: (@username, @project, @branch, options) ->
     super(options)
 
-    # FIXME: branch is a computed observable because of the BuildPage definition
+    # FIXME: branch is a computed observable because of the BuildPage definition, and the only computed observable in Crumb
 
   name: () =>
     if @branch()
