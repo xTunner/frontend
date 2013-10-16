@@ -15,9 +15,9 @@
     </filter>
   </defs>
   <g id="bkg">
-    <circle id="right"  fill="#59df59" cx="144" cy="50" r="50"/>
-    <rect   id="center" fill="#59df59"  x="55" width="89" height="100"/>
-    <circle id="left"   fill="#59df59" cx="55" cy="50" r="50"/>
+    <circle id="right"  fill="#229922" cx="144" cy="50" r="50"/>
+    <rect   id="center" fill="#229922"  x="55" width="89" height="100"/>
+    <circle id="left"   fill="#229922" cx="55" cy="50" r="50"/>
   </g>
   <circle id="handle" fill="#fff" cx="144" cy="50" r="47.5" filter="url(#dropshadow)" />
 </svg>
