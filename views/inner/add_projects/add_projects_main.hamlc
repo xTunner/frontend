@@ -1,13 +1,8 @@
-%div{data-bind: "ifnot: repos().length"}
-  .add_repos_blank_slate
-    %h3
-      Welcome to CircleCI
-    %p
-      Choose your company's GitHub organization or a GitHub username on the left side of this page.
-      %br
-      Then choose a repository to follow with CircleCI. Repos you choose to follow will have their tests run by CircleCI.
-      %br
-      %strong Follow a repo to get started.
+.add-repos{data-bind: "ifnot: repos().length"}
+  %h3 Welcome to Circle
+  %ul
+    %li Get started by selecting your GitHub username or organization on the left.
+    %li Choose a repo you want to test and we'll do the rest!
 
 
 %ul.proj-list{data-bind: "foreach: repos"}
