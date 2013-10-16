@@ -22,8 +22,6 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       else
         @name
 
-
-
   unfollow: (data, event) =>
     $.ajax
       type: "POST"
@@ -38,12 +36,15 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
-      success: (successData) =>
+      success: (resp) =>
         _gaq.push(['_trackEvent', 'Repos', 'Add']);
-        if successData.first_build
-          VM.visit_local_url data.first_build.build_url
+
+        if resp.first_build
+          VM.visit_local_url resp.first_build.build_url
+
         else if @shouldDoFirstFollowerBuild()
           @doFirstFollowerBuild(data, event)
+
         else
           $('html, body').animate({ scrollTop: 0 }, 0);
           VM.loadRecentBuilds()
