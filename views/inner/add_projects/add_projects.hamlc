@@ -1,0 +1,4 @@
+#new-add-projects{data-bind: "if: VM.ab().add_projects_test_switches"}
+  = HAML.new_add_projects()
+#old-add-projects{data-bind: "ifnot: VM.ab().add_projects_test_switches"}
+  = HAML.old_add_projects()
