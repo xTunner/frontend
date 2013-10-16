@@ -225,9 +225,6 @@
   }
   .repo-1stfollow {
     color: @blueLight;
-    img {
-      .animation(waiting 1.5s ease-in 0 infinite);
-    }
     span {
       opacity: 0;
       .translate3d(0,100%,0);
@@ -241,7 +238,7 @@
       margin-right: 5em;
       pointer-events: none;
       .translate3d(0,0,0);
-      .animation(broll 3s ease-in-out 0 infinite);
+      .animation(point-right 3s ease infinite);
       -webkit-backface-visibility: hidden;
     }
   }
@@ -249,27 +246,9 @@
     margin: 25vh 0;
   }
 }
-@-webkit-keyframes waiting {
-    0% {opacity: .34;}
-   50% {opacity:   1;}
-  100% {opacity: .34;}
+@-webkit-keyframes point-right {
+   50% {-webkit-transform: translate3d(5px,0,0);}
 }
-@keyframes waiting {
-    0% {opacity: .34;}
-   50% {opacity:   1;}
-  100% {opacity: .34;}
-}
-@-webkit-keyframes broll {
-    0% {-webkit-transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
-   50% {-webkit-transform: rotate3d(0, 0, 0,  0deg) translate3d(5px,0,0);}
-   94% {-webkit-transform: rotate3d(0, 0, 0,  0deg);}
-   97% {-webkit-transform: rotate3d(1, 0, 0, 90deg);}
-  100% {-webkit-transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
-}
-@keyframes broll {
-    0% {transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
-   50% {transform: rotate3d(0, 0, 0,  0deg) translate3d(5px,0,0);}
-   94% {transform: rotate3d(0, 0, 0,  0deg);}
-   97% {transform: rotate3d(1, 0, 0, 90deg);}
-  100% {transform: rotate3d(0, 0, 0,  0deg) translate3d(0,0,0);}
+@keyframes point-right {
+   50% {transform: translate3d(5px,0,0);}
 }

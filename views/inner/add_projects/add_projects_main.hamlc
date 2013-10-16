@@ -23,7 +23,7 @@
       %img{src: assetPath("/img/switchOff.svg")}
     .repo-1stfollow{data-bind: "if: shouldDoFirstFollowerBuild"}
       %a{data-bind: "click: follow, text: displayName", data-loading-text: "Starting first build...", href: "#"}
-      %img{src: assetPath("/img/switchOff.svg")}
+      %img{src: assetPath("/img/switchBounce.svg")}
       %i.icon-caret-right
       %span Start this repo!
 
