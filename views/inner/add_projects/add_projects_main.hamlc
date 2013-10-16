@@ -25,7 +25,7 @@
       %a{data-bind: "click: follow, text: displayName", data-loading-text: "Starting first build...", href: "#"}
       %img{src: assetPath("/img/switchOff.svg")}
       %i.icon-caret-right
-      %span Begin building!
+      %span Start this repo!
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
