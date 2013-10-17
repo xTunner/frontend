@@ -1,18 +1,18 @@
 .row-fluid{data-bind: "visible: artifacts_visible"}
   .artifacts.span12.well
     .spinner-container{data-bind: "ifnot: artifacts"}
-      = HAML.fast_spinner({})
+      != HAML.fast_spinner({})
     %div{data-bind: "if: artifacts"}
       %ul{data-bind: "foreach: artifacts"}
         %li.artifact
           / ko ifnot: VM.current_user().admin
           %a{target: "_blank", data-bind: "attr: { href: url }"}
             %span{data-bind: "text: pretty_path"}
-            = surround '(', ')', ->
+            != surround '(', ')', ->
               %span{data-bind: "text: node_index"}<>
           / /ko
           / ko if: VM.current_user().admin
           %span{data-bind: "text: pretty_path"}
-          = surround '(', ')', ->
+          != surround '(', ')', ->
             %span{data-bind: "text: node_index"}<>
           / /ko

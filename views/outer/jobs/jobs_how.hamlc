@@ -2,7 +2,7 @@
   %h2 How to apply
   %p
     Send an email to
-    = succeed ",", ->
+    != succeed ",", ->
       %a{:href => "mailto:jobs@circleci.com"} jobs@circleci.com
     including a resume. We're mostly interested in seeing proof that you're brilliant. This might include great projects you've worked on, a portfolio, open source you've contributed to, your grades at MIT, that you got hired by Google, or anything that hints that you might be particularly brilliant. We're also interested in reading about technologies you've worked with in the past, and what you did with them.
 

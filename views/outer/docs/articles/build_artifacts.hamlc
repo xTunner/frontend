@@ -9,14 +9,14 @@
 %p
   Before each build, we create an empty directory and export its path in the
   <code>$CIRCLE_ARTIFACTS</code>
-  = succeed ".", ->
+  != succeed ".", ->
     %a{ href: "/docs/environment-variables" } environment variable
   After the build finishes, everything in this directory is saved and linked to the build.
 
 %p
   You'll find links to the artifacts at the top of the build page. You can also consume them
   via our
-  = succeed ".", ->
+  != succeed ".", ->
     %a{ href: "/docs/api#build-artifacts" }<
       API
 
@@ -25,5 +25,5 @@
 
 %p
   Feel free to
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   if you have any questions or feedback!

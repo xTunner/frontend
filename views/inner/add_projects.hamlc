@@ -1,9 +1,9 @@
 .container-fluid{data-bind: "with: current_user"}
   .row
-    = HAML['flashes']({})
+    != HAML['flashes']({})
   .row-fluid
     .span3
-      = HAML['org_sidebar']({})
+      != HAML['org_sidebar']({})
     .span9
       .row-fluid
         %h1
@@ -13,6 +13,6 @@
       .row-fluid
         %div{data-bind: "if: showLoading"}
           .centered-spinner
-            = HAML['fast_spinner']()
+            != HAML['fast_spinner']()
         %div{data-bind: "ifnot: showLoading"}
-          = HAML['add_projects_main']({})
+          != HAML['add_projects_main']({})

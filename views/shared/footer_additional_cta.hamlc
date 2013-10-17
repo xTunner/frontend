@@ -17,7 +17,7 @@
         Sign up using GitHub, and add your team's repo.
         You're 30 seconds from running your tests on Circle.
 
-      = HAML.home_button({text: "Sign up now"})
+      != HAML.home_button({text: "Sign up now"})
       %p
         or
         %a{href: "/pricing"} See Pricing

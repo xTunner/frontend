@@ -11,7 +11,7 @@
 %h2 Root commands and packages
 
 %p
-  = HAML.contact_us({wording: "Contact us"})
+  != HAML.contact_us({wording: "Contact us"})
   to add any packages we don't currently have.
   We'll add them to your project, and you'll be able to start using them immediately.
   We'll add common packages to our VM image too.
@@ -20,14 +20,14 @@
   We can run any arbitrary command for you in the same way, not just package management.
   This means we can tweak our VM in any way you need.
   Let us know what commands you need when you
-  = HAML.contact_us({succeed: "."})
+  != HAML.contact_us({succeed: "."})
 
 %p
   In case you're curious, the reason we require this is that our virtualization does not support providing <code>sudo</code> to arbitrary users.
   We use LXC (the same technology used by Heroku, Docker, and other PaaSes).
   LXC is one of the many technologies we use to make your builds run so fast, especially compared to alternatives such as VirtualBox or OpenVZ.
   The tradeoff is you need to
-  = HAML.contact_us()
+  != HAML.contact_us()
   for <code>sudo</code> commands.
   We plan to address this in the future.
 
@@ -61,7 +61,7 @@
 
 %p
   Tell Circle to save a cached copy using the
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/configuration#cache-directories"}
       %code cache_directories
       setting, in your

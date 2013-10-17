@@ -5,14 +5,14 @@
     %p
       %strong Our culture is product-driven.
       Our customers and our founders are engineers, and most of our employees will be too. We are inspired by companies like
-      = succeed ",", ->
+      != succeed ",", ->
         %a{:href => "http://blog.alexmaccaw.com/stripes-culture"} Stripe
-      = succeed ",", ->
+      != succeed ",", ->
         %a{:href => "http://gigaom.com/2012/03/26/tales-from-the-trenches-github/"} GitHub
-      = succeed ",", ->
+      != succeed ",", ->
         %a{:href => "http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html"} Fog Creek
       and
-      = succeed ".", ->
+      != succeed ".", ->
         %a{:href => "http://www.valvesoftware.com/company/Valve_Handbook_LowRes.pdf"} Valve
     %p
       %strong We have a flat organization.

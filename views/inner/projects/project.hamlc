@@ -1,18 +1,18 @@
-= HAML.invite_form({})
+!= HAML.invite_form({})
 
 .container-fluid#dashboard
 
   %aside
-    = HAML['action_sidebar']({})
-    = HAML['followed_sidebar']({})
+    != HAML['action_sidebar']({})
+    != HAML['followed_sidebar']({})
 
   .dash-wrap.clearfix
-    = HAML['flashes']({})
+    != HAML['flashes']({})
 
     .dashboard-main
       %div{data-bind: "ifnot: project_dashboard_ready"}
         .centered-spinner
-          = HAML['fast_spinner']()
+          != HAML['fast_spinner']()
 
       %div{data-bind: "if: project_dashboard_ready"}
 
@@ -28,7 +28,7 @@
             %a.btn.pull-right.follow{ data-bind: 'click: project().follow' }
               Follow
 
-        = HAML['builds']({builds: "builds", mention_project: false, pagination: false})
+        != HAML['builds']({builds: "builds", mention_project: false, pagination: false})
 
 
 
