@@ -9,17 +9,20 @@
 #     This is the text that will show up if option is set to true
 #   %p{href: "#", data-bind: "if: ab().daniel_test"}
 #     This is the text that will show up if option is set to false
+#
+# You can pass in an overrides object, e.g. {daniel_test: true}.
+# Useful for testing or exluding certain users from the test.
 
 CI.ABTests = class ABTests
-  constructor: (test_definitions, options={}) ->
+  constructor: (test_options, overrides, opts={}) ->
 
-    @cookie_name = options.cookie_name || "ab_test_user_seed"
+    @cookie_name = opts.cookie_name || "ab_test_user_seed"
 
     @user_seed = @get_user_seed()
 
     # defs don't need to be an observable, but we may want to do
     # inference in the future. Better to set it up now.
-    @test_definitions = ko.observable(test_definitions)
+    @test_options = ko.observable(test_options)
 
     # @ab_tests is an object with format {'test_name': "chosen_option", ...}
     # Again, no need to be observable yet
@@ -41,7 +44,7 @@ CI.ABTests = class ABTests
 
   setup_tests: () =>
     tests = {}
-    for own name, options of @test_definitions().options
+    for own name, options of @test_options()
 
       value = options[@option_index(@user_seed, name, options)]
 
@@ -52,12 +55,10 @@ CI.ABTests = class ABTests
     @ab_tests(tests)
 
   apply_overrides: () =>
-    for override in @test_definitions().overrides
-      if override.override_p()
-        for own name, value of override.options
-          if @ab_tests()[name]
-            console.log "Overriding A/B test '#{name}' with value '#{value}'"
-            @ab_tests()[name](value)
+    for own name, value of @overrides
+      if @ab_tests()[name]
+        console.log "Overriding A/B test '#{name}' with value '#{value}'"
+        @ab_tests()[name](value)
 
   notify_mixpanel: () =>
     unpacked_tests = {}
