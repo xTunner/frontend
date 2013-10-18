@@ -30,7 +30,7 @@ CI.ABTests = class ABTests
 
     @setup_tests()
 
-    @apply_overrides()
+    @apply_overrides(overrides)
 
     @notify_mixpanel()
 
@@ -54,8 +54,8 @@ CI.ABTests = class ABTests
 
     @ab_tests(tests)
 
-  apply_overrides: () =>
-    for own name, value of @overrides
+  apply_overrides: (overrides) =>
+    for own name, value of overrides
       if @ab_tests()[name]
         console.log "Overriding A/B test '#{name}' with value '#{value}'"
         @ab_tests()[name](value)
