@@ -219,3 +219,16 @@ j.describe "setting project parallelism works", ->
     project.focused_parallel(4)
     @expect(project.show_upgrade_plan()).toBe(true)
     @expect(project.show_add_containers()).not.toBe(true)
+
+j.describe "favicon", ->
+ j.it "setting build status changes favicon", ->
+   VM.current_page(new CI.inner.BuildPage({}))
+   VM.build(new CI.inner.Build({}))
+
+   VM.build().status("running")
+   @expect(VM.build().favicon_color()).toBe("blue")
+   @expect(VM.favicon.get_color()).toBe(VM.build().favicon_color())
+
+   VM.build().status("failed")
+   @expect(VM.build().favicon_color()).toBe("red")
+   @expect(VM.favicon.get_color()).toBe(VM.build().favicon_color())
