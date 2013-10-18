@@ -65,8 +65,8 @@
               %span{data-bind: "text: billing.usable_containers"}
               containers.
 
-            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Increase your parallelism
-            up to
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Add more containers
+            to increase your parallelism up to
 
             %strong
               != succeed "x.", ->
