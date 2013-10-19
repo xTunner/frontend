@@ -14,7 +14,7 @@ CI.inner.Favicon = class Favicon extends CI.inner.Obj
         @reset_favicon()
 
   set_color: (color) =>
-    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.png?v=27"))
+    $("link[rel='icon']").attr('href', assetPath("/favicon-#{color}.ico?v=27"))
 
   build_updator: (build) =>
     if build?
