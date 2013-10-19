@@ -76,6 +76,9 @@ jQueryExt = (type) =>
 ko.bindingHandlers.popover = jQueryExt('popover')
 ko.bindingHandlers.tooltip = jQueryExt('tooltip')
 ko.bindingHandlers.typeahead = jQueryExt('typeahead')
+ko.bindingHandlers.waypoint = { init: (el, valueAccessor) =>
+                                    options = ko.toJS(valueAccessor())
+                                    $(el).waypoint('sticky', options) }
 
 ## Money custom binding
 

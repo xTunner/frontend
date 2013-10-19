@@ -7,7 +7,8 @@
         %div{data-bind: "if: $root.build().different_type($data)"}
           .type-divider
             %span{data-bind: "text: type"}
-        .action_header{data-bind: "css: action_header_style"}
+        -#.action_header{data-bind: "css: action_header_style, waypoint: {offset: 90}"}
+        .action_header{data-bind: "waypoint: {offset: 90}"}
           .ah_wrapper
             .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
               .button{data-bind: "css: action_header_button_style"}
@@ -51,3 +52,12 @@
                       -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}
+        -#.detail-wrapper{data-bind: "if: has_content"}
+          .detail{data-bind: "css: action_log_style, visible: !minimize()"}
+
+            %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
+              = HAML.messages()
+            -#%pre.output.solarized{style: "white-space: normal;"}
+              %span{data-bind: "foreach: final_out"}
+                %span.pre{data-bind: "html: $data"}
+              %span.pre{data-bind: "html: trailing_out"}
