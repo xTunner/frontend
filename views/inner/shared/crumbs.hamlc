@@ -1,5 +1,5 @@
 %div
   %ul.nav.crumbs{data-bind: "foreach: {data: VM.current_page().crumbs, as: 'crumb'}"}
-    %li
+    %li{data-bind: "attr: {class: css_class}"}
       %a{data-bind: "attr: {href: path()}"}
         %span.label{data-bind: "text: name(), css: styles()"}

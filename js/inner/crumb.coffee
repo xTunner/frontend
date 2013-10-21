@@ -1,6 +1,7 @@
 CI.inner.Crumb = class Crumb extends CI.inner.Obj
   constructor: (options) ->
     @active = false
+    @css_class = "crumb"
     if options? and options.active?
       @active = options.active
 
@@ -21,6 +22,7 @@ CI.inner.Crumb = class Crumb extends CI.inner.Obj
 CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
   constructor: (@username, @project, options) ->
     super(options)
+    @css_class = "project"
 
   name: () =>
     "#{@username}/#{@project}"
@@ -70,6 +72,7 @@ CI.inner.BuildCrumb = class BuildCrumb extends Crumb
 CI.inner.OrgCrumb = class OrgCrumb extends Crumb
   constructor: (@username, options) ->
     super(options)
+    @css_class = "org"
 
   name: () =>
     @username
