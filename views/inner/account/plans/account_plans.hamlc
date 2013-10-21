@@ -6,7 +6,7 @@
           Plans have moved to the Organizations settings page. You can select a plan from the organization's settings page on any organization that you're an admin on.
         %p
           If you previously had a plan on your account, it has moved to your "personal" org. You can edit the plan from
-          = succeed ".", ->
+          != succeed ".", ->
             %a{data-bind: "attr: {href: CI.paths.org_settings(VM.current_user().login, 'plan')}"}<
               its settings page
   .row-fluid

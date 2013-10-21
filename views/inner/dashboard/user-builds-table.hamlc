@@ -1,7 +1,7 @@
 .dashboard-main
   %div{data-bind: "ifnot: dashboard_ready"}
     .centered-spinner
-      = HAML['fast_spinner']()
+      != HAML['fast_spinner']()
 
   %div{data-bind: "if: dashboard_ready"}
 
@@ -32,4 +32,4 @@
           %a{href: "/account/plans" }
             Re-enable your tests.
 
-      = HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+      != HAML['builds']({builds: "builds", mention_project: true, pagination: false})

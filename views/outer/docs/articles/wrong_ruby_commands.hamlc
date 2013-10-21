@@ -25,7 +25,7 @@
   This commonly causes us to call
   %code spec
   instead of
-  = succeed ',', ->
+  != succeed ',', ->
     %code rspec
   or use the wrong database.
   You should check in your Gemfile.lock if possible, or manually add your test steps.
@@ -35,7 +35,7 @@
 %h2#wrong-dependencies Have you listed all your dependencies?
 %p
   Circle always prefixes its commands with
-  = succeed '.', ->
+  != succeed '.', ->
     %code bundle exec
   This ensures that the only gems used are the ones specified in the Gemfile.
   Unfortunately, developers commonly omit gems from their Gemfiles, but do not notice because they have them installed locally.

@@ -1,27 +1,27 @@
 #build-log-container
 
   %div{data-bind: "ifnot: build_has_been_loaded"}
-    = HAML['flashes']({})
+    != HAML['flashes']({})
     .centered-spinner
-      = HAML['fast_spinner']()
+      != HAML['fast_spinner']()
 
   %div{data-bind: "if: build_has_been_loaded"}
 
     %div{data-bind: "with: build"}
 
-      = HAML.build_top_table({})
+      != HAML.build_top_table({})
 
-      = HAML.flashes({})
+      != HAML.flashes({})
 
       .row-fluid
         .offset1.span10
           %div{data-bind: "if: messages().length"}
-            = HAML['messages']()
+            != HAML['messages']()
           %div{data-bind: "ifnot: messages().length"}
-            = HAML['report_error']({build: true})
+            != HAML['report_error']({build: true})
 
           %div{data-bind: "if: $root.project() && $root.project().show_build_page_trial_notice"}
-            = HAML.project_trial_notice()
+            != HAML.project_trial_notice()
 
         -# coming soon
         -#%aside.stages.span2
@@ -44,7 +44,7 @@
               %a Deploy
 
 
-        = HAML.build_steps({})
+        != HAML.build_steps({})
 
         %div{data-bind: "if: steps().length > 1"}
-          = HAML.messages()
+          != HAML.messages()

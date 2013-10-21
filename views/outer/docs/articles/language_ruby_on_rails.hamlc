@@ -91,5 +91,5 @@
     Circle uses the wrong Ruby version
 %p
   If you still having trouble, please
-  = HAML.contact_us({succeed: ""})
+  != HAML.contact_us({succeed: ""})
   and we will be happy to help.

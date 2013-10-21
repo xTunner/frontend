@@ -1,0 +1,17 @@
+%dl.clearfix.commit-log
+  %dt
+    %span{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}"}
+      Commit Log
+      %i.icon-caret-down{data-bind: "visible: rest_commits().length, css: {'icon-rotate-180': rest_commits_visible}"}
+
+  -# can delete first dd when backend fully deploys
+  %dd{data-bind: "ifnot: head_commits().length"}
+    %span{data-bind: "if: body"}
+      %a{href: '#', data-bind: "attr: { href: github_url }, text: subject, tooltip: {title: body}"}}
+    %span{data-bind: "ifnot: body"}
+      %a{data-bind: "attr: { href: github_url }, text: subject"}}
+
+  %dd{data-bind: "if: head_commits().length"}
+    %div{data-bind: "haml: {template: 'build_commit_list', args: {commits: head_commits}}"}
+    .rest-commits{data-bind: "if: rest_commits_visible"}
+      %div{data-bind: "haml: {template: 'build_commit_list', args: {commits: rest_commits}}"}

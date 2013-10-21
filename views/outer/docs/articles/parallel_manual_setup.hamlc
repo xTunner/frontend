@@ -8,7 +8,7 @@
 
 %p
   To begin with, you'll need to turn on parallelism from your project's settings page.
-  Go to <strong>Edit settings > Build speed</strong> to adjust the settings.
+  Go to <strong>Edit settings > Parallelism</strong> to adjust the settings.
 
 %h2 Splitting your test suite
 %p
@@ -89,5 +89,5 @@
 
   If you set this up for a library or framework that we should be
   able to infer automatically, please
-  = HAML.contact_us({succeed: "."})
+  != HAML.contact_us({succeed: "."})
   We are always interested in adding support for more languages and frameworks.

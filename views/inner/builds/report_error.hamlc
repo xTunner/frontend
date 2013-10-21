@@ -3,11 +3,11 @@
     .alert-wrap
       Error!
 
-      = succeed ',', ->
+      != succeed ',', ->
         %a{href: "/docs/troubleshooting" } Check out common problems
 
       or
-      = succeed ',', ->
+      != succeed ',', ->
         %a{ data-bind: "attr: {href: edit_link}" } tweak your test settings
 
       or
@@ -22,10 +22,10 @@
     Looks like we had a bug in our infrastructure, or that of our providers (generally
     %a{href: "https://status.github.com/"} GitHub
     or
-    = succeed ').', ->
+    != succeed ').', ->
       %a{href: "http://status.aws.amazon.com/"} AWS
     %span{data-bind: "ifnot: status() == 'canceled'"}
       We should have automatically retried this build.
     We've been alerted of the issue and are almost certainly looking into it, please
-    = HAML['contact_us_inner']()
+    != HAML['contact_us_inner']()
     if you're interested in the cause of the problem.

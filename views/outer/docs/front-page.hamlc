@@ -25,9 +25,9 @@
   %ul.articles.span4
     %h4 Getting started
     - if VM?
-      = HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
+      != HAML.article_list($.extend @, {article: VM.docs.categories['gettingstarted']})
 
   %ul.articles.span4
     %h4 Troubleshooting
     - if VM?
-      = HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})
+      != HAML.article_list($.extend @, {article: VM.docs.categories['troubleshooting']})

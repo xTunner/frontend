@@ -1,20 +1,20 @@
-= HAML.invite_form({})
+!= HAML.invite_form({})
 
 #dashboard
 
   %aside
-    = HAML['action_sidebar']({})
-    = HAML['followed_sidebar']({})
+    != HAML['action_sidebar']({})
+    != HAML['followed_sidebar']({})
     .shadowX
 
   .dash-wrap
     .dashboard-main
 
-      = HAML['flashes']({})
+      != HAML['flashes']({})
 
       %div{data-bind: "ifnot: dashboard_ready"}
         .centered-spinner
-          = HAML['fast_spinner']()
+          != HAML['fast_spinner']()
 
       %div{data-bind: "if: dashboard_ready"}
 
@@ -26,6 +26,6 @@
 
         %div{data-bind: "if: show_build_table()"}
 
-          = HAML.project_trial_notice()
+          != HAML.project_trial_notice()
 
-          = HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+          != HAML['builds']({builds: "builds", mention_project: true, pagination: false})

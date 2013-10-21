@@ -4,7 +4,7 @@
 %p
   If you would prefer to poll the status of your projects' builds, rather than rely on
   notifications, CircleCI offers an implementation of the
-  = succeed ',', ->
+  != succeed ',', ->
     %a{ href: "http://confluence.public.thoughtworks.org/display/CI/Multiple+Project+Summary+Reporting+Standard" } Multiple Project Summary Reporting Standard
   which is the format (originally from CruiseControl) consumed by common CI monitoring tools.
 
@@ -51,15 +51,15 @@
 
   %ul
     %li
-      = succeed ':', ->
+      != succeed ':', ->
         %a{ href: "http://ccmenu.sourceforge.net/" } CCMenu
       an OS X menu bar plugin.
     %li
-      = succeed ':', ->
+      != succeed ':', ->
         %a{ href: "https://bitbucket.org/Anay/buildnotify/wiki/Home" } BuildNotify
       a GNU/Linux system tray plugin.
     %li
-      = succeed ':', ->
+      != succeed ':', ->
         %a{ href: "http://ccnet.sourceforge.net/CCNET/CCTray.html" } CCTray
       a Windows system tray plugin.
 
@@ -68,7 +68,7 @@
 
   %ul
     %li
-      = succeed ':', ->
+      != succeed ':', ->
         %a{ href: "https://addons.mozilla.org/en-US/firefox/addon/cruisecontrol-monitor/" } CruiseControl Monitor
       a Firefox plugin.
 
@@ -83,4 +83,4 @@
 %p
   If you run into trouble configuring these, or are using a different tool not on this list,
   please
-  = HAML['contact_us']({succeed: '.'})
+  != HAML['contact_us']({succeed: '.'})

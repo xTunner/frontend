@@ -1,15 +1,15 @@
 .row-fluid.plans.pricing#billing{data-bind: "with: billing"}
 
   / ko if: trial
-  = HAML.plans_trial_notification()
+  != HAML.plans_trial_notification()
   / /ko
 
   / ko if: piggieback_plan_p
-  = HAML.plans_piggieback_plan_notification()
+  != HAML.plans_piggieback_plan_notification()
   / /ko
 
-  = HAML.pricing_plans()
-  = HAML.pricing_features()
-  = HAML.pricing_faq()
+  != HAML.pricing_plans()
+  != HAML.pricing_features()
+  != HAML.pricing_faq()
 
-  = HAML.confirm_plan_modal()
+  != HAML.confirm_plan_modal()

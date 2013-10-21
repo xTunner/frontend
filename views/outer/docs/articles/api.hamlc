@@ -303,7 +303,7 @@
 %ol
   %li
     Add an API token from your
-    = succeed '.', ->
+    != succeed '.', ->
       %a{ href: "/account/api"} account dashboard
 
   %li
@@ -339,7 +339,7 @@
 %h2 Authentication
 %p
   To authenticate, add an API token using your
-  = succeed '.', ->
+  != succeed '.', ->
     %a{ href: "/account/api"} account dashboard
   To use the API token, add it to the
   %code circle-token
@@ -363,19 +363,19 @@
 
 
 %h2 User
-= HAML['api_reference_block']({api_data: api_data, url: "me", try_it: true})
+!= HAML['api_reference_block']({api_data: api_data, url: "me", try_it: true})
 
 
 %h2 Projects
-= HAML['api_reference_block']({api_data: api_data, url: 'projects', try_it: true})
+!= HAML['api_reference_block']({api_data: api_data, url: 'projects', try_it: true})
 
 
 %h2#recent-builds Recent Builds Across All Projects
-= HAML['api_reference_block']({api_data: api_data, url: 'recent-builds', try_it: true})
+!= HAML['api_reference_block']({api_data: api_data, url: 'recent-builds', try_it: true})
 
 
 %h2#recent-builds-project Recent Builds For a Single Project
-= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project'})
+!= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project'})
 %p
   You can narrow the builds to a single branch by appending /tree/:branch to the url:
   %p
@@ -384,13 +384,13 @@
 
 
 %h2#build Single Build
-= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num'})
+!= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num'})
 
 %h2#build-artifacts Artifacts of a Build
-= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/artifacts'})
+!= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/artifacts'})
 
 %h2#retry-build Retry a Build
-= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/retry'})
+!= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/retry'})
 
 %p
   You can retry a build with ssh by swapping "retry" with "ssh":
@@ -399,11 +399,11 @@
 
 
 %h2#cancel-build Cancel a Build
-= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/cancel'})
+!= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/:build_num/cancel'})
 
 
 %h2#clear-cache Clear Cache
-= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/build-cache'})
+!= HAML['api_reference_block']({api_data: api_data, url: 'project/:username/:project/build-cache'})
 
 
 %h2 Summary

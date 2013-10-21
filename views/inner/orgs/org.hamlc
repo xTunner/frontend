@@ -1,7 +1,7 @@
 .dashboard-main
   %div{data-bind: "ifnot: builds_have_been_loaded"}
     .centered-spinner
-      = HAML['fast_spinner']()
+      != HAML['fast_spinner']()
   %div{data-bind: "if: builds_have_been_loaded"}
     %h2
       Latest builds for the
@@ -11,4 +11,4 @@
         %a.btn.pull-right#invite{data-toggle: "modal", data-target: "#inviteForm"}
           Invite Collaborators
 
-    = HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+    != HAML['builds']({builds: "builds", mention_project: true, pagination: false})

@@ -1,4 +1,4 @@
-= HAML['flashes']({})
+!= HAML['flashes']({})
 
 .container-fluid
   .row-fluid

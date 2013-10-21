@@ -15,7 +15,7 @@
   If you want a quick look at how to set up your
   %code circle.yml
   file, check out our
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/config-sample"} sample file
 
 
@@ -24,7 +24,7 @@
   %a{ href: "/docs/troubleshooting" } troubleshooting section
   can likely tell you the best way to solve the problem.
   If you find yourself repeateadly consulting this guide, please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   and let us know what you're working on.
   We'll try to make it easier for you.
 
@@ -45,7 +45,7 @@
 %p
   The
   %code circle.yml
-  file is made up of six sections.
+  file is made up of six primary sections.
   Each section represents a
   %em phase
   of running your tests:
@@ -59,6 +59,12 @@
   %li <b>test</b>: running your tests
   -#%li <b>artifact</b>: uploading your artifacts for distribution
   %li <b>deployment</b>: deploying your code to your web servers
+
+%p
+  The
+  %code circle.yml
+  file contains another <b>general</b> section for general build-related configurations
+  that are not related to a specific phase.
 
 %p
   Remember: most projects won't need to specify anything for many of the phases.
@@ -154,7 +160,7 @@
 %p
 %p
   This example sets the
-  = succeed ",", ->
+  != succeed ",", ->
     %a{ href: "#timezone" }<
       time zone
   chooses a
@@ -231,7 +237,7 @@
   on your Unix machine or in the
   %strong TZ
   column in
-  = succeed ".", ->
+  != succeed ".", ->
     %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}<
       Wikipedia's list of TZ database time zones
 
@@ -272,7 +278,7 @@
   %code
     = CI.Versions.default_ruby
   or
-  = succeed ',', ->
+  != succeed ',', ->
     %code= CI.Versions.old_ruby
   whichever we think is better.
   If you use a different Ruby version let Circle know by including that information in the
@@ -287,7 +293,7 @@
           version: 1.9.3-p0-falcon
 %p
   The complete list of supported Ruby versions is found
-  = succeed ".", ->
+  != succeed ".", ->
     %a{href: "/docs/environment#ruby"} here
 
 %h3#node-version
@@ -302,7 +308,7 @@
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
   If you do not specify a version, Circle uses
-  = succeed '.', ->
+  != succeed '.', ->
     %code= CI.Versions.default_node
   Note that recent versions of NVM support selecting versions through
   package.json.
@@ -424,6 +430,7 @@
           - beanstalkd
           - couchbase-server
           - neo4j
+          - sphinxsearch
 
 
 %h2#checkout Code checkout from GitHub
@@ -540,7 +547,7 @@
 %p
   If our inferred <code>database.yml</code> isn't working for you, you may need to <code>override</code> our setup commands (as shown in the following example).
   If that is the case, please
-  = HAML["contact_us"]()
+  != HAML["contact_us"]()
   and let Circle know so that we can improve our inference.
 
 %p
@@ -786,12 +793,36 @@
 %p
 
 
+%h2#branches Specifying branches to build
 
+%p
+  Circle by default tests every push to <i>any</i> branch in the repository.
+  Testing all branches maintains quality in all branches and adds
+  confidence when the branches are to be merged with default branch.
+
+%p
+  You may, however, blacklist branches from being built in Circle.  This example
+  excludes
+  %code gh-pages
+  from being built in circle:
+
+%pre
+  %code<>
+    :preserves
+      general:
+        branches:
+          ignore:
+            - gh-pages
+
+%p
+  %code circle.yml
+  is per-branch configuration file, and the branch ignore list in one branch will
+  only affect that branch and no other one.
 
 %h2#help Need anything else?
 
 %p
   We are adding support for configuring every part of your build.
   If you need to tweak something that isn't currently supported, please
-  = HAML["contact_us"]()
+  != HAML["contact_us"]()
   and we'll figure out how to make it happen.

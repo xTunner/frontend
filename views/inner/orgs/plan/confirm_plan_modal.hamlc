@@ -6,14 +6,14 @@
   .modal-body
     %p
       Your old total was
-      = precede '$', ->
-        = succeed '.', ->
+      != precede '$', ->
+        != succeed '.', ->
           %span{data-bind: "text: oldTotal"}<>
     %div{data-bind: "if: chosenPlan"}
       Your new total will be
       %span{data-bind: "money: total"}
-      = precede '(', ->
-        = succeed ' )', ->
+      != precede '(', ->
+        != succeed ' )', ->
           %span{data-bind: "money: chosenPlan().price"}
           +
           %span{data-bind: "text: extra_containers"}

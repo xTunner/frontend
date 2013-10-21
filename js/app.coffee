@@ -36,8 +36,8 @@ display = (template, args, subpage, hash) ->
     $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
     $("##{hash}").addClass('active')
 
-  if VM.selected().title
-    document.title = "#{VM.selected().title} - CircleCI"
+  if VM.current_page().title
+    document.title = "#{VM.current_page().title} - CircleCI"
   else
     document.title = "Continuous Integration and Deployment - CircleCI"
 
@@ -53,7 +53,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   constructor: ->
     super()
-    @favicon = new CI.inner.Favicon(@selected)
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
@@ -84,7 +83,9 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       # TODO: extract the billing portion from the project/users portion
       @org() && @org().loaded()
 
-    @navbar = ko.observable(new CI.inner.Navbar(@selected, @build))
+    @current_page = ko.observable(new CI.inner.Page)
+
+    @favicon = new CI.inner.Favicon(@current_page)
 
     @billing = ko.observable(new CI.inner.Billing)
 
@@ -93,7 +94,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     # user is looking at the project's summary, but hasn't followed it
     @show_follow_project_button = @komp =>
-      @project() && !@project().followed() && @project().project_name() is @selected().project_name
+      @project() && !@project().followed() && @project().project_name() is @current_page().project_name
 
 
     if window.renderContext.current_user
@@ -119,11 +120,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   refreshBuildState: () =>
     VM.loadProjects()
-    VM.selected().refresh_fn() if VM.selected().refresh_fn
-
-  # Keep this until backend has a chance to fully deploy
-  refreshDashboard: () =>
-    @refreshBuildState()
+    VM.current_page().refresh()
 
   loadProjects: () =>
     $.getJSON '/api/v1/projects', (data) =>
@@ -363,12 +360,7 @@ window.SammyApp = Sammy 'body', (n) ->
     # do nothing, tests will load later
 
   @get '^/', (cx) =>
-    VM.selected
-      refresh_fn: =>
-        VM.loadRecentBuilds(true)
-      mention_branch: true
-      favicon_updator: VM.reset_favicon
-      title: "Dashboard"
+    VM.current_page new CI.inner.DashboardPage
 
     VM.loadRootPage(cx)
 
@@ -376,22 +368,14 @@ window.SammyApp = Sammy 'body', (n) ->
 
   # before any project pages so that it gets routed first
   @get '^/gh/organizations/:username/settings(.*)', (cx) ->
-    VM.selected
-      page: "org_settings"
-      crumbs: ['org', 'org_settings']
-      username: cx.params.username
-      favicon_updator: VM.reset_favicon
-      title: "Org settings - #{cx.params.username}"
+    VM.current_page new CI.inner.OrgSettingsPage
+      org_name: cx.params.username
 
     VM.loadEditOrgPage cx.params.username, splitSplat(cx)
 
   route_org_dashboard = (cx) ->
-    VM.selected
-      page: "org"
-      crumbs: ['org', 'org_settings']
+    VM.current_page new CI.inner.OrgDashboardPage
       username: cx.params.username
-      favicon_updator: VM.reset_favicon
-      title: "#{cx.params.username}"
 
     VM.loadOrg cx.params.username
 
@@ -401,23 +385,17 @@ window.SammyApp = Sammy 'body', (n) ->
 
   @get '^/gh/:username/:project/edit(.*)',
     (cx) ->
-      VM.selected
-        page: 'project_settings'
-        crumbs: ['project', 'project_settings']
+      VM.current_page new CI.inner.ProjectSettingsPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
-        favicon_updator: VM.reset_favicon
-        title: "Edit settings - #{cx.params.username}/#{cx.params.project}"
 
       VM.loadEditPage cx, cx.params.username, cx.params.project, splitSplat(cx)
 
   @get '^/account(.*)',
     (cx) ->
-      VM.selected
-        page: "account"
-        favicon_updator: VM.reset_favicon
+      VM.current_page new CI.inner.AccountPage
         title: "Account"
+
       VM.loadAccountPage cx, splitSplat(cx)
 
   @get '^/gh/:username/:project/tree/(.*)',
@@ -425,54 +403,27 @@ window.SammyApp = Sammy 'body', (n) ->
       # github allows '/' is branch names, so match more broadly and combine them
       branch = cx.params.splat.join('/')
 
-      VM.selected
-        page: "branch"
-        crumbs: ['project', 'branch', 'project_settings']
+      VM.current_page new CI.inner.ProjectBranchPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
         branch: branch
-        mention_branch: false
-        favicon_updator: VM.reset_favicon
-        title: "#{branch} - #{cx.params.username}/#{cx.params.project}"
-        refresh_fn: =>
-          VM.loadProject(cx.params.username, cx.params.project, branch, true)
 
       VM.loadProject cx.params.username, cx.params.project, branch
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
-      VM.selected
-        page: "build"
-        crumbs: ['project', 'branch', 'build', 'project_settings']
+      VM.current_page new CI.inner.BuildPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
         build_num: cx.params.build_num
-        mention_branch: true
-        title: "##{cx.params.build_num} - #{cx.params.username}/#{cx.params.project}"
-        refresh_fn: =>
-          if VM.build() and VM.build().usage_queue_visible()
-            VM.build().load_usage_queue_why()
-        favicon_updator: =>
-          VM.favicon.build_updator(VM.build())
-
 
       VM.loadBuild cx, cx.params.username, cx.params.project, cx.params.build_num
 
   @get '^/gh/:username/:project',
     (cx) ->
-      VM.selected
-        page: "project"
-        crumbs: ['project', 'project_settings']
+      VM.current_page new CI.inner.ProjectPage
         username: cx.params.username
         project: cx.params.project
-        project_name: "#{cx.params.username}/#{cx.params.project}"
-        mention_branch: true
-        favicon_updator: VM.reset_favicon
-        title: "#{cx.params.username}/#{cx.params.project}"
-        refresh_fn: =>
-          VM.loadProject(cx.params.username, cx.params.project, null, true)
 
       VM.loadProject cx.params.username, cx.params.project
 
@@ -484,12 +435,8 @@ window.SammyApp = Sammy 'body', (n) ->
   @get '^/admin/build-state', (cx) -> VM.loadAdminBuildState cx
   @get '^/admin/recent-builds', (cx) ->
     VM.loadAdminRecentBuilds()
-    VM.selected
-      page: "admin"
-      admin_builds: true
-      refresh_fn: VM.refreshAdminRecentBuilds
-      favicon_updator: VM.reset_favicon
-      title: "Admin recent builds"
+    VM.current_page new CI.inner.AdminRecentBuildsPage
+      title: "Admin Recent Builds"
 
   # outer
   @get "^/docs(.*)", (cx) => VM.docs.display(cx)

@@ -1,35 +1,34 @@
-%h1 Personal notifications
-
-.row
-  .span8
-    %form.well
+#settings-notification
+  .notification-item
+    %form
       %legend
         Email notifications
       %label.radio
         %input{type: "radio", name: "email_pref", value: "all", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
-          %span Send an email for every build in all your followed projects
+          %span Send me a personalized email for every build in all of my projects.
 
       %label.radio
         %input{type: "radio", name: "email_pref", value: "smart", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
-          %span Send an email for branches you've pushed to when builds fail, and once they're fixed
+          %span Send me a personalized email every time I push and a build fails; also once they're fixed.
 
       %label.radio
         %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
-          %span No email
+          %span Don't send me emails.
 
-    .well
-      %form#email_address.form-horizontal
-        %legend
-          Email Address
-        %div{data-bind: "foreach: all_emails"}
-          %label.radio
-            %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
-            %span{data-bind: "text: $data"}
-      %div
-        %i To add more email addresses, add them on GitHub, then refresh this page.
+  .notification-item
+    %form#email_address.form-horizontal
+      %legend
+        Email Address
+      %div{data-bind: "foreach: all_emails"}
+        %label.radio
+          %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
+          %span{data-bind: "text: $data"}
+    %div
+      %i To add more email addresses, add them on GitHub, then refresh this page.
 
 
-    %form.well
+  .notification-item
+    %form
       %legend
         Project preferences
       %p Projects can be individually configured, from a project's <b>Edit settings</b> page.

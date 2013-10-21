@@ -2,4 +2,4 @@
 - @title = "Troubleshooting Node.js"
 - @short_title = "Node.js"
 
-= HAML['article_list'](@)
+!= HAML['article_list'](@)
