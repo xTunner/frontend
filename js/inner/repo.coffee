@@ -8,7 +8,7 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
     CI.inner.VcsUrlMixin(@)
 
     @canFollow = @komp =>
-      not @following() and @has_followers
+      not @following() and (@admin or @has_followers)
 
     @shouldDoFirstFollowerBuild = @komp =>
       not @following() and @admin and not @has_followers
