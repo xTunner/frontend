@@ -25,7 +25,7 @@
         %a{href: '/account/close'}
           Close Account
   .row
-    = HAML['flashes']({})
+    != HAML['flashes']({})
   .settings-item{data-bind: "with: current_user"}
     .settings-item-inner
       #subpage

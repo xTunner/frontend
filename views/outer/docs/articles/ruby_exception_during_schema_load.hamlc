@@ -48,7 +48,7 @@
   The Solution
 %p
   The solution is to make sure that
-  = succeed '.', ->
+  != succeed '.', ->
     %b no ActiveRecord models are loaded during rake db:schema:load
 
   There are many ways to trigger this bug, but the two most common are
@@ -93,13 +93,13 @@
   %code config/environment.rb
   loads, which then
   requires
-  = succeed ',', ->
+  != succeed ',', ->
     %code spec/factories.rb
     which loads
-  = succeed ',', ->
+  != succeed ',', ->
     %code FactoryGirl
   which loads
-  = succeed '.', ->
+  != succeed '.', ->
     %code ActiveRecord
   The solution then, is to refactor the code in such
   a way that spec/factories.rb isn't loaded unless tests are
@@ -107,6 +107,6 @@
 
 %p
   The idiomatic way to do this is by putting that code in
-  = succeed ',', ->
+  != succeed ',', ->
     %a{href: "http://guides.rubyonrails.org/configuring.html#using-initializer-files"} initializer files
   which are only run once the complete application is loaded.

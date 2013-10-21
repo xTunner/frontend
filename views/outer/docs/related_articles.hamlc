@@ -2,4 +2,4 @@
   %h4
     Related Articles
   %hr
-= HAML['article_list'](@)
+!= HAML['article_list'](@)

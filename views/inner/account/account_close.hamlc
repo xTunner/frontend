@@ -5,7 +5,7 @@
     %p
       We don't currently have a button to delete your account.
       Please
-      = HAML['contact_us_inner']()
+      != HAML['contact_us_inner']()
       and we can do it manually.
 
     %p

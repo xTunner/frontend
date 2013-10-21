@@ -48,7 +48,7 @@
 
 %p
   Before you start, make sure you have an X Window System on your computer. If you're using OSX, I recommend
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: 'http://xquartz.macosforge.org/landing/'} XQuartz
 
 %p

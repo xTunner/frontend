@@ -21,7 +21,7 @@
 
 %p
   You can provide Circle with a GitHub user key
-  = succeed ".", ->
+  != succeed ".", ->
     %a{ href: "/account/ssh"} here
 
 

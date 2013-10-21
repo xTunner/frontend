@@ -5,7 +5,7 @@
         %li.nav-header
           Organization settings
           %span.pull-right{data-bind: "ifnot: VM.org_has_been_loaded"}
-            = HAML.fast_spinner()
+            != HAML.fast_spinner()
         %li.divider
 
         / ko with: org
@@ -37,16 +37,16 @@
 
 
     .span9
-      = HAML['flashes']({})
+      != HAML['flashes']({})
 
       #subpage
         %div{data-bind: "ifnot: VM.org_has_been_loaded"}
           .spinner-container
-            = HAML.fast_spinner()
+            != HAML.fast_spinner()
 
         %div{data-bind: "if: VM.org_has_been_loaded"}
           %div{data-bind: "with: org"}
             %div{data-bind: "if: unauthorized"}
-              = HAML.org_non_admin_plan()
+              != HAML.org_non_admin_plan()
             %div{data-bind: "ifnot: unauthorized"}
               %div{data-bind: "haml: {template: 'org_' + subpage(), args: {}}"}

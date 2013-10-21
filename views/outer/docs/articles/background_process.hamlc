@@ -31,7 +31,7 @@
       wraps the command in a new shell, without which there is a race
       condition that can prevent the command from running at all!
     %li
-      = succeed ',', ->
+      != succeed ',', ->
         %code &amp;
       of course, backgrounds the command so the rest of your testing
       can proceed.

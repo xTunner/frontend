@@ -34,7 +34,7 @@
   then
   %code bunny.rb
   might rely on code loaded by
-  = succeed ".", ->
+  != succeed ".", ->
     %code aardvark.rb
   If you run
   %code bunny.rb
@@ -55,7 +55,7 @@
   has been declared before it is used, typically by adding a
   %code require
   call to
-  = succeed '.', ->
+  != succeed '.', ->
     %code api_token_generator.rb
 
 

@@ -16,7 +16,7 @@
 %p
   If you're using a library or module with similar functionality (i.e. one
   that provides a bundled solr, and a wrapper for booting it), please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   so that we can extend our inference to make it work automatically!
 
 %h2 The Hard Way
@@ -28,7 +28,7 @@
     = CI.Versions.solr
   is installed on your build system. It will need to be configured with your
   schema.xml, and booted via
-  = succeed '.', ->
+  != succeed '.', ->
     %a{ href: "/docs/configuration" }
       circle.yml
   Here's an example of how to do so:
@@ -59,7 +59,7 @@
       into place.
     %li
       Launch solr as a
-      = succeed '.', ->
+      != succeed '.', ->
         %a{ href: "/docs/background-process" }
           background process
 
@@ -70,6 +70,6 @@
 
 %p
   Please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   and let us know if you're using solr this way! Your feedback helps us keep our
   documentation up to date, and our services as useable as possible.
