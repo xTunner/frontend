@@ -192,7 +192,7 @@
   }
   &:hover [class^="repo-"] span {
     opacity: 1;
-    .translate3d(0,0,0);
+    .translate(0,0);
     transition: all .1s ease-in, opacity .2s linear .1s;
   }
   img {
@@ -220,7 +220,7 @@
     color: @blueLight;
     span {
       opacity: 0;
-      .translate3d(0,100%,0);
+      .translate(0,100%);
       transition: all .3s ease-out, opacity .1s linear;
     }
     i {
@@ -230,15 +230,15 @@
       margin-top: -3em;
       margin-right: 5em;
       pointer-events: none;
-      .translate3d(0,0,0);
+      .translate(0,0);
       .animation(point-right 3s ease infinite);
       -webkit-backface-visibility: hidden;
     }
   }
 }
 @-webkit-keyframes point-right {
-   50% {-webkit-transform: translate3d(5px,0,0);}
+   50% {-webkit-transform: translate(5px,0);}
 }
 @keyframes point-right {
-   50% {transform: translate3d(5px,0,0);}
+   50% {transform: translate(5px,0);}
 }
