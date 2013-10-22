@@ -36,6 +36,7 @@ CI.ABTests = class ABTests
 
   get_user_seed: =>
     if not $.cookie(@cookie_name)?
+      @new_cookie = true
       $.cookie(@cookie_name, Math.random(), {expires: 365, path: "/"})
     parseFloat($.cookie(@cookie_name))
 
@@ -61,7 +62,17 @@ CI.ABTests = class ABTests
         @ab_tests()[name](value)
 
   notify_mixpanel: () =>
-    unpacked_tests = {}
-    unpacked_tests["ab_#{k}"] = v() for own k, v of @ab_tests()
+    mixpanel.register_once ko.toJS(@ab_tests)
 
-    mixpanel.register_once(unpacked_tests)
+    if @new_cookie
+      mixpanel.register
+        first_page_load: true
+    else
+      mixpanel.unregister 'first_page_load'
+
+    if mixpanel.get_property('mp_name_tag')
+      mixpanel.register
+        existing_user: true
+    else
+      mixpanel.register
+        existing_user: false
