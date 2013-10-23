@@ -190,21 +190,6 @@
       box-shadow: 0 1px 1px lighten(@grayBorder, 1) inset;
     }
   }
-  &:hover [class^="repo-"] span {
-    opacity: 1;
-    .translate(0,0);
-    transition: all .1s ease-in, opacity .2s linear .1s;
-  }
-  img {
-    height: 3em;
-    padding: .5em;
-    .box-sizing(border-box);
-    margin-right: .5em;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 1px;
-  }
   span {
     line-height: 3em;
     float: right;
@@ -216,29 +201,80 @@
     overflow: hidden;
     position: relative;
   }
-  .repo-1stfollow {
-    color: @blueLight;
-    span {
-      opacity: 0;
-      .translate(0,100%);
-      transition: all .3s ease-out, opacity .1s linear;
-    }
-    i {
-      display: inline-block;
-      line-height: 3em;
-      float: right;
-      margin-top: -3em;
-      margin-right: 5em;
-      pointer-events: none;
-      .translate(0,0);
-      .animation(point-right 3s ease infinite);
-      -webkit-backface-visibility: hidden;
+  // To replace switches
+  .repo-unfollow {
+    button {
+      .buttonDark(@grayLightest);
+      color: @gray;
+      text-shadow: none;
+      &:hover, &:active {
+        color: @grayDark;
+      }
     }
   }
+  .repo-follow {
+    button {
+      .buttonDark;
+    }
+  }
+  .repo-nofollow {
+    button {
+      .buttonDark(@redLight);
+    }
+  }
+  [class^="repo-"] {
+    button {
+      line-height: 2em;
+      padding: 0;
+      position: absolute;
+      right: 0;
+      top: 1px;
+      margin: .5em;
+      width: 11ex;
+      outline: none;
+      border-radius: 3px;
+    }
+  }
+  // Style items for switches > buttons. WIP
+  //
+  // .repo-1stfollow {
+  //   color: @blueLight;
+  //   span {
+  //     opacity: 0;
+  //     .translate(0,100%);
+  //     transition: all .3s ease-out, opacity .1s linear;
+  //   }
+  //   i {
+  //     display: inline-block;
+  //     line-height: 3em;
+  //     float: right;
+  //     margin-top: -3em;
+  //     margin-right: 5em;
+  //     pointer-events: none;
+  //     .translate(0,0);
+  //     .animation(point-right 3s ease infinite);
+  //     -webkit-backface-visibility: hidden;
+  //   }
+  // }
+  // &:hover [class^="repo-"] span {
+  //   opacity: 1;
+  //   .translate(0,0);
+  //   transition: all .1s ease-in, opacity .2s linear .1s;
+  // }
+  // img {
+  //   height: 3em;
+  //   padding: .5em;
+  //   .box-sizing(border-box);
+  //   margin-right: .5em;
+  //   pointer-events: none;
+  //   position: absolute;
+  //   right: 0;
+  //   top: 1px;
+  // }
 }
-@-webkit-keyframes point-right {
-   50% {-webkit-transform: translate(5px,0);}
-}
-@keyframes point-right {
-   50% {transform: translate(5px,0);}
-}
+// @-webkit-keyframes point-right {
+//    50% {-webkit-transform: translate(5px,0);}
+// }
+// @keyframes point-right {
+//    50% {transform: translate(5px,0);}
+// }

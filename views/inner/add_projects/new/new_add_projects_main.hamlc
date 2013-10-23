@@ -11,23 +11,27 @@
       %div{data-bind: "if: shouldDoFirstFollowerBuild"}
         %a{data-bind: "click: follow, text: displayName",
            data-loading-text: "Starting first build..."}
-        %img{src: assetPath("/img/switchBounce.svg")}
-        %i.icon-caret-right
-        %span Start this repo!
+        -# %img{src: assetPath("/img/switchBounce.svg")}
+        -# %i.icon-caret-right
+        -# %span Start this repo!
+        %button Follow
       %div{data-bind: "ifnot: shouldDoFirstFollowerBuild"}
         %a{data-bind: "click: follow, text: displayName",
            data-loading-text: "Following repo..."}
-        %img{src: assetPath("/img/switchOff.svg")}
+        -# %img{src: assetPath("/img/switchOff.svg")}
+        %button Follow
 
     .repo-unfollow{data-bind: "if: following"}
       %a{data-bind: "click: unfollow, text: displayName",
          data-loading-text: "Unfollowing repo..."}
-      %img{src: assetPath("/img/switchOn.svg")}
+      -# %img{src: assetPath("/img/switchOn.svg")}
+      %button Unfollow
     .repo-nofollow{data-bind: "if: requiresInvite"}
       %a{data-bind: "text: displayName",
          data-toggle: "modal",
          data-target: "#inviteForm"}
-      %img{src: assetPath("/img/switchOff.svg")}
+      -# %img{src: assetPath("/img/switchOff.svg")}
+      %button Follow
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
