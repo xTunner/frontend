@@ -12,7 +12,7 @@
             .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
               .button{data-bind: "css: action_header_button_style"}
                 %span{data-bind: "if: has_content"}
-                  %i.icon-chevron-up
+                  %i.fa.fa-chevron-up
               .command{data-bind: "css: action_header_style"}
                 %span.command-text
                   %span{data-bind: "if: $data.bash_command() == $data.name()"}

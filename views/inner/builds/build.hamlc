@@ -31,7 +31,7 @@
             %li
               %a.active
                 Machine
-                %i.icon-refresh.icon-spin
+                %i.fa.fa-refresh.fa-spin
             %li
               %a Checkout
             %li
