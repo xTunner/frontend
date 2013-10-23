@@ -37,16 +37,16 @@
           %li.adr
             %i.icon-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
-              = succeed ",", ->
-                %span.street-address 325 9th Street
-              = succeed ",", ->
+              != succeed ",", ->
+                %span.street-address Circle Internet Services, 325 9th Street
+              != succeed ",", ->
                 %span.locality San Francisco
-              = succeed ",", ->
+              != succeed ",", ->
                 %span.region CA
               %span.postal-code 94103
         %h3 Press Inquiries
         %p
           Drop a line to
-          = succeed ",", ->
+          != succeed ",", ->
             %a{href: "mailtopress@circleci.com"} press@circleci.com
           or call Paul at +1 415 341 2432.

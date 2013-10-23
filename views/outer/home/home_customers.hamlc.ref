@@ -39,7 +39,7 @@
         %p
           CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go.
           %strong I'm a huge fan.
-        = HAML.john_collison_image()
+        != HAML.john_collison_image()
         %h4 John Collison
         %p
           Founder at
@@ -49,7 +49,7 @@
           It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.
           %strong The first time it happened, my team cheered.
           The fact that we don't have to admin the server ourselves is a big timesaver.
-        = HAML.jon_crawford_image()
+        != HAML.jon_crawford_image()
         %h4 Jon Crawford
         %p
           CEO of
@@ -59,10 +59,10 @@
           CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently.
           %strong CircleCI's customer support is outstanding.
           We get quick, thorough answers to all our questions.
-        = HAML.aaron_suggs_image()
+        != HAML.aaron_suggs_image()
         %h4 Aaron Suggs
         %p
           Operations Engineer at
           %a{alt: "Kickstarter", href: "http://www.kickstarter.com/", title: "Kickstarter"} Kickstarter
   %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    = HAML.home_cta({text: "Start your 14-day free trial now", source: "customers_cta"})
+    != HAML.home_cta({text: "Start your 14-day free trial now", source: "customers_cta"})

@@ -41,5 +41,5 @@
           We pride ourselves on our excellent support. But don't take our word for it, try contacting us using our in-application messaging system, at
           %a{:href => ""} support@circleci.com
           or
-          = succeed ".", ->
+          != succeed ".", ->
             %a{:href => ""} live chat

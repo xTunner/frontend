@@ -2,7 +2,7 @@
   %div
     - if c.body
       %span{data-bind: 'tooltip: {animation: "false", placement: "bottom"}',
-            title: c.body}
+            title: "#{ $e c.body}"}
         = c.subject
     - else
       = c.subject

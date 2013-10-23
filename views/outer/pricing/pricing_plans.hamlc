@@ -20,7 +20,7 @@
 
           %li
             Up to
-            = succeed '-way', ->
+            != succeed '-way', ->
               %span{data-bind: "text: max_parallelism"}
             parallelism
 

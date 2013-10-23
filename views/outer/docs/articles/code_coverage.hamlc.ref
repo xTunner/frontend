@@ -15,7 +15,7 @@
 %p
   It's straightforward to see simple coverage results from your build.
   Simply add a coverage library to your project, and configure it to write the results out to CircleCI's
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/build-artifacts"} artifacts directory
   CircleCI will upload coverage results and make them visible as part of your build.
 
@@ -93,7 +93,7 @@
 
 %p
   You can also get them via the
-  = succeed ".", ->
+  != succeed ".", ->
     %a{href: "https://circleci.com/docs/api#build-artifacts"} CircleCI API
 
 %p
@@ -117,7 +117,7 @@
 
 %p
   Coveralls does not currently support CircleCI's parallelization.
-  = HAML.contact_us({wording: "Contact us"})
+  != HAML.contact_us({wording: "Contact us"})
   if you'd like to use this.
 
 
@@ -134,7 +134,7 @@
 
 %p
   Code Climate does not currently support CircleCI's parallelization.
-  = HAML.contact_us({wording: "Contact us"})
+  != HAML.contact_us({wording: "Contact us"})
   if you'd like to use this.
 
 
@@ -143,5 +143,5 @@
 %p
   Code coverage is an area where our support is evolving.
   We'd love to have your feedback about how we could support it better.
-  = HAML.contact_us({wording: "Let us know"})
+  != HAML.contact_us({wording: "Let us know"})
   how you're using it, how you'd like to use it, and what we could do better!

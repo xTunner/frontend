@@ -7,7 +7,7 @@
 
 %p
   If you wish to remove important files from your repository, you should add a rough copy of the file under a similar name, such as
-  = succeed ".", ->
+  != succeed ".", ->
     config/app.yml.ci
 
   You can then copy it to its correct place with some simple commands:

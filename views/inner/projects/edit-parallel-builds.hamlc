@@ -2,7 +2,7 @@
   %h1 Change parallelism for this project
   %div{data-bind: "if: loading_billing"}
     .row-fluid.centered-spinner
-      = HAML.fast_spinner()
+      != HAML.fast_spinner()
   %div{data-bind: "ifnot: loading_billing"}
     .row-fluid{style: "min-height: 250px"}
       .span5
@@ -35,7 +35,7 @@
           containers available, so you can run
           %span{data-bind: "text: simultaneous_builds"}
           builds at once at
-          = succeed 'x.', ->
+          != succeed 'x.', ->
             %span{data-bind: "text: focused_parallel"}
 
         %p{data-bind: "if: show_uneven_divisor_warning_p"}
@@ -65,8 +65,8 @@
               %span{data-bind: "text: billing.usable_containers"}
               containers.
 
-            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Increase your parallelism
-            up to
+            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Add more containers
+            to increase your parallelism up to
 
             %strong
               != succeed "x.", ->
@@ -76,7 +76,7 @@
     .row-fluid{data-bind: "if: show_test_new_settings"}
       .span10
         - text = "Try out a build at <span data-bind='text: parallel'></span>x"
-        = HAML.expando_button({                              |
+        != HAML.expando_button({                             |
             button_binding: "click: create_settings_build",  |
             loading_text: "Starting...",                     |
             button_text: text})                              |
@@ -116,7 +116,7 @@
             %span{data-bind: "with: chosenPlan"}
               %span{data-bind: "if: allowsParallelism"}
                 and supports up to
-                = succeed "x", ->
+                != succeed "x", ->
                   %span{data-bind: "text: max_parallelism"}
                 paralellism.
               %span{data-bind: "ifnot: allowsParallelism"}

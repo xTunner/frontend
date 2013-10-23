@@ -75,15 +75,15 @@
                                     data-success-text: "Canceled"}
               Cancel
 
-    = HAML.usage_queue_table({})
+    != HAML.usage_queue_table({})
 
-    = HAML.build_commit_log()
+    != HAML.build_commit_log()
 
     / ko if: ssh_enabled_now()
     %dl.clearfix.ssh_info
       %dt SSH Info
       %dd
-        = HAML.ssh_info_table({})
+        != HAML.ssh_info_table({})
     / /ko
 
     / ko if: has_artifacts
@@ -96,5 +96,5 @@
             %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': artifacts_visible }"}
         %dd
 
-    = HAML.artifacts_table({})
+    != HAML.artifacts_table({})
     / /ko

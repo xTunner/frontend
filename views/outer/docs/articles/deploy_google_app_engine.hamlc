@@ -16,7 +16,7 @@
 %p
   You'll need to find the download URL for the SDK that you need. The official source for
   SDK downloads is
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "https://code.google.com/p/googleappengine/downloads/list"}
       https://code.google.com/p/googleappengine/downloads/list
 
@@ -56,7 +56,7 @@
 
 %p
   Using
-  = succeed ':', ->
+  != succeed ':', ->
     %a{href: 'https://developers.google.com/appengine/docs/python/gettingstarted/uploading'} appcfg.py update
 
 %pre
@@ -72,7 +72,7 @@
 
 %p
   Using
-  = succeed ':', ->
+  != succeed ':', ->
     %a{href: 'https://developers.google.com/appengine/docs/java/tools/uploadinganapp'} appcfg.sh update
 
 %pre
@@ -88,7 +88,7 @@
 
 %p
   Using
-  = succeed ':', ->
+  != succeed ':', ->
     %a{href: 'https://developers.google.com/appengine/docs/go/tools/uploadinganapp'} appcfg.py update
 
 %pre
@@ -106,7 +106,7 @@
   In all three cases, the deployment command passes an email address and password to
   the appcfg command. The credentials are stored in environment variables, which you can
   manage through the web UI as described
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/environment-variables#setting-environment-variables-for-all-commands-without-adding-them-to-git"} in this document
 
 %p

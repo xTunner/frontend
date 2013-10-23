@@ -2,4 +2,4 @@
 - @title = "Troubleshooting Python"
 - @short_title = "Python"
 
-= HAML['article_list'](@)
+!= HAML['article_list'](@)

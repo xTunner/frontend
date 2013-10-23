@@ -77,7 +77,7 @@ CI.Versions =
   erlang: 'r14b04'
 
   solr: "4.3.1"
-  postgresql: "9.2.4"
+  postgresql: "9.2.5"
   mysql: "5.5.32"
   mongodb: "2.4.6"
   riak: "1.2.1"

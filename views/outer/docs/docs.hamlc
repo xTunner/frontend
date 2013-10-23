@@ -6,20 +6,20 @@
   .container.content
     .row
       %aside.span3
-        = HAML['categories']({categories: @categories})
+        != HAML['categories']({categories: @categories})
 
       .span8.offset1
         - unless @article.slug? and @article.slug == "front_page"
-          = HAML['docs_search_form']()
+          != HAML['docs_search_form']()
 
         %article
-          = HAML.docs_title(@)
+          != HAML.docs_title(@)
 
           - if @article.slug? and @article.slug == "front_page"
-            = HAML['docs_search_form'](@)
+            != HAML['docs_search_form'](@)
 
 
           - if @article.category
-            = HAML['article_list'](@)
+            != HAML['article_list'](@)
           - else
-            = HAML[@article.slug](@)
+            != HAML[@article.slug](@)

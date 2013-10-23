@@ -1,6 +1,6 @@
 CI.inner.Foundation = class Foundation extends CI.inner.Obj
   constructor: ->
-    @ab = (new CI.ABTests(ab_test_definitions)).ab_tests
+    @ab = (new CI.ABTests(ab_test_definitions, window.renderContext.abOverrides)).ab_tests
     @error_message = ko.observable(null)
     @turbo_mode = ko.observable(false)
     @from_heroku = ko.observable(window.renderContext.from_heroku)

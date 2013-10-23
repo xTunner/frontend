@@ -4,6 +4,8 @@
     %span{data-bind: "text: name"}
     organization
   .span10
+    %h4{data-bind: "ifnot: user_objs().length"}
+      No users found.
     .row-fluid{data-bind: "foreach: {data: user_objs, as: 'user'}"}
       -# handle wrapping divs to next line when they're different heights
       / ko if: ($index() % 2 == 0)
