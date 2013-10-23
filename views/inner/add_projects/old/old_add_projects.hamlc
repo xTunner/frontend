@@ -3,7 +3,7 @@
     != HAML['flashes']({})
   .row-fluid
     .span3
-      != HAML['org_sidebar']({})
+      != HAML['old_org_sidebar']({})
     .span9
       .row-fluid
         %h1
@@ -15,4 +15,4 @@
           .centered-spinner
             != HAML['fast_spinner']()
         %div{data-bind: "ifnot: showLoading"}
-          != HAML['add_projects_main']({})
+          != HAML['old_add_projects_main']({})
