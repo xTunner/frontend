@@ -24,7 +24,7 @@
         #languages.tab-pane.active
           .row-fluid
             .span6
-              = HAML.languages_image()
+              != HAML.languages_image()
 
             .span6
               CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.
@@ -33,7 +33,7 @@
         #databases.tab-pane
           .row-fluid
             .span6
-              = HAML.dbs_image()
+              != HAML.dbs_image()
 
             .span6
               If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.
@@ -43,7 +43,7 @@
         #queues.tab-pane
           .row.fluid
             .span6
-              = HAML.queues_image()
+              != HAML.queues_image()
 
             .span6
               If you need to test against queues, we have them installed on our boxes.
@@ -53,7 +53,7 @@
         #browsers.tab-pane
           .row-fluid
             .span6
-              = HAML.browsers_image()
+              != HAML.browsers_image()
 
             .span6
               We support continuous integration testing in your apps against a wide range of browsers.
@@ -73,7 +73,7 @@
         #deployment.tab-pane
           .row-fluid
             .span6
-              = HAML.deployment_image()
+              != HAML.deployment_image()
 
             .span6
               Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.

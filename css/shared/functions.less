@@ -71,6 +71,12 @@
           transform: translate3d(@x, @y, @z);
 }
 
+.animation(@arguments) {
+  -webkit-animation: @arguments;
+     -moz-animation: @arguments;
+          animation: @arguments;
+}
+
 .rotate3d (@x, @y, @z, @deg) {
   -webkit-transform: rotate3d(@x, @y, @z, @deg);
           transform: rotate3d(@x, @y, @z, @deg);

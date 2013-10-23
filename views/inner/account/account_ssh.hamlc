@@ -40,6 +40,6 @@
     %p
       Your current Circle user key is listed below.
       Your other user keys are listed in your
-      = succeed '.', ->
+      != succeed '.', ->
         %a{href: "https://github.com/settings/ssh"}<
           GitHub account

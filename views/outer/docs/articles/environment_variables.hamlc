@@ -46,14 +46,14 @@
     %code CIRCLE_ARTIFACTS
   %dd
     The directory whose contents are automatically saved as
-    = succeed '.', ->
+    != succeed '.', ->
       %a{ href: "/docs/build-artifacts" } build artifacts
 
 %h3 Parallelism
 
 %p
   These variables are available for
-  = succeed ':', ->
+  != succeed ':', ->
     %a{ href: "/docs/parallel-manual-setup" } manually setting up parallelism
 
 %dl
@@ -105,7 +105,7 @@
   You can set environment variables in your
   %code circle.yml
   file, that
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/configuration#environment"} will be set for every command
 
 

@@ -180,7 +180,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     query
 
   searchArticles: (form) =>
-    @performDocSearch($(form).find('.search-query').val())
+    @performDocSearch($(form).find('#searchQuery').val())
     return false
 
   suggestArticles: (query, process) =>

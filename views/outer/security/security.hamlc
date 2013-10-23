@@ -42,13 +42,13 @@
         Circle's founders and employees are well versed in full-stack security. Paul worked on
         %a{:href => "http://mozilla.org/"} Mozilla's
         Javascript engine, where every bug is a potential security bug; and was a principal engineer at
-        = succeed ",", ->
+        != succeed ",", ->
           %a{:href => "http://mylookout.com/"} Lookout
         the premiere Android security company. Before that, he did his
-        = succeed ",", ->
+        != succeed ",", ->
           %a{:href => "http://paulbiggar.com/research/#phd-dissertation"} PhD in static analysis
         which kept him well versed with the latest security research and vulnerabilities. Allen was a lead developer at
-        = succeed ",", ->
+        != succeed ",", ->
           %a{:href => "http://crossroads.com/"} Crossroads
         where he provided security audits for their full-stack SAN solution. His experience includes work on Storage Area Networks, Linux kernel drivers and medical imaging software, all of which have an extremely security-oriented focus.
 
@@ -79,10 +79,10 @@
       %h3 Canceling your account
       %p
         We do not currently have a button to delete your account, but we will be adding one soon. If you need your account canceled and your data deleted, please contact us at
-        = succeed ".", ->
+        != succeed ".", ->
           %a{:href => "mailto:sayhi@circleci.com"} sayhi@circleci.com
         To remove Circle's access to your GitHub account, you can remove it via your
-        = succeed ".", ->
+        != succeed ".", ->
           %a{:href => "https://github.com/settings/applications"} GitHub application settings page
         You should also remove Circle's
         %em Deploy Keys
@@ -107,7 +107,7 @@
       %h3 Disclosure
       %p
         If you have found a vulnerability in CircleCi, please contact our security team by email at
-        = succeed ".", ->
+        != succeed ".", ->
           %a{:href => "mailto:security@circleci.com"} security@circleci.com
         We will do everything in our power to respond and fix the problem immediately. If possible, please encrypt your message using
         %a{href: "/circleci-security.pub", target: '_blank' } our security team's GPG key
@@ -127,7 +127,7 @@
 
       %p
         We take security incredibly seriously. If you have any suggestions for how we could improve our security, or improve this policy, please contact us at
-        = succeed ".", ->
+        != succeed ".", ->
           %a{:href => "mailto:security@circleci.com"} security@circleci.com
         We will act immediately to deal with the issue.
 

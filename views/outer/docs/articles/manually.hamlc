@@ -81,7 +81,7 @@
   %a{ href: "/docs/environment" } the Circle environment
   for a comprehensive list of what we have installed.
   If you need anything else installed, please
-  = HAML.contact_us({succeed: ""})
+  != HAML.contact_us({succeed: ""})
   and Circle support should be able to accommodate you.
   Be aware that for security reasons, we don't provide root access.
 

@@ -89,5 +89,5 @@
 
   If you set this up for a library or framework that we should be
   able to infer automatically, please
-  = HAML.contact_us({succeed: "."})
+  != HAML.contact_us({succeed: "."})
   We are always interested in adding support for more languages and frameworks.

@@ -1,6 +1,6 @@
 %div{ data-bind: "if: VM.logged_in" }
   .inner
-    = HAML._topbar()
+    != HAML._topbar()
 %div{ data-bind: "ifnot: VM.logged_in" }
   .outer
-    = HAML.outer_header()
+    != HAML.outer_header()

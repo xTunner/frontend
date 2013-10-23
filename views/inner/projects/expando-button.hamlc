@@ -4,7 +4,7 @@
                             name: "save-and-test",
                             data-bind: @button_binding,
                             data-loading-text: @loading_text}
-      = @button_text
+      != @button_text
     %input.input-medium{type: "text",
                         name: "branch",
                         autocomplete: "off",

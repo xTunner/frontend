@@ -6,12 +6,12 @@
   Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
   In the future, we plan to allow as much of this to be configurable as possible.
   Please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   if some part of our environment is not suitable for you, and we will try to come up with a workaround.
 
 %p
   If any version is not listed here, SSH into our build boxes to check it manually (and
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   so we can update this doc.
 
 
@@ -96,7 +96,7 @@
 
 %p
   Circle runs graphical programs in a virtual framebuffer, using
-  = succeed '.', ->
+  != succeed '.', ->
     xvfb
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
   You do not need to do anything to set this up.
@@ -147,14 +147,14 @@
     Ruby
     = @v.default_ruby
   unless we detect that you need Ruby 1.8.7, in which case we'll use
-  = succeed '.', ->
+  != succeed '.', ->
     %code= @v.old_ruby
   This is installed via
   RVM (stable).
 
 %p
   We also have a number of Ruby commands pre-installed if you need to use them directly. They use Ruby
-  = succeed '.', ->
+  != succeed '.', ->
     %code= @v.default_ruby
 
 %ul
@@ -185,7 +185,7 @@
 
 %p
   If you do not specify a version, we use
-  = succeed '.', ->
+  != succeed '.', ->
     %code= @v.default_node
 
 
@@ -194,10 +194,10 @@
   We use
   %code= @v.v('lein')
   by default, and you can also use
-  = succeed ",", ->
+  != succeed ",", ->
     %code lein16
   which is version
-  = succeed ".", ->
+  != succeed ".", ->
     = @v.lein_old
 
 %p
@@ -210,15 +210,15 @@
 %h3 Python
 %p
   We use
-  = succeed ",", ->
+  != succeed ",", ->
     %code= @v.v('python')
   by default, although you can
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/configuration#python-version"} control the version in your circle.yml file
   Packages can be installed using
   %code= @v.v('pip')
   and
-  = succeed ".", ->
+  != succeed ".", ->
     %code= @v.v('virtualenv')
 
 %p
@@ -238,7 +238,7 @@
 
 %p
   Please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   if other versions of Python would be useful to you.
 
 
@@ -247,10 +247,10 @@
 %h3 PHP
 %p
   We use
-  = succeed ",", ->
+  != succeed ",", ->
     %code= @v.v('php')
   by default, although you can
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/configuration#php-version"} control the version in your circle.yml file
   Packages can be installed using
   <code>composer</code>, <code>pear</code>, and <code>pecl</code>.
@@ -272,7 +272,7 @@
 %p
   Are you using a version of PHP that isn't included in this list?
   If so, please
-  = HAML['contact_us']({succeed: '.'})
+  != HAML['contact_us']({succeed: '.'})
 
 
 %h3#java Java (and JVM based languages)
@@ -309,10 +309,10 @@
 %p
   Other JVM-based languages should also work.
   Circle has
-  = succeed ",", ->
+  != succeed ",", ->
     %a{href: "#clojure"} special support for Clojure
   please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   let us know if you need anything else installed to run your JVM language of choice.
 
 

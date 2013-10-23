@@ -18,7 +18,7 @@
   When Circle detects Python, we automatically initiate <code>virtualenv</code>
   to create an isolated Python environment using <code>python 2.7.3</code>.
   Please
-  = HAML.contact_us({succeed: ""})
+  != HAML.contact_us({succeed: ""})
   if other versions of Python would be of use to you.
 
 %h2#package-mgrs-dependencies Package managers and dependencies

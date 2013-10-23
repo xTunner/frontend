@@ -79,7 +79,7 @@
           Projects are only tested if they have a follower.
 
   .span9
-    = HAML['flashes']({})
+    != HAML['flashes']({})
 
     #subpage{data-bind: "with: project"}
       %p
