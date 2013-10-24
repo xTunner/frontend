@@ -147,7 +147,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       "fa-times": @komp => @important_style() || @warning_style() || @canceled()
       "fa-clock-o": @komp => @queued()
       "fa-refresh": @komp => @info_style()
-      "fa-calendar-empty": @komp => @scheduled()
+      "fa-calendar-o": @komp => @scheduled()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
