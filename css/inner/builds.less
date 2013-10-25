@@ -27,7 +27,7 @@
   overflow: hidden;
   width: 100%;
   .pull-right {
-    margin: 1em;
+    margin: 1em 1em 0 1em;
     color: @grayLightest;
   }
   #build-messages {
@@ -115,22 +115,9 @@
 }
 
 .action-source {
-  .border-radius;
   float: right;
-  margin-right: 10px; // move back from the right edge
-  padding: 0px 4px; // padding, but without increasing the height
   font-style: italic;
-  font-size: 15px;
-  font-weight: normal; // unbolden
-  color: #174278;
-  .text-shadow(0,-1px,0px, rgba(0,0,0, 0)); // Remove text shadow
 }
-
-.action-source-inner:hover {
-  border-bottom: 2px solid;
-  cursor: help;
-}
-
 .type-divider {
   text-align: center;
   border-bottom: 1px solid #777;
@@ -207,9 +194,6 @@
     }
   }
   .failed {
-    .command-text, .time {
-      color: @whiten;
-    }
     .button i.icon-chevron-up {
       text-shadow: none;
     }
@@ -301,6 +285,9 @@
       height: inherit;
       overflow: hidden; // put to the left of .button
       line-height: 3em;
+      &.failed {
+        color: @whiten;
+      }
     }
   }
 }
