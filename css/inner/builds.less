@@ -42,6 +42,7 @@
   color: @gray;
   padding-top: 1em;
   box-shadow: 0 1px lighten(@gray,55.50%);
+  margin-bottom: 1.5em;
   h4 {
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
@@ -164,9 +165,6 @@
     }
   }
 
-  .alert {
-    margin: 20px 0;
-  }
   .output {
     margin: 0;
     border: none;
@@ -392,6 +390,7 @@ dd .build_status {
   }
 
   .alert {
+    margin-bottom: 1.5em;
     &.alert-danger {
       background: @buildErrorBackground;
       border: @buildErrorBorder;
@@ -399,14 +398,10 @@ dd .build_status {
       color: @redLightest;
       padding: 1em;
       border-bottom-color: transparent;
-      margin: 3em 0;
       a {
         color: @white;
         font-weight: bold;
       }
-    }
-    &.alert-info {
-      margin: 3em 0;
     }
     .close {
       right: 0;
