@@ -194,19 +194,37 @@
           background: @blueDark;
 
         }
-
-        .env-production, .env-staging, .env-development, .env-test {
-          .label;
-          font-weight: normal;
-          padding: 6px 8px;
-          background: @blueDark;
+      }
+    }
+    .env-badge {
+      display: inline-block;
+      line-height: @navbarHeight;
+      span {
+        font-size: 0.846em;
+        line-height: 1em;
+        border-radius: 5em;
+        padding: .5em 1em;
+      }
+      .env-production {
+        @prodRed: #c45b23;
+        background-color: @redDark;
+      }
+      .env-staging {
+        @stagingYellow: #e2c256;
+        background-color: @stagingYellow;
+        color: black;
+      }
+      .env-development {
+        border: 1px solid @blueLight;
+        background: none;
+        color: @whiten;
+        &:before {
+          content: "/dev";
         }
-
-        .env-production { @prodRed: #c45b23; background-color: @redDark; }
-        .env-staging { @stagingYellow: #e2c256; background-color: @stagingYellow; color: black;}
-        .env-development { background-color: @blueDark; }
-        .env-test { @testGreen: #178261; background-color: @greenDark; }
-
+      }
+      .env-test {
+        @testGreen: #178261;
+        background-color: @greenDark;
       }
     }
 
