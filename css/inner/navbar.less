@@ -11,7 +11,7 @@
 
     // the bar itself
     background: @blueDarker;
-    height: @navbarHeight + 2;
+    height: @navbarHeight;
     min-width: 500px;
     border-top: none;
 
@@ -49,25 +49,13 @@
       }
     }
     ul.nav {
-      top: 2px;
-
       > li {
         height: @navbarHeight;
         line-height: @navbarHeight;
       }
-
-      // environment element
-      li {
-        margin: 0 5px;
-      }
-
       &.crumbs {
         li {
-          a, span {
             display: inline-block;
-            font-size: .9em;
-            font-weight: normal;
-            color: white;
           }
 
           span.label {
@@ -91,11 +79,6 @@
           &.crumb {
             &:before {
               content: '/';
-              position: absolute;
-              left: -6px;
-              top: 1px;
-              color: white;
-              font-size: 1.2em;
             }
           }
 
@@ -108,24 +91,11 @@
         }
       }
       li {
-        // rightside nav elements
-        &.pane:hover {
-          background: @blueDark;
-        }
-
-        position: relative;
         a {
-          cursor: pointer;
-          line-height: @navbarHeight; // keeps this nav from overflowing the box
-          font-size: 15px;
-          padding: 0px 10px;
-          color: white;
-          .text-shadow(0, 1px,0px, #1B3E69);
           &.label-success {
             &:hover { background: darken(@green, 10%); }
           }
         }
-
         // dropbox header
         &.open > a.dropdown-toggle {
           background-color: @blueDark;
@@ -134,19 +104,11 @@
         .dropdown-toggle {
           .gravatar {
             border-radius: 5em;
-            margin-right: 5px;
-            width: 30px;
-            height: 30px;
-            vertical-align: bottom;
-            // oddly hard to automatically center, so I'm calculating it's position.
-            margin-bottom: floor((@navbarHeight - 30px) / 2);
-            position: relative;
           }
         }
 
         ul.dropdown-menu {
           margin-top: 0;
-          border-top: none;
           &:after {
             display: none; // get rid of caret
           }
