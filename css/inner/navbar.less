@@ -37,6 +37,25 @@
     }
 
     // rest of the nav elements
+    .repo-breadcrumb {
+      a {
+        padding: 0;
+      }
+      display: inline-block;
+      vertical-align: top;
+      .crumb-settings {
+        visibility: collapse;
+        &:before {
+          content: "\f013";
+          font-family: FontAwesome;
+          visibility: visible;
+          display: inline-block;
+          padding: 0 .5em;
+          font-size: 1.077em;
+          line-height: 1em;
+        }
+      }
+    }
     .user-menu {
       width: @dropdownWidth;
       > li {
