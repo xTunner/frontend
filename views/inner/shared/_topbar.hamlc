@@ -21,27 +21,27 @@
             %span{data-bind: "if: gravatar_url()"}
               %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
 
-            %i.icon-caret-down
+            %i.fa.fa-caret-down
 
           %ul.dropdown-menu
             %li
               %a{href: '/account'}
-                %i.icon-gears
+                %i.fa.fa-gears
                 Settings
 
             %li{ data-bind: "ifnot: VM.from_heroku" }
               %a#logout-link{ href: '/logout'}
-                %i.icon-signout
+                %i.fa.fa-sign-out
                 Logout
 
             %li
               %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
-                %i.icon-bullhorn
+                %i.fa.fa-bullhorn
                 Support
 
             %li
               %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
-                %i.icon-comments
+                %i.fa.fa-comments
                 Chat support
 
 

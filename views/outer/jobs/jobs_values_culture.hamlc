@@ -1,6 +1,6 @@
 .row.reason
   .span10.offset2
-    %i.icon-heart
+    %i.fa.fa-heart
     %h3 Culture
     %p
       %strong Our culture is product-driven.

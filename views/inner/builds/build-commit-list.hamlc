@@ -8,4 +8,4 @@
       = c.subject
     %a.sha-one{href: c.commit_url, title: c.commit}
       = c.commit.slice(0,7)
-      %i.icon-github
+      %i.fa.fa-github
