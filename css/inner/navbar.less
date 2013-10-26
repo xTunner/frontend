@@ -12,6 +12,7 @@
     border-left: 0px;
     border-right: 0px;
     @navbarHeight: 50px;
+    color: @grayLighter;
 
     // the bar itself
     background: @blueDarker;
@@ -83,6 +84,8 @@
       }
     }
     ul.nav {
+      display: inline-block;
+      vertical-align: top;
       > li {
         height: @navbarHeight;
         line-height: @navbarHeight;
@@ -122,6 +125,7 @@
       }
       li {
         a {
+          text-shadow:none;
           &.label-success {
             &:hover { background: darken(@green, 10%); }
           }
@@ -129,6 +133,11 @@
         // dropbox header
         &.open > a.dropdown-toggle {
           background-color: @blueDark;
+          padding-left: 1em;
+          > i {
+            .rotate(180deg);
+            box-shadow: none;
+          }
         }
 
         .dropdown-toggle {
@@ -149,11 +158,16 @@
           }
           .gravatar {
             border-radius: 5em;
+            overflow: hidden;
           }
         }
 
         ul.dropdown-menu {
           margin-top: 0;
+          border: none;
+          box-shadow: none;
+          border-radius: 0 0 3px 3px;
+          width: @dropdownWidth;
           &:after {
             display: none; // get rid of caret
           }
@@ -174,8 +188,8 @@
               background: @blue;
             }
             i {
-              font-size: .8em;
-              padding-right: .8em;
+              font-size: 1.077em;
+              padding-right: .5em;
             }
 
           }
@@ -227,7 +241,6 @@
         background-color: @greenDark;
       }
     }
-
   }
 
   // Retina prettyness
