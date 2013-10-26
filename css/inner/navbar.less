@@ -132,6 +132,21 @@
         }
 
         .dropdown-toggle {
+          &:hover > i {
+            box-shadow: 0  1px @dropdownToggleColor,
+                        0 -1px @dropdownToggleColor,
+                        1px  0 @dropdownToggleColor,
+                       -1px  0 @dropdownToggleColor;
+            transition-duration: .1s;
+          }
+          > i {
+            // background: red;
+            width: 1em;
+            display: inline-block;
+            text-align: center;
+            border-radius: 3px;
+            transition: box-shadow .3s ease-in-out;
+          }
           .gravatar {
             border-radius: 5em;
           }
