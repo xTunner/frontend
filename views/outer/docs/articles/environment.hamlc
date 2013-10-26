@@ -115,7 +115,16 @@
   environment variable has already been set.
 
 %p
-  Selenium-based tests are able to use Chrome stable channel (Chrome 28.0 with Chromedriver 23.0 as of August, 2013), and Firefox 23.
+  Selenium-based tests are able to use Chrome stable channel
+  = "(#{@v.v('Chrome')}" # add leading (
+  with
+  = @v.v('chromedriver')
+  as of October, 2013), and
+  = succeed '.', ->
+    = @v.v('Firefox')
+
+  Chromedriver 23.0 is also available as
+  %code chromedriver23
 
 %p
   %span.label.label-info Help

@@ -27,7 +27,7 @@
   overflow: hidden;
   width: 100%;
   .pull-right {
-    margin: 1em;
+    margin: 1em 1em 0 1em;
     color: @grayLightest;
   }
   #build-messages {
@@ -42,6 +42,7 @@
   color: @gray;
   padding-top: 1em;
   box-shadow: 0 1px lighten(@gray,55.50%);
+  margin-bottom: 1.5em;
   h4 {
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
@@ -115,22 +116,9 @@
 }
 
 .action-source {
-  .border-radius;
   float: right;
-  margin-right: 10px; // move back from the right edge
-  padding: 0px 4px; // padding, but without increasing the height
   font-style: italic;
-  font-size: 15px;
-  font-weight: normal; // unbolden
-  color: #174278;
-  .text-shadow(0,-1px,0px, rgba(0,0,0, 0)); // Remove text shadow
 }
-
-.action-source-inner:hover {
-  border-bottom: 2px solid;
-  cursor: help;
-}
-
 .type-divider {
   text-align: center;
   border-bottom: 1px solid #777;
@@ -177,9 +165,6 @@
     }
   }
 
-  .alert {
-    margin: 20px 0;
-  }
   .output {
     margin: 0;
     border: none;
@@ -301,6 +286,9 @@
       height: inherit;
       overflow: hidden; // put to the left of .button
       line-height: 3em;
+      &.failed {
+        color: @whiten;
+      }
     }
   }
 }
@@ -405,6 +393,7 @@ dd .build_status {
   }
 
   .alert {
+    margin-bottom: 1.5em;
     &.alert-danger {
       background: @buildErrorBackground;
       border: @buildErrorBorder;
@@ -412,14 +401,10 @@ dd .build_status {
       color: @redLightest;
       padding: 1em;
       border-bottom-color: transparent;
-      margin: 3em 0;
       a {
         color: @white;
         font-weight: bold;
       }
-    }
-    &.alert-info {
-      margin: 3em 0;
     }
     .close {
       right: 0;
