@@ -26,6 +26,28 @@
     }
 
     // rest of the nav elements
+    .user-menu {
+      width: @dropdownWidth;
+      > li {
+        float: right;
+        &.docs {
+          float: left;
+          padding-left: 1.2em; // the extra '.2' lines up the thinner docs icon w/ those in the dropdown
+          i {
+            margin-right: .5em;
+          }
+        }
+        &.dropdown {
+          a {
+            padding: 0 1em;
+          }
+        }
+        > a {
+          // padding: 0 .5em;
+          padding: 0;
+        }
+      }
+    }
     ul.nav {
       top: 2px;
 
