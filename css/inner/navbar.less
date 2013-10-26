@@ -15,14 +15,25 @@
     min-width: 500px;
     border-top: none;
 
-    // circle logo
-    a.brand {
-      margin-top: 4px;
-      margin-left: 20px;
-      background: url(../../../img/logo.svg) no-repeat;
-      background-size: contain;
-      width: 150px;
-      height: 20px;
+    a {
+      color: @grayLighter;
+      transition: color .3s ease-in-out;
+      cursor: pointer;
+      &:hover {
+        color: @white;
+        transition-duration: .1s;
+      }
+      &.brand {
+        margin-top: 4px;
+        margin-left: 20px;
+        background: url(../../../img/logo.svg) no-repeat;
+        background-size: contain;
+        width: 150px;
+        height: 20px;
+      }
+    }
+    i {
+      font-size: 1.077em;
     }
 
     // rest of the nav elements
