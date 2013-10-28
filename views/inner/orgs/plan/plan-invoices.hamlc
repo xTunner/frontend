@@ -4,7 +4,7 @@
     %dl.dl-horizontal
       %dt
         Account balance
-        %i.icon-question-sign{title: "Account balance",
+        %i.fa.fa-question-circle{title: "Account balance",
                               data-content: "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p><p>Contact us if you'd like us to send you a refund for the balance.</p><p>This amount may take a few hours to refresh.</p>",
                               data-bind: "popover: {animation: false, trigger: 'hover', html: true}"}
 
@@ -18,7 +18,7 @@
           %th Total
           %th
             Actions
-            %i.icon-question-sign{title: 'Resend an invoice to the billing email above.',
+            %i.fa.fa-question-circle{title: 'Resend an invoice to the billing email above.',
                                   data-bind: 'tooltip: {animation: false}'}
       %tbody{data-bind: "foreach: invoices"}
         %tr

@@ -2,6 +2,11 @@ CI.Versions =
   v: (v) ->
     "#{v} #{CI.Versions[v]}"
 
+  Firefox: "24.0"
+  Chrome: "30.0"
+  chromedriver: "2.2"
+
+
   default_ruby: "1.9.3-p448"
   old_ruby: "1.8.7-p358"
   rubies: [

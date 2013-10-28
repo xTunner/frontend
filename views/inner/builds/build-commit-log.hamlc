@@ -2,7 +2,7 @@
   %dt
     %span{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}"}
       Commit Log
-      %i.icon-caret-down{data-bind: "visible: rest_commits().length, css: {'icon-rotate-180': rest_commits_visible}"}
+      %i.fa.fa-caret-down{data-bind: "visible: rest_commits().length, css: {'fa-rotate-180': rest_commits_visible}"}
 
   -# can delete first dd when backend fully deploys
   %dd{data-bind: "ifnot: head_commits().length"}

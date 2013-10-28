@@ -15,10 +15,10 @@
         %td.span4
           %span{data-bind: "popover: $parent.popover_options({title: headline, content: detail, placement: 'right'})"}
             %strong{data-bind: "text: headline"}
-            %i.icon-info-sign
+            %i.fa.fa-info-circle
 
         / ko foreach: $parent.plans
         %td.span2{data-bind: "if: featureAvailableOuter($parent)"}
-          %i.icon-ok
+          %i.fa.fa-check
         / /ko
       / /ko

@@ -20,11 +20,11 @@
           %h4= user.role
           %ul.clearfix
             %li
-              %a.icon-envelope{href: "mailto:#{user.email}"}
+              %a.fa.fa-envelope{href: "mailto:#{user.email}"}
             %li
-              %a.icon-github{href: "https://github.com/#{user.github}"}
+              %a.fa.fa-github{href: "https://github.com/#{user.github}"}
             %li
-              %a.icon-twitter{href: "https://twitter.com/#{user.twitter}"}
+              %a.fa.fa-twitter{href: "https://twitter.com/#{user.twitter}"}
           - for p in user.bio
             %p
               = p

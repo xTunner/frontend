@@ -12,7 +12,7 @@
         %a{data-bind: "click: follow, text: displayName",
            data-loading-text: "Starting first build..."}
         -# %img{src: assetPath("/img/switchBounce.svg")}
-        -# %i.icon-caret-right
+        -# %i.fa.fa-caret-right
         -# %span Start this repo!
         %button Follow
       %div{data-bind: "ifnot: shouldDoFirstFollowerBuild"}

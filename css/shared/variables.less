@@ -35,12 +35,12 @@
 
 // Reds
 @red:                          #992222;
-  @redLightest:                lighten(   saturate(@red, 19),  51.5); // #fac8c8
-  @redLighter:                 lighten(   saturate(@red,  4),  24.6); // #df5959
-  @redLight:                   lighten( desaturate(@red,  8),    12); // #c13737
-  @redDark:                     darken(   saturate(@red,  5),   9.8); // #741515
-  @redDarker:                   darken(   saturate(@red,  9), 17.34); // #550d0d
   @redDarkest:                  darken(   saturate(@red, 15),  27.3); // #2b0505
+  @redDarker:                   darken(   saturate(@red,  9), 17.34); // #550d0d
+  @redDark:                     darken(   saturate(@red,  5),   9.8); // #741515
+  @redLight:                   lighten( desaturate(@red,  8),    12); // #c13737
+  @redLighter:                 lighten(   saturate(@red,  4),  24.6); // #df5959
+  @redLightest:                lighten(   saturate(@red, 19),  51.5); // #fac8c8
 
 // Orange(s)
 @orange:                       #e95900;
@@ -50,12 +50,12 @@
 
 // Text
 @successText: @green;
-@errorText: @red;
+@errorText:   @redLight;
 
 // Links
 @link:                          @gray;
 @linkHover:                @blueLight;
-@linkColor:                     @gray;
+@linkColor:                @blueDark;
 @linkColorHover:           @blueLight;
 
 /* ============= MISC. ============= */
