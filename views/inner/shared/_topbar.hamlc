@@ -2,9 +2,6 @@
   .navbar
     .navbar-inner{data-bind: "with: current_user"}
 
-      .env-badge{data-bind: "if: showEnvironment, tooltip: {title: \"You're the best\", placement: 'right', trigger: 'click'}"}
-        %span{data-bind: "css: environmentColor"}
-
       %a.brand{href: "/"}
 
       != HAML.crumbs({})
@@ -56,3 +53,6 @@
                 %a{href: "/admin/projects"} Projects
               %li
                 %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+
+      .env-badge{data-bind: "if: showEnvironment, tooltip: {title: \"You're the best\", placement: 'right', trigger: 'click'}"}
+        %span{data-bind: "css: environmentColor"}
