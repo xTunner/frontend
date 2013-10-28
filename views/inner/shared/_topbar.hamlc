@@ -11,7 +11,7 @@
 
       %ul.nav.pull-right.user-menu
         %li.pane.docs
-          %a{href: "/docs", target: "_blank"} <i class="icon-file-text-alt"></i> Documentation
+          %a{href: "/docs", target: "_blank"} <i class="fa fa-files-o"></i> Documentation
 
         %li.pane.dropdown
           %a.dropdown-toggle{data-toggle: "dropdown"}
