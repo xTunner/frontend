@@ -215,27 +215,31 @@
         line-height: 1em;
         border-radius: 5em;
         padding: .5em 1em;
+        color: @whiten;
       }
       .env-production {
-        @prodRed: #c45b23;
-        background-color: @redDark;
+        background-color: @redLight;
+        &:before {
+          content: "prod";
+        }
       }
       .env-staging {
-        @stagingYellow: #e2c256;
-        background-color: @stagingYellow;
-        color: black;
+        background: @orange;
+        &:before {
+          content: "stag";
+        }
       }
       .env-development {
-        border: 1px solid @blueLight;
-        background: none;
-        color: @whiten;
+        background: @blueLight;
         &:before {
-          content: "/dev";
+          content: "dev";
         }
       }
       .env-test {
-        @testGreen: #178261;
-        background-color: @greenDark;
+        background-color: @green;
+        &:before {
+          content: "test";
+        }
       }
     }
   }
