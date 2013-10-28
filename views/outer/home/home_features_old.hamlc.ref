@@ -8,7 +8,7 @@
     .row-fluid
       .span4.section.quick-setup.clearfix
         .section-graphic
-          %i.icon-magic
+          %i.fa.fa-magic
         .section-content
           %h6 Quick Setup
           %p
@@ -16,7 +16,7 @@
             not two days. With one click CircleCI detects test settings for a wide range of web apps, and set them up automatically on our servers.
       .span4.section.fast-tests.clearfix
         .section-graphic
-          %i.icon-bolt
+          %i.fa.fa-bolt
         .section-content
           %h6 Fast Tests
           %p
@@ -25,7 +25,7 @@
             EC2, your local server, or any other service.
       .span4.section.deep-customization.clearfix
         .section-graphic
-          %i.icon-beaker
+          %i.fa.fa-flask
         .section-content
           %h6 Deep Customization
           %p
@@ -35,7 +35,7 @@
     .row-fluid
       .span4.section.debug-with-ease.clearfix
         .section-graphic
-          %i.icon-cog
+          %i.fa.fa-cog
         .section-content
           %h6 Debug with Ease
           %p
@@ -44,7 +44,7 @@
             to test manually.
       .span4.section.smart-notifications.clearfix
         .section-graphic
-          %i.icon-bullhorn
+          %i.fa.fa-bullhorn
         .section-content
           %h6 Smart Notifications
           %p
@@ -52,7 +52,7 @@
             %strong we only notify you when it matters.
       .span4.section.incredible-support.clearfix
         .section-graphic
-          %i.icon-heart
+          %i.fa.fa-heart
         .section-content
           %h6 Loving support
           %p
@@ -62,7 +62,7 @@
     .row-fluid
       .span4.section.automatic-parallelization.clearfix
         .section-graphic
-          %i.icon-fullscreen
+          %i.fa.fa-fullscreen
         .section-content
           %h6 Automatic Parallelization
           %p
@@ -71,14 +71,14 @@
             parallelization</strong>, your test turn-around time can be massively reduced.
       .span4.section.continuous-deployment.clearfix
         .section-graphic
-          %i.icon-refresh
+          %i.fa.fa-refresh
         .section-content
           %h6 Continuous Deployment
           %p
             <strong>Get code to your customers faster</strong>, as soon as the tests pass. CircleCI supports branch-specific deployments, SSH key management and supports any hosting environment using custom commands, auto-merging, and uploading packages.
       .span4.section.more-to-come.clearfix
         .section-graphic
-          %i.icon-lightbulb
+          %i.fa.fa-lightbulb-o
         .section-content
           %h6 More to come.
           %p

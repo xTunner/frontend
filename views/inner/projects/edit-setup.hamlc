@@ -79,4 +79,4 @@
           Now set up your tests
           %span
             &nbsp;
-            %i.icon-long-arrow-right
+            %i.fa.fa-long-arrow-right

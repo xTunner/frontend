@@ -21,21 +21,21 @@
         %ul
           %li
             %a.email{href: "mailto:sayhi@circleci.com"}
-              %i.icon-envelope
+              %i.fa.fa-envelope
               sayhi@circleci.com
           %li
             %a{href: "https://www.hipchat.com/gjwkHcrD5"}
-              %i.icon-comments
+              %i.fa.fa-comments
               Live Support
           %li
             %a{href: "https://twitter.com/circleci"}
-              %i.icon-twitter
+              %i.fa.fa-twitter
               @circleci
           %li.tel
-            %i.icon-phone
+            %i.fa.fa-phone
               800 585-7075 / +1 415 944-3995
           %li.adr
-            %i.icon-globe
+            %i.fa.fa-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
               != succeed ",", ->
                 %span.street-address Circle Internet Services, 325 9th Street

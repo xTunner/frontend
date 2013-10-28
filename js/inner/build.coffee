@@ -143,11 +143,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @stop_time()? or @canceled()
 
     @status_icon_class =
-      "icon-ok": @success_style
-      "icon-remove": @komp => @important_style() || @warning_style() || @canceled()
-      "icon-time": @komp => @queued()
-      "icon-refresh": @komp => @info_style()
-      "icon-calendar-empty": @komp => @scheduled()
+      "fa-check": @success_style
+      "fa-times": @komp => @important_style() || @warning_style() || @canceled()
+      "fa-clock-o": @komp => @queued()
+      "fa-refresh": @komp => @info_style()
+      "fa-calendar-o": @komp => @scheduled()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"

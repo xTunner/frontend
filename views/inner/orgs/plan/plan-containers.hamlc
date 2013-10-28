@@ -39,7 +39,7 @@
       %span{data-bind: "text: oldTotal"}<>
       %span.grandfather{data-bind: "if: special_price_p"}
         (grandfathered
-        %i.icon-question-sign{title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!",
+        %i.fa.fa-question-circle{title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!",
                               data-bind: "tooltip: {animation: false}"}
         %span<>
           )

@@ -94,7 +94,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     # user is looking at the project's summary, but hasn't followed it
     @show_follow_project_button = @komp =>
-      @project() && !@project().followed() && @project().project_name() is @current_page().project_name
+      @project() &&
+       @project().loaded_settings() &&
+        !@project().followed() &&
+         @project().project_name() is @current_page().project_name
 
 
     if window.renderContext.current_user
@@ -195,15 +198,11 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
-    settings_path = path + "/settings"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
     @loadBuilds(path, refresh)
 
-    $.getJSON settings_path, (data) =>
-      @project(new CI.inner.Project data)
-      # load data needed to show trial information
-      @project().maybe_load_billing()
+    @maybeLoadProjectDetails(project_name)
 
     if not refresh
       display "dashboard",
@@ -225,19 +224,22 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     display 'org_settings'
 
-  maybeLoadProjectBilling: (project_name) =>
-    if @project() and @project().project_name() is project_name
-      @project().maybe_load_billing()
-    else
+  # loads info needed to show plan info/trial notices and
+  # if the user is following
+  maybeLoadProjectDetails: (project_name) =>
+    unless (@project() and @project().project_name() is project_name)
       @project().clean() if @project()
       @project new CI.inner.Project
         vcs_url: "https://github.com/#{project_name}"
-      @project().maybe_load_billing()
+
+    @project().maybe_load_settings()
+    @project().maybe_load_billing()
+
 
   loadBuild: (cx, username, project, build_num) =>
     @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
-    @maybeLoadProjectBilling(project_name)
+    @maybeLoadProjectDetails(project_name)
     @build().clean() if @build()
     @build(null)
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>

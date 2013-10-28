@@ -13,7 +13,7 @@
 
   .control-group
     %label.control-label{for: "hipchat-notify-prefs"} Fixed/Failed Only
-      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+      %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
     .controls
       %input.span1#hipchat-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)" }
 
@@ -41,7 +41,7 @@
 
   .control-group
     %label.control-label{for: "campfire-notify-prefs"} Fixed/Failed Only
-      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+      %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
     .controls
       %input.span1#campfire-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)" }
 
@@ -85,7 +85,7 @@
 
   .control-group
     %label.control-label{for: "irc-notify-prefs"} Fixed/Failed Only
-      %i.icon-question-sign{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+      %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
     .controls
       %input.span1#irc-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)" }
 

@@ -11,7 +11,7 @@
     %input.input-medium{type: "text", name: "label", placeholder: "label", data-bind: "value: tokenLabel"}
 
     %label{for: "scope"} Scope
-      %i.icon-question-sign{
+      %i.fa.fa-question-circle{
         data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
 
     %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
@@ -32,7 +32,7 @@
         %th Token
         %td
           %b Scope
-          %i.icon-question-sign{
+          %i.fa.fa-question-circle{
             data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'right', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
         %th Created
         %th

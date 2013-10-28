@@ -22,7 +22,7 @@
           %dt
             Queued Time
             %span
-              %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': usage_queue_visible }"
+              %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"
 
           %dd{data-bind: "text: queued_time_summary"}
         / /ko
@@ -93,7 +93,7 @@
         %dt
           Build Artifacts
           %span
-            %i.icon-caret-down{data-bind: "css: {'icon-rotate-180': artifacts_visible }"}
+            %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
         %dd
 
     != HAML.artifacts_table({})

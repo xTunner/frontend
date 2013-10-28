@@ -7,4 +7,4 @@
                      data-bind: "typeahead: { source: VM.docs.suggestArticles, updater: VM.docs.performDocSearch }",
                      type: "text"}
   %button{type: "submit"}
-    %i.icon-search
+    %i.fa.fa-search
