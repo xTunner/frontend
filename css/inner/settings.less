@@ -9,7 +9,7 @@
 }
 #account-settings {
   font-family: 'Roboto Slab', Helvetica, Arial, sans-serif;
-  font-size: 1.154em;
+  font-size: 1.15385em; // 15px
   line-height: 1.5em;
   color: @grayLight;
   margin-top: -1vw;
@@ -29,13 +29,12 @@
   }
   .account-top {
     border-bottom: 1px solid #ddd;
-    padding: 0 3vw;
+    padding: 0 2vw;
   }
   .nav {
     border: none;
-    max-width: 940px;
-    margin: 0 auto;
     &.nav-tabs {
+      margin: 0;
       .active a {
         background: none;
         border-bottom: 2px solid @blue;
@@ -69,7 +68,7 @@
     display: block;
     width: 100%;
     padding: 0;
-    margin-bottom: 1em;
+    margin: 0 0 1em 0;
     border-bottom: 1px solid #e5e5e5;
   }
   h4 {
@@ -82,15 +81,14 @@
   }
 }
 .settings-item {
-  padding: 0 3vw;
+  padding: 2vw;
   .settings-item-inner {
     max-width: 940px;
-    margin: 2vw auto;
   }
 }
-.notification-item, .tokens-item, .ssh-item, .heroku-item, .plans-item, .close-item {
-  margin: 3vw 0;
-}
+// .notification-item, .api-item, .tokens-item, .ssh-item, .heroku-item, .plans-item, .close-item {
+//   margin: 1vw 0;
+// }
 
 @import "settings/notification.less";
 @import "settings/api.less";
