@@ -1,7 +1,8 @@
-%h2 Delete your account
+#settings-close
+  .close-item
+    %h2 Delete your account
 
-.row
-  .span5
+  .close-item
     %p
       We don't currently have a button to delete your account.
       Please
