@@ -8,14 +8,24 @@
    li { font-size: 16px; padding: 10px; }
 }
 #account-settings {
-  color: @gray;
+  font-family: 'Roboto Slab', Helvetica, Arial, sans-serif;
+  font-size: 1.154em;
+  line-height: 1.5em;
+  color: @grayLight;
   margin-top: -1vw;
   a {
     .dark-links;
     color: @blue;
   }
-  p {
+  small {
     color: @grayLight;
+  }
+  label {
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .btn {
+    font-size: 15px;
   }
   .account-top {
     border-bottom: 1px solid #ddd;
@@ -33,7 +43,8 @@
       }
     }
     a {
-      color: @gray;
+      font-family: 'Roboto', Helvetica, Arial, sans-serif;
+      color: @grayLight;
       border: none;
       border-bottom: 2px solid transparent;
       margin-bottom: -1px;
@@ -50,10 +61,11 @@
     }
   }
   legend, h2 {
+    font-family: 'Roboto', Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    color: @gray;
     font-size: 2em;
     line-height: 1.5em;
-    font-weight: 200;
-    color: @gray;
     display: block;
     width: 100%;
     padding: 0;
@@ -61,7 +73,12 @@
     border-bottom: 1px solid #e5e5e5;
   }
   h4 {
-    font-weight: lighter;
+    font-family: 'Roboto', Helvetica, Arial, sans-serif;
+    color: @gray;
+    margin-top: 2em;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.5em;
   }
 }
 .settings-item {
@@ -71,10 +88,11 @@
     margin: 2vw auto;
   }
 }
-.notification-item, .tokens-item, .ssh-item, .heroku-item {
+.notification-item, .tokens-item, .ssh-item, .heroku-item, .plans-item, .close-item {
   margin: 3vw 0;
 }
 
+@import "settings/notification.less";
 @import "settings/api.less";
 @import "settings/ssh.less";
 @import "settings/heroku.less";

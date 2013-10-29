@@ -1,4 +1,7 @@
 #settings-ssh {
+  div:empty {
+    display: none;
+  }
   form {
     display: block;
     margin: 0;
@@ -16,10 +19,17 @@
       min-width: 150px;
       margin: 0 auto;
       display: block;
+      font-weight: 300;
+      outline: none;
     }
   }
   .with-ssh, .no-ssh {
-    margin-top: 4vw;
+    margin-top: 3vw;
+  }
+  .with-ssh {
+    textarea {
+      font-family: @monoFontFamily;
+    }
   }
   .no-ssh {
     textarea {
