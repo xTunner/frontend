@@ -49,16 +49,28 @@
 @lightYellow:                  #fff3cf;
 
 // Text
-@successText: @green;
-@errorText:   @redLight;
+@successText:                  @green;
+@errorText:                    @redLight;
+
+
+@sansFontFamily:        "Roboto", Helvetica, Arial, sans-serif;
+@serifFontFamily:       "Roboto Slab", serif;
+@monoFontFamily:        Monaco, Menlo, monospace;
+
+@baseFontSize:          13px;
+@baseFontFamily:        @sansFontFamily;
+@baseLineHeight:        1.5em;
+@altFontFamily:         @serifFontFamily;
 
 // Links
-@link:                          @gray;
+@link:                     @gray;
 @linkHover:                @blueLight;
 @linkColor:                @blueDark;
 @linkColorHover:           @blueLight;
 
 /* ============= MISC. ============= */
+
+@outerBodyBackground: darken(@white, 2.75); // #f8f8f8
 
 // Layout Grid
 @columns:                           12;
