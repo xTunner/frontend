@@ -1,6 +1,6 @@
 #settings-close
   .close-item
-    %h2 Delete your account
+    %h2 Deleting your account?
 
   .close-item
     %p
