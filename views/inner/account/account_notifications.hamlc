@@ -19,7 +19,7 @@
     %form#email_address.form-horizontal
       %legend
         Email Addresses
-        %i.fa.fa-info-circle{data-bind: "tooltip: {title: \"Those added to your GitHub will be reflected here\", placement: 'right', trigger: 'hover'}"}
+        %i.fa.fa-info-circle{data-bind: "tooltip: {title: \"Addresses added to your GitHub account will be reflected here\", placement: 'right', trigger: 'hover'}"}
       %div{data-bind: "foreach: all_emails"}
         %label.radio
           %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
