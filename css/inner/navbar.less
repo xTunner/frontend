@@ -18,7 +18,9 @@
 
     a {
       color: @grayLighter;
-      transition: color .3s ease-in-out;
+      transition-property: color, text-shadow;
+      transition-duration: .3s;
+      transition-timing-function: ease-in-out;
       cursor: pointer;
       &:hover {
         color: @white;
