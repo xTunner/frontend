@@ -1,6 +1,6 @@
-.container-fluid
-  .span3
-    %ul.nav.nav-list.well
+.project-settings
+  %aside
+    %ul.nav.nav-list
       %li.nav-header
         Project settings
       %li
