@@ -1,6 +1,5 @@
 .container-fluid
   .span3
-
     %ul.nav.nav-list.well
       %li.nav-header
         Project settings
@@ -8,7 +7,6 @@
         %a{ href: "edit" }
           Overview
       %li.divider
-
       %li.nav-header
         Tweaks
       %li
@@ -16,7 +14,6 @@
       %li
         %a{ href: "edit#env-vars" } Environment variables
       %li.divider
-
       %li.nav-header
         Test commands
       %li
@@ -24,17 +21,13 @@
       %li
         %a{ href: "edit#tests" } Tests
       %li.divider
-
-
       %li.nav-header
         Notifications
       %li
         %a{ href: "edit#hooks" } Chatrooms
       %li
         %a{ href: "edit#webhooks" } Webhooks
-
       %li.divider
-
       %li.nav-header
         Permissions
       -# %li
@@ -45,22 +38,16 @@
         %a{ href: "edit#github" } GitHub user
       %li
         %a{ href: "edit#api" } API tokens
-
       %li.nav-header
         Build artifacts
       %li
         %a{ href: "edit#artifacts" } Artifacts
-
-
       %li.nav-header
         Continuous Deployment
       %li
         %a{ href: "edit#heroku" } Heroku
       %li
         %a{ href: "edit#deployment" } Other deployments
-
-
-
     .well.follow-status{data-bind: "with: project"}
       %div{data-bind: "if: followed"}
         .follow-align
@@ -68,8 +55,6 @@
             Unfollow
         %p
           You are following this project, and will receive personalized build emails.
-
-
       %div{data-bind: "ifnot: followed"}
         .follow-align
           %button.btn.btn-primary.btn-large{data-bind: 'click: follow_and_maybe_visit'}
@@ -77,10 +62,8 @@
         %p
           You are not following this project, and will not receive personalized build emails.
           Projects are only tested if they have a follower.
-
   .span9
     != HAML['flashes']({})
-
     #subpage{data-bind: "with: project"}
       %p
         Loading...
