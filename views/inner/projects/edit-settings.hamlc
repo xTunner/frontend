@@ -2,41 +2,40 @@
   Settings for
   %a{data-bind: "attr: {href: vcs_url}, text: project_name"}
 
-.row.settings-list
-  .offset1.span6
-    %h2
-      To configure your project:
+.settings-list
+  %h2
+    To configure your project:
 
-    %ol
-      %li
-        %b Do nothing!
-        Circle infers many settings automatically.
-        Works great for Ruby, Python, NodeJS, Java and Clojure.
-        However, if it needs tweaks or doesn't work, see below.
+  %ol
+    %li
+      %b Do nothing!
+      Circle infers many settings automatically.
+      Works great for Ruby, Python, NodeJS, Java and Clojure.
+      However, if it needs tweaks or doesn't work, see below.
 
-      %li
-        Override inferred settings and add new test commands
-        %a{ href: "#setup" }
-          through the web UI.
-        Great for prototyping changes.
+    %li
+      Override inferred settings and add new test commands
+      %a{ href: "#setup" }
+        through the web UI.
+      Great for prototyping changes.
 
-      %li
-        Override all settings via a
-        %a{ href: "/docs/configuration" }
-          %i circle.yml
-          file
-        in your repo.
-        Very powerful.
+    %li
+      Override all settings via a
+      %a{ href: "/docs/configuration" }
+        %i circle.yml
+        file
+      in your repo.
+      Very powerful.
 
 
-    -#%p
-      %button.btn.btn-primary.btn-large.span6#reset{ data-loading-text: "Resetting" }
-        Delete your commands and revert to inferred
+  -#%p
+    %button.btn.btn-primary.btn-large.span6#reset{ data-loading-text: "Resetting" }
+      Delete your commands and revert to inferred
 
-    -#%p
-      %button.btn.btn-primary.btn-large#trigger{ data-loading-text: "triggering" }
-        Trigger a build
+  -#%p
+    %button.btn.btn-primary.btn-large#trigger{ data-loading-text: "triggering" }
+      Trigger a build
 
-    %p{data-bind: "if: false"}
-      %button.btn.btn-primary.btn-large#trigger_inferred{ data-loading-text: "triggering"} }
-        Trigger an inferred build
+  %p{data-bind: "if: false"}
+    %button.btn.btn-primary.btn-large#trigger_inferred{ data-loading-text: "triggering"} }
+      Trigger an inferred build
