@@ -58,7 +58,7 @@
         %p
           You are not following this project, and will not receive personalized build emails.
           Projects are only tested if they have a follower.
-  .span9
+  .span9.project-settings-inner
     != HAML['flashes']({})
     #subpage{data-bind: "with: project"}
       %p
