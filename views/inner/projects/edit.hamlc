@@ -1,30 +1,30 @@
 #project-settings
   %aside
-    %ul.nav.nav-list
-      %li.nav-header
+    %ul.side-list
+      %li.project-settings-header
         Project settings
       %li
         %a{ href: "edit" }
           Overview
-      %li.nav-header
+      %li.project-settings-header
         Tweaks
       %li
         %a{ href: "edit#parallel-builds" } Parallelism
       %li
         %a{ href: "edit#env-vars" } Environment variables
-      %li.nav-header
+      %li.project-settings-header
         Test commands
       %li
         %a{ href: "edit#setup" } Dependencies
       %li
         %a{ href: "edit#tests" } Tests
-      %li.nav-header
+      %li.project-settings-header
         Notifications
       %li
         %a{ href: "edit#hooks" } Chatrooms
       %li
         %a{ href: "edit#webhooks" } Webhooks
-      %li.nav-header
+      %li.project-settings-header
         Permissions
       -# %li
       -#   %a{ href: "edit#collaborators" } Collaborators
@@ -34,11 +34,11 @@
         %a{ href: "edit#github" } GitHub user
       %li
         %a{ href: "edit#api" } API tokens
-      %li.nav-header
+      %li.project-settings-header
         Build artifacts
       %li
         %a{ href: "edit#artifacts" } Artifacts
-      %li.nav-header
+      %li.project-settings-header
         Continuous Deployment
       %li
         %a{ href: "edit#heroku" } Heroku
