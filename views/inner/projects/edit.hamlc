@@ -6,28 +6,24 @@
       %li
         %a{ href: "edit" }
           Overview
-      %li.divider
       %li.nav-header
         Tweaks
       %li
         %a{ href: "edit#parallel-builds" } Parallelism
       %li
         %a{ href: "edit#env-vars" } Environment variables
-      %li.divider
       %li.nav-header
         Test commands
       %li
         %a{ href: "edit#setup" } Dependencies
       %li
         %a{ href: "edit#tests" } Tests
-      %li.divider
       %li.nav-header
         Notifications
       %li
         %a{ href: "edit#hooks" } Chatrooms
       %li
         %a{ href: "edit#webhooks" } Webhooks
-      %li.divider
       %li.nav-header
         Permissions
       -# %li
