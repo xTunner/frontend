@@ -56,3 +56,38 @@ form.expando {
     border: 1px solid @selected-border-color;
   }
 }
+
+.project-settings {
+  .clearfix();
+  padding: 0 1vw;
+  aside {
+    width: 250px;
+    margin: 0;
+    float: left;
+    .nav {
+      li {
+        a {
+          padding: 1em 0;
+          line-height: 1em;
+          margin: 0;
+        }
+      }
+      padding: 0;
+      .nav-header {
+        margin-top: 0;
+      }
+    }
+  }
+  .project-settings-inner {
+    width: ~"calc(100% - 500px)";
+    margin: 0;
+    padding: 0 1em;
+    .box-sizing(border-box);
+  }
+  .follow-status {
+    width: 250px;
+    float: right;
+    display: inline-block;
+    margin: 0;
+  }
+}
