@@ -97,10 +97,34 @@ form.expando {
     }
   }
   .project-settings-inner {
+    .skin_cleanBoxShadow();
     .flex-grow-shrink(1, 1);
+    margin: 0 1em;
   }
   .follow-status {
     width: 250px;
     .flex-grow-shrink(0, 1.1);
+    i {
+      font-size: 5em;
+      line-height: 1.5em;
+      display: block;
+      text-align: center;
+      color: #555;
+    }
+    h4 {
+      font-size: 1.154em;
+      margin: 0;
+      line-height: 2em;
+    }
+    p {
+      margin-bottom: 1em;
+      line-height: 1.34em;
+    }
+    button {
+      .circleButton(@grayLighter, @redLight);
+      width: 100%;
+      margin: 0 auto;
+      display: block;
+    }
   }
 }
