@@ -41,9 +41,10 @@
   .follow-status{data-bind: "with: project"}
     .followed{data-bind: "if: followed"}
       %i.fa.fa-group
-      %h4 You're following this project!
-      %p We'll keep an eye on this repo and we'll update you with personalized build emails. You can stop these any time from your <a href="/account">account settings</a>.
+      %h4 You're following this repo
+      %p We'll keep an eye on this and update you with personalized build emails. You can stop these any time from your <a href="/account">account settings</a>.
       %button{ data-bind: 'click: unfollow' } Unfollow
     .not-followed{data-bind: "ifnot: followed"}
-      %p You are not following this project, and will not receive personalized build emails. Projects are only tested if they have a follower.
+      %h4 You're not following this repo
+      %p We can't update you with personalized build emails unless you follow this project. Projects are only tested if they have a follower.
       %button{data-bind: 'click: follow_and_maybe_visit'} Follow
