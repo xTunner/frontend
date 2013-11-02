@@ -121,10 +121,19 @@ form.expando {
       line-height: 1.34em;
     }
     button {
-      .circleButton(@grayLighter, @redLight);
       width: 100%;
       margin: 0 auto;
       display: block;
+    }
+    .followed {
+      button {
+        .circleButton(@grayLighter, @redLight);
+      }
+    }
+    .not-followed {
+      button {
+        .circleButton(@grayLighter, @green);
+      }
     }
   }
 }
