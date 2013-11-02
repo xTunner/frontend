@@ -3,6 +3,14 @@ body {
   // the specificity on outer beats this
   background-color: @outerBodyBackground;
   -webkit-font-smoothing: antialiased;
+  p > a {
+    color: @blueDark;
+    border-bottom: 1px dotted @blueLight;
+    &:hover {
+      color: @blueLight;
+      border-bottom-color: @blueDark;
+    }
+  }
 }
 
 .inner {
