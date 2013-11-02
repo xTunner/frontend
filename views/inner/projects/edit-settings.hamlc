@@ -1,6 +1,3 @@
-%h1
-  Settings for
-  %a{data-bind: "attr: {href: vcs_url}, text: project_name"}
 .project-settings-block
   %h2
     To configure your project:
