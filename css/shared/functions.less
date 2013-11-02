@@ -107,6 +107,25 @@
           animation: @arguments;
 }
 
+.flex {
+  display: -webkit-flex;
+  display:         flex;
 }
+
+.flex-grow(@growValue: 1) {
+  -webkit-flex-grow: @growValue;
+          flex-grow: @growValue;
+}
+
+.flex-shrink(@shrinkValue: 1) {
+  -webkit-flex-shrink: @shrinkValue;
+          flex-shrink: @shrinkValue;
+}
+
+.flex-grow-shrink(@growValue: 1, @shrinkValue: 1) {
+  .flex-grow(@growValue);
+  .flex-shrink(@shrinkValue);
+}
+
 @import "mixins/transforms.less";
 @import "mixins/skins.less";
