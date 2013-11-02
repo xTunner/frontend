@@ -1,54 +1,43 @@
 #project-settings
   %aside
     %ul.side-list
-      %li.project-settings-header
-        Project settings
+      %li.side-title Project settings
       %li
-        %a{ href: "edit" }
-          Overview
-      %li.project-settings-header
-        Tweaks
+        %a{href: "edit"} Overview
+      %li.side-title Tweaks
       %li
-        %a{ href: "edit#parallel-builds" } Parallelism
+        %a{ href: "#parallel-builds"} Parallelism
       %li
-        %a{ href: "edit#env-vars" } Environment variables
-      %li.project-settings-header
-        Test commands
+        %a{ href: "#env-vars"} Environment variables
+      %li.side-title Test commands
       %li
-        %a{ href: "edit#setup" } Dependencies
+        %a{ href: "#setup"} Dependencies
       %li
-        %a{ href: "edit#tests" } Tests
-      %li.project-settings-header
-        Notifications
+        %a{ href: "#tests"} Tests
+      %li.side-title Notifications
       %li
-        %a{ href: "edit#hooks" } Chatrooms
+        %a{ href: "#hooks"} Chatrooms
       %li
-        %a{ href: "edit#webhooks" } Webhooks
-      %li.project-settings-header
-        Permissions
-      -# %li
-      -#   %a{ href: "edit#collaborators" } Collaborators
+        %a{ href: "#webhooks"} Webhooks
+      %li.side-title Permissions
       %li
-        %a{ href: "edit#ssh" } SSH keys
+        %a{ href: "#ssh"} SSH keys
       %li
-        %a{ href: "edit#github" } GitHub user
+        %a{ href: "#github"} GitHub user
       %li
-        %a{ href: "edit#api" } API tokens
-      %li.project-settings-header
-        Build artifacts
+        %a{ href: "#api"} API tokens
+      %li.side-title Build artifacts
       %li
-        %a{ href: "edit#artifacts" } Artifacts
-      %li.project-settings-header
-        Continuous Deployment
+        %a{ href: "#artifacts"} Artifacts
+      %li.side-title Continuous Deployment
       %li
-        %a{ href: "edit#heroku" } Heroku
+        %a{href: "#heroku"} Heroku
       %li
-        %a{ href: "edit#deployment" } Other deployments
-  .span9.project-settings-inner
+        %a{href: "#deployment"} Other deployments
+  .project-settings-inner
     != HAML['flashes']({})
     #subpage{data-bind: "with: project"}
-      %p
-        Loading...
+      %p Loading...
   .follow-status{data-bind: "with: project"}
     .followed{data-bind: "if: followed"}
       %i.fa.fa-group
