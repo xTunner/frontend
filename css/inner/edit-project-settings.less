@@ -78,6 +78,7 @@ form.expando {
   }
   .side-list {
     margin: 0;
+    list-style: none;
     a {
       .dark-links;
       text-decoration: none;
@@ -87,20 +88,21 @@ form.expando {
       display: block;
     }
   }
+  .side-title {
+    color: @grayLighter;
+    line-height: 1em;
+    margin: .5em 0;
+    padding-top: 1em;
+    &:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+    }
+  }
   .project-settings-inner {
     .flex-grow-shrink(1, 1);
   }
   .follow-status {
     width: 250px;
-  .project-settings-header {
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: @grayLighter;
-    line-height: 1em;
-    margin: .5em 0;
-    vertical-align: middle;
     .flex-grow-shrink(0, 1.1);
   }
 }
