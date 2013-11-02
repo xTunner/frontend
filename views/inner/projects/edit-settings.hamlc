@@ -8,10 +8,7 @@
       Works great for Ruby, Python, NodeJS, Java and Clojure.
       However, if it needs tweaks or doesn't work, see below.
     %li
-      Override inferred settings and add new test commands
-      %a{ href: "#setup" }
-        through the web UI.
-      Great for prototyping changes.
+      %p Override inferred settings and add new test commands <a href="#setup">through the web UI</a>. This works great for prototyping changes.
     %li
       Override all settings via a
       %a{ href: "/docs/configuration" }
