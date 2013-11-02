@@ -57,6 +57,14 @@
 }
 
 
+.dynamicTextColor (@bkg) when (lightness(@bkg) < 50%) {
+  color: @grayLightest;
+  text-shadow: 0 -1px 1px darken(saturate(@bkg,8%),21%),
+               0  1px 1px lighten(@bkg, 8);
+}
+.dynamicTextColor (@bkg) when (lightness(@bkg) >= 50%) {
+  color: @grayDark;
+  text-shadow: 0 1px 1px lighten(@bkg, 8);
 }
 .circleButton(@color: @grayLight, @hover: @grayLight) {
   text-align: center;
@@ -74,7 +82,9 @@
   line-height: 1.5em;
   transition: all .3s ease-in-out;
   font-size: 1.154em;
+  .dynamicTextColor(@color);
   &:hover, &:active {
+    .dynamicTextColor(@hover);
     background-size: 300%;
     border-color: darken(saturate(@hover,3%),3%);
     transition-duration: .1s;
