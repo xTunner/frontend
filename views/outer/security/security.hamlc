@@ -8,7 +8,7 @@
     .timestamp
       %p
         %strong Last modified:
-        March 10, 2013
+        November 5, 2013
 
     %section
       %h2 Code security
@@ -99,11 +99,6 @@
         %li work with us to close the vulnerability before disclosing it to others.
 
     %section
-      %h3 Other partners
-      %p
-        A small number of partners, who we choose not to enumerate for security reasons, have access to small amounts of our customer data. We constantly audit the data that is provided to them to ensure that this could not be used to gain access to your account or your code.
-
-    %section
       %h3 Disclosure
       %p
         If you have found a vulnerability in CircleCi, please contact our security team by email at
@@ -111,8 +106,7 @@
           %a{:href => "mailto:security@circleci.com"} security@circleci.com
         We will do everything in our power to respond and fix the problem immediately. If possible, please encrypt your message using
         %a{href: "/circleci-security.pub", target: '_blank' } our security team's GPG key
-        (ID: 0xC3D1C4F6, fingerprint: B5BB 2E59 534D 89CD F9BA 45D1 0EEA E040 C3D1 C4F6).
-
+        (ID: 0x496DB6C8, fingerprint: 94DD 6CA2 7582 AA37 B538 6054 93FB 08FB 496D B6C8).
 
     %section
       %h3 Partners with access to your source code
@@ -121,6 +115,10 @@
         %a{:href => "http://aws.amazon.com/security/"} Amazon's Security Center
         discusses their security in great detail.
 
+    %section
+      %h3 Other partners
+      %p
+        A small number of partners, who we choose not to enumerate for security reasons, have access to small amounts of our customer data. We constantly audit the data that is provided to them to ensure that this could not be used to gain access to your account or your code.
 
     %section
       %h3 Feedback
@@ -134,6 +132,9 @@
 
     %h2 Changelog
     %ul.changelog
+      %li
+        %strong Nov 5, 2013
+        Rotate GPG key.
       %li
         %strong Mar 10, 2013
         Clarify that if asked to, and given explicit permission, we will look at your code to answer your support request.

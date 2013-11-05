@@ -10,7 +10,7 @@
     .timestamp
       %p
         %strong Last modified:
-        March 26, 2012
+        November 5, 2013
 
     %h2 Private data
     %p
@@ -43,9 +43,9 @@
           %a{:href => "/about#contact"} contact page
 
       %li
-        %a{:href => "https://kissmetrics.com/"} KissMetrics
+        %a{:href => "https://mixpanel.com/"} mixpanel
         is used for SaaS marketing, including A/B testing, funnel tracking, and other conversion-rate optimization techniques. See
-        %a{:href => "http://www.kissmetrics.com/user-privacy"} KissMetrics' privacy policy
+        %a{:href => "https://mixpanel.com/privacy/"} mixpanel's privacy policy
         for more detail.
 
       %li
@@ -64,6 +64,9 @@
 
     %h2 Changelog
     %ul.changelog
+      %li
+        %strong Nov 5, 2013
+        Add mixpanel; remove KissMetrics.
       %li
         %strong Mar 10, 2013
         Discuss Hipchat usage.
