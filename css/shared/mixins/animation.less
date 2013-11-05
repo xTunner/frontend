@@ -1,0 +1,17 @@
+.animation(@arguments) {
+  -webkit-animation: @arguments;
+     -moz-animation: @arguments;
+          animation: @arguments;
+}
+.smoothHover(...) {
+  @joined: ~`"@{arguments}".slice(1,-1)`;
+  transition-property: @joined;
+  transition-duration: .3s;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    transition-duration: .1s;
+  }
+  &:active {
+    transition-duration: .2s;
+  }
+}
