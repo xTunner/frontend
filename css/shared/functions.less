@@ -105,6 +105,18 @@
 // Gradients
 // all three accept infinite number of colors and stops
 
+.vertGradient(...) {
+  @joined: ~`"@{arguments}".slice(1,-1)`;
+  background-image: linear-gradient(to bottom, @joined);
+}
+.horiGradient(...) {
+  @joined: ~`"@{arguments}".slice(1,-1)`;
+  background-image: linear-gradient(to right, @joined);
+}
+.radiGradient(...) {
+  @joined: ~`"@{arguments}".slice(1,-1)`;
+  background-image: radial-gradient(ellipse at center, @joined);
+}
 
 // Flexbox
 // makes very simple/powerful grids (good til IE10 [easy fix below 10] but Safari needs vendor temporarily)
