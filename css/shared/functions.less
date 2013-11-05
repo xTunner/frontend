@@ -75,6 +75,31 @@
 // Outline
 // same effect as "border" w/o increasing object size
 
+.outlineEmboss(@color) {
+  border: none;
+  @topHighlightColor: lighten(@color,     5);
+  @outlineColor:       darken(@color, 11.75);
+  box-shadow:  0    1px @outlineColor,
+               0   -1px @outlineColor,
+               1px  0   @outlineColor,
+              -1px  0   @outlineColor,
+               0    1px @topHighlightColor inset;
+}
+.outlineFlat(@color) {
+  border: none;
+  box-shadow:  0    1px @color,
+               0   -1px @color,
+               1px  0   @color,
+              -1px  0   @color;
+}
+.outlinePress(@color) {
+  border: none;
+  @topShadowColor: darken(@color, 5);
+  box-shadow:  0    1px @color,
+               0   -1px @color,
+               1px  0   @color,
+              -1px  0   @color,
+               0    2px @topShadowColor inset;
 }
 
 // Gradients
