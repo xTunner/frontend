@@ -57,48 +57,8 @@
 }
 
 
-.dynamicTextColor (@bkg) when (lightness(@bkg) < 50%) {
-  color: @grayLightest;
-  text-shadow: 0 -1px 1px darken(saturate(@bkg,8%),21%),
-               0  1px 1px lighten(@bkg, 8);
 }
-.dynamicTextColor (@bkg) when (lightness(@bkg) >= 50%) {
-  color: @grayDark;
-  text-shadow: 0 1px 1px lighten(@bkg, 8);
-}
-.circleButton(@color: @grayLight, @hover: @grayLight) {
-  text-align: center;
-  outline: none;
-  border-radius: 100em;
   background-size: 100%;
-  background-repeat: repeat-x;
-  background-color: @color;
-  background-image: linear-gradient(to bottom,
-                      fadein(fadeout(@white, 100), 5) 0%,
-                      fadein(fadeout(@black, 100), 8) 100%);
-  border: 1px solid darken(@color, 8);
-  box-shadow: 0 1px fadein(fadeout(@white, 100), 21) inset;
-  padding: .75em 2em;
-  line-height: 1.5em;
-  transition: all .3s ease-in-out;
-  font-size: 1.154em;
-  .dynamicTextColor(@color);
-  &:hover, &:active {
-    .dynamicTextColor(@hover);
-    background-size: 300%;
-    border-color: darken(saturate(@hover,3%),3%);
-    transition-duration: .1s;
-  }
-  &:hover {
-    background-color: darken(saturate(@hover,3%),3%);
-    box-shadow: none;
-    text-shadow: none;
-  }
-  &:active {
-    background-color: darken(saturate(@hover,5%),8%);
-    box-shadow: 0 2px fadein(fadeout(@black, 100), 21) inset;
-    text-shadow: 0 2px 1px darken(@hover, 13);
-  }
 }
 
 .animation(@arguments) {
@@ -129,3 +89,4 @@
 
 @import "mixins/transforms.less";
 @import "mixins/skins.less";
+@import "mixins/buttons.less";
