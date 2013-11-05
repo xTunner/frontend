@@ -106,7 +106,7 @@
           %a{:href => "mailto:security@circleci.com"} security@circleci.com
         We will do everything in our power to respond and fix the problem immediately. If possible, please encrypt your message using
         %a{href: "/circleci-security.pub", target: '_blank' } our security team's GPG key
-        (ID: 0x496DB6C8, fingerprint: 94DD 6CA2 7582 AA37 B538 6054 93FB 08FB 496D B6C8).
+        (ID: 0x4013DDA7, fingerprint: 3CD2 A48F 2071 61C0 B9B7  1AE2 6170 15B8 4013 DDA7).
 
     %section
       %h3 Partners with access to your source code
