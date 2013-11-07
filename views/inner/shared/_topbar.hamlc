@@ -55,4 +55,4 @@
                 %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
 
       .env-badge{data-bind: "if: showEnvironment, tooltip: {title: \"You're the best\", placement: 'left', trigger: 'click'}"}
-        %span{data-bind: "css: environmentColor"}
+        %span{data-bind: "text: environment, css: environmentColor"}
