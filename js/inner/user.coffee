@@ -23,6 +23,7 @@ CI.inner.User = class User extends CI.inner.Obj
     parallelism: 1
     gravatar_id: null
     github_id: null
+    github_oauth_scopes: []
 
   constructor: (json) ->
     super json,
@@ -81,6 +82,9 @@ CI.inner.User = class User extends CI.inner.Obj
         avatar_url: @gravatar_url()
 
       _.sortBy @organizations().concat(user_org), 'login'
+
+    @has_user_scope = @komp =>
+      _.contains(@github_oauth_scopes(), 'user')
 
   load_tokens: () =>
     $.getJSON "/api/v1/user/token", (data) =>
