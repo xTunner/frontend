@@ -10,8 +10,8 @@
         %label{for: "hipchat-notify"} Show popups
           %input#hipchat-notify{type: "checkbox", data-bind: "checked: hipchat_notify"}
       %section
-        %input#hipchat-room{type: "text", data-bind: "value: hipchat_room", placeholder: "Room"}
-        %input#hipchat-token{type: "text", data-bind: "value: hipchat_api_token", placeholder: "API"}
+        %input#hipchat-room{type: "text", data-bind: "value: hipchat_room", placeholder: "Room", required: ""}
+        %input#hipchat-token{type: "text", data-bind: "value: hipchat_api_token", placeholder: "API", required: ""}
     .chat-room-foot
       %label{for: "hipchat-notify-prefs"}
         %input#hipchat-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)"}
@@ -25,12 +25,12 @@
       %section
         %p To get your API token, visit your company Campfire, then click "My info". Note that if you use your personal API token, campfire won't show the notifications to you!
       %section
-        %input#campfire-room{placeholder: "Room", type: "text", data-bind: "value: campfire_room"}
-        %input#campfire-subdomain{placeholder: "Subdomain", type: "text", data-bind: "value: campfire_subdomain"}
-        %input#campfire-token{placeholder: "API", type: "text", data-bind: "value: campfire_token"}
+        %input#campfire-room{placeholder: "Room", type: "text", data-bind: "value: campfire_room", required: ""}
+        %input#campfire-subdomain{placeholder: "Subdomain", type: "text", data-bind: "value: campfire_subdomain", required: ""}
+        %input#campfire-token{placeholder: "API", type: "text", data-bind: "value: campfire_token", required: ""}
     .chat-room-foot
       %label.control-label{for: "campfire-notify-prefs"}
-        %input#campfire-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)"}
+        %input#campfire-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)", required: ""}
         %span Fixed/Failed Only
         %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
 
@@ -41,7 +41,7 @@
       %section
         %p To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
       %section
-        %input#hipchat-token{type: "text", data-bind: "value: flowdock_api_token", placeholder: "API"}
+        %input#hipchat-token{type: "text", data-bind: "value: flowdock_api_token", placeholder: "API", required: ""}
     .chat-room-foot
 
   .chat-room-item
@@ -49,11 +49,11 @@
       %h4 IRC
     .chat-room-body
       %section
-        %input#irc_server{type: "text", data-bind: "value: irc_server", placeholder: "Hostname"}
-        %input#irc_channel{type: "text", data-bind: "value: irc_channel", placeholder: "Channel"}
-        %input#irc_keyword{type: "text", data-bind: "value: irc_keyword", placeholder: "Private Keyword"}
-        %input#irc_username{type: "text", data-bind: "value: irc_username", placeholder: "Username"}
-        %input#irc_password{type: "text", data-bind: "value: irc_password", placeholder: "Password (optional)"}
+        %input#irc_server{type: "text", data-bind: "value: irc_server", placeholder: "Hostname", required: ""}
+        %input#irc_channel{type: "text", data-bind: "value: irc_channel", placeholder: "Channel", required: ""}
+        %input#irc_keyword{type: "text", data-bind: "value: irc_keyword", placeholder: "Private Keyword", required: ""}
+        %input#irc_username{type: "text", data-bind: "value: irc_username", placeholder: "Username", required: ""}
+        %input#irc_password{type: "text", data-bind: "value: irc_password", placeholder: "Password (optional)", required: ""}
     .chat-room-foot
       %label.control-label{for: "irc-notify-prefs"}
         %input#irc-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)"}
