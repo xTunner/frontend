@@ -253,4 +253,61 @@ form.expando {
       }
     }
   }
+  .chat-room-foot {
+    box-shadow: 0 -1px #ddd;
+    margin-top: auto;
+    &:empty {
+      padding-top: 3em;
+    }
+    label {
+      padding: 1em;
+    }
+    label, input[type="checkbox"] {
+      margin: 0;
+      line-height: 1em;
+      height: 1em;
+    }
+    input[type="checkbox"] {
+      visibility: hidden;
+      margin-right: .5em;
+      &:checked {
+        &:before {
+          content: "\f046";
+          font-family: FontAwesome;
+          visibility: visible;
+        }
+      }
+      &:not(:checked) {
+        &:before {
+          content: "\f096";
+          font-family: FontAwesome;
+          visibility: visible;
+        }
+      }
+    }
+    i {
+      font-size: 10px;
+      float: right;
+      line-height: 1.300em;
+    }
+    .tooltip {
+      .tooltip-inner {
+        padding: 1em;
+        background: @grayDark;
+      }
+      .tooltip-arrow {
+        border-top-color: @grayDark;
+      }
+    }
+  }
+  .chat-room-save {
+    display: block;
+    margin: 2em 0;
+    input {
+      &[type="submit"] {
+        .circleButton();
+        font-size: 1em;
+      }
+    }
+  }
 }
