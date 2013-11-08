@@ -201,4 +201,56 @@ form.expando {
     padding: 1em;
     box-shadow: 0 1px @grayBoxBorder;
   }
+  .chat-room-body {
+    display: flex;
+    flex-grow: 1;
+    padding: 1em;
+    flex-flow: column;
+    section:last-of-type {
+      margin-top: auto;
+    }
+    input[type="text"] {
+      display: block;
+      .box-sizing(border-box);
+      width: 100%;
+      height: 3em;
+      line-height: 2em;
+      padding: .5em;
+      background: transparent;
+      border: none;
+      border-radius: 1px;
+      .outlineInside(@grayLighter);
+      font-weight: normal;
+      border-radius: 5em;
+      padding: .5em 1.34em;
+      margin-bottom: 1em;
+      -webkit-font-smoothing: antialiased;
+      &::-webkit-input-placeholder {
+        transition: all .2s ease-in-out;
+        -webkit-transform-origin: left;
+      }
+      &:focus {
+        color: @grayDarker;
+        .outlineInside(@blueLighter);
+        &::-webkit-input-placeholder {
+          -webkit-transform: translate(0, -75%) scale(.9, .9);
+          color: @blueLighter;
+          visibility: visible !important;
+          overflow: visible;
+          text-shadow: -1px  0   @whiten,
+                       -2px  0   @whiten,
+                       -3px  0   @whiten,
+                       -4px  0   @whiten,
+                        1px  0   @whiten,
+                        2px  0   @whiten,
+                        3px  0   @whiten,
+                       -1px -1px @whiten,
+                       -2px -2px @whiten,
+                       -3px -3px @whiten,
+                       -4px -4px @whiten,
+                       -5px -5px @whiten;
+        }
+      }
+    }
+  }
 }
