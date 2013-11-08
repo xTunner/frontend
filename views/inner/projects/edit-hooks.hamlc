@@ -1,118 +1,69 @@
-%form.hook_form.form-horizontal
-  %legend Hipchat
+%h1 Chatrooms
+.chat-rooms
 
-  .control-group
-    %label.control-label{for: "hipchat-room"} Room name
-    .controls
-      %input.span4#hipchat-room{ type: "text", data-bind: "value: hipchat_room" }
+  .chat-room-item
+    .chat-room-head
+      %h4 Hipchat
+    .chat-room-body
+      %section
+        %p To get your API token, create a "notification" token via the <a href="https://hipchat.com/admin/api">HipChat site</a>.
+        %label{for: "hipchat-notify"} Show popups
+          %input#hipchat-notify{type: "checkbox", data-bind: "checked: hipchat_notify"}
+      %section
+        %input#hipchat-room{type: "text", data-bind: "value: hipchat_room", placeholder: "Room"}
+        %input#hipchat-token{type: "text", data-bind: "value: hipchat_api_token", placeholder: "API"}
+    .chat-room-foot
+      %label{for: "hipchat-notify-prefs"}
+        %input#hipchat-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)"}
+        %span Fixed/Failed Only
+        %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
 
-  .control-group
-    %label.control-label{for: "hipchat-notify"} Show popups
-    .controls
-      %input.span1#hipchat-notify{ type: "checkbox", data-bind: "checked: hipchat_notify" }
+  .chat-room-item
+    .chat-room-head
+      %h4 Campfire
+    .chat-room-body
+      %section
+        %p To get your API token, visit your company Campfire, then click "My info". Note that if you use your personal API token, campfire won't show the notifications to you!
+      %section
+        %input#campfire-room{placeholder: "Room", type: "text", data-bind: "value: campfire_room"}
+        %input#campfire-subdomain{placeholder: "Subdomain", type: "text", data-bind: "value: campfire_subdomain"}
+        %input#campfire-token{placeholder: "API", type: "text", data-bind: "value: campfire_token"}
+    .chat-room-foot
+      %label.control-label{for: "campfire-notify-prefs"}
+        %input#campfire-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)"}
+        %span Fixed/Failed Only
+        %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
 
-  .control-group
-    %label.control-label{for: "hipchat-notify-prefs"} Fixed/Failed Only
-      %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
-    .controls
-      %input.span1#hipchat-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)" }
+  .chat-room-item
+    .chat-room-head
+      %h4 Flowdock
+    .chat-room-body
+      %section
+        %p To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
+      %section
+        %input#hipchat-token{type: "text", data-bind: "value: flowdock_api_token", placeholder: "API"}
+    .chat-room-foot
 
-  .control-group
-    %label.control-label{for: "hipchat-token"} API token
-    .controls
-      %input.span4#hipchat-token{ type: "text", data-bind: "value: hipchat_api_token" }
-      .help-block
-        To get your API token,
-        %a{href: "https://hipchat.com/admin/api"}
-          create a "<i>notification</i>" token on the HipChat site.
-
-
-
-  %legend Campfire
-  .control-group
-    %label.control-label{for: "campfire-room"} Room name
-    .controls
-      %input.span4#campfire-room{ type: "text", data-bind: "value: campfire_room" }
-
-  .control-group
-    %label.control-label{for: "campfire-subdomain"} Subdomain
-    .controls
-      %input.span4#campfire-subdomain{ type: "text", data-bind: "value: campfire_subdomain" }
-
-  .control-group
-    %label.control-label{for: "campfire-notify-prefs"} Fixed/Failed Only
-      %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
-    .controls
-      %input.span1#campfire-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)" }
-
-  .control-group
-    %label.control-label{for: "campfire-token"} API token
-    .controls
-      %input.span4#campfire-token{ type: "text", data-bind: "value: campfire_token" }
-      .help-block
-        To get your API token, visit your company Campfire, then click "My info".
-        You should end up at
-        https://YOURSUBDOMAIN.campfirenow.com/member/edit.
-        Note that if you use your personal API token, campfire won't show the notifications
-        to you!
-
-
-  %legend Flowdock
-
-  .control-group
-    %label.control-label{for: "flowdock-token"} API token
-    .controls
-      %input.span4#hipchat-token{ type: "text", data-bind: "value: flowdock_api_token" }
-      .help-block
-        To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
+  .chat-room-item
+    .chat-room-head
+      %h4 IRC
+    .chat-room-body
+      %section
+        %input#irc_server{type: "text", data-bind: "value: irc_server", placeholder: "Hostname"}
+        %input#irc_channel{type: "text", data-bind: "value: irc_channel", placeholder: "Channel"}
+        %input#irc_keyword{type: "text", data-bind: "value: irc_keyword", placeholder: "Private Keyword"}
+        %input#irc_username{type: "text", data-bind: "value: irc_username", placeholder: "Username"}
+        %input#irc_password{type: "text", data-bind: "value: irc_password", placeholder: "Password (optional)"}
+    .chat-room-foot
+      %label.control-label{for: "irc-notify-prefs"}
+        %input#irc-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)"}
+        %span Fixed/Failed Only
+        %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
 
 
-  %legend IRC
-
-  .control-group
-    %label.control-label{for: "irc_server"} Server
-    .controls
-      %input.span4#irc_server{ type: "text", data-bind: "value: irc_server" }
-      .help-block
-        HOSTNAME or HOSTNAME:PORT (e.g. 'irc.freenode.net' or 'irc.freenode.net:6667')
-
-  .control-group
-    %label.control-label{for: "irc_channel"} Channel
-    .controls
-      %input.span4#irc_channel{ type: "text", data-bind: "value: irc_channel" }
-      .help-inline
-      (e.g. #clojure)
-
-  .control-group
-    %label.control-label{for: "irc-notify-prefs"} Fixed/Failed Only
-      %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
-    .controls
-      %input.span1#irc-notify-prefs{ type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)" }
-
-  .control-group
-    %label.control-label{for: "irc_keyword"} Keyword
-    .controls
-      %input.span4#irc_keyword{ type: "text", data-bind: "value: irc_keyword" }
-      .help-inline
-      Private keyword to join the channel (e.g. "trustno1")
-
-  .control-group
-    %label.control-label{for: "irc_username"} Username
-    .controls
-      %input.span4#irc_username{ type: "text", data-bind: "value: irc_username" }
-      .help-inline
-      (e.g. circlebot)
-
-  .control-group
-    %label.control-label{for: "irc_password"} Password
-    .controls
-      %input.span4#irc_password{ type: "text", data-bind: "value: irc_password" }
-      .help-inline
-      optional
-
-  .form-actions
-    %input.btn.btn-primary.span5.btn-large{data-bind: "click: save_hooks",
-                                           type: "submit",
-                                           value: "Save notification hooks",
-                                           data-loading-text: "Saving",
-                                           data-success-text: "Saved"}
+.chat-room-save
+  %input{data-bind: "click: save_hooks",
+                                         type: "submit",
+                                         value: "Save notification hooks",
+                                         data-loading-text: "Saving",
+                                         data-success-text: "Saved"}
