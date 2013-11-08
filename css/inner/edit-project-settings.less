@@ -100,4 +100,59 @@ form.expando {
       }
     }
   }
+  .parallelism-items {
+    @blockSize: 8em;
+    @blockColor: @green;
+    @blockColor: @gray;
+    display: flex;
+    flex-flow: row wrap;
+    flex-grow: 1;
+    flex-shrink: 1;
+    order: 2;
+    margin: 0;
+    flex-basis: (@blockSize * 5);
+    max-width: (@blockSize * 8);
+    .selected {
+      span {
+        .outlineFlat(@blockColor);
+        color: @whiten;
+      }
+      ~ label span {
+        background: transparent;
+        color: @blockColor;
+        .outlineFlat(@blockColor);
+      }
+    }
+    input[type=radio] {
+      display: none;
+    }
+    label {
+      width: @blockSize;
+      height: @blockSize;
+      font-size: inherit;
+      margin: 0;
+      position: relative;
+      &:hover ~ label span {
+        box-shadow: none;
+      }
+      span {
+        position: absolute;
+        top: 3%;
+        left: 3%;
+        width: 94%;
+        padding: ~'calc(47% - .5em)' 0;
+        box-sizing: border-box;
+        background: @blockColor;
+        border-radius: 3px;
+        line-height: 1em;
+        text-align: center;
+        transition: box-shadow .2s ease-in-out;
+        color: @whiten;
+        &:after {
+          content: "x";
+          margin-right: -.5ex;
+        }
+      }
+    }
+  }
 }
