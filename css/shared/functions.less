@@ -92,6 +92,13 @@
                1px  0   @color,
               -1px  0   @color;
 }
+.outlineInside(@color) {
+  border: none;
+  box-shadow:  0    1px @color inset,
+               0   -1px @color inset,
+               1px  0   @color inset,
+              -1px  0   @color inset;
+}
 .outlinePress(@color) {
   border: none;
   @topShadowColor: darken(@color, 5);
