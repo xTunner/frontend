@@ -182,6 +182,56 @@ form.expando {
       justify-content: space-between;
     }
   }
+  // Environment Variables Page
+  .environment-variables-inner{
+    .outlineFlat();
+    border-radius: 4px;
+    form {
+      margin: 0;
+      + ul li:last-of-type {
+          box-shadow: none;
+      }
+    }
+    li {
+      display: flex;
+      justify-content: space-between;
+      line-height: 3em;
+      box-shadow: 0 1px @grayBoxBorder;
+    }
+    span {
+      display: block;
+      &:not(:last-of-type) {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 44%;
+        padding-left: 1em;
+      }
+    }
+    input[type="text"] {
+      .stickyInput();
+      margin: 0;
+      box-shadow: none;
+      padding: 0;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    input[type=submit] {
+      .circleButton(@grayLightest, @green);
+      padding: 0 1.5em;
+      font-size: 1em;
+      line-height: 2em;
+      margin: 0 .5em;
+    }
+    a {
+      line-height: 3em;
+      padding: 1em 1em 1em 4em;
+      color: @grayLight;
+      &:hover {
+        color: @redLight;
+      }
+    }
+  }
   // Chatrooms Page
   .chat-rooms {
     display: flex;
