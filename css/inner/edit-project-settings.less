@@ -231,31 +231,33 @@ form.expando {
   }
   // Chatrooms Page
   .chat-rooms {
-    display: flex;
-    flex-flow: row wrap;
+    .clearfix();
   }
   .chat-room-item {
-    .flex(0,0);
     width: 21em;
     min-height: 34em;
     .outlineFlat();
     margin: 1em;
     border-radius: 4px;
     padding: 0;
-    display: flex;
-    flex-flow: column;
+    float: left;
+    position: relative;
   }
   .chat-room-head {
     padding: 1em;
     box-shadow: 0 1px @grayBoxBorder;
   }
   .chat-room-body {
-    display: flex;
-    .flex(1,0);
-    padding: 1em;
-    flex-flow: column;
+    .clearfix();
+    section:first-of-type {
+      padding: 1em;
+    }
     section:last-of-type {
-      margin-top: auto;
+      position: absolute;
+      bottom: 3em;
+      width: 100%;
+      padding: 0 1em;
+      .box-sizing(border-box);
     }
     input[type="text"] {
       .stickyInput();
@@ -264,11 +266,17 @@ form.expando {
   .chat-room-foot {
     box-shadow: 0 -1px #ddd;
     margin-top: auto;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
     &:empty {
       padding-top: 3em;
     }
     label {
       padding: 1em;
+      span {
+        margin-left: 1.5em;
+      }
     }
     label, input[type="checkbox"] {
       margin: 0;
@@ -276,21 +284,18 @@ form.expando {
       height: 1em;
     }
     input[type="checkbox"] {
-      visibility: hidden;
+      display: none;
       margin-right: .5em;
-      &:checked {
-        &:before {
-          content: "\f046";
-          font-family: FontAwesome;
-          visibility: visible;
-        }
+      ~ span:before {
+        content: "\f096";
+        font-family: FontAwesome;
+        visibility: visible;
+        margin-right: 1em;
+        position: absolute;
+        left: 1em;
       }
-      &:not(:checked) {
-        &:before {
-          content: "\f096";
-          font-family: FontAwesome;
-          visibility: visible;
-        }
+      &:checked ~ span:before {
+        content: "\f046";
       }
     }
     i {
