@@ -1,5 +1,6 @@
 .project-settings-block
-  %h1 How to configure your project
+  %h1 How to configure
+    %span{data-bind: "text: project_name"}
   %ul
     %li
       %h4 Step 1

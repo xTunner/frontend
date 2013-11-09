@@ -1,5 +1,6 @@
 .environment-variables
-  %h1 Environment variables
+  %h1 Environment variables for
+    %span{data-bind: "text: project_name"}
 
   %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
   .environment-variables-inner
