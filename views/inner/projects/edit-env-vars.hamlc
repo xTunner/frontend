@@ -8,9 +8,9 @@
       %ul{data-bind: "if: env_vars().length"}
         %li
           %span
-            %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
+            %input#env-var-name{type: "text", name: "name", placeholder: "(enter name)", data-bind: "value: env_varName", required: ""}
           %span
-            %input#env-var-value{type: "text", name: "value", placeholder: "Value", data-bind: "value: env_varValue", required: ""}
+            %input#env-var-value{type: "text", name: "value", placeholder: "(enter value)", data-bind: "value: env_varValue", required: ""}
           %span
             %input#submit{type: "submit",
                           value: "Add",
