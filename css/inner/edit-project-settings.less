@@ -10,7 +10,7 @@ form.expando {
   }
 }
 #project-settings {
-  .flex();
+  .flexBox();
   padding: 0 2em;
   a {
     color: @blueDark;
@@ -36,7 +36,7 @@ form.expando {
   aside {
     width: 250px;
     min-width: 200px;
-    .flex-grow-shrink(0, 1.1);
+    .flex(0, 1.1);
   }
   .side-list {
     margin: 0;
@@ -60,14 +60,14 @@ form.expando {
   }
   .project-settings-inner {
     .skin_cleanBoxShadow();
-    .flex-grow-shrink(1, 1);
+    .flex(1, 1);
     margin: 0 2em;
     min-height: 89vh;
   }
   .follow-status {
     width: 250px;
     min-width: 200px;
-    .flex-grow-shrink(0, 1.1);
+    .flex(0, 1.1);
     i {
       font-size: 5em;
       line-height: 1.5em;
@@ -112,11 +112,10 @@ form.expando {
     @blockColor: @gray;
     display: flex;
     flex-flow: row wrap;
-    flex-grow: 1;
-    flex-shrink: 1;
+    .flex(1, 1, (@blockSize * 5));
     order: 2;
     margin: 0;
-    flex-basis: (@blockSize * 5);
+    // flex-basis: (@blockSize * 5);
     max-width: (@blockSize * 8);
     .selected {
       span {
@@ -177,8 +176,8 @@ form.expando {
     display: flex;
     justify-content: space-between;
     .mini-faq-item {
-      // .flex-grow-shrink(1,1);
-      flex-basis: 30%;
+      // flex-basis: 30%;
+      .flex(1, 1, 30%);
       justify-content: space-between;
     }
   }
@@ -202,9 +201,8 @@ form.expando {
     span {
       display: block;
       &:not(:last-of-type) {
-        flex-grow: 1;
-        flex-shrink: 1;
-        flex-basis: 44%;
+        .flex(1, 1, 44%);
+        // flex-basis: 44%;
         padding-left: 1em;
       }
     }
@@ -239,8 +237,7 @@ form.expando {
     flex-flow: row wrap;
   }
   .chat-room-item {
-    flex-grow: 0;
-    flex-shrink: 0;
+    .flex(0,0);
     width: 21em;
     min-height: 34em;
     .outlineFlat();
@@ -256,7 +253,7 @@ form.expando {
   }
   .chat-room-body {
     display: flex;
-    flex-grow: 1;
+    .flex(1,0);
     padding: 1em;
     flex-flow: column;
     section:last-of-type {
