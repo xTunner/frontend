@@ -23,21 +23,5 @@
         %span{data-bind: "text: name"}
         %span{data-bind: "text: value"}
         %span
-          %a{data-bind: "click: $root.project().delete_env_var"}
+          %a{data-bind: "click: $root.project().delete_env_var", title: "Remove this variable?"}
             %i.fa.fa-times-circle
-
-
-  / %div{data-bind: "if: env_vars().length"}
-  /   %table.table.well.table
-  /     %thead
-  /       %th
-  /         %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
-  /       %th Value
-  /       %th
-  /     %tbody{data-bind: "foreach: env_vars"}
-  /       %td{data-bind: "text: name"}
-  /       %td{data-bind: "text: value"}
-  /       %td
-  /         %span
-  /           %button.btn{value: "Delete", data-bind: "click: $root.project().delete_env_var"}
-  /             Delete
