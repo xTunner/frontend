@@ -1,0 +1,7 @@
+-# The key line here is: No source for ruby-1.9.3-p448 provided with debugger-ruby_core_source gem.
+
+-# Not all ruby patchsets work with debugger, only a small subset. Did you change your version of ruby recently?
+
+-# What sometimes happens is that people will update their version of ruby, and not experience any problems because the compiled part of linecache is in their Circle cache. Then the old cache will go away (happens periodically, or through manual intervention), and suddenly the build doesn't work anymore.
+
+-# Either way, the solution is to switch to a supported version of ruby, or to turn of debugger.
