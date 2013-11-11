@@ -179,11 +179,12 @@
     padding: 1em;
     margin-left: @sideLineWidth;
     .bash-command {
-      color: @white;
-      font-weight: bolder;
-      margin: 0;
       border: none;
       padding-bottom: 0;
+      &:first-line {
+        color: @white;
+        font-weight: bold;
+      }
       &:before {
         content: "$";
         margin-right: 1ex;
