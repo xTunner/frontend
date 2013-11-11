@@ -812,7 +812,13 @@
       general:
         branches:
           ignore:
-            - gh-pages
+            - gh-pages # list of branches to ignore
+            - /release\/.*/ # or ignore regexes
+
+%p
+  We deliberately don't support branch whitelisting instead, as we have found that leads to trouble for users down the line.
+  However, if this is an important issue to you, it can be
+  accomplished with an advanced regex, an exercise which is left to the reader.
 
 %p
   %code circle.yml
