@@ -1,0 +1,54 @@
+-# - @title = "RSpec is failing but not being reported as such"
+-# - @lastUpdated = "Jul 29, 2013"
+
+
+-# %p
+-#   Sometimes, Circle will report that your RSpec tests have passed, even though the RSpec output indicates that some of the specs have failed.
+-#   This is a bug in RSpec.
+
+-# %p
+-#   Circle uses the exit code of each test command to determine success or failure.
+-#   Due to bugs in RSpec, RSpec will return an exit code of 0 (indicating success), even when spec have failed.
+
+-# %p
+-#   This happens because RSpec throws an exception while it's running.
+-#   RSpec runs during the Ruby
+-#   %code at_exit
+-#   handler, and exceptions thrown then cause Ruby to exit with an exit code of zero.
+
+-# %p
+-#   This bug has appeared in many different versions of RSpec, and appears to be quite difficult to kill.
+-#   To solve it, we recommend
+-#   It's actually quite interesting when it does this.
+-#   R
+
+-# spec_helper.rb
+
+
+-# You should be able to reproduce it either locally or via SSH into a build machine: bundle exec rspec some-failing-test followed by echo $?.
+
+-# With rspec, the most common source of incorrect exit statuses is at_exit handlers which either fail to propagate the exit status, or throw exceptions. Do you have any at_exit code that might be breaking?
+
+-# The general solution is to upgrade your Ruby patchset, though I believe people have also fixed it by upgrading the RSpec version.
+
+-# http://bugs.ruby-lang.org/issues/5218
+
+-# https://github.com/jonleighton/spring/issues/57
+
+
+
+-# module Kernel
+-#   alias :__at_exit :at_exit
+-#   def at_exit(&block)
+-#     __at_exit do
+-#       exit_status = $!.status if $!.is_a?(SystemExit)
+-#       block.call
+-#       exit exit_status if exit_status
+-#     end
+-#   end
+-# end
+
+-# The solution is to track down the exception being thrown.
+
+-# Try different patchese
+-# Try different rspec
