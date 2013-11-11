@@ -8,6 +8,8 @@
     %span{data-bind: "ifnot: github_user()"}
       None
 
+-# use old version until backend API changes are fully deployed
+/ ko ifnot: VM.current_user().admin
 %div{data-bind: "if: github_user() != $root.current_user().login"}
   %form.api
     %input.btn.btn-primary{type: "submit",
@@ -23,5 +25,29 @@
                           data-bind: "click: clear_github_user",
                           data-loading-text: "Saving...",
                           data-success-text: "Saved"}
+/ /ko
+
+/ ko if: VM.current_user().admin
+%div{data-bind: "if: github_user() != $root.current_user().login"}
+  %form.api{data-bind: "if: $root.current_user().has_user_scope"}
+    %input.btn.btn-primary{type: "submit",
+                           value: "Set GitHub User to #{VM.current_user().login}",
+                           data-bind: "click: set_github_user",
+                           data-loading-text: "Saving...",
+                           data-success-text: "Saved"}
+  %form.api{data-bind: "ifnot: $root.current_user().has_user_scope"}
+    .alert.alert-warning
+      We need an additional OAuth scope from GitHub so that we can add a new SSH key to your GitHub user account. You'll be redirected to GitHub to grant the scope.
+      %a.btn.btn-primary{href: CI.github.authUrl(["user", "repo"])}
+        Grant Circle the user scope
+%div{data-bind: "if: github_user() == $root.current_user().login"}
+  %form.api
+    %input.btn.btn-danger{type: "submit",
+                          value: "Remove GitHub User",
+                          data-bind: "click: clear_github_user",
+                          data-loading-text: "Saving...",
+                          data-success-text: "Saved"}
+/ /ko
+
 
 %p Note: You should not delete the project's deploy key from Github. We will still use the project key to do an initial checkout that we use to configure the build.
