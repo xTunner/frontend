@@ -23,6 +23,9 @@
           %div{data-bind: "if: $root.project() && $root.project().show_build_page_trial_notice"}
             != HAML.project_trial_notice()
 
+          %div{data-bind: "if: $root.project() && $root.project().show_enable_project_notice"}
+            != HAML.project_enable_notice()
+
           .row-fluid{data-bind: "if: $root.show_follow_project_button"}
             .offset1.span10
               .alert.alert-success
@@ -33,8 +36,6 @@
                 to add
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
-
-
 
         -# coming soon
         -#%aside.stages.span2
