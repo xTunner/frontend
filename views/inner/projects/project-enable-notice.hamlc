@@ -3,8 +3,9 @@
     .row-fluid
       .offset1.span10
         .alert.alert-error
+          Project
+          %span{data-bind: "text: project_name"}
+          isn't being built because we don't have an SSH key.
           %button.btn.btn-primary{data-bind: "click: VM.project().enable",
-                                  data-loading-text: "Enabling..."}
-            Enable
-            %span{data-bind: "text: project_name"}
-          to build on Circle.
+                                  data-loading-text: "Adding..."}
+            Add SSH key
