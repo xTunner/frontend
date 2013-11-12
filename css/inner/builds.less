@@ -44,6 +44,33 @@
     padding-bottom: 15px;
     margin: 0 0 15px 0;
   }
+  table {
+    width: 100%;
+    td {
+      width: 40%;
+      &:not(:last-child) {
+        white-space: nowrap;
+        padding-right: 1em;
+      }
+    }
+    .anchor-title {
+      width: 1%;
+      font-weight: bold;
+      color: @grayDark;
+      min-width: 100px;
+    }
+    dt {
+      color: @grayDark;
+    }
+    .build_status {
+      text-transform: uppercase;
+      vertical-align: middle;
+      text-shadow: none;
+      border-radius: 10em;
+      padding: 0 1.5ex;
+      line-height: 1.5em;
+    }
+  }
   div:empty {
     display: none;
   }
