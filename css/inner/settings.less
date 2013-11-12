@@ -2,24 +2,34 @@
 .collaborators-table td { vertical-align: middle; }
 .spec_form textarea { position: relative; }
 #account-settings {
-  color: @gray;
+  font-size: 1.143em; // 16px (increase for legibility)
+  line-height: 1.5em;
+  color: @grayLight;
   margin-top: -1vw;
   a {
     .dark-links;
     color: @blue;
   }
-  p {
+  small {
     color: @grayLight;
+  }
+  label {
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .btn {
+    font-size: 15px;
+    outline: none;
   }
   .account-top {
     border-bottom: 1px solid #ddd;
-    padding: 0 3vw;
+    padding: 0 2vw;
   }
   .nav {
     border: none;
-    max-width: 940px;
-    margin: 0 auto;
     &.nav-tabs {
+      max-width: 940px;
+      margin: 0 auto;
       .active a {
         background: none;
         border-bottom: 2px solid @blue;
@@ -27,7 +37,8 @@
       }
     }
     a {
-      color: @gray;
+      font-family: @sansFontFamily;
+      color: @grayLight;
       border: none;
       border-bottom: 2px solid transparent;
       margin-bottom: -1px;
@@ -44,31 +55,39 @@
     }
   }
   legend, h2 {
-    font-size: 2em;
-    line-height: 1.5em;
-    font-weight: 200;
+    font-family: @sansFontFamily;
+    font-weight: bold;
     color: @gray;
+    font-size: 2em;
     display: block;
     width: 100%;
     padding: 0;
-    margin-bottom: 1em;
-    border-bottom: 1px solid #e5e5e5;
+    margin: 0;
+    line-height: 2em;
+    border: none;
   }
   h4 {
-    font-weight: lighter;
+    font-family: @sansFontFamily;
+    font-weight: bold;
+    color: @gray;
+    margin: 0;
+    font-size: 1em;
+    line-height: 2em;
   }
   .notification-item, .tokens-item, .ssh-item, .heroku-item {
     margin: 3vw 0;
   }
 }
 .settings-item {
-  padding: 0 3vw;
+  padding: 2vw;
   .settings-item-inner {
     max-width: 940px;
-    margin: 2vw auto;
+    margin: 0 auto;
   }
 }
 
+@import "settings/notification.less";
 @import "settings/api.less";
 @import "settings/ssh.less";
 @import "settings/heroku.less";
+@import "settings/plans.less";

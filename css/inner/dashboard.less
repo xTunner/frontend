@@ -47,9 +47,6 @@
       line-height: 13em;
     }
   }
-  .dash-wrap {
-    .translate3d(0,0,0);
-  }
   .dashboard-main {
     padding-bottom: 4px;
     overflow-x: auto;
@@ -63,6 +60,8 @@
   #invite, #add-projects{
     .buttonDark;
     width: 50%;
+    padding: 0;
+    font-weight: 600;
   }
   #add-projects {
     border-radius: 3px 0 0 3px;
@@ -171,7 +170,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    width: 66%;
+    width: 60%;
     margin-right: -4px;
   }
   .tooltip {
@@ -189,13 +188,14 @@
       border: 1px solid darken(@gray,5%);
       line-height: 1em;
       white-space: nowrap;
+      font-weight: bolder;
     }
   }
   .build-circles {
     display: inline-block;
     vertical-align: top;
     text-align: right;
-    width: 34%;
+    width: 40%;
     height: 1.2em;
     position: relative;
     margin: .4em 0;
@@ -352,7 +352,7 @@
     .box-sizing(border-box);
     a {
       display: block;
-      line-height: 1.5em;
+      line-height: 1.25em;
       padding: .5em 0 .5em .5em;
     }
     &:first-child a {

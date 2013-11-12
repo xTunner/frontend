@@ -22,7 +22,7 @@
       %td
         %a{data-bind: "attr: { href: url, title: description(#{@mention_project}) }, text: description(#{@mention_project})"}
 
-      %td
+      %td.revision
         %a.text{data-bind: "attr: { href: url, title: github_revision }, text: github_revision"}
       / ko if: VM.current_page().show_branch
       %td

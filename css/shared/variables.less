@@ -49,11 +49,21 @@
 @lightYellow:                  #fff3cf;
 
 // Text
-@successText: @green;
-@errorText:   @redLight;
+@successText:                  @green;
+@errorText:                    @redLight;
+
+
+@sansFontFamily:        "Proxima Nova", sans-serif;
+@serifFontFamily:       "PT Serif", serif;
+@monoFontFamily:        "Monaco", monospace;
+
+@baseFontSize:          14px;
+@baseFontFamily:        @sansFontFamily;
+@baseLineHeight:        20px;
+@altFontFamily:         @serifFontFamily;
 
 // Links
-@link:                          @gray;
+@link:                     @gray;
 @linkHover:                @blueLight;
 @linkColor:                @blueDark;
 @linkColorHover:           @blueLight;
@@ -68,6 +78,8 @@
 @shadowSoft: fadein(fadeout(@black, 100), 8);
 
 /* ============= MISC. ============= */
+
+@outerBodyBackground: darken(@white, 2.75); // #f8f8f8
 
 // Layout Grid
 @columns:                           12;

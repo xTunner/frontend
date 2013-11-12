@@ -18,19 +18,16 @@
   .notification-item
     %form#email_address.form-horizontal
       %legend
-        Email Address
+        Email Addresses
+        %i.fa.fa-info-circle{data-bind: "tooltip: {title: \"Addresses added to your GitHub account will be reflected here\", placement: 'right', trigger: 'hover'}"}
       %div{data-bind: "foreach: all_emails"}
         %label.radio
           %input{type: "radio", name: "selected_email", data-bind: "value: $data, checked: $root.current_user().selected_email, click: $root.current_user().save_email_address"}
           %span{data-bind: "text: $data"}
-    %div
-      %i To add more email addresses, add them on GitHub, then refresh this page.
 
 
   .notification-item
     %form
       %legend
         Project preferences
-      %p Projects can be individually configured, from a project's <b>Edit settings</b> page.
-
-      %p Instant message settings are per-project; edit a project to set them.
+      %p Projects can be individually configured, from a project's 'Settings' page. Instant message settings are per-project; edit a project to set them.

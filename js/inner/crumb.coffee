@@ -38,6 +38,10 @@ CI.inner.ProjectSettingsCrumb = class ProjectCrumb extends Crumb
   name: () =>
     "Edit settings"
 
+  styles: () =>
+    @komp =>
+      'crumb-settings'
+
   path: () =>
     CI.paths.project_settings_path(@username, @project)
 
