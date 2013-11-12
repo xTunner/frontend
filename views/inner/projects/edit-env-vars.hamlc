@@ -26,3 +26,4 @@
         %span
           %a{data-bind: "click: $root.project().delete_env_var", title: "Remove this variable?"}
             %i.fa.fa-times-circle
+            %span Remove
