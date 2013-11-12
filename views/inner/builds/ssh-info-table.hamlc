@@ -7,6 +7,8 @@
     %dt{data-bind: "text: $index"}
     %dd{data-bind: "css: { connected: $data.ssh_enabled }"
       %span.hi-daniel{data-bind: "text: $parent.ssh_connection_string($data)"}
+      %span{data-bind: "ifnot: $data.ssh_enabled"}
+        != HAML.fast_spinner()
 
 %p
   SSH boxes will stay up for 30 minutes. This build takes up one of your

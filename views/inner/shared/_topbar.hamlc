@@ -1,25 +1,23 @@
 #topbar
   .navbar
-    .navbar-inner
+    .navbar-inner{data-bind: "with: current_user"}
+
       %a.brand{href: "/"}
 
       != HAML.crumbs({})
 
-      %ul.nav.pull-right{data-bind: "with: current_user"}
-        %li.pane
-          %a{href: "/docs", target: "_blank"}
-            Documentation
-
-        %li{data-bind: "if: showEnvironment"}
-          %a
-            %span{data-bind: "text: environment, css: environmentColor, tooltip: {title: \"You're the best\", placement: 'left', trigger: 'click'}"}
+      %ul.nav.pull-right.user-menu
+        %li.pane.docs
+          %a{href: "/docs", target: "_blank"} <i class="fa fa-files-o"></i> Documentation
 
         %li.pane.dropdown
           %a.dropdown-toggle{data-toggle: "dropdown"}
             %span{data-bind: "ifnot: gravatar_url()"}
               %span{data-bind: "text: login"}
             %span{data-bind: "if: gravatar_url()"}
-              %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
+              -# FIXME GitHub returns 420x420 identicons which gravatar does
+                not resize. Add in width + height to hack around this
+              %img.gravatar{data-bind: "attr: {src: gravatar_url(30), width: 30, height: 30}"}
 
             %i.fa.fa-caret-down
 
@@ -57,3 +55,6 @@
                 %a{href: "/admin/projects"} Projects
               %li
                 %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+
+      .env-badge{data-bind: "if: showEnvironment, tooltip: {title: \"You're the best\", placement: 'left', trigger: 'click'}"}
+        %span{data-bind: "text: environment, css: environmentColor"}

@@ -1,19 +1,20 @@
 #topbar {
+
+  @dropdownToggleColor: @blue;
+  @dropdownWidth: 230px;
+
   .navbar {
     margin-bottom: 0;
   }
   .navbar-inner {
     padding: 0 1vw;
     border-radius: 0px;
-    border-bottom: 0px;
-    border-left: 0px;
-    border-right: 0px;
     @navbarHeight: 50px;
-
-    // the bar itself
+    color: @grayLighter;
     background: @blueDarker;
-    height: @navbarHeight + 2;
+    height: @navbarHeight;
     min-width: 500px;
+<<<<<<< HEAD
     border-top: none;
 
     // circle logo
@@ -25,57 +26,105 @@
       height: @navbarHeight + 2;
       padding: 0;
       margin: 0;
+=======
+    padding: 0 1vw;
+    border: none;
+
+    a {
+      color: @grayLighter;
+      transition-property: color, text-shadow;
+      transition-duration: .3s;
+      transition-timing-function: ease-in-out;
+      cursor: pointer;
+      font-weight: 600;
+      &:hover {
+        color: @white;
+        transition-duration: .1s;
+      }
+      &.brand {
+        background: url(../../../img/logo.svg) no-repeat;
+        background-size: auto 40px;
+        background-position: left 40%;
+        width: 150px;
+        height: 50px;
+        margin: 0;
+        padding: 0;
+      }
+    }
+    i {
+      font-size: 1.077em;
+>>>>>>> master
     }
 
     // rest of the nav elements
+    .repo-breadcrumb {
+      a {
+        padding: 0;
+      }
+      display: inline-block;
+      vertical-align: top;
+      .crumb-settings {
+        &:before {
+          content: "\f013";
+          font-family: FontAwesome;
+          visibility: visible;
+          display: inline-block;
+          padding: 0 .5em;
+          font-size: 1.077em;
+          line-height: 1em;
+        }
+      }
+    }
+    .user-menu {
+      width: @dropdownWidth;
+      > li {
+        float: right;
+        &.docs {
+          float: left;
+          padding-left: 1em;
+          i {
+            margin-right: .5em;
+          }
+        }
+        &.dropdown {
+          a {
+            padding: 0 1em;
+          }
+        }
+        > a {
+          padding: 0;
+        }
+      }
+    }
     ul.nav {
-      top: 2px;
-
+      display: inline-block;
+      vertical-align: top;
       > li {
         height: @navbarHeight;
         line-height: @navbarHeight;
       }
-
-      // environment element
-      li {
-        margin: 0 5px;
-      }
-
       &.crumbs {
         li {
-          a, span {
+          a {
             display: inline-block;
-            font-size: .9em;
-            font-weight: normal;
-            color: white;
+          }
+          span {
+            display: inline-block;
+            padding: 0 .5em;
           }
 
           span.label {
             background-color: inherit;
             padding: 5px;
           }
-
-          &:hover {
-            span.label {
-              background: @blueDark;
-              .box-shadow(inset 0 0 3px darken(@blueDark, 10%));
-            }
-            span.label-active {
-              background: @blueDarkest;
-            }
-          }
-          span.label-active {
-            background: @blueDark;
+          .label-active {
+            color: @whiten;
+            font-weight: 600;
           }
 
           &.crumb {
             &:before {
               content: '/';
-              position: absolute;
-              left: -6px;
-              top: 1px;
-              color: white;
-              font-size: 1.2em;
             }
           }
 
@@ -88,44 +137,57 @@
         }
       }
       li {
-        // rightside nav elements
-        &.pane:hover {
-          background: @blueDark;
-        }
-
-        position: relative;
         a {
+<<<<<<< HEAD
           cursor: pointer;
           line-height: @navbarHeight; // keeps this nav from overflowing the box
           padding: 0px 10px;
           color: white;
           .text-shadow(0, 1px,0px, #1B3E69);
+=======
+          text-shadow:none;
+>>>>>>> master
           &.label-success {
             &:hover { background: darken(@green, 10%); }
           }
         }
-
         // dropbox header
         &.open > a.dropdown-toggle {
           background-color: @blueDark;
+          padding-left: 1em;
+          > i {
+            .rotate(180deg);
+            box-shadow: none;
+          }
         }
 
         .dropdown-toggle {
+          &:hover > i {
+            box-shadow: 0  1px @dropdownToggleColor,
+                        0 -1px @dropdownToggleColor,
+                        1px  0 @dropdownToggleColor,
+                       -1px  0 @dropdownToggleColor;
+            transition-duration: .1s;
+          }
+          > i {
+            width: 1em;
+            display: inline-block;
+            text-align: center;
+            border-radius: 3px;
+            transition: box-shadow .3s ease-in-out;
+          }
           .gravatar {
             border-radius: 5em;
-            margin-right: 5px;
-            width: 30px;
-            height: 30px;
-            vertical-align: bottom;
-            // oddly hard to automatically center, so I'm calculating it's position.
-            margin-bottom: floor((@navbarHeight - 30px) / 2);
-            position: relative;
+            overflow: hidden;
           }
         }
 
         ul.dropdown-menu {
           margin-top: 0;
-          border-top: none;
+          border: none;
+          box-shadow: none;
+          border-radius: 0 0 3px 3px;
+          width: @dropdownWidth;
           &:after {
             display: none; // get rid of caret
           }
@@ -139,16 +201,16 @@
           }
 
           a {
-            height: 40px;
-            line-height: 40px;
-            color: @white;
-            padding: 0 10px;
+            height: @navbarHeight;
+            line-height: @navbarHeight;
+            padding: 0 1em;
             &:hover {
               background: @blue;
+              text-shadow: 0 2px 2px fadein(fadeout(@black, 100), 21); // fadeout alone generates weird decimal
             }
             i {
-              font-size: .8em;
-              padding-right: .8em;
+              font-size: 1.077em;
+              padding-right: .5em;
             }
 
           }
@@ -167,21 +229,37 @@
           background: @blueDark;
 
         }
-
-        .env-production, .env-staging, .env-development, .env-test {
-          .label;
-          font-weight: normal;
-          padding: 6px 8px;
-          background: @blueDark;
-        }
-
-        .env-production { @prodRed: #c45b23; background-color: @redDark; }
-        .env-staging { @stagingYellow: #e2c256; background-color: @stagingYellow; color: black;}
-        .env-development { background-color: @blueDark; }
-        .env-test { @testGreen: #178261; background-color: @greenDark; }
-
       }
     }
+<<<<<<< HEAD
 
+=======
+    .env-badge {
+      display: inline-block;
+      line-height: @navbarHeight;
+      float: right;
+      margin: 0 1em;
+      cursor: pointer;
+      span {
+        font-size: 0.84615em;
+        line-height: 1em;
+        border-radius: 5em;
+        padding: .5em 1em;
+        color: @whiten;
+      }
+      .env-production {
+        background-color: @redLight;
+      }
+      .env-staging {
+        background: @orange;
+      }
+      .env-development {
+        background: @blueLight;
+      }
+      .env-test {
+        background-color: @green;
+      }
+    }
+>>>>>>> master
   }
 }

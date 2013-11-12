@@ -30,10 +30,6 @@
     margin: 1em 1em 0 1em;
     color: @grayLightest;
   }
-  #build-messages {
-    margin-top: -20px;
-    margin-bottom: -35px;
-  }
 }
 
 .build-table {
@@ -49,7 +45,7 @@
     margin: 0 0 15px 0;
   }
   dt {
-    width: 100px;
+    min-width: 100px;
     float: left;
     display: block;
     clear: left;
@@ -93,7 +89,9 @@
     }
     a.sha-one {
       color: @blue;
-      font-size: 0.8em;
+      i {
+        font-size: 14px;
+      }
     }
   }
   .artifacts {

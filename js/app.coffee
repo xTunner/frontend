@@ -94,7 +94,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     # user is looking at the project's summary, but hasn't followed it
     @show_follow_project_button = @komp =>
-      @project() && !@project().followed() && @project().project_name() is @current_page().project_name
+      @project() &&
+       @project().loaded_settings() &&
+        !@project().followed() &&
+         @project().project_name() is @current_page().project_name
 
 
     if window.renderContext.current_user
