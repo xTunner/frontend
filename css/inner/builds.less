@@ -31,8 +31,7 @@
     font-size: @fontSizeSmall;
     font-family: @monoFontFamily;
     font-weight: bold;
-    margin-right: 1em;
-    line-height: 4em;
+    margin: 1em 1em 0 1em;
   }
 }
 
@@ -184,19 +183,15 @@
     margin-left: @sideLineWidth;
     .bash-command {
       border: none;
-      padding: 0 1em;
-      &:first-line {
-        color: @white;
-        font-weight: bold;
-        line-height: 4em;
-      }
+      text-indent: -1.25em;
+      padding-left: 2em;
+      padding: 1em 1em 0 2em;
+      color: @white;
+      font-weight: bold;
       &:before {
         content: "$";
         margin-right: 1ex;
       }
-    }
-    .solarized {
-      padding-top: 0;
     }
   }
   .failed {
