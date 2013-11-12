@@ -1,7 +1,6 @@
 .row-fluid.build-table#build-log-header
   .span10.offset1
 
-    .clearfix
       %dl.span4
 
         %dt Author
@@ -80,14 +79,12 @@
     != HAML.build_commit_log()
 
     / ko if: ssh_enabled_now()
-    %dl.clearfix.ssh_info
       %dt SSH Info
       %dd
         != HAML.ssh_info_table({})
     / /ko
 
     / ko if: has_artifacts
-    %dl.clearfix.artifacts
 
       %div.artifacts-def{data-bind: "click: toggle_artifacts"}
         %dt
