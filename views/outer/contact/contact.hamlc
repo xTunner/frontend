@@ -14,7 +14,7 @@
           %label{for: "email"} Email address
           %input#email{name: "email", placeholder: "Your email address", type: "email"}
           %label{for: "message"} Message
-          %textarea{placeholder: "Tell us what you're thinking"}
+          %textarea#message{name: "message", placeholder: "Tell us what you're thinking"}
           %button.btn-primary{type: "submit"} Send
       .span6.vcard
         %h3 Don't like forms? Contact us anyway!
