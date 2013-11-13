@@ -15,9 +15,7 @@
             %span{data-bind: "ifnot: gravatar_url()"}
               %span{data-bind: "text: login"}
             %span{data-bind: "if: gravatar_url()"}
-              -# FIXME GitHub returns 420x420 identicons which gravatar does
-                not resize. Add in width + height to hack around this
-              %img.gravatar{data-bind: "attr: {src: gravatar_url(30), width: 30, height: 30}"}
+              %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
 
             %i.fa.fa-caret-down
 
