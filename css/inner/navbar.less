@@ -65,6 +65,8 @@
     .user-menu {
       width: @dropdownWidth;
       > li {
+        height: @navbarHeight;
+        line-height: @navbarHeight;
         float: right;
         &.docs {
           float: left;
@@ -86,10 +88,6 @@
     ul.nav {
       display: inline-block;
       vertical-align: top;
-      > li {
-        height: @navbarHeight;
-        line-height: @navbarHeight;
-      }
       &.crumbs {
         li {
           a {
