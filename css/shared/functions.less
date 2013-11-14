@@ -82,15 +82,15 @@
           transform: rotate3d(@x, @y, @z, @deg);
 }
 
-.fontFace(@family, @src, @weight: normal, @style: normal) {
-  @font-face {
-    font-family: @family;
-    src: url('#{@src}.eot');
-    src: url('#{@src}.eot?#iefix')     format('embedded-opentype'),
-         url('#{@src}.woff')           format('woff'),
-         url('#{@src}.ttf')            format('truetype'),
-         url('#{@src}.svg##{@family}') format('svg');
-    font-weight: @weight;
-    font-style: @style;
-  }
+.fontFace(@font: sans-serif, @weight: normal, @style: normal){
+    @font-face{
+        font-family: @family;
+        src:url('../../webfonts/@{font}@{weight}.eot');
+        src:url('../../webfonts/@{font}@{weight}.eot?#iefix') format('embedded-opentype'),
+            url('../../webfonts/@{font}@{weight}.woff') format('woff'),
+            url('../../webfonts/@{font}@{weight}.ttf') format('truetype'),
+            url('../../webfonts/@{font}@{weight}.svg#icon') format('svg');
+        font-weight: @weight;
+        font-style: @style;
+    }
 }
