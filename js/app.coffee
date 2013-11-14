@@ -121,6 +121,14 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
+    @signupUrl = @komp =>
+      CI.github.authUrl(@ab().oauth_scopes())
+
+    # TODO: try to give non-users a signupUrl
+    @loginUrl = @komp =>
+      CI.github.authUrl(false)
+
+
   refreshBuildState: () =>
     VM.loadProjects()
     VM.current_page().refresh()
