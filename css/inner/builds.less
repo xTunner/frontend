@@ -49,18 +49,19 @@
   }
   table {
     width: 100%;
+    th {
+      width: 1%;
+      font-weight: bold;
+      color: @grayDark;
+      min-width: 100px;
+      text-align: left;
+    }
     td {
       width: 40%;
       &:not(:last-child) {
         white-space: nowrap;
         padding-right: 1em;
       }
-    }
-    .anchor-title {
-      width: 1%;
-      font-weight: bold;
-      color: @grayDark;
-      min-width: 100px;
     }
     dt {
       color: @grayDark;
