@@ -39,7 +39,7 @@
     %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
     %h3#inviteFormLabel This requires an Administrator
   .modal-body
-    %p For security purposes, you cannot add this project to Circle unless you are an adminstrator of the GitHub project. Invite your admin(s) by sending them this link:
+    %p For security purposes, you cannot add this project to Circle unless you are an administrator of the GitHub project. Invite your admin(s) by sending them this link:
       %p.pull-right
         %input{type: "text", value: "https://circleci.com/?join=dont-test-alone"}
   .modal-footer
