@@ -1,7 +1,7 @@
 %ul.side-list
   %li.add-orgs Your Organizations
 
-  / ko foreach: organizations -->
+  / ko foreach: organizations
 
   %li.side-item
     %a{data-bind: "click: $root.current_user().setActiveOrganization"}

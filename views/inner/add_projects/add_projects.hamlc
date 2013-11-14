@@ -1,4 +1,4 @@
-%div{data-bind: "with: current_user"}
+#add-projects{data-bind: "with: current_user"}
   != HAML['flashes']({})
   != HAML['org_sidebar']({})
   .proj-wrapper
