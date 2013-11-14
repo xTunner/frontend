@@ -9,4 +9,3 @@ exports.ab_test_definitions =
   first_cta_button_text_showdown: ["A", "B"]
   pricing_maintain_infrastructure: [true, false]
   a_is_a: [true, false]
-  add_projects_test_switches: [true, false]
