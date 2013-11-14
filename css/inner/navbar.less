@@ -2,6 +2,7 @@
 
   @dropdownToggleColor: @blue;
   @dropdownWidth: 230px;
+  @gravatarCallSize: 30px;
 
   .navbar {
     margin-bottom: 0;
@@ -16,6 +17,7 @@
     min-width: 500px;
     padding: 0 1vw;
     border: none;
+    min-width: 960px; // To match min-width of page
 
     a {
       color: @grayLighter;
@@ -63,8 +65,10 @@
       }
     }
     .user-menu {
-      width: @dropdownWidth;
+      min-width: @dropdownWidth;
       > li {
+        height: @navbarHeight;
+        line-height: @navbarHeight;
         float: right;
         &.docs {
           float: left;
@@ -158,6 +162,8 @@
           .gravatar {
             border-radius: 5em;
             overflow: hidden;
+            width: @gravatarCallSize;
+            height: @gravatarCallSize;
           }
         }
 

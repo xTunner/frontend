@@ -81,3 +81,16 @@
   -webkit-transform: rotate3d(@x, @y, @z, @deg);
           transform: rotate3d(@x, @y, @z, @deg);
 }
+
+.fontFace(@font, @weight, @style: normal){
+    @font-face{
+        font-family: @font;
+        src:url('../../webfonts/@{font}@{weight}.eot');
+        src:url('../../webfonts/@{font}@{weight}.eot?#iefix') format('embedded-opentype'),
+            url('../../webfonts/@{font}@{weight}.woff') format('woff'),
+            url('../../webfonts/@{font}@{weight}.ttf') format('truetype'),
+            url('../../webfonts/@{font}@{weight}.svg#icon') format('svg');
+        font-weight: @weight;
+        font-style: @style;
+    }
+}
