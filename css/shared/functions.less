@@ -82,7 +82,7 @@
           transform: rotate3d(@x, @y, @z, @deg);
 }
 
-.fontFace(@font: @baseFontFamily, @weight: normal, @style: normal){
+.fontFace(@font, @weight, @style: normal){
     @font-face{
         font-family: @font;
         src:url('../../webfonts/@{font}@{weight}.eot');
