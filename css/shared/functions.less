@@ -82,9 +82,9 @@
           transform: rotate3d(@x, @y, @z, @deg);
 }
 
-.fontFace(@font: sans-serif, @weight: normal, @style: normal){
+.fontFace(@weight: normal, @font: @baseFontFamily, @style: normal){
     @font-face{
-        font-family: @family;
+        font-family: @font;
         src:url('../../webfonts/@{font}@{weight}.eot');
         src:url('../../webfonts/@{font}@{weight}.eot?#iefix') format('embedded-opentype'),
             url('../../webfonts/@{font}@{weight}.woff') format('woff'),
