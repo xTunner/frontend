@@ -15,10 +15,15 @@ CI.github =
 
     path = "https://github.com/login/oauth/authorize"
     client_id = window.renderContext.githubClientId
-    scope = scope.join ","
-    scope = encodeURIComponent(scope)
 
     l = window.location
     redirect = "#{l.protocol}//#{l.host}/auth/github?return-to=#{destination}"
     redirect = encodeURIComponent(redirect)
-    "#{path}?client_id=#{client_id}&redirect_uri=#{redirect}&scope=#{scope}"
+
+    url =  "#{path}?client_id=#{client_id}&redirect_uri=#{redirect}"
+    if scope
+      scope = scope.join ","
+      scope = encodeURIComponent(scope)
+      url += "&scope=#{scope}"
+
+    url
