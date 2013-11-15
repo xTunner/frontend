@@ -7,7 +7,7 @@
       .span8
         .row
           %a#logo.span2{href: "/"}
-            %img{height: "40", src: assetPath("/img/logo.svg"), width: "130"}
+            %img{height: "40", src: assetPath("/img/logo-new.svg"), width: "130"}
           %nav.span6{role: "navigation"}
             %ul.nav.nav-pills
               %li
