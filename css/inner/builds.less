@@ -47,20 +47,43 @@
     padding-bottom: 15px;
     margin: 0 0 15px 0;
   }
-  dt {
-    min-width: 100px;
-    float: left;
-    display: block;
-    clear: left;
-    color: #333;
-    text-align: left;
-    margin-right: 10px;
+  table {
+    width: 100%;
+    th {
+      width: 1%;
+      font-weight: bold;
+      color: @grayDark;
+      min-width: 100px;
+      text-align: left;
+    }
+    td {
+      width: 40%;
+      &:not(:last-child) {
+        white-space: nowrap;
+        padding-right: 1em;
+      }
+    }
+    dt {
+      color: @grayDark;
+    }
+    .build_status {
+      text-transform: uppercase;
+      vertical-align: middle;
+      text-shadow: none;
+      border-radius: 10em;
+      padding: 0 1.5ex;
+      line-height: 1.5em;
+    }
   }
-
+  div:empty {
+    display: none;
+  }
   .queued-def {
     cursor: pointer;
   }
-
+  .span10 {
+    position: relative;
+  }
   .artifacts-def {
     cursor: pointer;
   }
@@ -73,12 +96,11 @@
     float: left;
     display: block;
   }
-  .span4 {
+  .actions {
+    position: absolute;
+    top: 0;
+    right: 0;
     margin: 0;
-    &.actions {
-      width: auto;
-      float: right;
-    }
   }
   .commit-log {
     padding-top: 1em;
@@ -303,15 +325,6 @@
   .not_run_message {
     text-align: center;
   }
-}
-
-dd .build_status {
-  text-align: left;
-  text-transform: uppercase;
-  vertical-align: middle;
-  text-shadow: none;
-  border-radius: 1em;
-  padding: .352ex 1ex;
 }
 
 #build-log-container {
