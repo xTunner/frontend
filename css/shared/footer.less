@@ -1,33 +1,24 @@
 #footer {
-  border-top: 1px solid @grayLightest;
+
+  border-top: 1px solid #eee;
+
   .logo {
-    height: 1em;
-    background-image: url("@{imgPath}/logomark.svg");
-    background-size: 1em;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: .66;
-    transition: opacity .4s ease-in-out;
-    &:hover {
-      opacity: 1;
-      transition-duration: .2s;
-    }
+    margin: 6px 10px 0 0;
   }
+
   nav {
+    margin: 0;
     li {
-      a {
-        color: @grayLighter;
-        transition: color .4s ease-in-out;
-        &:hover,
-        &:focus,
-        &.active {
-          background-color: transparent;
-          color: @grayLight;
-          transition-duration: .2s;
-        }
+      a:hover, a:focus, .active {
+        background: lighten(#eee, 4%);
       }
     }
   }
+
+  a {
+    color: darken(#eee, 8%);
+  }
+
 // this should go back to outer
 //  @import "../shared/additional.less";
 }

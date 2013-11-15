@@ -1,26 +1,30 @@
 #navbar {
   background: @circleBlueDark;
+
   padding: 15px 0;
+
   #logo {
     display: block;
+    height: 40px;
     width: 130px;
-    margin: 0;
-    img {
-      height: 3em;
-    }
+    margin: -7px 0 0 0;
   }
-  ul {
-    margin: 0;
-    a {
-      padding: 0 1em;
-      margin: 0;
-      line-height: 3em;
-      color: #84aebe;
-      &:hover, &:focus, &:active {
+
+  nav {
+    li {
+      a:hover, a:focus, .active {
         background: @circleBlue;
       }
     }
   }
+
+  .nav-pills {
+    margin: 0;
+    a {
+	    color: #84aebe;
+    }
+  }
+
   .controls {
     text-align: right;
   }
