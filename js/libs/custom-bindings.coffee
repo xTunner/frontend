@@ -49,6 +49,22 @@ ko.bindingHandlers.equalizeWidth =
       $.each(els, (i, e) -> $(e).width(max))
       $(el).css('visibility', 'visible')
 
+ko.bindingHandlers.scrollOnClick =
+  update: (el, valueAccessor, allBindingsAccessor) =>
+    options = ko.toJS(valueAccessor())
+
+    $(el).click (e) ->
+      $container = $(e.target).closest(options.selector)
+
+      if options.position is 'top'
+        scroll_top = $container.offset().top
+      else if options.position is 'bottom'
+        scroll_top = $container.offset().top + $container.height() - $(window).height()
+      if scroll_top
+        $("html, body").animate {scrollTop: scroll_top}, 0
+
+
+
 # Takes any kind of jQueryExtension, e.g. popover, tooltip, etc.
 jQueryExt = (type) =>
   init: (el, valueAccessor) =>
