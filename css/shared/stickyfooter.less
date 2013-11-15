@@ -2,7 +2,7 @@
 
 @footerHeight: 50px;
 @footerPadding: 20px;
-@bodyRealMargin: (@footerHeight + 2 * @footerPadding);
+@footerActualHeight: (@footerHeight + 2 * @footerPadding);
 
 html {
   min-height: 100%;
@@ -10,7 +10,7 @@ html {
 }
 
 body {
-  margin: 0 0 @bodyRealMargin 0;
+  margin: 0 0 @footerActualHeight 0;
   -webkit-font-smoothing: antialiased;
 }
 

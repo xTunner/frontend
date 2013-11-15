@@ -295,16 +295,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   loadStripe: () =>
     $.getScript "https://js.stripe.com/v1/"
-    # Stripe has a bug in v3 that makes ajax sends use url/form-encoded
-    # instead of application/json, this breaks our ajax calls, so users
-    # can't change their containers. If we want a true result, we'll
-    # have to restart the test with a different name.
-    if false #VM.ab().stripe_v3()
-      $.getScript("https://checkout.stripe.com/v3/checkout.js")
-        .success(() => @stripe_loaded(true))
-    else
-      $.getScript("https://checkout.stripe.com/v2/checkout.js")
-        .success(() => @stripe_loaded(true))
+    $.getScript("https://checkout.stripe.com/v2/checkout.js")
+      .success(() => @stripe_loaded(true))
 
   loadPlanData: (data) =>
     # update containers, extra_orgs, and extra invoice info

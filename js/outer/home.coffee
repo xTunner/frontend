@@ -34,5 +34,4 @@ class CI.outer.Home extends CI.outer.Page
     textmap =
       "A": "RUN YOUR TESTS",
       "B": "Take 14 days to try us out - Start Here",
-      "C": HAML.home_first_cta3()
-    textmap[VM.ab().first_cta_button_text()]
+    textmap[VM.ab().first_cta_button_text_showdown()]

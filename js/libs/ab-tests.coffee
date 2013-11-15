@@ -62,7 +62,11 @@ CI.ABTests = class ABTests
         @ab_tests()[name](value)
 
   notify_mixpanel: () =>
-    mixpanel.register_once ko.toJS(@ab_tests)
+    unpacked_tests = {}
+    for own k, v of ko.toJS(@ab_tests)
+      unpacked_tests["ab_#{k}"] = v
+
+    mixpanel.register_once unpacked_tests
 
     try
       if @new_cookie
