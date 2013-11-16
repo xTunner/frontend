@@ -100,6 +100,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
          @project().project_name() is @current_page().project_name
 
 
+    @is_existing_user = (new CI.ExistingUserHueristic).is_existing_user
     if window.renderContext.current_user
       CI.olark.disable()
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
