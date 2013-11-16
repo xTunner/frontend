@@ -11,8 +11,6 @@ CI.ExistingUserHueristic = class ExistingUserHueristic
           @set_from_mixpanel_cookie()
         else # wait for mixpanel script to load
           $(window).load () =>
-            console.log(@)
-            window.this = @
             @set_from_mixpanel_cookie()
       catch e
         console.error e.message
