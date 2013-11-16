@@ -32,3 +32,24 @@
 
 
 %p Note: You should not delete the project's deploy key from Github. We will still use the project key to do an initial checkout that we use to configure the build.
+
+.help-block
+  %h2 About user keys
+
+  %h4 What is a user key?
+  %p When you add a repository to Circle, we add a 'deploy key' to your repository on GitHub. This allows us to checkout the repository from GitHub. Each deploy key is valid for only one repository, and cannot be used to access other repositories.
+  %p By contrast, 'user keys' have access to all of your repositories. Some tests need to access many repositories. This particularly happens when bundle, npm or pip depend on projects in private git repos.
+
+  %h4 When do we use user-keys?
+  %p After adding a user key, we will use it to test your pushes to any private repository you're a member of. We won't use your user key for public projects, and we don't use it when another member of your project pushed.
+  %p If you'd like to use it for all builds on a project, you can set yourself as the 'GitHub user' for the project from the 'GitHub user' section of the project's Settings page.
+
+  %h4 What about security?
+  %p A user key is pretty similar to your own SSH key, and should be treated as such. Just like you wouldn't run code on your personal machine which you didn't trust, you also shouldn't push code to Circle that you don't trust.
+
+  %h4 What SSH keys do I currently have?
+  %p
+    Your user keys are listed in your
+    != succeed '.', ->
+      %a{href: "https://github.com/settings/ssh"}<
+        GitHub account
