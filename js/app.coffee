@@ -125,9 +125,11 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @signupUrl = @komp =>
       CI.github.authUrl(@ab().oauth_scopes())
 
-    # TODO: try to give non-users a signupUrl
     @loginUrl = @komp =>
-      CI.github.authUrl(false)
+      if @is_existing_user()
+        CI.github.authUrl(false)
+      else
+        @signupUrl()
 
 
   refreshBuildState: () =>
