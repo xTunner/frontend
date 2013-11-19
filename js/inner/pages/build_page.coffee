@@ -11,7 +11,8 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
     @project_name = "#{@username}/#{@project}"
     @title = "##{@build_num} - #{@project_name}"
 
-    @crumbs = [new CI.inner.ProjectCrumb(@username, @project),
+    @crumbs = [new CI.inner.OrgCrumb(@username),
+               new CI.inner.ProjectCrumb(@username, @project),
                new CI.inner.ProjectBranchCrumb(@username, @project, ko.computed =>
                  if VM.build()?
                    VM.build().branch())
