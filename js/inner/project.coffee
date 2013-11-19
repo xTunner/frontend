@@ -197,8 +197,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
        !@billing.trial_over() &&
          @billing.trial_days() < 4
 
+    # This is inserted as html, so be careful that everything is escaped properly
     @trial_notice_text = @komp =>
-      org_name = @billing.org_name()
+      org_name = _.escape(@billing.org_name())
       plan_path = CI.paths.org_settings org_name, 'plan'
       days = @billing.trial_days()
       if @billing.trial_over()
