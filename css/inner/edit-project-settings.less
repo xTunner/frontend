@@ -55,6 +55,15 @@ form.expando {
     min-width: 200px;
     .flex(0, 1.1);
   }
+  .tooltip {
+    .tooltip-inner {
+      padding: 1em;
+      background: @grayDark;
+    }
+    .tooltip-arrow {
+      border-top-color: @grayDark;
+    }
+  }
   .side-list {
     margin: 0;
     list-style: none;
@@ -339,13 +348,6 @@ form.expando {
     }
     .tooltip {
       position: relative;
-      .tooltip-inner {
-        padding: 1em;
-        background: @grayDark;
-      }
-      .tooltip-arrow {
-        border-top-color: @grayDark;
-      }
     }
   }
   .chat-room-save {
