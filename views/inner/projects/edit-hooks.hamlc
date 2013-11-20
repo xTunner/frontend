@@ -1,4 +1,4 @@
-%h1 Chatroom setup for
+%h2 Chatroom setup for
   %span{data-bind: "text: project_name"}
 .chat-rooms
 

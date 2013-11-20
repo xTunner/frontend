@@ -1,4 +1,4 @@
-%h1 Setup GitHub user for
+%h2 Setup GitHub user for
   %span{data-bind: "text: project_name"}
 %p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
 

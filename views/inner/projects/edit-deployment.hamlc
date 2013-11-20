@@ -1,4 +1,4 @@
-%h1 Other deployments for
+%h2 Other deployments for
   %span{data-bind: "text: project_name"}
 
 .doc

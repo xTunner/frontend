@@ -1,4 +1,4 @@
-%h1 Build artifacts for
+%h2 Build artifacts for
   %span{data-bind: "text: project_name"}
 
 .doc

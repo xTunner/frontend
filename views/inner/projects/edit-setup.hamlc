@@ -1,4 +1,4 @@
-%h1 Install dependencies for
+%h2 Install dependencies for
   %span{data-bind: "text: project_name"}
 
 %form.spec_form

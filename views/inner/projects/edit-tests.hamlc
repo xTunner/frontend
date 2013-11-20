@@ -1,4 +1,4 @@
-%h1 Set up tests for
+%h2 Set up tests for
   %span{data-bind: "text: project_name"}
 
 .spec_form

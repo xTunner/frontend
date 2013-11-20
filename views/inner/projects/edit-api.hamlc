@@ -1,4 +1,4 @@
-%h1 API tokens for
+%h2 API tokens for
   %span{data-bind: "text: project_name"}
 
 .doc
@@ -25,7 +25,7 @@
                                   data-failed-text: "Failed"}
 
   %div{data-bind: "if: tokens().length"}
-    %h2 Project API Tokens
+    %h3 Project API Tokens
 
     %table.table.well.table
       %thead
