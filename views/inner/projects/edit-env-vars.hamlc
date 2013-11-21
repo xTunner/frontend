@@ -19,11 +19,11 @@
                           data-success-text: "Added",
                           data-failed-text: "Failed"}
 
-    %ul{data-bind: "foreach: env_vars"}
-      %li
-        %span{data-bind: "text: name"}
-        %span{data-bind: "text: value"}
-        %span
-          %a{data-bind: "click: $root.project().delete_env_var", title: "Remove this variable?"}
-            %i.fa.fa-times-circle
-            %span Remove
+      %ul{data-bind: "foreach: env_vars"}
+        %li
+          %span{data-bind: "text: name"}
+          %span{data-bind: "text: value"}
+          %span
+            %a{data-bind: "click: $root.project().delete_env_var", title: "Remove this variable?"}
+              %i.fa.fa-times-circle
+              %span Remove
