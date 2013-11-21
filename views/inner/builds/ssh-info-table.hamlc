@@ -4,7 +4,9 @@
 
 %div.ssh-info-table
   %dl.dl-horizontal{data-bind: "foreach: node"}
-    %dt{data-bind: "text: $index"}
+    %dt
+      %span{data-bind: "if: $parent.node().length > 1"}
+        %span{data-bind: "text: $index"}
     %dd{data-bind: "css: { connected: $data.ssh_enabled }"
       %span.hi-daniel{data-bind: "text: $parent.ssh_connection_string($data)"}
       %span{data-bind: "ifnot: $data.ssh_enabled"}
