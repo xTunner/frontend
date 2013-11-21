@@ -77,14 +77,6 @@
 
 .mini-faq
   .mini-faq-item
-    %h3 What is parallelism?
-    %p We split your tests into groups, and run each group on different machines in parallel. This allows them run in a fraction of the time, for example:
-    %ul
-      %li a 45 minute build fell to 18 minutes with 3x build speed,
-      %li a 20 minute build dropped to 11 minutes with 2x build speed.
-    %p Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, memory, and databases.
-    %p For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can <a href="/docs/parallel-manual-setup">control the parallelism directly</a>.
-  .mini-faq-item
     %h3 What are containers?
     %p{data-bind: "with: billing"}
       Containers are what we call the virtual machines that your tests run in. Your current plan has
@@ -105,6 +97,14 @@
         %li 4 simultaneous builds at 4x parallelism
         %li 2 simultaneous builds at 8x parallelism
         %li 1 build at 16x parallelism
+  .mini-faq-item
+    %h3 What is parallelism?
+    %p We split your tests into groups, and run each group on different machines in parallel. This allows them run in a fraction of the time, for example:
+    %ul
+      %li a 45 minute build fell to 18 minutes with 3x build speed,
+      %li a 20 minute build dropped to 11 minutes with 2x build speed.
+    %p Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, memory, and databases.
+    %p For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can <a href="/docs/parallel-manual-setup">control the parallelism directly</a>.
   .mini-faq-item
     %h3 Do others use these?
     %blockquote <i>The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.</i>
