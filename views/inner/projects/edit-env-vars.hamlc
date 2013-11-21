@@ -5,7 +5,7 @@
   %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
   .environment-variables-inner
     %form
-      %ul{data-bind: "if: env_vars().length"}
+      %ul
         %li
           %span
             %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
