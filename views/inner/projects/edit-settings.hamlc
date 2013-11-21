@@ -1,15 +1,15 @@
 .project-settings-block
   %h2 How to configure
     %span{data-bind: "text: project_name"}
-  %ul
-    %li
-      %h4 Step 1
+  %ul.overview-options
+    %li.overview-item
+      %h4 Option 1
       %p <b>Do nothing!</b> Circle infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below.
-    %li
-      %h4 Step 2
+    %li.overview-item
+      %h4 Option 2
       %p Override inferred settings and add new test commands <a href="#setup">through the web UI</a>. This works great for prototyping changes.
-    %li
-      %h4 Step 3
+    %li.overview-item
+      %h4 Option 3
       %p Override all settings via a <a href="/docs/configuration">circle.yml file</a> in your repo. Very powerful.
 
   -#%p
