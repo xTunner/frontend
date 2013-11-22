@@ -8,8 +8,9 @@
     .chat-room-body
       %section
         %p To get your API token, create a "notification" token via the <a href="https://hipchat.com/admin/api">HipChat site</a>.
-        %label{for: "hipchat-notify"} Show popups
+        %label{for: "hipchat-notify"}
           %input#hipchat-notify{type: "checkbox", data-bind: "checked: hipchat_notify"}
+          %span Show popups
       %section
         %input#hipchat-room{type: "text", data-bind: "value: hipchat_room", placeholder: "Room", required: ""}
         %input#hipchat-token{type: "text", data-bind: "value: hipchat_api_token", placeholder: "API", required: ""}
