@@ -295,6 +295,24 @@ form.expando {
     padding: 0;
     float: left;
     position: relative;
+    input[type="checkbox"] {
+      margin: 0;
+      line-height: 1em;
+      height: 1em;
+      display: none;
+      margin-right: .5em;
+      ~ span:before {
+        content: "\f096";
+        font-family: FontAwesome;
+        visibility: visible;
+        margin-right: 1em;
+        position: absolute;
+        left: 1em;
+      }
+      &:checked ~ span:before {
+        content: "\f046";
+      }
+    }
   }
   .chat-room-head {
     padding: 1em;
@@ -331,25 +349,10 @@ form.expando {
         margin-left: 1.5em;
       }
     }
-    label, input[type="checkbox"] {
+    label {
       margin: 0;
       line-height: 1em;
       height: 1em;
-    }
-    input[type="checkbox"] {
-      display: none;
-      margin-right: .5em;
-      ~ span:before {
-        content: "\f096";
-        font-family: FontAwesome;
-        visibility: visible;
-        margin-right: 1em;
-        position: absolute;
-        left: 1em;
-      }
-      &:checked ~ span:before {
-        content: "\f046";
-      }
     }
     i {
       font-size: 10px;
