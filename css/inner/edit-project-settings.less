@@ -301,6 +301,12 @@ form.expando {
       height: 1em;
       display: none;
       margin-right: .5em;
+      &:not(:checked) {
+        ~ span:after {
+          opacity: 1;
+          transition-duration: .1s;
+        }
+      }
       ~ span:before {
         content: "\f096";
         font-family: FontAwesome;
@@ -311,6 +317,16 @@ form.expando {
       }
       &:checked ~ span:before {
         content: "\f046";
+      }
+    }
+    label {
+      span {
+        margin-left: 1.5em;
+        &:after {
+          content: "?";
+          opacity: 0;
+          transition: .3s opacity ease-in-out;
+        }
       }
     }
   }
