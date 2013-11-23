@@ -4,7 +4,7 @@
 
   .chat-room-item
     .chat-room-head
-      %h4 Hipchat
+      %h4.chat-i-hip Hipchat
     .chat-room-body
       %section
         %p To get your API token, create a "notification" token via the <a href="https://hipchat.com/admin/api">HipChat site</a>.
@@ -22,7 +22,7 @@
 
   .chat-room-item
     .chat-room-head
-      %h4 Campfire
+      %h4.chat-i-camp Campfire
     .chat-room-body
       %section
         %p To get your API token, visit your company Campfire, then click "My info". Note that if you use your personal API token, campfire won't show the notifications to you!
@@ -38,7 +38,7 @@
 
   .chat-room-item
     .chat-room-head
-      %h4 Flowdock
+      %h4.chat-i-flow Flowdock
     .chat-room-body
       %section
         %p To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
@@ -48,7 +48,7 @@
 
   .chat-room-item
     .chat-room-head
-      %h4 IRC
+      %h4.chat-i-irc IRC
     .chat-room-body
       %section
         %input#irc_server{type: "text", data-bind: "value: irc_server", placeholder: "Hostname", required: ""}
