@@ -295,6 +295,13 @@ form.expando {
     padding: 0;
     float: left;
     position: relative;
+    &:hover {
+      [class^=chat-i] {
+        &:before, &:after { transition-duration: .2s;}
+        &:before { opacity: 0;}
+        &:after { opacity: 1;}
+      }
+    }
     input[type="checkbox"] {
       margin: 0;
       line-height: 1em;
@@ -331,8 +338,45 @@ form.expando {
     }
   }
   .chat-room-head {
+    @logoHeight: 20px;
     padding: 1em;
     box-shadow: 0 1px @grayBoxBorder;
+    [class^=chat-i] {
+      line-height: @logoHeight;
+      &:before, &:after {
+        content: "";
+        width: @logoHeight;
+        height: @logoHeight;
+        position: absolute;
+        right: 0;
+        top: 0;
+        margin: 1em;
+        background-image: url('@{imgPath}/chat-sprite1.png');
+        transition: opacity .4s ease-in-out;
+      }
+      &:before {
+        opacity: 1;
+      }
+      &:after {
+        opacity: 0;
+      }
+    }
+    .chat-i-hip {
+      &:before { background-position: 0 @logoHeight;}
+      &:after  { background-position: 0 0          ;}
+    }
+    .chat-i-camp {
+      &:before { background-position: -@logoHeight -@logoHeight;}
+      &:after  { background-position: -@logoHeight  0          ;}
+    }
+    .chat-i-flow {
+      &:before { background-position: (-@logoHeight * 2) -@logoHeight;}
+      &:after  { background-position: (-@logoHeight * 2)  0          ;}
+    }
+    .chat-i-irc {
+      &:before { background-position: (-@logoHeight * 3) -@logoHeight;}
+      &:after  { background-position: (-@logoHeight * 3)  0          ;}
+    }
   }
   .chat-room-body {
     .clearfix();
