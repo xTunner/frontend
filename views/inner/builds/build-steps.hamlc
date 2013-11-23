@@ -48,5 +48,6 @@
 
                   %pre.output.solarized{style: "white-space: normal;"}
                     %span{data-bind: "foreach: final_out"}
+                      -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}
