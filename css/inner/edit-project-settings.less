@@ -220,6 +220,7 @@ form.expando {
     .outlineFlat();
     border-radius: 4px;
     margin: 3em 0;
+    max-width: @gridRowWidth;
     form {
       margin: 0;
       + ul li:last-of-type {
@@ -237,6 +238,9 @@ form.expando {
       &:not(:last-of-type) {
         .flex(1, 1, 44%);
         padding-left: 1em;
+      }
+      &:last-of-type {
+        flex: 0 0 140px;
       }
     }
     input[type="text"] {
