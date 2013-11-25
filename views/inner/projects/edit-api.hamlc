@@ -13,7 +13,7 @@
 
     %label{for: "scope"} Scope
       %i.fa.fa-question-circle{
-        data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
+        data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: HAML.scope_popover() }" }
 
     %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
 
@@ -34,7 +34,7 @@
         %td
           %b Scope
           %i.fa.fa-question-circle{
-            data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'right', title: 'Scope', content: function () { return $('#scope-popover').html() }}" }
+            data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'right', title: 'Scope', content: HAML.scope_popover() }" }
         %th Created
         %th
       %tbody{data-bind: "foreach: tokens"}
@@ -47,22 +47,3 @@
           %span
             %button.btn-mini.btn-danger{data-bind: "click: $root.project().delete_token"}
               Revoke
-
-  %div#scope-popover.hide
-    %p
-      A token's scope limits what can be done with it.
-      %dl
-        %dt
-          status
-        %dd
-          Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is
-          %a{href: "/docs/status-badges", target: "_blank"}
-            sharing status badges
-          and
-          %a{href: "/docs/polling-project-status", target: "_blank"}
-            status polling tools
-          for private projects.
-        %dt
-          all
-        %dd
-          Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project.
