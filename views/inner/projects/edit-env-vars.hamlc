@@ -12,12 +12,12 @@
           %span
             %input#env-var-value{type: "text", name: "value", placeholder: "Value", data-bind: "value: env_varValue", required: ""}
           %span
-            %input#submit{type: "submit",
-                          value: "Add",
-                          data-bind: "click: create_env_var",
-                          data-loading-text: "Adding...",
-                          data-success-text: "Added",
-                          data-failed-text: "Failed"}
+            %input#submit.btn{type: "submit",
+                              value: "Add",
+                              data-bind: "click: create_env_var",
+                              data-loading-text: "Adding...",
+                              data-success-text: "Added",
+                              data-failed-text: "Failed"}
 
       %ul{data-bind: "foreach: env_vars"}
         %li
