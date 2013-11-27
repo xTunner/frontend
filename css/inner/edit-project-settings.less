@@ -138,16 +138,13 @@ form.expando {
   }
   // Parallelism Page
   .parallelism-picker {
-    display: flex;
-    flex-flow: row wrap;
     margin: 2em 0;
   }
   .parallelism-items {
+    .clearfix();
     @blockSize: 8em;
     @blockColor: @green;
     @blockColor: @gray;
-    display: flex;
-    flex-flow: row wrap;
     .flex(1, 1, (@blockSize * 5));
     order: 2;
     margin: 0;
@@ -172,6 +169,7 @@ form.expando {
       font-size: inherit;
       margin: 0;
       position: relative;
+      float: left;
       &:hover ~ label span {
         box-shadow: none;
       }
@@ -209,11 +207,12 @@ form.expando {
   }
   .mini-faq {
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-between;
     .mini-faq-item {
       padding-right: 4em;
       .flex(1, 1, 30%);
-      justify-content: space-between;
+      min-width: 300px;
       &:last-child {
         padding-right: 0;
       }
