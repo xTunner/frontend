@@ -130,6 +130,7 @@ form.expando {
   // Overview Page
   .overview-options {
     .flexBox();
+    margin: 2em 0;
   }
   .overview-item {
     .flex(0, 1, 250px);
@@ -213,6 +214,9 @@ form.expando {
       padding-right: 4em;
       .flex(1, 1, 30%);
       justify-content: space-between;
+      &:last-child {
+        padding-right: 0;
+      }
     }
   }
   // Environment Variables Page
