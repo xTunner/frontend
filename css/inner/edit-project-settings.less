@@ -129,12 +129,18 @@ form.expando {
   }
   // Overview Page
   .overview-options {
-    .flexBox();
+    // .flexBox();
     margin: 2em 0;
+    .clearfix();
   }
   .overview-item {
-    .flex(0, 1, 250px);
-    margin-right: 2%
+    // .flex(0, 1, 250px);
+    margin-right: 2%;
+    float: left;
+    width: 300px;
+    &:last-child {
+      margin-right: 0;
+    }
   }
   // Parallelism Page
   .parallelism-picker {
@@ -220,12 +226,18 @@ form.expando {
   }
   // Environment Variables Page
   .environment-variables-inner{
-    .outlineFlat();
-    border-radius: 4px;
-    margin: 3em 0;
+    // .outlineFlat();
+    // border-radius: 4px;
+    margin: 2em 0;
     max-width: @gridRowWidth;
+    .env-table {
+      .outlineFlat();
+      border-radius: 4px;
+    }
     form {
       margin: 0;
+      // margin: 3em 0;
+      // max-width: @gridRowWidth;
       + ul li:last-of-type {
           box-shadow: none;
       }

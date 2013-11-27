@@ -2,22 +2,24 @@
   %h2 Environment variables for
     %span{data-bind: "text: project_name"}
 
-  %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
+
   .environment-variables-inner
-    %form
-      %ul
-        %li
-          %span
-            %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
-          %span
-            %input#env-var-value{type: "text", name: "value", placeholder: "Value", data-bind: "value: env_varValue", required: ""}
-          %span
-            %input#submit.btn{type: "submit",
-                              value: "Add",
-                              data-bind: "click: create_env_var",
-                              data-loading-text: "Adding...",
-                              data-success-text: "Added",
-                              data-failed-text: "Failed"}
+    %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
+    .env-table
+      %form
+        %ul
+          %li
+            %span
+              %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
+            %span
+              %input#env-var-value{type: "text", name: "value", placeholder: "Value", data-bind: "value: env_varValue", required: ""}
+            %span
+              %input#submit.btn{type: "submit",
+                                value: "Add",
+                                data-bind: "click: create_env_var",
+                                data-loading-text: "Adding...",
+                                data-success-text: "Added",
+                                data-failed-text: "Failed"}
 
       %ul{data-bind: "foreach: env_vars"}
         %li
