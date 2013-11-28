@@ -302,6 +302,39 @@ form.expando {
       }
     }
   }
+  // Dependencies Page
+  .dependencies {
+    fieldset {
+      a.btn {
+        .circleButton();
+        margin-top: 2em;
+        display: inline-block;
+        i {
+          margin-left: 1ex;
+          font-size: @baseFontSize;
+        }
+      }
+      p {
+        max-width: 66%;
+      }
+    }
+    textarea {
+      .stickyInput();
+      resize: none;
+      height: auto;
+      width: 100%;
+      border-radius: .5em;
+      // padding: .5em;
+      margin-top: 3em;
+      &:first-child {
+        margin-top: 2em;
+      }
+    }
+  }
+  .dependencies-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+  }
   // Chatrooms Page
   .chat-rooms {
     .clearfix();
