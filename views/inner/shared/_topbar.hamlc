@@ -1,5 +1,3 @@
-!= HAML.missing_scopes_notice()
-
 #topbar
   .navbar
     .navbar-inner{data-bind: "with: current_user"}
