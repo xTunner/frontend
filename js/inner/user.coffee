@@ -89,15 +89,14 @@ CI.inner.User = class User extends CI.inner.Obj
 
   missing_scopes: () =>
     user_scopes = ['user', 'user:email']
-    wanted_user_scope = _.intersection(VM.ab().oauth_scopes(), user_scopes)
 
     missing = []
     if _.isEmpty(_.intersection(@github_oauth_scopes(), ['repo']))
-      missing.push("repo")
+      missing.push('repo')
 
     # only ask for the user scope we want if they don't have any user scope
     if _.isEmpty(_.intersection(@github_oauth_scopes(), user_scopes))
-      missing.push(wanted_user_scope)
+      missing.push('user:email')
 
     missing
 

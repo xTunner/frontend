@@ -9,4 +9,3 @@ exports.ab_test_definitions =
   a_is_a: [true, false]
   first_cta_button_text_showdown: ["A", "B"]
   pricing_maintain_infrastructure: [true, false]
-  oauth_scopes: [["user", "repo"], ["user:email", "repo"]]

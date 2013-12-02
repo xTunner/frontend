@@ -123,13 +123,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           path[1]
 
     @signupUrl = @komp =>
-      CI.github.authUrl(@ab().oauth_scopes())
+      CI.github.authUrl(["user:email", "repo"])
 
     @loginUrl = @komp =>
-      if @is_existing_user()
-        CI.github.authUrl(false)
-      else
-        @signupUrl()
+      @signupUrl()
 
 
   refreshBuildState: () =>
