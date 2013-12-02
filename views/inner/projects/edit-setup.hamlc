@@ -1,4 +1,4 @@
-.dependencies
+.dependencies-page
   %h2 Install dependencies for
     %span{data-bind: "text: project_name"}
   .dependencies-inner
