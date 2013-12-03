@@ -30,6 +30,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loading_billing: false
     users: []
     parallel: 1
+    has_usable_key: true
     retried_build: null
     branches: null
     default_branch: null
@@ -188,13 +189,17 @@ CI.inner.Project = class Project extends CI.inner.Obj
           @billing.trial_end() &&
             @billing.trial_days() < 15 # we probably hacked the db here
 
+    @show_enable_project_notice = @komp =>
+       !@has_usable_key()
+
     @show_build_page_trial_notice = @komp =>
       @show_trial_notice() &&
        !@billing.trial_over() &&
          @billing.trial_days() < 4
 
+    # This is inserted as html, so be careful that everything is escaped properly
     @trial_notice_text = @komp =>
-      org_name = @billing.org_name()
+      org_name = _.escape(@billing.org_name())
       plan_path = CI.paths.org_settings org_name, 'plan'
       days = @billing.trial_days()
       if @billing.trial_over()
@@ -304,6 +309,14 @@ CI.inner.Project = class Project extends CI.inner.Obj
         @followed(data.followed)
         _gaq.push(['_trackEvent', 'Projects', 'Add'])
         if callback? then callback()
+
+  enable: (data, event, callback) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/enable"
+      success: (data) =>
+        @has_usable_key(data.has_usable_key)
 
   follow_and_maybe_visit: (data, event) =>
     callback = (data) =>

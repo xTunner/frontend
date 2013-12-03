@@ -28,4 +28,6 @@
 
           != HAML.project_trial_notice()
 
+          != HAML.project_enable_notice()
+
           != HAML['builds']({builds: "builds", mention_project: true, pagination: false})

@@ -30,11 +30,12 @@
 
             .detail-wrapper{data-bind: "if: has_content"}
               .detail{data-bind: "css: action_log_style, visible: !minimize()"}
-
                 .output-spin{data-bind: "if: retrieving_output"}
                   != HAML['fast_spinner']()
 
                 %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
+                  %i.fa.fa-arrow-circle-o-down.pull-right.click-to-scroll{data-bind: "scrollOnClick: {selector: '.detail-wrapper', position: 'bottom'}"}
+
                   != HAML.messages()
 
                   %span{data-bind: "if: bash_command"}
@@ -47,5 +48,6 @@
 
                   %pre.output.solarized{style: "white-space: normal;"}
                     %span{data-bind: "foreach: final_out"}
+                      -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}

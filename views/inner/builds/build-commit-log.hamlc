@@ -1,4 +1,4 @@
-%dl.clearfix.commit-log
+%dl.commit-log
   %dt
     %span{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}"}
       Commit Log
