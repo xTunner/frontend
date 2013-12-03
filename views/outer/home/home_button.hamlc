@@ -1,2 +1,2 @@
-%a.btn.btn-primary.btn-large{data-bind: "attr: {href: $root.signupUrl}, track_link: {event: 'Auth GitHub', properties: {'source': '#{@source}'}}"}
+%a.btn.btn-primary.btn-large{data-bind: "attr: {href: CI.github.authUrl()}, track_link: {event: 'Auth GitHub', properties: {'source': '#{@source}'}}"}
   != @text

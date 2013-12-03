@@ -37,5 +37,5 @@
                                data-failed-text: "Failed!",
                                data-loading-text: "Paying..."}
           %span{data-bind: "ifnot: $root.logged_in"}
-            %a.btn.btn-primary{data-bind: "attr: {href: $root.signupUrl}"} Start your 14-day trial
+            %a.btn.btn-primary{data-bind: "attr: {href: CI.github.authUrl()}"} Start your 14-day trial
       / /ko

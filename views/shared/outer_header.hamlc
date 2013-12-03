@@ -22,6 +22,6 @@
                 %a{href: "http://blog.circleci.com"} Blog
       .span4.controls
         %a#login.btn.btn-primary{title: 'Sign in with Github',
-                                 data-bind: "attr: {href: $root.loginUrl}, track_link: {event: 'Auth GitHub', properties: {'source': 'header'}}"}
+                                 data-bind: "attr: {href: CI.github.authUrl()}, track_link: {event: 'Auth GitHub', properties: {'source': 'header'}}"}
           %i.fa.fa-github-alt
           Sign in with Github
