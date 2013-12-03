@@ -4,7 +4,11 @@ CI.Pusher = class Pusher
       when "production" then "961a1a02aa390c0a446d"
       else "3f8cb51e8a23a178f974"
 
-    @pusher = new window.Pusher(key, { encrypted: true})
+    @pusher = new window.Pusher(key,
+      encrypted: true
+      auth:
+        params:
+          CSRFToken: CSRFToken)
 
     window.Pusher.channel_auth_endpoint = "/auth/pusher"
 
