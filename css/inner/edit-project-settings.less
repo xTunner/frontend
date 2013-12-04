@@ -506,6 +506,33 @@ form.expando {
       }
     }
   }
+  // SSH Keys Page
+  .sshkeys-page {
+    table {
+      .skin_table();
+      margin: 2em 0;
+      th {
+        text-align: left;
+        &:last-child {
+          width: 1%;
+        }
+      }
+    }
+    input {
+      &[type="submit"] {
+        .circleButton();
+        display: inline-block;
+      }
+      &[type="text"] {
+        .stickyInput();
+        max-width: 250px;
+      }
+    }
+  }
+  .sshkeys-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+  }
   // Heroku Page
   .heroku-step {
     margin-bottom: 3em;
