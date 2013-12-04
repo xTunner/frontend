@@ -12,8 +12,12 @@
           %input#hipchat-notify{type: "checkbox", data-bind: "checked: hipchat_notify"}
           %span Show popups
       %section
-        %input#hipchat-room{type: "text", data-bind: "value: hipchat_room", placeholder: "Room", required: ""}
-        %input#hipchat-token{type: "text", data-bind: "value: hipchat_api_token", placeholder: "API", required: ""}
+        %label.sticky
+          %input#hipchat-room{data-bind: "value: hipchat_room", type: "text", required:""}
+          %label{for: "hipchat-room"} Room
+        %label.sticky
+          %input#hipchat-token{data-bind: "value: hipchat_api_token", type: "text", required:""}
+          %label{for: "hipchat-token"} Room
     .chat-room-foot
       %label{for: "hipchat-notify-prefs"}
         %input#hipchat-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)"}
@@ -27,9 +31,15 @@
       %section
         %p To get your API token, visit your company Campfire, then click "My info". Note that if you use your personal API token, campfire won't show the notifications to you!
       %section
-        %input#campfire-room{placeholder: "Room", type: "text", data-bind: "value: campfire_room", required: ""}
-        %input#campfire-subdomain{placeholder: "Subdomain", type: "text", data-bind: "value: campfire_subdomain", required: ""}
-        %input#campfire-token{placeholder: "API", type: "text", data-bind: "value: campfire_token", required: ""}
+        %label.sticky
+          %input#campfire-room{data-bind: "value: campfire_room", type: "text", required:""}
+          %label{for: "campfire-room"} Room
+        %label.sticky
+          %input#campfire-subdomain{data-bind: "value: campfire_subdomain", type: "text", required:""}
+          %label{for: "campfire-subdomain"} Subdomain
+        %label.sticky
+          %input#campfire-token{data-bind: "value: campfire_token", type: "text", required:""}
+          %label{for: "campfire-token"} API
     .chat-room-foot
       %label.control-label{for: "campfire-notify-prefs"}
         %input#campfire-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)", required: ""}
@@ -43,7 +53,9 @@
       %section
         %p To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
       %section
-        %input#hipchat-token{type: "text", data-bind: "value: flowdock_api_token", placeholder: "API", required: ""}
+        %label.sticky
+          %input#hipchat-token{data-bind: "value: flowdock_api_token", type: "text", required:""}
+          %label{for: "hipchat-token"} API
     .chat-room-foot
 
   .chat-room-item
@@ -51,11 +63,21 @@
       %h4.chat-i-irc IRC
     .chat-room-body
       %section
-        %input#irc_server{type: "text", data-bind: "value: irc_server", placeholder: "Hostname", required: ""}
-        %input#irc_channel{type: "text", data-bind: "value: irc_channel", placeholder: "Channel", required: ""}
-        %input#irc_keyword{type: "text", data-bind: "value: irc_keyword", placeholder: "Private Keyword", required: ""}
-        %input#irc_username{type: "text", data-bind: "value: irc_username", placeholder: "Username", required: ""}
-        %input#irc_password{type: "text", data-bind: "value: irc_password", placeholder: "Password (optional)", required: ""}
+        %label.sticky
+          %input#irc_server{data-bind: "value: irc_server", type: "text", required:""}
+          %label{for: "irc_server"} Hostname
+        %label.sticky
+          %input#irc_channel{data-bind: "value: irc_channel", type: "text", required:""}
+          %label{for: "irc_channel"} Channel
+        %label.sticky
+          %input#irc_keyword{data-bind: "value: irc_keyword", type: "text", required:""}
+          %label{for: "irc_keyword"} Private Keyword
+        %label.sticky
+          %input#irc_username{data-bind: "value: irc_username", type: "text", required:""}
+          %label{for: "irc_username"} Username
+        %label.sticky
+          %input#irc_password{data-bind: "value: irc_password", type: "text", required:""}
+          %label{for: "irc_password"} Password (optional)
     .chat-room-foot
       %label.control-label{for: "irc-notify-prefs"}
         %input#irc-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)"}
