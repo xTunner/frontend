@@ -170,6 +170,48 @@
     }
   }
 }
+.stickyLabel {
+  position: relative;
+  > label {
+    margin: 0 0 0 1em;
+    padding: 0 3px;
+    position: absolute;
+    line-height: 1em;
+    top: 0;
+    left: 0;
+    color: @grayLighter;
+    transition: all .2s ease-in-out;
+    white-space: nowrap;
+    -webkit-transform-origin: top center;
+            transform-origin: top center;
+    -webkit-transform: translate(0, 100%) scale(1, 1);
+            transform: translate(0, 100%) scale(1, 1);
+  }
+  > input[type="text"] {
+    .box-sizing(border-box);
+    line-height: 2em;
+    height: 3em;
+    width: 100%;
+    padding: .5em 1.34em;
+    margin-bottom: 1em;
+    background: transparent;
+    .outlineInside(@grayLighter);
+    border-radius: 5em;
+    &:focus {
+      .outlineInside(@blueLighter);
+      + label {
+        color: @blueLighter;
+      }
+    }
+    &:focus, &:valid {
+      outline: none;
+      + label {
+        background: @whiten;
+        -webkit-transform: translate(0, -50%) scale(.9, .9);
+      }
+    }
+  }
+}
 
 // Outline
 // same effect as "border" w/o increasing object size
