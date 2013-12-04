@@ -488,6 +488,9 @@ form.expando {
           width: 1%;
         }
       }
+      td {
+        vertical-align: middle;
+      }
     }
     input {
       &[type="submit"] {
@@ -503,6 +506,17 @@ form.expando {
   .sshkeys-inner {
     margin: 2em 0;
     max-width: @gridRowWidth;
+    label.sticky {
+      .stickyLabel();
+    }
+    a {
+      .tableDrawerBtn();
+      line-height: 1em;
+      > i {
+        padding: 0;
+        padding-left: 7.5em;
+      }
+    }
   }
   // Heroku Page
   .heroku-step {
