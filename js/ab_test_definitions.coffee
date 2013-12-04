@@ -6,6 +6,6 @@
 exports = this
 
 exports.ab_test_definitions =
-  first_cta_button_text_showdown: ["A", "B"]
+  single_bold_cta: [true, false]
   pricing_maintain_infrastructure: [true, false]
   a_is_a: [true, false]
