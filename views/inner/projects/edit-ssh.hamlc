@@ -14,7 +14,9 @@
           %td{data-bind: "text: hostname"}
           %td{data-bind: "text: fingerprint"}
           %td
-            %a{data-bind: "click: $root.project().delete_ssh_key"} Delete
+            %a{data-bind: "click: $root.project().delete_ssh_key", title: "Remove this Key?"}
+              %i.fa.fa-times-circle
+              %span Remove
     %form
       %input#hostname{type: "text", placeholder: "Hostname", required: ""}
       %input#publicKey{type: "text", placeholder: "Public Key", required: ""}
