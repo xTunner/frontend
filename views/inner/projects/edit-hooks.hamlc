@@ -1,7 +1,6 @@
 %h2 Chatroom setup for
   %span{data-bind: "text: project_name"}
 .chat-rooms
-
   .chat-room-item
     .chat-room-head
       %h4.chat-i-hip Hipchat
@@ -23,7 +22,6 @@
         %input#hipchat-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)"}
         %span Fixed/Failed Only
         %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
-
   .chat-room-item
     .chat-room-head
       %h4.chat-i-camp Campfire
@@ -45,7 +43,6 @@
         %input#campfire-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(campfire_notify_prefs)", required: ""}
         %span Fixed/Failed Only
         %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
-
   .chat-room-item
     .chat-room-head
       %h4.chat-i-flow Flowdock
@@ -57,7 +54,6 @@
           %input#hipchat-token{data-bind: "value: flowdock_api_token", type: "text", required:""}
           %label{for: "hipchat-token"} API
     .chat-room-foot
-
   .chat-room-item
     .chat-room-head
       %h4.chat-i-irc IRC
@@ -83,8 +79,6 @@
         %input#irc-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)"}
         %span Fixed/Failed Only
         %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
-
-
 .chat-room-save
   %input{data-bind: "click: save_hooks",
                                          type: "submit",
