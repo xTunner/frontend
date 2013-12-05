@@ -3,4 +3,4 @@
                   data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'hero'}}"}
   %i.fa.fa-github-alt 
   Sign up with 
-  %strong Github
+  %strong.white Github
