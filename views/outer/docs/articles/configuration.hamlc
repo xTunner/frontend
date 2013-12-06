@@ -813,10 +813,12 @@
         branches:
           ignore:
             - gh-pages # list of branches to ignore
-            - /release\/.*/ # or ignore regexes
+            - /release\\/.*/ # or ignore regexes
 
 %p
-  We deliberately don't support branch whitelisting instead, as we have found that leads to trouble for users down the line.
+  We deliberately don't support branch whitelisting, it means work-in-progress
+  code can go a long time without being integrated and tested and we've found
+  it leads to problems when that untested code gets merged.
   However, if this is an important issue to you, it can be
   accomplished with an advanced regex, an exercise which is left to the reader.
 
