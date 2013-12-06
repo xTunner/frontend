@@ -125,18 +125,18 @@
 
 %h2#php-apache Using the Apache Webserver
 %p
-  Apache2 is already installed on Circle CI containers but it needs to be
+  Apache2 is already installed on CircleCI containers but it needs to be
   configured to host your PHP application.
 
 %p
-  Write your site configuration to
-  <code>/etc/apache2/sites-available/MY-SITE</code>. You can use any name for
-  this file, replace <code>MY-SITE</code> in these instructions with the name
-  you choose.  Replace <code>PHP_VERSION</code> with the version of PHP you
-  configured in your <code>circle.yml</code>.
+  To enable your site check a file containing your site configuration into your
+  repository and copy it to <code>/etc/apache2/sites-available/</code> during
+  your build.
+  Then enable the site with <code>a2ensite</code> and restart Apache.
+
 %p
-  A very bare-bones configuration that sets up Apache to serve the PHP site
-  from <code>/home/ubuntu/MY-PROJECT/server-root</code> follows:
+  An example configuration that sets up Apache to serve the PHP site from
+  <code>/home/ubuntu/MY-PROJECT/server-root</code> is:
 
 %pre
   %code.no-highlight<>
@@ -152,6 +152,10 @@
           SetHandler application/x-httpd-php
         &lt;/FilesMatch&gt;
       &lt;/VirtualHost&gt;
+%p
+  Replace <code>MY-SITE</code> in with the name of your site configuration
+  file and <code>PHP_VERSION</code> with the version of PHP you configured
+  in your <code>circle.yml</code>.
 
 %p
   Then enable your site and restart Apache by adding the following to your <code>circle.yml</code>
@@ -161,6 +165,6 @@
     :preserve
       dependencies:
         post:
-          - cp MY-SITE /etc/apache2/sites-available
+          - cp ~/MY-PROJECT/MY-SITE /etc/apache2/sites-available
           - a2ensite MY-SITE
           - sudo service apache2 restart
