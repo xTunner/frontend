@@ -146,22 +146,38 @@ form.expando {
   }
   .parallelism-items {
     .clearfix();
-    @blockSize: 8em;
+    @blockSize: 10em;
     @blockColor: @green;
     @blockColor: @gray;
+    @blockColor: @blueDark;
     .flex(1, 1, (@blockSize * 5));
     order: 2;
     margin: 0;
     max-width: (@blockSize * 8);
     .selected {
       span {
-        .outlineFlat(@blockColor);
+        .outlineInside(@blockColor);
         color: @whiten;
       }
       ~ label span {
         background: transparent;
         color: @blockColor;
-        .outlineFlat(@blockColor);
+        .outlineInside(@blockColor);
+      }
+    }
+    label.disabled {
+      cursor: default;
+      &:hover {
+        .insufficient-containers {
+          .translate3d(0, 0, 0);
+          transition-duration: .1s;
+          opacity: 1;
+        }
+      }
+      span {
+        background: @grayLightest;
+        box-shadow: none;
+        color: @grayLighter;
       }
     }
     input[type=radio] {
@@ -174,6 +190,7 @@ form.expando {
       margin: 0;
       position: relative;
       float: left;
+      overflow: hidden;
       &:hover ~ label span {
         box-shadow: none;
       }
@@ -183,7 +200,7 @@ form.expando {
         left: 3%;
         width: 94%;
         padding: ~'calc(47% - .5em)' 0;
-        box-sizing: border-box;
+        .box-sizing(border-box);
         background: @blockColor;
         border-radius: 3px;
         line-height: 1em;
