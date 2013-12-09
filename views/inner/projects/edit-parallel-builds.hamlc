@@ -10,9 +10,11 @@
            attr: { for: $root.project().parallel_input_id($data)},
            event: {mouseover: $root.project().parallel_focus_in}"}
       %span{data-bind: "text: $data"}
-      .insufficient-containers
+      / ko if: billing.paid
+      .insufficient-containers{data-bind: "if: show_add_containers"}
         Not enough containers available.
-        %a{href: "#"} Add more
+        %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Add More
+      / /ko
       %input{type: "radio", name: "parallel", data-bind: "value: $data,
             checked: $root.project().editParallel,
             disable: $root.project().disable_parallel_input($data),
