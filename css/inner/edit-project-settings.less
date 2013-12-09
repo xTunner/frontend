@@ -196,6 +196,31 @@ form.expando {
         }
       }
     }
+    .insufficient-containers {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #555;
+      padding: .75em;
+      color: @grayLightest;
+      .box-sizing(border-box);
+      top: 3%;
+      left: 3%;
+      width: 94%;
+      height: 97%;
+      border-radius: 3px;
+      text-align: center;
+      .translate3d(0, 110%, 0);
+      transition: all .3s ease-in-out;
+      opacity: 0;
+      a {
+        .circleButton(@grayLightest, @green);
+        font-size: @baseFontSize;
+        display: block;
+        padding: 3px;
+        margin-top: 1.5em;
+      }
+    }
   }
   .parallelism-info {
     width: 48ex;
