@@ -4,7 +4,6 @@
   .circle-api-page-inner
     %p Create and revoke project-specific API tokens to access this project's details using our
       API.
-
     %form
       .styled-select
         %select{name: "scope", data-bind: "options: ['Choose scope...', 'Status', 'All'], value: tokenScope"}
@@ -19,18 +18,14 @@
       %label.sticky
         %input#label{type: "text", required:""}
         %label{for: "label"} Label
-
-
       %input{type: "submit",
             value: "Create token",
             data-bind: "click: create_token",
             data-loading-text: "Creating...",
             data-success-text: "Created",
             data-failed-text: "Failed"}
-
     %div{data-bind: "if: tokens().length"}
       %h3 Project API Tokens
-
       %table
         %thead
           %th Label
