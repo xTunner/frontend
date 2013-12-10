@@ -562,6 +562,34 @@ form.expando {
         .circleButton();
       }
     }
+    .styled-select {
+      position: relative;
+      select {
+        background: transparent;
+        -webkit-appearance: none;
+        outline: none;
+        .outlineInside(@grayLighter);
+        border-radius: 5em;
+        .box-sizing(border-box);
+        line-height: 2em;
+        height: 3em;
+        width: 100%;
+        padding: .5em 1.34em;
+        margin-bottom: 1em;
+        -webkit-font-smoothing: antialiased;
+      }
+      i {
+        position: absolute;
+        top: 20%;
+        &.fa-question-circle {
+          right: -10%;
+        }
+        &.fa-chevron-down {
+          right: 10%;
+          pointer-events: none;
+        }
+      }
+    }
   }
   // Heroku Page
   .heroku-step {
