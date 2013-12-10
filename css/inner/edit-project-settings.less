@@ -559,6 +559,17 @@ form.expando {
       top: 66px;
       left: 340px;
     }
+    form {
+      max-width: 250px;
+    }
+    input {
+      &[type="text"] {
+        .stickyInput();
+      }
+      &[type="submit"] {
+        .circleButton();
+      }
+    }
   }
   // Heroku Page
   .heroku-step {
