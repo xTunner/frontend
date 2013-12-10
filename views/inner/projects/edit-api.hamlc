@@ -1,49 +1,52 @@
-%h2 API tokens for
-  %span{data-bind: "text: project_name"}
+.circle-api-page
+  %h2 API tokens for
+    %span{data-bind: "text: project_name"}
+  .circle-api-page-inner
+    %p Create and revoke project-specific API tokens to access this project's details using our
+      API.
 
-.doc
-  %p
-    Create and revoke project-specific API tokens to access this project's details using our
-    API.
+    %form
+      %label{for: "label"} Label
 
-  %form.well.form-inline
-    %label{for: "label"} Label
+      %input.input-medium{type: "text", name: "label", placeholder: "label", data-bind: "value: tokenLabel"}
 
-    %input.input-medium{type: "text", name: "label", placeholder: "label", data-bind: "value: tokenLabel"}
+      %label{for: "scope"} Scope
+        %i.fa.fa-question-circle{
+          data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: HAML.scope_popover() }" }
 
-    %label{for: "scope"} Scope
-      %i.fa.fa-question-circle{
-        data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: HAML.scope_popover() }" }
+      %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
 
-    %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
+      %input{type: "submit",
+            value: "Create token",
+            data-bind: "click: create_token",
+            data-loading-text: "Creating...",
+            data-success-text: "Created",
+            data-failed-text: "Failed"}
 
-    %input#submit.btn.btn-primary.float-left{type: "submit",
-                                  value: "Create token",
-                                  data-bind: "click: create_token",
-                                  data-loading-text: "Creating...",
-                                  data-success-text: "Created",
-                                  data-failed-text: "Failed"}
+    %div{data-bind: "if: tokens().length"}
+      %h3 Project API Tokens
 
-  %div{data-bind: "if: tokens().length"}
-    %h3 Project API Tokens
-
-    %table.table.well.table
-      %thead
-        %th Label
-        %th Token
-        %td
-          %b Scope
-          %i.fa.fa-question-circle{
-            data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'right', title: 'Scope', content: HAML.scope_popover() }" }
-        %th Created
-        %th
-      %tbody{data-bind: "foreach: tokens"}
-        %td{data-bind: "text: label"}
-        %td
-          %span.code{data-bind: "text: token"}
-        %td{data-bind: "text: scope"}
-        %td{data-bind: "text: time"}
-        %td
-          %span
-            %button.btn-mini.btn-danger{data-bind: "click: $root.project().delete_token"}
-              Revoke
+      %table
+        %thead
+          %th Label
+          %th Token
+          %th Scope
+            %i.fa.fa-question-circle{
+              data-bind: "popover: {html: true,
+                                    delay: 0,
+                                    animation: false,
+                                    placement: 'top',
+                                    title: 'Scope',
+                                    content: HAML.scope_popover() }" }
+          %th Created
+          %th
+        %tbody{data-bind: "foreach: tokens"}
+          %td{data-bind: "text: label"}
+          %td
+            %span.code{data-bind: "text: token"}
+          %td{data-bind: "text: scope"}
+          %td{data-bind: "text: time"}
+          %td
+            %a.slideBtn{data-bind: "click: $root.project().delete_token", title: "Remove this Key?"}
+              %i.fa.fa-times-circle
+              %span Remove
