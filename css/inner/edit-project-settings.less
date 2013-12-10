@@ -254,9 +254,11 @@ form.expando {
         flex: 0 0 140px;
       }
     }
+    .sticky {
+      margin-top: 1em;
+    }
     input[type="text"] {
-      .stickyInput();
-      margin: 1em 0;
+      margin-bottom: 0;
     }
     input[type=submit] {
       .circleButton(@grayLightest, @green);
@@ -430,9 +432,6 @@ form.expando {
       padding: 0 1em;
       .box-sizing(border-box);
     }
-    input[type="text"] {
-      .stickyInput();
-    }
   }
   .chat-room-foot {
     box-shadow: 0 -1px #ddd;
@@ -559,9 +558,6 @@ form.expando {
       max-width: 250px;
     }
     input {
-      &[type="text"] {
-        .stickyInput();
-      }
       &[type="submit"] {
         .circleButton();
       }
