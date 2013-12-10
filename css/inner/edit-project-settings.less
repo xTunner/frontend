@@ -526,6 +526,40 @@ form.expando {
     margin: 2em 0;
     max-width: @gridRowWidth;
   }
+  // Circle API Page
+  .circle-api-page {
+    table {
+      .skin_table();
+      margin: 2em 0;
+      overflow: visible;
+      th {
+        text-align: left;
+        &:last-child {
+          width: 1%;
+        }
+      }
+      td {
+        vertical-align: middle;
+      }
+      .slideBtn {
+        .tableDrawerBtn();
+        line-height: 1em;
+        > i {
+          padding: 0;
+          padding-left: 7.5em;
+        }
+      }
+    }
+  }
+  .circle-api-page-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+    .popover {
+      width: 500px;
+      top: 66px;
+      left: 340px;
+    }
+  }
   // Heroku Page
   .heroku-step {
     margin-bottom: 3em;
