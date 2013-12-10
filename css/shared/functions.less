@@ -182,6 +182,7 @@
     color: @grayLighter;
     transition: all .2s ease-in-out;
     white-space: nowrap;
+    cursor: text;
     -webkit-transform-origin: top center;
             transform-origin: top center;
     -webkit-transform: translate(0, 100%) scale(1, 1);
@@ -201,13 +202,16 @@
       .outlineInside(@blueLighter);
       + label {
         color: @blueLighter;
+        cursor: default;
       }
     }
     &:focus, &:valid {
       outline: none;
       + label {
         background: @whiten;
+        cursor: default;
         -webkit-transform: translate(0, -50%) scale(.9, .9);
+                transform: translate(0, -50%) scale(.9, .9);
       }
     }
   }
