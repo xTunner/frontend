@@ -6,10 +6,9 @@
       API.
 
     %form
-      %label{for: "label"} Label
-
-      %input.input-medium{type: "text", name: "label", placeholder: "label", data-bind: "value: tokenLabel"}
-
+      %label.sticky
+        %input#label{type: "text", required:""}
+        %label{for: "label"} Label
       %label{for: "scope"} Scope
         %i.fa.fa-question-circle{
           data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: HAML.scope_popover() }" }
@@ -32,12 +31,12 @@
           %th Token
           %th Scope
             %i.fa.fa-question-circle{
-              data-bind: "popover: {html: true,
-                                    delay: 0,
-                                    animation: false,
-                                    placement: 'top',
-                                    title: 'Scope',
-                                    content: HAML.scope_popover() }" }
+              data-bind: "popover: {  html: true,
+                                      delay: 0,
+                                      animation: false,
+                                      placement: 'top',
+                                      title: 'Scope',
+                                      content: HAML.scope_popover() }" }
           %th Created
           %th
         %tbody{data-bind: "foreach: tokens"}
