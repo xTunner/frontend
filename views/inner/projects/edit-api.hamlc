@@ -11,7 +11,12 @@
         %label{for: "label"} Label
       %label{for: "scope"} Scope
         %i.fa.fa-question-circle{
-          data-bind: "popover: {html: true, delay: 0, animation: false, placement: 'left', title: 'Scope', content: HAML.scope_popover() }" }
+          data-bind: "popover: {  html: true,
+                                  delay: 0,
+                                  animation: false,
+                                  placement: 'left',
+                                  title: 'Scope',
+                                  content: HAML.scope_popover() }" }
 
       %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
 
