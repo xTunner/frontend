@@ -554,8 +554,9 @@ form.expando {
       top: 66px;
       left: 340px;
     }
-    form {
-      max-width: 250px;
+    label.sticky {
+      width: 250px;
+      display: inline-block;
     }
     input {
       &[type="submit"] {
@@ -564,6 +565,8 @@ form.expando {
     }
     .styled-select {
       position: relative;
+      width: 250px;
+      display: inline-block;
       select {
         background: transparent;
         -webkit-appearance: none;
