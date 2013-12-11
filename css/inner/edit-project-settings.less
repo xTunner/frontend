@@ -583,6 +583,10 @@ form.expando {
         padding: .5em 1.34em;
         margin-bottom: 1em;
         -webkit-font-smoothing: antialiased;
+        &:hover ~ i.fa-chevron-down {
+          color: @blueLight;
+          transition-duration: .1s;
+        }
       }
       i {
         position: absolute;
@@ -593,6 +597,7 @@ form.expando {
         &.fa-chevron-down {
           right: 10%;
           pointer-events: none;
+          transition: color .3s ease-in-out;
         }
       }
     }
