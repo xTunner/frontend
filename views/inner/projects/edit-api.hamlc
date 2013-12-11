@@ -26,7 +26,6 @@
             data-success-text: "Created",
             data-failed-text: "Failed"}
     %div{data-bind: "if: tokens().length"}
-      %h3 Project API Tokens
       %table
         %thead
           %th Label
