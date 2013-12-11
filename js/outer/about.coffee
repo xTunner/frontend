@@ -21,7 +21,7 @@ CI.outer.About = class About extends CI.outer.Page
       bio: ["The answer to any question posed to Allen is \"Clojure\". He <b>loves</b> Clojure! He's been working with Clojure since before it was officially released, and his name appears in the Changelog of dozens of libraries, including Clojure core. Allen's favourite philosopher is Rich Hickey, and his hobbies include Ultimate Frisbee, persistent data structures, and immutability.",
             "Allen started Circle to make Continuous Deployment available to the masses. He's greatly influenced by the work of IMVU, and his goal is their infrastructure as a generalized service. He currently deploys six times a day, and more on weekends."]
     ,
-      name: "David Lowe"
+      name: "Dracula Lowe"
       visible: true
       role: "Backend Developer"
       github: "dlowe"
