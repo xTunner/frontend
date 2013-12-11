@@ -1,0 +1,8 @@
+- if VM.ab().single_bold_cta()
+  != HAML.header_button_version_a()
+- else
+  != HAML.header_button_version_b()
+
+
+
+

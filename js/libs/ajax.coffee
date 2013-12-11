@@ -62,6 +62,8 @@ $(document).ajaxSend (ev, xhr, options) ->
     if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
       textVal t, loading
 
+CI.sendCSRFtoken = (settings) ->
+  return /^\//.test(settings.url)
 
 # Make the buttons disabled when clicked
 CI.ajax =
@@ -70,3 +72,6 @@ CI.ajax =
       contentType: "application/json"
       accepts: {json: "application/json"}
       dataType: "json"
+      beforeSend: (xhr, settings) ->
+        if CI.sendCSRFtoken(settings)
+           xhr.setRequestHeader("X-CSRFToken", CSRFToken)
