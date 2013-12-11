@@ -232,3 +232,11 @@ j.describe "favicon", ->
    VM.build().status("failed")
    @expect(VM.build().favicon_color()).toBe("red")
    @expect(VM.favicon.get_color()).toBe(VM.build().favicon_color())
+
+
+j.describe "AJAX CSRF", ->
+ j.it "CSRF token should be present on requests to the server", ->
+   @expect(CI.sendCSRFtoken({url: "/api/v1/project/circleci/circle/43557"}), true)
+
+ j.it "CSRF token should NOT present on requests to S3", ->
+   @expect(CI.sendCSRFtoken({url: "https://circle-development-action-output.s3.amazonaws.com/aec9f023a9924003a4781725-circleci-circle-7-0?Expires=1542919505&AWSAccessKeyId=AKIAICVK7FVGWE6KDIIA&Signature=Ds9KuYYJuowyDpf9QdVKUTCmvE8%3D"}), false)

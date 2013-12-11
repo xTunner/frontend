@@ -37,5 +37,7 @@
                                data-failed-text: "Failed!",
                                data-loading-text: "Paying..."}
           %span{data-bind: "ifnot: $root.logged_in"}
-            %a.btn.btn-primary{href: CI.github.authUrl()} Start your 14-day trial
+            %a.btn.btn-primary{href: CI.github.authUrl(),  
+                              data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-' + name}}"} 
+              Start your 14-day trial
       / /ko

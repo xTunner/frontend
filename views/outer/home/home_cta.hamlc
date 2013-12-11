@@ -4,7 +4,7 @@
       %p
         Plans start at $19 per month. All plans include a free 14 day trial.
 
-  != HAML.home_button({text: @text, source: @source})
+  != HAML.home_button()
 
   - if @first
     %div

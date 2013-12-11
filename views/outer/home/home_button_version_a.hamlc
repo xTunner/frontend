@@ -1,0 +1,3 @@
+%a.btn.btn-primary.btn-large{href: CI.github.authUrl(),
+                             data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'hero'}"}
+  RUN YOUR TESTS

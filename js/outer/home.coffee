@@ -28,10 +28,5 @@ class CI.outer.Home extends CI.outer.Page
       icon: "fa-comments"
       headline: "Incredible support"
       teaser: "We respond to support requests immediately, every day. Most requests are responded to within an hour. No-one ever waits more than 12 hours for a response."
-    ]
+    ]  
 
-  @cta_text: () =>
-    textmap =
-      "A": "RUN YOUR TESTS",
-      "B": "Take 14 days to try us out - Start Here",
-    textmap[VM.ab().first_cta_button_text_showdown()]

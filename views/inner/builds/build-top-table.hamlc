@@ -1,7 +1,7 @@
 .row-fluid.build-table#build-log-header
   .span10.offset1
 
-    %table
+    %table.build-table-top
 
       %tbody
 
