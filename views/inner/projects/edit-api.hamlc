@@ -3,18 +3,19 @@
     %span{data-bind: "text: project_name"}
   .circle-api-page-inner
     %p Create and revoke project-specific API tokens to access this project's details using our
-      API.
+      API. First choose a scope
+      %i.fa.fa-question-circle{
+        data-bind: "popover: {  html: true,
+                                delay: 0,
+                                animation: false,
+                                placement: 'right',
+                                title: 'Scope',
+                                content: HAML.scope_popover() }" }
+      and then create a label.
     %form
       .styled-select
         %select{name: "scope", data-bind: "options: ['Choose scope...', 'Status', 'All'], value: tokenScope"}
         %i.fa.fa-chevron-down
-        %i.fa.fa-question-circle{
-          data-bind: "popover: {  html: true,
-                                  delay: 0,
-                                  animation: false,
-                                  placement: 'right',
-                                  title: 'Scope',
-                                  content: HAML.scope_popover() }" }
       %label.sticky
         %input#label{type: "text", required:""}
         %label{for: "label"} Label
