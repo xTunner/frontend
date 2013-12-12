@@ -10,6 +10,7 @@
            attr: { for: $parent.parallel_input_id($data)},
            event: {mouseover: $parent.parallel_focus_in}"}
       %span{data-bind: "text: $data"}
+
       / ko if: $parent.billing.paid
 
       .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
@@ -21,14 +22,15 @@
         %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
 
       / /ko
+
       %input{type: "radio", name: "parallel", data-bind: "value: $data,
             checked: $parent.editParallel,
             disable: $parent.disable_parallel_input($data),
             click: $parent.set_parallelism,
             attr: { id: $parent.parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
 
-.row-fluid{data-bind: "if: show_test_new_settings"}
-  - text = "Try out a build at <span data-bind='text: parallel'></span>x"
+.try-out-build{data-bind: "if: show_test_new_settings"}
+  - text = "Go!"
   != HAML.expando_button({                             |
       button_binding: "click: create_settings_build",  |
       loading_text: "Starting...",                     |
