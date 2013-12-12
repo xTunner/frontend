@@ -233,11 +233,25 @@ form.expando {
       transition: all .3s ease-in-out;
       opacity: 0;
       a {
-        .circleButton(@grayLightest, @green);
+        .circleButton(@grayLightest);
         font-size: @baseFontSize;
         display: block;
         padding: 3px;
         margin-top: 1.5em;
+        text-shadow: none;
+      }
+      &:empty {
+        display: none;
+      }
+    }
+    .insufficient-plan {
+      a {
+        .circleButton(@green);
+        font-size: @baseFontSize;
+        display: block;
+        padding: 3px;
+        margin-top: 1.5em;
+        text-shadow: none;
       }
     }
   }
