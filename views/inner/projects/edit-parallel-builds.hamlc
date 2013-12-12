@@ -3,6 +3,14 @@
 %div{data-bind: "if: loading_billing"}
   .row-fluid.centered-spinner
     != HAML.fast_spinner()
+
+.try-out-build{data-bind: "if: show_test_new_settings"}
+  - text = "Go!"
+  != HAML.expando_button({                             |
+      button_binding: "click: create_settings_build",  |
+      loading_text: "Starting...",                     |
+      button_text: text})                              |
+
 .parallelism-picker{data-bind: "ifnot: loading_billing"}
 
   %form.parallelism-items{data-bind: "foreach: parallelism_options"}
@@ -28,13 +36,6 @@
             disable: $parent.disable_parallel_input($data),
             click: $parent.set_parallelism,
             attr: { id: $parent.parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
-
-.try-out-build{data-bind: "if: show_test_new_settings"}
-  - text = "Go!"
-  != HAML.expando_button({                             |
-      button_binding: "click: create_settings_build",  |
-      loading_text: "Starting...",                     |
-      button_text: text})                              |
 
 .mini-faq
   .mini-faq-item
