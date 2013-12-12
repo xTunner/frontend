@@ -9,6 +9,69 @@ form.expando {
     vertical-align: top;
   }
 }
+.try-out-build {
+  line-height: 3em;
+  height: 3em;
+  margin: 1em 0;
+  transition: all .3s ease-in-out;
+  opacity: 1;
+  &:empty {
+    margin: 0;
+    opacity: 0;
+  }
+  .inline-select {
+    font-size: @baseFontSize;
+    display: inline-block;
+    margin: 0 .5em;
+  }
+  .styled-select {
+    position: relative;
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+    select {
+      background: transparent;
+      -webkit-appearance: none;
+      outline: none;
+      .outlineInside(@grayLighter);
+      border-radius: 5em;
+      .box-sizing(border-box);
+      line-height: 2em;
+      height: 3em;
+      width: 100%;
+      padding: .5em 1.34em;
+      -webkit-font-smoothing: antialiased;
+      &:hover ~ i.fa-chevron-down {
+        color: @blueLight;
+        transition-duration: .1s;
+      }
+    }
+    i {
+      &.fa-chevron-down {
+        right: 8%;
+        pointer-events: none;
+        position: absolute;
+        top: 31%;
+        transition: color .3s ease-in-out;
+        font-size: @baseFontSize;
+      }
+    }
+  }
+  button[type="submit"] {
+    font-size: @baseFontSize;
+    border: none;
+    background: none;
+    outline: none;
+    color: @blueDark;
+    border-bottom: 1px dotted @blueLight;
+    padding: 0;
+    vertical-align: middle;
+    &:hover {
+      color: @blueLight;
+      border-bottom-color: @blueDark;
+    }
+  }
+}
 #project-settings {
   .flexBox();
   padding: 0 2em;
@@ -249,67 +312,6 @@ form.expando {
         padding: 3px;
         margin-top: 1.5em;
         text-shadow: none;
-      }
-    }
-  }
-  .try-out-build {
-    line-height: 3em;
-    height: 3em;
-    margin: 1em 0;
-    transition: all .1s ease-in-out;
-    &:empty {
-      margin: 0;
-      transition-duration: .3s;
-    }
-    .inline-select {
-      font-size: @baseFontSize;
-      display: inline-block;
-      margin: 0 .5em;
-    }
-    .styled-select {
-      position: relative;
-      width: 250px;
-      display: inline-block;
-      vertical-align: top;
-      select {
-        background: transparent;
-        -webkit-appearance: none;
-        outline: none;
-        .outlineInside(@grayLighter);
-        border-radius: 5em;
-        .box-sizing(border-box);
-        line-height: 2em;
-        height: 3em;
-        width: 100%;
-        padding: .5em 1.34em;
-        -webkit-font-smoothing: antialiased;
-        &:hover ~ i.fa-chevron-down {
-          color: @blueLight;
-          transition-duration: .1s;
-        }
-      }
-      i {
-        &.fa-chevron-down {
-          right: 8%;
-          pointer-events: none;
-          position: absolute;
-          top: 31%;
-          transition: color .3s ease-in-out;
-          font-size: @baseFontSize;
-        }
-      }
-    }
-    button[type="submit"] {
-      font-size: @baseFontSize;
-      border: none;
-      background: none;
-      outline: none;
-      color: @blueDark;
-      border-bottom: 1px dotted @blueLight;
-      padding: 0;
-      &:hover {
-        color: @blueLight;
-        border-bottom-color: @blueDark;
       }
     }
   }
