@@ -1,10 +1,12 @@
 %form.input-prepend.input-append.expando
-  .inline-select Try out
+  .inline-select
+    != @prepend_text
   .styled-select
     %select{data-bind: "foreach: pretty_branch_names, value: settings_branch"}
       %option{data-bind: "text: $data"}
     %i.fa.fa-chevron-down
-  .inline-select with <span data-bind='text: parallel'></span>x containers.
+  .inline-select
+    != @append_text
   %button{type: "submit",
           name: "save-and-test",
           data-bind: @button_binding,

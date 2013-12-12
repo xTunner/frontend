@@ -5,10 +5,14 @@
     != HAML.fast_spinner()
 
 .try-out-build{data-bind: "if: show_test_new_settings"}
-  - text = "Go!"
+  - prepend = "Try out"
+  - append = "with <span data-bind='text: parallel'></span>x containers."
+  - text = "Try it now!"
   != HAML.expando_button({                             |
       button_binding: "click: create_settings_build",  |
       loading_text: "Starting...",                     |
+      prepend_text: prepend,                           |
+      append_text: append,                             |
       button_text: text})                              |
 
 .parallelism-picker{data-bind: "ifnot: loading_billing"}
