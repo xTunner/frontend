@@ -168,7 +168,8 @@ form.expando {
     label.disabled {
       cursor: default;
       &:hover {
-        .insufficient-containers {
+        .insufficient-containers,
+        .insufficient-plan {
           .translate3d(0, 0, 0);
           transition-duration: .1s;
           opacity: 1;
@@ -213,7 +214,8 @@ form.expando {
         }
       }
     }
-    .insufficient-containers {
+    .insufficient-containers,
+    .insufficient-plan {
       position: absolute;
       top: 0;
       left: 0;
