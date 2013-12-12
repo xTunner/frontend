@@ -11,9 +11,15 @@
            event: {mouseover: $parent.parallel_focus_in}"}
       %span{data-bind: "text: $data"}
       / ko if: $parent.billing.paid
+
+      .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
+        Your plan doesn't allow this many containers.
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Upgrade
+
       .insufficient-containers{data-bind: "if: $parent.show_add_containers"}
         Not enough containers available.
-        %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Add More
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
+
       / /ko
       %input{type: "radio", name: "parallel", data-bind: "value: $data,
             checked: $parent.editParallel,
