@@ -31,7 +31,7 @@ CI.outer.About = class About extends CI.outer.Page
       github: "dlowe"
       twitter: "j_david_lowe"
       email: "dlowe@circleci.com"
-      photo: "dlowe"
+      photo: "david"
       bio: [
         "David is responsible for all of the bugs. He wrote his first buggy code in BASIC with a pencil and paper, and he's been getting better at it ever since. He keeps a 1/4 acre garden and eats almost entirely home-grown veggies during the growing season.  Helping to balance out the numerous times that he's lost at chess, David has won the IOCCC on 5 separate occasions. In a past life, he wrote MTA software which at one time was sending about 1% of the internet's email.",
         "Besides being invited to speak at the Frozen Perl Conference, OIT's CSET Department, and SOU's CS Department, David co-founded the SF perl user group, the southern Oregon geek group, and the Rogue hack lab hackerspace. He drank the automated testing kool-aid years ago, and after introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle, and is particularly keen on building and scaling things which would be impossible to justify for any single small company where CI isn't what they do. He splits his time between introducing new bugs, telling kids to get off his lawn, and baking pies. His current running total is roughly 1500 delicious pastry concoctions."
