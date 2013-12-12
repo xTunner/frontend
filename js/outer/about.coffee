@@ -42,45 +42,45 @@ CI.outer.About = class About extends CI.outer.Page
             "Drawing from her many years' experience in her previous position as the Customer Amazement Specialist, Operations Manager, Returns Siren, and Retail Store Maven for a certain large utility kilt manufacturer, Jenneviere brings her skills as a professional pottymouth, dabbler in inappropriate and snarky humor, and cat wrangling to the team at Circle, and spends most of her time trying to keep everyone well-groomed and hairball free."]
     ,
 
-      name: “Daniel Woelfel“
-      photo: “daniel”
+      name: "Daniel Woelfel"
+      photo: "daniel"
       visible: true
-      role: “Backend Developer”
-      github: "dwwoelfel”
+      role: "Backend Developer"
+      github: "dwwoelfel"
       twitter: "DanielWoelfel"
-      email: “daniel@circleci.com"
-      bio: [“Despite all our coercions, promises, bribes, and outright threats for nearly a year, it took us putting Daniel in a time-out and forcing him to type things about himself to get a bio out of him. He doesn't really have any hobbies: if he's doing something, it's usually either reading romantic fiction (not to be confused with romance novels!), coding, or binge-watching episodes of :tv-show-he-just-discovered-that-is-so-awesome-he-can't-put-it-down. One of his first programming projects was an app written in Python that creates an exact replica of an image using only html tables. It's been almost 2 years since he last touched the thing, and it's still cranking out tables. He's only been rejected from YCombinator 3 times, which is empirically below the threshold of consolation prizes.”,
-            “Daniel has a bachelors degree in Math from Texas A&M. He has written an app to graph Kickstarter projects, and was a customer (the 155th!) before he joined the Circle team. He looks forward to helping increase the "wow, I can do something cool with this!" feeling that users get when they use Circle, and has been tinkering with a few things recently to make that possible--a native websockets library so that our output feels more like you're directly connected to a terminal and hooking in something like jquery.terminal so that you actually can be directly connected to a terminal. He currently helps feed his movie habit by helping organize weekly movie nights at the office. Next up: Fight Club.”]
+      email: "daniel@circleci.com"
+      bio: ["Despite all our coercions, promises, bribes, and outright threats for nearly a year, it took us putting Daniel in a time-out and forcing him to type things about himself to get a bio out of him. He doesn't really have any hobbies: if he's doing something, it's usually either reading romantic fiction (not to be confused with romance novels!), coding, or binge-watching episodes of :tv-show-he-just-discovered-that-is-so-awesome-he-can't-put-it-down. One of his first programming projects was an app written in Python that creates an exact replica of an image using only html tables. It's been almost 2 years since he last touched the thing, and it's still cranking out tables. He's only been rejected from YCombinator 3 times, which is empirically below the threshold of consolation prizes.",
+            "Daniel has a bachelors degree in Math from Texas A&M. He has written an app to graph Kickstarter projects, and was a customer (the 155th!) before he joined the Circle team. He looks forward to helping increase the 'wow, I can do something cool with this!' feeling that users get when they use Circle, and has been tinkering with a few things recently to make that possible--a native websockets library so that our output feels more like you're directly connected to a terminal and hooking in something like jquery.terminal so that you actually can be directly connected to a terminal. He currently helps feed his movie habit by helping organize weekly movie nights at the office. Next up: Fight Club."]
     ,
-      name: “Mahmood Ali“
-      photo: “mahmood”
+      name: "Mahmood Ali"
+      photo: "mahmood"
       visible: true
-      role: “Backend Developer”
-      github: "notnoopci”
+      role: "Backend Developer"
+      github: "notnoopci"
       twitter: "notnoop"
-      email: “mahmood@circleci.com"
-      bio: [“Mahmood loves car camping, which might explain why he also likes moving as much as he does. He and his family have moved 6 times in the last 6 years, though his baby boy has been completely lazy and hasn't offered to carry a single box yet. In between relocation to new abodes, Mahmood spends the nicer Boston weather exploring bike trails and learning computer languages. He's determined that his son will know Java before he can talk.”,
-            “During his time at MIT, Mahmood spoke at a few Java research conferences including Devoxx, and has pushed code to Java 8--and Java 7--compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He enjoys being reminded of his in-production projects, like java-apns, every time he gets support tickets. He acknowledges his own fallibility, and aims to help the Circle team continue to bring reliable test automation to all developers. His Achilles Heel is his pair of permanently underachieving glasses.”]
+      email: "mahmood@circleci.com"
+      bio: ["Mahmood loves car camping, which might explain why he also likes moving as much as he does. He and his family have moved 6 times in the last 6 years, though his baby boy has been completely lazy and hasn't offered to carry a single box yet. In between relocation to new abodes, Mahmood spends the nicer Boston weather exploring bike trails and learning computer languages. He's determined that his son will know Java before he can talk.",
+            "During his time at MIT, Mahmood spoke at a few Java research conferences including Devoxx, and has pushed code to Java 8--and Java 7--compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He enjoys being reminded of his in-production projects, like java-apns, every time he gets support tickets. He acknowledges his own fallibility, and aims to help the Circle team continue to bring reliable test automation to all developers. His Achilles Heel is his pair of permanently underachieving glasses."]
     ,
 
-      name: “Gordon Syme“
-      photo: “gordon”
+      name: "Gordon Syme"
+      photo: "gordon"
       visible: true
-      role: “Backend Developer”
-      github: “gordonsyme”
+      role: "Backend Developer"
+      github: "gordonsyme"
       twitter: "gordon_syme"
-      email: “gordon@circleci.com"
-      bio: [“Gordon has been racing dinghies right through the winter off the coast of Ireland for the past 16-odd years, and as his oft-showcased cabinet of prize coffee mugs will tell you, he's damn good at it. When he's not busy bludgeoning a piano with his ham-fisted fingers, he spends his free time rolling down mountains on a bicycle… sometimes even the right way up. In his down time, he's a board game shark, though you won't catch him trying to buy Boardwalk or get out of jail free.”,
-            “Gordon joins the team after spending significant time at Amazon building tools to monitor the entire network (he built their DWDM monitoring from the ground up). He also built a JVM bytecode recompiler to enable running applications on a clustered VM without needing re-programming effort, and has grand plans for how he's going to make waves at Circle. We're pretty sure they include company Power Grid tournaments.”]
+      email: "gordon@circleci.com"
+      bio: ["Gordon has been racing dinghies right through the winter off the coast of Ireland for the past 16-odd years, and as his oft-showcased cabinet of prize coffee mugs will tell you, he's damn good at it. When he's not busy bludgeoning a piano with his ham-fisted fingers, he spends his free time rolling down mountains on a bicycle… sometimes even the right way up. In his down time, he's a board game shark, though you won't catch him trying to buy Boardwalk or get out of jail free.",
+            "Gordon joins the team after spending significant time at Amazon building tools to monitor the entire network (he built their DWDM monitoring from the ground up). He also built a JVM bytecode recompiler to enable running applications on a clustered VM without needing re-programming effort, and has grand plans for how he's going to make waves at Circle. We're pretty sure they include company Power Grid tournaments."]
     ,
 
-      name: “Danny King“
-      photo: “danny”
+      name: "Danny King"
+      photo: "danny"
       visible: true
-      role: “Designer”
-      github: “dannykingme”
-      twitter: “dannykingme”
-      email: “danny@circleci.com"
-      bio: [“Danny (not to be confused with Daniel) has batted a .500 baseball season with zero strikeouts and once took 2nd place at a poker tournament at the Mirage in Vegas. When he was 15 he, along with two of his paintball teammates, won a pickup paintball game against the three top-rated players from the number one team in the world, though he reckons this is only arguably impressive.  In the world of virtual sports, Danny has scored over a million points in Tony Hawk's Pro Skater, and has racked up massive karma points by designing a website--pro bono--for a non-profit organization that helps provide activity bags to hospitalized children. He was selected for a reality TV show on Fox but he turned it down (they're evil).”,
-            “Danny finished high school at the young age of 16.  Two years after that, he cashed his first design freelance check. His past clients include Verizon, Lego, The Tribune, and Tyson Foods, and he has four individual 5-star rated projects in the Age of Empires design community. Not only does he design, but he's learned a bit of code, too, so he can build the things he designs, and his past projects include writing a tool that auto-hides Google Map's UI with simple CSS. He comes to Circle bursting with fresh ideas (like the new logo!) and can be found manipulating pixels with his hood securely in the Up position.”]
+      role: "Designer"
+      github: "dannykingme"
+      twitter: "dannykingme"
+      email: "danny@circleci.com"
+      bio: ["Danny (not to be confused with Daniel) has batted a .500 baseball season with zero strikeouts and once took 2nd place at a poker tournament at the Mirage in Vegas. When he was 15 he, along with two of his paintball teammates, won a pickup paintball game against the three top-rated players from the number one team in the world, though he reckons this is only arguably impressive.  In the world of virtual sports, Danny has scored over a million points in Tony Hawk's Pro Skater, and has racked up massive karma points by designing a website--pro bono--for a non-profit organization that helps provide activity bags to hospitalized children. He was selected for a reality TV show on Fox but he turned it down (they're evil).",
+            "Danny finished high school at the young age of 16.  Two years after that, he cashed his first design freelance check. His past clients include Verizon, Lego, The Tribune, and Tyson Foods, and he has four individual 5-star rated projects in the Age of Empires design community. Not only does he design, but he's learned a bit of code, too, so he can build the things he designs, and his past projects include writing a tool that auto-hides Google Map's UI with simple CSS. He comes to Circle bursting with fresh ideas (like the new logo!) and can be found manipulating pixels with his hood securely in the Up position."]
     ]
