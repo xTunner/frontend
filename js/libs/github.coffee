@@ -7,7 +7,7 @@ checkOuterPages = (url) =>
 
 
 CI.github =
-  # we encore each parammeter separately (one of them twice!) to get the right format
+  # we encode each parameter separately (one of them twice!) to get the right format
   authUrl: (scope=["user:email", "repo"]) =>
     destination = window.location.pathname + window.location.hash
     destination = checkOuterPages(destination)
