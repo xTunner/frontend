@@ -5,7 +5,7 @@ CI.ExistingUserHeuristics = class ExistingUserHeuristics
 
     @is_existing_user.subscribe (answer) =>
       mixpanel.register
-        existing_user: false
+        existing_user: answer
 
     if window.renderContext.current_user
       @is_existing_user(true)
