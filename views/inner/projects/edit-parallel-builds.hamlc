@@ -5,7 +5,7 @@
     != HAML.fast_spinner()
 
 .try-out-build{data-bind: "if: show_test_new_settings"}
-  - prepend = "Try out"
+  - prepend = "Run a build on"
   - append = "with <span data-bind='text: parallel'></span>x containers."
   - text = "Try it now!"
   != HAML.expando_button({                             |
