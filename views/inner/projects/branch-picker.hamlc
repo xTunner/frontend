@@ -1,4 +1,4 @@
-%form.input-prepend.input-append.expando
+%form
   .inline-select
     != @prepend_text
   .styled-select

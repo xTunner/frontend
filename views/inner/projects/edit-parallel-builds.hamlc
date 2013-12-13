@@ -8,7 +8,7 @@
   - prepend = "Run a build on"
   - append = "with <span data-bind='text: parallel'></span>x containers."
   - text = "Try it now!"
-  != HAML.expando_button({                             |
+  != HAML.branch_picker({                              |
       button_binding: "click: create_settings_build",  |
       loading_text: "Starting...",                     |
       prepend_text: prepend,                           |
