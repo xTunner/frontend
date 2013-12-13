@@ -23,6 +23,11 @@
            event: {mouseover: $parent.parallel_focus_in}"}
       %span{data-bind: "text: $data"}
 
+      %div{data-bind: "if: $parent.billing.trial"}
+        .alert.alert-warning
+          %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Select a plan
+          to increase your paralellism.
+
       / ko if: $parent.billing.paid
 
       .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
