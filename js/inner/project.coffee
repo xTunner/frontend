@@ -30,6 +30,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loading_billing: false
     users: []
     parallel: 1
+    focused_parallel: 1
     has_usable_key: true
     retried_build: null
     branches: null
@@ -65,7 +66,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @build_url = @komp =>
       @vcs_url() + '/build'
 
-    @settings_branch(@default_branch())
+    @default_branch.subscribe (val) =>
+      @settings_branch(val)
 
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
@@ -85,7 +87,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @paid_parallelism = @komp =>
       Math.min @plan().max_parallelism(), @billing.usable_containers()
 
-    @focused_parallel = ko.observable @parallel()
+    @parallel.subscribe (val) =>
+      @focused_parallel(val)
 
     @parallel_label_style = (num) =>
       disabled: @komp =>
