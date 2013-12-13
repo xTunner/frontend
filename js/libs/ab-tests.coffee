@@ -69,7 +69,7 @@ CI.ABTests = class ABTests
     mixpanel.register_once unpacked_tests
 
     try
-      new CI.ExistingUserHueristics # sets existing_user property
+      new CI.ExistingUserHeuristics # sets existing_user property
       if @new_cookie
         mixpanel.register
           first_page_load: true

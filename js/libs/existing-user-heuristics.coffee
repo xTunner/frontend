@@ -1,5 +1,5 @@
 # Hueristics for determining if a visitor to the website is a user
-CI.ExistingUserHueristics = class ExistingUserHueristics
+CI.ExistingUserHeuristics = class ExistingUserHeuristics
   constructor: () ->
     @is_existing_user = ko.observable()
 
