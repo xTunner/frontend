@@ -210,7 +210,7 @@
         .outlineInside(@blockColor);
         color: @whiten;
       }
-      ~ label span {
+      ~ label > span {
         background: transparent;
         color: @blockColor;
         .outlineInside(@blockColor);
@@ -226,7 +226,7 @@
           opacity: 1;
         }
       }
-      span {
+      > span {
         background: @grayLightest;
         box-shadow: none;
         color: @grayLighter;
@@ -243,10 +243,10 @@
       position: relative;
       float: left;
       overflow: hidden;
-      &:hover ~ label span {
+      &:hover ~ label > span {
         box-shadow: none;
       }
-      span {
+      > span {
         position: absolute;
         top: 3%;
         left: 3%;
@@ -452,7 +452,7 @@
       }
     }
     label {
-      span {
+      > span {
         margin-left: 1.5em;
         &:after {
           content: "?";
