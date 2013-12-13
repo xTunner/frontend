@@ -2,8 +2,7 @@
   .inline-select
     != @prepend_text
   .styled-select
-    %select{data-bind: "foreach: pretty_branch_names, value: settings_branch"}
-      %option{data-bind: "text: $data"}
+    %select{data-bind: "value: settings_branch, options: pretty_branch_names"}
     %i.fa.fa-chevron-down
   .inline-select
     != @append_text
