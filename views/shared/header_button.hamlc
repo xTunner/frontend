@@ -1,8 +1,4 @@
-- if VM.ab().single_bold_cta()
-  != HAML.header_button_version_a()
-- else
-  != HAML.header_button_version_b()
-
-
-
-
+%a#login.login-link{href: CI.github.authUrl(),
+                          title: 'Sign in with Github',
+                          data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'header', 'url' : window.location.pathname}}"}
+ Sign in
