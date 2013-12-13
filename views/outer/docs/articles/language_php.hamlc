@@ -122,3 +122,49 @@
 
 %p
   This example uses <code>sed</code> to uncomment the lines in the pre-installed <code>xdebug.ini</code> file.
+
+%h2#php-apache Using the Apache Webserver
+%p
+  Apache2 is already installed on CircleCI containers but it needs to be
+  configured to host your PHP application.
+
+%p
+  To enable your site check a file containing your site configuration into your
+  repository and copy it to <code>/etc/apache2/sites-available/</code> during
+  your build.
+  Then enable the site with <code>a2ensite</code> and restart Apache.
+
+%p
+  An example configuration that sets up Apache to serve the PHP site from
+  <code>/home/ubuntu/MY-PROJECT/server-root</code> is:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      Listen 8080
+
+      &lt;VirtualHost *:8080&gt;
+        LoadModule php5_module /home/ubuntu/.phpenv/versions/PHP_VERSION/libexec/libphp5.so
+
+        DocumentRoot /home/ubuntu/MY-PROJECT/server-root
+        ServerName host.example.com
+        &lt;FilesMatch \\.php$&gt;
+          SetHandler application/x-httpd-php
+        &lt;/FilesMatch&gt;
+      &lt;/VirtualHost&gt;
+%p
+  Replace <code>MY-SITE</code> in with the name of your site configuration
+  file and <code>PHP_VERSION</code> with the version of PHP you configured
+  in your <code>circle.yml</code>.
+
+%p
+  Then enable your site and restart Apache by adding the following to your <code>circle.yml</code>
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        post:
+          - cp ~/MY-PROJECT/MY-SITE /etc/apache2/sites-available
+          - a2ensite MY-SITE
+          - sudo service apache2 restart

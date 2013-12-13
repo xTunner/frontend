@@ -14,4 +14,4 @@ CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.Page
     @title = "#{@branch} - #{@username}/#{@project}"
 
   refresh: () ->
-    VM.loadProject(@username, @project, null, true)
+    VM.loadProject(@username, @project, @branch, true)

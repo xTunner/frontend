@@ -1,4 +1,4 @@
-.usage-queue-why.well{data-bind: "visible: usage_queue_visible"}
+.usage-queue-why{data-bind: "visible: usage_queue_visible"}
   .spinner-container{data-bind: "ifnot: usage_queue_why"}
     != HAML.fast_spinner({})
   %div{data-bind: "if: usage_queue_why"}

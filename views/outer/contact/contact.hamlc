@@ -38,7 +38,7 @@
             %i.fa.fa-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
               != succeed ",", ->
-                %span.street-address Circle Internet Services, 325 9th Street
+                %span.street-address 325 9th Street
               != succeed ",", ->
                 %span.locality San Francisco
               != succeed ",", ->

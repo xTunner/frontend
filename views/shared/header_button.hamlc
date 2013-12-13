@@ -1,0 +1,4 @@
+%a#login.login-link{href: CI.github.authUrl(),
+                          title: 'Sign in with Github',
+                          data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'header', 'url' : window.location.pathname}}"}
+ Sign in

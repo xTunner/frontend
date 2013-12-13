@@ -9,6 +9,69 @@ form.expando {
     vertical-align: top;
   }
 }
+.try-out-build {
+  line-height: 3em;
+  height: 3em;
+  margin: 1em 0;
+  transition: all .3s ease-in-out;
+  opacity: 1;
+  &:empty {
+    margin: 0;
+    opacity: 0;
+  }
+  .inline-select {
+    font-size: @baseFontSize;
+    display: inline-block;
+    margin: 0 .5em;
+  }
+  .styled-select {
+    position: relative;
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+    select {
+      background: transparent;
+      -webkit-appearance: none;
+      outline: none;
+      .outlineInside(@grayLighter);
+      border-radius: 5em;
+      .box-sizing(border-box);
+      line-height: 2em;
+      height: 3em;
+      width: 100%;
+      padding: .5em 1.34em;
+      -webkit-font-smoothing: antialiased;
+      &:hover ~ i.fa-chevron-down {
+        color: @blueLight;
+        transition-duration: .1s;
+      }
+    }
+    i {
+      &.fa-chevron-down {
+        right: 8%;
+        pointer-events: none;
+        position: absolute;
+        top: 31%;
+        transition: color .3s ease-in-out;
+        font-size: @baseFontSize;
+      }
+    }
+  }
+  button[type="submit"] {
+    font-size: @baseFontSize;
+    border: none;
+    background: none;
+    outline: none;
+    color: @blueDark;
+    border-bottom: 1px dotted @blueLight;
+    padding: 0;
+    vertical-align: middle;
+    &:hover {
+      color: @blueLight;
+      border-bottom-color: @blueDark;
+    }
+  }
+}
 #project-settings {
   .flexBox();
   padding: 0 2em;
@@ -129,12 +192,10 @@ form.expando {
   }
   // Overview Page
   .overview-options {
-    // .flexBox();
     margin: 2em 0;
     .clearfix();
   }
   .overview-item {
-    // .flex(0, 1, 250px);
     margin-right: 2%;
     float: left;
     width: 300px;
@@ -143,27 +204,37 @@ form.expando {
     }
   }
   // Parallelism Page
-  .parallelism-picker {
-    margin: 2em 0;
-  }
   .parallelism-items {
     .clearfix();
-    @blockSize: 8em;
-    @blockColor: @green;
-    @blockColor: @gray;
-    .flex(1, 1, (@blockSize * 5));
-    order: 2;
+    @blockSize: 10em;
+    @blockColor: @blueDark;
     margin: 0;
     max-width: (@blockSize * 8);
     .selected {
       span {
-        .outlineFlat(@blockColor);
+        .outlineInside(@blockColor);
         color: @whiten;
       }
       ~ label span {
         background: transparent;
         color: @blockColor;
-        .outlineFlat(@blockColor);
+        .outlineInside(@blockColor);
+      }
+    }
+    label.disabled {
+      cursor: default;
+      &:hover {
+        .insufficient-containers,
+        .insufficient-plan {
+          .translate3d(0, 0, 0);
+          transition-duration: .1s;
+          opacity: 1;
+        }
+      }
+      span {
+        background: @grayLightest;
+        box-shadow: none;
+        color: @grayLighter;
       }
     }
     input[type=radio] {
@@ -176,6 +247,7 @@ form.expando {
       margin: 0;
       position: relative;
       float: left;
+      overflow: hidden;
       &:hover ~ label span {
         box-shadow: none;
       }
@@ -185,7 +257,7 @@ form.expando {
         left: 3%;
         width: 94%;
         padding: ~'calc(47% - .5em)' 0;
-        box-sizing: border-box;
+        .box-sizing(border-box);
         background: @blockColor;
         border-radius: 3px;
         line-height: 1em;
@@ -196,6 +268,46 @@ form.expando {
           content: "x";
           margin-right: -.5ex;
         }
+      }
+    }
+    .insufficient-containers,
+    .insufficient-plan {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #555;
+      padding: .75em;
+      color: @grayLightest;
+      .box-sizing(border-box);
+      top: 3%;
+      left: 3%;
+      width: 94%;
+      height: 97%;
+      border-radius: 3px;
+      text-align: center;
+      .translate3d(0, 110%, 0);
+      transition: all .3s ease-in-out;
+      opacity: 0;
+      a {
+        .circleButton(@grayLightest);
+        font-size: @baseFontSize;
+        display: block;
+        padding: 3px;
+        margin-top: 1.5em;
+        text-shadow: none;
+      }
+      &:empty {
+        display: none;
+      }
+    }
+    .insufficient-plan {
+      a {
+        .circleButton(@green);
+        font-size: @baseFontSize;
+        display: block;
+        padding: 3px;
+        margin-top: 1.5em;
+        text-shadow: none;
       }
     }
   }
@@ -215,6 +327,7 @@ form.expando {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    margin-top: 2em;
     .mini-faq-item {
       padding-right: 4em;
       .flex(1, 1, 30%);

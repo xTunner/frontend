@@ -62,7 +62,13 @@
 @baseLineHeight:        20px;
 @altFontFamily:         @serifFontFamily;
 
+<<<<<<< HEAD
 @fontSizeSmall:         0.857em; // 12px
+=======
+@fontSizeLarge:         round((@baseFontSize * 1.25), 0); // 18px
+@fontSizeSmall:         round((@baseFontSize * 0.85), 0); // 12px
+@fontSizeMini:          round((@baseFontSize * 0.75), 0); // 11px
+>>>>>>> repo-settings-update
 
 // Links
 @link:                     @gray;
@@ -83,6 +89,7 @@
 /* ============= MISC. ============= */
 
 @outerBodyBackground: darken(@white, 2.75); // #f8f8f8
+@grayBorder:   lighten(@gray,55.50%); //#e3e3e3
 
 // Layout Grid
 @columns:                           12;
