@@ -51,7 +51,7 @@
               data-bind: "click: save_specs",
               data-loading-text: "Saving..."}
         Save
-      - prepend = "and then try"
+      - prepend = "and/or run a build on"
       - append = "with these commands."
       - text = "Try it now!"
       != HAML.branch_picker({                                     |
