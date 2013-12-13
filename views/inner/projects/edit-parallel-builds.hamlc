@@ -69,7 +69,7 @@
     %ul
       %li a 45 minute build fell to 18 minutes with 3x build speed,
       %li a 20 minute build dropped to 11 minutes with 2x build speed.
-    %p Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, memory, and databases.
+    %p Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory.
     %p For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can <a href="/docs/parallel-manual-setup">control the parallelism directly</a>.
   .mini-faq-item
     %h3 Do others use these?
