@@ -4,11 +4,6 @@
   .row-fluid.centered-spinner
     != HAML.fast_spinner()
 
-%div{data-bind: "if: $parent.billing.trial"}
-  .alert.alert-warning
-    %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Select a plan
-    to increase your paralellism.
-
 .try-out-build{data-bind: "if: show_test_new_settings"}
   - prepend = "Run a build on"
   - append = "with <span data-bind='text: parallel'></span>x containers."
@@ -37,6 +32,14 @@
       .insufficient-containers{data-bind: "if: $parent.show_add_containers"}
         Not enough containers available.
         %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
+
+      / /ko
+
+      / ko if: $parent.billing.trial
+
+      .insufficient-trial{data-bind: "if: $parent.show_upgrade_trial"}
+        Trials only come with <span data-bind='text: $parent.billing.usable_containers'></span> available containers.
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Add a plan
 
       / /ko
 
