@@ -22,4 +22,3 @@
                 %a{href: "http://blog.circleci.com"} Blog
       .span4.controls
         != HAML.header_button()
-        

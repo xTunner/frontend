@@ -69,24 +69,13 @@ CI.ABTests = class ABTests
     mixpanel.register_once unpacked_tests
 
     try
+      new CI.ExistingUserHeuristics # sets existing_user property
       if @new_cookie
         mixpanel.register
           first_page_load: true
       else
         mixpanel.unregister 'first_page_load'
 
-      set_existing_user = () ->
-        if mixpanel.get_property('mp_name_tag')
-          mixpanel.register
-            existing_user: true
-        else
-          mixpanel.register
-            existing_user: false
-
-      if mixpanel.get_property?
-        set_existing_user()
-      else # have wait for mixpanel script to load
-        $(window).load () ->
-          set_existing_user()
     catch e
+      console.error e
       _rollbar.push e
