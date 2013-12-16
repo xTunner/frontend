@@ -105,6 +105,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @show_add_containers = @komp =>
       @paid_parallelism() < @focused_parallel() <= @plan().max_parallelism()
 
+    @show_upgrade_trial = @komp =>
+      @paid_parallelism() < @focused_parallel()
+
     @show_uneven_divisor_warning_p = @komp =>
       @focused_parallel() <= @paid_parallelism() && @billing.usable_containers() % @focused_parallel() isnt 0
 

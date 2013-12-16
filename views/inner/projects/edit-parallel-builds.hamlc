@@ -5,10 +5,10 @@
     != HAML.fast_spinner()
 
 .try-out-build{data-bind: "if: show_test_new_settings"}
-  - prepend = "Try out"
+  - prepend = "Run a build on"
   - append = "with <span data-bind='text: parallel'></span>x containers."
   - text = "Try it now!"
-  != HAML.expando_button({                             |
+  != HAML.branch_picker({                              |
       button_binding: "click: create_settings_build",  |
       loading_text: "Starting...",                     |
       prepend_text: prepend,                           |
@@ -26,12 +26,20 @@
       / ko if: $parent.billing.paid
 
       .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
-        Your plan doesn't allow this many containers.
+        Your plan only allows up to <span data-bind='text: $parent.plan().max_parallelism'></span> parallelism.
         %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Upgrade
 
       .insufficient-containers{data-bind: "if: $parent.show_add_containers"}
         Not enough containers available.
         %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
+
+      / /ko
+
+      / ko if: $parent.billing.trial
+
+      .insufficient-trial{data-bind: "if: $parent.show_upgrade_trial"}
+        Trials only come with <span data-bind='text: $parent.billing.usable_containers'></span> available containers.
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Add a plan
 
       / /ko
 
@@ -73,7 +81,7 @@
     %p Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory.
     %p For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can <a href="/docs/parallel-manual-setup">control the parallelism directly</a>.
   .mini-faq-item
-    %h3 Do others use these?
+    %h3 What do others think?
     %blockquote <i>The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.</i>
     %ul
       %li
