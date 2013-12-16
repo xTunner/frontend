@@ -168,7 +168,7 @@ CI.Versions =
   mysql: "5.5.32"
   mongodb: "2.4.6"
   riak: "1.2.1"
-  cassandra: "1.2.8"
+  cassandra: "2.0.3"
   redis: "2.6.16"
   memcache: "1.4.13-0ubuntu2"
   sphinx: "2.0.4-release"
@@ -176,11 +176,11 @@ CI.Versions =
   beanstalkd: "1.4.6"
   couchbase: "2.0.0"
   couchdb: "1.3.0"
-  neo4j: "1.8.2"
+  neo4j: "2.0.0"
   rabbitmq: "3.0.3"
 
 
-  git: "1.8.3.4"
+  git: "1.8.5.1"
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.2"
