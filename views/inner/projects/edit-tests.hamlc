@@ -54,7 +54,7 @@
       - prepend = "Save and run a build on"
       - append = "with these commands."
       - text = "Try it now!"
-      != HAML.branch_picker({                                     |
+      != HAML.branch_picker({                                      |
           button_binding: "click: save_and_create_settings_build", |
           loading_text: "Saving...",                               |
           prepend_text: prepend,                                   |

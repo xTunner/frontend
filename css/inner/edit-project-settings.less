@@ -13,7 +13,12 @@
     margin: 0;
     opacity: 0;
   }
-  .inline-select {
+  input[type="text"] {
+    .stickyInput();
+    display: inline-block;
+    width: 250px;
+  }
+  .inline-input-text {
     display: inline-block;
     margin: 0 .5em;
   }
@@ -64,6 +69,13 @@
     &:hover {
       color: @blueLight;
       border-bottom-color: @blueDark;
+    }
+  }
+  .typeahead {
+    .active {
+      a {
+        background: @grayLightest;
+      }
     }
   }
 }
