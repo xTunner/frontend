@@ -9,7 +9,7 @@
 
       %label.radio
         %input{type: "radio", name: "email_pref", value: "smart", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
-          %span Send me a personalized email every time I push and a build fails; also once they're fixed.
+          %span Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed.
 
       %label.radio
         %input{type: "radio", name: "email_pref", value: "none", data-bind: "checked: basic_email_prefs, click: save_basic_email_pref"}
