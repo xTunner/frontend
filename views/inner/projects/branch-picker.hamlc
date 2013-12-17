@@ -5,7 +5,7 @@
         name: "branch",
         autocomplete: "off",
         placeholder: "Choose branch",
-        data-bind: "typeahead: {source: pretty_branch_names}",
+        data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}",
         required: ""}
   .inline-input-text
     != @append_text
