@@ -1,0 +1,38 @@
+.stickyLabel {
+  > label {
+    margin: 0 0 0 1em;
+  }
+  > input[type="text"] {
+    height: 3em;
+    width: 100%;
+    margin: 0 0 1em 0;
+    border-radius: 5em;
+    &:focus {
+      ~ label {
+      }
+    }
+    &:focus, &:valid {
+      ~ label {
+      }
+    }
+  }
+}
+.stickyLabelTextarea {
+  > label {
+    margin: 1em 0 0 1em;
+  }
+  > textarea {
+    height: auto;
+    width: 100%;
+    margin: 1em 0;
+    border-radius: .5em;
+    &:focus {
+      ~ label {
+      }
+    }
+    &:focus, &:valid {
+      ~ label {
+      }
+    }
+  }
+}
