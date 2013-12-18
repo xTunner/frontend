@@ -1,6 +1,21 @@
 .stickyLabel-shared-base {
   position: relative;
 }
+.stickyLabel-shared-label {
+  padding: 0 3px;
+  position: absolute;
+  line-height: 1em;
+  top: 0;
+  left: 0;
+  color: @grayLighter;
+  white-space: nowrap;
+  cursor: text;
+  transition: all .2s ease-in-out;
+  -webkit-transform-origin: top center;
+          transform-origin: top center;
+  -webkit-transform: translate(0, 100%) scale(1, 1);
+          transform: translate(0, 100%) scale(1, 1);
+}
 .stickyLabel {
   > label {
     margin: 0 0 0 1em;
