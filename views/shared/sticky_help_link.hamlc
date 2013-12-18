@@ -1,2 +1,2 @@
-%div{:id => "StickyHelpLink", :data-bind => "css: { loggedIn: logged_in }"}
-  %a{:href => "https://www.hipchat.com/gjwkHcrD5"} Need Help? Chat with us!
+%div{id: "sticky-help-link", data-bind: "css: { loggedIn: logged_in }"}
+  %a{href: "https://www.hipchat.com/gjwkHcrD5"} Need Help? Chat with us!
