@@ -12,7 +12,7 @@
       .member.row{ class: "#{if member%2 != 0 then 'right' else 'left'}" }
         %img{alt: user.name,
              height: "150",
-             src: assetPath("img/outer/about/#{user.photo}.png"),
+             src: assetPath("#{user.img_path}"),
              width: "150",
              class: "#{if member%2 != 0 then 'pull-right' else 'pull-left'}"}
         .span9
