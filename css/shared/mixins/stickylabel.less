@@ -42,39 +42,54 @@
 }
 
 .stickyLabel {
+  .stickyLabel-shared-base();
   > label {
+    .stickyLabel-shared-label();
     margin: 0 0 0 1em;
   }
   > input[type="text"] {
+    .stickyLabel-shared-text();
     height: 3em;
     width: 100%;
     margin: 0 0 1em 0;
     border-radius: 5em;
     &:focus {
+      .stickyLabel-shared-focus();
       ~ label {
+        .stickyLabel-shared-focusLabel();
       }
     }
     &:focus, &:valid {
+      .stickyLabel-shared-valid();
       ~ label {
+        .stickyLabel-shared-validLabel();
       }
     }
   }
 }
+
 .stickyLabelTextarea {
+  .stickyLabel-shared-base();
   > label {
+    .stickyLabel-shared-label();
     margin: 1em 0 0 1em;
   }
   > textarea {
+    .stickyLabel-shared-text();
     height: auto;
     width: 100%;
     margin: 1em 0;
     border-radius: .5em;
     &:focus {
+      .stickyLabel-shared-focus();
       ~ label {
+        .stickyLabel-shared-focusLabel();
       }
     }
     &:focus, &:valid {
+      .stickyLabel-shared-valid();
       ~ label {
+        .stickyLabel-shared-validLabel();
       }
     }
   }
