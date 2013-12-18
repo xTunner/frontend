@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 .tests-page
   %h2 Set up tests for
     %span{data-bind: "text: project_name"}
@@ -16,10 +15,6 @@
                 data-bind: "value: extra, valueUpdate: 'keyup'",
                 required: ""}
       %p Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet.
-      %a.btn{type: "submit",
-             name: "save",
-             data-bind: "click: save_specs",
-             data-loading-text: "Saving..."} Save
       .try-out-build
         %button{type: "submit",
                 name: "save",
@@ -34,67 +29,3 @@
             prepend_text: prepend,                                    |
             append_text: append,                                      |
             button_text: text})                                       |
-=======
-%h2 Set up tests for
-  %span{data-bind: "text: project_name"}
-
-.spec_form
-  %fieldset
-
-    %label{ for: "test" }
-      %h4 Test commands
-    .row
-      .span5
-        %textarea.span5{rows: 7,
-                        name: "test",
-                        placeholder: "Replace our inferred test commands with your own inferred commands",
-                        data-bind: "value: test, valueUpdate: 'keyup'"}
-
-      .span4
-        %p
-          These
-          %b test commands
-          run
-          %b instead of
-          our inferred test commands. If our inferred commands are not to your liking, replace them here.
-        %p
-          As usual, all commands are arbitrary bash, and run on Ubuntu 12.04.
-
-
-
-    %label{ for: "extra"}
-      %h4 Post-test commands
-    .row
-      .span5
-        %textarea.span5{name: "extra",
-                        rows: 7,
-                        placeholder: "Run extra test commands after the others finish",
-                        data-bind: "value: extra, valueUpdate: 'keyup'"}
-
-
-      .span4
-        %p
-          %b Extra test commands
-          run
-          %b after
-          our inferred commands.
-          Add extra tests that we haven't thought of yet.
-
-
-
-    .try-out-build
-      %button{type: "submit",
-              name: "save",
-              data-bind: "click: save_specs",
-              data-loading-text: "Saving..."}
-        Save.
-      - prepend = "Save and run a build on"
-      - append = "with these commands."
-      - text = "Try it now!"
-      != HAML.branch_picker({                                      |
-          button_binding: "click: save_and_create_settings_build", |
-          loading_text: "Saving...",                               |
-          prepend_text: prepend,                                   |
-          append_text: append,                                     |
-          button_text: text})                                      |
->>>>>>> master
