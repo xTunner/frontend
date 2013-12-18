@@ -200,14 +200,14 @@
     border-radius: 5em;
     &:focus {
       .outlineInside(@blueLighter);
-      + label {
+      ~ label {
         color: @blueLighter;
         cursor: default;
       }
     }
     &:focus, &:valid {
       outline: none;
-      + label {
+      ~ label {
         background: @whiten;
         cursor: default;
         -webkit-transform: translate(0, -50%) scale(.9, .9);
