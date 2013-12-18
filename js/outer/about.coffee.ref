@@ -38,7 +38,7 @@ CI.outer.About = class About extends CI.outer.Page
       ]
     ,
       name: "Jenneviere Villegas"
-      img_path: '(asset-path "img/outer/about/jenn.png")'
+      img_path: '(asset-path "img/outer/about/jenneviere.png")'
       visible: true
       role: "Operations"
       github: "jenneviere"
