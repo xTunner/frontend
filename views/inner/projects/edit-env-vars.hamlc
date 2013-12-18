@@ -1,38 +1,31 @@
-%h1 Environment variables
+.environment-variables
+  %h2 Environment variables for
+    %span{data-bind: "text: project_name"}
 
-.doc
-  %p
-    Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here,
-    rather than placing them in the repository.
 
-  %form.well.form-inline
-    %label{for: "name"} Name
+  .environment-variables-inner
+    %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
+    .env-table
+      %form
+        %ul
+          %li
+            %span
+              %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
+            %span
+              %input#env-var-value{type: "text", name: "value", placeholder: "Value", data-bind: "value: env_varValue", required: ""}
+            %span
+              %input#submit.btn{type: "submit",
+                                value: "Add",
+                                data-bind: "click: create_env_var",
+                                data-loading-text: "Adding...",
+                                data-success-text: "Added",
+                                data-failed-text: "Failed"}
 
-    %input.input-medium#env-var-name{type: "text", name: "name", placeholder: "name", data-bind: "value: env_varName"}
-
-    %label{for: "value"} Value
-
-    %input.input-medium#env-var-value{type: "text", name: "value", placeholder: "value", data-bind: "value: env_varValue"}
-
-    %input#submit.btn.btn-primary.float-left{type: "submit",
-                                  value: "Save",
-                                  data-bind: "click: create_env_var",
-                                  data-loading-text: "Saving...",
-                                  data-success-text: "Saved",
-                                  data-failed-text: "Failed"}
-
-  %div{data-bind: "if: env_vars().length"}
-    %h2 Project environment variables
-
-    %table.table.well.table
-      %thead
-        %th Name
-        %th Value
-        %th
-      %tbody{data-bind: "foreach: env_vars"}
-        %td{data-bind: "text: name"}
-        %td{data-bind: "text: value"}
-        %td
+      %ul{data-bind: "foreach: env_vars"}
+        %li
+          %span{data-bind: "text: name"}
+          %span{data-bind: "text: value"}
           %span
-            %button.btn{value: "Delete", data-bind: "click: $root.project().delete_env_var"}
-              Delete
+            %a{data-bind: "click: $root.project().delete_env_var", title: "Remove this variable?"}
+              %i.fa.fa-times-circle
+              %span Remove

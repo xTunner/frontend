@@ -1,153 +1,90 @@
-%div
-  %h1 Change parallelism for this project
-  %div{data-bind: "if: loading_billing"}
-    .row-fluid.centered-spinner
-      != HAML.fast_spinner()
-  %div{data-bind: "ifnot: loading_billing"}
-    .row-fluid{style: "min-height: 250px"}
-      .span5
-        %p
-          %form.select-project-parallelization{data-bind: "foreach: parallelism_options"}
-            %label{data-bind: "css: $root.project().parallel_label_style($data), attr: { for: $root.project().parallel_input_id($data)}, event: {mouseover: $root.project().parallel_focus_in}"}
-              != succeed "x", ->
-                %span{data-bind: "text: $data"}
-              %input{type: "radio", name: "parallel", data-bind: "value: $data, checked: $root.project().editParallel, disable: $root.project().disable_parallel_input($data), click: $root.project().set_parallelism, attr: { id: $root.project().parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
+%h2 Change parallelism for
+  %span{data-bind: "text: project_name"}
+%div{data-bind: "if: loading_billing"}
+  .row-fluid.centered-spinner
+    != HAML.fast_spinner()
 
+.try-out-build{data-bind: "if: show_test_new_settings"}
+  - prepend = "Run a build on"
+  - append = "with <span data-bind='text: parallel'></span>x containers."
+  - text = "Try it now!"
+  != HAML.branch_picker({                              |
+      button_binding: "click: create_settings_build",  |
+      loading_text: "Starting...",                     |
+      prepend_text: prepend,                           |
+      append_text: append,                             |
+      button_text: text})                              |
 
-      .span6.well.focused-label{data-bind: "css: parallelism_description_style()"}
+.parallelism-picker{data-bind: "ifnot: loading_billing"}
 
-        %span{data-bind: "if: focused_parallel() == 1"}
-          At 1x parallelism, all of your tests will run sequentially on the same machine.
+  %form.parallelism-items{data-bind: "foreach: parallelism_options"}
+    %label{data-bind: "css: $parent.parallel_label_style($data),
+           attr: { for: $parent.parallel_input_id($data)},
+           event: {mouseover: $parent.parallel_focus_in}"}
+      %span{data-bind: "text: $data"}
 
-        %p{data-bind: "if: focused_parallel() > 1"}
-          %strong
-            != succeed 'x', ->
-              %span{data-bind: "text: focused_parallel"}
-          runs your tests in parallel across
-          %strong{data-bind: "text: focused_parallel"}
-          machines to finish your build
-          %strong{data-bind: "text: focused_parallel"}
-          times faster.
+      / ko if: $parent.billing.paid
 
-        %p{data-bind: "if: show_number_of_simultaneous_builds_p"}
-          You have
-          %span{data-bind: "text: billing.usable_containers"}
-          containers available, so you can run
-          %span{data-bind: "text: simultaneous_builds"}
-          builds at once at
-          != succeed 'x.', ->
-            %span{data-bind: "text: focused_parallel"}
+      .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
+        Your plan only allows up to <span data-bind='text: $parent.plan().max_parallelism'></span> parallelism.
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Upgrade
 
-        %p{data-bind: "if: show_uneven_divisor_warning_p"}
-          %span.label.label-info
-            Tip
-          You can run more simultaneous builds if you choose a speed that divides your total containers evenly.
+      .insufficient-containers{data-bind: "if: $parent.show_add_containers"}
+        Not enough containers available.
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
 
-        %div{data-bind: "if: billing.trial"}
-          .alert.alert-warning
-            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"} Select a plan
-            to increase your paralellism.
+      / /ko
 
-        / ko if: billing.paid
-        %div{data-bind: "if: show_upgrade_plan"}
-          .alert.alert-warning
-            Your plan's max parallelism is only
-            != succeed "x.", ->
-              %strong{data-bind: "text: plan().max_parallelism"}
+      / ko if: $parent.billing.trial
 
-            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'plan')}"} Upgrade your plan
-            to unlock more parallelism.
+      .insufficient-trial{data-bind: "if: $parent.show_upgrade_trial"}
+        Trials only come with <span data-bind='text: $parent.billing.usable_containers'></span> available containers.
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Add a plan
 
-        %div{data-bind: "if: show_add_containers"}
-          .alert.alert-warning
-            %p
-              You only have
-              %span{data-bind: "text: billing.usable_containers"}
-              containers.
+      / /ko
 
-            %a{data-bind: "attr: {href: CI.paths.org_settings(org_name(), 'containers')}"} Add more containers
-            to increase your parallelism up to
+      %input{type: "radio", name: "parallel", data-bind: "value: $data,
+            checked: $parent.editParallel,
+            disable: $parent.disable_parallel_input($data),
+            click: $parent.set_parallelism,
+            attr: { id: $parent.parallel_input_id($data), 'data-loading-text': $data, 'data-success-text': $data, 'data-failed-text': $data}"}
 
-            %strong
-              != succeed "x.", ->
-                %span{data-bind: "text: plan().max_parallelism"}
-        / /ko
-
-    .row-fluid{data-bind: "if: show_test_new_settings"}
-      .span10
-        - text = "Try out a build at <span data-bind='text: parallel'></span>x"
-        != HAML.expando_button({                             |
-            button_binding: "click: create_settings_build",  |
-            loading_text: "Starting...",                     |
-            button_text: text})                              |
-
-    .row-fluid
-      .span8
-        %h3 How Parallelism Works
-        %p
-          We split your tests into groups, and run each group on different machines in parallel.
-          This allows them run in a fraction of the time, for example:
-        %ul
-          %li
-            a 45 minute build fell to 18 minutes with 3x build speed,
-          %li
-            a 20 minute build dropped to 11 minutes with 2x build speed.
-
-
-        %p
-          Each machine is completely separated (sandboxed and firewalled) from the others,
-          so that your tests can't conflict with each other:
-          separate databases, file systems, process space, memory, and databases.
-
-        %p
-          For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting
-          them appropriately among different machines.
-          If you have a different test suite, you can
-          %a{href: '/docs/parallel-manual-setup'} control the parallelism directly.
-
-
-
-        %div
-          %h3 How containers work
-          %p{data-bind: "with: billing"}
-            Containers are what we call the virtual machines that your tests run in. Your current plan has
-            %span{data-bind: "text: containers"}
-            containers
-            %span{data-bind: "with: chosenPlan"}
-              %span{data-bind: "if: allowsParallelism"}
-                and supports up to
-                != succeed "x", ->
-                  %span{data-bind: "text: max_parallelism"}
-                paralellism.
-              %span{data-bind: "ifnot: allowsParallelism"}
-                but does not support parallelism.
-
-          %p
-            With 16 containers you could run
-            %ul
-              %li
-                16 simultaneous builds at 1x parallelism
-              %li
-                8 simultaneous builds at 2x parallelism
-              %li
-                4 simultaneous builds at 4x parallelism
-              %li
-                2 simultaneous builds at 8x parallelism
-              %li
-                1 build at 16x parallelism
-
-    .row-fluid
-      .span10
-        %h3 Things our customers say about parallel builds
-        %p
-          %blockquote{ cite: "#" }
-            %p
-              The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop.
-              %strong
-                The parallelization just works - we didn't have to tweak anything.
-              Amazing service.
-
-            %small
-              %cite
-                %a{ href: "http://zencoder.com/company/" } Brandon Arbini
-                %a{ href: "http://zencoder.com/" } VP of Product & Engineering at Zencoder.com
+.mini-faq
+  .mini-faq-item
+    %h3 What are containers?
+    %p{data-bind: "with: billing"}
+      Containers are what we call the virtual machines that your tests run in. Your current plan has
+      %span{data-bind: "text: containers"}
+      containers
+      %span{data-bind: "with: chosenPlan"}
+        %span{data-bind: "if: allowsParallelism"}
+          and supports up to
+          != succeed "x", ->
+            %span{data-bind: "text: max_parallelism"}
+          paralellism.
+        %span{data-bind: "ifnot: allowsParallelism"}
+          but does not support parallelism.
+    %p With 16 containers you could run:
+      %ul
+        %li 16 simultaneous builds at 1x parallelism
+        %li 8 simultaneous builds at 2x parallelism
+        %li 4 simultaneous builds at 4x parallelism
+        %li 2 simultaneous builds at 8x parallelism
+        %li 1 build at 16x parallelism
+  .mini-faq-item
+    %h3 What is parallelism?
+    %p We split your tests into groups, and run each group on different machines in parallel. This allows them run in a fraction of the time, for example:
+    %p
+      %ul
+        %li a 45 minute build fell to 18 minutes with 3x build speed,
+        %li a 20 minute build dropped to 11 minutes with 2x build speed.
+    %p Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory.
+    %p For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can <a href="/docs/parallel-manual-setup">control the parallelism directly</a>.
+  .mini-faq-item
+    %h3 What do others think?
+    %blockquote <i>The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service.</i>
+    %ul
+      %li
+        %a{ href: "http://zencoder.com/company/" } Brandon Arbini
+      %li
+        %a{ href: "http://zencoder.com/" } Zencoder.com

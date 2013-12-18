@@ -1,0 +1,32 @@
+.animation(@arguments) {
+  -webkit-animation: @arguments;
+     -moz-animation: @arguments;
+          animation: @arguments;
+}
+.transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
+  transition: -webkit-transform @duration @timing-function @delay;
+  transition:         transform @duration @timing-function @delay;
+}
+.smoothHover(...) {
+  @joined: ~`"@{arguments}".slice(1,-1)`;
+  transition-property: @joined;
+  transition-duration: .3s;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    transition-duration: .1s;
+  }
+  &:active {
+    transition-duration: .2s;
+  }
+}
+#animated {
+  .slide-in {
+    -webkit-animation-name: slide-in;
+    -webkit-animation-duration: 1s;
+  }
+}
+
+@-webkit-keyframes slide-in {
+  0% { -webkit-transform: translate(0, -100%); }
+  100% {   -webkit-transform: translate(0, 0); }
+}

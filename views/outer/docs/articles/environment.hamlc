@@ -98,8 +98,8 @@
   Circle runs graphical programs in a virtual framebuffer, using
   != succeed '.', ->
     xvfb
-  This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly.
-  You do not need to do anything to set this up.
+  This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly, just like they do when you use them locally.
+  You do not need to do anything special to set this up.
   We have
   <code>phantomjs 1.9.0</code>,
   %code= @v.v('casperjs')

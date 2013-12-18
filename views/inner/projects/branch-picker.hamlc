@@ -1,0 +1,16 @@
+%form
+  .inline-input-text
+    != @prepend_text
+  %input{type: "text",
+        name: "branch",
+        autocomplete: "off",
+        placeholder: "Choose branch",
+        data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}",
+        required: ""}
+  .inline-input-text
+    != @append_text
+  %button{type: "submit",
+          name: "save-and-test",
+          data-bind: @button_binding,
+          data-loading-text: @loading_text}
+    != @button_text

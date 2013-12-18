@@ -33,7 +33,8 @@
       gem "rails", :git => "http://github.com/rails/rails"
 
 %p
-  If the repository is private, you will need to
-  %a{href: "/account/ssh"}
-    enable user keys
-  from your account settings.
+  If the repository is private, you will need to enable user keys
+  from your project's
+  %strong
+    Edit settings > GitHub user
+  page.

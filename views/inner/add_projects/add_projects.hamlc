@@ -1,5 +1,6 @@
 #add-projects{data-bind: "with: current_user"}
   != HAML['flashes']({})
+  != HAML.missing_scopes_notice()
   != HAML['org_sidebar']({})
   .proj-wrapper
     %div{data-bind: "if: showLoading"}
