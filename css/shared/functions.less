@@ -103,54 +103,6 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-.stickyInput {
-  @inputHeight: 3em;
-  display: block;
-  .box-sizing(border-box);
-  width: 100%;
-  height: @inputHeight;
-  line-height: (2 / 3) * @inputHeight;
-  background: transparent;
-  border: none;
-  .outlineInside(@grayLighter);
-  font-weight: normal;
-  border-radius: @inputHeight / 2;
-  padding: (((1 / 3) * @inputHeight) / 2)
-           (((1 / 9) * @inputHeight) + ((1 / 3) * @inputHeight));
-  margin-bottom: (1 / 3) * @inputHeight;
-  -webkit-font-smoothing: antialiased;
-  &::-webkit-input-placeholder {
-    color: @grayLighter;
-    transition: all .2s ease-in-out;
-    -webkit-transform-origin: left;
-  }
-  &:focus {
-    .outlineInside(@blueLighter);
-    &::-webkit-input-placeholder {
-      color: @blueLighter;
-    }
-  }
-  &:focus, &:valid {
-    color: @grayDarker;
-    &::-webkit-input-placeholder {
-      -webkit-transform: translate(0, -75%) scale(.9, .9);
-      visibility: visible !important;
-      overflow: visible;
-      text-shadow: -1px  0   @whiten,
-                   -2px  0   @whiten,
-                   -3px  0   @whiten,
-                   -4px  0   @whiten,
-                    1px  0   @whiten,
-                    2px  0   @whiten,
-                    3px  0   @whiten,
-                   -1px -1px @whiten,
-                   -2px -2px @whiten,
-                   -3px -3px @whiten,
-                   -4px -4px @whiten,
-                   -5px -5px @whiten;
-    }
-  }
-}
 
 // Outline
 // same effect as "border" w/o increasing object size
