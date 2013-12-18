@@ -1,29 +1,43 @@
 #sticky-help-link {
-  background: #404040;
   bottom: 0;
   border: 1px solid #000;
   border-bottom: 0;
   -webkit-border-radius: 6px 6px 0 0;
   border-radius: 6px 6px 0 0;
-  color: #fff;
-  cursor: pointer;
   display: none;
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  height: 20px;
-  line-height: 20px;
-  padding: 10px 19px 11px;
+  max-height: 41px;
+  overflow: hidden;
   position: fixed;
   right: 20px;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+  transition: max-height .7s ease;
   z-index: 2147483646;
 
-  a {
+  .dark-background {
+    background: #404040;
     color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 10px 19px 11px;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+  }
+
+  .light-background {
+    background: #fff;
+    padding: 10px 19px 11px;
+
+    .contact-us {
+      margin: 0px 0px 15px;
+    }
   }
 
   &.loggedOut {
     display: block;
+  }
+
+  &.isOpen {
+    max-height: 1000px;
   }
 }
