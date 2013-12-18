@@ -24,6 +24,23 @@
   background: transparent;
   resize: none;
 }
+.stickyLabel-shared-focus {
+  .outlineInside(@blueLighter);
+}
+.stickyLabel-shared-focusLabel {
+  color: @blueLighter;
+  cursor: default;
+}
+.stickyLabel-shared-valid {
+  outline: none;
+}
+.stickyLabel-shared-validLabel {
+  background: @whiten;
+  cursor: default;
+  -webkit-transform: translate(0, -50%) scale(.9, .9);
+          transform: translate(0, -50%) scale(.9, .9);
+}
+
 .stickyLabel {
   > label {
     margin: 0 0 0 1em;
