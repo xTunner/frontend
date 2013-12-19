@@ -21,10 +21,12 @@
       %label.sticky
         %input#hostname{type: "text", required:""}
         %label{for: "hostname"} Hostname
-      %label.sticky
-        %input#publicKey{type: "text", required:""}
+      %label.stickyArea
+        %textarea#publicKey{rows: 7,
+                            required:""}
         %label{for: "publicKey"} Public Key
-      %label.sticky
-        %input#privateKey{type: "text", required:""}
+      %label.stickyArea
+        %textarea#privateKey{rows: 7,
+                             required:""}
         %label{for: "privateKey"} Private Key
       %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", value: "Submit", data-loading-text: "Saving..", data-success-text: "Saved", data-failed-text: "Failed"}
