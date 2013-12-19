@@ -622,6 +622,9 @@
         &:active,
         &:focus {
           z-index: 1;
+          ~ label {
+            z-index: 2;
+          }
         }
       }
       #privateKey {
