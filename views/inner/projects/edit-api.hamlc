@@ -14,7 +14,7 @@
       and then create a label.
     %form
       .styled-select
-        %select{name: "scope", data-bind: "options: ['Choose scope...', 'Status', 'All'], value: tokenScope"}
+        %select{name: "scope", data-bind: "options: ['Choose scope...', 'status', 'all'], value: tokenScope"}
         %i.fa.fa-chevron-down
       %label.sticky
         %input#label{type: "text", required:""}
