@@ -1,8 +1,9 @@
-%form.contact-us{ action: "/about/contact", method: "POST" }
+%form.contact-us{ action: "/about/contact", method: "POST", data-bind: "with: new CI.outer.AjaxForm($element)" }
+  %div.notice Success! We'll be in touch soon.
   %label{for: "name"} Full name
   %input#name{name: "name", placeholder: "Your Name", type: "text"}
   %label{for: "email"} Email address
   %input#email{name: "email", placeholder: "Your email address", type: "email"}
   %label{for: "message"} Message
   %textarea#message{name: "message", placeholder: "Tell us what you're thinking"}
-  %button.btn-primary{type: "submit"} Send
+  %button.btn-primary{ data-bind: "click: submitAjaxForm" } Send
