@@ -2,10 +2,10 @@ CI.outer.AjaxForm = class AjaxForm
   $element = null
 
   constructor: ($element) ->
-    this.$element = $element
+    @$element = $element
 
   submitAjaxForm: () =>
-    form = this.$element
+    form = @$element
     $form = $(form)
     $.ajax {
       data: $form.serialize()
