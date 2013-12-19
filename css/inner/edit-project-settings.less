@@ -618,6 +618,11 @@
       #publicKey {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+        position: relative;
+        &:active,
+        &:focus {
+          z-index: 1;
+        }
       }
       #privateKey {
         border-top-left-radius: 0;
