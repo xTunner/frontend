@@ -2,7 +2,7 @@
 - @lastUpdated = "Feb 3, 2013"
 
 %p
-  While one-day variations are your responsibility, differences of a second or so are probably bugs in your CI server, and should not happen on Circle.
+  While one-day variations are your responsibility, differences of a second or so are probably bugs in your CI server, and should not happen on CircleCI.
 
 %p
   This sort of bugs happen on slow computers running time-sensitive tests.
@@ -10,18 +10,18 @@
   For example, if some button hasn't appeared in 3 seconds, tests start to fail.
 
 %p
-  Circle is not susceptible to this kind of bug.
-  Circle is really really fast, even without parallelism, and so this kind of error should never happen.
+  CircleCI is not susceptible to this kind of bug.
+  CircleCI is really really fast, even without parallelism, and so this kind of error should never happen.
 
 %p
   If you do see timeouts, increase the timeout parameter to see if it goes away.
   If it does go away,
   %strong and the tests work on your local machine,
-  this is very possibly a bug with Circle.
+  this is very possibly a bug with CircleCI.
 
 %p
   Another cause of this bug is a rendering problem.
-  Circle may not use the same exact browser as you use locally (this, of course, is a good thing), so it may catch a rendering bug that you don't.
+  CircleCI may not use the same exact browser as you use locally (this, of course, is a good thing), so it may catch a rendering bug that you don't.
   Check out
-  %a{ href: "/docs/environment#browsers" } Circle's program versions
+  %a{ href: "/docs/environment#browsers" } CircleCI's program versions
   to see if this is the case.

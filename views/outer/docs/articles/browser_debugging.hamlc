@@ -1,5 +1,5 @@
 - @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
-- @title = "Interacting with the browser on Circle's VM"
+- @title = "Interacting with the browser on CircleCI's VM"
 - @lastUpdated = "Feb 18, 2013"
 
 %p
@@ -44,7 +44,7 @@
   X11 forwarding over SSH
 
 %p
-  Circle supports X11 forwarding over SSH to make this process much easier.
+  CircleCI supports X11 forwarding over SSH to make this process much easier.
 
 %p
   Before you start, make sure you have an X Window System on your computer. If you're using OSX, I recommend
@@ -54,7 +54,7 @@
 %p
   With X set up on your system,
   %a{href: '/docs/ssh-build'} start an SSH build
-  to a Circle VM, using the
+  to a CircleCI VM, using the
   %code -X
   flag to set up forwarding:
 
