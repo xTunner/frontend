@@ -1,54 +1,65 @@
--# - @title = "RSpec is failing but not being reported as such"
--# - @lastUpdated = "Jul 29, 2013"
+- @title = "RSpec is failing but not being reported as such"
+- @lastUpdated = "Dec 20, 2013"
 
+%p
+  Sometimes Circle will report that your RSpec tests have passed, even though
+  the RSpec output indicates that some of the specs have failed.
 
--# %p
--#   Sometimes, Circle will report that your RSpec tests have passed, even though the RSpec output indicates that some of the specs have failed.
--#   This is a bug in RSpec.
+%p
+  CircleCI uses the exit code of each test command to determine success or
+  failure and a combination of bugs in Ruby and RSpec can make RSpec return an
+  exit code of 0 (indicating success) even when the specs have failed.
 
--# %p
--#   Circle uses the exit code of each test command to determine success or failure.
--#   Due to bugs in RSpec, RSpec will return an exit code of 0 (indicating success), even when spec have failed.
+%h2 The gory details
 
--# %p
--#   This happens because RSpec throws an exception while it's running.
--#   RSpec runs during the Ruby
--#   %code at_exit
--#   handler, and exceptions thrown then cause Ruby to exit with an exit code of zero.
+%p
+  RSpec runs in an <code>at_exit</code> block which it sets up when you require
+  it in your specs. This makes it easy to run with either <code>ruby</code> or
+  <code>rspec</code>.
 
--# %p
--#   This bug has appeared in many different versions of RSpec, and appears to be quite difficult to kill.
--#   To solve it, we recommend
--#   It's actually quite interesting when it does this.
--#   R
+%p
+  But this approach also makes RSpec susceptible to some bugs and/or incorrect
+  <code>at_exit</code> blocks resetting its exit code.
 
--# spec_helper.rb
+  The major causes are:
+  %ol
+    %li
+      %a{href: "http://bugs.ruby-lang.org/issues/5218"} A bug in Ruby's at_exit code
+      where exceptions thrown during at_exit cause the exit status to be reset
+      to 0, even if the exception is handled inside the <code>at_exit</code>
+      block.
+    %li
+      %a{href: "https://github.com/rspec/rspec-core/pull/569"} A bug in RSpec's at_exit block
+      which masks non-zero exit codes by ignoring the value of <code>$!</code>.
+    %li
+      <code>at_exit</code> blocks added by the code under test which don't
+      propagate the exit status properly.
 
+%h2 How to fix
 
--# You should be able to reproduce it either locally or via SSH into a build machine: bundle exec rspec some-failing-test followed by echo $?.
+%p
+  You should be able to reproduce the problem either locally or via SSH into a
+  build machine:
+  <code>bundle exec rspec some-failing-test</code> followed by <code>echo
+  $?</code> to show the exit code.
 
--# With rspec, the most common source of incorrect exit statuses is at_exit handlers which either fail to propagate the exit status, or throw exceptions. Do you have any at_exit code that might be breaking?
+%p
+  The first thing to do is to upgrade your Ruby patchset and/or your RSpec
+  version to make sure you have the fixes for the above bugs.
 
--# The general solution is to upgrade your Ruby patchset, though I believe people have also fixed it by upgrading the RSpec version.
+%p
+  After that, with RSpec, the most common source of incorrect exit statuses is
+  <code>at_exit</code> blocks which either call <code>exit</code> and fail to
+  propagate the previous exit status, or throw exceptions. Do you have any
+  <code>at_exit</code> code that might be breaking?
 
--# http://bugs.ruby-lang.org/issues/5218
-
--# https://github.com/jonleighton/spring/issues/57
-
-
-
--# module Kernel
--#   alias :__at_exit :at_exit
--#   def at_exit(&block)
--#     __at_exit do
--#       exit_status = $!.status if $!.is_a?(SystemExit)
--#       block.call
--#       exit exit_status if exit_status
--#     end
--#   end
--# end
-
--# The solution is to track down the exception being thrown.
-
--# Try different patchese
--# Try different rspec
+%p
+  A pattern to preserve non-zero exit codes if you do need to call
+  <code>exit</code> from your <code>at_exit</code> blocks is:
+%pre
+  %code.ruby<>
+    :preserve
+      at_exit do
+        new_exit_status = cleanup_code arg1, arg2
+        exit new_exit_status unless $!
+      end
