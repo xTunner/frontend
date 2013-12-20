@@ -27,8 +27,9 @@
       %a{href: "http://bugs.ruby-lang.org/issues/5218"} A bug in Ruby's at_exit code
       where exceptions thrown during at_exit cause the exit status to be reset
       to 0, even if the exception is handled inside the <code>at_exit</code>
-      block (this bug has been difficult to squash and has appeared in several
-      Ruby versions).
+      block. This bug has been difficult to truly squash and has appeared in
+      several Ruby versions over time. It first appears in ruby-1.9.2-p0 and,
+      at the time of writing, is fixed from ruby-1.9.3-p392 onwards.
     %li
       %a{href: "https://github.com/rspec/rspec-core/pull/569"} A bug in RSpec's at_exit block
       which masks non-zero exit codes by ignoring the value of <code>$!</code>.
