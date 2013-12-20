@@ -2,23 +2,19 @@
 - @lastUpdated = "Dec 20, 2013"
 
 %p
-  Sometimes Circle will report that your RSpec tests have passed, even though
-  the RSpec output indicates that some of the specs have failed.
-
-%p
   CircleCI uses the exit code of each test command to determine success or
-  failure and a combination of bugs in Ruby and RSpec can make RSpec return an
-  exit code of 0 (indicating success) even when the specs have failed.
+  failure. A combination of bugs in Ruby and RSpec can make RSpec return an
+  exit code of 0 (indicating success) even when the specs have failed, tricking
+  us into reporting success incorrectly.
 
 %h2 The gory details
 
 %p
-  RSpec runs in an <code>at_exit</code> block which it sets up when you require
-  it in your specs. This makes it easy to run with either <code>ruby</code> or
-  <code>rspec</code>.
+  RSpec runs in an <code>at_exit</code> block. This makes it easy to run with
+  either <code>ruby</code> or <code>rspec</code>.
 
 %p
-  But this approach also makes RSpec susceptible to some bugs and/or incorrect
+  But this also makes RSpec susceptible to some bugs and/or incorrect
   <code>at_exit</code> blocks resetting its exit code.
 
   The major causes are:
@@ -28,8 +24,8 @@
       where exceptions thrown during at_exit cause the exit status to be reset
       to 0, even if the exception is handled inside the <code>at_exit</code>
       block. This bug has been difficult to truly squash and has appeared in
-      several Ruby versions over time. It first appears in ruby-1.9.2-p0 and,
-      at the time of writing, is fixed from ruby-1.9.3-p392 onwards.
+      %a{href: "https://gist.github.com/gordonsyme/8062293"} several Ruby versions
+      over time.
     %li
       %a{href: "https://github.com/rspec/rspec-core/pull/569"} A bug in RSpec's at_exit block
       which masks non-zero exit codes by ignoring the value of <code>$!</code>.
@@ -56,8 +52,8 @@
   <code>at_exit</code> code that might be breaking?
 
 %p
-  A pattern to preserve non-zero exit codes if you do need to call
-  <code>exit</code> from your <code>at_exit</code> blocks is:
+  You can use this pattern to preserve non-zero exit codes if you do need to
+  call <code>exit</code> from your <code>at_exit</code> blocks:
 %pre
   %code.ruby<>
     :preserve
