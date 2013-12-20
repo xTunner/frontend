@@ -1,4 +1,4 @@
-- @title = "RSpec is failing but not being reported as such"
+- @title = "RSpec is failing but CircleCI reports my tests have passed"
 - @lastUpdated = "Dec 20, 2013"
 
 %p
