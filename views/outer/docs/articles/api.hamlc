@@ -275,7 +275,7 @@
         }
         """
     "api/v1/user/ssh-key":
-      description: "Adds a CircleCI key to you Github User account."
+      description: "Adds a CircleCI key to your Github User account."
       method: "POST"
     "api/v1/user/heroku-key":
       method: "POST"
