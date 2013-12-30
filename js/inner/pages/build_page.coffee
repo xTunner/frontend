@@ -5,6 +5,7 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
     @project_name = null
     @build_num = null
     @mention_branch = true
+    @show_branch = true
 
     super(properties)
     @name = "build"
