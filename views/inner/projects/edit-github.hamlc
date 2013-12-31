@@ -18,12 +18,10 @@
                                data-bind: "click: set_github_user",
                                data-loading-text: "Saving...",
                                data-success-text: "Saved"}
-        .alert.alert-warning
-          We need an additional OAuth scope from GitHub so that we can add a new SSH key to your GitHub user account.
-          Grant Circle the user scope
       .request-user{data-bind: "if: $root.current_user().has_user_scope"}
         %input.btn{type: "submit",
       .request-auth{data-bind: "ifnot: $root.current_user().has_user_scope"}
+        %p We need additional authorization to add a new SSH key to your GitHub account.
         %a.btn{href: CI.github.authUrl(["user", "repo"])} Authorize w/ Github
 
     %div{data-bind: "if: github_user() == $root.current_user().login"}
