@@ -13,11 +13,12 @@
         none
 
     %div{data-bind: "if: github_user() != $root.current_user().login"}
-        %p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
       .request-user{data-bind: "if: $root.current_user().has_user_scope"}
         %input.btn{type: "submit",
                    value: "Set to #{VM.current_user().login}",
                    data-bind: "click: set_github_user,
+                               tooltip: { title: 'Makes new key for this project and associates it w/ your GitHub account',
+                                          animation: false }",
                    data-loading-text: "Saving...",
                    data-success-text: "Saved"}
       .request-auth{data-bind: "ifnot: $root.current_user().has_user_scope"}
@@ -29,6 +30,8 @@
         %input.btn{type: "submit",
                    value: "Remove user",
                    data-bind: "click: clear_github_user,
+                               tooltip: { title: 'Removes association between this project to current user',
+                                          animation: false }",
                    data-loading-text: "Saving...",
                    data-success-text: "Saved"}
 
