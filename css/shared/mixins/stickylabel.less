@@ -5,6 +5,7 @@
 }
 .stickyLabel-shared-label {
   padding: 0 ((1 / 13) * @singleInputHeight);
+  margin: 0 0 0 ((1 / 3) * @singleInputHeight);
   position: absolute;
   line-height: ((1 / 3) * @singleInputHeight);
   top: 0;
@@ -24,6 +25,10 @@
   line-height: ((2 / 3) * @singleInputHeight);
   padding: (((1 / 3) * @singleInputHeight) / 2)
            (((1 / 9) * @singleInputHeight) + ((1 / 3) * @singleInputHeight));
+  margin: 0 0 ((1 / 3) * @singleInputHeight) 0;
+  border-radius: (@singleInputHeight / 2);
+  height: @singleInputHeight;
+  width: 100%;
   background: transparent;
   resize: none;
 }
@@ -48,14 +53,9 @@
   .stickyLabel-shared-base();
   > label {
     .stickyLabel-shared-label();
-    margin: 0 0 0 ((1 / 3) * @singleInputHeight);
   }
   > input[type="text"] {
     .stickyLabel-shared-text();
-    height: @singleInputHeight;
-    width: 100%;
-    margin: 0 0 ((1 / 3) * @singleInputHeight) 0;
-    border-radius: (@singleInputHeight / 2);
     &:focus {
       .stickyLabel-shared-focus();
       ~ label {
@@ -79,7 +79,6 @@
   > textarea {
     .stickyLabel-shared-text();
     height: auto;
-    width: 100%;
     margin: ((1 / 3) * @singleInputHeight) 0;
     border-radius: ((1 / 5) * @singleInputHeight);
     &:focus {
