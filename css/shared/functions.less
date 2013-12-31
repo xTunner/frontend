@@ -111,11 +111,11 @@
   border: none;
   @topHighlightColor: lighten(@color,     5);
   @outlineColor:       darken(@color, 11.75);
-  box-shadow:  0    1px @outlineColor,
-               0   -1px @outlineColor,
-               1px  0   @outlineColor,
-              -1px  0   @outlineColor,
-               0    1px @topHighlightColor inset;
+  box-shadow:  0    1px @outlineColor inset,
+               0   -1px @outlineColor inset,
+               1px  0   @outlineColor inset,
+              -1px  0   @outlineColor inset,
+               0    2px @topHighlightColor inset;
 }
 .outlineFlat(@color: @grayBoxBorder) {
   border: none;
