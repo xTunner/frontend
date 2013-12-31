@@ -672,6 +672,9 @@
     }
     div[class^="gh-user-"] {
       .stickyLabel-shared-text();
+      &:empty {
+        display: none;
+      }
     }
     .gh-label-user {
       .stickyLabel-shared-label();
