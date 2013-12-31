@@ -16,7 +16,7 @@
           %label{for: "hipchat-room"} Room
         %label.sticky
           %input#hipchat-token{data-bind: "value: hipchat_api_token", type: "text", required:""}
-          %label{for: "hipchat-token"} Room
+          %label{for: "hipchat-token"} API
     .chat-room-foot
       %label{for: "hipchat-notify-prefs"}
         %input#hipchat-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hipchat_notify_prefs)"}
