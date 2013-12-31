@@ -14,12 +14,12 @@
 
     %div{data-bind: "if: github_user() != $root.current_user().login"}
         %p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
-                               value: "Set GitHub User to #{VM.current_user().login}",
-                               data-bind: "click: set_github_user",
-                               data-loading-text: "Saving...",
-                               data-success-text: "Saved"}
       .request-user{data-bind: "if: $root.current_user().has_user_scope"}
         %input.btn{type: "submit",
+                   value: "Set to #{VM.current_user().login}",
+                   data-bind: "click: set_github_user,
+                   data-loading-text: "Saving...",
+                   data-success-text: "Saved"}
       .request-auth{data-bind: "ifnot: $root.current_user().has_user_scope"}
         %p We need additional authorization to add a new SSH key to your GitHub account.
         %a.btn{href: CI.github.authUrl(["user", "repo"])} Authorize w/ Github
