@@ -25,12 +25,12 @@
         %a.btn{href: CI.github.authUrl(["user", "repo"])} Authorize w/ Github
 
     %div{data-bind: "if: github_user() == $root.current_user().login"}
-                              value: "Remove GitHub User",
-                              data-bind: "click: clear_github_user",
-                              data-loading-text: "Saving...",
-                              data-success-text: "Saved"}
       .request-remove-user
         %input.btn{type: "submit",
+                   value: "Remove user",
+                   data-bind: "click: clear_github_user,
+                   data-loading-text: "Saving...",
+                   data-success-text: "Saved"}
 
 
 
