@@ -14,25 +14,25 @@
 
     %div{data-bind: "if: github_user() != $root.current_user().login"}
         %p Clicking this will create a new SSH key, associate it with your GitHub user account, and use it for all builds of this project.
-        %input.btn.btn-success{type: "submit",
                                value: "Set GitHub User to #{VM.current_user().login}",
                                data-bind: "click: set_github_user",
                                data-loading-text: "Saving...",
                                data-success-text: "Saved"}
         .alert.alert-warning
           We need an additional OAuth scope from GitHub so that we can add a new SSH key to your GitHub user account.
-        %a.btn.btn-primary{href: CI.github.authUrl(["user", "repo"])}
           Grant Circle the user scope
       .request-user{data-bind: "if: $root.current_user().has_user_scope"}
+        %input.btn{type: "submit",
       .request-auth{data-bind: "ifnot: $root.current_user().has_user_scope"}
+        %a.btn{href: CI.github.authUrl(["user", "repo"])} Authorize w/ Github
 
     %div{data-bind: "if: github_user() == $root.current_user().login"}
-        %input.btn.btn-danger{type: "submit",
                               value: "Remove GitHub User",
                               data-bind: "click: clear_github_user",
                               data-loading-text: "Saving...",
                               data-success-text: "Saved"}
       .request-remove-user
+        %input.btn{type: "submit",
 
 
 
