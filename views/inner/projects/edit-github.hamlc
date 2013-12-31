@@ -2,14 +2,15 @@
   %h2 Setup GitHub user for
     %span{data-bind: "text: project_name"}
   .github-page-inner
-    %p Current GitHub user is
-      %strong
-        %span{data-bind: "if: github_user()"}
-          %span{data-bind: "text: github_user" }
-        %span{data-bind: "ifnot: github_user()"}
-          None
 
     %p If you wish to access multiple GitHub repos from a single project, we'll need to add a 'user key' to your or one of your collaborator's GitHub accounts. You should not delete the project's deploy key from Github. We will still use the project key to do an initial checkout that we use to configure the build.
+
+    .current-gh-user{data-bind: "if: $root.current_user().has_user_scope"}
+      .gh-label-user Current GitHub User
+      .gh-user-name{data-bind: "if: github_user()"}
+        %span{data-bind: "text: github_user" }
+      .gh-user-none{data-bind: "ifnot: github_user()"}
+        none
 
     %div{data-bind: "if: github_user() != $root.current_user().login"}
       %form.api{data-bind: "if: $root.current_user().has_user_scope"}
