@@ -614,20 +614,6 @@
       max-width: @standardBlockSize;
     }
     label.stickyArea {
-      width: 50%;
-      float: left;
-      #publicKey {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        position: relative;
-        &:active,
-        &:focus {
-          z-index: 1;
-          ~ label {
-            z-index: 2;
-          }
-        }
-      }
       #privateKey {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
