@@ -22,8 +22,11 @@
                    data-loading-text: "Saving...",
                    data-success-text: "Saved"}
       .request-auth{data-bind: "ifnot: $root.current_user().has_user_scope"}
-        %p We need additional authorization to add a new SSH key to your GitHub account.
-        %a.btn{href: CI.github.authUrl(["user", "repo"])} Authorize w/ Github
+        %a.btn{data-bind: "tooltip: { title: 'We need additional authorization to add a new SSH key to your GitHub account',
+                                      animation: false }",
+               href: CI.github.authUrl(["user", "repo"])}
+          %span Authorize w/ Github
+          %i.fa.fa-exclamation-circle
 
     %div{data-bind: "if: github_user() == $root.current_user().login"}
       .request-remove-user
