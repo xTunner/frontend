@@ -620,8 +620,9 @@
       #publicKey,
       #privateKey {
         font-family: @monoFontFamily;
-        width: @sshTextAreaWidth; // approximate width of the letter 'x'
-        .box-sizing(content-box); // make content width match width above
+        font-size: @fontSizeSmall;
+        width: @sshTextAreaWidth;
+        .box-sizing(content-box);
       }
     }
     input {
