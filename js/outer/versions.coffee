@@ -50,6 +50,7 @@ CI.Versions =
     "2.0.0-p353",
     "2.1.0-preview1",
     "2.1.0-preview2",
+    "2.1.0",
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4",
