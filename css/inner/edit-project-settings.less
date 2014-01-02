@@ -615,7 +615,7 @@
     }
     label.stickyArea {
       @sshCharCount: 64;
-      @sshTextAreaWidth: @sshCharCount + 4ex;
+      @sshTextAreaWidth: (@sshCharCount) + ((10 / 100) * @sshCharCount) + 1ex;
       display: inline-block;
       #publicKey,
       #privateKey {
