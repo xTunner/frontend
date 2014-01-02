@@ -226,27 +226,29 @@
         color: @whiten;
         background: @blockColor;
       }
-      ~ label > span {
-        background: transparent;
-        color: @blockColor;
-        .outlineInside(@blockColor);
-      }
-    }
-    label.disabled:not(.selected) {
-      cursor: default;
-      &:hover {
-        .insufficient-containers,
-        .insufficient-plan,
-        .insufficient-trial {
-          .translate3d(0, 0, 0);
-          transition-duration: .1s;
-          opacity: 1;
+      ~ label {
+        &.disabled {
+          cursor: default;
+          &:hover {
+            .insufficient-containers,
+            .insufficient-plan,
+            .insufficient-trial {
+              .translate3d(0, 0, 0);
+              transition-duration: .1s;
+              opacity: 1;
+            }
+          }
+          > span {
+            background: @grayLightest;
+            box-shadow: none;
+            color: @grayLighter;
+          }
         }
-      }
-      > span {
-        background: @grayLightest;
-        box-shadow: none;
-        color: @grayLighter;
+        > span {
+          background: transparent;
+          color: @blockColor;
+          .outlineInside(@blockColor);
+        }
       }
     }
     input[type=radio] {
