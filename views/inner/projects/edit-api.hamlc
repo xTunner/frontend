@@ -12,32 +12,31 @@
                                 title: 'Scope',
                                 content: HAML.scope_popover() }" }
       and then create a label.
-    %form
-      .styled-select
-        %select{name: "scope", data-bind: "options: ['Choose scope...', 'status', 'all'], value: tokenScope"}
-        %i.fa.fa-chevron-down
-      %label.sticky
-        %input#label{type: "text", required:""}
-        %label{for: "label"} Label
-      %input{type: "submit",
-            value: "Create token",
-            data-bind: "click: create_token",
-            data-loading-text: "Creating...",
-            data-success-text: "Created",
-            data-failed-text: "Failed"}
+    .styled-select
+      %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
+      %i.fa.fa-chevron-down
+    %label.sticky
+      %input#label{type: "text", required:""}
+      %label{for: "label"} Label
+    %input{type: "submit",
+          value: "Create token",
+          data-bind: "click: create_token",
+          data-loading-text: "Creating...",
+          data-success-text: "Created",
+          data-failed-text: "Failed"}
     %div{data-bind: "if: tokens().length"}
       %table
         %thead
+          %th Scope
           %th Label
           %th Token
-          %th Scope
           %th Created
           %th
         %tbody{data-bind: "foreach: tokens"}
+          %td{data-bind: "text: scope"}
           %td{data-bind: "text: label"}
           %td
             %span.code{data-bind: "text: token"}
-          %td{data-bind: "text: scope"}
           %td{data-bind: "text: time"}
           %td
             %a.slideBtn{data-bind: "click: $root.project().delete_token", title: "Remove this Key?"}
