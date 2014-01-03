@@ -259,6 +259,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
     else
       time_sort
 
+  too_much_parallelism_text: () =>
+    n = @focused_parallel()
+    "You need #{n} containers on your plan to use #{n}x parallelism."
+
   compute_latest_build: () =>
     if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?
       new CI.inner.Build @branches()[@default_branch()].recent_builds[0]
