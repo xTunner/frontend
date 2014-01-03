@@ -12,29 +12,6 @@ body {
   }
 }
 .inner {
-  pre, code {
-    font-familt: Menlo, Monaco, Consolas, "Courier New", monospace;
-  }
-  .btn-primary {
-    @btnPrimaryBackground: #1f4d80;
-    @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
-    .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
-  }
-  &#content {
-    padding-bottom: 70px; // Fix for the intercom help button obscuring text
-    min-width: 960px;
-    padding-top: 1vw;
-  }
-  // Basic Typography
-  h1 {
-    color: #1c508b;
-  }
-  h2 {
-    color: #366aa4;
-  }
-  a:hover {
-    cursor: pointer;
-  }
   @import "../shared/variables.less";
   @import "../shared/functions.less";
   @import "../shared/general.less";
