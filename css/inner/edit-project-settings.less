@@ -13,10 +13,13 @@
     margin: 0;
     opacity: 0;
   }
-  input[type="text"] {
-    .stickyInput();
+  label.sticky {
     display: inline-block;
-    width: 250px;
+    > input[type="text"] {
+      display: inline-block;
+      width: @standardBlockSize;
+      margin: 0;
+    }
   }
   .inline-input-text {
     display: inline-block;
@@ -24,7 +27,7 @@
   }
   .styled-select {
     position: relative;
-    width: 250px;
+    width: @standardBlockSize;
     display: inline-block;
     vertical-align: top;
     select {
@@ -124,7 +127,7 @@
     margin: 0;
   }
   aside {
-    width: 250px;
+    width: @standardBlockSize;
     min-width: 200px;
     .flex(0, 1.1);
   }
@@ -156,7 +159,7 @@
     min-height: 89vh;
   }
   .follow-status {
-    width: 250px;
+    width: @standardBlockSize;
     min-width: 200px;
     .flex(0, 1.1);
     i {
@@ -200,6 +203,7 @@
     margin-right: 2%;
     float: left;
     width: 300px;
+    min-height: (1 / 2) * @standardBlockSize;
     &:last-child {
       margin-right: 0;
     }
@@ -411,9 +415,11 @@
         flex: 0 0 140px;
       }
     }
+    .sticky {
+      margin-top: 1em;
+    }
     input[type="text"] {
-      .stickyInput();
-      margin: 1em 0;
+      margin-bottom: 0;
     }
     input[type=submit] {
       .circleButton(@grayLightest, @green);
@@ -423,37 +429,48 @@
       padding: 0 3em;
     }
     a {
-      line-height: 3em;
-      color: @grayLight;
-      width: 8.5em;
-      display: block;
-      overflow: hidden;
-      white-space: nowrap;
-      margin-left: auto;
-      > i {
-        padding: 1em;
-        padding-left: 6.5em;
-        transition: .2s padding ease-in-out;
-      }
-      > span {
+      .tableDrawerBtn();
+    }
+  }
+  // Dependencies Page
+  .dependencies-page {
+    fieldset {
+      a.btn {
+        .circleButton();
+        margin-top: 2em;
         display: inline-block;
-        margin-left: -3px;
-        opacity: 0;
-        transition: .2s opacity ease-in-out;
+        i {
+          margin-left: 1ex;
+          font-size: @baseFontSize;
+        }
       }
-      &:hover {
-        color: @redLight;
-        > i {
-          padding-left: 2em;
-          padding-right: .25em;
-          transition-duration: .1s;
-        }
-        > span {
-          opacity: 1;
-          transition-duration: .3s;
-        }
+      p {
+        max-width: 66%;
       }
     }
+  }
+  .dependencies-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+  }
+  // Tests Page
+  .tests-page {
+    a.btn {
+      .circleButton();
+      margin-top: 2em;
+      display: inline-block;
+      i {
+        margin-left: 1ex;
+        font-size: @baseFontSize;
+      }
+    }
+    p {
+      max-width: 66%;
+    }
+  }
+  .tests-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
   }
   // Chatrooms Page
   .chat-rooms {
@@ -573,9 +590,6 @@
       padding: 0 1em;
       .box-sizing(border-box);
     }
-    input[type="text"] {
-      .stickyInput();
-    }
   }
   .chat-room-foot {
     box-shadow: 0 -1px #ddd;
@@ -616,6 +630,183 @@
       }
     }
   }
+  // SSH Keys Page
+  .sshkeys-page {
+    table {
+      .skin_table();
+      margin: 2em 0;
+      &:empty {
+        display: none;
+      }
+      th {
+        text-align: left;
+        &:last-child {
+          width: 1%;
+        }
+      }
+      td {
+        vertical-align: middle;
+      }
+    }
+    form {
+      margin: 2em 0;
+    }
+    label.sticky {
+      max-width: @standardBlockSize;
+    }
+    label.stickyArea {
+      @sshCharCount: 64;
+      @sshTextAreaWidth: (@sshCharCount) + ((10 / 100) * @sshCharCount) + 1ex;
+      display: inline-block;
+      #privateKey {
+        font-family: @monoFontFamily;
+        font-size: @fontSizeSmall;
+        width: @sshTextAreaWidth;
+        .box-sizing(content-box);
+      }
+    }
+    input {
+      &[type="submit"] {
+        .circleButton();
+        display: block;
+      }
+    }
+  }
+  .sshkeys-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+    a {
+      .tableDrawerBtn();
+      line-height: 1em;
+      > i {
+        padding: 0;
+        padding-left: 7.5em;
+      }
+    }
+  }
+  // Github Page
+  .github-page {
+    .btn {
+      .circleButton();
+      font-size: @baseFontSize;
+      position: relative;
+      i {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: @redLight;
+      }
+    }
+  }
+  .github-page-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+    .tooltip {
+      font-size: @baseFontSize;
+    }
+    .current-gh-user {
+      position: relative;
+      width: @standardBlockSize;
+      margin: 2em auto 0;
+    }
+    div[class^="request-"] {
+      text-align: center;
+      p {
+        margin-top: 1em;
+      }
+    }
+    div[class^="gh-user-"] {
+      .stickyLabel-shared-text();
+      &:empty {
+        display: none;
+      }
+    }
+    .gh-label-user {
+      .stickyLabel-shared-label();
+      .stickyLabel-shared-validLabel();
+    }
+  }
+  // Circle API Page
+  .circle-api-page {
+    table {
+      .skin_table();
+      overflow: visible;
+      th {
+        text-align: left;
+        &:last-child {
+          width: 1%;
+        }
+      }
+      td {
+        vertical-align: middle;
+      }
+      .slideBtn {
+        .tableDrawerBtn();
+        line-height: 1em;
+        > i {
+          padding: 0;
+          padding-left: 7.5em;
+        }
+      }
+    }
+  }
+  .circle-api-page-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
+    .popover {
+      width: 500px;
+      top: 66px;
+      left: 340px;
+    }
+    label.sticky {
+      width: @standardBlockSize;
+      display: inline-block;
+      margin-left: 1em;
+    }
+    input {
+      &[type="submit"] {
+        .circleButton();
+        font-size: inherit;
+        vertical-align: top;
+        margin-left: 1em;
+      }
+    }
+    i {
+      cursor: pointer;
+    }
+    .styled-select {
+      position: relative;
+      width: @standardBlockSize;
+      display: inline-block;
+      select {
+        background: transparent;
+        -webkit-appearance: none;
+        outline: none;
+        .outlineInside(@grayLighter);
+        border-radius: 5em;
+        .box-sizing(border-box);
+        line-height: 2em;
+        height: 3em;
+        width: 100%;
+        padding: .5em 1.34em;
+        margin-bottom: 1em;
+        -webkit-font-smoothing: antialiased;
+        &:hover ~ i.fa-chevron-down {
+          color: @blueLight;
+          transition-duration: .1s;
+        }
+      }
+      i {
+        &.fa-chevron-down {
+          right: 8%;
+          pointer-events: none;
+          position: absolute;
+          top: 24%;
+          transition: color .3s ease-in-out;
+        }
+      }
+    }
+  }
   // Heroku Page
   .heroku-step {
     margin-bottom: 3em;
@@ -625,11 +816,17 @@
     input[type="submit"] {
       outline: none;
     }
+    form {
+      margin: 1em 0;
+      &:empty {
+        display: none;
+      }
+    }
     .set-user {
-      .circleButton(@grayLightest, @green);
+      .circleButton();
     }
     .remove-user {
-      .circleButton(@grayLightest, @redLight);
+      .circleButton();
     }
   }
   .heroku-item {

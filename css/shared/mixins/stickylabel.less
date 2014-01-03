@@ -1,0 +1,97 @@
+@singleInputHeight: 3em;
+
+.stickyLabel-shared-base {
+  position: relative;
+}
+.stickyLabel-shared-label {
+  padding: 0 ((1 / 13) * @singleInputHeight);
+  margin: 0 0 0 ((1 / 3) * @singleInputHeight);
+  position: absolute;
+  line-height: ((1 / 3) * @singleInputHeight);
+  top: 0;
+  left: 0;
+  color: @grayLighter;
+  white-space: nowrap;
+  cursor: text;
+  transition: all .2s ease-in-out;
+  -webkit-transform-origin: top center;
+          transform-origin: top center;
+  -webkit-transform: translate(0, 100%) scale(1, 1);
+          transform: translate(0, 100%) scale(1, 1);
+}
+.stickyLabel-shared-text {
+  .box-sizing(border-box);
+  .outlineInside(@grayLighter);
+  line-height: ((2 / 3) * @singleInputHeight);
+  padding: (((1 / 3) * @singleInputHeight) / 2)
+           (((1 / 9) * @singleInputHeight) + ((1 / 3) * @singleInputHeight));
+  margin: 0 0 ((1 / 3) * @singleInputHeight) 0;
+  border-radius: (@singleInputHeight / 2);
+  height: @singleInputHeight;
+  width: 100%;
+  background: transparent;
+  resize: none;
+}
+.stickyLabel-shared-focus {
+  .outlineInside(@blueLighter);
+}
+.stickyLabel-shared-focusLabel {
+  color: @blueLighter;
+  cursor: default;
+}
+.stickyLabel-shared-valid {
+  outline: none;
+}
+.stickyLabel-shared-validLabel {
+  background: @whiten;
+  cursor: default;
+  -webkit-transform: translate(0, -50%) scale(.9, .9);
+          transform: translate(0, -50%) scale(.9, .9);
+}
+
+.stickyLabel {
+  .stickyLabel-shared-base();
+  > label {
+    .stickyLabel-shared-label();
+  }
+  > input[type="text"] {
+    .stickyLabel-shared-text();
+    &:focus {
+      .stickyLabel-shared-focus();
+      ~ label {
+        .stickyLabel-shared-focusLabel();
+      }
+    }
+    &:focus, &:valid {
+      .stickyLabel-shared-valid();
+      ~ label {
+        .stickyLabel-shared-validLabel();
+      }
+    }
+  }
+}
+.stickyLabelTextarea {
+  .stickyLabel-shared-base();
+  > label {
+    .stickyLabel-shared-label();
+    margin: ((1 / 3) * @singleInputHeight) 0 0 ((1 / 3) * @singleInputHeight);
+  }
+  > textarea {
+    .stickyLabel-shared-text();
+    height: auto;
+    margin: ((1 / 3) * @singleInputHeight) 0;
+    border-radius: ((1 / 5) * @singleInputHeight);
+    &:focus {
+      .stickyLabel-shared-focus();
+      ~ label {
+        .stickyLabel-shared-focusLabel();
+      }
+    }
+    &:focus, &:valid {
+      .stickyLabel-shared-valid();
+      ~ label {
+        .stickyLabel-shared-validLabel();
+      }
+    }
+  }
+}

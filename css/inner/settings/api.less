@@ -1,104 +1,18 @@
 #settings-api {
-  .form-inline {
+  label.sticky {
     display: inline-block;
-    width: 34%;
-    vertical-align: top;
   }
-  .enter-label {
+  #api-token {
+    width: @standardBlockSize * 2;
+  }
+  input.btn {
+    .circleButton(@grayLightest, @grayLighter);
     margin-bottom: 1em;
-    line-height: 3em;
-    font-size: 1em;
-    height: auto;
-    font-weight: 300;
-    border-radius: 4px 0 0 4px;
-    border-right-color: transparent;
-    box-shadow: none;
-    margin: 0;
-    padding: 0em 1em;
-    color: @grayDark;
-    .box-sizing(border-box);
-    &:focus {
-      border-color: @blueDark;
-    }
-  }
-  .submit {
-    .buttonDark(@buttonColor: #004b64);
-    border-radius: 0 4px 4px 0;
-    line-height: 3em;
-    padding: 0 2em;
-    text-shadow: none;
-    font-weight: 300;
-    margin-left: -5px;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
   table {
-    font-family: @sansFontFamily;
-    font-size: @baseFontSize;
-    border-collapse: separate;
-    background: @whiten;
-    overflow: hidden;
-    border: 1px solid darken(@grayBorder,1%);
-    border-radius: 4px;
-    width: 100%;
-    margin: 0;
-  }
-  th {
-    padding: 0 0 0 .5em;
-    line-height: 2em;
-    text-align: left;
-    white-space: nowrap;
-    font-size: 0.923em;
-    &:first-child {
-      padding-left: 1vw;
-    }
-  }
-  tr {
-    border-top: 1px solid @grayBorder;
-    &:hover td {
-      background-color: lighten(@grayBorder,8%);
-      box-shadow: 0 1px lighten(@grayBorder,3%) inset;
-      transition-duration: .1s;
-    }
-    &:active td {
-      background-color: lighten(@grayBorder,5%);
-      box-shadow: 0 1px 1px lighten(@grayBorder,1%) inset;
-      transition-duration: .1s;
-    }
-    &:first-child {
-      border: none;
-    }
-  }
-  td {
-    vertical-align: top;
-    border-top: 1px solid lighten(@grayBorder,5%);
-    box-shadow: 0 1px @white inset;
-    text-align: left;
-    padding: 0;
-    transition-duration: .2s;
-    transition-property: background-color, box-shadow;
-    position: relative;
-    .box-sizing(border-box);
-    line-height: 1.5em;
-    padding: .5em 0 .5em .5em;
-    &:first-child {
-      padding-left: 1vw;
-    }
-    &:last-child {
-      text-align: right;
-      padding-right: 1em;
-      a {
-        color: @redLight;
-        &:hover {
-          color: @redLighter;
-        }
-      }
-    }
-    .code {
-      font-family: @monoFontFamily;
-    }
-    button {
-      font-size: 1em;
-      font-weight: 300;
-      line-height: 1.5em;
-    }
+    .skin_table();
   }
 }
