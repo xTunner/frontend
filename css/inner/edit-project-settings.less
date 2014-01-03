@@ -234,12 +234,28 @@
             box-shadow: none;
             color: @grayLighter;
           }
+          .insufficient-minimum {
+            display: none;
+          }
         }
         > span {
           background: transparent;
           color: @blockColor;
           .outlineInside(@blockColor);
         }
+      }
+    }
+    .disabled {
+      &:hover {
+        .insufficient-minimum {
+          .translate3d(0, 0, 0);
+          transition-duration: .1s;
+          opacity: 1;
+        }
+      }
+      > span {
+        background: @redLight;
+        box-shadow: none;
       }
     }
     input[type=radio] {
@@ -283,7 +299,8 @@
     }
     .insufficient-containers,
     .insufficient-plan,
-    .insufficient-trial {
+    .insufficient-trial,
+    .insufficient-minimum {
       position: absolute;
       top: 0;
       left: 0;
@@ -312,7 +329,8 @@
         display: none;
       }
     }
-    .insufficient-plan {
+    .insufficient-plan,
+    .insufficient-minimum {
       a {
         .circleButton();
         display: block;
@@ -320,6 +338,14 @@
         margin-top: 1.5em;
         text-shadow: none;
         font-size: @baseFontSize;
+      }
+    }
+    .insufficient-minimum {
+      .translate3d(0, 0, 0);
+      background: @redLight;
+      z-index: 1;
+      .tooltip {
+        width: @blockSize * 1.34;
       }
     }
   }
