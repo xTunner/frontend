@@ -48,7 +48,7 @@
       .insufficient-minimum
         Unsupported. Upgrade or lower parallelism.
         %i.fa.fa-question-circle{data-bind: "tooltip: {animation: false, placement: 'top', title: $parent.too_much_parallelism_text}"}
-        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Upgrade
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Upgrade
 
       %input{type: "radio", name: "parallel", data-bind: "value: $data,
             checked: $parent.editParallel,
