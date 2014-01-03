@@ -1,5 +1,4 @@
-body {
-  // the specificity on outer beats this
+.inner {
   background-color: @outerBodyBackground;
   -webkit-font-smoothing: antialiased;
   p > a {
@@ -10,8 +9,6 @@ body {
       border-bottom-color: @blueDark;
     }
   }
-}
-.inner {
   @import "navbar.less";
   @import "labels.less";
   @import "terminal.less";
