@@ -32,8 +32,7 @@ CI.outer.Page = class Page
 
     args = $.extend renderContext, @viewContext(cx)
     header =
-      $("<div></div>")
-        .attr('id', 'header')
+      $("<header></header>")
         .addClass(klass)
         .append(HAML.header(args))
 

@@ -4,8 +4,7 @@ display = (template, args, subpage, hash) ->
   klass = 'inner'
 
   header =
-    $("<div></div>")
-      .attr('id', 'header')
+    $("<header></header>")
       .addClass(klass)
       .append(HAML.header(args))
 
