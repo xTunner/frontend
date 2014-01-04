@@ -6,6 +6,7 @@ display = (template, args, subpage, hash) ->
   header =
     $("<div></div>")
       .attr('id', 'header')
+      .addClass(klass)
       .append(HAML.header(args))
 
   content =

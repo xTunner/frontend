@@ -34,6 +34,7 @@ CI.outer.Page = class Page
     header =
       $("<div></div>")
         .attr('id', 'header')
+        .addClass(klass)
         .append(HAML.header(args))
 
     content =
