@@ -1,2 +1,0 @@
-!= HAML.footer_additional_cta()
-!= HAML.footer_nav()
