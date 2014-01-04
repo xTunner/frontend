@@ -1,7 +1,7 @@
 // sticky - see http://mystrd.at/modern-clean-css-sticky-footer/
-#footer {
-  @footerItemSize: 1em;
-  padding: @footerPadding 0;
+@footerItemSize: 1em;
+footer {
+  padding: (@footerItemSize * 2) 0;
   border-top: 1px solid @grayLightest;
   .logo {
     display: block;
@@ -12,34 +12,35 @@
     background-position: center left;
     background-repeat: no-repeat;
   }
-  nav {
-    width: @minimumContentWidth;
-    margin: 0 auto;
-    ul {
-      .clearfix();
-      list-style: none;
-      margin: 0;
-      li {
-        display: inline-block;
-        float: left;
-        &:last-of-type {
-          float: right;
-        }
-        a {
-          display: block;
+}
+.footer-nav {
+  width: @minimumContentWidth;
+  margin: 0 auto;
+  ul {
+    .clearfix();
+    list-style: none;
+    margin: 0;
+    li {
+      display: inline-block;
+      float: left;
+      &:last-of-type {
+        float: right;
+      }
+      a {
+        display: block;
+        padding: @footerItemSize @footerItemSize @footerItemSize 0;
+        height: @footerItemSize;
+        line-height: @footerItemSize;
+        color: @grayLight;
+        opacity: .66;
+        transition: opacity .3s ease-in-out;
+        &:hover,
+        &:focus,
+        &.active {
           text-decoration: none;
-          padding: @footerItemSize @footerItemSize @footerItemSize 0;
-          height: @footerItemSize;
-          line-height: @footerItemSize;
           color: @grayLight;
-          opacity: .66;
-          transition: opacity .3s ease-in-out;
-          &:hover,
-          &:focus,
-          &.active {
-            transition-duration: .1s;
-            opacity: 1;
-          }
+          transition-duration: .1s;
+          opacity: 1;
         }
       }
     }
