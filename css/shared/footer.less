@@ -1,31 +1,45 @@
 // sticky - see http://mystrd.at/modern-clean-css-sticky-footer/
 #footer {
+  @footerItemSize: 1em;
   padding: @footerPadding 0;
   border-top: 1px solid @grayLightest;
   .logo {
-    height: 1em;
+    display: block;
+    height: @footerItemSize;
+    width: @footerItemSize;
     background-image: url("@{imgPath}/logomark.svg");
-    background-size: 1em;
-    background-position: center;
+    background-size: @footerItemSize;
+    background-position: center left;
     background-repeat: no-repeat;
-    opacity: .66;
-    transition: opacity .4s ease-in-out;
-    &:hover {
-      opacity: 1;
-      transition-duration: .2s;
-    }
   }
   nav {
-    li {
-      a {
-        color: @grayLighter;
-        transition: color .4s ease-in-out;
-        &:hover,
-        &:focus,
-        &.active {
-          background-color: transparent;
+    width: @minimumContentWidth;
+    margin: 0 auto;
+    ul {
+      .clearfix();
+      list-style: none;
+      margin: 0;
+      li {
+        display: inline-block;
+        float: left;
+        &:last-of-type {
+          float: right;
+        }
+        a {
+          display: block;
+          text-decoration: none;
+          padding: @footerItemSize @footerItemSize @footerItemSize 0;
+          height: @footerItemSize;
+          line-height: @footerItemSize;
           color: @grayLight;
-          transition-duration: .2s;
+          opacity: .66;
+          transition: opacity .3s ease-in-out;
+          &:hover,
+          &:focus,
+          &.active {
+            transition-duration: .1s;
+            opacity: 1;
+          }
         }
       }
     }
