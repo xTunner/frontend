@@ -1,0 +1,57 @@
+.navbar
+  .navbar-inner{data-bind: "with: current_user"}
+
+    %a.brand{href: "/"}
+
+    != HAML.crumbs({})
+
+    %ul.nav.pull-right.user-menu
+      %li.pane.docs
+        %a{href: "/docs", target: "_blank"} <i class="fa fa-files-o"></i> Documentation
+
+      %li.pane.dropdown
+        %a.dropdown-toggle{data-toggle: "dropdown"}
+          %span{data-bind: "ifnot: gravatar_url()"}
+            %span{data-bind: "text: login"}
+          %span{data-bind: "if: gravatar_url()"}
+            %img.gravatar{data-bind: "attr: {src: gravatar_url(30)}"}
+
+          %i.fa.fa-caret-down
+
+        %ul.dropdown-menu
+          %li
+            %a{href: '/account'}
+              %i.fa.fa-gears
+              Settings
+
+          %li{ data-bind: "ifnot: VM.from_heroku" }
+            %a#logout-link{ href: '/logout'}
+              %i.fa.fa-sign-out
+              Logout
+
+          %li
+            %a{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
+              %i.fa.fa-bullhorn
+              Support
+
+          %li
+            %a{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+              %i.fa.fa-comments
+              Chat support
+
+
+          %div{data-bind: "if: admin"}
+            %li.divider
+            %li
+              %a{href: "/admin"} Admin
+            %li
+              %a{href: "/admin/users"} Users
+            %li
+              %a{href: "/admin/recent-builds"} Recent builds
+            %li
+              %a{href: "/admin/projects"} Projects
+            %li
+              %a{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+
+    .env-badge{data-bind: "if: showEnvironment, tooltip: {title: \"You're the best\", placement: 'left', trigger: 'click'}"}
+      %span{data-bind: "text: environment, css: environmentColor"}
