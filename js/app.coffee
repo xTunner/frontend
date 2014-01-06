@@ -9,8 +9,7 @@ display = (template, args, subpage, hash) ->
       .append(HAML.header(args))
 
   content =
-    $("<div></div>")
-      .attr('id', 'content')
+    $("<main></main>")
       .removeClass('outer')
       .removeClass('inner')
       .addClass(klass)
