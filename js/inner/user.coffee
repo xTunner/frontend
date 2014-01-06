@@ -86,6 +86,21 @@ CI.inner.User = class User extends CI.inner.Obj
     @has_user_scope = @komp =>
       _.contains(@github_oauth_scopes(), 'user')
 
+
+  missing_scopes: () =>
+    user_scopes = ['user', 'user:email']
+
+    missing = []
+    if _.isEmpty(_.intersection(@github_oauth_scopes(), ['repo']))
+      missing.push('repo')
+
+    # only ask for the user scope we want if they don't have any user scope
+    if _.isEmpty(_.intersection(@github_oauth_scopes(), user_scopes))
+      missing.push('user:email')
+
+    missing
+
+
   load_tokens: () =>
     $.getJSON "/api/v1/user/token", (data) =>
       @tokens(data)

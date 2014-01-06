@@ -99,7 +99,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
         !@project().followed() &&
          @project().project_name() is @current_page().project_name
 
-
     if window.renderContext.current_user
       CI.olark.disable()
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)

@@ -71,7 +71,6 @@ CI.inner.Foundation = class Foundation extends CI.inner.Obj
 
 
   logout: (cx) =>
-    # TODO: add CSRF protection
     $.post('/logout', () =>
        window.location = "/")
 

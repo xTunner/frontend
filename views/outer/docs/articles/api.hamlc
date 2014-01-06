@@ -274,10 +274,10 @@
           "status" : "build caches deleted"
         }
         """
-    "api/v1/user/ssh-key":
+    "user/ssh-key":
       description: "Adds a CircleCI key to your Github User account."
       method: "POST"
-    "api/v1/user/heroku-key":
+    "user/heroku-key":
       method: "POST"
       description: "Adds your Heroku API key to CircleCI, takes apikey as form param name."
 
@@ -333,7 +333,7 @@
 %h2#calling Making calls
 %p
   All API calls are made in the same way, by making standard HTTP calls, using JSON, a content-type, and your API token.
-  All CircleCI API endpoints begin in
+  All CircleCI API endpoints begin with
   <code>"https://circleci.com/api/v1/"</code>.
 
 %h2 Authentication
@@ -407,6 +407,11 @@
 
 
 %h2 Summary
+
+%p All Circle API endpoints begin with
+  != succeed ".", ->
+    %code "https://circleci.com/api/v1/"
+
 %dl.dl-horizontal
 - for own url, data of api_data
   %dt

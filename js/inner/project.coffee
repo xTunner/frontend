@@ -30,6 +30,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loading_billing: false
     users: []
     parallel: 1
+    focused_parallel: 1
     has_usable_key: true
     retried_build: null
     branches: null
@@ -65,7 +66,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @build_url = @komp =>
       @vcs_url() + '/build'
 
-    @settings_branch(@default_branch())
+    @default_branch.subscribe (val) =>
+      @settings_branch(val)
 
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
@@ -85,7 +87,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @paid_parallelism = @komp =>
       Math.min @plan().max_parallelism(), @billing.usable_containers()
 
-    @focused_parallel = ko.observable @parallel()
+    @parallel.subscribe (val) =>
+      @focused_parallel(val)
 
     @parallel_label_style = (num) =>
       disabled: @komp =>
@@ -101,6 +104,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     @show_add_containers = @komp =>
       @paid_parallelism() < @focused_parallel() <= @plan().max_parallelism()
+
+    @show_upgrade_trial = @komp =>
+      @paid_parallelism() < @focused_parallel()
 
     @show_uneven_divisor_warning_p = @komp =>
       @focused_parallel() <= @paid_parallelism() && @billing.usable_containers() % @focused_parallel() isnt 0
@@ -252,6 +258,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       Project.buildNumSort(l, r)
     else
       time_sort
+
+  too_much_parallelism_text: () =>
+    n = @focused_parallel()
+    "You need #{n} containers on your plan to use #{n}x parallelism."
 
   compute_latest_build: () =>
     if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?

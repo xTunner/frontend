@@ -9,10 +9,6 @@
         %a{href: '/account/api'}
           API Tokens
 
-      %li#ssh
-        %a{href: '/account/ssh'}
-          SSH Keys
-
       %li#heroku
         %a{href: '/account/heroku'}
           Heroku Key
