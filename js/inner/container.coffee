@@ -33,14 +33,6 @@ CI.inner.Container = class Container extends CI.inner.Obj
     @position_style = 
       left: (@container_index * 100) + "%"
 
-    @container_class = @komp =>
-      # Everything about this function is icky
-      #   - It shouldn't need to be a ko.computed, the value is static
-      #   - The dynamic property syntax is ugly, coffeescript supports interpolation but not "foo#{name}": value
-      o = {}
-      o["container_" + @container_id] = true
-      return o
-
   success: () ->
     for action in @actions()
       if not action.success()
