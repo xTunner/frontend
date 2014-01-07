@@ -1,5 +1,5 @@
 / ko if: VM.logged_in
-!= HAML._topbar()
+!= HAML.inner_header()
 / /ko
 
 / ko ifnot: VM.logged_in
