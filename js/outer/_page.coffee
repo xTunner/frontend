@@ -37,8 +37,7 @@ CI.outer.Page = class Page
         .append(HAML.header(args))
 
     content =
-      $("<div></div>")
-        .addClass('content')
+      $("<main></main>")
         .attr("id", "#{@name}-page")
         .removeClass('outer')
         .removeClass('inner')
