@@ -80,6 +80,13 @@ ko.bindingHandlers.sticky_waypoint = { init: (el, valueAccessor) =>
                                         options = ko.toJS(valueAccessor())
                                         $(el).waypoint('sticky', options) }
 
+# Usage: %div{data-bind: "on_resize: function(event) { console.log('event was: ' + event) }"}
+ko.bindingHandlers.on_resize = { init: (el, valueAccessor) =>
+                                  fn = valueAccessor()
+                                  $(window).on('resize', (event) =>
+                                    fn(event)
+                                  ) }
+
 ## Money custom binding
 
 # Add helper that was minified
