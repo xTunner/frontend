@@ -613,32 +613,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
       str += "#{username}@#{ip}"
     str
 
-  # TODO Needs to be split into:
-  #   1) set the currently active container
-  #   2) switch the viewport to that container
-  # Then we can drop output from other containers to save some memory
-  # We can also have "<<" and ">>" buttons
   select_container: (container) =>
     console.log("selected container " + container.name)
     @current_container(container)
-
     @switch_viewport(@current_container())
 
-  switch_viewport: (container) =>
+  switch_viewport: (container, duration=250) =>
     $container_parent = $("#container_parent")
-    console.log($container_parent)
-
     $element = container.jquery_element()
-    console.log($element)
-    console.log($element.offset())
 
     crazy_parent_offset = $container_parent.offset().left
-
     delta = $element.offset().left - crazy_parent_offset
-
     offset = $container_parent.scrollLeft() + delta
 
-    $container_parent.stop().animate({scrollLeft: offset}, 250)
-
-# TODO the next challenge is to set the height of $("#container_parent) to be
-# whatever the currently selected container height is, and update dynamically
+    $container_parent.stop().animate({scrollLeft: offset}, duration)
