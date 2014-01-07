@@ -19,15 +19,15 @@
     box-shadow: 0 -1px @grayBoxBorder inset;
   }
   .nav {
-    border: none;
+    border: none; // BS RESET
     &.nav-tabs {
       max-width: @minimumContentWidth;
       margin: 0 auto;
       .active a {
-        background: none;
+        background: none; // BS RESET
+        color: @blue; // BS RESET
         box-shadow: 0 -1px @blue inset,
                     0  1px @blue;
-        color: @blue;
       }
     }
     li {
@@ -35,14 +35,13 @@
     }
     a {
       color: @grayLight;
-      border: none;
-      padding: 0 1em;
       line-height: 1em;
       padding: 0 1em 2em 1em;
+      border: none; // BS RESET
+      margin: 0; // BS RESET
       &:hover {
-        color: @blue;
-        background: none;
-        border: none;
+        background: none; // BS RESET
+        color: @blue; // BS RESET
         box-shadow: 0 -1px @blue inset,
                     0  1px @blue;
       }
