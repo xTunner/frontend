@@ -1,14 +1,21 @@
-.row-fluid
-  .offset1.span10{data-bind: "foreach: steps"}
-    %div{data-bind: "foreach: actions"}
+%div
+  -# There needs to be a parent element for each of the containers to handle the slidey bit
+  -# this div needs a data-bind css: property to make sure it is the same
+  -# height as the currently selected container child
+  %div#container_parent{data-bind: "foreach: containers, style: foo_height_bar"}
+    -#%div.step.pull-left
+      Phase/Step
+      -#%div.container{data-bind: "foreach: actions, css: container_style"}
+    -# each div.container has a data-bind css: property to set left: i * 100%
+    -# each div.container has need a unique id so it can be identified for the slidey animation
+    %div.container{data-bind: "foreach: actions, attr: {id: container_id}, style: position_style"}
 
       -# wrapper allows the header and detail be siblings, for the JS
-      .wrapper.build-output
+      .build-output
         %div{data-bind: "if: $root.build().different_type($data)"}
           .type-divider
             %span{data-bind: "text: type"}
-        -#.action_header{data-bind: "css: action_header_style, waypoint: {offset: 90}"}
-        .action_header{data-bind: "waypoint: {offset: 90}"}
+        .action_header{data-bind: "css: action_header_style"}
           .ah_wrapper
             .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
               .button{data-bind: "css: action_header_button_style"}
@@ -52,12 +59,13 @@
                       -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}
-        -#.detail-wrapper{data-bind: "if: has_content"}
-          .detail{data-bind: "css: action_log_style, visible: !minimize()"}
+          -#.detail-wrapper{data-bind: "if: has_content"}
+            .detail{data-bind: "css: action_log_style, visible: !minimize()"}
 
-            %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
-              = HAML.messages()
-            -#%pre.output.solarized{style: "white-space: normal;"}
-              %span{data-bind: "foreach: final_out"}
-                %span.pre{data-bind: "html: $data"}
-              %span.pre{data-bind: "html: trailing_out"}
+              %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
+                = HAML.messages()
+              -#%pre.output.solarized{style: "white-space: normal;"}
+                %span{data-bind: "foreach: final_out"}
+                  %span.pre{data-bind: "html: $data"}
+                %span.pre{data-bind: "html: trailing_out"}
+  #container-sibling

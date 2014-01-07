@@ -1,11 +1,20 @@
-.containers {
-  background-color: firebrick;
-  height: 38px;
+#container_parent {
+  position: relative;
+  overflow-x: hidden;
+  height: 100%;
+  margin-left: 8.5%;
+  margin-right: 8.5%;
 }
-  
+
+.containers {
+  background-color: whitesmoke;
+  height: 30px;
+  margin: 0px;
+}
+
 .containers.stuck {
   position: fixed;
-  top: 52px;
+  top: 50px;
   width: 100%;
   z-index: 1;
 }
@@ -23,8 +32,21 @@
 }
 
 .action_header.stuck {
+  /*
   position: fixed;
-  top: 90px;
-  width: 100%;
+  top: 82px;
+  // le sigh, width is relative to the entire window when position is fixed, so
+  // drop width to auto and add 8.5% left/right positioning to match the
+  // terminal-window
+  left: 8.5%;
+  right: 8.5%;
+  //width: auto;
   //z-index: 1;
+  background-color: white;
+  */
+}
+
+.container {
+  position: absolute;
+  width: 100%;
 }
