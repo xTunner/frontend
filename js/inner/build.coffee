@@ -14,6 +14,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     stop_time: null
     queued_at: null
     steps: []
+    containers: []  # actions belong to containers
+    current_container: null
     status: null
     lifecycle: null
     outcome: null
@@ -48,7 +50,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @clean_usage_queue_why()
 
   constructor: (json) ->
-
     steps = json.steps or []
 
     super(json)
@@ -56,6 +57,68 @@ CI.inner.Build = class Build extends CI.inner.Obj
     CI.inner.VcsUrlMixin(@)
 
     @steps(new CI.inner.Step(s, @) for s in steps)
+    # Find out what the JSON really looks like so containers can be pre-populated
+    #
+    #      "steps" : [ {
+    #          "name" : "configure the build",
+    #          "actions" : [ {
+    #            "bash_command" : null,
+    #            "run_time_millis" : 1646,
+    #            "start_time" : "2013-02-12T21:33:38Z",
+    #            "end_time" : "2013-02-12T21:33:39Z",
+    #            "name" : "configure the build",
+    #            "command" : "configure the build",
+    #            "exit_code" : null,
+    #            "type" : "infrastructure",
+    #            "index" : 0,
+    #            "status" : "success",
+    #          } ] },
+    #          "name" : "lein2 deps",
+    #          "actions" : [ {
+    #            "bash_command" : "lein2 deps",
+    #            "run_time_millis" : 7555,
+    #            "start_time" : "2013-02-12T21:33:47Z",
+    #            "command" : "((lein2 :deps))",
+    #            "messages" : [ ],
+    #            "step" : 1,
+    #            "exit_code" : 0,
+    #            "end_time" : "2013-02-12T21:33:54Z",
+    #            "index" : 0,
+    #            "status" : "success",
+    #            "type" : "dependencies",
+    #            "source" : "inference",
+    #            "failed" : null
+    #          } ] }
+    #
+    # So... iterate over steps, actions. Push the actions into new lists for containers
+    #
+    # Basically just a 2D list of actions per step. Transpose to form actions
+    # per container
+
+    # This is truly horrible...
+    containers = []
+    for step in @steps()
+      console.log("Step")
+      for action in step.actions()
+        if not containers[action.index()]?
+          console.log("create new container list")
+          containers[action.index()] = []
+        console.log("append to container list")
+        containers[action.index()].push(action)
+        console.log("container list size:" + containers[action.index()].length)
+
+    @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
+    console.log("Built containers - " + containers.length)
+    console.log("Number of steps - " + steps.length)
+
+    @current_container(@containers()[0])
+
+    # FIXME This more than likely won't dynamically update :(
+    @foo_height_bar = @komp =>
+      $current_container = $("#" + @current_container.container_id)
+      console.log("foo_height_bar")
+      console.log($current_container)
+      return { height: $current_container.css("height") }
 
     @url = @komp =>
       @urlForBuildNum @build_num
@@ -395,22 +458,37 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if not @steps()[step].actions()[i]?
         @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}, @))
 
+    # fill up containers
+    for i in [0..index]
+      if not @containers()[i]?
+        @containers.setIndex(i, new CI.inner.Container("C" + i, i, [], @))
+
+    # fill up actions in containers
+    for i in [0..step]
+      if not @containers()[index].actions()[i]?
+        @containers.setIndex(i, new CI.inner.ActionLog({}, @))
+
   newAction: (json) =>
     @fillActions(json.step, json.index)
     if old = @steps()[json.step].actions()[json.index]
       old.clean()
-    @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
+    action_log = new CI.inner.ActionLog(json.log, @)
+    @steps()[json.step].actions.setIndex(json.index, action_log)
+    @containers()[json.index].actions.setIndex(json.step, action_log)
+    console.log("newAction step:" + json.step + ", index:" + json.index)
 
   updateAction: (json) =>
     # updates the observables on the action, such as end time and status.
     @fillActions(json.step, json.index)
     @steps()[json.step].actions()[json.index].updateObservables(json.log)
+    console.log("updateAction step:" + json.step + ", index:" + json.index)
 
   appendAction: (json) =>
     # adds output to the action
     @fillActions(json.step, json.index)
 
     @steps()[json.step].actions()[json.index].append_output([json.out])
+    console.log("appendAction step:" + json.step + ", index:" + json.index)
 
   maybeAddMessages: (json) =>
     existing = (message.message for message in @messages())
@@ -541,3 +619,33 @@ CI.inner.Build = class Build extends CI.inner.Obj
     if username
       str += "#{username}@#{ip}"
     str
+
+  # TODO Needs to be split into:
+  #   1) set the currently active container
+  #   2) switch the viewport to that container
+  # Then we can drop output from other containers to save some memory
+  # We can also have "<<" and ">>" buttons
+  select_container: (container) =>
+    console.log("selected container " + container.name)
+    @current_container(container)
+
+    @switch_viewport(@current_container())
+
+  switch_viewport: (container) =>
+    $container_parent = $("#container_parent")
+    console.log($container_parent)
+
+    $element = $("#" + container.container_id)
+    console.log($element)
+    console.log($element.offset())
+
+    crazy_parent_offset = $container_parent.offset().left
+
+    delta = $element.offset().left - crazy_parent_offset
+
+    offset = $container_parent.scrollLeft() + delta
+
+    $container_parent.stop().animate({scrollLeft: offset}, 250)
+
+# TODO the next challenge is to set the height of $("#container_parent) to be
+# whatever the currently selected container height is, and update dynamically
