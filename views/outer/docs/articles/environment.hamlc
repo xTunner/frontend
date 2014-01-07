@@ -198,24 +198,6 @@
     %code= @v.default_node
 
 
-%h3  Clojure
-%p
-  We use
-  %code= @v.v('lein')
-  by default, and you can also use
-  != succeed ",", ->
-    %code lein16
-  which is version
-  != succeed ".", ->
-    = @v.lein_old
-
-%p
-  You should specify your Clojure version in your
-  %code project.clj
-  file.
-
-
-
 %h3 Python
 %p
   We use
@@ -300,9 +282,13 @@
     %code= @v.v('ant')
   %li
     %code= @v.v('maven')
+  %li
+    %code= @v.v('gradle')
+  %li
+    %code= @v.v('play')
 
 %p
-  You can specify the following Java versions in your <code>circle.yml</code> file:
+  You can specify the following JVM versions in your <code>circle.yml</code> file:
     %ul
       %li
         <code>oraclejdk7</code> (default)
@@ -313,15 +299,30 @@
       %li
         %code openjdk6
 
+%h4 Scala
+
+We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
+  %ul
+    - for s in @v.scalas
+      %li
+        %code= s
+
+We also install some release candidate and beta versions (not listed).
+
+%h3  Clojure
 %p
-  Other JVM-based languages should also work.
-  Circle has
-  != succeed ",", ->
-    %a{href: "#clojure"} special support for Clojure
+  We use
+  %code= @v.v('lein')
+
+%p
+  You should specify your Clojure version in your
+  %code project.clj
+  file.
+
+%p
   please
   != HAML['contact_us']()
   let us know if you need anything else installed to run your JVM language of choice.
-
 
 
 %h3#other Other languages
