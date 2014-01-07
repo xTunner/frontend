@@ -113,13 +113,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @current_container(@containers()[0])
 
-    # FIXME This more than likely won't dynamically update :(
-    @foo_height_bar = @komp =>
-      $current_container = $("#" + @current_container.container_id)
-      console.log("foo_height_bar")
-      console.log($current_container)
-      return { height: $current_container.css("height") }
-
     @url = @komp =>
       @urlForBuildNum @build_num
 
