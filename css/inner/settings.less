@@ -4,7 +4,6 @@
 #account-settings {
   line-height: 1.5em;
   color: @grayLight;
-  margin-top: -1vw;
   a {
     .dark-links;
     color: @blue;
@@ -16,8 +15,8 @@
     outline: none;
   }
   .account-top {
-    border-bottom: 1px solid #ddd;
     padding: 0 2vw;
+    box-shadow: 0 -1px @grayBoxBorder inset;
   }
   .nav {
     border: none;
@@ -26,24 +25,26 @@
       margin: 0 auto;
       .active a {
         background: none;
-        border-bottom: 2px solid @blue;
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
         color: @blue;
       }
+    }
+    li {
+      margin: 0; // BS RESET
     }
     a {
       color: @grayLight;
       border: none;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      margin-left: -4px;
-      line-height: 5em;
-      border-radius: 1px;
       padding: 0 1em;
+      line-height: 1em;
+      padding: 0 1em 2em 1em;
       &:hover {
         color: @blue;
         background: none;
         border: none;
-        border-bottom: 2px solid @blue;
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
       }
     }
   }
