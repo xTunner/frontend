@@ -17,7 +17,7 @@ display = (template, args, subpage, hash) ->
     $("<footer></footer>")
       .append(HAML["footer_nav"](args))
 
-  $('#main')
+  $('#app')
     .html("")
     .addClass(klass)
     .append(header)

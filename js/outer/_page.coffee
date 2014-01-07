@@ -50,7 +50,7 @@ CI.outer.Page = class Page
         .append(HAML["footer_nav"](args))
 
 
-    $('#main')
+    $('#app')
       .html("")
       .append(header)
       .append(content)
