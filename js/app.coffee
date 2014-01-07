@@ -5,23 +5,21 @@ display = (template, args, subpage, hash) ->
 
   header =
     $("<header></header>")
-      .addClass(klass)
       .append(HAML.header(args))
 
   content =
     $("<main></main>")
       .removeClass('outer')
       .removeClass('inner')
-      .addClass(klass)
       .append(HAML[template](args))
 
   footer =
     $("<footer></footer>")
-      .addClass(klass)
       .append(HAML["footer_nav"](args))
 
   $('#main')
     .html("")
+    .addClass(klass)
     .append(header)
     .append(content)
     .append(footer)
