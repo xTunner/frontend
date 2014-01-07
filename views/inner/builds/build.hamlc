@@ -36,10 +36,10 @@
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
 
-      -# Clicking on containers uses jQuery to animate the scrollLeft property of the #container_parent div
       %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 50}"}
         %ul{data-bind: "foreach: containers"}
-          %li
+          %li{data-bind: "css: { active: $data === $parent.current_container() }"}
+            // Add a status style for the success/fail info
             %a{href:"#", data-bind: "text: name, click: $parent.select_container"}
       
       != HAML.build_steps({})
