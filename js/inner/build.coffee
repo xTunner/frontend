@@ -628,7 +628,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $container_parent = $("#container_parent")
     console.log($container_parent)
 
-    $element = $("#" + container.container_id)
+    $element = container.jquery_element()
     console.log($element)
     console.log($element.offset())
 

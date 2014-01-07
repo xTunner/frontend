@@ -1,6 +1,6 @@
 #container_parent {
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
   height: 100%;
   margin-left: 8.5%;
   margin-right: 8.5%;
@@ -31,22 +31,21 @@
   margin-right: auto;
 }
 
-.action_header.stuck {
-  /*
-  position: fixed;
-  top: 82px;
-  // le sigh, width is relative to the entire window when position is fixed, so
-  // drop width to auto and add 8.5% left/right positioning to match the
-  // terminal-window
-  left: 8.5%;
-  right: 8.5%;
-  //width: auto;
-  //z-index: 1;
-  background-color: white;
-  */
+/* This .class { ... }
+ *      .class:not(.other_class) { position:absolute }
+ *      .class.other_class { position:relative }
+ * trick for setting the panel position attributes is inspired by
+ * http://tympanus.net/codrops/2013/09/05/sliding-horizontal-layout/
+ */
+.container {
+  width: 100%;
+  top: 0px;
 }
 
-.container {
+.container:not(.current_container) {
   position: absolute;
-  width: 100%;
+}
+
+.container.current_container {
+  position: relative;
 }

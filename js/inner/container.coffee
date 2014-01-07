@@ -58,3 +58,6 @@ CI.inner.Container = class Container extends CI.inner.Obj
       if action.failed()
         return true
     return false
+
+  jquery_element: () =>
+    $("#" + @container_id)

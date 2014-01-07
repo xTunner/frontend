@@ -2,13 +2,16 @@
   -# There needs to be a parent element for each of the containers to handle the slidey bit
   -# this div needs a data-bind css: property to make sure it is the same
   -# height as the currently selected container child
-  %div#container_parent{data-bind: "foreach: containers, style: foo_height_bar"}
+  %div#container_parent{data-bind: "foreach: containers"}
     -#%div.step.pull-left
       Phase/Step
       -#%div.container{data-bind: "foreach: actions, css: container_style"}
     -# each div.container has a data-bind css: property to set left: i * 100%
     -# each div.container has need a unique id so it can be identified for the slidey animation
-    %div.container{data-bind: "foreach: actions, attr: {id: container_id}, style: position_style"}
+    %div.container{data-bind: "foreach: actions
+                               , attr: {id: container_id}
+                               , style: position_style
+                               , css: { current_container: $data === $parent.current_container() }"}
 
       -# wrapper allows the header and detail be siblings, for the JS
       .build-output
