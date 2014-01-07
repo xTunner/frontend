@@ -37,10 +37,11 @@
                 to your sidebar and get build notifications.
 
       %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 50}"}
-        %ul{data-bind: "foreach: containers"}
+        %ul.container-list{data-bind: "foreach: containers"}
           %li{data-bind: "css: { active: $data === $parent.current_container() }"}
-            // Add a status style for the success/fail info
-            %a{href:"#", data-bind: "text: name, click: $parent.select_container"}
+            %a.container-selector{href:"#", data-bind: "text: name
+                                                        , click: $parent.select_container
+                                                        , css: status_style"}
       
       != HAML.build_steps({})
 

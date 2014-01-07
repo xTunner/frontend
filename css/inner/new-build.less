@@ -46,3 +46,27 @@
 .container.current_container {
   position: relative;
 }
+
+
+/* Set up a :after pseudo-element to reflect the build status */
+ul.container-list {
+  li > a.container-selector {
+    position:relative;
+
+    &:after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      bottom: 2px;
+      left: 0;
+      height: @sideLineWidth;
+      width: 70%;
+      margin-left: 15%;
+      border-radius: 2px;
+    }
+
+    &.success:after { background: @green; }
+    &.running:after { background: @yellow; }
+    &.failed:after { background: @redLight; }
+  }
+}
