@@ -33,7 +33,6 @@ CI.outer.Page = class Page
     args = $.extend renderContext, @viewContext(cx)
     header =
       $("<header></header>")
-        .addClass(klass)
         .append(HAML.header(args))
 
     content =
@@ -41,17 +40,16 @@ CI.outer.Page = class Page
         .attr("id", "#{@name}-page")
         .removeClass('outer')
         .removeClass('inner')
-        .addClass(klass)
         .append(HAML[template](args))
 
     footer =
       $("<footer></footer>")
-        .addClass(klass)
         .append(HAML["footer"](args))
 
 
     $('#app')
       .html("")
+      .addClass(klass)
       .append(header)
       .append(content)
       .append(footer)
