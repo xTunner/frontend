@@ -36,7 +36,7 @@
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
 
-      %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 50}"}
+      %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 0}"}
         %ul.container-list{data-bind: "foreach: containers"}
           %li{data-bind: "css: { active: $data === $parent.current_container() }"}
             %a.container-selector{href:"#", data-bind: "text: name
