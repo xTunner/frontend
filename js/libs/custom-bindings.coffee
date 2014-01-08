@@ -80,11 +80,17 @@ ko.bindingHandlers.sticky_waypoint = { init: (el, valueAccessor) =>
                                         options = ko.toJS(valueAccessor())
                                         $(el).waypoint('sticky', options) }
 
-# Usage: %div{data-bind: "on_resize: function(event) { console.log('event was: ' + event) }"}
-ko.bindingHandlers.on_resize = { init: (el, valueAccessor) =>
-                                  fn = valueAccessor()
-                                  $(window).on('resize', (event) =>
-                                    fn(event)
+# Usage: %div{data-bind: "on_window_event: {event: 'resize', fn: function(event) { console.log('event was: ' + event) }}"}
+ko.bindingHandlers.on_window_event = { init: (el, valueAccessor) =>
+                                        options = valueAccessor()
+                                        $(window).on(options.event, (event) =>
+                                          options.fn(event)
+                                        ) }
+# Usage: %div{data-bind: "on_event: {event: 'scroll', fn: function(event) {console.log('event was: ' + event)}}"}
+ko.bindingHandlers.on_event = { init: (el, valueAccessor) =>
+                                  options = valueAccessor()
+                                  $(el).on(options.event, (event) =>
+                                    options.fn(event)
                                   ) }
 
 ## Money custom binding

@@ -631,14 +631,50 @@ CI.inner.Build = class Build extends CI.inner.Obj
   select_container: (container) =>
     console.log("selected container " + container.name)
     @current_container(container)
-    @switch_viewport(@current_container())
+    @switch_container_viewport(@current_container())
 
-  switch_viewport: (container, duration=250) =>
+  switch_container_viewport: (container, duration=250) =>
     $container_parent = $("#container_parent")
     $element = container.jquery_element()
 
-    crazy_parent_offset = $container_parent.offset().left
-    delta = $element.offset().left - crazy_parent_offset
-    offset = $container_parent.scrollLeft() + delta
+    # .offset().left measures from the left of the browser window
+    parent_offset = $container_parent.offset().left
+    offset_delta = $element.offset().left - parent_offset
+    scroll_offset = $container_parent.scrollLeft() + offset_delta
 
-    $container_parent.stop().animate({scrollLeft: offset}, duration)
+    scroll_handler = @handle_browser_scroll
+
+    $container_parent.off("scroll.container")
+    $container_parent.stop().animate({scrollLeft: scroll_offset}, duration)
+    $container_parent.queue( () ->
+                                enable_scroll_handler = () ->
+                                    console.log("animation completion")
+                                    $container_parent.on("scroll.container", scroll_handler)
+                                    $(this).dequeue()
+                                # There is a race between the final scroll
+                                # event and the scroll handler being re-enabled
+                                # which causes the last scroll event to be
+                                # delivered to the scroll handler after the
+                                # animation has been finished and the scroll
+                                # handler has been re-enabled.
+                                # FIXME This slight delay in re-enabling the
+                                # handler avoids that but I would much prefer a
+                                # solution that isn't time-based
+                                setTimeout(enable_scroll_handler, 100))
+
+  realign_container_viewport: () =>
+    @switch_container_viewport(@current_container(), 0)
+
+  handle_browser_scroll: (event) =>
+    console.log("browser scroll of container parent element detected")
+
+    # scrollLeft() is how far the div has scrolled horizontally, divide by the
+    # width and round to find out which container most occupies the visible
+    # area.
+    # FIXME This makes the assumption that the browser will try and centre the
+    # selected text, and that centering the text will scroll the
+    # container_parent a little more into the new container.
+    # Chrome does this. Dunno about Firefox
+    $container_parent = $("#container_parent")
+    container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
+    @select_container(@containers()[container_index])
