@@ -1,5 +1,10 @@
 .inner {
   background-color: @outerBodyBackground;
+  main {
+    min-height: 100vh;
+    padding: 2em 0;
+    .box-sizing(border-box);
+  }
   p {
     > a {
       color: @blueDark;
