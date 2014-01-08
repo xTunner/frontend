@@ -373,8 +373,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
   different_type: (action) =>
     last = null
     breakLoop = false
-    for s in @steps()
-      for a in s.actions()
+    for c in @containers()
+      for a in c.actions()
         if a == action
           breakLoop = true # no nested breaks in CS
           break
@@ -444,46 +444,58 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('updateObservables', @updateObservables)
 
   fillActions: (step, index) =>
-    # fills up steps and actions such that step and index are valid
-    for i in [0..step]
-      if not @steps()[i]?
-        @steps.setIndex(i, new CI.inner.Step({}))
+    # Fills up @containers and their actions so the step and index are valid
+    # 'step' is the position in the container's actions array
+    # 'index' is the container index
 
-    # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
-    for i in [0..index]
-      if not @steps()[step].actions()[i]?
-        @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}, @))
-
-    # fill up containers
+    # Add at least enough containers to store the actions
     for i in [0..index]
       if not @containers()[i]?
         @containers.setIndex(i, new CI.inner.Container("C" + i, i, [], @))
 
-    # fill up actions in containers
+    # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
     for i in [0..step]
       if not @containers()[index].actions()[i]?
-        @containers.setIndex(i, new CI.inner.ActionLog({}, @))
+        @containers()[index].actions.setIndex(i, new CI.inner.ActionLog({}, @))
 
   newAction: (json) =>
+    if json.parallel
+      @newParallelAction(json)
+    else
+      @newNonParallelAction(json)
+
+  newParallelAction: (json) =>
     @fillActions(json.step, json.index)
-    if old = @steps()[json.step].actions()[json.index]
+    if old = @containers()[json.index].actions()[json.step]
       old.clean()
     action_log = new CI.inner.ActionLog(json.log, @)
-    @steps()[json.step].actions.setIndex(json.index, action_log)
     @containers()[json.index].actions.setIndex(json.step, action_log)
-    console.log("newAction step:" + json.step + ", index:" + json.index)
+    console.log("newParallelAction step:" + json.step + ", index:" + json.index)
+
+  newNonParallelAction: (json) =>
+    # Create a single action log and add it to *all* containers
+    max_index = @containers().length - 1
+    @fillActions(json.step, max_index)
+
+    action_log = new CI.inner.ActionLog(json.log, @)
+    for container in @containers()
+      if old = container.actions()[json.step]
+        old.clean()
+      container.actions.setIndex(json.step, action_log)
+
+    console.log("newNonParallelAction step:" + json.step + ", index:" + json.index)
 
   updateAction: (json) =>
     # updates the observables on the action, such as end time and status.
     @fillActions(json.step, json.index)
-    @steps()[json.step].actions()[json.index].updateObservables(json.log)
+    @containers()[json.index].actions()[json.step].updateObservables(json.log)
     console.log("updateAction step:" + json.step + ", index:" + json.index)
 
   appendAction: (json) =>
     # adds output to the action
     @fillActions(json.step, json.index)
 
-    @steps()[json.step].actions()[json.index].append_output([json.out])
+    @containers()[json.index].actions()[json.step].append_output([json.out])
     console.log("appendAction step:" + json.step + ", index:" + json.index)
 
   maybeAddMessages: (json) =>
