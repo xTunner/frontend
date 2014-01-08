@@ -101,7 +101,7 @@
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly, just like they do when you use them locally.
   You do not need to do anything special to set this up.
   We have
-  <code>phantomjs 1.9.0</code>,
+  <code>phantomjs 1.9.2</code>,
   %code= @v.v('casperjs')
   and
   %code libwebkit (2.2.1-1ubuntu4)
