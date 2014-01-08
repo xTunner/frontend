@@ -118,7 +118,7 @@
   <b>Edit settings &gt; Environment Variables</b> page of your project.
 
 %p
-  All commands and data on Circle's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
+  All commands and data on CircleCI's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
   Take this into account before adding important credentials that some colleagues do not have access to.
 
 

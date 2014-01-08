@@ -3,7 +3,7 @@
 - @v = CI.Versions
 
 %p
-  Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
+  Occasionally, bugs in tests arise because CircleCI's environment differs slightly from your local environment.
   In the future, we plan to allow as much of this to be configurable as possible.
   Please
   != HAML['contact_us']()
@@ -95,7 +95,7 @@
 
 
 %p
-  Circle runs graphical programs in a virtual framebuffer, using
+  CircleCI runs graphical programs in a virtual framebuffer, using
   != succeed '.', ->
     xvfb
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly, just like they do when you use them locally.
@@ -267,7 +267,7 @@
 %h3#java Java (and JVM based languages)
 
 %p
-  Circle has the following languages and tools installed:
+  CircleCI has the following languages and tools installed:
 
 %ul
   %li
@@ -307,7 +307,7 @@ We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scal
       %li
         %code= s
 
-We also install some release candidate and beta versions (not listed).
+We also install some release candidate and beta versions (see the above URL for the complete list).
 
 %h3  Clojure
 %p
@@ -320,10 +320,9 @@ We also install some release candidate and beta versions (not listed).
   file.
 
 %p
-  please
+  Other JVM-based languages should also work. please
   != HAML['contact_us']()
   let us know if you need anything else installed to run your JVM language of choice.
-
 
 %h3#other Other languages
 %p

@@ -29,4 +29,11 @@
             %p
               = p
 
+    #jobs-cta
+      %p
+        We're looking for amazing people to join us on this journey.
+        Want to join the team?
+      %a.btn.btn-primary.btn-large{href: "/jobs"}
+        CircleCI is hiring!
+
 != HAML.contact()

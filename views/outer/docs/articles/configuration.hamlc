@@ -1,15 +1,15 @@
-- @title = 'Configuring Circle'
+- @title = 'Configuring CircleCI'
 - @lastUpdated = "May 2, 2013"
 
 %h2 Overview
 
 %p
-  Circle automatically infers your settings from your code, so Circle's normal processing works just fine in most circumstances.
+  CircleCI automatically infers your settings from your code, so CircleCI's normal processing works just fine in most circumstances.
   When it doesn't, the
   %code circle.yml
-  file makes it easy to tell Circle what you need.
+  file makes it easy to tell CircleCI what you need.
   This is a simple YAML file where you spell out any tweaks required for your web app.
-  You place the file in your git repo's root directory and Circle reads the file each time it runs a build.
+  You place the file in your git repo's root directory and CircleCI reads the file each time it runs a build.
 
 %p
   If you want a quick look at how to set up your
@@ -37,7 +37,7 @@
   file in their repo's root directory.
   However, if you store your application code in a subdirectory instead of the root, putting the
   %code circle.yml
-  file in that subdirectory tells Circle to look for your app in that subdirectory.
+  file in that subdirectory tells CircleCI to look for your app in that subdirectory.
 
 
 %h2#phases File structure and content
@@ -72,19 +72,19 @@
 
 %p
   The sections contain lists of bash commands.  If you don't specify
-  commands, Circle infers them from your code.  Commands are run in
+  commands, CircleCI infers them from your code.  Commands are run in
   the order they appear in the file; all test commands are run to
   completion, but a non-zero exit code during setup will cause the
   build to fail early.  You can modify which&mdash;and
   when&mdash;commands are run by adding <code>override</code>,
-  <code>pre</code> and/or <code>post</code> to adjust Circle's
+  <code>pre</code> and/or <code>post</code> to adjust CircleCI's
   inferred commands.  Here's how it works:
 
 
 %ul
-  %li <b>pre</b>: commands run before Circle's inferred commands
-  %li <b>override</b>: commands run instead of Circle's inferred commands
-  %li <b>post</b>:  commands run after Circle's inferred commands
+  %li <b>pre</b>: commands run before CircleCI's inferred commands
+  %li <b>override</b>: commands run instead of CircleCI's inferred commands
+  %li <b>post</b>:  commands run after CircleCI's inferred commands
 
 
 %p
@@ -182,7 +182,7 @@
   is not.
   Here's how you might adjust the <code>circle.yml</code> file using
   %code pre
-  to install a different version of <code>phantomjs</code> than the version Circle has installed.
+  to install a different version of <code>phantomjs</code> than the version CircleCI has installed.
 
 %pre
   %code.no-highlight<>
@@ -201,7 +201,7 @@
   to the
   %code machine
   section.
-  Remember that Circle uses a new shell for every command; as previously mentioned
+  Remember that CircleCI uses a new shell for every command; as previously mentioned
   %code export foo=bar
   won't work. Instead, you must include something like this.
 
@@ -227,7 +227,7 @@
   Changing the time to your <i>development</i> machine's time zone is <b>asking for trouble</b>.
 
 %p
-  This modifier tells Circle to
+  This modifier tells CircleCI to
   overwrite
   %code /etc/timezone
   and then restart all databases and services that rely on it.
@@ -267,7 +267,7 @@
   Ruby version
 
 %p
-  Circle uses
+  CircleCI uses
   %a{ href: "https://rvm.io/" } RVM
   to manage Ruby versions.
   We use the Ruby version you specify in your <code>.rvmrc</code>, your
@@ -281,7 +281,7 @@
   != succeed ',', ->
     %code= CI.Versions.old_ruby
   whichever we think is better.
-  If you use a different Ruby version let Circle know by including that information in the
+  If you use a different Ruby version let CircleCI know by including that information in the
   %code machine
   section. Here's an example of how you do that.
 
@@ -301,13 +301,13 @@
 
 
 %p
-  Circle uses
+  CircleCI uses
   %a{ href: "https://github.com/creationix/nvm" } NVM
   to manage Node versions.
   See
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
-  If you do not specify a version, Circle uses
+  If you do not specify a version, CircleCI uses
   != succeed '.', ->
     %code= CI.Versions.default_node
   Note that recent versions of NVM support selecting versions through
@@ -347,7 +347,7 @@
   PHP version
 
 %p
-  Circle uses
+  CircleCI uses
   %a{href: "https://github.com/CHH/php-build"} php-build
   and
   %a{href: "https://github.com/CHH/phpenv"} phpenv
@@ -370,7 +370,7 @@
   Python version
 
 %p
-  Circle uses
+  CircleCI uses
   %a{href: "https://github.com/yyuu/pyenv"} pyenv
   to manage Python versions.
   Here's an example of how to set the version of Python used for your tests.
@@ -409,7 +409,7 @@
   Databases and other services
 
 %p
-  Circle supports a large number of
+  CircleCI supports a large number of
   <a href="/docs/environment#databases">databases and other services</a>.
   Most popular ones are running by default on our build machines (bound to localhost), including Postgres, MySQL, Redis and MongoDB.
 
@@ -452,7 +452,7 @@
 %p
 
 .top-caption
-  Example: overwriting configuration files on Circle
+  Example: overwriting configuration files on CircleCI
 %pre
   %code.bash<>
     :preserves
@@ -464,7 +464,7 @@
 
 %p
   Most web programming languages and frameworks, including Ruby's bundler, npm for Node.js, and Python's pip, have some form of dependency specification;
-  Circle automatically runs commands to fetch such dependencies.
+  CircleCI automatically runs commands to fetch such dependencies.
 
 %p
   You can use <code>override</code>, <code>pre</code>, and/or <code>post</code> to modify
@@ -518,7 +518,7 @@
   Custom Cache Directories
 
 %p
-  Circle caches dependencies between builds.
+  CircleCI caches dependencies between builds.
   To include any custom directories in our caching, you can use
   %code cache_directories
   to list any additional directories you'd like cached between builds.
@@ -577,7 +577,7 @@
   The most important part of testing is actually running the tests!
 
 %p
-  Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
+  CircleCI supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
   However, this section has one minor difference: all test commands will run, even if one fails.
   This allows our test output to tell you about all the tests that fail, not just the first error.
 
@@ -604,13 +604,13 @@
         override:
           - phpunit my/special/subdirectory/tests
 %p
-  Circle also supports the use of <code>minitest_globs</code>
+  CircleCI also supports the use of <code>minitest_globs</code>
   (a list of file globs, using <a href="http://ruby-doc.org/core-2.0/Dir.html#glob-method">Ruby's Dir.glob syntax</a>)
   that can list the file globs to be used during testing.
 
 %p
 %p
-  By default, when testing in parallel, Circle runs all tests in the test/unit, test/integration, and
+  By default, when testing in parallel, CircleCI runs all tests in the test/unit, test/integration, and
   test/functional directories.
   You can add <code>minitest_globs</code> to replace the
   standard directories with your own.
@@ -698,8 +698,8 @@
   SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
-  upload the keys to Circle.
-  Circle's UI enables you to do this on your project's <b>Edit settings > SSH keys</b> page.
+  upload the keys to CircleCI.
+  CircleCI's UI enables you to do this on your project's <b>Edit settings > SSH keys</b> page.
   Add and then submit the one or more SSH keys needed
   for deploying to your machines. If you leave the <b>Hostname</b> field blank,
   the public key will be used for all hosts.
@@ -709,7 +709,7 @@
   Heroku
 
 %p
-  Circle also has first-class support for deploying to Heroku.
+  CircleCI also has first-class support for deploying to Heroku.
   Specify the app you'd like to
   %code git push
   to under <code>appname</code>.
@@ -728,7 +728,7 @@
   Setting up our deployment to Heroku requires one extra step.
   Due to Heroku's architecture and security model, we need to deploy as a particular user.
   A member of your project, possibly you, will need to register as that user.
-  Circle's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
+  CircleCI's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
 
 %h3#heroku-extra
   Heroku with pre or post-deployment steps
@@ -750,12 +750,12 @@
 %h2#notify Notifications
 
 %p
-  Circle sends personalized notifications by email.
+  CircleCI sends personalized notifications by email.
 
 %p
-  In addition to these per-user emails, Circle sends notifications on a per-project basis.
-  Circle supports sending webhooks when your build completes.
-  Circle also supports HipChat, Campfire, Flowdock and IRC notifications; you configure these notifications from your project's
+  In addition to these per-user emails, CircleCI sends notifications on a per-project basis.
+  CircleCI supports sending webhooks when your build completes.
+  CircleCI also supports HipChat, Campfire, Flowdock and IRC notifications; you configure these notifications from your project's
   <b>Edit settings > Notifications </b> page.
 
 
@@ -796,12 +796,12 @@
 %h2#branches Specifying branches to build
 
 %p
-  Circle by default tests every push to <i>any</i> branch in the repository.
+  CircleCI by default tests every push to <i>any</i> branch in the repository.
   Testing all branches maintains quality in all branches and adds
   confidence when the branches are to be merged with default branch.
 
 %p
-  You may, however, blacklist branches from being built in Circle.  This example
+  You may, however, blacklist branches from being built in CircleCI.  This example
   excludes
   %code gh-pages
   from being built in circle:
