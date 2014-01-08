@@ -11,7 +11,6 @@ CI.inner.Container = class Container extends CI.inner.Obj
     @actions(actions)
     @container_index = index
     @container_id = _.uniqueId("container_")
-    console.log("Created container: " + JSON.stringify(@, null, 2))
 
     @status_style = @komp =>
       # Result from calling action_log.action_header_style is a map

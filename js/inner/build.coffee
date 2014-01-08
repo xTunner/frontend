@@ -14,7 +14,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     stop_time: null
     queued_at: null
     steps: []
-    containers: []  # actions belong to containers
+    containers: []
     current_container: null
     status: null
     lifecycle: null
@@ -114,7 +114,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     console.log("Built containers - " + containers.length)
     console.log("Number of steps - " + steps.length)
 
-    @current_container(@containers()[0])
+    if @containers()[0]?
+      @current_container(@containers()[0])
 
     @url = @komp =>
       @urlForBuildNum @build_num
@@ -453,13 +454,18 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if not @containers()[i]?
         @containers.setIndex(i, new CI.inner.Container("C" + i, i, [], @))
 
+    # It's possible no containers existed when the build was first loaded, if
+    # so, select the first
+    if not @current_container()?
+      @current_container(@containers()[0])
+
     # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
     for i in [0..step]
       if not @containers()[index].actions()[i]?
         @containers()[index].actions.setIndex(i, new CI.inner.ActionLog({}, @))
 
   newAction: (json) =>
-    if json.parallel
+    if json.log.parallel
       @newParallelAction(json)
     else
       @newNonParallelAction(json)

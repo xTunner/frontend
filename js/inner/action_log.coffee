@@ -10,6 +10,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     status: null
     source: null
     type: null
+    parallel: null
     messages: []
     final_out: []
     trailing_out: ""
@@ -101,6 +102,11 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
 
     @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
     @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+
+  is_parallel: =>
+    if not @parallel()?
+      false
+    @parallel()
 
   toggle_minimize: =>
     if not @user_minimized?
