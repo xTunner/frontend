@@ -47,7 +47,7 @@ CI.outer.Page = class Page
     footer =
       $("<footer></footer>")
         .addClass(klass)
-        .append(HAML["footer_nav"](args))
+        .append(HAML["footer"](args))
 
 
     $('#app')
