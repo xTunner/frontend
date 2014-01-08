@@ -95,17 +95,20 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # Basically just a 2D list of actions per step. Transpose to form actions
     # per container
 
-    # This is truly horrible...
-    containers = []
+    # _.zip transposes the steps to containers. The non-parallel action
+    # references need to be duplicated n times where n is the number of
+    # containers
+    new_steps = []
     for step in @steps()
-      console.log("Step")
-      for action in step.actions()
-        if not containers[action.index()]?
-          console.log("create new container list")
-          containers[action.index()] = []
-        console.log("append to container list")
-        containers[action.index()].push(action)
-        console.log("container list size:" + containers[action.index()].length)
+      # FIXME This will do for now, but a better check is that the actions in
+      # the step have parallel: true
+      if step.has_multiple_actions
+        new_steps.push(step.actions())
+      else
+        # Coffeescript a..b ranges are inclusive
+        new_steps.push(step.actions()[0] for dont_care in [1..@parallel()])
+
+    containers = _.zip(new_steps...)
 
     @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
     console.log("Built containers - " + containers.length)
