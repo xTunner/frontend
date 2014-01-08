@@ -1,233 +1,170 @@
-@dropdownToggleColor: @blue;
-@dropdownWidth: 230px;
-@gravatarCallSize: 30px;
-@navbarHeight: 50px;
-.navbar {
-  margin-bottom: 0;
-  .navbar-inner {
-    padding: 0 1em;
-    border-radius: 0px; // BS RESET
-    color: @grayLighter;
-    background: @blueDarker;
+.header-nav {
+  padding: 0 1em;
+  color: @grayLighter;
+  background: @blueDarker;
+  height: @navbarHeight;
+  min-width: @minimumContentWidth;
+  .flexBox();
+  .menu-item {
     height: @navbarHeight;
-    min-width: (@standardBlockSize * 2);
-    border: none; // BS RESET
-    min-width: @minimumContentWidth;
-    a {
-      color: @grayLighter;
-      transition-property: color, text-shadow;
-      transition-duration: .3s;
-      transition-timing-function: ease-in-out;
-      cursor: pointer;
+    float: left;
+    width: 100%;
+    .box-sizing(border-box);
+    padding: ((1 / 2) * (@navbarHeight - @baseFontSize));
+    line-height: 1em;
+    i {
+      float: left;
+    }
+    span {
+      float: left;
+      margin-left: 1em;
+      line-height: 1em;
+    }
+  }
+  a {
+    color: @grayLighter;
+    transition-property: color;
+    transition-duration: .3s;
+    transition-timing-function: ease-in-out;
+    cursor: pointer;
+    font-weight: bold;
+    &:hover {
+      color: @white;
+      transition-duration: .1s;
+    }
+  }
+}
+.header-nav-logo {
+  .flex(0, 0);
+  a {
+    background: url("@{imgPath}/logo-new.svg") no-repeat;
+    background-size: 150px @navbarHeight;
+    background-position: 0 -1px;
+    width: 34px;
+    height: @navbarHeight;
+    display: inline-block;
+  }
+}
+.header-nav-environment {
+  .flex(0, 0);
+  display: inline-block;
+  line-height: @navbarHeight;
+  float: right;
+  cursor: pointer;
+  span {
+    @environmentBadgeHeight: 1em;
+    @environmentBadgePadding: ((1 / 2) * @environmentBadgeHeight);
+    font-size: @fontSizeSmall;
+    line-height: @environmentBadgeHeight;
+    border-radius: (@environmentBadgePadding * 2);
+    padding: @environmentBadgePadding (@environmentBadgePadding * 2);
+    color: @whiten;
+  }
+  .env-production {
+    background-color: @redLight;
+  }
+  .env-staging {
+    background: @orange;
+  }
+  .env-development {
+    background: @blueLight;
+  }
+  .env-test {
+    background-color: @green;
+  }
+}
+.header-nav-breadcrumb {
+  @crumbVertPadding: ((1 / 2) * (@navbarHeight - @baseFontSize));
+  @crumbHorizPadding: 3px;
+  .flex(1, 0);
+  nav {
+    .clearfix();
+    margin-left: 2em;
+  }
+  a {
+    line-height: 1em;
+    padding: @crumbVertPadding 0 @crumbVertPadding @crumbHorizPadding ;
+    float: left;
+    &:not(:first-child):before {
+      content: '/';
       font-weight: bold;
-      &:hover {
-        color: @white;
-        transition-duration: .1s;
+      margin-right: @crumbHorizPadding;
+    }
+    &:last-child {
+      padding-left: 1em;
+      visibility: hidden;
+      &:before {
+        content: "\f013";
+        font-family: 'FontAwesome';
+        line-height: 0;
+        visibility: visible;
+        font-weight: normal;
       }
-      &.brand {
-        background: url("@{imgPath}/logo-new.svg") no-repeat;
-        background-size: 150px @navbarHeight;
-        background-position: 0 -1px;
-        width: 34px;
-        height: @navbarHeight;
-        margin: 0;
-        padding: 0;
-      }
+    }
+  }
+}
+@headerMenuToggleWidth: @navbarHeight + (@baseFontSize * 2);
+@headerMenuDropWidth: @standardBlockSize;
+.header-nav-menu {
+  position: relative;
+  width: @headerMenuToggleWidth;
+  > a {
+    display: block;
+    line-height: @navbarHeight;
+    text-align: center;
+    &:hover > i {
+      .outlineFlat(@blue);
+      transition-duration: .1s;
     }
     i {
-      font-size: 1.077em;
-    }
-    // rest of the nav elements
-    .repo-breadcrumb {
-      a {
-        padding: 0;
-      }
+      width: 1em;
       display: inline-block;
-      vertical-align: top;
-      .crumb-settings {
-        &:before {
-          content: "\f013";
-          font-family: FontAwesome;
-          visibility: visible;
-          display: inline-block;
-          padding: 0 .5em;
-          font-size: 1.077em;
-          line-height: 1em;
-          font-weight: normal;
-        }
+      text-align: center;
+      border-radius: 3px;
+      transition: box-shadow .3s ease-in-out;
+    }
+  }
+  img {
+    border-radius: ((1 / 2) * @navbarHeight);
+    overflow: hidden;
+  }
+  aside {
+    position: absolute;
+    z-index: 1;
+    width: @headerMenuDropWidth;
+    right: 0;
+    top: 100%;
+    display: none;
+    background: @blueDark;
+    border-radius: 0 0 5px 5px;
+    overflow: hidden;
+    .menu-item {
+      &:hover {
+        background: @blue;
+      }
+      &:active,
+      &:focus {
+        box-shadow: 0 2px @shadowSoft inset;
+        background: @blue;
       }
     }
-    .user-menu {
-      min-width: @dropdownWidth;
-      > li {
-        height: @navbarHeight;
-        line-height: @navbarHeight;
-        float: right;
-        &.docs {
-          float: left;
-          padding-left: 1em;
-          i {
-            margin-right: .5em;
-          }
-        }
-        &.dropdown {
-          a {
-            padding: 0 1em;
-          }
-        }
-        > a {
-          padding: 0;
-        }
+  }
+  &.open {
+    aside {
+      display: block;
+    }
+    > a {
+      background-color: @blueDark;
+      > i {
+        .rotate(180deg);
       }
     }
-    ul.nav {
-      display: inline-block;
-      vertical-align: top;
-      > li {
-        height: @navbarHeight;
-        line-height: @navbarHeight;
-      }
-      &.crumbs {
-        margin: 0 0 0 3em;
-        li {
-          a {
-            display: inline-block;
-          }
-          span {
-            display: inline-block;
-            padding: 0 .5em 0 .25em;
-          }
-
-          span.label {
-            background-color: inherit;
-            padding: 5px;
-          }
-          .label-active {
-            color: @whiten;
-            font-weight: 600;
-          }
-
-          &.crumb {
-            &:before {
-              content: '/';
-              font-weight: bold;
-            }
-          }
-
-          &.project, &.org {
-            .label {
-              font-size: 15px;
-              padding: 8px;
-            }
-          }
-        }
-      }
-      li {
-        a {
-          text-shadow:none;
-          &.label-success {
-            &:hover { background: darken(@green, 10%); }
-          }
-        }
-        // dropbox header
-        &.open > a.dropdown-toggle {
-          background-color: @blueDark;
-          padding-left: 1em;
-          > i {
-            .rotate(180deg);
-            box-shadow: none;
-          }
-        }
-        .dropdown-toggle {
-          &:hover > i {
-            box-shadow: 0  1px @dropdownToggleColor,
-                        0 -1px @dropdownToggleColor,
-                        1px  0 @dropdownToggleColor,
-                       -1px  0 @dropdownToggleColor;
-            transition-duration: .1s;
-          }
-          > i {
-            width: 1em;
-            display: inline-block;
-            text-align: center;
-            border-radius: 3px;
-            transition: box-shadow .3s ease-in-out;
-          }
-          .gravatar {
-            border-radius: 5em;
-            overflow: hidden;
-            width: @gravatarCallSize;
-            height: @gravatarCallSize;
-          }
-        }
-        ul.dropdown-menu {
-          margin-top: 0;
-          border: none;
-          box-shadow: none;
-          border-radius: 0 0 3px 3px;
-          width: @dropdownWidth;
-          &:after {
-            display: none; // get rid of caret
-          }
-        }
-        // dropdown menu elements
-        .dropdown-menu li {
-          margin: 0;
-          &:first-child {
-            border: none;
-          }
-          a {
-            height: @navbarHeight;
-            line-height: @navbarHeight;
-            padding: 0 1em;
-            &:hover {
-              background: @blue;
-              text-shadow: 0 2px 2px fadein(fadeout(@black, 100), 21); // fadeout alone generates weird decimal
-            }
-            i {
-              font-size: 1.077em;
-              padding-right: .5em;
-            }
-          }
-        }
-        .dropdown-menu {
-          &:before {
-            border-bottom: 0;
-          }
-          &:after {
-            border-bottom: 6px solid @blueDark;
-          }
-          padding: 0;
-          border-radius: 0;
-          background: @blueDark;
-        }
-      }
-    }
-    .env-badge {
-      display: inline-block;
-      line-height: @navbarHeight;
-      float: right;
-      margin: 0 1em;
-      cursor: pointer;
-      span {
-        font-size: 0.84615em;
-        line-height: 1em;
-        border-radius: 5em;
-        padding: .5em 1em;
-        color: @whiten;
-      }
-      .env-production {
-        background-color: @redLight;
-      }
-      .env-staging {
-        background: @orange;
-      }
-      .env-development {
-        background: @blueLight;
-      }
-      .env-test {
-        background-color: @green;
-      }
-    }
+  }
+}
+.header-nav-docs {
+  @headerDocsWidth: (@headerMenuDropWidth - @headerMenuToggleWidth);
+  .flex(0, 0);
+  a.menu-item {
+    width: @headerDocsWidth;
   }
 }
