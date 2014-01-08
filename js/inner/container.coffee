@@ -5,11 +5,12 @@ CI.inner.Container = class Container extends CI.inner.Obj
   constructor: (name, index, actions, build) ->
     if not name?
       name = "None"
-    super { name: name, has_multiple_actions: 1 }
+    super { name: name }
+
     @build = build
     @actions(actions)
     @container_index = index
-    @container_id = "container_" + @container_index
+    @container_id = _.uniqueId("container_")
     console.log("Created container: " + JSON.stringify(@, null, 2))
 
     @status_style = @komp =>
@@ -27,6 +28,7 @@ CI.inner.Container = class Container extends CI.inner.Obj
         failed: accum.failed or e.failed()
         running: accum.running or e.running()
 
+      # FIXME What if child_styles is an empty list?
       child_styles = (action.action_header_style for action in @actions())
       child_styles.reduce(reducer, { success: true, failed: false, running: false })
 
