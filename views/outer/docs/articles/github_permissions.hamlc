@@ -1,4 +1,4 @@
-- @title = "Why does Circle need all those permissions?"
+- @title = "Why does CircleCI need all those permissions?"
 - @lastUpdated = "Feb 3, 2013"
 
 %p
@@ -8,7 +8,7 @@
   unfortunately.
 
 %p
-  Circle actually needs the following concrete permissions:
+  CircleCI actually needs the following concrete permissions:
 
 %ul
   %li add deploy keys to a repo

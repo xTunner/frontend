@@ -12,7 +12,7 @@
 
 %h2 Splitting your test suite
 %p
-  When you use Circle's parallelization, we run your code on multiple separate VMs.
+  When you use CircleCI's parallelization, we run your code on multiple separate VMs.
   To use parallelism, you make your test runner run only a subset of tests on each VM.
   We use environment variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
 

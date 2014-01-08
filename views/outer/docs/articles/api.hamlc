@@ -11,12 +11,12 @@
         }
         """
     'projects':
-      description: "List of all the projects you're following on Circle, with build information organized by branch."
+      description: "List of all the projects you're following on CircleCI, with build information organized by branch."
       method: "GET"
       response: """
         [ {
           "vcs_url": "https://github.com/circleci/mongofinil"
-          "followed": true // true if you follow this project in Circle
+          "followed": true // true if you follow this project in CircleCI
           "branches" : {
             "master" : {
               "pusher_logins" : [ "pbiggar", "arohner" ], // users who have pushed
@@ -275,11 +275,11 @@
         }
         """
     "user/ssh-key":
-      description: "Adds a Circle key to you Github User account."
+      description: "Adds a CircleCI key to your Github User account."
       method: "POST"
     "user/heroku-key":
       method: "POST"
-      description: "Adds your Heroku API key to Circle, takes apikey as form param name."
+      description: "Adds your Heroku API key to CircleCI, takes apikey as form param name."
 
 -# (def api1-project-settings "/api/v1/project/:username/:project/settings")
 -# (def api1-save-preferences "/api/v1/user/save-preferences")
@@ -289,15 +289,15 @@
 -# (def api1-project-github-user "/api/v1/project/:username/:project/github-user")
 
 
-- @title = 'Circle REST API'
+- @title = 'CircleCI REST API'
 - @lastUpdated = "Aug 23, 2012"
 
 
-%h2#intro The Circle API
+%h2#intro The CircleCI API
 %p
-  The Circle API is a RESTy, fully-featured API that allows you to do almost anything in Circle.
+  The CircleCI API is a RESTy, fully-featured API that allows you to do almost anything in CircleCI.
   You can access all information and trigger all actions.
-  The only thing we don't provide access to is billing functions, which must be done from the Circle web UI.
+  The only thing we don't provide access to is billing functions, which must be done from the CircleCI web UI.
 
 %h2 Getting started
 %ol
@@ -333,7 +333,7 @@
 %h2#calling Making calls
 %p
   All API calls are made in the same way, by making standard HTTP calls, using JSON, a content-type, and your API token.
-  All Circle API endpoints begin with
+  All CircleCI API endpoints begin with
   <code>"https://circleci.com/api/v1/"</code>.
 
 %h2 Authentication

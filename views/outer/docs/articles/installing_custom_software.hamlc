@@ -3,10 +3,10 @@
 
 
 %p
-  The Circle environment provides the libraries, languages, and databases needed for most development work
+  The CircleCI environment provides the libraries, languages, and databases needed for most development work
   (check out the
   %a{href: "/docs/environment"} comprehensive list).
-  However, if you need to install a particular version of software&mdash;to match your production systems or to test backward compatibility, for example&mdash;or add custom code, Circle makes it easy to set up your environment to meet your testing needs.
+  However, if you need to install a particular version of software&mdash;to match your production systems or to test backward compatibility, for example&mdash;or add custom code, CircleCI makes it easy to set up your environment to meet your testing needs.
 
 %h2 Root commands and packages
 
@@ -56,11 +56,11 @@
 
 %p
   Natually, downloading and compiling this custom software can take time, making your build longer.
-  To reduce the time spent installing dependencies, Circle will cache them between builds.
+  To reduce the time spent installing dependencies, CircleCI will cache them between builds.
   You can add arbitrary directories to this cache, allowing you to avoid the overhead of building your custom software during the build.
 
 %p
-  Tell Circle to save a cached copy using the
+  Tell CircleCI to save a cached copy using the
   != succeed '.', ->
     %a{href: "/docs/configuration#cache-directories"}
       %code cache_directories

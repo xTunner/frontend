@@ -5,7 +5,7 @@
 
 %ul
   %li
-    Circle supports
+    CircleCI supports
     != succeed ',', ->
       %code git submodule
     and has advanced SSH key management to let you access multiple repositories from a single test suite.
@@ -21,7 +21,7 @@
 
 
   %li
-    Circle's VMs are connected to the internet. You can download dependencies directly while setting up your project, using
+    CircleCI's VMs are connected to the internet. You can download dependencies directly while setting up your project, using
     %code curl
     or
     != succeed '.', ->

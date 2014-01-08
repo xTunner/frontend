@@ -6,7 +6,7 @@
 
 %p
   You must supply or confirm some authentication settings before Heroku deployment.
-  Circle dividies this setup work into three steps.
+  CircleCI dividies this setup work into three steps.
 
 %p
   <b>Note</b>: Heroku authenticates using the API key set in your Heroku dashboard <b>Account</b> page;
@@ -20,7 +20,7 @@
 
 %p
   If this key has already been added to your <b>Edit settings > Heroku settings</b> page,
-  Circle maintains security by displaying a shorten version of the existing API key
+  CircleCI maintains security by displaying a shorten version of the existing API key
   and masking the key when autofilling the <b>Set key</b> field.
 
 %p
@@ -145,7 +145,7 @@
   %code rake db:migrate
   command invokes several tasks including
   <code> db:schema:dump</code>, which updates the db/schema.rb file to match the database structure.
-  Circle supports such command-driven database migrations as well as database migrations performed manually.
+  CircleCI supports such command-driven database migrations as well as database migrations performed manually.
 
 %p
   Before migrating, Heroku recommends that you use the

@@ -7,21 +7,21 @@
 
 %p
   If you are testing and deploying Node.js applications, rest easy,
-  Circle automatically detects a <code>package.json</code>.
-  Circle also has
+  CircleCI automatically detects a <code>package.json</code>.
+  CircleCI also has
   %a{href: "/docs/environment#nodejs"}several Node versions
   pre-installed.
 
 %h2 Dependencies
 
 %p
-  When Circle finds a <code>package.json</code>, we automatically run
+  When CircleCI finds a <code>package.json</code>, we automatically run
   <code>npm install</code> to fetch all of your project's dependencies.
 
 %h2 Testing
 
 %p
-  Circle always runs <code>npm test</code> when you
+  CircleCI always runs <code>npm test</code> when you
   specify a test script in <code>package.json</code>.
   We also run your Mocha tests as well as run any
   <code>test</code> targets in Cakefiles or Makefiles.
@@ -31,7 +31,7 @@
 %p
   The
   %a{href: "/docs/configuration"} circle.yml
-  file makes it easy to tell Circle about custom requirements or dependencies.
+  file makes it easy to tell CircleCI about custom requirements or dependencies.
   For example, if you need to pass a special flag to <code>npm</code>, here's code that could do that.
 
 %pre
@@ -43,5 +43,5 @@
 
 %p
   As this example show, you can use the <code>circle.yml</code> file to
-  override or add pre- or post-dependencies to Circle's inferred
+  override or add pre- or post-dependencies to CircleCI's inferred
   test commands to match your project's requirements.
