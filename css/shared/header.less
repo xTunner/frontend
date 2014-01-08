@@ -84,17 +84,17 @@
     float: left;
     &:not(:first-child):before {
       content: '/';
+      color: @grayLighter;
       font-weight: bold;
       margin-right: @crumbHorizPadding;
     }
     &:last-child {
       padding-left: 1em;
-      visibility: hidden;
       &:before {
         content: "\f013";
         font-family: 'FontAwesome';
         line-height: 0;
-        visibility: visible;
+        margin-right: 5px;
         font-weight: normal;
       }
     }
