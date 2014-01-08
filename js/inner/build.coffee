@@ -57,43 +57,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     CI.inner.VcsUrlMixin(@)
 
     @steps(new CI.inner.Step(s, @) for s in steps)
-    # Find out what the JSON really looks like so containers can be pre-populated
-    #
-    #      "steps" : [ {
-    #          "name" : "configure the build",
-    #          "actions" : [ {
-    #            "bash_command" : null,
-    #            "run_time_millis" : 1646,
-    #            "start_time" : "2013-02-12T21:33:38Z",
-    #            "end_time" : "2013-02-12T21:33:39Z",
-    #            "name" : "configure the build",
-    #            "command" : "configure the build",
-    #            "exit_code" : null,
-    #            "type" : "infrastructure",
-    #            "index" : 0,
-    #            "status" : "success",
-    #          } ] },
-    #          "name" : "lein2 deps",
-    #          "actions" : [ {
-    #            "bash_command" : "lein2 deps",
-    #            "run_time_millis" : 7555,
-    #            "start_time" : "2013-02-12T21:33:47Z",
-    #            "command" : "((lein2 :deps))",
-    #            "messages" : [ ],
-    #            "step" : 1,
-    #            "exit_code" : 0,
-    #            "end_time" : "2013-02-12T21:33:54Z",
-    #            "index" : 0,
-    #            "status" : "success",
-    #            "type" : "dependencies",
-    #            "source" : "inference",
-    #            "failed" : null
-    #          } ] }
-    #
-    # So... iterate over steps, actions. Push the actions into new lists for containers
-    #
-    # Basically just a 2D list of actions per step. Transpose to form actions
-    # per container
 
     # _.zip transposes the steps to containers. The non-parallel action
     # references need to be duplicated n times where n is the number of

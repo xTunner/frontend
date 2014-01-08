@@ -29,8 +29,14 @@ CI.inner.Container = class Container extends CI.inner.Obj
 
       child_styles = (action.action_header_style for action in @actions())
 
+      # This is horrible, but works. Failed is reported immediately, success
+      # only happens when the build is finished
       if child_styles.length > 0
-        child_styles.reduce(reducer, { success: true, failed: false, running: false })
+        style = child_styles.reduce(reducer, { success: true, failed: false, running: false })
+        if not style.failed and @build.finished? and not @build.finished()
+          {success: false, failed: false, running: true}
+        else
+          style
       else
         # assume running if there are no child actions
         {success: false, failed: false, running: true}
