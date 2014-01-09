@@ -23,25 +23,32 @@
            event: {mouseover: $parent.parallel_focus_in}"}
       %span{data-bind: "text: $data"}
 
-      / ko if: $parent.billing.paid
+      .parallelism-upgrades
 
-      .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
-        Your plan only allows up to <span data-bind='text: $parent.plan().max_parallelism'></span> parallelism.
-        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Upgrade
+        / ko if: $parent.billing.paid
 
-      .insufficient-containers{data-bind: "if: $parent.show_add_containers"}
-        Not enough containers available.
-        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
+        .insufficient-plan{data-bind: "if: $parent.show_upgrade_plan"}
+          Your plan only allows up to <span data-bind='text: $parent.plan().max_parallelism'></span> parallelism.
+          %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Upgrade
 
-      / /ko
+        .insufficient-containers{data-bind: "if: $parent.show_add_containers"}
+          Not enough containers available.
+          %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Add More
 
-      / ko if: $parent.billing.trial
+        / /ko
 
-      .insufficient-trial{data-bind: "if: $parent.show_upgrade_trial"}
-        Trials only come with <span data-bind='text: $parent.billing.usable_containers'></span> available containers.
-        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Add a plan
+        / ko if: $parent.billing.trial
 
-      / /ko
+        .insufficient-trial{data-bind: "if: $parent.show_upgrade_trial"}
+          Trials only come with <span data-bind='text: $parent.billing.usable_containers'></span> available containers.
+          %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'plan')}"} Add a plan
+
+        / /ko
+
+      .insufficient-minimum
+        Unsupported. Upgrade or lower parallelism.
+        %i.fa.fa-question-circle{data-bind: "tooltip: {animation: false, placement: 'top', title: $parent.too_much_parallelism_text}"}
+        %a{data-bind: "attr: {href: CI.paths.org_settings($parent.org_name(), 'containers')}"} Upgrade
 
       %input{type: "radio", name: "parallel", data-bind: "value: $data,
             checked: $parent.editParallel,

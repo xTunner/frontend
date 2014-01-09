@@ -424,7 +424,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
       "clear-cache?": clearCache
       "ssh?": SSH)
 
-  # TODO: CSRF protection
   retry_build: (data, event, clearCache) =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"

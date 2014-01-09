@@ -83,7 +83,7 @@
   %a{href: "/docs/build-artifacts"} artifacts directory.
 
 
-%h3 Seeing the results in the Circle UI
+%h3 Seeing the results in the CircleCI UI
 
 %p
   We will upload your coverage files, which will allow you view them from your build page.

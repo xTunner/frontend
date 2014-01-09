@@ -144,7 +144,7 @@
 
 %p
   Make sure that the key which github accepted (in our
-  example, /Users/me/.ssh/id_rsa_github) was also offered to Circle.
+  example, /Users/me/.ssh/id_rsa_github) was also offered to CircleCI.
 
 %p
   If it was not offered, you can specify it via the -i command-line

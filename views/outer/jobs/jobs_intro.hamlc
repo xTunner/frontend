@@ -2,7 +2,10 @@
   %h2 Who are we?
 
   %p
-    We're 8 people, made up almost entirely of people who work on the product.
+    We're
+    != succeed ',', ->
+      %a{href: "/about"} 9 people
+    made up almost entirely of people who work on the product.
 
   %p
     CircleCI is at the growth stage of its life: we've found “product-market fit” (we have a product that we know lots of people want and will pay for), and are focusing on growing our customer base and significantly improving our product.

@@ -41,7 +41,7 @@
 
 %p
   This error occurs because ActiveRecord models are being used before the
-  schema is loaded. On Circle, every build runs in a clean VM, so at the
+  schema is loaded. On CircleCI, every build runs in a clean VM, so at the
   start of the build, your database doesn't exist yet.
 
 %h2

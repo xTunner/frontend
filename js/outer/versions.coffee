@@ -50,6 +50,7 @@ CI.Versions =
     "2.0.0-p353",
     "2.1.0-preview1",
     "2.1.0-preview2",
+    "2.1.0",
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4",
@@ -76,7 +77,6 @@ CI.Versions =
   ]
 
   lein: "2.3.1"
-  lein_old: "1.6.1.1"
   ant: "1.8.2"
   maven: "3.0.5"
 
@@ -162,6 +162,18 @@ CI.Versions =
 
   golang: 'go1'
   erlang: 'r14b04'
+
+  gradle: "1.7"
+  play: "2.2.1"
+  scalas: [
+    "0.11.3",
+    "0.12.0",
+    "0.12.1",
+    "0.12.2",
+    "0.12.3",
+    "0.12.4",
+    "0.13.0",
+    "0.13.1"]
 
   solr: "4.3.1"
   postgresql: "9.2.5"

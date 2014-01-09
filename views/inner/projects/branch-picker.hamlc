@@ -1,12 +1,14 @@
 %form
   .inline-input-text
     != @prepend_text
-  %input{type: "text",
-        name: "branch",
-        autocomplete: "off",
-        placeholder: "Choose branch",
-        data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}",
-        required: ""}
+  %label.sticky
+    %input#branch-picker{type: "text",
+                         name: "branch",
+                         autocomplete: "off",
+                         data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}",
+                         required: ""}
+    %label{for: "branch-picker"} Branch name
+
   .inline-input-text
     != @append_text
   %button{type: "submit",

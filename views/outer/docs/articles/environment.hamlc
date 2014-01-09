@@ -3,7 +3,7 @@
 - @v = CI.Versions
 
 %p
-  Occasionally, bugs in tests arise because Circle's environment differs slightly from your local environment.
+  Occasionally, bugs in tests arise because CircleCI's environment differs slightly from your local environment.
   In the future, we plan to allow as much of this to be configurable as possible.
   Please
   != HAML['contact_us']()
@@ -95,13 +95,13 @@
 
 
 %p
-  Circle runs graphical programs in a virtual framebuffer, using
+  CircleCI runs graphical programs in a virtual framebuffer, using
   != succeed '.', ->
     xvfb
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly, just like they do when you use them locally.
   You do not need to do anything special to set this up.
   We have
-  <code>phantomjs 1.9.0</code>,
+  <code>phantomjs 1.9.2</code>,
   %code= @v.v('casperjs')
   and
   %code libwebkit (2.2.1-1ubuntu4)
@@ -198,24 +198,6 @@
     %code= @v.default_node
 
 
-%h3  Clojure
-%p
-  We use
-  %code= @v.v('lein')
-  by default, and you can also use
-  != succeed ",", ->
-    %code lein16
-  which is version
-  != succeed ".", ->
-    = @v.lein_old
-
-%p
-  You should specify your Clojure version in your
-  %code project.clj
-  file.
-
-
-
 %h3 Python
 %p
   We use
@@ -285,7 +267,7 @@
 %h3#java Java (and JVM based languages)
 
 %p
-  Circle has the following languages and tools installed:
+  CircleCI has the following languages and tools installed:
 
 %ul
   %li
@@ -300,9 +282,13 @@
     %code= @v.v('ant')
   %li
     %code= @v.v('maven')
+  %li
+    %code= @v.v('gradle')
+  %li
+    %code= @v.v('play')
 
 %p
-  You can specify the following Java versions in your <code>circle.yml</code> file:
+  You can specify the following JVM versions in your <code>circle.yml</code> file:
     %ul
       %li
         <code>oraclejdk7</code> (default)
@@ -313,16 +299,30 @@
       %li
         %code openjdk6
 
+%h4 Scala
+
+We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
+  %ul
+    - for s in @v.scalas
+      %li
+        %code= s
+
+We also install some release candidate and beta versions (see the above URL for the complete list).
+
+%h3  Clojure
 %p
-  Other JVM-based languages should also work.
-  Circle has
-  != succeed ",", ->
-    %a{href: "#clojure"} special support for Clojure
-  please
+  We use
+  %code= @v.v('lein')
+
+%p
+  You should specify your Clojure version in your
+  %code project.clj
+  file.
+
+%p
+  Other JVM-based languages should also work. please
   != HAML['contact_us']()
   let us know if you need anything else installed to run your JVM language of choice.
-
-
 
 %h3#other Other languages
 %p

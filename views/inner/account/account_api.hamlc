@@ -2,26 +2,23 @@
   .api-item
     %h2 API Tokens
 
-    %form.form-inline
-      %input.enter-label{type: "text",
-                         name: "label",
-                         placeholder: "Enter token label...",
-                         data-bind: "value: tokenLabel"}
-
-      %input.submit.btn.btn-primary.float-left{type: "submit",
-                             value: "Create",
-                             data-bind: "click: create_token",
-                             data-loading-text: "Creating...",
-                             data-success-text: "Created",
-                             data-failed-text: "Failed"}
-
-    %p.token-info
-      Create and revoke API tokens to access this account's details using our API.
+    %p Create and revoke API tokens to access this account's details using our API.
       Apps using these tokens can act as you, and have full read- and write-permissions!
 
-  .api-item{data-bind: "if: tokens().length"}
-    %h2 User API Tokens
+    %label.sticky
+      %input#api-token{data-bind: "value: tokenLabel",
+                       type: "text",
+                       name: "label",
+                       required:""}
+      %label{for: "api-token"} Token name
+      %input.btn{type: "submit",
+                 value: "Create",
+                 data-bind: "click: create_token",
+                 data-loading-text: "Creating...",
+                 data-success-text: "Created",
+                 data-failed-text: "Failed"}
 
+  .api-item{data-bind: "if: tokens().length"}
     %table.table
       %thead
         %th Label

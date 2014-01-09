@@ -6,12 +6,12 @@
 
 %ul
   %li
-    Using the permissions you gave Circle when you signed up, we'll add some Github settings to your project:
+    Using the permissions you gave CircleCI when you signed up, we'll add some Github settings to your project:
     %ul
       %li A <b>deploy key</b>&mdash;used to check out your project from GitHub
-      %li A <b>service hook</b>&mdash;used to notify Circle when you push to GitHub
+      %li A <b>service hook</b>&mdash;used to notify CircleCI when you push to GitHub
   %li
-    Circle immediately checks your code out onto our machines, infers your settings from your code, and runs your first build.
+    CircleCI immediately checks your code out onto our machines, infers your settings from your code, and runs your first build.
   %li
     Our inference algorithms look through your dependencies, Gemfile, libraries, and code to figure out how to run your tests.
     For example, we might find that you have a standard Rails project using Postgres specifications and features, so we'll run:

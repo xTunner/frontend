@@ -3,7 +3,7 @@
 
 %p
   Time-zones are fickle masters, and time-based code frequently only works in the time-zone in which it was written.
-  Your code is probably tested in local time on your development machine, while Circle is in UTC.
+  Your code is probably tested in local time on your development machine, while CircleCI is in UTC.
   If that's the case, you may end up with test failures looking like this:
 %pre
   %code.no-highlight<>
@@ -15,12 +15,12 @@
 
 %p
   Fortunately, it's easy to
-  %a{ href: "/docs/configuration#timezone"} change Circle's timezone
+  %a{ href: "/docs/configuration#timezone"} change CircleCI's timezone
   to match yours.
 
 %p
   When making this change, it might be a good time to check what time zone your server is in.
-  You should set Circle to use the same timezone as the servers to which you deploy, not the same time zones as your development machines.
+  You should set CircleCI to use the same timezone as the servers to which you deploy, not the same time zones as your development machines.
   Otherwise you might be in for a nasty surprise when your users get a 0-day trial, but it works fine on your machine!
 
 %h3 Daylight savings time
@@ -32,6 +32,6 @@
 
 %p
   One nice solution is to just try again, preferably at a different time of day.
-  Try to avoid midnight in both your local timezone, and the time zone that Circle uses (UTC unless you
+  Try to avoid midnight in both your local timezone, and the time zone that CircleCI uses (UTC unless you
   %a{ href: "/docs/configuration#timezone"} changed
   it).

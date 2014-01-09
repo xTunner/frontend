@@ -10,9 +10,13 @@
         %ul
           %li
             %span
-              %input#env-var-name{type: "text", name: "name", placeholder: "Name", data-bind: "value: env_varName", required: ""}
+              %label.sticky
+                %input#env-var-name{type: "text", name: "name", data-bind: "value: env_varName",required:""}
+                %label{for: "label"} Name
             %span
-              %input#env-var-value{type: "text", name: "value", placeholder: "Value", data-bind: "value: env_varValue", required: ""}
+              %label.sticky
+                %input#env-var-value{type: "text", name: "value", data-bind: "value: env_varValue",required:""}
+                %label{for: "label"} Value
             %span
               %input#submit.btn{type: "submit",
                                 value: "Add",
