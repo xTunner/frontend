@@ -642,7 +642,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
       str += "#{username}@#{ip}"
     str
 
-  select_container: (container) =>
+  select_container: (container, event) =>
+    # Multiple clicks cause the transition to get out of sync with the selected
+    # container, ignore double clicks etc.
+    # http://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
+    #
+    # Not every call of select_container is be in response to a Knockout
+    # click binding so 'event' may be undefined.
+    if event? and event?.originalEvent?.detail != 1
+      console.log("ignoring multiple clicks, click-count: " + event.originalEvent.detail)
+      return
+
     console.log("selected container " + container.name)
     @current_container(container)
     @switch_container_viewport(@current_container())
