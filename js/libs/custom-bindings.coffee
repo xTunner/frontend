@@ -86,12 +86,6 @@ ko.bindingHandlers.on_window_event = { init: (el, valueAccessor) =>
                                         $(window).on(options.event, (event) =>
                                           options.fn(event)
                                         ) }
-# Usage: %div{data-bind: "on_event: {event: 'scroll', fn: function(event) {console.log('event was: ' + event)}}"}
-ko.bindingHandlers.on_event = { init: (el, valueAccessor) =>
-                                  options = valueAccessor()
-                                  $(el).on(options.event, (event) =>
-                                    options.fn(event)
-                                  ) }
 
 ## Money custom binding
 

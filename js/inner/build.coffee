@@ -668,13 +668,12 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     scroll_handler = @handle_browser_scroll
 
-    $container_parent.off("scroll.container")
+    $container_parent.off("scroll")
     $container_parent.stop().animate({scrollLeft: scroll_offset}, duration)
-    $container_parent.queue( () ->
+    $container_parent.queue( (next) ->
                                 enable_scroll_handler = () ->
                                     console.log("animation completion")
-                                    $container_parent.on("scroll.container", scroll_handler)
-                                    $(this).dequeue()
+                                    $container_parent.on("scroll", scroll_handler)
                                 # There is a race between the final scroll
                                 # event and the scroll handler being re-enabled
                                 # which causes the last scroll event to be
@@ -684,7 +683,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
                                 # FIXME This slight delay in re-enabling the
                                 # handler avoids that but I would much prefer a
                                 # solution that isn't time-based
-                                setTimeout(enable_scroll_handler, 100))
+                                setTimeout(enable_scroll_handler, 100)
+                                next())
 
   realign_container_viewport: () =>
     @switch_container_viewport(@current_container(), 0)
@@ -698,7 +698,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # FIXME This makes the assumption that the browser will try and centre the
     # selected text, and that centering the text will scroll the
     # container_parent a little more into the new container.
-    # Chrome does this. Dunno about Firefox
+    # Chrome does this. Firefox doesn't
     $container_parent = $("#container_parent")
     container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
     @select_container(@containers()[container_index])
