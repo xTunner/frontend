@@ -22,4 +22,4 @@
       %a{href: "https://www.hipchat.com/gjwkHcrD5"} Live Support
     %li
       %a.fa.fa-twitter{href: "https://twitter.com/circleci",
-                       title: "Follow CircleCi on Twitter"}
+                       title: "Follow CircleCI on Twitter"}
