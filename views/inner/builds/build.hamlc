@@ -36,6 +36,7 @@
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
 
+      / ko if: feature_enabled("build_GH1157_container_oriented_ui")
       %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 0}"}
         %ul.container-list{data-bind: "foreach: containers"}
           %li{data-bind: "css: { active: $data === $parent.current_container() }"}
@@ -43,7 +44,12 @@
                                                         , click: $parent.select_container
                                                         , css: status_style"}
       
+      != HAML.container_build_steps({})
+      / /ko
+
+      / ko if: !feature_enabled("build_GH1157_container_oriented_ui")
       != HAML.build_steps({})
+      / /ko
 
       %div{data-bind: "if: steps().length > 1"}
         != HAML.messages()

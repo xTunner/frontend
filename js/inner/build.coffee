@@ -58,27 +58,28 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @steps(new CI.inner.Step(s, @) for s in steps)
 
-    # _.zip transposes the steps to containers. The non-parallel action
-    # references need to be duplicated n times where n is the number of
-    # containers
-    new_steps = []
-    for step in @steps()
-      # FIXME This will do for now, but a better check is that the actions in
-      # the step have parallel: true
-      if step.has_multiple_actions
-        new_steps.push(step.actions())
-      else
-        # Coffeescript a..b ranges are inclusive
-        new_steps.push(step.actions()[0] for dont_care in [1..@parallel()])
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # _.zip transposes the steps to containers. The non-parallel action
+      # references need to be duplicated n times where n is the number of
+      # containers
+      new_steps = []
+      for step in @steps()
+        # FIXME This will do for now, but a better check is that the actions in
+        # the step have parallel: true
+        if step.has_multiple_actions
+          new_steps.push(step.actions())
+        else
+          # Coffeescript a..b ranges are inclusive
+          new_steps.push(step.actions()[0] for dont_care in [1..@parallel()])
 
-    containers = _.zip(new_steps...)
+      containers = _.zip(new_steps...)
 
-    @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
-    console.log("Built containers - " + containers.length)
-    console.log("Number of steps - " + steps.length)
+      @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
+      console.log("Built containers - " + containers.length)
+      console.log("Number of steps - " + steps.length)
 
-    if @containers()[0]?
-      @current_container(@containers()[0])
+      if @containers()[0]?
+        @current_container(@containers()[0])
 
     @url = @komp =>
       @urlForBuildNum @build_num
@@ -332,21 +333,38 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+  feature_enabled: (feature_name) =>
+    return @feature_flags? and @feature_flags[feature_name]? and @feature_flags[feature_name]
+
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
   different_type: (action) =>
-    last = null
-    breakLoop = false
-    for c in @containers()
-      for a in c.actions()
-        if a == action
-          breakLoop = true # no nested breaks in CS
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      last = null
+      breakLoop = false
+      for c in @containers()
+        for a in c.actions()
+          if a == action
+            breakLoop = true # no nested breaks in CS
+            break
+          last = a
+        if breakLoop
           break
-        last = a
-      if breakLoop
-        break
 
-    last? and not (last.type() == action.type())
+      last? and not (last.type() == action.type())
+    else
+      last = null
+      breakLoop = false
+      for s in @steps()
+        for a in s.actions()
+          if a == action
+            breakLoop = true # no nested breaks in CS
+            break
+          last = a
+        if breakLoop
+          break
+
+      last? and not (last.type() == action.type())
 
   estimated_time: (current_build_millis) =>
     valid = (estimated_millis) ->
@@ -408,30 +426,47 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('updateObservables', @updateObservables)
 
   fillActions: (step, index) =>
-    # Fills up @containers and their actions so the step and index are valid
-    # 'step' is the position in the container's actions array
-    # 'index' is the container index
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # Fills up @containers and their actions so the step and index are valid
+      # 'step' is the position in the container's actions array
+      # 'index' is the container index
 
-    # Add at least enough containers to store the actions
-    for i in [0..index]
-      if not @containers()[i]?
-        @containers.setIndex(i, new CI.inner.Container("C" + i, i, [], @))
+      # Add at least enough containers to store the actions
+      for i in [0..index]
+        if not @containers()[i]?
+          @containers.setIndex(i, new CI.inner.Container("C" + i, i, [], @))
 
-    # It's possible no containers existed when the build was first loaded, if
-    # so, select the first
-    if not @current_container()?
-      @current_container(@containers()[0])
+      # It's possible no containers existed when the build was first loaded, if
+      # so, select the first
+      if not @current_container()?
+        @current_container(@containers()[0])
 
-    # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
-    for i in [0..step]
-      if not @containers()[index].actions()[i]?
-        @containers()[index].actions.setIndex(i, new CI.inner.ActionLog({}, @))
+      # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
+      for i in [0..step]
+        if not @containers()[index].actions()[i]?
+          @containers()[index].actions.setIndex(i, new CI.inner.ActionLog({}, @))
+    else
+      # fills up steps and actions such that step and index are valid
+      for i in [0..step]
+        if not @steps()[i]?
+          @steps.setIndex(i, new CI.inner.Step({}))
+
+      # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
+      for i in [0..index]
+        if not @steps()[step].actions()[i]?
+          @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}, @))
 
   newAction: (json) =>
-    if json.log.parallel
-      @newParallelAction(json)
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      if json.log.parallel
+        @newParallelAction(json)
+      else
+        @newNonParallelAction(json)
     else
-      @newNonParallelAction(json)
+      @fillActions(json.step, json.index)
+      if old = @steps()[json.step].actions()[json.index]
+        old.clean()
+      @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
 
   newParallelAction: (json) =>
     @fillActions(json.step, json.index)
@@ -455,17 +490,27 @@ CI.inner.Build = class Build extends CI.inner.Obj
     console.log("newNonParallelAction step:" + json.step + ", index:" + json.index)
 
   updateAction: (json) =>
-    # updates the observables on the action, such as end time and status.
-    @fillActions(json.step, json.index)
-    @containers()[json.index].actions()[json.step].updateObservables(json.log)
-    console.log("updateAction step:" + json.step + ", index:" + json.index)
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # updates the observables on the action, such as end time and status.
+      @fillActions(json.step, json.index)
+      @containers()[json.index].actions()[json.step].updateObservables(json.log)
+      console.log("updateAction step:" + json.step + ", index:" + json.index)
+    else
+      # updates the observables on the action, such as end time and status.
+      @fillActions(json.step, json.index)
+      @steps()[json.step].actions()[json.index].updateObservables(json.log)
 
   appendAction: (json) =>
-    # adds output to the action
-    @fillActions(json.step, json.index)
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # adds output to the action
+      @fillActions(json.step, json.index)
 
-    @containers()[json.index].actions()[json.step].append_output([json.out])
-    console.log("appendAction step:" + json.step + ", index:" + json.index)
+      @containers()[json.index].actions()[json.step].append_output([json.out])
+      console.log("appendAction step:" + json.step + ", index:" + json.index)
+    else
+      # adds output to the action
+      @fillActions(json.step, json.index)
+      @steps()[json.step].actions()[json.index].append_output([json.out])
 
   maybeAddMessages: (json) =>
     existing = (message.message for message in @messages())
