@@ -261,7 +261,7 @@
                 animation: spin 1s infinite linear;
       }
     }
-    .dashboardAsideStatusColor(@color) {
+    .statusIconColor(@color) {
       &:hover {
         a {
           color: @color;
@@ -280,22 +280,22 @@
     }
     .success,
     .fixed {
-      .dashboardAsideStatusColor(@green);
+      .statusIconColor(@green);
     }
     .no_tests,
     .failed,
     .timedout,
     .canceled {
-      .dashboardAsideStatusColor(@redLight);
+      .statusIconColor(@redLight);
     }
     .running {
-      .dashboardAsideStatusColor(@blueDark);
+      .statusIconColor(@blueDark);
     }
     .queued {
-      .dashboardAsideStatusColor(@gray);
+      .statusIconColor(@gray);
     }
     .not_run {
-      .dashboardAsideStatusColor(@orange);
+      .statusIconColor(@orange);
     }
     span.queued a:not(:hover) {
       color: @grayLight;
