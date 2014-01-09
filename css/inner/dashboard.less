@@ -285,8 +285,7 @@
     .no_tests,
     .failed,
     .timedout,
-    .canceled,
-    .not_run {
+    .canceled {
       .dashboardAsideStatusColor(@redLight);
     }
     .running {
@@ -294,6 +293,9 @@
     }
     .queued {
       .dashboardAsideStatusColor(@gray);
+    }
+    .not_run {
+      .dashboardAsideStatusColor(@orange);
     }
     span.queued a:not(:hover) {
       color: @grayLight;
