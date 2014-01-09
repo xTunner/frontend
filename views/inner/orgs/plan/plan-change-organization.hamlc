@@ -39,7 +39,7 @@
                     %span{data-bind: "text: $data"}
 
             .form-actions.span6
-              %button.btn.btn-large.btn-danger{data-bind: "click: transferPlan, css: {disabled: !transfer_org_name()}, text: transfer_plan_button_text()",
+              %button.btn.btn-large.btn-danger{data-bind: "attr: {disabled: !transfer_org_name()}, click: transferPlan, text: transfer_plan_button_text()",
                                                type: "submit",
                                                data-loading-text: "Tranferring...",
                                                data-success-text: "Transferred"}
