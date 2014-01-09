@@ -9,8 +9,6 @@ display = (template, args, subpage, hash) ->
 
   content =
     $("<main></main>")
-      .removeClass('outer')
-      .removeClass('inner')
       .append(HAML[template](args))
 
   footer =
@@ -19,6 +17,8 @@ display = (template, args, subpage, hash) ->
 
   $('#app')
     .html("")
+    .removeClass('outer')
+    .removeClass('inner')
     .addClass(klass)
     .append(header)
     .append(content)

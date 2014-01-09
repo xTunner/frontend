@@ -38,8 +38,6 @@ CI.outer.Page = class Page
     content =
       $("<main></main>")
         .attr("id", "#{@name}-page")
-        .removeClass('outer')
-        .removeClass('inner')
         .append(HAML[template](args))
 
     footer =
@@ -49,6 +47,8 @@ CI.outer.Page = class Page
 
     $('#app')
       .html("")
+      .removeClass('outer')
+      .removeClass('inner')
       .addClass(klass)
       .append(header)
       .append(content)
