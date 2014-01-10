@@ -4,7 +4,6 @@
 
 /* ============= COLOR ============= */
 
-// Grayscale
 @black:                        #000000;
 @blacken:                      #080808;
 @grayDarkest:                  #131313;
@@ -17,7 +16,6 @@
 @whiten:                       #fbfbfb;
 @white:                        #ffffff;
 
-// Blues
 @blue:                         #007196;
 @blueDarkest:                   darken(             spin( @blue,   -1), 19.7)       ; // #002632
 @blueDarker:                    darken(                   @blue, 14.8)              ; // #00384b
@@ -26,7 +24,6 @@
 @blueLighter:                  lighten(             spin( @blue,   .6), 19.7)       ; // #00bafa
 @blueLightest:                 lighten( desaturate( spin( @blue,  -15),   17), 58.9); // #c8fafa
 
-// Greens
 @green:                        #229922;
 @greenDarkest:                  darken(   saturate(@green, 15.5), 27.3); // #052b05
 @greenDarker:                   darken(   saturate(@green,  9.2), 17.3); // #0d550d
@@ -35,7 +32,6 @@
 @greenLighter:                 lighten(   saturate(@green,    4), 24.5); // #59df59
 @greenLightest:                lighten(   saturate(@green,   19), 51.5); // #c8fac8
 
-// Reds
 @red:                          #992222;
 @redDarkest:                    darken(   saturate(@red, 15),  27.3); // #2b0505
 @redDarker:                     darken(   saturate(@red,  9), 17.34); // #550d0d
@@ -90,7 +86,6 @@
 
 @footerItemSize: 1em;
 
-/* ============= MISC. ============= */
 
 @outerBodyBackground: darken(@white, 2.75); // #f8f8f8
 @grayBorder:   lighten(@gray,55.50%); //#e3e3e3
