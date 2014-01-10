@@ -2,20 +2,18 @@
   bottom: 0;
   border: 1px solid #000;
   border-bottom: 0;
-  -webkit-border-radius: 6px 6px 0 0;
   border-radius: 6px 6px 0 0;
   display: none;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   max-height: 41px;
   overflow: hidden;
   position: fixed;
   right: 20px;
   transition: max-height .7s ease;
-  z-index: 2147483646;
+  z-index: @zindexStickyFooter;
 
   .dark-background {
-    background: #404040;
-    color: #fff;
+    background: @graySlightlyDark;
+    color: @white;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
