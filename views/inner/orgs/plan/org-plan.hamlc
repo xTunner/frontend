@@ -7,7 +7,6 @@
   / ko if: piggieback_plan_p
   != HAML.plans_piggieback_plan_notification()
   / /ko
-  != HAML.org_plan_summary()
 
   != HAML.pricing_plans()
   != HAML.pricing_features()
