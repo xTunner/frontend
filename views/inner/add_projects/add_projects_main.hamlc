@@ -31,7 +31,10 @@
          data-toggle: "modal",
          data-target: "#inviteForm"}
       -# %img{src: assetPath("/img/switchOff.svg")}
-      %button{data-bind: "text: buttonText"}
+      %button
+        %span{data-bind: "text: buttonText"}
+        %i.fa.fa-lock
+
 
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
