@@ -209,12 +209,7 @@
     // To replace switches
     .repo-unfollow {
       button {
-        .buttonDark(@grayLightest);
-        color: @gray;
-        text-shadow: none;
-        &:hover, &:active {
-          color: @grayDark;
-        }
+        .buttonDark(@redLight);
       }
     }
     .repo-follow {
@@ -224,8 +219,11 @@
     }
     .repo-nofollow {
       button {
-        .buttonDark(@redLight);
+        .buttonDark;
       }
+    }
+    .join-btn{
+      .buttonDark(@green);
     }
     [class^="repo-"] {
       button {

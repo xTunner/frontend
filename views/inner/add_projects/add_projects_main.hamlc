@@ -14,7 +14,7 @@
         -# %img{src: assetPath("/img/switchBounce.svg")}
         -# %i.fa.fa-caret-right
         -# %span Start this repo!
-        %button{data-bind: "text: buttonText"}
+        %button.join-btn{data-bind: "text: buttonText"}
       %div{data-bind: "ifnot: shouldDoFirstFollowerBuild"}
         %a{data-bind: "click: follow, text: displayName",
            data-loading-text: "Following repo..."}
