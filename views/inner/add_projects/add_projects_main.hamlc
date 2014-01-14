@@ -19,12 +19,12 @@
         %a{data-bind: "click: follow, text: displayName",
            data-loading-text: "Following repo..."}
         -# %img{src: assetPath("/img/switchOff.svg")}
-        %button.join-project Join
+        %button.join-project Follow
     .repo-unfollow{data-bind: "if: following"}
       %a{data-bind: "click: unfollow, text: displayName",
          data-loading-text: "Unfollowing repo..."}
       -# %img{src: assetPath("/img/switchOn.svg")}
-      %button Leave
+      %button Unfollow
     .repo-nofollow{data-bind: "if: requiresInvite"}
       %a{data-bind: "text: displayName",
          data-toggle: "modal",
@@ -41,7 +41,7 @@
     %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
     %h3#inviteFormLabel This requires an Administrator
   .modal-body
-    %p For security purposes, you cannot add this project to Circle unless you are an administrator of the GitHub project. Invite your admin(s) by sending them this link:
+    %p For security purposes only a project's Github administrator may setup Circle. Invite this project's admin(s) by sending them the link below and asking them to setup the project in Circle. You may also ask them to make you a Github administrator.
       %p.pull-right
         %input{type: "text", value: "https://circleci.com/?join=dont-test-alone"}
   .modal-footer
