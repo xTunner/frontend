@@ -194,13 +194,14 @@
         box-shadow: 0 1px 1px lighten(@grayBorder, 1) inset;
       }
     }
-    span {
-      line-height: 3em;
-      float: right;
-      margin-top: -3em;
-      margin-right: 6em;
-      pointer-events: none;
-    }
+    // TODO Danny take a look
+    // span {
+    //   line-height: 3em;
+    //   float: right;
+    //   margin-top: -3em;
+    //   margin-right: 6em;
+    //   pointer-events: none;
+    // }
     [class^="repo-"] {
       overflow: hidden;
       position: relative;
@@ -208,22 +209,21 @@
     // To replace switches
     .repo-unfollow {
       button {
-        .buttonDark(@grayLightest);
-        color: @gray;
-        text-shadow: none;
-        &:hover, &:active {
-          color: @grayDark;
-        }
+        .buttonDark(@redLight);
       }
     }
     .repo-follow {
       button {
         .buttonDark;
       }
+      .join-project {
+        .buttonDark(@green);
+        line-height: 2em;
+      }
     }
     .repo-nofollow {
       button {
-        .buttonDark(@redLight);
+        .buttonDark;
       }
     }
     [class^="repo-"] {
