@@ -24,7 +24,7 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
 
     @buttonText = @komp =>
       if not @following() and @has_followers
-        "Join"
+        "Follow"
       if not @following() and not @has_followers
         "Setup"
 
