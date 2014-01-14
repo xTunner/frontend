@@ -12,6 +12,11 @@
   %p
     Naturally, this goes both ways. We're happy to answer any questions you have about Circle, where we're going, why it's a great place to work, and what we're doing to keep it that way.
 
+  %p
+    Interested?
+    %a{:href => "mailto:jobs@circleci.com"} Email us now!
+
+
 
 
 -# %section.application
