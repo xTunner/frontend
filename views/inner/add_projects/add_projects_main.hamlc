@@ -14,13 +14,12 @@
         -# %img{src: assetPath("/img/switchBounce.svg")}
         -# %i.fa.fa-caret-right
         -# %span Start this repo!
-        %button.join-btn{data-bind: "text: buttonText"}
+        %button{data-bind: "text: buttonText"}
       %div{data-bind: "ifnot: shouldDoFirstFollowerBuild"}
         %a{data-bind: "click: follow, text: displayName",
            data-loading-text: "Following repo..."}
         -# %img{src: assetPath("/img/switchOff.svg")}
-        %button{data-bind: "text: buttonText"}
-
+        %button.join-project Join
     .repo-unfollow{data-bind: "if: following"}
       %a{data-bind: "click: unfollow, text: displayName",
          data-loading-text: "Unfollowing repo..."}
