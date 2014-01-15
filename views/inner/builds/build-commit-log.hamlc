@@ -14,5 +14,5 @@
     .rest-commits{data-bind: "if: rest_commits_visible"}
       %div{data-bind: "haml: {template: 'build_commit_list', args: {commits: rest_commits}}"}
   %div.clear
-    %span#bingo{data-bind: "click: toggle_rest_commits"}
-      %a{data-bind: "text: linkCopy, click: toggle_text"}
+    %span
+      %a{data-bind: "text: linkCopy, click: toggle_rest_commits, visible: rest_commits().length"}
