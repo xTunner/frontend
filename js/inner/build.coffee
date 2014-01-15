@@ -37,6 +37,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     ssh_enabled: false
     rest_commits_visible: false
     node: []
+    linkCopy: 'View More'
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -309,9 +310,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
-    @linkCopy = @komp =>
-      'See More'
-
 
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
@@ -477,9 +475,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   toggle_rest_commits: () =>
     @rest_commits_visible(!@rest_commits_visible())
-    
-  toggle_text: () =>
-    @linkCopy = 'Hide'
+    if @rest_commits_visible()
+      @linkCopy('Hide')
+    else
+      @linkCopy('View More')
 
   clean_usage_queue_why: () =>
     if @usage_queue_why()
