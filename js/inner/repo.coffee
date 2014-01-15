@@ -22,6 +22,12 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       else
         @name
 
+    @buttonText = @komp =>
+      if not @following() and @has_followers
+        "Follow"
+      if not @following() and not @has_followers
+        "Setup"
+
   unfollow: (data, event) =>
     $.ajax
       type: "POST"
