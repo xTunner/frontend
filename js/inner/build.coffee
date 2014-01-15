@@ -310,6 +310,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+    @linkCopy = @komp =>
+      'See More'
+
+
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
   different_type: (action) =>
@@ -325,6 +329,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         break
 
     last? and not (last.type() == action.type())
+ 
 
   estimated_time: (current_build_millis) =>
     valid = (estimated_millis) ->
@@ -353,7 +358,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
         vcs_url: @vcs_url()
         build_num: @build_num
     event.stopPropagation()
-
 
   visit: () =>
     SammyApp.setLocation @url()
@@ -474,6 +478,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   toggle_rest_commits: () =>
     @rest_commits_visible(!@rest_commits_visible())
+    
+  toggle_text: () =>
+    @linkCopy = 'Hide'
 
   clean_usage_queue_why: () =>
     if @usage_queue_why()
