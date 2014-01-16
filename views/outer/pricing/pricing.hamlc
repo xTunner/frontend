@@ -12,5 +12,6 @@
   .container.content{data-bind: "with: $root.billing"}
     != HAML.pricing_plans_heading()
     != HAML.pricing_plans()
+    != HAML.pricing_customers()
     != HAML.pricing_features()
     != HAML.pricing_faq()
