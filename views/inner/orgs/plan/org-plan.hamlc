@@ -10,6 +10,8 @@
   != HAML.org_plan_summary()
 
   != HAML.pricing_plans()
+  != HAML.plans_customers()
+
   != HAML.pricing_features()
   != HAML.pricing_faq()
 
