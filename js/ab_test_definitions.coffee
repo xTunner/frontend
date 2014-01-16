@@ -8,3 +8,4 @@ exports = this
 exports.ab_test_definitions =
   a_is_a: [true, false]
   pricing_maintain_infrastructure: [true, false]
+  customer_logos: [true, false]
