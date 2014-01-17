@@ -1,6 +1,6 @@
 %div.company-container
-  %h4.powering-header
-    %span.text Powering Worldsclass Software
+  %h4
+    %span Powering Worldsclass Software
   .company
     %img{src: '(data-uri "img/logos/stripe.png")',
          title: "Stripe"}
