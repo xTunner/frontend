@@ -2,8 +2,7 @@
 
   %div{data-bind: "ifnot: build_has_been_loaded"}
     != HAML['flashes']({})
-    .centered-spinner
-      != HAML['fast_spinner']()
+    != HAML.fast_spinner({})
 
   %div{data-bind: "if: build_has_been_loaded"}
 
