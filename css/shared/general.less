@@ -22,10 +22,11 @@ label.sticky {
 label.stickyArea {
   .stickyLabelTextarea();
 }
-.centered-spinner {
-  text-align: center;
-  font-size: 5em;
-  margin-top: 1em;
+#loading-spinner {
+  display: block;
+  margin: @spinnerSize auto;
+  width: @spinnerSize;
+  height: @spinnerSize;
 }
 .fa.fa-spin {
   -moz-animation: spin 1s infinite linear;
