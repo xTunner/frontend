@@ -1,6 +1,6 @@
 %div.company-container.row
   %h4
-    %span Powering Worldsclass Software
+    %span Powering World Class Software
   .company
     %img{src: '(data-uri "img/logos/stripe.png")',
          title: "Stripe"}
