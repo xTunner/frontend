@@ -1,4 +1,4 @@
-%div.company-container
+%div.company-container.row
   %h4
     %span Powering Worldsclass Software
   .company
@@ -16,3 +16,4 @@
   .company
     %img{src: '(data-uri "img/logos/shopify.png")',
          title: "Shopify"}
+  %span.stretch

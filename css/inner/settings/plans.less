@@ -1,6 +1,5 @@
 .company-container{
-	width: 90%;
-	margin: 60px auto 40px auto;
+	margin-top: 40px;
 	border: @grayLighter solid;
 	border-width: 1px 0px;
 	padding-bottom: 20px;
@@ -16,12 +15,17 @@
 		}
 	}
 	.company{
-		float: left;
+		width: 200px;
+		height: 80px;
 		line-height: 80px;
-		padding-right: 2%;
-		img{
-			max-height: 80px;
-			max-width: 200px;
-		}
+		display: inline-block;
+		zoom: 1;
+		text-align: center;
+	}
+	.stretch{
+		width: 100%;
+		display: inline-block;
+		font-size: 0;
+		line-height: 0;
 	}
 }
