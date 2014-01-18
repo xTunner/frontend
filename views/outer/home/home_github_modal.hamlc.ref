@@ -1,0 +1,40 @@
+#githubModal.modal.hide.fade
+  .modal-body
+    %i.fa.fa-github.fa-3x
+    %p
+      In order to run your tests on CircleCI you need to authenticate with Github first.
+      %br
+      The permission page may look scary, but it's not, we promise! The security and privacy of your code is our #1 priority and we take it 
+      %strong very seriously.
+      %br
+    %div.company-container.row
+      %h4
+        %span Trusted By
+      .company
+        %img{src: '(data-uri "img/logos/stripe.png")',
+             title: "Stripe"}
+      .company
+        %img{src: '(data-uri "img/logos/salesforce.png")',
+             title: "Salesforce"}
+      .company
+        %img{src: '(data-uri "img/logos/kickstarter.png")',
+             title: "Kickstarter"}
+      .company
+        %img{src: '(data-uri "img/logos/cisco.png")',
+             title: "Cisco"}
+      .company
+        %img{src: '(data-uri "img/logos/shopify.png")',
+             title: "Shopify"}
+      %span.stretch
+    %div.hide.why_authenticate_github_modal{style:'text-align:left;'}
+      %p
+        To run your tests we need to check out your code from GitHub. When you sign up for CircleCI you tell GitHub that you are authorizing us to check out your private repositories. You may revoke this permission at any time through your GitHub application settings page and by removing CircleCI's Deploy Keys and Service Hooks from your repositories' Admin pages.
+      %p
+        While CircleCI allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" CircleCI gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
+    .center-btn
+      %a.btn.btn-primary.bold-btn{href: CI.github.authUrl(),
+                    title: 'Sign up with Github',
+                    data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'hero'}}"}
+        %i.fa.fa-github-alt
+        Go To
+        %strong.white Github
