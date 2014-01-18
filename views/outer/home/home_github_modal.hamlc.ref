@@ -2,9 +2,9 @@
   .modal-body
     %i.fa.fa-github.fa-3x
     %p
-      In order to run your tests on CircleCI you need to authenticate with Github first.
-      %br
-      The permission page may look scary, but it's not, we promise! The security and privacy of your code is our #1 priority and we take it 
+      In order to run your tests on CircleCI's lighting fast and secure testing platform you need to authenticate with Github first. 
+      %br 
+      Once you've clicked the 'Allow Access' button at the bottom of the next screen you'll be running your tests in no time! And don't worry, the security and privacy of your code is our #1 priority and we take it 
       %strong very seriously.
       %br
     %div.company-container.row
