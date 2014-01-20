@@ -37,7 +37,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     ssh_enabled: false
     rest_commits_visible: false
     node: []
-    linkCopy: 'Show More'
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -475,10 +474,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   toggle_rest_commits: () =>
     @rest_commits_visible(!@rest_commits_visible())
-    if @rest_commits_visible()
-      @linkCopy('Hide')  
-    else
-      @linkCopy('Show More')
 
 
   clean_usage_queue_why: () =>
