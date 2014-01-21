@@ -3,6 +3,8 @@
     .container
       %h1 Security policy
       %h3 If we lose your code, we're out of business.
+      != HAML.home_button({first: true, source: "security"})
+
 
   .container.content
     .timestamp

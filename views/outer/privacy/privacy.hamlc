@@ -5,6 +5,7 @@
     .container
       %h1 Privacy Policy
       %h3 We will never sell your private information.
+      != HAML.home_button({first: true, source: "privacy"})
 
   .container.content
     .timestamp

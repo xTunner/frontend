@@ -5,7 +5,7 @@
 .dynamicTextColor (@bkg) when (lightness(@bkg) < 50%) {
   color: @grayLightest;
   text-shadow: 0 -1px 1px darken(saturate(@bkg, 8), 21),
-               0  1px 1px lighten(@bkg, 8);
+  0  1px 1px lighten(@bkg, 8);
 }
 .dynamicTextColor (@bkg) when (lightness(@bkg) >= 50%) {
   color: @grayDark;
@@ -47,5 +47,10 @@
     text-shadow: 0 2px darken(@activeDark, 5);
     transition-duration: .2s;
     .outlinePress(@activeDark);
+  }
+}
+.bold-btn{
+  .white{
+    color: #fff;
   }
 }
