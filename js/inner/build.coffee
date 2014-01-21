@@ -306,6 +306,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
       # careful not to modify the all_commit_details array here
       @all_commit_details().slice(0,-3).reverse()
 
+    @commit_count = @komp =>
+      @rest_commits().length + " more"
+
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
@@ -474,7 +477,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   toggle_rest_commits: () =>
     @rest_commits_visible(!@rest_commits_visible())
-
 
   clean_usage_queue_why: () =>
     if @usage_queue_why()
