@@ -54,6 +54,9 @@ CI.outer.Page = class Page
       .append(content)
       .append(footer)
 
+    if VM.ab().old_font()
+      $('#app').addClass('old-font')
+
 
 
   scroll: (hash) =>
