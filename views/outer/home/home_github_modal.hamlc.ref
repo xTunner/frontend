@@ -5,7 +5,7 @@
       In order to run your tests on CircleCI's lighting fast and secure testing platform you need to authenticate with Github first. 
       %br 
       Once you've clicked the 'Allow Access' button at the bottom of the next screen you'll be running your tests in no time! And don't worry, the security and privacy of your code is our #1 priority and we take it 
-      %strong very seriously.
+      %a{href: '/privacy#security'} very seriously.
       %br
     %div.company-container.row
       %h4
@@ -33,8 +33,8 @@
         While CircleCI allows you to selectively test your projects, note that GitHub's permissions model is "all or nothing" CircleCI gets permission to access all of a user's repositories or none of them. We have asked GitHub to provide finer-grained permissions, but they have indicated it will not be completed in the short term. Please <a href="https://github.com/contact" target="_blank">contact GitHub</a> if this is important to you.
     .center-btn
       %a.btn.btn-primary.bold-btn{href: CI.github.authUrl(),
-                    title: 'Sign up with Github',
-                    data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'hero'}}"}
+                                  title: 'Sign up with Github',
+                                  data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'hero'}}"}
         %i.fa.fa-github-alt
         Go To
-        %strong.white Github
+        %strong.white Github}
