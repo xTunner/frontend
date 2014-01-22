@@ -3,8 +3,6 @@
     .container
       %h1 Security policy
       %h3 If we lose your code, we're out of business.
-      != HAML.home_button({first: true, source: "security"})
-
 
   .container.content
     .timestamp
@@ -155,3 +153,5 @@
       %li
         %strong March 26, 2012
         Initial version.
+    .center-text
+      != HAML.home_button({first: true, source: "security"})
