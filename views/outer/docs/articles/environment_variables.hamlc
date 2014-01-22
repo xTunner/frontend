@@ -28,6 +28,16 @@
 
 %dl
   %dt
+    %code CIRCLE_PROJECT_USERNAME
+  %dd
+    The username or organization name of the project being tested, i.e. "foo" in circleci.com/gh/foo/bar/123
+
+  %dt
+    %code CIRCLE_PROJECT_REPONAME
+  %dd
+    The repository name of the project being tested, i.e. "bar" in circleci.com/gh/foo/bar/123
+
+  %dt
     %code CIRCLE_BRANCH
   %dd
     The name of the branch being tested, e.g. 'master'.
