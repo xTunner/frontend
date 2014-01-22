@@ -39,6 +39,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     ssh_enabled: false
     rest_commits_visible: false
     node: []
+    feature_flags: {}
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -70,13 +71,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
           new_steps.push(step.actions())
         else
           # Coffeescript a..b ranges are inclusive
+          # Can't use '_' for the don't care variable, that leaks outside the
+          # listcomp and redefines _ the library.
           new_steps.push(step.actions()[0] for dont_care in [1..@parallel()])
 
       containers = _.zip(new_steps...)
 
       @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
-      console.log("Built containers - " + containers.length)
-      console.log("Number of steps - " + steps.length)
 
       if @containers()[0]?
         @current_container(@containers()[0])
@@ -334,7 +335,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @status_words() + ": " + @build_num
 
   feature_enabled: (feature_name) =>
-    return @feature_flags? and @feature_flags[feature_name]? and @feature_flags[feature_name]
+    @feature_flags()[feature_name]
 
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
@@ -474,7 +475,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
       old.clean()
     action_log = new CI.inner.ActionLog(json.log, @)
     @containers()[json.index].actions.setIndex(json.step, action_log)
-    console.log("newParallelAction step:" + json.step + ", index:" + json.index)
 
   newNonParallelAction: (json) =>
     # Create a single action log and add it to *all* containers
@@ -487,14 +487,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
         old.clean()
       container.actions.setIndex(json.step, action_log)
 
-    console.log("newNonParallelAction step:" + json.step + ", index:" + json.index)
-
   updateAction: (json) =>
     if @feature_enabled("build_GH1157_container_oriented_ui")
       # updates the observables on the action, such as end time and status.
       @fillActions(json.step, json.index)
       @containers()[json.index].actions()[json.step].updateObservables(json.log)
-      console.log("updateAction step:" + json.step + ", index:" + json.index)
     else
       # updates the observables on the action, such as end time and status.
       @fillActions(json.step, json.index)
@@ -506,7 +503,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @fillActions(json.step, json.index)
 
       @containers()[json.index].actions()[json.step].append_output([json.out])
-      console.log("appendAction step:" + json.step + ", index:" + json.index)
     else
       # adds output to the action
       @fillActions(json.step, json.index)
@@ -643,17 +639,12 @@ CI.inner.Build = class Build extends CI.inner.Obj
     str
 
   select_container: (container, event) =>
-    # Multiple clicks cause the transition to get out of sync with the selected
-    # container, ignore double clicks etc.
+    # Multiple mouse clicks cause the transition to get out of sync with the
+    # selected container, ignore double clicks etc.
     # http://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
-    #
-    # Not every call of select_container is be in response to a Knockout
-    # click binding so 'event' may be undefined.
-    if event? and event?.originalEvent?.detail != 1
-      console.log("ignoring multiple clicks, click-count: " + event.originalEvent.detail)
+    if event instanceof MouseEvent and event?.originalEvent?.detail != 1
       return
 
-    console.log("selected container " + container.name)
     @current_container(container)
     @switch_container_viewport(@current_container())
 
@@ -672,14 +663,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $container_parent.stop().animate({scrollLeft: scroll_offset}, duration)
     $container_parent.queue( (next) ->
                                 enable_scroll_handler = () ->
-                                    console.log("animation completion")
                                     $container_parent.on("scroll", scroll_handler)
                                 # There is a race between the final scroll
                                 # event and the scroll handler being re-enabled
                                 # which causes the last scroll event to be
                                 # delivered to the scroll handler after the
-                                # animation has been finished and the scroll
-                                # handler has been re-enabled.
+                                # animation has finished and the scroll handler
+                                # has been re-enabled.
                                 # FIXME This slight delay in re-enabling the
                                 # handler avoids that but I would much prefer a
                                 # solution that isn't time-based
@@ -690,8 +680,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @switch_container_viewport(@current_container(), 0)
 
   handle_browser_scroll: (event) =>
-    console.log("browser scroll of container parent element detected")
-
     # scrollLeft() is how far the div has scrolled horizontally, divide by the
     # width and round to find out which container most occupies the visible
     # area.
