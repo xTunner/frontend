@@ -8,8 +8,5 @@ exports = this
 exports.ab_test_definitions =
   a_is_a: [true, false]
   pricing_maintain_infrastructure: [true, false]
-<<<<<<< HEAD
-  old_font: [true, false]
-=======
   customer_logos: [true, false]
->>>>>>> master
+  old_font: [true, false]
