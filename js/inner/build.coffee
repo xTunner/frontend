@@ -70,10 +70,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         if step.has_multiple_actions
           new_steps.push(step.actions())
         else
-          # Coffeescript a..b ranges are inclusive
-          # Can't use '_' for the don't care variable, that leaks outside the
-          # listcomp and redefines _ the library.
-          new_steps.push(step.actions()[0] for dont_care in [1..@parallel()])
+          new_steps.push(_.times @parallel(), -> step.actions()[0])
 
       containers = _.zip(new_steps...)
 
@@ -680,6 +677,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @switch_container_viewport(@current_container(), 0)
 
   handle_browser_scroll: (event) =>
+    # Fix-up viewports after a scroll causes them to be mis-aligned.
+    #
     # scrollLeft() is how far the div has scrolled horizontally, divide by the
     # width and round to find out which container most occupies the visible
     # area.
