@@ -84,6 +84,11 @@ CI.inner.Foundation = class Foundation extends CI.inner.Obj
   goPrivacy: (data, event) => 
     $('#githubModal').modal('hide');
     window.SammyApp.setLocation("/privacy#security")
+    mixpanel.track("Modal Privacy Link")
+
+  githubModal: (data, event) =>
+    $('#githubModal').modal('show')
+    mixpanel.track("Fire GH Modal")
 
 
 
