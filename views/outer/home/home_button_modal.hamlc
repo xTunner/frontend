@@ -1,0 +1,5 @@
+%button.btn.btn-primary.bold-btn{title: 'Sign up with Github',
+						data-bind: "click: githubModal"}
+ %i.fa.fa-github-alt
+ Sign up with
+ %strong.white Github
