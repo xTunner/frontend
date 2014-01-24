@@ -28,7 +28,7 @@
                   %span{data-bind: "if: $data.bash_command() == $data.name()"}
                     \$
                   %span{data-bind: "text: name, attr: {title: bash_command}"}
-                  %span{data-bind: "if: is_parallel()"}
+                  %span{data-bind: "if: parallel()"}
                     != surround '(', ')', ->
                       %span{data-bind: "text: index"}<>
                 %span.time
