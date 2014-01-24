@@ -59,26 +59,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @steps(new CI.inner.Step(s, @) for s in steps)
 
-    if @feature_enabled("build_GH1157_container_oriented_ui")
-      # _.zip transposes the steps to containers. The non-parallel action
-      # references need to be duplicated n times where n is the number of
-      # containers
-      new_steps = []
-      for step in @steps()
-        # FIXME This will do for now, but a better check is that the actions in
-        # the step have parallel: true
-        if step.has_multiple_actions
-          new_steps.push(step.actions())
-        else
-          new_steps.push(_.times @parallel(), -> step.actions()[0])
-
-      containers = _.zip(new_steps...)
-
-      @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
-
-      if @containers()[0]?
-        @current_container(@containers()[0])
-
     @url = @komp =>
       @urlForBuildNum @build_num
 
@@ -330,6 +310,29 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
+
+    # Containers use @finished() to determine their status. Create the
+    # Container instances *after* the Build komps are created or container
+    # status can be reported incorrectly.
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # _.zip transposes the steps to containers. The non-parallel action
+      # references need to be duplicated n times where n is the number of
+      # containers
+      new_steps = []
+      for step in @steps()
+        # FIXME This will do for now, but a better check is that the actions in
+        # the step have parallel: true
+        if step.has_multiple_actions
+          new_steps.push(step.actions())
+        else
+          new_steps.push(_.times @parallel(), -> step.actions()[0])
+
+      containers = _.zip(new_steps...)
+
+      @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
+
+      if @containers()[0]?
+        @current_container(@containers()[0])
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
