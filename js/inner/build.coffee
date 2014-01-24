@@ -213,6 +213,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
         window.updator() # update every second
         CI.time.as_time_since(@start_time())
 
+    @recent_builds_start = @komp =>
+      if @start_time()
+        window.updator() # update every second
+        CI.time.as_since_condensed(@start_time())
+
     @previous_build = @komp =>
       @previous()? and @previous().build_num
 
@@ -226,6 +231,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
         else if @start_time()
           duration_millis = @updatingDuration(@start_time())
           CI.time.as_duration(duration_millis) + @estimated_time(duration_millis)
+
+    @duration_condensed = @komp () =>
+      if @start_time() and @stop_time()
+        CI.time.as_duration_condensed(moment(@stop_time()).diff(moment(@start_time())))
+      else
+        if @status() == "canceled"
+          # build was canceled from the queue
+          "canceled"
+        else if @start_time()
+          duration_millis = @updatingDuration(@start_time())
+          CI.time.as_duration_condensed(duration_millis) + @estimated_time(duration_millis)
 
     # don't try to show queue information if the build is pre-usage_queue
     @show_queued_p = @komp =>

@@ -47,11 +47,11 @@
       / /ko
 
       / ko if: status() != 'not_run'
-        %a.text{data-bind: "attr: { href: url, title: pretty_start_time }, text: pretty_start_time"}
       %td.live.time
+        %a{data-bind: "attr: { href: url, title: pretty_start_time }, text: recent_builds_start"}
 
-        %a.text{data-bind: "attr: { href: url, title: duration }, text: duration"}
       %td.live.time
+        %a{data-bind: "attr: { href: url, title: duration }, text: duration_condensed"}
       / /ko
 
       / ko if: status() == 'not_run'
