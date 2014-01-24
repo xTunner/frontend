@@ -6,33 +6,40 @@
 
 
 %ul.proj-list{data-bind: "foreach: repos"}
-  %li.repo
-    .repo-follow{data-bind: "if: canFollow, css: {'repo-1stfollow': shouldDoFirstFollowerBuild}"}
-      %div{data-bind: "if: shouldDoFirstFollowerBuild"}
-        %a{data-bind: "click: follow, text: displayName",
-           data-loading-text: "Starting first build..."}
-        -# %img{src: assetPath("/img/switchBounce.svg")}
-        -# %i.fa.fa-caret-right
-        -# %span Start this repo!
-        %button{data-bind: "text: buttonText"}
-      %div{data-bind: "ifnot: shouldDoFirstFollowerBuild"}
-        %a{data-bind: "click: follow, text: displayName",
-           data-loading-text: "Following repo..."}
-        -# %img{src: assetPath("/img/switchOff.svg")}
-        %button.join-project Follow
-    .repo-unfollow{data-bind: "if: following"}
-      %a{data-bind: "click: unfollow, text: displayName",
-         data-loading-text: "Unfollowing repo..."}
-      -# %img{src: assetPath("/img/switchOn.svg")}
-      %button Unfollow
-    .repo-nofollow{data-bind: "if: requiresInvite"}
-      %a{data-bind: "text: displayName",
-         data-toggle: "modal",
-         data-target: "#inviteForm"}
-      -# %img{src: assetPath("/img/switchOff.svg")}
-      %button
-        %span{data-bind: "text: buttonText"}
-        %i.fa.fa-lock
+  / ko if: canFollow
+  %li.repo-follow{data-bind: "css: {'repo-1stfollow': shouldDoFirstFollowerBuild}"}
+    / ko if: shouldDoFirstFollowerBuild
+    %a{data-bind: "click: follow, text: displayName",
+       data-loading-text: "Starting first build..."}
+    -# %img{src: assetPath("/img/switchBounce.svg")}
+    -# %i.fa.fa-caret-right
+    -# %span Start this repo!
+    %button{data-bind: "text: buttonText"}
+    / /ko
+    / ko ifnot: shouldDoFirstFollowerBuild
+    %a{data-bind: "click: follow, text: displayName",
+       data-loading-text: "Following repo..."}
+    -# %img{src: assetPath("/img/switchOff.svg")}
+    %button.join-project Follow
+    / /ko
+  / /ko
+  / ko if: following
+  %li.repo-unfollow
+    %a{data-bind: "click: unfollow, text: displayName",
+       data-loading-text: "Unfollowing repo..."}
+    -# %img{src: assetPath("/img/switchOn.svg")}
+    %button Unfollow
+  / /ko
+  / ko if: requiresInvite
+  %li.repo-nofollow
+    %a{data-bind: "text: displayName",
+       data-toggle: "modal",
+       data-target: "#inviteForm"}
+    -# %img{src: assetPath("/img/switchOff.svg")}
+    %button
+      %span{data-bind: "text: buttonText"}
+      %i.fa.fa-lock
+  / /ko
 
 
 
