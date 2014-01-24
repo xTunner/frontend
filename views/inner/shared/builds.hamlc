@@ -23,14 +23,14 @@
         %a{data-bind: "attr: { href: url, title: description(#{@mention_project}) }, text: description(#{@mention_project})"}
 
       %td.revision
-        %a.text{data-bind: "attr: { href: url, title: github_revision }, text: github_revision"}
+        %a{data-bind: "attr: { href: url, title: github_revision }, text: github_revision"}
       / ko if: VM.current_page().show_branch
       %td
-        %a.text{data-bind: "attr: { href: url, title: branch_in_words }, text: trimmed_branch_in_words"}
+        %a{data-bind: "attr: { href: url, title: branch_in_words }, text: trimmed_branch_in_words"}
       / /ko
 
       %td
-        %a.text{data-bind: "attr: { href: url, title: author }, text: author" }
+        %a{data-bind: "attr: { href: url, title: author }, text: author" }
 
       %td
         / ko if: body
@@ -38,12 +38,12 @@
         / /ko
 
         / ko ifnot: body
-        %a.build_log.text{data-bind: "attr: { href: url }, text: subject"}
+        %a.build_log{data-bind: "attr: { href: url }, text: subject"}
         / /ko
 
       / ko if: VM.current_page().show_queued
       %td
-        %a.text{data-bind: "attr: { href: url }, duration: queued_time"}
+        %a{data-bind: "attr: { href: url }, duration: queued_time"}
       / /ko
 
       / ko if: status() != 'not_run'
