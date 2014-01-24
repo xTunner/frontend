@@ -19,4 +19,3 @@
     %div{data-bind: "haml: {template: 'build_commit_list', args: {commits: head_commits}}"}
     .rest-commits{data-bind: "if: rest_commits_visible"}
       %div{data-bind: "haml: {template: 'build_commit_list', args: {commits: rest_commits}}"}
-    %div.toggle-link
