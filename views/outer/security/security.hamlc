@@ -153,3 +153,5 @@
       %li
         %strong March 26, 2012
         Initial version.
+    .center-text
+      != HAML.home_button({first: true, source: "security"})
