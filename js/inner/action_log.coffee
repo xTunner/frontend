@@ -10,6 +10,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     status: null
     source: null
     type: null
+    parallel: false
     messages: []
     final_out: []
     trailing_out: ""
