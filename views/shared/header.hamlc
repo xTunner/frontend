@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 / ko if: VM.logged_in
 != HAML.inner_header()
 / /ko
@@ -6,12 +5,3 @@
 / ko ifnot: VM.logged_in
 != HAML.outer_header()
 / /ko
-=======
-%div{ data-bind: "if: VM.logged_in" }
-  %div{style: "height: 52px;"}
-    .inner
-      != HAML._topbar()
-%div{ data-bind: "ifnot: VM.logged_in" }
-  .outer
-    != HAML.outer_header()
->>>>>>> master
