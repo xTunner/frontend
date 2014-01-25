@@ -63,10 +63,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
-#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
-#    @security = new CI.outer.Page("security", "Security", "View Security")
+    # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
+    # @security = new CI.outer.Page("security", "Security", "View Security")
 
-    @stickyHelpLink = CI.outer.StickyHelpLink
+    @sticky_help_is_open = ko.observable(false)
 
     # inner
     @build = ko.observable()
