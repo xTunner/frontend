@@ -1,3 +1,7 @@
+.rotate (@rotation) {
+  -webkit-transform: rotate(~"@{rotation}deg");
+          transform: rotate(~"@{rotation}deg");
+}
 .rotate3d (@x, @y, @z, @deg) {
   -webkit-transform: rotate3d(@x, @y, @z, @deg);
           transform: rotate3d(@x, @y, @z, @deg);
