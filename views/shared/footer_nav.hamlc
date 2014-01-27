@@ -25,3 +25,7 @@
         %li.pull-right
           %a.fa.fa-twitter{href: "https://twitter.com/circleci",
                           title: "Follow CircleCi on Twitter"}
+
+/ ko if: !logged_in()
+!= HAML.sticky_help_link()
+/ /ko
