@@ -6,6 +6,10 @@
   -webkit-transform: rotate3d(@x, @y, @z, @deg);
           transform: rotate3d(@x, @y, @z, @deg);
 }
+.scale (@x, @y: 0) {
+  -webkit-transform: scale3d(@x, @y);
+          transform: scale3d(@x, @y);
+}
 .scale3d (@x, @y: 0, @z: 0) {
   -webkit-transform: scale3d(@x, @y, @z);
           transform: scale3d(@x, @y, @z);
