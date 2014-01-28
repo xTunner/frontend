@@ -21,7 +21,6 @@
                   %span{data-bind: "if: $parent.has_multiple_actions"}
                     != surround '(', ')', ->
                       %span{data-bind: "text: index"}<>
-                %span{data-bind: "if: truncated"}&nbsp;(truncated)
                 %span.time
                   %span{data-bind: "text: duration, attr: {title: start_to_end_string}"}<>
                   %span{data-bind: "if: timedout"}&nbsp;(timed out)
@@ -50,6 +49,8 @@
                   Output:
 
                   %pre.output.solarized{style: "white-space: normal;"}
+                    %span.truncated{data-bind: "if: truncated"}
+                      (this output has been truncated)
                     %span{data-bind: "foreach: final_out"}
                       -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
