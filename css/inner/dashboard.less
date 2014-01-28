@@ -191,32 +191,32 @@
   }
   .build-circles {
     .success, .fixed {
-      &:hover a      { color            : @green            ;}
+      color: @green;
+      &:hover        { color            : @green            ;}
       .tooltip-arrow { border-top-color : darken(@green,5%) ;}
       .tooltip-inner { background-color : @green            ;
                        border-color     : darken(@green,5%) ;}
-      &:last-child a { color            : @green            ;}
     }
     .no_tests, .failed, .timedout, .canceled {
-      &:hover a      { color            : @redLight            ;}
+      color: @redLight;
+      &:hover        { color            : @redLight            ;}
       .tooltip-arrow { border-top-color : darken(@redLight,5%) ;}
       .tooltip-inner { background-color : @redLight            ;
                        border-color     : darken(@redLight,5%) ;}
-      &:last-child a { color            : @redLight            ;}
     }
     .running {
-      &:hover a      { color            : @blueDark            ;}
+      color: @blueDark;
+      &:hover        { color            : @blueDark            ;}
       .tooltip-arrow { border-top-color : darken(@blueDark,5%) ;}
       .tooltip-inner { background-color : @blueDark            ;
                        border-color     : darken(@blueDark,5%) ;}
-      &:last-child a { color            : @blueDark            ;}
     }
     .queued {
-      &:hover a      { color            : @gray            ;}
+      color: @gray;
+      &:hover        { color            : @gray            ;}
       .tooltip-arrow { border-top-color : darken(@gray,5%) ;}
       .tooltip-inner { background-color : @gray            ;
                        border-color     : darken(@gray,5%) ;}
-      &:last-child a { color            : @gray            ;}
     }
     span.queued a:not(:hover) {
       color: @grayLight;
