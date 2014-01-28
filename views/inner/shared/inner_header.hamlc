@@ -19,7 +19,7 @@
         %span{data-bind: "text: login"}
       <!-- /ko -->
       <!-- ko if: gravatar_url() -->
-        %img{data-bind: "attr: {src: gravatar_url(30)}"}
+        %img{data-bind: "attr: {src: gravatar_url(30), width: 30, height: 30}"}
       <!-- /ko -->
       %i.fa.fa-caret-down
     %aside
