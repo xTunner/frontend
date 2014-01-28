@@ -168,6 +168,10 @@
   display: -webkit-flex;
   display:         flex;
 }
+.flexJustify(@arg) { // flex-start, flex-end, center, space-between, space-around
+  -webkit-justify-content: @arg;
+          justify-content: @arg;
+}
 
 .fontFace(@font, @weight, @style: normal){
   @font-face{
