@@ -1,7 +1,6 @@
 .dashboard-main
   %div{data-bind: "ifnot: dashboard_ready"}
-    .centered-spinner
-      != HAML['fast_spinner']()
+    != HAML.fast_spinner({})
 
   %div{data-bind: "if: dashboard_ready"}
 

@@ -4,26 +4,22 @@ display = (template, args, subpage, hash) ->
   klass = 'inner'
 
   header =
-    $("<div></div>")
-      .attr('id', 'header')
+    $("<header></header>")
       .append(HAML.header(args))
 
   content =
-    $("<div></div>")
-      .attr('id', 'content')
-      .removeClass('outer')
-      .removeClass('inner')
-      .addClass(klass)
+    $("<main></main>")
       .append(HAML[template](args))
 
   footer =
-    $("<div></div>")
-      .attr('id', 'footer')
-      .addClass(klass)
-      .append(HAML["footer_nav"](args))
+    $("<footer></footer>")
+      .append(HAML["footer"](args))
 
-  $('#main')
+  $('#app')
     .html("")
+    .removeClass('outer')
+    .removeClass('inner')
+    .addClass(klass)
     .append(header)
     .append(content)
     .append(footer)

@@ -12,10 +12,9 @@
     transition-timing-function: ease-in-out;
   }
 }
-
 #dashboard {
   .clearfix();
-  padding: 0 1vw;
+  padding: 0 1em;
   li {
     line-height: 1em;
   }
@@ -30,7 +29,7 @@
     z-index: 1;
     float: left;
     width: 250px;
-    margin-right: 1vw;
+    margin-right: 1em;
     background: @whiten;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
@@ -226,6 +225,7 @@
     }
   }
   .build-circles {
+<<<<<<< HEAD
     .success, .fixed {
       color: @green;
       &:hover        { color            : @green            ;}
@@ -253,6 +253,122 @@
       .tooltip-arrow { border-top-color : darken(@gray,5%) ;}
       .tooltip-inner { background-color : @gray            ;
                        border-color     : darken(@gray,5%) ;}
+=======
+    display: inline-block;
+    vertical-align: top;
+    text-align: right;
+    width: 40%;
+    height: 1.2em;
+    position: relative;
+    margin: .4em 0;
+    &:hover span:last-child a:not(:hover) {
+      color: @whiten;
+      text-shadow: 0  1px @grayLight,
+                   0 -1px @grayLight,
+                   1px  0 @grayLight,
+                  -1px  0 @grayLight;
+    }
+    span, a, i, i:before {
+      position: absolute;
+      height: 0;
+      top: 0;
+      left: 0;
+      text-align: center;
+      padding-bottom: 20%;
+      width: 20%;
+    }
+    span {
+      top: 50%;
+      .translate3d(0, -50%, 0);
+      &:nth-last-of-type(5) {left:  0%;}
+      &:nth-last-of-type(4) {left: 20%;}
+      &:nth-last-of-type(3) {left: 40%;}
+      &:nth-last-of-type(2) {left: 60%;}
+      &:nth-last-of-type(1) {left: 80%;}
+      &:not(:last-child) a:not(:hover) {
+        color: @whiten;
+        text-shadow: 0  1px @grayLight,
+                     0 -1px @grayLight,
+                     1px  0 @grayLight,
+                    -1px  0 @grayLight;
+      }
+    }
+    a {
+      color: @grayLighter;
+      padding-bottom: 100%;
+      width: 100%;
+    }
+    i {
+      padding-bottom: 195%;
+      width: 195%;
+      left: -50%;
+      top: -50%;
+      font-size: 2em;
+      .transition-transform();
+      .scale3d(.6, .6, 1);
+      &:hover {
+        transition-duration: .2s;
+        transition-timing-function: cubic-bezier(.55,-2,.55,3);
+        .scale3d(.8, .8, 1);
+      }
+      &:active {
+        transition-timing-function: cubic-bezier(0,1,0,1);
+        .scale3d(.7, .7, 1);
+      }
+      &:before {
+        width: 100%;
+        padding-bottom: 100%;
+        line-height: 1.2em;
+      }
+      &.fa.fa-refresh:before {
+        -webkit-animation: spin 1s infinite linear;
+                animation: spin 1s infinite linear;
+      }
+    }
+    .statusIconColor(@color) {
+      &:hover {
+        a {
+          color: @color;
+        }
+      }
+      .tooltip-arrow {
+        border-top-color: darken(@color, 5);
+      }
+      .tooltip-inner {
+        background-color: @color;
+        border-color: darken(@color, 5);
+      }
+      &:last-child a {
+        color: @color;
+      }
+    }
+    .success,
+    .fixed {
+      .statusIconColor(@green);
+    }
+    .no_tests,
+    .failed,
+    .timedout,
+    .canceled {
+      .statusIconColor(@redLight);
+    }
+    .running {
+      .statusIconColor(@blueDark);
+    }
+    .queued {
+      .statusIconColor(@gray);
+    }
+    .not_run {
+      .statusIconColor(@orange);
+    }
+    span.queued a:not(:hover) {
+      color: @grayLight;
+      text-shadow: none;
+    }
+    span.scheduled a:not(:hover) {
+      color: @grayLight;
+      text-shadow: none;
+>>>>>>> master
     }
   }
   .build_status {
@@ -293,7 +409,6 @@
 .shadowX {
   height: 1px;
   background: none;
-  z-index: -1;
   position: relative;
   width: 50%;
   margin-left: 50%;
