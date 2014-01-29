@@ -7,7 +7,7 @@
       %a.nav-menu-icon.fa.fa-cog{data-bind: "attr: { href: edit_link }, tooltip: {}", title: "Project settings"}
 
       / ko if: show_toggle_branches
-      %a.toggle-show-branches{title: 'Show all branches', data-bind: "click: toggle_show_all_branches, tooltip: { animation: false }"}
+      %a.toggle-show-branches{title: 'Show all branches', data-bind: "click: toggle_show_all_branches, tooltip: {}"}
         / ko if: show_all_branches
         %i.fa.fa-caret-up
         / /ko
