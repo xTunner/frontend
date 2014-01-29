@@ -1,6 +1,19 @@
-.alert-info {
-  a {
-    text-decoration: underline;
+body {
+  -webkit-font-smoothing: antialiased;
+}
+#app {
+  min-width: @minimumContentWidth;
+  min-height: 100vh;
+}
+.btn-primary {
+  @btnPrimaryBackground: #1f4d80;
+  @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
+  .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
+}
+a {
+  &:hover {
+    cursor: pointer;
+    text-decoration: none;
   }
 }
 label.sticky {
@@ -9,23 +22,18 @@ label.sticky {
 label.stickyArea {
   .stickyLabelTextarea();
 }
-.centered-spinner {
-  text-align: center;
-  margin-top: 30px;
-  font-size: 28px;
+#loading-spinner {
+  display: block;
+  margin: @spinnerSize auto;
+  width: @spinnerSize;
+  height: @spinnerSize;
 }
-
 .fa.fa-spin {
   -moz-animation: spin 1s infinite linear;
   -o-animation: spin 1s infinite linear;
   -webkit-animation: spin 1s infinite linear;
   animation: spin 1s infinite linear;
 }
-
-.flash-error-wrapper {
-  height: 100px;
-}
-
 .github-icon-link {
   color: #333;
   .transition(all 0.1s ease-in);
@@ -34,3 +42,59 @@ label.stickyArea {
     color: #4183c4;
   }
 }
+.center-text{
+  text-align: center;
+}
+.contact-us {
+  .notice {
+    .error { color: @errorText; }
+    .success { color: @successText; }
+    margin: 0 0 15px;
+  }
+
+  textarea {
+    height: 100px;
+  }
+
+  button {
+    display: block;
+    width: 100px;
+  }
+}
+#sticky-help-link {
+  bottom: 0;
+  border: 1px solid @black;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  max-height: 41px;
+  overflow: hidden;
+  position: fixed;
+  right: 20px;
+  transition: max-height .7s ease;
+  z-index: @zindexStickyFooter;
+
+  .dark-background {
+    background: @grayDark;
+    color: @white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 10px 19px 11px;
+    text-shadow: 0 1px 0 fade(@black, 50%);
+  }
+
+  .light-background {
+    background: @white;
+    padding: 10px 19px 11px;
+
+    .contact-us {
+      margin: 0px 0px 15px;
+    }
+  }
+
+  &.isOpen {
+    max-height: 1000px;
+  }
+}
+

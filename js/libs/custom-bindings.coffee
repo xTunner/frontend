@@ -76,6 +76,16 @@ jQueryExt = (type) =>
 ko.bindingHandlers.popover = jQueryExt('popover')
 ko.bindingHandlers.tooltip = jQueryExt('tooltip')
 ko.bindingHandlers.typeahead = jQueryExt('typeahead')
+ko.bindingHandlers.sticky_waypoint = { init: (el, valueAccessor) =>
+                                        options = ko.toJS(valueAccessor())
+                                        $(el).waypoint('sticky', options) }
+
+# Usage: %div{data-bind: "on_window_event: {event: 'resize', fn: function(event) { console.log('event was: ' + event) }}"}
+ko.bindingHandlers.on_window_event = { init: (el, valueAccessor) =>
+                                        options = valueAccessor()
+                                        $(window).on(options.event, (event) =>
+                                          options.fn(event)
+                                        ) }
 
 ## Money custom binding
 

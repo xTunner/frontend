@@ -1,10 +1,6 @@
-
-.collaborators-table td { vertical-align: middle; }
-.spec_form textarea { position: relative; }
 #account-settings {
   line-height: 1.5em;
   color: @grayLight;
-  margin-top: -1vw;
   a {
     .dark-links;
     color: @blue;
@@ -16,38 +12,40 @@
     outline: none;
   }
   .account-top {
-    border-bottom: 1px solid #ddd;
-    padding: 0 2vw;
+    box-shadow: 0 -1px @grayBoxBorder inset;
+    padding: 0 1em;
   }
   .nav {
-    border: none;
+    border: none; // BS RESET
     &.nav-tabs {
-      max-width: 940px;
+      max-width: @minimumContentWidth;
       margin: 0 auto;
       .active a {
-        background: none;
-        border-bottom: 2px solid @blue;
-        color: @blue;
+        background: none; // BS RESET
+        color: @blue; // BS RESET
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
       }
+    }
+    li {
+      margin: 0; // BS RESET
     }
     a {
       color: @grayLight;
-      border: none;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      margin-left: -4px;
-      line-height: 5em;
-      border-radius: 1px;
-      padding: 0 1em;
+      line-height: 1em;
+      padding: 0 1em 2em 1em;
+      border: none; // BS RESET
+      margin: 0; // BS RESET
       &:hover {
-        color: @blue;
-        background: none;
-        border: none;
-        border-bottom: 2px solid @blue;
+        background: none; // BS RESET
+        color: @blue; // BS RESET
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
       }
     }
   }
-  legend, h2 {
+  legend,
+  h2 {
     font-weight: bold;
     color: @gray;
     font-size: 2em;
@@ -67,9 +65,9 @@
   }
 }
 .settings-item {
-  padding: 2vw;
+  padding: 2em;
   .settings-item-inner {
-    max-width: 940px;
+    max-width: @minimumContentWidth;
     margin: 0 auto;
   }
 }
