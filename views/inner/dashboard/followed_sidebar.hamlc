@@ -4,11 +4,11 @@
   %li
     .project{data-bind: "css: project.active_style(project.project_name())"}
 
-      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }, tooltip: {}", title: "Project settings"}
+      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }, tooltip: {title: 'Project settings', animation: false}"}
         %i.fa.fa-cog
 
       / ko if: show_toggle_branches
-      %a.toggle-show-branches{title: 'Show all branches', data-bind: "click: toggle_show_all_branches, tooltip: {}"}
+      %a.toggle-show-branches{data-bind: "click: toggle_show_all_branches, tooltip: {title: 'Show all branches', animation: false}"}
         / ko if: show_all_branches
         %i.fa.fa-caret-up
         / /ko
