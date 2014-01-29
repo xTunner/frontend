@@ -7,12 +7,15 @@
       %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
         %i.fa.fa-cog
 
-      %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
         %a{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, tooltip: {animation: false}"}
-          %span{data-bind: "if: show_all_branches"}
             %i.fa.fa-caret-down
-          %span{data-bind: "ifnot: show_all_branches"}
             %i.fa.fa-caret-right
+      / ko if: show_toggle_branches
+        / ko if: show_all_branches
+        / /ko
+        / ko ifnot: show_all_branches
+        / /ko
+      / /ko
 
       %a.nav-menu-item.project-name{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
