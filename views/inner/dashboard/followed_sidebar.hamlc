@@ -7,13 +7,13 @@
       %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
         %i.fa.fa-cog
 
-            %i.fa.fa-caret-down
-            %i.fa.fa-caret-right
       / ko if: show_toggle_branches
       %a.toggle-show-branches{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, tooltip: { animation: false }"}
         / ko if: show_all_branches
+        %i.fa.fa-caret-up
         / /ko
         / ko ifnot: show_all_branches
+        %i.fa.fa-caret-down
         / /ko
       / /ko
 
