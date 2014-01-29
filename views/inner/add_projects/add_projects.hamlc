@@ -4,8 +4,7 @@
   != HAML['org_sidebar']({})
   .proj-wrapper
     %div{data-bind: "if: showLoading"}
-      .centered-spinner
-        != HAML['fast_spinner']()
+      != HAML.fast_spinner({})
     %div{data-bind: "ifnot: showLoading"}
       != HAML['add_projects_main']({})
   .side-return
