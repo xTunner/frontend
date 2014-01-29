@@ -4,7 +4,7 @@
   %li
     .project{data-bind: "css: project.active_style(project.project_name())"}
 
-      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Project settings"}
         %i.fa.fa-cog
 
       / ko if: show_toggle_branches
