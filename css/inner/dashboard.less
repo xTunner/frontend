@@ -218,21 +218,10 @@
   }
   .build-circles {
     .statusIconColor(@color) {
-      &:hover {
-        a {
-          color: @color;
-        }
-      }
-      .tooltip-arrow {
-        border-top-color: darken(@color, 5);
-      }
-      .tooltip-inner {
-        background-color: @color;
-        border-color: darken(@color, 5);
-      }
-      &:last-child a {
-        color: @color;
-      }
+                       color:            @color;
+      &:hover        { color:            @color; }
+      .tooltip-arrow { border-top-color: @color; }
+      .tooltip-inner { background-color: @color; }
     }
     .success,
     .fixed {
