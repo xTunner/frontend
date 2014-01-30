@@ -176,6 +176,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @builds_have_been_loaded(true)
+    .fail (request) => VM.error.display()
 
   loadRecentBuilds: (refresh) =>
     @loadBuilds('/api/v1/recent-builds', refresh)
