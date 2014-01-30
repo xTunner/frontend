@@ -46,13 +46,6 @@
               %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
             / /ko
 
-          / ko if: compare
-          %tr
-            %td{colspan: "4"}
-              %a{data-bind: "attr: {href: compare}"}
-                Compare
-          / /ko
-
           %tr
             %th Parallelism
             %td
@@ -65,9 +58,6 @@
           %tr
             %td{colspan: "4"}
               != HAML.build_commit_log()
-
-
-
 
       %dl.actions
         %dd
@@ -99,7 +89,6 @@
                                     data-loading-text: "Canceling...",
                                     data-success-text: "Canceled"}
               Cancel
-
 
     / ko if: ssh_enabled_now()
     %dl.ssh_info
