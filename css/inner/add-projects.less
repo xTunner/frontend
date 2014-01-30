@@ -196,37 +196,27 @@
       overflow: hidden;
       position: relative;
     }
-    .repo-unfollow {
-      button {
-        .buttonDark(@redLight);
-      }
-    }
-    .repo-follow {
-      button {
-        .buttonDark;
-      }
-      .join-project {
-        .buttonDark(@green);
-        line-height: 2em;
-      }
-    }
-    .repo-nofollow {
-      button {
-        .buttonDark;
-      }
-    }
-    [class^="repo-"] {
-      button {
-        line-height: 2em;
-        padding: 0;
+    button {
+      .subtleButton();
+      width: 12ex;
+      i {
         position: absolute;
-        right: 0;
-        top: 1px;
-        margin: .5em;
-        width: 11ex;
-        outline: none;
-        border-radius: 3px;
-        pointer-events: none;
+        margin-left: .5ex;
+        .scale3d(.75, .75);
+      }
+    }
+    .repoButtonColor(@color, @colorHover) {
+      button {
+        .subtleButtonColor(@color, @colorHover);
+        .subtleButtonFill(@colorHover);
+      }
+    }
+    .repo-unfollow {
+      .repoButtonColor(@grayLight, @redLight);
+    }
+    .repo-1stfollow {
+      .repoButtonColor(@greenLight, @green);
+    }
       }
     }
   }
