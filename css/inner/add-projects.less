@@ -161,38 +161,10 @@
   .proj-list {
     li {
       display: block;
-      line-height: 1em;
-      text-decoration: none;
-      transition: all .2s ease-in-out;
-      color: #555;
-      font-weight: normal;
-      text-decoration: none;
-      box-shadow: 0 1px @white inset;
-      padding: 0 1em;
-      line-height: 3em;
-      cursor: pointer;
-      &:hover {
-        background-color: lighten(@grayBorder,8%);
-        color: @blueLight;
-        transition-duration: .1s;
-      }
-      &:active {
-        background-color: lighten(@grayBorder,5%);
-        transition-duration: .1s;
-      }
-    }
-    &:not(:first-child) a {
       box-shadow: 0 1px lighten(@grayLightest, .5) inset, 0 2px @white inset;
-      &:hover {
-        box-shadow: 0 1px lighten(@grayBorder, 3) inset;
-      }
-      &:active {
-        box-shadow: 0 1px 1px lighten(@grayBorder, 1) inset;
-      }
-    }
-    [class^="repo-"] {
-      overflow: hidden;
+      line-height: 1em;
       position: relative;
+      .clearfix();
     }
     button {
       .subtleButton();
