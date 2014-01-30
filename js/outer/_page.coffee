@@ -32,31 +32,30 @@ CI.outer.Page = class Page
 
     args = $.extend renderContext, @viewContext(cx)
     header =
-      $("<div></div>")
-        .attr('id', 'header')
+      $("<header></header>")
         .append(HAML.header(args))
 
     content =
-      $("<div></div>")
-        .addClass('content')
+      $("<main></main>")
         .attr("id", "#{@name}-page")
-        .removeClass('outer')
-        .removeClass('inner')
-        .addClass(klass)
         .append(HAML[template](args))
 
     footer =
-      $("<div></div>")
-        .attr('id', 'footer')
-        .addClass(klass)
-        .append(HAML["footer_nav"](args))
+      $("<footer></footer>")
+        .append(HAML["footer"](args))
 
 
-    $('#main')
+    $('#app')
       .html("")
+      .removeClass('outer')
+      .removeClass('inner')
+      .addClass(klass)
       .append(header)
       .append(content)
       .append(footer)
+
+    if VM.ab().old_font()
+      $('#app').addClass('old-font')
 
 
 

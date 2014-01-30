@@ -14,6 +14,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     stop_time: null
     queued_at: null
     steps: []
+    containers: []
+    current_container: null
     status: null
     lifecycle: null
     outcome: null
@@ -37,6 +39,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     ssh_enabled: false
     rest_commits_visible: false
     node: []
+    feature_flags: {}
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -48,7 +51,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @clean_usage_queue_why()
 
   constructor: (json) ->
-
     steps = json.steps or []
 
     super(json)
@@ -325,21 +327,61 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+    # Containers use @finished() to determine their status. Create the
+    # Container instances *after* the Build komps are created or container
+    # status can be reported incorrectly.
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # _.zip transposes the steps to containers. The non-parallel action
+      # references need to be duplicated n times where n is the number of
+      # containers
+      new_steps = []
+      for step in @steps()
+        # FIXME This will do for now, but a better check is that the actions in
+        # the step have parallel: true
+        if step.has_multiple_actions
+          new_steps.push(step.actions())
+        else
+          new_steps.push(_.times @parallel(), -> step.actions()[0])
+
+      containers = _.zip(new_steps...)
+
+      @containers(new CI.inner.Container("C" + index, index, action_list, @) for action_list, index in containers)
+
+      if @containers()[0]?
+        @current_container(@containers()[0])
+
+  feature_enabled: (feature_name) =>
+    @feature_flags()[feature_name]
+
    # hack - how can an action know its type is different from the previous, when
    # it doesn't even have access to the build
   different_type: (action) =>
-    last = null
-    breakLoop = false
-    for s in @steps()
-      for a in s.actions()
-        if a == action
-          breakLoop = true # no nested breaks in CS
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      last = null
+      breakLoop = false
+      for c in @containers()
+        for a in c.actions()
+          if a == action
+            breakLoop = true # no nested breaks in CS
+            break
+          last = a
+        if breakLoop
           break
-        last = a
-      if breakLoop
-        break
 
-    last? and not (last.type() == action.type())
+      last? and not (last.type() == action.type())
+    else
+      last = null
+      breakLoop = false
+      for s in @steps()
+        for a in s.actions()
+          if a == action
+            breakLoop = true # no nested breaks in CS
+            break
+          last = a
+        if breakLoop
+          break
+
+      last? and not (last.type() == action.type())
 
   estimated_time: (current_build_millis) =>
     valid = (estimated_millis) ->
@@ -401,32 +443,86 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @build_channel.bind('updateObservables', @updateObservables)
 
   fillActions: (step, index) =>
-    # fills up steps and actions such that step and index are valid
-    for i in [0..step]
-      if not @steps()[i]?
-        @steps.setIndex(i, new CI.inner.Step({}))
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # Fills up @containers and their actions so the step and index are valid
+      # 'step' is the position in the container's actions array
+      # 'index' is the container index
 
-    # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
-    for i in [0..index]
-      if not @steps()[step].actions()[i]?
-        @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}, @))
+      # Add at least enough containers to store the actions
+      for i in [0..index]
+        if not @containers()[i]?
+          @containers.setIndex(i, new CI.inner.Container("C" + i, i, [], @))
+
+      # It's possible no containers existed when the build was first loaded, if
+      # so, select the first
+      if not @current_container()?
+        @current_container(@containers()[0])
+
+      # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
+      for i in [0..step]
+        if not @containers()[index].actions()[i]?
+          @containers()[index].actions.setIndex(i, new CI.inner.ActionLog({}, @))
+    else
+      # fills up steps and actions such that step and index are valid
+      for i in [0..step]
+        if not @steps()[i]?
+          @steps.setIndex(i, new CI.inner.Step({}))
+
+      # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
+      for i in [0..index]
+        if not @steps()[step].actions()[i]?
+          @steps()[step].actions.setIndex(i, new CI.inner.ActionLog({}, @))
 
   newAction: (json) =>
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      if json.log.parallel
+        @newParallelAction(json)
+      else
+        @newNonParallelAction(json)
+    else
+      @fillActions(json.step, json.index)
+      if old = @steps()[json.step].actions()[json.index]
+        old.clean()
+      @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
+
+  newParallelAction: (json) =>
     @fillActions(json.step, json.index)
-    if old = @steps()[json.step].actions()[json.index]
+    if old = @containers()[json.index].actions()[json.step]
       old.clean()
-    @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
+    action_log = new CI.inner.ActionLog(json.log, @)
+    @containers()[json.index].actions.setIndex(json.step, action_log)
+
+  newNonParallelAction: (json) =>
+    # Create a single action log and add it to *all* containers
+    max_index = @containers().length - 1
+    @fillActions(json.step, max_index)
+
+    action_log = new CI.inner.ActionLog(json.log, @)
+    for container in @containers()
+      if old = container.actions()[json.step]
+        old.clean()
+      container.actions.setIndex(json.step, action_log)
 
   updateAction: (json) =>
-    # updates the observables on the action, such as end time and status.
-    @fillActions(json.step, json.index)
-    @steps()[json.step].actions()[json.index].updateObservables(json.log)
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # updates the observables on the action, such as end time and status.
+      @fillActions(json.step, json.index)
+      @containers()[json.index].actions()[json.step].updateObservables(json.log)
+    else
+      # updates the observables on the action, such as end time and status.
+      @fillActions(json.step, json.index)
+      @steps()[json.step].actions()[json.index].updateObservables(json.log)
 
   appendAction: (json) =>
-    # adds output to the action
-    @fillActions(json.step, json.index)
+    if @feature_enabled("build_GH1157_container_oriented_ui")
+      # adds output to the action
+      @fillActions(json.step, json.index)
 
-    @steps()[json.step].actions()[json.index].append_output([json.out])
+      @containers()[json.index].actions()[json.step].append_output([json.out])
+    else
+      # adds output to the action
+      @fillActions(json.step, json.index)
+      @steps()[json.step].actions()[json.index].append_output([json.out])
 
   maybeAddMessages: (json) =>
     existing = (message.message for message in @messages())
@@ -557,3 +653,58 @@ CI.inner.Build = class Build extends CI.inner.Obj
     if username
       str += "#{username}@#{ip}"
     str
+
+  select_container: (container, event) =>
+    # Multiple mouse clicks cause the transition to get out of sync with the
+    # selected container, ignore double clicks etc.
+    # http://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
+    if event instanceof MouseEvent and event?.originalEvent?.detail != 1
+      return
+
+    @current_container(container)
+    @switch_container_viewport(@current_container())
+
+  switch_container_viewport: (container, duration=250) =>
+    $container_parent = $("#container_parent")
+    $element = container.jquery_element()
+
+    # .offset().left measures from the left of the browser window
+    parent_offset = $container_parent.offset().left
+    offset_delta = $element.offset().left - parent_offset
+    scroll_offset = $container_parent.scrollLeft() + offset_delta
+
+    scroll_handler = @handle_browser_scroll
+
+    $container_parent.off("scroll")
+    $container_parent.stop().animate({scrollLeft: scroll_offset}, duration)
+    $container_parent.queue( (next) ->
+                                enable_scroll_handler = () ->
+                                    $container_parent.on("scroll", scroll_handler)
+                                # There is a race between the final scroll
+                                # event and the scroll handler being re-enabled
+                                # which causes the last scroll event to be
+                                # delivered to the scroll handler after the
+                                # animation has finished and the scroll handler
+                                # has been re-enabled.
+                                # FIXME This slight delay in re-enabling the
+                                # handler avoids that but I would much prefer a
+                                # solution that isn't time-based
+                                setTimeout(enable_scroll_handler, 100)
+                                next())
+
+  realign_container_viewport: () =>
+    @switch_container_viewport(@current_container(), 0)
+
+  handle_browser_scroll: (event) =>
+    # Fix-up viewports after a scroll causes them to be mis-aligned.
+    #
+    # scrollLeft() is how far the div has scrolled horizontally, divide by the
+    # width and round to find out which container most occupies the visible
+    # area.
+    # FIXME This makes the assumption that the browser will try and centre the
+    # selected text, and that centering the text will scroll the
+    # container_parent a little more into the new container.
+    # Chrome does this. Firefox doesn't
+    $container_parent = $("#container_parent")
+    container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
+    @select_container(@containers()[container_index])

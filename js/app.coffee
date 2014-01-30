@@ -4,26 +4,22 @@ display = (template, args, subpage, hash) ->
   klass = 'inner'
 
   header =
-    $("<div></div>")
-      .attr('id', 'header')
+    $("<header></header>")
       .append(HAML.header(args))
 
   content =
-    $("<div></div>")
-      .attr('id', 'content')
-      .removeClass('outer')
-      .removeClass('inner')
-      .addClass(klass)
+    $("<main></main>")
       .append(HAML[template](args))
 
   footer =
-    $("<div></div>")
-      .attr('id', 'footer')
-      .addClass(klass)
-      .append(HAML["footer_nav"](args))
+    $("<footer></footer>")
+      .append(HAML["footer"](args))
 
-  $('#main')
+  $('#app')
     .html("")
+    .removeClass('outer')
+    .removeClass('inner')
+    .addClass(klass)
     .append(header)
     .append(content)
     .append(footer)
@@ -63,8 +59,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
-#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
-#    @security = new CI.outer.Page("security", "Security", "View Security")
+    # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
+    # @security = new CI.outer.Page("security", "Security", "View Security")
+
+    @sticky_help_is_open = ko.observable(false)
 
     # inner
     @build = ko.observable()
@@ -99,8 +97,11 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
         !@project().followed() &&
          @project().project_name() is @current_page().project_name
 
+    # disable olark all the time
+    # TODO: remove this once the server-side olark removal change propagates
+    CI.olark.disable()
+
     if window.renderContext.current_user
-      CI.olark.disable()
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)

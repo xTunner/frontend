@@ -1,47 +1,24 @@
-body {
-  // the specificity on outer beats this
-  background-color: @outerBodyBackground;
-  -webkit-font-smoothing: antialiased;
-  p > a {
-    color: @blueDark;
-    border-bottom: 1px dotted @blueLight;
-    &:hover {
-      color: @blueLight;
-      border-bottom-color: @blueDark;
+.inner {
+  .flexBox();
+  .flex-direction(column);
+  background-color: @appBackgroundColor;
+  main {
+    .flex(1, 1);
+    padding: 2em 0;
+  }
+  p {
+    > a {
+      color: @blueDark;
+      border-bottom: 1px dotted @blueLight;
+      &:hover {
+        color: @blueLight;
+        border-bottom-color: @blueDark;
+      }
     }
   }
-}
-.inner {
-  pre, code {
-    font-familt: Menlo, Monaco, Consolas, "Courier New", monospace;
-  }
-  .btn-primary {
-    @btnPrimaryBackground: #1f4d80;
-    @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
-    .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
-  }
-  &#content {
-    padding-bottom: 70px; // Fix for the intercom help button obscuring text
-    min-width: 960px;
-    padding-top: 1vw;
-  }
-  // Basic Typography
-  h1 {
-    color: #1c508b;
-  }
-  h2 {
-    color: #366aa4;
-  }
-  a:hover {
-    cursor: pointer;
-  }
-  @import "../shared/variables.less";
-  @import "../shared/functions.less";
-  @import "../shared/general.less";
-  @import "navbar.less";
-  @import "labels.less";
   @import "terminal.less";
   @import "builds.less";
+  @import "new-build.less";
   @import "billing.less";
   @import "settings.less";
   @import "add-projects.less";

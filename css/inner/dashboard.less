@@ -12,14 +12,17 @@
     transition-timing-function: ease-in-out;
   }
 }
+<<<<<<< HEAD
 .live {
   &.time {
     white-space: nowrap;
   }
 }
+=======
+>>>>>>> master
 #dashboard {
   .clearfix();
-  padding: 0 1vw;
+  padding: 0 1em;
   li {
     line-height: 1em;
   }
@@ -34,7 +37,7 @@
     z-index: 1;
     float: left;
     width: 250px;
-    margin-right: 1vw;
+    margin-right: 1em;
     background: @whiten;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
@@ -266,33 +269,41 @@
                 animation: spin 1s infinite linear;
       }
     }
-    .success, .fixed {
-      &:hover a      { color            : @green            ;}
-      .tooltip-arrow { border-top-color : darken(@green,5%) ;}
-      .tooltip-inner { background-color : @green            ;
-                       border-color     : darken(@green,5%) ;}
-      &:last-child a { color            : @green            ;}
+    .statusIconColor(@color) {
+      &:hover {
+        a {
+          color: @color;
+        }
+      }
+      .tooltip-arrow {
+        border-top-color: darken(@color, 5);
+      }
+      .tooltip-inner {
+        background-color: @color;
+        border-color: darken(@color, 5);
+      }
+      &:last-child a {
+        color: @color;
+      }
     }
-    .no_tests, .failed, .timedout, .canceled {
-      &:hover a      { color            : @redLight            ;}
-      .tooltip-arrow { border-top-color : darken(@redLight,5%) ;}
-      .tooltip-inner { background-color : @redLight            ;
-                       border-color     : darken(@redLight,5%) ;}
-      &:last-child a { color            : @redLight            ;}
+    .success,
+    .fixed {
+      .statusIconColor(@green);
+    }
+    .no_tests,
+    .failed,
+    .timedout,
+    .canceled {
+      .statusIconColor(@redLight);
     }
     .running {
-      &:hover a      { color            : @blueDark            ;}
-      .tooltip-arrow { border-top-color : darken(@blueDark,5%) ;}
-      .tooltip-inner { background-color : @blueDark            ;
-                       border-color     : darken(@blueDark,5%) ;}
-      &:last-child a { color            : @blueDark            ;}
+      .statusIconColor(@blueDark);
     }
     .queued {
-      &:hover a      { color            : @gray            ;}
-      .tooltip-arrow { border-top-color : darken(@gray,5%) ;}
-      .tooltip-inner { background-color : @gray            ;
-                       border-color     : darken(@gray,5%) ;}
-      &:last-child a { color            : @gray            ;}
+      .statusIconColor(@gray);
+    }
+    .not_run {
+      .statusIconColor(@orange);
     }
     span.queued a:not(:hover) {
       color: @grayLight;
@@ -341,7 +352,6 @@
 .shadowX {
   height: 1px;
   background: none;
-  z-index: -1;
   position: relative;
   width: 50%;
   margin-left: 50%;

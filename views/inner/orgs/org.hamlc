@@ -1,7 +1,6 @@
 .dashboard-main
   %div{data-bind: "ifnot: builds_have_been_loaded"}
-    .centered-spinner
-      != HAML['fast_spinner']()
+    != HAML.fast_spinner({})
   %div{data-bind: "if: builds_have_been_loaded"}
     %h2
       Latest builds for the
