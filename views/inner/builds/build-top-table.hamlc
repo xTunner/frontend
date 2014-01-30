@@ -46,6 +46,12 @@
               %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
             / /ko
 
+          / ko if: compare
+          %tr
+            %td{colspan: "4"}
+              %a{data-bind: "attr: {href: compare}"}
+                Compare
+          / /ko
 
           %tr
             %th Parallelism
