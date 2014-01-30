@@ -240,43 +240,51 @@
         pointer-events: none;
       }
     }
-    // Style items for switches > buttons. WIP
-    //
-    // .repo-1stfollow {
-    //   color: @blueLight;
-    //   span {
-    //     opacity: 0;
-    //     .translate(0,100%);
-    //     transition: all .3s ease-out, opacity .1s linear;
-    //   }
-    //   i {
-    //     display: inline-block;
-    //     line-height: 3em;
-    //     float: right;
-    //     margin-top: -3em;
-    //     margin-right: 5em;
-    //     pointer-events: none;
-    //     .translate(0,0);
-    //     .animation(point-right 3s ease infinite);
-    //     -webkit-backface-visibility: hidden;
-    //   }
-    // }
-    // &:hover [class^="repo-"] span {
-    //   opacity: 1;
-    //   .translate(0,0);
-    //   transition: all .1s ease-in, opacity .2s linear .1s;
-    // }
-    // img {
-    //   height: 3em;
-    //   padding: .5em;
-    //   .box-sizing(border-box);
-    //   margin-right: .5em;
-    //   pointer-events: none;
-    //   position: absolute;
-    //   right: 0;
-    //   top: 1px;
-    // }
   }
+  .tooltip {
+    font-size: inherit;
+    opacity: .89;
+    .tooltip-inner {
+      padding: 1em;
+      .box-sizing(border-box);
+    }
+  }
+  // Style items for switches > buttons. WIP
+  //
+  // .repo-1stfollow {
+  //   color: @blueLight;
+  //   span {
+  //     opacity: 0;
+  //     .translate(0,100%);
+  //     transition: all .3s ease-out, opacity .1s linear;
+  //   }
+  //   i {
+  //     display: inline-block;
+  //     line-height: 3em;
+  //     float: right;
+  //     margin-top: -3em;
+  //     margin-right: 5em;
+  //     pointer-events: none;
+  //     .translate(0,0);
+  //     .animation(point-right 3s ease infinite);
+  //     -webkit-backface-visibility: hidden;
+  //   }
+  // }
+  // &:hover [class^="repo-"] span {
+  //   opacity: 1;
+  //   .translate(0,0);
+  //   transition: all .1s ease-in, opacity .2s linear .1s;
+  // }
+  // img {
+  //   height: 3em;
+  //   padding: .5em;
+  //   .box-sizing(border-box);
+  //   margin-right: .5em;
+  //   pointer-events: none;
+  //   position: absolute;
+  //   right: 0;
+  //   top: 1px;
+  // }
   // @-webkit-keyframes point-right {
   //    50% {-webkit-transform: translate(5px,0);}
   // }
