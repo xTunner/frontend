@@ -10,25 +10,22 @@
   %li.repo-follow{data-bind: "css: {'repo-1stfollow': shouldDoFirstFollowerBuild}"}
     / ko if: shouldDoFirstFollowerBuild
     %a{data-bind: "click: follow, text: displayName",
-       data-loading-text: "Starting first build..."}
     -# %img{src: assetPath("/img/switchBounce.svg")}
     -# %i.fa.fa-caret-right
     -# %span Start this repo!
-    %button{data-bind: "text: buttonText"}
+    %button{data-bind: "click: follow, text: buttonText", data-loading-text: "..."}
     / /ko
     / ko ifnot: shouldDoFirstFollowerBuild
     %a{data-bind: "click: follow, text: displayName",
-       data-loading-text: "Following repo..."}
     -# %img{src: assetPath("/img/switchOff.svg")}
-    %button.join-project Follow
+    %button.join-project{data-bind: "click: follow", data-loading-text: "..."} Follow
     / /ko
   / /ko
   / ko if: following
   %li.repo-unfollow
     %a{data-bind: "click: unfollow, text: displayName",
-       data-loading-text: "Unfollowing repo..."}
     -# %img{src: assetPath("/img/switchOn.svg")}
-    %button Unfollow
+    %button{data-bind: "click: unfollow", data-loading-text: "..."} Unfollow
   / /ko
   / ko if: requiresInvite
   %li.repo-nofollow
