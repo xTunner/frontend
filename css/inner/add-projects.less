@@ -224,6 +224,14 @@
     i {
       font-size: @fontSizeMini;
     }
+    &.forked {
+      span {
+        &:after {
+          content: ~"'\f126'";
+          margin-left: .5ex;
+          font-family: FontAwesome;
+          color: @grayLight;
+        }
       }
     }
   }
