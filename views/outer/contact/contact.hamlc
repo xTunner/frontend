@@ -1,4 +1,4 @@
-.page.contact
+.page.contact#contact
   .banner
     .container
       %h1 Contact us
