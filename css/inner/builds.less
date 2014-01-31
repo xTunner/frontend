@@ -182,7 +182,6 @@
 
 .build-output  {
   background-color: @whiten;
-  .rotate3d(0, 0, 0, 0deg);
   .border-radius;
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
   margin-bottom: 5px;
@@ -267,9 +266,9 @@
       }
     }
   }
-  .minimize .ah_wrapper {
-    .fa.fa-chevron-up {
-      .rotate3d(1, 0, 0, 180deg);
+  .action_header:not(.minimize) .ah_wrapper {
+    .fa.fa-chevron-down {
+      .rotate(180);
     }
   }
   .ah_wrapper {
@@ -305,7 +304,7 @@
       height: 30px; // the button has no size without this
       width: 30px; // the button has no size without this
     }
-    .fa.fa-chevron-up {
+    .fa.fa-chevron-down {
       color: @whiten;
       display: inline-block;
       transition: all .2s ease;
