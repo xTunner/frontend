@@ -8,15 +8,15 @@
     .accordion-inner
       %h4 What kind of folks we like:
       %ul
-        %li people who truly care about making developers more productive,
+        %li people who truly care about making developers more productive
 
-        %li pleasant people, and good conversationalists - we'll be spending the next few years together after all,
+        %li pleasant people and good conversationalists - we'll be spending the next few years together after all
 
-        %li being easy to work with: we're not interested in solo artists, divas, people who always know best, or assholes,
+        %li easy to work with: we're not interested in solo artists, divas, know-it-alls, or assholes
 
-        %li we tend to get on well with folks that do not identify with the words "ninja", "pirate", "rock star", or (especially) "brogrammer",
+        %li people who do not identify as a "ninja", "pirate", "rock star", or (especially) "brogrammer"
 
-        %li great communicators.
+        %li great communicators
 
 
       %h4 Extra skills

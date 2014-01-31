@@ -2,12 +2,12 @@
   .banner
     .container
       %h1 We're hiring.
-      %h3 We're currently looking for great designers and front-end developers.
+      %h3 We're currently looking for great people for enigneering, design, growth, and sales roles. 
 
   .container.content
     .row
       %h2.aside
-        Get on board with a young growing company, with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
+        Get on board with a rapidly growing company with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
 
       != HAML['jobs_intro']()
       != HAML['jobs_who']()
