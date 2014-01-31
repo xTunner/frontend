@@ -1,5 +1,5 @@
 .row-fluid.build-table#build-log-header
-  .span10.offset1
+  .span10.offset1.build-page-header
 
     %table.build-table-top
 
