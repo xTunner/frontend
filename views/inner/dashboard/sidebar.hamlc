@@ -7,7 +7,6 @@
     %span Collaborator
   <!-- ko if: show_follow_project_button -->
     %button#follow-project-button{href: "#", data-bind: "click: project().follow"}
-      %i.fa.fa-plus
       %span Follow
       %span{data-bind: "text: project().project_name"}
   <!-- /ko -->
