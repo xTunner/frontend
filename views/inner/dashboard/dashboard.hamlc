@@ -33,7 +33,7 @@
       / /ko
 
       / ko if: show_build_table()
+      != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
       / /ko
 
-          != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
     <!-- /ko -->
