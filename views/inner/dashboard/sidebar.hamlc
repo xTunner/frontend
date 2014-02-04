@@ -5,12 +5,12 @@
   %a#invite{href: "#", data-toggle: "modal", data-target: "#inviteForm"}
     %i.fa.fa-plus
     %span Collaborator
-  / ko if: show_follow_project_button
+  <!-- ko if: show_follow_project_button -->
     %button#follow-project-button{href: "#", data-bind: "click: project().follow"}
       %i.fa.fa-plus
       %span Follow
       %span{data-bind: "text: project().project_name"}
-  / /ko
+  <!-- /ko -->
 
 / ko ifnot: projects_have_been_loaded
 != HAML.fast_spinner({})
