@@ -5,7 +5,7 @@
 
 #dashboard
 
-  %aside.side-projects
+  %aside
     != HAML.sidebar({})
 
   %section.recent-builds

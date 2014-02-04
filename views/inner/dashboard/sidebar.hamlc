@@ -13,37 +13,38 @@
 %span{data-bind: "ifnot: projects_have_been_loaded"}
   != HAML['fast_spinner']()
 
-<!-- ko foreach: {data: followed_projects(), as: 'project'} -->
+.side-projects
+  <!-- ko foreach: {data: followed_projects(), as: 'project'} -->
 
-  .side-project
+    .side-project
 
-    .project-info
+      .project-info
 
-      %a.project-name{data-bind: "attr: {href: project_path, title: 'View builds for entire ' + project_display_name() + ' project'}, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
+        %a.project-name{data-bind: "attr: {href: project_path, title: 'View builds for entire ' + project_display_name() + ' project'}, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
-      %a.project-settings{data-bind: "attr: {href: edit_link}"}
-        %i.fa.fa-cog{data-bind: "tooltip: {title: 'Project settings', animation: false}"}
+        %a.project-settings{data-bind: "attr: {href: edit_link}"}
+          %i.fa.fa-cog{data-bind: "tooltip: {title: 'Project settings', animation: false}"}
 
-      <!-- ko if: show_toggle_branches -->
-        %a.project-show-all{data-bind: "click: toggle_show_all_branches", role: "button"}
-          / ko if: show_all_branches
-          %i.fa.fa-ellipsis-vertical{data-bind: "tooltip: {title: 'Show less branches', animation: false}"}
-          / /ko
-          / ko ifnot: show_all_branches
-          %i.fa.fa-ellipsis-horizontal{data-bind: "tooltip: {title: 'Show all branches', animation: false}"}
-          / /ko
+        <!-- ko if: show_toggle_branches -->
+          %a.project-show-all{data-bind: "click: toggle_show_all_branches", role: "button"}
+            / ko if: show_all_branches
+            %i.fa.fa-ellipsis-vertical{data-bind: "tooltip: {title: 'Show less branches', animation: false}"}
+            / /ko
+            / ko ifnot: show_all_branches
+            %i.fa.fa-ellipsis-horizontal{data-bind: "tooltip: {title: 'Show all branches', animation: false}"}
+            / /ko
+        <!-- /ko -->
+
+      <!-- ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'} -->
+
+        .project-branch
+
+          %a.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: 'View ' + project.format_branch_name(branch_name) + ' builds only'}, text: project.format_branch_name(branch_name, 23)"}
+
+          .branch-recent{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
+            %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status"}
+              %i.fa{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
+
       <!-- /ko -->
 
-    <!-- ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'} -->
-
-      .project-branch
-
-        %a.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: 'View ' + project.format_branch_name(branch_name) + ' builds only'}, text: project.format_branch_name(branch_name, 23)"}
-
-        .branch-recent{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
-          %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status"}
-            %i.fa{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
-
-    <!-- /ko -->
-
-<!-- /ko -->
+  <!-- /ko -->
