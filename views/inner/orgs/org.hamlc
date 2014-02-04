@@ -10,4 +10,4 @@
         %a.btn.pull-right#invite{data-toggle: "modal", data-target: "#inviteForm"}
           Invite Collaborators
 
-    != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+    != HAML.recent_builds({builds: "builds", mention_project: true})

@@ -31,4 +31,4 @@
           %a{href: "/account/plans" }
             Re-enable your tests.
 
-      != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+      != HAML.recent_builds({builds: "builds", mention_project: true})
