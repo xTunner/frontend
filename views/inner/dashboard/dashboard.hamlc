@@ -8,7 +8,6 @@
   %aside.side-projects
     != HAML['action_sidebar']({})
     != HAML['followed_sidebar']({})
-    .shadowX
 
   %section.recent-builds
 

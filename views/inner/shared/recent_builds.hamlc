@@ -66,4 +66,3 @@
         %td.build_actions{data-bind: "if: can_cancel"}
           %button.btn.btn-small.btn-danger{data-bind: "click: cancel_build"}
             Cancel
-.shadowX
