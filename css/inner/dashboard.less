@@ -29,6 +29,24 @@
 }
 .project-title {
   .flexBox();
+  i {
+    display: block;
+    height: 1em;
+    width: 1em;
+    text-align: right;
+  }
+  .project-settings {
+    height: 1em;
+    margin-left: auto;
+    i {
+      width: @baseFontSize;
+      height: @baseFontSize;
+      line-height: @baseFontSize;
+      font-size: @fontSizeSmall;
+      margin-right: 2px;
+    }
+  }
+}
 }
 .project-branch-build {
   max-width: 34%;
