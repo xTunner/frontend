@@ -12,6 +12,16 @@
     transition-timing-function: ease-in-out;
   }
 }
+.side-projects {
+  list-style: none;
+  margin: 0;
+  a {
+    color: @grayLight;
+    &:hover {
+      color: @blueLight;
+    }
+  }
+}
 .project-branch-build {
   max-width: 34%;
   .flexBox();
@@ -134,13 +144,6 @@
     margin-top: 1em;
     .buttonDark(@green);
     border-radius: 3px;
-  }
-  .projects {
-    list-style: none;
-    margin: 0;
-    li:hover .nav-menu-icon, li:hover .toggle-show-branches {
-      opacity: 1;
-    }
   }
   .project {
     padding: 0;
