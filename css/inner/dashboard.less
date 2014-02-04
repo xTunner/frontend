@@ -191,6 +191,125 @@
     .buttonDark(@green);
     border-radius: 3px;
   }
+<<<<<<< HEAD
+=======
+  .projects {
+    list-style: none;
+    margin: 0;
+    li:hover .nav-menu-icon, li:hover .toggle-show-branches {
+      opacity: 1;
+    }
+  }
+  .project {
+    padding: 0;
+    display: inline-block;
+    border-top: 1px solid lighten(@grayBorder,5%);
+    width: 100%;
+    box-shadow: 1px 1px 0 @white inset;
+    margin-top: .5em;
+    &:first-child {
+      margin-top: 0;
+    }
+    .project-name {
+      line-height: 3em;
+      display: block;
+      padding-left: 1em;
+      .box-sizing(border-box);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: @gray;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &:hover {
+        color: @blueLight;
+        transition-duration: .1s;
+      }
+    }
+    .nav-menu-icon, .toggle-show-branches {
+      transition: opacity .4s linear;
+      opacity: 0;
+      float: right;
+      display: block;
+      padding: 5px;
+      border-radius: 2px;
+      border-left: 1px solid @grayBorder;
+      border-bottom: 1px solid @grayBorder;
+      i {
+        line-height: 1.1em;
+        font-size: 12px;
+        transition: all .2s ease-in;
+      }
+      &:first-child {
+        border-radius: 0;
+      }
+      &:hover i {
+        transition: all .4s ease-in;
+      }
+    }
+  }
+  .branch {
+    .flexBox();
+    .flexJustify(space-between);
+    padding: .5em 1.5em;
+  }
+  .branch-name {
+    .box-sizing(border-box);
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    min-width: 66%;
+    margin-right: -4px;
+  }
+  .build-circles {
+    max-width: 34%;
+    .flexBox();
+    .flexJustify(flex-end);
+    &:hover {
+      a {
+        &:nth-last-of-type(1) {
+          opacity: .34;
+          transition: none;
+        }
+      }
+    }
+    a {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      text-align: center;
+      // transition: opacity .2s; // hold off until dashboard is refactored
+      &:nth-last-of-type(1) {
+        opacity:  1;
+        transition: opacity .3s;
+        &:hover {
+          opacity: 1;
+        }
+      }
+      &:nth-last-of-type(2) {
+        opacity:  .21;
+      }
+      &:nth-last-of-type(3) {
+        opacity:  .13;
+      }
+      &:nth-last-of-type(4) {
+        opacity:  .08;
+      }
+      &:nth-last-of-type(5) {
+        opacity:  .05;
+      }
+      &:hover {
+        opacity: 1;
+        // transition-duration: .1s; // hold off until dashboard is refactored
+      }
+      i {
+        width: 100%;
+      }
+    }
+  }
+>>>>>>> master
   .tooltip {
     opacity: 1;
     font-size: @fontSizeSmall; // BS RESET
