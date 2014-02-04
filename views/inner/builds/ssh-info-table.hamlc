@@ -9,7 +9,7 @@
       %span{data-bind: "text: $parent.ssh_connection_string($data)"}
       / ko ifnot: $data.ssh_enabled
       %span
-        != HAML.spinner({loading: true})
+        != HAML.spinner({size: "0.8"})
       / /ko
 
 %p
