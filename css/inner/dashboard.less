@@ -35,6 +35,19 @@
     width: 1em;
     text-align: right;
   }
+  .project-name {
+    .flex(1, 0);
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover {
+      color: @blueLight;
+      transition-duration: .1s;
+    }
+  }
   .project-settings {
     height: 1em;
     margin-left: auto;
