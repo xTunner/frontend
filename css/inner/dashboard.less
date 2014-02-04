@@ -154,20 +154,6 @@
     margin-right: 1em;
     background: @whiten;
     border-radius: 4px;
-    a {
-      .dark-links;
-      color: @grayLight;
-    }
-    & > span {
-      text-align: center;
-      display: block;
-      line-height: 13em;
-    }
-  }
-  .dashboard-main {
-    padding-bottom: 4px;
-    overflow-x: auto;
-    .box-sizing(border-box);
   }
   .side-actions {
     padding: .5em;
@@ -201,7 +187,6 @@
     border-radius: 3px;
   }
   .tooltip {
-    text-transform: capitalize;
     opacity: 1;
     font-size: @fontSizeSmall; // BS RESET
     .tooltip-inner {
@@ -233,10 +218,6 @@
                 0 -1px 0px rgba(255, 255, 255, 0.08) inset;
     box-sizing: border-box;
   }
-.status-circle {
-  a:hover {
-    text-decoration: none;
-    color: inherit;
   }
 }
 .shadowX {
