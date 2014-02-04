@@ -55,7 +55,7 @@
       / /ko
 
       / ko if: status() == 'not_run'
-      != HAML['not_run_message']()
+      != HAML.not_run_message({})
       / /ko
 
       %td
