@@ -243,29 +243,24 @@
       .statusIconColor(@orange);
     }
   }
-  .build_status {
+.recent-build-status {
+  text-align: center;
+  span {
+    display: block;
+    color: @white;
+    font-weight: normal;
+    text-transform: capitalize;
+    text-shadow: none;
+    padding: 0 1ex;
     text-align: center;
-    span {
-      display: block;
-      color: @white;
-      font-weight: normal;
-      text-transform: capitalize;
-      text-shadow: none;
-      padding: 0 1ex;
-      text-align: center;
-      white-space: nowrap;
-      max-height: 2em;
-      line-height: 2em;
-      border-radius: 25px;
-      box-shadow: 0  2px 0px rgba(0, 0, 0, 0.08) inset,
-                  0 -1px 0px rgba(255, 255, 255, 0.08) inset;
-      box-sizing: border-box;
-    }
-    a {
-      padding: 0;
-    }
+    white-space: nowrap;
+    max-height: 2em;
+    line-height: 2em;
+    border-radius: 25px;
+    box-shadow: 0  2px 0px rgba(0, 0, 0, 0.08) inset,
+                0 -1px 0px rgba(255, 255, 255, 0.08) inset;
+    box-sizing: border-box;
   }
-}
 .status-circle {
   a:hover {
     text-decoration: none;

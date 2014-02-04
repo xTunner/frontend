@@ -59,7 +59,7 @@
       / /ko
 
       %td
-        %a.build_status{data-bind: "attr: { href: url, title: status_words }"}
+        %a.recent-build-status{data-bind: "attr: { href: url, title: status_words }"}
           %span{data-bind: "text: status_words, css: style"}
 
       - if @actions
