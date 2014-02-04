@@ -91,8 +91,10 @@
   &:hover {
     a {
       &:nth-last-of-type(1) {
-        opacity: .34;
-        transition: none;
+        i {
+          opacity: .34;
+          transition: none;
+        }
       }
     }
   }
@@ -103,27 +105,39 @@
     text-align: center;
     transition: opacity .2s;
     &:nth-last-of-type(1) {
-      opacity:  1;
-      transition: opacity .3s;
-      &:hover {
+     i {
+        opacity:  1;
+        transition: opacity .3s;
+      }
+      &:hover i {
         opacity: 1;
       }
     }
     &:nth-last-of-type(2) {
-      opacity:  .21;
+      i {
+        opacity:  .21;
+      }
     }
     &:nth-last-of-type(3) {
-      opacity:  .13;
+      i {
+        opacity:  .13;
+      }
     }
     &:nth-last-of-type(4) {
-      opacity:  .08;
+      i {
+        opacity:  .08;
+      }
     }
     &:nth-last-of-type(5) {
-      opacity:  .05;
+      i {
+        opacity:  .05;
+      }
     }
     &:hover {
-      opacity: 1;
+      i {
+        opacity: 1;
         transition-duration: .1s;
+      }
     }
     i {
       width: 100%;
