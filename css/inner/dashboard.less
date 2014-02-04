@@ -29,8 +29,10 @@
 }
 .project-title {
   .flexBox();
-  a {
+  > * {
     padding: .5em 0;
+  }
+  a {
     color: @grayDark;
   }
   i {
@@ -72,7 +74,7 @@
 .project-branch {
   .flexBox();
   .flexJustify(space-between);
-  a {
+  > * {
     padding: .5em 0;
   }
 }
