@@ -1,7 +1,7 @@
 - @spinner_type =
-  - else if @size
+  - if @size and @size isnt "normal"
     - "#{@size}-loading-spinner"
-  - else if @loading
+  - else if @loading or @size is "normal"
     - "loading-spinner"
   - else
     - "spinner"
