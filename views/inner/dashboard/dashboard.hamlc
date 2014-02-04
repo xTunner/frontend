@@ -6,8 +6,7 @@
 #dashboard
 
   %aside.side-projects
-    != HAML.action_sidebar({})
-    != HAML.followed_sidebar({})
+    != HAML.sidebar({})
 
   %section.recent-builds
 
