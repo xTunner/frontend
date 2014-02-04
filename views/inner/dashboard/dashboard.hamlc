@@ -10,21 +10,27 @@
       != HAML['flashes']({})
   %section.recent-builds
 
-      %div{data-bind: "ifnot: dashboard_ready"}
         != HAML['fast_spinner']()
 
-      %div{data-bind: "if: dashboard_ready"}
+    / ko ifnot: dashboard_ready
+    / /ko
 
-        %div{data-bind: "if: show_add_projects()"}
           %h2 You don't have any projects in CircleCI!
           %p
             Why don't you add a repository or two on
             %a{href: "/add-projects"} the Manage Projects page?
+    <!-- ko if: dashboard_ready -->
 
-        %div{data-bind: "if: show_build_table()"}
+      / ko if: show_add_projects()
+      / /ko
 
           != HAML.project_trial_notice()
+      / ko if: show_build_table()
+      / /ko
 
           != HAML.project_enable_notice()
+      / ko if: show_build_table()
+      / /ko
 
           != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+    <!-- /ko -->
