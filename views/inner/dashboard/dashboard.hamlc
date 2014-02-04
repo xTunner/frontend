@@ -12,11 +12,11 @@
 
   %section.recent-builds
 
-        != HAML['fast_spinner']()
     -# to be moved into dashboard messages above
     != HAML.flashes({})
 
     / ko ifnot: dashboard_ready
+    != HAML.fast_spinner({})
     / /ko
 
           %h2 You don't have any projects in CircleCI!
