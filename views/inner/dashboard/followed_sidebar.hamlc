@@ -2,7 +2,7 @@
 
   .side-project
 
-    .project-title{data-bind: "css: project.active_style(project.project_name())"}
+    .project-info{data-bind: "css: project.active_style(project.project_name())"}
 
       %a.project-name{data-bind: "attr: { href: project_path, title: 'View builds for entire ' + project_display_name() + ' project' }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
