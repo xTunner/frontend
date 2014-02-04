@@ -2,15 +2,13 @@
 
 #dashboard
 
-  %aside
+  %aside.side-projects
     != HAML['action_sidebar']({})
     != HAML['followed_sidebar']({})
     .shadowX
 
-  .dash-wrap
-    .dashboard-main
-
       != HAML['flashes']({})
+  %section.recent-builds
 
       %div{data-bind: "ifnot: dashboard_ready"}
         != HAML['fast_spinner']()
