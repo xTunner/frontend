@@ -5,7 +5,8 @@ CI.inner.ProjectPage = class ProjectPage extends CI.inner.Page
 
     super(properties)
 
-    @crumbs = [new CI.inner.ProjectCrumb(@username, @project, {active: true}),
+    @crumbs = [new CI.inner.OrgCrumb(@username),
+               new CI.inner.ProjectCrumb(@username, @project, {active: true}),
                new CI.inner.ProjectSettingsCrumb(@username, @project)]
 
     @project_name = "#{@username}/#{@project}"
