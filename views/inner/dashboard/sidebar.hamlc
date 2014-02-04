@@ -14,6 +14,7 @@
   != HAML['fast_spinner']()
 
 .side-projects
+
   <!-- ko foreach: {data: followed_projects(), as: 'project'} -->
 
     .side-project
