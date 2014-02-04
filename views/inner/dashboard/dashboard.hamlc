@@ -1,5 +1,8 @@
 != HAML.invite_form({})
 
+-# hold off on visual change, work in progress
+-# .dashboard-messages
+
 #dashboard
 
   %aside.side-projects
@@ -7,10 +10,11 @@
     != HAML['followed_sidebar']({})
     .shadowX
 
-      != HAML['flashes']({})
   %section.recent-builds
 
         != HAML['fast_spinner']()
+    -# to be moved into dashboard messages above
+    != HAML.flashes({})
 
     / ko ifnot: dashboard_ready
     / /ko
@@ -24,11 +28,12 @@
       / ko if: show_add_projects()
       / /ko
 
-          != HAML.project_trial_notice()
+      -# to be moved into dashboard messages above
       / ko if: show_build_table()
+      != HAML.project_trial_notice()
+      != HAML.project_enable_notice()
       / /ko
 
-          != HAML.project_enable_notice()
       / ko if: show_build_table()
       / /ko
 
