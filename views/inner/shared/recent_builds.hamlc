@@ -37,7 +37,7 @@
 
       %td
         / ko if: body
-        %a.build_log{data-bind: "text: subject, attr: {title: body, href: url}"}
+        %a.build_log{data-bind: "attr: {title: body, href: url}, text: subject"}
         / /ko
         / ko ifnot: body
         %a.build_log{data-bind: "attr: {href: url}, text: subject"}
