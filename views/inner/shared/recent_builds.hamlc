@@ -17,43 +17,43 @@
       - if @actions
         %th Actions
 
-  %tbody{data-bind: "foreach: { data: #{@builds} }"}
+  %tbody{data-bind: "foreach: {data: #{@builds}}"}
 
-    %tr{data-bind: "css: { dont_build: dont_build }"}
-
-      %td
-        %a{data-bind: "attr: { href: url, title: description(#{@mention_project}) }, text: description(#{@mention_project})"}
+    %tr{data-bind: "css: {dont_build: dont_build}"}
 
       %td
-        %a{data-bind: "attr: { href: url, title: github_revision }, text: github_revision"}
+        %a{data-bind: "attr: {href: url, title: description(#{@mention_project})}, text: description(#{@mention_project})"}
+
+      %td
+        %a{data-bind: "attr: {href: url, title: github_revision}, text: github_revision"}
 
       / ko if: VM.current_page().show_branch
       %td
-        %a{data-bind: "attr: { href: url, title: branch_in_words }, text: trimmed_branch_in_words"}
+        %a{data-bind: "attr: {href: url, title: branch_in_words}, text: trimmed_branch_in_words"}
       / /ko
 
       %td
-        %a{data-bind: "attr: { href: url, title: author }, text: author" }
+        %a{data-bind: "attr: {href: url, title: author}, text: author"}
 
       %td
         / ko if: body
-        %a.build_log{href: '#', data-bind: "text: subject, attr: { title: body, href: url }"}
+        %a.build_log{href: '#', data-bind: "text: subject, attr: {title: body, href: url}"}
         / /ko
         / ko ifnot: body
-        %a.build_log{data-bind: "attr: { href: url }, text: subject"}
+        %a.build_log{data-bind: "attr: {href: url}, text: subject"}
         / /ko
 
       / ko if: VM.current_page().show_queued
       %td
-        %a{data-bind: "attr: { href: url }, duration: queued_time"}
+        %a{data-bind: "attr: {href: url}, duration: queued_time"}
       / /ko
 
       / ko if: status() != 'not_run'
       %td
-        %a{data-bind: "attr: { href: url, title: pretty_start_time }, text: pretty_start_time"}
+        %a{data-bind: "attr: {href: url, title: pretty_start_time}, text: pretty_start_time"}
 
       %td
-        %a{data-bind: "attr: { href: url, title: duration }, text: duration"}
+        %a{data-bind: "attr: {href: url, title: duration}, text: duration"}
       / /ko
 
       / ko if: status() == 'not_run'
