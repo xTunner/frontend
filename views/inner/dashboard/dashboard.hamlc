@@ -2,11 +2,11 @@
 
 #dashboard
 
-  / ko ifnot: projects_have_been_loaded
+  / ko ifnot: dashboard_ready
   != HAML.spinner({size: "large"})
   / /ko
 
-  / ko if: projects_have_been_loaded
+  / ko if: dashboard_ready
   %aside
     != HAML['action_sidebar']({})
     != HAML['followed_sidebar']({})
