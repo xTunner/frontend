@@ -256,29 +256,3 @@
     padding: 0;
   }
 }
-.shadowX {
-  height: 1px;
-  background: none;
-  position: relative;
-  width: 50%;
-  margin-left: 50%;
-  margin-top: -2px;
-  border-radius: 0 0 5px 0;
-  box-shadow: -1px 1px @grayBorder,
-              -2px 2px @grayBorder,
-              -3px 3px @grayBorder,
-              -4px 4px darken(@grayBorder,2%);
-  &:before {
-    width: 100%;
-    content: "";
-    left: -100%;
-    display: block;
-    position: relative;
-    border-radius: 0 0 0 5px;
-    height: 100%;
-    box-shadow: 1px 1px @grayBorder,
-                2px 2px @grayBorder,
-                3px 3px @grayBorder,
-                4px 4px darken(@grayBorder,2%);
-  }
-}
