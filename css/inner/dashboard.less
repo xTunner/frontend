@@ -12,6 +12,65 @@
     transition-timing-function: ease-in-out;
   }
 }
+.project-branch-build {
+  max-width: 34%;
+  .flexBox();
+  .flexJustify(flex-end);
+  a {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    text-align: center;
+    transition: opacity .2s;
+    &:nth-last-of-type(1) {
+      opacity:  1;
+    }
+    &:nth-last-of-type(2) {
+      opacity:  .21;
+    }
+    &:nth-last-of-type(3) {
+      opacity:  .13;
+    }
+    &:nth-last-of-type(4) {
+      opacity:  .08;
+    }
+    &:nth-last-of-type(5) {
+      opacity:  .05;
+    }
+    &:hover {
+      opacity: 1;
+      transition-duration: .1s;
+    }
+    i {
+      width: 100%;
+    }
+  }
+  .statusIconColor(@color) {
+                     color:            @color;
+    &:hover        { color:            @color; }
+    .tooltip-arrow { border-top-color: @color; }
+    .tooltip-inner { background-color: @color; }
+  }
+  .success,
+  .fixed {
+    .statusIconColor(@green);
+  }
+  .no_tests,
+  .failed,
+  .timedout,
+  .canceled {
+    .statusIconColor(@redLight);
+  }
+  .running {
+    .statusIconColor(@blueDark);
+  }
+  .queued {
+    .statusIconColor(@gray);
+  }
+  .not_run {
+    .statusIconColor(@orange);
+  }
+}
 #dashboard {
   .clearfix();
   padding: 0 1em;
@@ -171,40 +230,6 @@
     min-width: 66%;
     margin-right: -4px;
   }
-  .build-circles {
-    max-width: 34%;
-    .flexBox();
-    .flexJustify(flex-end);
-    a {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      text-align: center;
-      transition: opacity .2s;
-      &:nth-last-of-type(1) {
-        opacity:  1;
-      }
-      &:nth-last-of-type(2) {
-        opacity:  .21;
-      }
-      &:nth-last-of-type(3) {
-        opacity:  .13;
-      }
-      &:nth-last-of-type(4) {
-        opacity:  .08;
-      }
-      &:nth-last-of-type(5) {
-        opacity:  .05;
-      }
-      &:hover {
-        opacity: 1;
-        transition-duration: .1s;
-      }
-      i {
-        width: 100%;
-      }
-    }
-  }
   .tooltip {
     text-transform: capitalize;
     opacity: 1;
@@ -216,33 +241,7 @@
       border-radius: 2em;
     }
   }
-  .build-circles {
-    .statusIconColor(@color) {
-                       color:            @color;
-      &:hover        { color:            @color; }
-      .tooltip-arrow { border-top-color: @color; }
-      .tooltip-inner { background-color: @color; }
-    }
-    .success,
-    .fixed {
-      .statusIconColor(@green);
-    }
-    .no_tests,
-    .failed,
-    .timedout,
-    .canceled {
-      .statusIconColor(@redLight);
-    }
-    .running {
-      .statusIconColor(@blueDark);
-    }
-    .queued {
-      .statusIconColor(@gray);
-    }
-    .not_run {
-      .statusIconColor(@orange);
-    }
-  }
+}
 .recent-build-status {
   text-align: center;
   span {
@@ -266,12 +265,6 @@
     text-decoration: none;
     color: inherit;
   }
-}
-.build_dot {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border-radius: 10px;
 }
 .shadowX {
   height: 1px;
