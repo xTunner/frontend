@@ -19,7 +19,7 @@
           / /ko
       <!-- /ko -->
 
-    .project-branches{data-bind: "foreach: {data: project.branch_names_to_show(), as: 'branch_name'}"}
+    <!-- ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'} -->
 
       .project-branch{data-bind: "css: project.active_style(project.project_name(), branch_name)"}
 
@@ -28,5 +28,7 @@
         .project-branch-build{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
           %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status"}
             %i.fa{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
+
+    <!-- /ko -->
 
 <!-- /ko -->
