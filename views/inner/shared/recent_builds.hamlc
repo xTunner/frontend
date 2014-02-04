@@ -43,7 +43,7 @@
         %a{data-bind: "attr: {href: url}, duration: queued_time"}
       / /ko
 
-      / ko if: status() != 'not_run'
+      / ko ifnot: status() == 'not_run'
       %td
         %a{data-bind: "attr: {href: url, title: pretty_start_time}, text: pretty_start_time"}
 
