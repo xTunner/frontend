@@ -2,6 +2,11 @@
 
 #dashboard
 
+  / ko ifnot: projects_have_been_loaded
+  != HAML.spinner({size: "large"})
+  / /ko
+
+  / ko if: projects_have_been_loaded
   %aside
     != HAML['action_sidebar']({})
     != HAML['followed_sidebar']({})
@@ -11,9 +16,6 @@
     .dashboard-main
 
       != HAML['flashes']({})
-
-      %div{data-bind: "ifnot: dashboard_ready"}
-        != HAML['fast_spinner']()
 
       %div{data-bind: "if: dashboard_ready"}
 
@@ -30,3 +32,4 @@
           != HAML.project_enable_notice()
 
           != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+  / /ko

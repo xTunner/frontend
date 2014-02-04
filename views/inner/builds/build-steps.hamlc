@@ -30,8 +30,9 @@
 
             .detail-wrapper{data-bind: "if: has_content"}
               .detail{data-bind: "css: action_log_style, visible: !minimize()"}
-                .output-spin{data-bind: "if: retrieving_output"}
-                  != HAML['fast_spinner']()
+                / ko if: retrieving_output
+                != HAML.spinner({loading: true})
+                / /ko
 
                 %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
                   %i.fa.fa-arrow-circle-o-down.pull-right.click-to-scroll{data-bind: "scrollOnClick: {selector: '.detail-wrapper', position: 'bottom'}"}
