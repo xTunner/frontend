@@ -6,18 +6,18 @@
 
       %a.nav-menu-icon.fa.fa-cog{data-bind: "attr: { href: edit_link }, tooltip: {}", title: "Project settings"}
 
-      / ko if: show_toggle_branches
-      %a.toggle-show-branches{title: 'Show all branches', data-bind: "click: toggle_show_all_branches, tooltip: {}"}
-        / ko if: show_all_branches
-        %i.fa.fa-caret-up
-        / /ko
-        / ko ifnot: show_all_branches
-        %i.fa.fa-caret-down
-        / /ko
-      / /ko
 
       %a.nav-menu-item.project-name{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
+      <!-- ko if: show_toggle_branches -->
+        %a.project-show-all{data-bind: "click: toggle_show_all_branches", role: "button"}
+          / ko if: show_all_branches
+          %i.fa.fa-ellipsis-vertical{data-bind: "tooltip: {title: 'Show less branches', animation: false}"}
+          / /ko
+          / ko ifnot: show_all_branches
+          %i.fa.fa-ellipsis-horizontal{data-bind: "tooltip: {title: 'Show all branches', animation: false}"}
+          / /ko
+      <!-- /ko -->
 
 
     / ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'}
