@@ -11,6 +11,7 @@
       %span Follow
       %span{data-bind: "text: project().project_name"}
   / /ko
+
 / ko ifnot: projects_have_been_loaded
   != HAML.fast_spinner({})
 / /ko
