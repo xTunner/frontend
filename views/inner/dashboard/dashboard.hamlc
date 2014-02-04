@@ -19,13 +19,11 @@
     != HAML.fast_spinner({})
     / /ko
 
-          %h2 You don't have any projects in CircleCI!
-          %p
-            Why don't you add a repository or two on
-            %a{href: "/add-projects"} the Manage Projects page?
     <!-- ko if: dashboard_ready -->
 
       / ko if: show_add_projects()
+      %h2 You don't have any projects in CircleCI!
+      %p Why don't you add a repository or two on the <a href="/add-projects">Manage Projects page</a>?
       / /ko
 
       -# to be moved into dashboard messages above
