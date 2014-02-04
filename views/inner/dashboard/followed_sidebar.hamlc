@@ -1,8 +1,6 @@
-%ul.projects
 
   / ko foreach: {data: followed_projects(), as: 'project'}
-  %li
-    .project{data-bind: "css: project.active_style(project.project_name())"}
+  .side-project
 
       %a.nav-menu-icon.fa.fa-cog{data-bind: "attr: { href: edit_link }, tooltip: {}", title: "Project settings"}
 
