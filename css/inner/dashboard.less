@@ -72,7 +72,7 @@
   }
 }
 #dashboard {
-  .clearfix();
+  .flexBox();
   padding: 0 1em;
   li {
     line-height: 1em;
@@ -84,15 +84,11 @@
     }
   }
   aside {
-    position: relative;
-    z-index: 1;
-    float: left;
-    width: 250px;
+    .flex(0, 0, 250px);
     margin-right: 1em;
     background: @whiten;
     border: 1px solid darken(@grayBorder,1%);
     border-radius: 4px;
-    .box-sizing(border-box);
     a {
       .dark-links;
       color: @grayLight;
@@ -241,6 +237,9 @@
       border-radius: 2em;
     }
   }
+}
+.recent-builds {
+  .flex(1, 1);
 }
 .recent-build-status {
   text-align: center;
