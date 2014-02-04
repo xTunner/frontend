@@ -13,7 +13,7 @@
   / /ko
 
 / ko ifnot: projects_have_been_loaded
-  != HAML.fast_spinner({})
+!= HAML.fast_spinner({})
 / /ko
 
 .side-projects
