@@ -52,8 +52,9 @@
       / /ko
 
       / ko if: status() == 'not_run'
-      != HAML.not_run_message({})
       / /ko
+        %td{colspan: 2}
+          != HAML.not_run_message({})
 
       %td
         %a.recent-status-badge{data-bind: "attr: { href: url, title: status_words }"}
