@@ -15,6 +15,6 @@
   / ko if: dont_build() == 'no-user' && user.is_user
   / /ko
 
-    Unverified push - ignored
   / ko if: dont_build() == 'bad-push'
+  %span Unverified push - ignored
   / /ko
