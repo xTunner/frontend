@@ -23,13 +23,13 @@
 
       .project-info
 
-        %a.project-name{data-bind: "attr: {href: project_path, title: 'View builds for entire ' + project_display_name() + ' project'}, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
+        %a.name{data-bind: "attr: {href: project_path, title: 'View builds for entire ' + project_display_name() + ' project'}, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
-        %a.project-settings{data-bind: "attr: {href: edit_link}"}
+        %a.settings{data-bind: "attr: {href: edit_link}"}
           %i.fa.fa-cog{data-bind: "tooltip: {title: 'Project settings', animation: false}"}
 
         <!-- ko if: show_toggle_branches -->
-          %a.project-show-all{data-bind: "click: toggle_show_all_branches, css: {active: show_all_branches}", role: "button"}
+          %a.toggle-all{data-bind: "click: toggle_show_all_branches, css: {active: show_all_branches}", role: "button"}
             %i.fa.fa-ellipsis-horizontal{data-bind: "tooltip: {title: show_all_tooltip, animation: false}"}
         <!-- /ko -->
 
