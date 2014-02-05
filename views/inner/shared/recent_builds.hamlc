@@ -1,4 +1,5 @@
 %table.builds-table
+
   %thead
     %tr
       %th Build
@@ -16,6 +17,7 @@
       %th Status
       - if @actions
         %th Actions
+
   %tbody{data-bind: "foreach: {data: #{@builds}}"}
     %tr{data-bind: "css: {dont_build: dont_build}"}
       %td
@@ -37,7 +39,6 @@
       <!-- ko ifnot: status() == 'not_run' -->
         %td
           %a{data-bind: "attr: {href: url, title: pretty_start_time}, text: pretty_start_time"}
-
         %td
           %a{data-bind: "attr: {href: url, title: duration}, text: duration"}
       <!-- /ko -->
