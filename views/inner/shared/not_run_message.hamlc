@@ -9,9 +9,7 @@
   / /ko
 
   / ko if: dont_build() == 'no-user' && user.is_user
-  %a
-    %span{data-bind: "text: user.login"}
-    has joined
+  %a{data-bind: "text: user.login + 'has joined'"}
   / /ko
 
   / ko if: dont_build() == 'bad-push'
