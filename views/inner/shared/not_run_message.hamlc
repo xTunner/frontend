@@ -1,4 +1,4 @@
-%td.not_run_message{colspan: 2}
+%td{colspan: 2}
 
     %a.btn.btn-primary{data-bind: "click: invite_user",
                        data-loading-text: "Sending",
