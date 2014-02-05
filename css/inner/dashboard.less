@@ -58,6 +58,12 @@
   padding: 1em;
   line-height: 1em;
   box-shadow: 0 1px @white inset, 0 -1px @grayLightest;
+  .aside-name {
+    .flex(1, 0);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 .aside-project-info {
   .flexBox();
@@ -72,19 +78,6 @@
     height: 1em;
     width: 1em;
     text-align: right;
-  }
-  .name {
-    .flex(1, 0);
-    display: inline-block;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    &:hover {
-      color: @blueLight;
-      transition-duration: .1s;
-    }
   }
   .settings {
     height: 1em;
@@ -120,12 +113,6 @@
   > * {
     padding: .5em 0;
   }
-}
-.name {
-  .flex(1, 0);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .aside-status-icons {
   max-width: 34%;
