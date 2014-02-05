@@ -149,6 +149,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @toggle_show_all_branches = () =>
       @show_all_branches(!@show_all_branches())
 
+    @show_all_tooltip = () =>
+      if @show_all_branches()
+        "Show less branches"
+      else
+        "Show all branches"
+
     @sorted_builds = (branch_name) =>
       if @branches()[branch_name]
         recent = @branches()[branch_name].recent_builds or []

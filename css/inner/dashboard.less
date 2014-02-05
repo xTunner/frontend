@@ -65,6 +65,17 @@
       margin-right: 2px;
     }
   }
+  .project-show-all {
+    i {
+      transition: .4s all;
+    }
+    &.active {
+      i {
+        .rotate(90);
+        transition-duration: .1s;
+      }
+    }
+  }
 }
 .project-branches {
   .tooltip {

@@ -29,13 +29,8 @@
           %i.fa.fa-cog{data-bind: "tooltip: {title: 'Project settings', animation: false}"}
 
         <!-- ko if: show_toggle_branches -->
-          %a.project-show-all{data-bind: "click: toggle_show_all_branches", role: "button"}
-            / ko if: show_all_branches
-            %i.fa.fa-ellipsis-vertical{data-bind: "tooltip: {title: 'Show less branches', animation: false}"}
-            / /ko
-            / ko ifnot: show_all_branches
-            %i.fa.fa-ellipsis-horizontal{data-bind: "tooltip: {title: 'Show all branches', animation: false}"}
-            / /ko
+          %a.project-show-all{data-bind: "click: toggle_show_all_branches, css: {active: show_all_branches}", role: "button"}
+            %i.fa.fa-ellipsis-horizontal{data-bind: "tooltip: {title: show_all_tooltip, animation: false}"}
         <!-- /ko -->
 
       <!-- ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'} -->
