@@ -1,4 +1,4 @@
-.side-actions
+.aside-actions
   %a#add-projects{href: "/add-projects"}
     %i.fa.fa-plus
     %span Projects
@@ -15,11 +15,11 @@
 != HAML.fast_spinner({})
 / /ko
 
-.side-projects
+.aside-projects
 
   <!-- ko foreach: {data: followed_projects(), as: 'project'} -->
 
-    .side-project
+    .aside-project
 
       .project-info
 
