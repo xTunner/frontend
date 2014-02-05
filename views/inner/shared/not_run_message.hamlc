@@ -1,12 +1,13 @@
 %td{colspan: 2}
 
-    %a.btn.btn-primary{data-bind: "click: invite_user",
                        data-loading-text: "Sending",
                        data-success-text: "Sent",
                        data-failed-text: "Failed to send"}
       Invite
       %span{data-bind: "text: user.login"}
   / ko if: dont_build() == 'no-user' && !user.is_user
+  %a{role: "button",
+     data-bind: "click: invite_user, text: 'send ' + user.login + ' an invite'",
   / /ko
 
     %a.btn.btn-primary.disabled
