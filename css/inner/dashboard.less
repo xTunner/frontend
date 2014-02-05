@@ -1,17 +1,3 @@
-.dark-links {
-  color: @gray;
-  font-weight: normal;
-  text-decoration: none;
-  transition-duration: .3s;
-  transition-property: color;
-  transition-timing-function: ease-in-out;
-  &:hover {
-    color: @blueLight;
-    transition-duration: .1s;
-    transition-property: color;
-    transition-timing-function: ease-in-out;
-  }
-}
 .aside-actions {
   padding: .5em;
   margin-left: 4px;
@@ -203,12 +189,6 @@
   .flexBox();
   .align-items(flex-start);
   padding: 0 1em;
-  .builds-table {
-    .tableLight();
-    a {
-      .dark-links;
-    }
-  }
   aside {
     .outlineFlat();
     .flex(0, 0, 250px);
@@ -234,6 +214,15 @@
   }
 }
 .recent-builds-list {
+  .tableLight();
+  a {
+    color: @gray;
+    transition: color .3s;
+    &:hover {
+      color: @blueLight;
+      transition-duration: .1s;
+    }
+  }
 }
 .recent-status-badge {
   span {
