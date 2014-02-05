@@ -1,3 +1,31 @@
+#dashboard {
+  .flexBox();
+  .align-items(flex-start);
+  padding: 0 1em;
+  aside {
+    .outlineFlat();
+    .flex(0, 0, 250px);
+    margin-right: 1em;
+    background: @whiten;
+    border-radius: 4px;
+  }
+  section {
+    .flex(1, 1);
+  }
+  .tooltip {
+    opacity: 1;
+    font-size: @fontSizeSmall; // BS RESET
+    .tooltip-inner {
+      padding: .75em 1.25em;
+      line-height: 1em;
+      white-space: nowrap;
+      border-radius: 2em;
+      &:first-letter {
+        text-transform: capitalize;
+      }
+    }
+  }
+}
 .aside-actions {
   padding: .5em;
   margin-left: 4px;
@@ -178,34 +206,6 @@
   }
   .not_run {
     .statusIconColor(@orange);
-  }
-}
-#dashboard {
-  .flexBox();
-  .align-items(flex-start);
-  padding: 0 1em;
-  aside {
-    .outlineFlat();
-    .flex(0, 0, 250px);
-    margin-right: 1em;
-    background: @whiten;
-    border-radius: 4px;
-  }
-  section {
-    .flex(1, 1);
-  }
-  .tooltip {
-    opacity: 1;
-    font-size: @fontSizeSmall; // BS RESET
-    .tooltip-inner {
-      padding: .75em 1.25em;
-      line-height: 1em;
-      white-space: nowrap;
-      border-radius: 2em;
-      &:first-letter {
-        text-transform: capitalize;
-      }
-    }
   }
 }
 .recent-builds-list {
