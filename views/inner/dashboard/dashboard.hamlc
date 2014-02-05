@@ -8,7 +8,7 @@
   %aside
     != HAML.sidebar({})
 
-  %section.recent-builds
+  %section
 
     -# to be moved into dashboard messages above
     != HAML.flashes({})

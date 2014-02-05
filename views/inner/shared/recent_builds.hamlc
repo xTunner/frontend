@@ -1,4 +1,4 @@
-%table.builds-table
+%table.recent-builds-list
 
   %thead
     %tr
