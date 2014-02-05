@@ -31,7 +31,7 @@
       / /ko
 
       / ko if: show_build_table()
-      != HAML.recent_builds({builds: "builds", mention_project: true})
+      != HAML.recent_builds_table({builds: "builds", mention_project: true})
       / /ko
 
     <!-- /ko -->

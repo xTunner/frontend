@@ -27,7 +27,7 @@
             %a.btn.pull-right.follow{ data-bind: 'click: project().follow' }
               Follow
 
-        != HAML.recent_builds({builds: "builds", mention_project: true})
+        != HAML.recent_builds_table({builds: "builds", mention_project: true})
 
 
 
