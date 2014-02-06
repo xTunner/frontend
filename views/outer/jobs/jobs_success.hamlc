@@ -7,8 +7,8 @@
   #jobFive.accordion-body.collapse
     .accordion-inner
       %p
-        Customer success is an unusual role: its all about making sure that customers are successful using Circle.
-        Its part engineering and part empathy.
+        Customer success is all about making sure that customers are successful using Circle.
+        It's part engineering and part empathy.
 
       %p
         %strong You'll talk to customers, fix their problems, and help them be successful.
@@ -20,4 +20,4 @@
 
       %p
         %strong Personal relationships are key!
-        You'll help customers both while they're getting set up, and over time, so that we build and maintain personal relationships with our customers.
+        You'll help customers during all phases of their use of Circle, ensuring that we build and maintain personal relationships with all of our customers.
