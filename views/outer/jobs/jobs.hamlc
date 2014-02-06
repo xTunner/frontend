@@ -2,7 +2,7 @@
   .banner
     .container
       %h1 We're hiring.
-      %h3 We're currently looking for great people for front-end, back-end, design, growth, and customer success roles. 
+      %h3 We're currently looking for great engineers and designers, for roles in product and customer happiness.
 
   .container.content
     .row

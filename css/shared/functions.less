@@ -168,6 +168,10 @@
   display: -webkit-flex;
   display:         flex;
 }
+.flexJustify(@arg) { // flex-start, flex-end, center, space-between, space-around
+  -webkit-justify-content: @arg;
+          justify-content: @arg;
+}
 .flex-direction(@arg) {
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
