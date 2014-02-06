@@ -5,7 +5,8 @@
     We're
     != succeed ',', ->
       %a{href: "/about"} 10 people
-    made up almost entirely of people who work on the product.
+    made up almost entirely of engineers who work on the product.
 
   %p
-    We have significant revenue, are well funded, and are the market leader in Continuous Integration and Deployment. We are a startup as well as a real business.
+    We have a great product that's loved by thousands of developers, with great revenue and funding, and we're the market leader in Continuous Integration and Deployment.
+    We are a startup as well as a real business.
