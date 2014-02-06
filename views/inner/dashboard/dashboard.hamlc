@@ -3,6 +3,7 @@
 #dashboard
 
   / ko ifnot: dashboard_ready
+  != HAML.flashes({})
   != HAML.spinner({size: "large"})
   / /ko
 
@@ -15,7 +16,7 @@
   .dash-wrap
     .dashboard-main
 
-      != HAML['flashes']({})
+      != HAML.flashes({})
 
       %div{data-bind: "if: dashboard_ready"}
 
