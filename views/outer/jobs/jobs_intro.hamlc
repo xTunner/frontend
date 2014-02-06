@@ -4,11 +4,9 @@
   %p
     We're
     != succeed ',', ->
-      %a{href: "/about"} 9 people
-    made up almost entirely of people who work on the product.
+      %a{href: "/about"} 10 people
+    made up almost entirely of engineers who work on the product.
 
   %p
-    CircleCI is at the growth stage of its life: we've found “product-market fit” (we have a product that we know lots of people want and will pay for), and are focusing on growing our customer base and significantly improving our product.
-
-  %p
-    We're not yet profitable, but make money and are growing rapidly with a year's worth of funding in the bank. Its not certain we'll succeed yet, but you can make worse bets as early stage startups go.
+    We have a great product that's loved by thousands of developers, with significant revenue and funding, and we're the market leader in Continuous Integration and Deployment.
+    We are a startup as well as a real business.

@@ -22,10 +22,10 @@ CI.inner.Crumb = class Crumb extends CI.inner.Obj
 CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
   constructor: (@username, @project, options) ->
     super(options)
-    @css_class = "project"
+    @css_class = "project crumb"
 
   name: () =>
-    "#{@username}/#{@project}"
+    "#{@project}"
 
   path: () =>
     CI.paths.project_path(@username, @project)
