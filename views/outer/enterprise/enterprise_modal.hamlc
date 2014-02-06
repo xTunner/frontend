@@ -15,14 +15,14 @@
              type: "email",
              data-bind: "value: email"}
 
-      %label{for: "message"} Phone Number
+      %label{for: "message"} Phone number
       %input{name: "message",
              type: "text",
+             placeholder: "optional",
              data-bind: "value: message"}
 
       .notice{data-bind: "with: notice"}
         %div{data-bind: "text: message, attr: {class: type}"}
 
 
-      %button.btn-primary.pull-right{data-bind: "click: submitAjaxForm"} Submit
-
+      %button.btn-primary.pull-right{data-bind: "click: submitAjaxForm"} Send
