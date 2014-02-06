@@ -235,7 +235,7 @@
             .insufficient-containers,
             .insufficient-plan,
             .insufficient-trial {
-              .translate3d(0, 0, 0);
+              .translate(0);
               transition-duration: .1s;
               opacity: 1;
             }
@@ -259,7 +259,7 @@
     .disabled {
       &:hover {
         .insufficient-minimum {
-          .translate3d(0, 0, 0);
+          .translate(0);
           transition-duration: .1s;
           opacity: 1;
         }
@@ -324,7 +324,7 @@
       height: 94%;
       border-radius: 3px;
       text-align: center;
-      .translate3d(0, 110%, 0);
+      .translate(0, 110%);
       transition: all .3s ease-in-out;
       opacity: 0;
       a {
@@ -351,7 +351,7 @@
       }
     }
     .insufficient-minimum {
-      .translate3d(0, 0, 0);
+      .translate(0);
       background: @redLight;
       z-index: 1;
       .tooltip {

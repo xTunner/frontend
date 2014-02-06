@@ -5,7 +5,8 @@ CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.Page
 
     super(properties)
 
-    @crumbs = [new CI.inner.ProjectCrumb(@username, @project),
+    @crumbs = [new CI.inner.OrgCrumb(@username),
+               new CI.inner.ProjectCrumb(@username, @project),
                new CI.inner.ProjectBranchCrumb(@username, @project, ko.computed =>
                  @branch
                {active: true})
