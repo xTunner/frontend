@@ -15,7 +15,6 @@
 
         .enterprise-hero-unit
 
-          -# %img{src: 'http://placehold.it/1000x1000', title: "On-premises"}
           != HAML.enterprise_server({})
 
           %h2 CircleCI on-premises
@@ -23,7 +22,6 @@
 
         .enterprise-hero-unit
 
-          -# %img{src: 'http://placehold.it/1000x1000', title: "On-premises"}
           != HAML.enterprise_cloud({})
 
           %h2 CircleCI in the cloud
@@ -42,12 +40,10 @@
           %p With on-premises and private cloud options, role-based access control, and enterprise grade security you can maintain complete control of your source code and deployment process.
           %a{href: "#", data-bind: "click: enterpriseModal"} Learn More
 
-        -# %img{src: 'http://placehold.it/500x500', title: "Kickstarter"}
         != HAML.enterprise_control({})
 
       .enterprise-feature
 
-        -# %img{src: 'http://placehold.it/500x500', title: "Kickstarter"}
         != HAML.enterprise_support({})
 
         %article
@@ -62,7 +58,6 @@
           %p We integrate with your current workflow via Github Enterprise, Amazon VPC, and more.
           %a{href: "#", data-bind: "click: enterpriseModal"} Learn More
 
-        -# %img{src: 'http://placehold.it/500x500', title: "Kickstarter"}
         != HAML.enterprise_integration({})
 
 
