@@ -6,13 +6,13 @@
 
   #jobOne.accordion-body.collapse
     .accordion-inner
-      %h4 What kind of folks we like:
+      %h4 What kind of folks do we like:
       %ul
         %li people who truly care about making developers more productive
 
         %li pleasant people and good conversationalists - we'll be spending the next few years together after all
 
-        %li easy to work with: we're not interested in solo artists, divas, know-it-alls, or assholes
+        %li folks who are easy to work with: we're not interested in solo artists, divas, know-it-alls, or assholes
 
         %li people who do not identify as a "ninja", "pirate", "rock star", or (especially) "brogrammer"
 
