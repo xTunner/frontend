@@ -4,7 +4,7 @@
   %p
     We're
     != succeed ',', ->
-      %a{href: "/about"} 9 people
+      %a{href: "/about"} 10 people
     made up almost entirely of people who work on the product.
 
   %p
