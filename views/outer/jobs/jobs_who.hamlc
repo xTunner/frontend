@@ -7,3 +7,4 @@
     != HAML.jobs_backend()
     != HAML.jobs_frontend()
     != HAML.jobs_designers()
+    != HAML.jobs_success()
