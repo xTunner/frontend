@@ -4,15 +4,18 @@
   %li
     .project{data-bind: "css: project.active_style(project.project_name())"}
 
-      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }", title: "Edit project settings"}
+      %a.nav-menu-icon{data-bind: "attr: { href: edit_link }, tooltip: {title: 'Project settings', animation: false}"}
         %i.fa.fa-cog
 
-      %span.toggle-show-branches{data-bind: "if: show_toggle_branches"}
-        %a{title: 'Toggle branches to show', data-bind: "click: toggle_show_all_branches, tooltip: {animation: false}"}
-          %span{data-bind: "if: show_all_branches"}
-            %i.fa.fa-caret-down
-          %span{data-bind: "ifnot: show_all_branches"}
-            %i.fa.fa-caret-right
+      / ko if: show_toggle_branches
+      %a.toggle-show-branches{data-bind: "click: toggle_show_all_branches, tooltip: {title: 'Show all branches', animation: false}"}
+        / ko if: show_all_branches
+        %i.fa.fa-caret-up
+        / /ko
+        / ko ifnot: show_all_branches
+        %i.fa.fa-caret-down
+        / /ko
+      / /ko
 
       %a.nav-menu-item.project-name{data-bind: "attr: { href: project_path, title: project_display_name }, text: CI.stringHelpers.trimMiddle(project_display_name(), 28)"}
 
@@ -24,9 +27,8 @@
       %a.nav-menu-item.branch-name{data-bind: "attr: {href: project.branch_path(branch_name), title: project.format_branch_name(branch_name)}, text: project.format_branch_name(branch_name, 23), css: {default: branch_name == project.default_branch()}"}
 
       .build-circles{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
-        %span{data-bind: "css: status"}
-          %a{data-bind: "attr: {href: project.build_path(build_num)}, tooltip: {title: tooltip_title, animation: false}"}
-            %i.fa{data-bind: "css: status_icon_class"}
+        %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status"}
+          %i.fa{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
 
     / /ko
   / /ko

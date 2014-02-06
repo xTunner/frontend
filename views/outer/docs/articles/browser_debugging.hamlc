@@ -44,7 +44,7 @@
   X11 forwarding over SSH
 
 %p
-  CircleCI supports X11 forwarding over SSH to make this process much easier.
+  CircleCI supports X11 forwarding over SSH to make this process much easier. X11 forwarding is similar to a remote desktop -- you can interact with the browser running on CircleCI from your local machine.
 
 %p
   Before you start, make sure you have an X Window System on your computer. If you're using OSX, I recommend
