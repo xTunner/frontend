@@ -9,11 +9,11 @@
 - if data.params
   %h4 Optional parameters
   %dl
-  - for param in data.params
-    %dt
-      != "#{param.name}"
-    %dd
-      != "#{param.description}"
+    - for param in data.params
+      %dt
+        != "#{param.name}"
+      %dd
+        != "#{param.description}"
 
 %h4 Example call
 %pre
