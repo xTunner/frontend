@@ -1,7 +1,7 @@
 #enterpriseModal.modal.hide.fade
   .modal-body
     %h4
-      Sign up to learn more about our enterprise continous delivery service
+      Contact us to learn more about enterprise Continous Delivery
     %hr
     %form.contact-us{data-bind: "with: new CI.outer.ContactUsForm($element)"}
 
