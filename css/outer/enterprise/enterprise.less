@@ -88,15 +88,37 @@
 .enterprise-cta-trust {
 	margin: 8vh 0;
 }
+// Bootstrap Modal Resets (BS RESET)
 #enterpriseModal {
+	&.modal {
+		background-color: @whiten;
+		&.fade{
+			&.in {
+				top: 20%;
+			}
+		}
+	}
+	.modal-body {
+		padding: 0;
+		max-height: 40em;
+	}
 	h4 {
 		font-size: 16px;
 		text-align: center;
+		margin: 0;
+		line-height: 5em;
+	}
+	hr {
+		margin: 0;
+		border-top: 1px solid @grayBorder;
+		border-bottom: 1px solid @white;
 	}
 	form {
 		.clearfix();
-		width: 50%;
-		margin: 0 auto;
+		margin: 3em 8em;
+	}
+	label {
+		text-transform: none;
 	}
 	input {
 		.box-sizing(border-box);
