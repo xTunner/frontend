@@ -1,0 +1,55 @@
+.page.enterprise-landing
+  .banner
+    .container
+      %h1 ship code at the speed of business
+      %h3 Powerful continous deployment on-premises or in the cloud
+
+  .container.content
+    .heading.row
+      .item.pull-left
+        %img{src: '(data-uri "img/icons/test.png")',
+             width: "200px", 
+             title: "On-premises"}
+        %h2.center-text CircleCI on-premises
+        %p Install circle CI bedind your firewall or in a private cloud for security that you control. 
+      .item.pull-right
+        %img{src: '(data-uri "img/icons/test.png")',
+             width: "200px", 
+             title: "On-premises"}
+        %h2.center-text CircleCI in the cloud
+        %p All the same great features as CircleCI's hosted offering along with SLA, role-based access control, flexible payments options and more.
+    .section
+      .item.pull-left
+        %h4 Maintain complete control
+        %p With On-premises and private cloud options, role-based access control, and enterprise grade security you can maintain complete control of your source code and deployment process.
+        %a Learn More
+      .item.pull-right
+        %img{src: '(data-uri "img/icons/test.png")',
+             width: "120px", 
+             title: "Kickstarter"}
+    .section 
+      .item.pull-left
+        %img{src: '(data-uri "img/icons/test.png")',
+             width: "120px", 
+             title: "Kickstarter"}
+      .item.pull-right
+        %h4 Enterprise support
+        %p Your success is our number one priority which is why we offer 24/7 support and multiple deployment options with service-level agreements.
+        %a Learn More
+    .section 
+      .item.pull-left
+        %h4 Seamless integration
+        %p We integrate with your current workflow via Github Enterprise, Amazon VPC, and more. 
+        %a Learn More
+      .item.pull-right
+        %img{src: '(data-uri "img/icons/test.png")',
+             width: "120px", 
+             title: "Kickstarter"}
+    .center-text
+      %button.btn.btn-secondary{title: 'Contact Us',
+                    data-bind: "click: enterpriseModal"}
+        Contact Us
+
+    != HAML.customers_trust()
+    != HAML.enterprise_modal()
+      
