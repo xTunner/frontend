@@ -16,7 +16,7 @@
     :preserve
       machine:
         post:
-          - ./daemon
+          - ./daemon:
               background: true
 
 %p
@@ -30,7 +30,7 @@
     :preserve
       machine:
         post:
-          - ./daemon
+          - ./daemon:
               background: true
           - sleep 5
 
