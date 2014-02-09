@@ -58,6 +58,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @error = new CI.outer.Error("error", "Error")
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
     # @security = new CI.outer.Page("security", "Security", "View Security")
@@ -96,10 +97,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
        @project().loaded_settings() &&
         !@project().followed() &&
          @project().project_name() is @current_page().project_name
-
-    # disable olark all the time
-    # TODO: remove this once the server-side olark removal change propagates
-    CI.olark.disable()
 
     if window.renderContext.current_user
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
@@ -445,6 +442,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/about.*", (cx) => VM.about.display(cx)
   @get "^/privacy.*", (cx) => VM.privacy.display(cx)
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
   # @get "^/security.*", (cx) => VM.security.display(cx)
 
