@@ -42,20 +42,14 @@ CI.time =
     minutes = now.diff date, "minutes"
     seconds = now.diff date, "seconds"
 
-    if seconds is 1
-      "1s ago"
-    else if seconds < 45
-      "#{seconds}s ago"
-    else if date.clone().startOf('day').diff(yesterday) == 0
-      "Yesterday"
-    else if minutes < 30
-      date.from now # use instead of fromNow because fromNow isn't properly mocked by sinon
-    else if hours < 5
-      date.from(now) + date.format " (h:mma)"
-    else if hours < 24
+    if minutes < 1
+      "just now"
+    else if hours < 1
+      "#{minutes}m ago"
+    else if date.clone().startOf('day').diff(yesterday) is 0 and hours > 18 and hours < 48
+      "yesterday"
+    else if days < 1
       date.format "h:mma"
-    else if days < 6
-      date.format "dddd"
     else if days < 365
       date.format "MMM D"
     else
