@@ -11,7 +11,7 @@
       / ko if: VM.current_page().show_queued
       %th Queued
       / /ko
-      %th Started at
+      %th Started
       %th Length
       %th Status
       - if @actions
