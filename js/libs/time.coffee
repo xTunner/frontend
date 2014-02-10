@@ -99,11 +99,9 @@ CI.time =
       display_minutes = "0" + display_minutes
 
     if hours > 0
-      "#{hours}:#{display_minutes}"
-    else if minutes >= 1
-      "#{minutes}:#{display_seconds}"
+      "#{hours}:#{display_minutes}:#{display_seconds}"
     else
-      "#{seconds}s"
+      "#{display_minutes}:#{display_seconds}"
 
   as_estimated_duration: (duration) =>
     seconds = Math.floor(duration / 1000)
