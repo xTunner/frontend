@@ -240,7 +240,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       else
         if @status() == "canceled"
           # build was canceled from the queue
-          "canceled"
+          "Canceled"
         else if @start_time()
           duration_millis = @updatingDuration(@start_time())
           CI.time.as_duration_condensed(duration_millis) + @estimated_time(duration_millis)
