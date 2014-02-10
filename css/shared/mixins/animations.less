@@ -1,6 +1,5 @@
 .animation(@arguments) {
   -webkit-animation: @arguments;
-     -moz-animation: @arguments;
           animation: @arguments;
 }
 .transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
@@ -25,8 +24,15 @@
     -webkit-animation-duration: 1s;
   }
 }
-
+@-webkit-keyframes spin-right {
+  0%   {-webkit-transform: rotate(  0deg);}
+  100% {-webkit-transform: rotate(360deg);}
+}
+@keyframes spin-right {
+  0%   {transform: rotate(  0deg);}
+  100% {transform: rotate(360deg);}
+}
 @-webkit-keyframes slide-in {
-  0% { -webkit-transform: translate(0, -100%); }
-  100% {   -webkit-transform: translate(0, 0); }
+  0%   {-webkit-transform: translate(0, -100%);}
+  100% {-webkit-transform: translate(0, 0);    }
 }
