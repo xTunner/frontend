@@ -2,17 +2,19 @@
 
 #dashboard
 
-  / ko ifnot: dashboard_ready
-  != HAML.flashes({})
-  != HAML.spinner({size: "large"})
-  / /ko
-
-  / ko if: dashboard_ready
+  / ko if: projects_have_been_loaded
   %aside
     != HAML['action_sidebar']({})
     != HAML['followed_sidebar']({})
     .shadowX
+  / /ko
 
+  / ko ifnot: builds_have_been_loaded
+  != HAML.flashes({})
+  != HAML.spinner({size: "large"})
+  / /ko
+
+  / ko if: builds_have_been_loaded
   .dash-wrap
     .dashboard-main
 
