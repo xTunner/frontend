@@ -108,16 +108,17 @@
     float: left;
     display: block;
   }
-  .actions {
-    position: absolute;
-    top: 2em;
-    right: 0;
-    margin: 0;
-  }
+  // (TODO, #1351) part of overlapping buttons bug
+  // .actions {
+  //   position: absolute;
+  //   top: 2em;
+  //   right: 0;
+  //   margin: 0;
+  // }
   .commit-log {
-    padding-top: 1em;
+    // padding-top: 1em; // (TODO, #1351) part of overlapping buttons bug
     margin: 1em 0;
-    border-top: 1px solid lighten(@gray,55.50%);
+    // border-top: 1px solid lighten(@gray,55.50%); // (TODO, #1351) part of overlapping buttons bug
     dd {
       max-width: 80%; // prevent overflow
     }
@@ -421,3 +422,13 @@
     margin: 0 auto;
   }
 }
+// hi, i am a mortal sin-of-a-hack, please kill me...
+.build-page-header {
+  .flexBox();
+  .build-table-top { display: block; }
+  .actions {
+    .flex(0, 0);
+    margin: 2em 0;
+  }
+}
+// ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
