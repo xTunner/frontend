@@ -7,9 +7,15 @@
   <!-- ko ifnot: usage_queued -->
     / ko if: run_queued
     %p
+      %span Circle has spent
+      %strong{data-bind: "duration: run_queued_time"}
+      %span acquiring containers to run your build.
     / /ko
     / ko if: run_queued_time == true && run_queued == false
     %p
+      %span Circle spent
+      %strong{data-bind: "duration: run_queued_time"}
+      %span acquiring containers to run your build.
     / /ko
   <!-- /ko -->
   <!--  ko if: usage_queue_why().length -->
@@ -20,26 +26,19 @@
     %h5 Currently queued behind these:
     / /ko
   <!-- /ko -->
+  %p
+    %span Your build
     %span{data-bind: "text: usage_queued() ? 'has':''"}
-    spent
+    %span spent
     %strong{data-bind: "duration: usage_queued_time"}
-    in your queue waiting for your other builds to finish.
-        Circle has spent
-        %strong{data-bind: "duration: run_queued_time"}
-        acquiring containers to run your build.
-          Circle spent
-          %strong{data-bind: "duration: run_queued_time"}
-          acquiring containers to run your build.
+    %span in your queue waiting for your other builds to finish.
 
-        Your build will start when some of these builds finish and free up containers:
-        Your build was queued behind these builds:
       != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
-        If your builds spend a lot of time waiting for other builds to finish, you can
-        != succeed ".", ->
-          %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"}<
-            add more containers from your plan page
     <!--  ko with: $root.project -->
       / ko if: billing.existing_plan_loaded
+      %span If your builds spend a lot of time waiting for other builds to finish, you can
+      %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
+      %span from your plan page
       / /ko
     <!-- /ko -->
 <!-- /ko -->
