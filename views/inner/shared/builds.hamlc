@@ -48,10 +48,10 @@
 
       / ko if: status() != 'not_run'
       %td.live.time
-        %a{data-bind: "attr: { href: url, title: pretty_start_time }, text: recent_builds_start"}
+        %a{data-bind: "attr: { href: url, title: start_time_stamp }, text: pretty_start_time"}
 
       %td.live.time
-        %a{data-bind: "attr: { href: url, title: duration }, text: duration_condensed"}
+        %a{data-bind: "attr: { href: url, title: duration }, text: duration"}
       / /ko
 
       / ko if: status() == 'not_run'
