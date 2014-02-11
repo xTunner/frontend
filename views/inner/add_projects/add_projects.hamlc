@@ -4,7 +4,8 @@
   != HAML['org_sidebar']({})
   .proj-wrapper
     / ko if: showLoading
-    != HAML.spinner({loading: true})
+    .loading-spinner
+      != HAML.spinner({})
     / /ko
     / ko ifnot: showLoading
     != HAML['add_projects_main']({})

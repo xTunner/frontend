@@ -1,6 +1,7 @@
 .container-fluid.org-page
   / ko ifnot: VM.org_has_been_loaded
-  != HAML.spinner({size: "large"})
+  .loading-spinner
+    != HAML.spinner({})
   / /ko
   / ko if: VM.org_has_been_loaded
   .row-fluid

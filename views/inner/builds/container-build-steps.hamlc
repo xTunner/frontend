@@ -41,7 +41,8 @@
             .detail-wrapper{data-bind: "if: has_content"}
               .detail{data-bind: "css: action_log_style, visible: !minimize()"}
                 / ko if: retrieving_output
-                != HAML.spinner({loading: true})
+                .loading-spinner
+                  != HAML.spinner({})
                 / /ko
 
                 %div#action-log-messages{data-bind: "ifnot: retrieving_output"}

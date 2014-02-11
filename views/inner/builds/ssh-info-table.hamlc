@@ -8,8 +8,8 @@
     %dd{data-bind: "css: { connected: $data.ssh_enabled }"
       %span{data-bind: "text: $parent.ssh_connection_string($data)"}
       / ko ifnot: $data.ssh_enabled
-      %span
-        != HAML.spinner({size: "0.8"})
+      %span.loading-spinner
+        != HAML.spinner({})
       / /ko
 
 %p

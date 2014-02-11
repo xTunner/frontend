@@ -3,7 +3,8 @@
 #dashboard
 
   / ko ifnot: project_dashboard_ready
-  != HAML.spinner({size: "large"})
+  .loading-spinner
+    != HAML.spinner({})
   / /ko
 
   / ko if: project_dashboard_ready

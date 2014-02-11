@@ -1,7 +1,8 @@
 %h2 Change parallelism for
   %span{data-bind: "text: project_name"}
 / ko if: loading_billing"}
-!= HAML.spinner({loading: true})
+.loading-spinner
+  != HAML.spinner({})
 / /ko
 
 .try-out-build{data-bind: "if: show_test_new_settings"}

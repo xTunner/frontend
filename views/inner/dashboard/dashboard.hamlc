@@ -11,7 +11,8 @@
 
   / ko ifnot: builds_have_been_loaded
   != HAML.flashes({})
-  != HAML.spinner({size: "large"})
+  .loading-spinner
+    != HAML.spinner({})
   / /ko
 
   / ko if: builds_have_been_loaded

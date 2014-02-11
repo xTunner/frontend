@@ -22,17 +22,19 @@ label.sticky {
 label.stickyArea {
   .stickyLabelTextarea();
 }
-[class$="loading-spinner"] {
-  display: inherit;
-  margin: auto;
-  align-self: center;
-  .dimensions(@spinnerSize);
-}
-.small-loading-spinner {
-  .dimensions(1em);
-}
-.large-loading-spinner {
-  .dimensions(5em);
+.loading-spinner {
+  svg {
+    display: inherit;
+    margin: auto;
+    width: 1em;
+    height: 1em;
+  }
+  &:not(span) {
+    svg {
+      width: @spinnerSize;
+      height: @spinnerSize;
+    }
+  }
 }
 .fa.fa-spin {
   -moz-animation: spin 1s infinite linear;

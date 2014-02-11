@@ -1,6 +1,7 @@
 .dashboard-main
   / ko ifnot: builds_have_been_loaded
-  != HAML.spinner({loading: true})
+  .loading-spinner
+    != HAML.spinner({})
   / /ko
   / ko if: builds_have_been_loaded
     %h2
