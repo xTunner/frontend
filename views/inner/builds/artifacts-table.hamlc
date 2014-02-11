@@ -2,7 +2,7 @@
   .artifacts.span12.well
     / ko ifnot: artifacts
     .loading-spinner
-       != HAML.spinner({})
+      != HAML.spinner({})
     / /ko
     %div{data-bind: "if: artifacts"}
       %ul{data-bind: "foreach: artifacts"}
