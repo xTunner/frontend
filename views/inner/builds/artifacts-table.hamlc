@@ -1,7 +1,8 @@
 .row-fluid{data-bind: "visible: artifacts_visible"}
   .artifacts.span12.well
     / ko ifnot: artifacts
-    != HAML.spinner({loading: true})
+    .loading-spinner
+       != HAML.spinner({})
     / /ko
     %div{data-bind: "if: artifacts"}
       %ul{data-bind: "foreach: artifacts"}

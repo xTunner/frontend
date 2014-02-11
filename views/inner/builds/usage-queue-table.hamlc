@@ -1,6 +1,7 @@
 .usage-queue-why{data-bind: "visible: usage_queue_visible"}
   / ko ifnot: usage_queue_why
-  != HAML.spinner({loading: true})
+  .loading-spinner
+     != HAML.spinner({})
   / /ko
   %div{data-bind: "if: usage_queue_why"}
     Your build
