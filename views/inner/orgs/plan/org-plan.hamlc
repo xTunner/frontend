@@ -11,8 +11,7 @@
 
   != HAML.pricing_plans()
 
-  - if VM.ab().customer_logos()
-    != HAML.plans_customers()
+  != HAML.plans_customers()
 
   != HAML.pricing_features()
   != HAML.pricing_faq()
