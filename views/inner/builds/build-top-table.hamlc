@@ -1,111 +1,113 @@
-.build-header
+.build-header-wrapper
 
-  .build-info-actions
+  .build-header
 
-    %table.build-table-top
-      %tbody
+    .build-info-actions
 
-        %tr
-          %th Author:
-          %td
-            %a{data-bind: "text: author, attr: {href: author_mailto}"}
-          %th Started:
-          %td{data-bind: "text: pretty_start_time"}
+      %table.build-table-top
+        %tbody
 
-        %tr
-          %th Trigger:
-          %td{data-bind: "text: why_in_words"}
-          %th Duration:
-          %td{data-bind: "text: duration"}
-
-        %tr
-          %th Previous:
-          %td
-            / ko ifnot: previous_build
-            %span none
-            / /ko
-            / ko if: previous_build
-            %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
-            / /ko
-          %th Status:
-          %td
-            %span.label{data-bind: "text: status_words, css: style"}
-
-        <!-- ko if: show_queued_p || author_isnt_committer -->
           %tr
-            / ko if: show_queued_p
-            %th Queued:
+            %th Author:
             %td
-              %span{data-bind: "text: queued_time_summary"}
-              %span{data-bind: "click: toggle_usage_queue_why", role: "button"}
-                %a view usage queue
-                %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
-            / /ko
-            / ko if: author_isnt_committer
-            %th Committer:
+              %a{data-bind: "text: author, attr: {href: author_mailto}"}
+            %th Started:
+            %td{data-bind: "text: pretty_start_time"}
+
+          %tr
+            %th Trigger:
+            %td{data-bind: "text: why_in_words"}
+            %th Duration:
+            %td{data-bind: "text: duration"}
+
+          %tr
+            %th Previous:
             %td
-              %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+              / ko ifnot: previous_build
+              %span none
+              / /ko
+              / ko if: previous_build
+              %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
+              / /ko
+            %th Status:
+            %td
+              %span.label{data-bind: "text: status_words, css: style"}
+
+          <!-- ko if: show_queued_p || author_isnt_committer -->
+            %tr
+              / ko if: show_queued_p
+              %th Queued:
+              %td
+                %span{data-bind: "text: queued_time_summary"}
+                %span{data-bind: "click: toggle_usage_queue_why", role: "button"}
+                  %a view usage queue
+                  %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
+              / /ko
+              / ko if: author_isnt_committer
+              %th Committer:
+              %td
+                %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+              / /ko
+          <!-- /ko -->
+
+      %dl.actions
+        %dd
+          %button.btn.btn-danger{data-bind: "click: report_build",
+                                 title: "Report an error in how Circle ran this build"} Report...
+
+          .btn-group
+            %button.btn.btn-primary{data-bind: "click: retry_build",
+                                title: "Rerun the same version of the tests",
+                                data-loading-text: "Triggering...",
+                                data-success-text: "Triggered"} Retry
+            %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                %a{href: '#', data-bind: "click: clear_cache_and_retry_build"} Clear Cache &amp; Retry
+
+          %button.btn.btn-primary{data-bind: "click: ssh_build",
+                                title: "Rerun the tests, with SSH into the VM",
+                                data-loading-text: "Triggering...",
+                                data-success-text: "Triggered"} SSH
+          %span{data-bind: "if: can_cancel()"}
+            %button.btn.btn-primary{data-bind: "click: cancel_build",
+                                    title: "Cancel the build immediately",
+                                    data-loading-text: "Canceling...",
+                                    data-success-text: "Canceled"} Cancel
+
+    .usage-queue{data-bind: "visible: usage_queue_visible"}
+      != HAML.usage_queue_table({})
+
+    <!-- ko if: rest_commits().length -->
+      .commit-log
+        .commit-log-title{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}", role: "button"}
+          %span Commit Log
+          %a{data-bind: "visible: rest_commits().length"}
+            / ko ifnot: rest_commits_visible()
+            %span{data-bind: "text: 'show all ' + rest_commits().length + ' logs'"}
             / /ko
-        <!-- /ko -->
+            / ko if: rest_commits_visible()
+            %span hide
+            / /ko
+            %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': rest_commits_visible}"}
+        .commit-log-list
+          != HAML.build_commit_log()
+    <!-- /ko -->
 
-    %dl.actions
-      %dd
-        %button.btn.btn-danger{data-bind: "click: report_build",
-                               title: "Report an error in how Circle ran this build"} Report...
+    <!-- ko if: ssh_enabled_now() -->
+      .ssh-info
+        .ssh-title
+          %span SSH Info
+          %i.fa.fa-question-circle{data-bind: "popover: {placement: 'right', title: 'SSH', content: 'You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done.'}", role: "button"}
+        != HAML.ssh_info_table({})
+    <!-- /ko -->
 
-        .btn-group
-          %button.btn.btn-primary{data-bind: "click: retry_build",
-                              title: "Rerun the same version of the tests",
-                              data-loading-text: "Triggering...",
-                              data-success-text: "Triggered"} Retry
-          %button.btn.btn-primary.dropdown-toggle{data-toggle: "dropdown"}
-            %span.caret
-          %ul.dropdown-menu
-            %li
-              %a{href: '#', data-bind: "click: clear_cache_and_retry_build"} Clear Cache &amp; Retry
+    <!-- ko if: has_artifacts -->
+      .artifacts
+        .artifacts-title{data-bind: "click: toggle_artifacts", role: "button"}
+          %span Build Artifacts
+          %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
 
-        %button.btn.btn-primary{data-bind: "click: ssh_build",
-                              title: "Rerun the tests, with SSH into the VM",
-                              data-loading-text: "Triggering...",
-                              data-success-text: "Triggered"} SSH
-        %span{data-bind: "if: can_cancel()"}
-          %button.btn.btn-primary{data-bind: "click: cancel_build",
-                                  title: "Cancel the build immediately",
-                                  data-loading-text: "Canceling...",
-                                  data-success-text: "Canceled"} Cancel
-
-  .usage-queue{data-bind: "visible: usage_queue_visible"}
-    != HAML.usage_queue_table({})
-
-  <!-- ko if: rest_commits().length -->
-    .commit-log
-      .commit-log-title{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}", role: "button"}
-        %span Commit Log
-        %a{data-bind: "visible: rest_commits().length"}
-          / ko ifnot: rest_commits_visible()
-          %span{data-bind: "text: 'show all ' + rest_commits().length + ' logs'"}
-          / /ko
-          / ko if: rest_commits_visible()
-          %span hide
-          / /ko
-          %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': rest_commits_visible}"}
-      .commit-log-list
-        != HAML.build_commit_log()
-  <!-- /ko -->
-
-  <!-- ko if: ssh_enabled_now() -->
-    .ssh-info
-      .ssh-title
-        %span SSH Info
-        %i.fa.fa-question-circle{data-bind: "popover: {placement: 'right', title: 'SSH', content: 'You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done.'}", role: "button"}
-      != HAML.ssh_info_table({})
-  <!-- /ko -->
-
-  <!-- ko if: has_artifacts -->
-    .artifacts
-      .artifacts-title{data-bind: "click: toggle_artifacts", role: "button"}
-        %span Build Artifacts
-        %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
-
-      != HAML.artifacts_table({})
-  <!-- /ko -->
+        != HAML.artifacts_table({})
+    <!-- /ko -->
