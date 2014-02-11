@@ -51,7 +51,15 @@
     'project/:username/:project':
       description: "Build summary for each of the last 30 builds for a single git repo."
       method: "GET"
-      params: [{name: "limit", description: "The number of builds to return. Maximum 100, defaults to 30.", example: 20}, {name: "offset", description: "The API returns builds starting from this offset, defaults to 0.", example: 5}]
+      params: [
+            name: "limit"
+            description: "The number of builds to return. Maximum 100, defaults to 30."
+            example: 20
+          ,
+            name: "offset"
+            description: "The API returns builds starting from this offset, defaults to 0."
+            example: 5
+          ]
       response: """
       [ {
         "vcs_url" : "https://github.com/circleci/mongofinil",
@@ -81,7 +89,15 @@
     'recent-builds':
       description: "Build summary for each of the last 30 recent builds, ordered by build_num."
       method: "GET"
-      params: [{name: "limit", description: "The number of builds to return. Maximum 100, defaults to 30.", example: 20}, {name: "offset", description: "The API returns builds starting from this offset, defaults to 0.", example: 5}]
+      params: [
+          name: "limit"
+          description: "The number of builds to return. Maximum 100, defaults to 30."
+          example: 20
+        ,
+          name: "offset"
+          description: "The API returns builds starting from this offset, defaults to 0."
+          example: 5
+        ]
       response: """
       [ {
         "vcs_url" : "https://github.com/circleci/mongofinil",
