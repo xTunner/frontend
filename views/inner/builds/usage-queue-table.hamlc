@@ -1,5 +1,4 @@
 .usage-queue-why{data-bind: "visible: usage_queue_visible"}
-    Your build
 / ko ifnot: usage_queue_why
 != HAML.fast_spinner({})
 / /ko
