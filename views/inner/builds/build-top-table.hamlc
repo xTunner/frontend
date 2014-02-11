@@ -36,21 +36,9 @@
               %span.label{data-bind: "text: status_words, css: style"}
 
 
-          %tr
-              %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"
-
-            %td{data-bind: "text: queued_time_summary"}
-            %td
-              %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
 
 
-          %tr
-            %td{colspan: "4"}
-              != HAML.usage_queue_table({})
 
-          %tr
-            %td{colspan: "4"}
-              != HAML.build_commit_log()
 
 
 
@@ -99,6 +87,24 @@
     %dl.ssh_info
       %dt SSH Info
       %dd
+    .usage-queue{data-bind: "visible: usage_queue_visible"}
+      != HAML.usage_queue_table({})
+
+    <!-- ko if: rest_commits().length -->
+      .commit-log
+        .commit-log-title{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}", role: "button"}
+          %span Commit Log
+          %a{data-bind: "visible: rest_commits().length"}
+            / ko ifnot: rest_commits_visible()
+            %span{data-bind: "text: 'show all ' + rest_commits().length + ' logs'"}
+            / /ko
+            / ko if: rest_commits_visible()
+            %span hide
+            / /ko
+            %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': rest_commits_visible}"}
+        .commit-log-list
+          != HAML.build_commit_log()
+    <!-- /ko -->
         != HAML.ssh_info_table({})
     / /ko
 
