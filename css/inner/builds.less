@@ -1,9 +1,16 @@
 @sideLineWidth: 5px;
-.build-table {
+.build-header {
   background: @whiten;
   color: @gray;
   box-shadow: 0 1px @grayBorder;
   margin-bottom: 1.5em;
+  padding-bottom: 2em;
+  dl {
+    margin: 0;
+  }
+  *[role="button"] {
+    cursor: pointer;
+  }
   h4 {
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
@@ -84,15 +91,6 @@
     .connected {
       color: #666;
     }
-  }
-}
-.build-page-header {
-  padding-bottom: 2em;
-  dl {
-    margin: 0;
-  }
-  *[role="button"] {
-    cursor: pointer;
   }
 }
 .build-info-actions {
