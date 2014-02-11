@@ -37,15 +37,11 @@
 
 
           %tr
-            / ko if: show_queued_p
               %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"
 
             %td{data-bind: "text: queued_time_summary"}
-            / /ko
-            / ko if: author_isnt_committer
             %td
               %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
-            / /ko
 
 
           %tr
@@ -58,8 +54,14 @@
 
 
 
+          <!-- ko if: show_queued_p || author_isnt_committer -->
+              / ko if: show_queued_p
               %th Queued:
+              / /ko
+              / ko if: author_isnt_committer
               %th Committer:
+              / /ko
+          <!-- /ko -->
 
       %dl.actions
         %dd
