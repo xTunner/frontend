@@ -1,6 +1,7 @@
 / ko ifnot: usage_queue_why
 != HAML.fast_spinner({})
 / /ko
+
 <!-- ko if: usage_queue_why -->
   <!-- ko ifnot: usage_queued -->
     / ko if: run_queued
@@ -16,6 +17,7 @@
       %span acquiring containers to run your build.
     / /ko
   <!-- /ko -->
+
   <!--  ko if: usage_queue_why().length -->
     / ko if: usage_queued
     %h5 Your build will start when some of these builds finish and free up containers:
@@ -25,6 +27,7 @@
     / /ko
     != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
   <!-- /ko -->
+
   %p
     %span Your build
     %span{data-bind: "text: usage_queued() ? 'has':''"}
