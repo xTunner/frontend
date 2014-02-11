@@ -26,6 +26,7 @@
             %th Previous:
             %td
               / ko ifnot: previous_build
+              %span none
               / /ko
               / ko if: previous_build
               %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
