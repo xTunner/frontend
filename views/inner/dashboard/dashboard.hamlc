@@ -11,7 +11,7 @@
     .shadowX
   / /ko
 
-  / ko ifnot: builds_have_been_loaded
+  / ko ifnot: dashboard_ready
   .loading-spinner
     != HAML.spinner({})
   / /ko
