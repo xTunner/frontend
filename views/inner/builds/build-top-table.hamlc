@@ -23,11 +23,13 @@
 
 
           %tr
-            / ko if: previous_build
             %th Previous:
             %td
+              / ko ifnot: previous_build
+              / /ko
+              / ko if: previous_build
               %a{data-bind: "text: previous_build, attr: {href: urlForBuildNum(previous_build())}"}
-            / /ko
+              / /ko
             %th Status:
             %td
               %span.label{data-bind: "text: status_words, css: style"}
