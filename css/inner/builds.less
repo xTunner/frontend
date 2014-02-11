@@ -1,49 +1,4 @@
 @sideLineWidth: 5px;
-.usage-queue {
-  .spinner-container {
-    text-align: center;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    i {
-      font-size: 1.5em;
-    }
-  }
-  .builds-table {
-    .tableLight();
-    margin-bottom: 1em;
-    ~ .shadowX {     //
-      display: none; // remove after dashboard refactor (or when shadowX is deleted)
-    }                //
-  }
-}
-#action-log-messages {
-  border-radius: 5px;
-  overflow: hidden;
-  width: 100%;
-  .exit-code {
-    color: @grayLightest;
-    font-size: @fontSizeSmall;
-    font-family: @monoFontFamily;
-    font-weight: bold;
-    margin: 1em 1em 0 1em;
-  }
-  .click-to-scroll {
-    display: none;
-    width: 1em;
-    height: 1em;
-    position: absolute;
-    right: 1em;
-    cursor: pointer;
-    font-size: 1.5em;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: 1.5em;
-  }
-  &:hover {
-    .click-to-scroll {
-      display: block;
-    }
-  }
-}
 .build-table {
   background: @whiten;
   color: @gray;
@@ -141,6 +96,69 @@
     }
     .connected {
       color: #666;
+    }
+  }
+}
+.build-page-header {
+  padding: 1em 0;
+  dl {
+    margin: 0;
+  }
+  *[role="button"] {
+    cursor: pointer;
+  }
+}
+.build-info-actions {
+  .flexBox();
+  .build-table-top {
+    display: block;
+  }
+  .actions {
+    .flex(0, 0);
+  }
+}
+.usage-queue {
+  .spinner-container {
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    i {
+      font-size: 1.5em;
+    }
+  }
+  .builds-table {
+    .tableLight();
+    margin-bottom: 1em;
+    ~ .shadowX {     //
+      display: none; // remove after dashboard refactor (or when shadowX is deleted)
+    }                //
+  }
+}
+#action-log-messages {
+  border-radius: 5px;
+  overflow: hidden;
+  width: 100%;
+  .exit-code {
+    color: @grayLightest;
+    font-size: @fontSizeSmall;
+    font-family: @monoFontFamily;
+    font-weight: bold;
+    margin: 1em 1em 0 1em;
+  }
+  .click-to-scroll {
+    display: none;
+    width: 1em;
+    height: 1em;
+    position: absolute;
+    right: 1em;
+    cursor: pointer;
+    font-size: 1.5em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 1.5em;
+  }
+  &:hover {
+    .click-to-scroll {
+      display: block;
     }
   }
 }
@@ -410,23 +428,5 @@
   .alert-wrap {
     text-align: center;
     margin: 0 auto;
-  }
-}
-.build-info-actions {
-  .flexBox();
-  .build-table-top {
-    display: block;
-  }
-  .actions {
-    .flex(0, 0);
-  }
-}
-.build-page-header {
-  padding: 1em 0;
-  dl {
-    margin: 0;
-  }
-  *[role="button"] {
-    cursor: pointer;
   }
 }
