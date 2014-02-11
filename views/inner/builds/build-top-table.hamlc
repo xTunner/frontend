@@ -1,7 +1,6 @@
 .row-fluid.build-table#build-log-header
   .span10.offset1.build-page-header
 
-    -# fix me soon please. part of TODO (#1351)
     .build-info-actions
 
       %table.build-table-top
