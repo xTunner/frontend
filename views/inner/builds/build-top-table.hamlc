@@ -5,7 +5,6 @@
     .build-info-actions
 
       %table.build-table-top
-
         %tbody
 
           %tr
@@ -21,7 +20,6 @@
             %th Duration:
             %td{data-bind: "text: duration"}
 
-
           %tr
             %th Previous:
             %td
@@ -35,19 +33,20 @@
             %td
               %span.label{data-bind: "text: status_words, css: style"}
 
-
-
-
-
-
-
-
           <!-- ko if: show_queued_p || author_isnt_committer -->
+            %tr
               / ko if: show_queued_p
               %th Queued:
+              %td
+                %span{data-bind: "text: queued_time_summary"}
+                %span{data-bind: "click: toggle_usage_queue_why", role: "button"}
+                  %a view usage queue
+                  %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
               / /ko
               / ko if: author_isnt_committer
               %th Committer:
+              %td
+                %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
               / /ko
           <!-- /ko -->
 
@@ -77,10 +76,6 @@
                                     data-loading-text: "Canceling...",
                                     data-success-text: "Canceled"} Cancel
 
-    / ko if: ssh_enabled_now()
-    %dl.ssh_info
-      %dt SSH Info
-      %dd
     .usage-queue{data-bind: "visible: usage_queue_visible"}
       != HAML.usage_queue_table({})
 
@@ -99,18 +94,20 @@
         .commit-log-list
           != HAML.build_commit_log()
     <!-- /ko -->
+
+    <!-- ko if: ssh_enabled_now() -->
+      .ssh-info
+        .ssh-title
+          %span SSH Info
+          %i.fa.fa-question-circle{data-bind: "popover: {placement: 'right', title: 'SSH', content: 'You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done.'}", role: "button"}
         != HAML.ssh_info_table({})
-    / /ko
+    <!-- /ko -->
 
-    / ko if: has_artifacts
-    %dl.artifacts
+    <!-- ko if: has_artifacts -->
+      .artifacts
+        .artifacts-title{data-bind: "click: toggle_artifacts", role: "button"}
+          %span Build Artifacts
+          %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
 
-      %div.artifacts-def{data-bind: "click: toggle_artifacts"}
-        %dt
-          Build Artifacts
-          %span
-            %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
-        %dd
-
-    != HAML.artifacts_table({})
-    / /ko
+        != HAML.artifacts_table({})
+    <!-- /ko -->
