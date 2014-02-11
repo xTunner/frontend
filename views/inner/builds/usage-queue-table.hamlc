@@ -25,6 +25,7 @@
     / ko ifnot: usage_queued
     %h5 Currently queued behind these:
     / /ko
+    != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
   <!-- /ko -->
   %p
     %span Your build
@@ -33,7 +34,6 @@
     %strong{data-bind: "duration: usage_queued_time"}
     %span in your queue waiting for your other builds to finish.
 
-      != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
     <!--  ko with: $root.project -->
       / ko if: billing.existing_plan_loaded
       %span If your builds spend a lot of time waiting for other builds to finish, you can
