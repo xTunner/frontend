@@ -67,18 +67,6 @@
       }
     }
   }
-  .artifacts,
-  .ssh-info {
-    list-style: none;
-    margin: 1em 0 0 0;
-    padding-top: 1em;
-    border-top: 1px solid #D7DCE3;
-    *[class$="-title"] {
-      > span {
-        font-weight: bold;
-      }
-    }
-  }
   .ssh-info-table {
     dt {
       width: 20px;
@@ -118,6 +106,18 @@
     ~ .shadowX {     //
       display: none; // remove after dashboard refactor (or when shadowX is deleted)
     }                //
+  }
+}
+.build-header-artifacts,
+.build-header-ssh {
+  list-style: none;
+  margin: 1em 0 0 0;
+  padding-top: 1em;
+  border-top: 1px solid #D7DCE3;
+  *[class$="-title"] {
+    > span {
+      font-weight: bold;
+    }
   }
 }
 #action-log-messages {
