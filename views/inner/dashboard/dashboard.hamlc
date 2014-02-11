@@ -2,6 +2,8 @@
 
 #dashboard
 
+  != HAML.flashes({})
+
   / ko if: projects_have_been_loaded
   %aside
     != HAML['action_sidebar']({})
@@ -10,7 +12,6 @@
   / /ko
 
   / ko ifnot: builds_have_been_loaded
-  != HAML.flashes({})
   .loading-spinner
     != HAML.spinner({})
   / /ko
@@ -19,7 +20,6 @@
   .dash-wrap
     .dashboard-main
 
-      != HAML.flashes({})
 
       %div{data-bind: "if: dashboard_ready"}
 
