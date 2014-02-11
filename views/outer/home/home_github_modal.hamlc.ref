@@ -7,25 +7,7 @@
       Once you've clicked the 'Authorize application' button on the next screen you'll be running your tests in no time! And don't worry, the security and privacy of your code is our #1 priority and we take it 
       %a{data-bind: "click: goPrivacy"} very seriously.
       %br
-    %div.company-container.row
-      %h4
-        %span Trusted By
-      .company
-        %img{src: '(data-uri "img/logos/stripe.png")',
-             title: "Stripe"}
-      .company
-        %img{src: '(data-uri "img/logos/salesforce.png")',
-             title: "Salesforce"}
-      .company
-        %img{src: '(data-uri "img/logos/kickstarter.png")',
-             title: "Kickstarter"}
-      .company
-        %img{src: '(data-uri "img/logos/cisco.png")',
-             title: "Cisco"}
-      .company
-        %img{src: '(data-uri "img/logos/shopify.png")',
-             title: "Shopify"}
-      %span.stretch
+    != HAML.customers_trust()
     .center-btn
       %a.btn.btn-primary.bold-btn{href: CI.github.authUrl(),
                                   title: 'Sign up with Github',
