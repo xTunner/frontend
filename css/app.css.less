@@ -1,11 +1,29 @@
+// Vendor styles
 @import "bootstrap/bootstrap.less";
-
-@import "shared/variables.less";
-@import "shared/shared.less";
-@import "shared/pricing.less";
-
 @import "../vendor/old-intercom.less";
 
-
+// App styles
+@import "shared/shared.less";
 @import "outer/outer.less";
 @import "inner/inner.less";
+
+// A/B Tests
+
+.old-font {
+  font-family: 'Ubuntu', sans-serif;
+  .old-font-SourceSans {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+  .were-number-one {
+    .old-font-SourceSans();
+  }
+  .get-started {
+    .old-font-SourceSans();
+    ol li {
+      font-size: 22px;
+    }
+  }
+  #hero h1 {
+    .old-font-SourceSans();
+  }
+}

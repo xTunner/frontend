@@ -1,5 +1,4 @@
 @sideLineWidth: 5px;
-
 .usage-queue-why {
   margin-top: 20px;
   .spinner-container {
@@ -14,7 +13,6 @@
     .tableLight();
   }
 }
-
 #action-log-messages {
   border-radius: 5px;
   overflow: hidden;
@@ -43,14 +41,12 @@
     }
   }
 }
-
 .build-table {
   background: @whiten;
-  top: 83px;
   color: @gray;
-  padding-top: 1em;
-  box-shadow: 0 1px lighten(@gray,55.50%);
+  box-shadow: 0 1px @grayBorder;
   margin-bottom: 1.5em;
+  margin-top: -2em;
   h4 {
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
@@ -105,18 +101,16 @@
   .artifacts-def {
     cursor: pointer;
   }
-
   p.reponame {
     font-weight: bold;
   }
-
   dd {
     float: left;
     display: block;
   }
   .actions {
     position: absolute;
-    top: 0;
+    top: 2em;
     right: 0;
     margin: 0;
   }
@@ -127,13 +121,17 @@
     dd {
       max-width: 80%; // prevent overflow
     }
-    .rest-commits:hover {
-      cursor: pointer;
-    }
     a.sha-one {
       color: @blue;
       i {
         font-size: 14px;
+      }
+    }
+    .count{
+      font-weight: lighter;
+      margin-left: 10px;
+      &:hover{
+        text-decoration: none;
       }
     }
   }
@@ -155,7 +153,6 @@
     }
   }
 }
-
 .action-source {
   float: right;
   font-style: italic;
@@ -165,47 +162,42 @@
   border-bottom: 1px solid #777;
   line-height: 0.1em;
   margin: 30px 0 7px;
-
   span {
-    background: @outerBodyBackground;
+    background: @appBackgroundColor;
     color: #777;
     font-size: 16px;
     padding: 0 10px;
   }
 }
-
 .build-output-active {
   background: #d7dce3;
   .action_header {
     background: #1a3d64;
   }
 }
+
 .build-output  {
   background-color: @whiten;
-  .rotate3d(0, 0, 0, 0deg);
   .border-radius;
-
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
   margin-bottom: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
   color: @gray;
   font-weight: normal;
-
   .action_header {
-
     &.success > .ah_wrapper:before { background: @green; }
     &.failed > .ah_wrapper:before { background: @redLight; }
     &.running > .ah_wrapper:before { background: @yellow; }
+    &.canceled > .ah_wrapper:before { background: @grayLight; }
     &.failed .header.running { background: @lightYellow; }
-
    &.failed .header.failed { background: @redLight; height: 40px; }
    &.failed .header.running { background: @lightYellow; }
-
     .time {
       float: right;
       margin: 0 1em;
     }
   }
-
   .output {
     margin: 0;
     border: none;
@@ -215,7 +207,6 @@
     border-radius: 0;
     padding: 1em;
   }
-
   .detail {
     text-shadow: none;
     padding: 1em;
@@ -271,13 +262,12 @@
       }
     }
   }
-  .minimize .ah_wrapper {
-    .fa.fa-chevron-up {
-      .rotate3d(1, 0, 0, 180deg);
+  .action_header:not(.minimize) .ah_wrapper {
+    .fa.fa-chevron-down {
+      .rotate(180);
     }
   }
   .ah_wrapper {
-
     &:before {
       content: "";
       position: absolute;
@@ -287,12 +277,10 @@
       height: 100%;
       width: @sideLineWidth;
     }
-
     .header.contents {
       // only show the cursor if clicking gets you anywhere
       cursor: pointer;
     }
-
     min-height: 40px;
     position: relative;
     border: 1px solid lighten(@gray,55.50%);
@@ -301,7 +289,6 @@
     text-shadow: 0 1px 0 rgba(255,255,255,.1);
     box-shadow: 0 1px @white inset;
     overflow: hidden; // put the contents beside each other
-
     .button {
       float: left; // put to the right of .command
       background-repeat: no-repeat;
@@ -312,9 +299,8 @@
       margin-left: 10px;
       height: 30px; // the button has no size without this
       width: 30px; // the button has no size without this
-
     }
-    .fa.fa-chevron-up {
+    .fa.fa-chevron-down {
       color: @whiten;
       display: inline-block;
       transition: all .2s ease;
@@ -334,33 +320,23 @@
     }
   }
 }
-
 .dont_build {
   .build_log {
     text-decoration: line-through;
   }
-
   .not_run_message {
     text-align: center;
   }
 }
-
 #build-log-container {
-
   // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
   .tooltip-inner {
     max-width: 500px;
   }
-
-
   .container-fluid.row-fluid {
     padding: 0 2%;
     width: 96%;
   }
-
-  top: -1vw;
-  position: relative;
-
   .stages {
     margin: 0;
     h4 {
@@ -418,13 +394,10 @@
       }
     }
   }
-
   .output-spin {
     font-size: 20px;
     text-align: center;
-
   }
-
   .alert {
     margin-bottom: 1.5em;
     &.alert-danger {

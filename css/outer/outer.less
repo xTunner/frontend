@@ -1,73 +1,61 @@
-body .outer {
-  // override bootstrap
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 14px;
-  background-color: white;
-}
-
 .outer {
-
-  a {
-    color: darken(@circleBlueLight, 20%);
+  h1,
+  h2,
+  h3 {
+    line-height: 40px;
   }
-
-  p, li {
-    color: @circleFont;
+  h4,
+  h5,
+  h6 {
+    line-height: 20px;
   }
-
-  strong {
-    color: #333;
-  }
-
-  // Monaco looks shit at lower sizes
-  code, pre {
-    font-size: 14px;
-  }
-
-  h1, h2, h3 {line-height: 40px;}
-  h4, h5, h6 {line-height: 20px;}
-
   h1 {
     font-size: 44px;
-    small{font-size:24.5px;}
+    small{
+      font-size: 24.5px;
+    }
   }
-
   h2 {
     font-size: 30px;
     line-height: 29px;
     margin: 30px 0;
-    small{font-size:17.5px;}
+    small{
+      font-size: 17.5px;
+    }
   }
-
   h3 {
     line-height: 26px;
     font-size: 20px;
-    small{font-size:14px;}
+    small{
+      font-size: 14px;
+    }
   }
-
   h4 {
     font-size: 17.5px;
-    small{font-size:14px;}
+    small{
+      font-size: 14px;
+    }
   }
-
-  h5 {font-size: 14px;}
-  h6 {font-size: 11.9px;}
-
-
+  h5 {
+    font-size: 14px;
+  }
+  h6 {
+    font-size: 11.9px;
+  }
   .content {
     padding-top: 20px;
     padding-bottom: 50px;
   }
-
   form {
     margin: 20px 0 0 0;
   }
-
-  input[type=text], input[type=email] {
+  input[type=text],
+  input[type=email] {
     height: 30px;
   }
-
-  input[type=text], input[type=email], textarea {
+  input[type=text],
+  input[type=email],
+  textarea {
     margin-bottom: 20px;
     padding: 4px 10px;
     background-color: lighten(@grayLighter, 3%);
@@ -75,7 +63,6 @@ body .outer {
     resize: none;
     box-shadow: none;
   }
-
   label {
     margin: 0;
     text-transform: uppercase;
@@ -83,11 +70,11 @@ body .outer {
     font-size: 12px;
     color: @gray;
   }
-
   // high specificity, hence all the hacks
-  .btn, button {
+  .btn,
+  button {
     &:not(.close) {
-      @btnBorder: #ccc;
+      @btnBorder: @grayLighter;
       border-color: @btnBorder;
       border-bottom-color: darken(@btnBorder, 10%);
       border: none;
@@ -108,18 +95,16 @@ body .outer {
     &.btn-primary {
       background: @circleAccent;
       color: @circleAccentText;
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background: lighten(@circleAccent, 5%);
       }
-
       i {
         margin-right: 7px;
         font-size: 1.1em;
       }
     }
   }
-
-
   @import "shared/banner.less";
   @import "shared/navbar.less";
   @import "shared/additional.less";
@@ -130,6 +115,7 @@ body .outer {
   @import "docs/docs.less";
   @import "error/error.less";
   @import "jobs/jobs.less";
+  @import "enterprise/enterprise.less";
   @import "privacy/privacy.less";
   @import "privacy/changelog.less";
 }

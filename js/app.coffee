@@ -4,26 +4,22 @@ display = (template, args, subpage, hash) ->
   klass = 'inner'
 
   header =
-    $("<div></div>")
-      .attr('id', 'header')
+    $("<header></header>")
       .append(HAML.header(args))
 
   content =
-    $("<div></div>")
-      .attr('id', 'content')
-      .removeClass('outer')
-      .removeClass('inner')
-      .addClass(klass)
+    $("<main></main>")
       .append(HAML[template](args))
 
   footer =
-    $("<div></div>")
-      .attr('id', 'footer')
-      .addClass(klass)
-      .append(HAML["footer_nav"](args))
+    $("<footer></footer>")
+      .append(HAML["footer"](args))
 
-  $('#main')
+  $('#app')
     .html("")
+    .removeClass('outer')
+    .removeClass('inner')
+    .addClass(klass)
     .append(header)
     .append(content)
     .append(footer)
@@ -62,9 +58,12 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @error = new CI.outer.Error("error", "Error")
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
-#    @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
-#    @security = new CI.outer.Page("security", "Security", "View Security")
+    # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
+    # @security = new CI.outer.Page("security", "Security", "View Security")
+
+    @sticky_help_is_open = ko.observable(false)
 
     # inner
     @build = ko.observable()
@@ -100,7 +99,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
          @project().project_name() is @current_page().project_name
 
     if window.renderContext.current_user
-      CI.olark.disable()
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)
@@ -444,6 +442,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/about.*", (cx) => VM.about.display(cx)
   @get "^/privacy.*", (cx) => VM.privacy.display(cx)
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
   # @get "^/security.*", (cx) => VM.security.display(cx)
 

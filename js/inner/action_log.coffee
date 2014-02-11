@@ -10,6 +10,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     status: null
     source: null
     type: null
+    parallel: false
     messages: []
     final_out: []
     trailing_out: ""
@@ -30,6 +31,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     @success = @komp => @status() == "success"
     @running = @komp => @status() == "running"
     @failed = @komp => @status() == "failed" or @status() == "timedout" or @status() == "cancelled" || @status() == "infrastructure_fail"
+    @canceled = @komp => @status() == "canceled"
     @infrastructure_fail = @komp => @status() == "infrastructure_fail"
 
 
@@ -58,6 +60,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       failed: @komp => @failed() or @infrastructure_fail()
       running: @komp => @running()
       success: @komp => @success()
+      canceled: @komp => @canceled()
 
     @action_header_button_style = @komp =>
       if @has_content()
