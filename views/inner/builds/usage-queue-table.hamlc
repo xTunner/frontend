@@ -19,27 +19,15 @@
   -# <!-- /ko -->
 
   <!--  ko if: usage_queue_why().length -->
-    / ko if: usage_queued
-    %h5 Your build will start when some of these builds finish and free up containers:
-    / /ko
-    / ko ifnot: usage_queued
-    %h5 Currently queued behind these:
-    / /ko
+    %span Waiting for these...
     != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
   <!-- /ko -->
-
-  %p
-    %span Your build
-    %span{data-bind: "text: usage_queued() ? 'has':''"}
-    %span spent
-    %strong{data-bind: "duration: usage_queued_time"}
-    %span in your queue waiting for your other builds to finish.
-
-    <!--  ko with: $root.project -->
-      / ko if: billing.existing_plan_loaded
-      %span If your builds spend a lot of time waiting for other builds to finish, you can
+  <!--  ko with: $root.project -->
+    / ko if: billing.existing_plan_loaded
+    %p
+      %span Too much waiting? You can
       %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
-      %span from your plan page
-      / /ko
-    <!-- /ko -->
+      %span and finish even faster.
+    / /ko
+  <!-- /ko -->
 <!-- /ko -->
