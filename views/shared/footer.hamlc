@@ -17,6 +17,8 @@
     %li
       %a{href: "/privacy#security"} Security
     %li
+      %a{href: "/enterprise"} Enterprise
+    %li
       %a{href: "/about#contact"} Contact
     %li
       %a{href: "https://www.hipchat.com/gjwkHcrD5"} Live Support

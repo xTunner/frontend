@@ -1,0 +1,19 @@
+%div.customers-trust.row
+  %h4
+    %span Trusted By
+  .company
+    %img{src: '(data-uri "img/logos/salesforce.png")',
+         title: "Salesforce"}
+  .company
+    %img{src: '(data-uri "img/logos/samsung.png")',
+         title: "Samsung"}
+  .company
+    %img{src: '(data-uri "img/logos/kickstarter.png")',
+         title: "Kickstarter"}
+  .company
+    %img{src: '(data-uri "img/logos/cisco.png")',
+         title: "Cisco"}
+  .company
+    %img{src: '(data-uri "img/logos/shopify.png")',
+         title: "Shopify"}
+  %span.stretch

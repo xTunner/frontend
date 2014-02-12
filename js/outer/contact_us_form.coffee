@@ -11,7 +11,7 @@ CI.outer.ContactUsForm = class ContactUsForm
     # There must be a better way to do this...
     $(@form).css 'width', $(@form).width()
 
-    if not (@name() && @email() && @message())
+    if not (@name() && @email())
       @notice
         type: 'error'
         message: 'Name, email, and message are all required.'

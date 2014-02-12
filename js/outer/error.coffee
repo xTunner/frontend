@@ -15,7 +15,7 @@ CI.outer.Error = class Error extends CI.outer.Page
 
   message: =>
     messages =
-      401: "<a href=\"#{@url}\">You must <b>log in</b> to view this page</a>"
+      401: "<a href=\"#{@url}\"><b>Login here</b> to view this page</a>"
       404: "We're sorry, but that page doesn't exist"
       500: "We're sorry, but something broke"
     messages[@status] or "Something completely unexpected happened"
