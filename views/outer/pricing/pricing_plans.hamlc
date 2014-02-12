@@ -29,7 +29,7 @@
             private repositories
 
         %span{data-bind: "if: enterprise_p"}
-          %a.btn.btn-primary{href: "mailto:enterprise@circleci.com"} Contact us
+          %a.btn.btn-primary{href: "/enterprise"} Contact us
         %span{data-bind: "ifnot: enterprise_p"}
           %span{data-bind: "if: $root.logged_in"}
             %button.btn.btn-primary{data-bind: "text: pricingDescription, click: function (d,e) { $parent.selectPlan($data, e)}",
