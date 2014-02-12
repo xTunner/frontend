@@ -3,20 +3,20 @@
 / /ko
 
 <!-- ko if: usage_queue_why -->
-  <!-- ko ifnot: usage_queued -->
-    / ko if: run_queued
-    %p
-      %span Circle has spent
-      %strong{data-bind: "duration: run_queued_time"}
-      %span acquiring containers to run your build.
-    / /ko
-    / ko if: run_queued_time == true && run_queued == false
-    %p
-      %span Circle spent
-      %strong{data-bind: "duration: run_queued_time"}
-      %span acquiring containers to run your build.
-    / /ko
-  <!-- /ko -->
+  -# <!-- ko ifnot: usage_queued -->
+  -#   / ko if: run_queued
+  -#   %p
+  -#     %span Circle has spent
+  -#     %strong{data-bind: "duration: run_queued_time"}
+  -#     %span acquiring containers to run your build.
+  -#   / /ko
+  -#   / ko if: run_queued_time == true && run_queued == false
+  -#   %p
+  -#     %span Circle spent
+  -#     %strong{data-bind: "duration: run_queued_time"}
+  -#     %span acquiring containers to run your build.
+  -#   / /ko
+  -# <!-- /ko -->
 
   <!--  ko if: usage_queue_why().length -->
     / ko if: usage_queued
