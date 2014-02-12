@@ -1,0 +1,21 @@
+.accordion-group
+  .accordion-heading
+    %a.accordion-toggle{"data-parent" => "#openings",
+                        "data-toggle" => "collapse",
+                        :href => "#jobFive"} For growth
+
+  #jobFive.accordion-body.collapse
+    .accordion-inner
+      %p Growth is the lifeblood of all startups and we take it very seriously. 
+
+      %p
+        %strong What is the growth team?
+        We believe that 'marketing' as it is traditionally defined is dead. If you consider yourself a Don Draper type who 'knows what people want', then this is probably not the team for you. On the other hand, if you live and breath data, love a/b testing, and believe that most marketing tasks can be automated with software then you'll fit right in. 
+
+      %h4 What our perfect growth engineer will have:
+      %ul
+        %li An analytic mindset and the ability to make decisions based on data
+        %li A good understanding on content marketing, specifically in regards to developers 
+        %li Familiarity with marketing automation and how it can be used to scale an inbound marketing machine
+        %li A love for metrics that matter
+        %li The ability to put your tactics and strategies into practice through code

@@ -90,5 +90,9 @@ CI.inner.Foundation = class Foundation extends CI.inner.Obj
     $('#githubModal').modal('show')
     mixpanel.track("Fire GH Modal")
 
+  enterpriseModal: (data, event) =>
+    $('#enterpriseModal').modal('show')
+    mixpanel.track("Fire enterprise Modal")
+
 
 
