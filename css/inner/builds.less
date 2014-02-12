@@ -49,24 +49,6 @@
                ((3 / 4) * ((1 / 3) * @fontSizeSmall));
     }
   }
-  .commit-log {
-    margin: 0;
-    display: inline-block;
-    a.sha-one {
-      color: @blue;
-      i {
-        font-size: 14px;
-      }
-    }
-    .commit-log-title {
-      > span {
-        font-weight: bold;
-      }
-      a {
-        margin-left: 10px;
-      }
-    }
-  }
   .ssh-info-table {
     dt {
       width: 20px;
@@ -91,7 +73,7 @@
     .flex(0, 0);
   }
 }
-.usage-queue {
+.build-usage-queue {
   .spinner-container {
     text-align: center;
     margin-top: 1em;
@@ -108,8 +90,26 @@
     }                //
   }
 }
-.build-header-artifacts,
-.build-header-ssh {
+.build-commit-log {
+  margin: 0;
+  display: inline-block;
+  a.sha-one {
+    color: @blue;
+    i {
+      font-size: 14px;
+    }
+  }
+  .commit-log-title {
+    > span {
+      font-weight: bold;
+    }
+    a {
+      margin-left: 10px;
+    }
+  }
+}
+.build-artifacts,
+.build-ssh {
   list-style: none;
   margin: 1em 0 0 0;
   padding-top: 1em;

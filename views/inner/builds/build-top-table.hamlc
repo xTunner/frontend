@@ -76,11 +76,11 @@
                                     data-loading-text: "Canceling...",
                                     data-success-text: "Canceled"} Cancel
 
-    .usage-queue{data-bind: "visible: usage_queue_visible"}
+    .build-usage-queue{data-bind: "visible: usage_queue_visible"}
       != HAML.usage_queue_table({})
 
     <!-- ko if: rest_commits().length -->
-      .commit-log
+      .build-commit-log
         .commit-log-title{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}", role: "button"}
           %span Commit Log
           %a{data-bind: "visible: rest_commits().length"}
@@ -96,7 +96,7 @@
     <!-- /ko -->
 
     <!-- ko if: ssh_enabled_now() -->
-      .build-header-ssh
+      .build-ssh-info
         .ssh-title
           %span SSH Info
           %i.fa.fa-question-circle{data-bind: "popover: {placement: 'right', title: 'SSH', content: 'You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done.'}", role: "button"}
@@ -104,7 +104,7 @@
     <!-- /ko -->
 
     <!-- ko if: has_artifacts -->
-      .build-header-artifacts
+      .build-artifacts
         .artifacts-title{data-bind: "click: toggle_artifacts", role: "button"}
           %span Build Artifacts
           %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
