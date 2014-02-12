@@ -259,10 +259,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
       (@run_queued_time() || 0) + (@usage_queued_time() || 0)
 
     @queued_time_summary = @komp =>
-      if @run_queued_time()
-        "#{CI.time.as_duration(@usage_queued_time())} waiting + #{CI.time.as_duration(@run_queued_time())} in queue"
+      time = CI.time.as_duration
+      use = @usage_queued_time()
+      run = @run_queued_time()
+      if run
+        if use < 1000
+          "#{time(run)}"
+        else
+          "#{time(use)} waiting, #{time(run)} queued"
       else
-        "#{CI.time.as_duration(@usage_queued_time())} waiting for builds to finish"
+        "#{time(use)} waiting for builds to finish"
 
     @branch_in_words = @komp =>
       return "unknown" unless @branch()
