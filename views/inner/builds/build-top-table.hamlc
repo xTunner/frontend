@@ -2,9 +2,9 @@
 
   .build-header
 
-    .build-info-actions
+    .build-info
 
-      %table.build-table-top
+      %table
         %tbody
 
           %tr
