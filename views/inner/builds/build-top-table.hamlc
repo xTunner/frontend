@@ -75,7 +75,7 @@
                                     data-loading-text: "Canceling...",
                                     data-success-text: "Canceled"} Cancel
 
-    .build-usage-queue{data-bind: "visible: usage_queue_visible"}
+    .build-usage-queue{data-bind: "visible: usage_queue_visible, css: {active: usage_queue_visible}"}
       != HAML.usage_queue_table({})
 
     <!-- ko if: rest_commits().length -->
