@@ -10,8 +10,9 @@
   != HAML.org_plan_summary()
 
   != HAML.pricing_plans()
-  - if VM.ab().customer_logos()
-    != HAML.customers_trust()
+  / ko if: VM.ab().customer_logos
+  != HAML.customers_trust()
+  / /ko
 
   != HAML.pricing_features()
   != HAML.pricing_faq()
