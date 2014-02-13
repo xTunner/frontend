@@ -538,7 +538,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @trackRetryBuild data, clearCache, false
     false
 
-  clear_cache_and_retry_build: (data, event) =>
+  clear_cache_retry: (data, event) =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/build-cache"
       type: "DELETE"
