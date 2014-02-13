@@ -53,4 +53,51 @@
   .white {
     color: #fff;
   }
+}}
+
+// Subtle Button
+// circular button, clear w/ outline
+
+.subtleButtonText (@bkg) when (lightness(@bkg) < 50%) {
+  color: @whiten;
+}
+.subtleButtonText (@bkg) when (lightness(@bkg) >= 50%) {
+  color: @grayDark;
+}
+.subtleButton(@size: 3em) {
+  .subtleButton(@size, @grayLight, @gray);
+}
+.subtleButton(@size, @color) {
+  .subtleButton(@size, @color, @gray);
+}
+.subtleButton(@size, @color, @colorHover) {
+  @line: ((1 / 3) * @size);
+  @space: ((1 / 2) * @line);
+  float: right;
+  line-height: @line;
+  padding: @space;
+  margin: ~"calc(@{space} - 1px)" @space;
+  background: none;
+  border-radius: 2em;
+  outline: none;
+  border: 1px solid;
+  .subtleButtonColor(@color, @colorHover);
+}
+.subtleButtonColor(@color, @colorHover) {
+  border-color: @color;
+  color: @color;
+  transition-type: color, border-color;
+  transition-duration: .4s;
+  &:hover {
+    border-color: @colorHover;
+    color: @colorHover;
+    transition-duration: .2s;
+  }
+}
+.subtleButtonFill(@color) {
+  &:hover {
+    background: @color;
+    border-color: @color;
+    .subtleButtonText(@color);
+  }
 }
