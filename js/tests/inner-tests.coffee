@@ -127,9 +127,9 @@ j.describe "CI.stringHelpers.trimMiddle", ->
 
 j.describe "time works", ->
   j.it "over 1 minute is correct", ->
-    @expect(CI.time.as_duration(1000)).toEqual "1s"
-    @expect(CI.time.as_duration(100000)).toEqual "1m 40s"
-    @expect(CI.time.as_duration(1000000)).toEqual "16m 40s"
+    @expect(CI.time.as_duration(1000)).toEqual "00:01"
+    @expect(CI.time.as_duration(100000)).toEqual "01:40"
+    @expect(CI.time.as_duration(1000000)).toEqual "16:40"
 
 
 j.describe "headings get link anchors correctly", ->
