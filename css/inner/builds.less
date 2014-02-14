@@ -51,17 +51,20 @@
       white-space: nowrap;
     }
   }
-  .build_status {
-    text-transform: uppercase;
-    vertical-align: middle;
-    text-shadow: none;
-    border-radius: 10em;
-    height: @fontSizeSmall;
-    line-height: @fontSizeSmall;
-    font-size: @fontSizeSmall;
-    padding: ((1 / 3) * @fontSizeSmall)
-             ((2 / 3) * @fontSizeSmall)
-             ((3 / 4) * ((1 / 3) * @fontSizeSmall));
+  .build-status {
+    .statusColor(@color) {
+      color: @color;
+      font-weight: bold;
+    }
+    &.success {
+      .statusColor(@green);
+    }
+    &.failed {
+      .statusColor(@redLight);
+    }
+    &.running {
+      .statusColor(@blueLight);
+    }
   }
 }
 .build-actions {

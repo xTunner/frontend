@@ -31,7 +31,7 @@
               / /ko
             %th Status:
             %td
-              %span.label{data-bind: "text: status_words, css: style"}
+              %span.build-status{data-bind: "text: status_words, css: status_words"}
 
           <!-- ko if: show_queued_p || author_isnt_committer -->
             %tr
