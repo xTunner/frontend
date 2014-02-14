@@ -1,19 +1,20 @@
-%div.customers-trust.row
+- @companySize ||= "big-company"  
+.customers-trust.row
   %h4
     %span Trusted By
-  .company
+  %div{class: "#{@companySize}"}
     %img{src: '(data-uri "img/logos/salesforce.png")',
          title: "Salesforce"}
-  .company
+  %div{class: "#{@companySize}"}
     %img{src: '(data-uri "img/logos/samsung.png")',
          title: "Samsung"}
-  .company
+  %div{class: "#{@companySize}"}
     %img{src: '(data-uri "img/logos/kickstarter.png")',
          title: "Kickstarter"}
-  .company
+  %div{class: "#{@companySize}"}
     %img{src: '(data-uri "img/logos/cisco.png")',
          title: "Cisco"}
-  .company
+  %div{class: "#{@companySize}"}
     %img{src: '(data-uri "img/logos/shopify.png")',
          title: "Shopify"}
   %span.stretch

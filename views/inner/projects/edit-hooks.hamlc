@@ -51,8 +51,8 @@
         %p To get your API token, visit your Flowdock, then click the "Settings" icon on the left. On the settings tab, click "Team Inbox"
       %section
         %label.sticky
-          %input#hipchat-token{data-bind: "value: flowdock_api_token", type: "text", required:""}
-          %label{for: "hipchat-token"} API
+          %input#flowdock-token{data-bind: "value: flowdock_api_token", type: "text", required:""}
+          %label{for: "flowdock-token"} API
     .chat-room-foot
   .chat-room-item
     .chat-room-head
@@ -77,6 +77,27 @@
     .chat-room-foot
       %label.control-label{for: "irc-notify-prefs"}
         %input#irc-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(irc_notify_prefs)"}
+        %span Fixed/Failed Only
+        %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+  .chat-room-item
+    .chat-room-head
+      %h4.chat-i-slack Slack
+    .chat-room-body
+      %section
+        %p To get your API token, visit Slack's <a href="https://slack.com/services/new/incoming-webhook">Incoming Webhooks</a> page and click the green "Add Integration" button at the bottom of the page.
+      %section
+        %label.sticky
+          %input#slack-channel{data-bind: "value: slack_channel", type: "text", required:""}
+          %label{for: "slack-channel"} Channel
+        %label.sticky
+          %input#slack-subdomain{data-bind: "value: slack_subdomain", type: "text", required:""}
+          %label{for: "slack-subdomain"} Subdomain
+        %label.sticky
+          %input#slack-token{data-bind: "value: slack_api_token", type: "text", required:""}
+          %label{for: "slack-token"} API
+    .chat-room-foot
+      %label{for: "slack-notify-prefs"}
+        %input#slack-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(slack_notify_prefs)"}
         %span Fixed/Failed Only
         %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
 .chat-room-save

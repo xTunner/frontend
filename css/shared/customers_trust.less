@@ -1,4 +1,4 @@
-.customers-trust {
+.customers-trust{
   margin: 20px 0 20px 0;
   border: @grayLighter solid;
   border-width: 1px 0px;
@@ -16,19 +16,37 @@
       color: @grayLight;
     }
   }
-  .company {
+  .big-company{
+    width: 150px;
+    height: 60px;
+    line-height: 80px;
+    display: inline-block;
+    zoom: 1;
+    text-align: center;
+  }
+  .small-company {
     width: 84px;
     height: 30px;
-    line-height: 40px;
+    line-height: 30px;
     display: inline-block;
     zoom: 1;
     text-align: center;
     margin-left: 8px;
   }
-  .stretch {
+  .stretch{
     width: 100%;
     display: inline-block;
     font-size: 0;
     line-height: 0;
+  }
+}
+//this is a fix for the difference in background color between inner and outer
+.inner{
+  .customers-trust{
+    h4 {
+      span {
+        background: @appBackgroundColor;
+      }
+    }
   }
 }
