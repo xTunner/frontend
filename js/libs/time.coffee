@@ -27,7 +27,7 @@ CI.time =
       date.format "MMM YYYY"
 
   time_since_timestamp: (time_string) =>
-    moment(time_string).format('llll');
+    moment(time_string).format('llll ZZ');
 
   as_duration: (duration) =>
     if not duration
