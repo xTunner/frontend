@@ -75,7 +75,35 @@
       }
     }
   }
+  .customers{
+    padding: 3% 0;
+    h3{
+      color: @gray;
+    }
+    .logos {
+      margin: 30px 0 30px -20px;
 
+      img {
+        opacity: .6;
+      }
+
+      a {
+        display: block;
+        height: 80px;
+        line-height: 80px;
+
+        &:first-of-type {
+          margin-left: 0;
+        }
+
+        &:hover {
+          img {
+            opacity: .8;
+          }
+        }
+      }
+    }
+  }
   .features {
     padding-bottom: 30px;
     background: none;

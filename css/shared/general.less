@@ -2,8 +2,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 #app {
+  .flexBox();
+  .flex-direction(column);
   min-width: @minimumContentWidth;
   min-height: 100vh;
+  main {
+    .flex(1, 1);
+  }
 }
 .btn-primary {
   @btnPrimaryBackground: #1f4d80;

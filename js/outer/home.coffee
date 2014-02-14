@@ -2,7 +2,7 @@ class CI.outer.Home extends CI.outer.Page
   lib: () =>
     _gaq.push(['_trackPageview', '/homepage'])
     mixpanel.track("Outer Home Page", {
-      'screen height': $( window ).height();
+      'window height': $( window ).height();
       })
 
   viewContext: =>
