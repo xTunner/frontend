@@ -1,7 +1,8 @@
 #build-log-container
   %div{data-bind: "ifnot: build_has_been_loaded"}
     != HAML['flashes']({})
-    != HAML.fast_spinner({})
+    .loading-spinner
+      != HAML.spinner({})
 
   %div{data-bind: "if: build_has_been_loaded"}
 
@@ -42,7 +43,7 @@
             %a.container-selector{href:"#", data-bind: "text: name
                                                         , click: $parent.select_container
                                                         , css: status_style"}
-      
+
       != HAML.container_build_steps({})
       / /ko
 

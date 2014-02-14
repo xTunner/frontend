@@ -1,6 +1,8 @@
 .usage-queue-why{data-bind: "visible: usage_queue_visible"}
-  .spinner-container{data-bind: "ifnot: usage_queue_why"}
-    != HAML.fast_spinner({})
+  / ko ifnot: usage_queue_why
+  .loading-spinner
+    != HAML.spinner({})
+  / /ko
   %div{data-bind: "if: usage_queue_why"}
     Your build
     %span{data-bind: "text: usage_queued() ? 'has':''"}

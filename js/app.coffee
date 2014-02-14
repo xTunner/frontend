@@ -156,9 +156,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
-    display "dashboard",
-      builds_table: 'user_builds_table'
-
+    display "dashboard"
 
   loadAddProjects: (cx) =>
     @current_user().loadOrganizations()
