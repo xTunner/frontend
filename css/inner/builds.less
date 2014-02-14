@@ -70,7 +70,17 @@
   }
 }
 .build-actions {
+  .flexBox();
+  .align-items(center);
   .flex(0, 0);
+  button {
+    .subtleButton(@gray);
+    .aRowOfButtons(2em);
+  }
+  .report_build,
+  .cancel_build {
+    .subtleButtonColor(@gray, @redLight);
+  }
 }
 .build-usage-queue {
   margin-top: @innerContentPadding;
