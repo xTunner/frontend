@@ -57,7 +57,9 @@
         = btn('clear_cache_retry', 'Clear cache and retry',   'Clear Cache')
         = btn('ssh_build',         'Retry with SSH in VM',    'SSH')
         = btn('report_build',      'Report error with build', 'Report')
+        / ko if: can_cancel()
         = btn('cancel_build',      'Cancel this build',       'Cancel')
+        / /ko
 
     .build-usage-queue{data-bind: "visible: usage_queue_visible, css: {active: usage_queue_visible}"}
       != HAML.usage_queue_table({})
