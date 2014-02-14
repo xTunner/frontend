@@ -39,7 +39,7 @@
               %th Queued:
               %td
                 %span{data-bind: "text: queued_time_summary"}
-                %a{data-bind: "click: toggle_usage_queue_why"} view queue
+                %a{data-bind: "click: toggle_queue"} view queue
                 %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
               / /ko
               / ko if: author_isnt_committer
@@ -56,6 +56,9 @@
         = btn('retry_build',       'Retry same tests',        'Rebuild')
         = btn('clear_cache_retry', 'Clear cache and retry',   'Clear Cache')
         = btn('ssh_build',         'Retry with SSH in VM',    'SSH')
+        / ko if: show_queued_p
+        = btn('toggle_queue',      'View usage queue',        'Queue')
+        / /ko
         = btn('report_build',      'Report error with build', 'Report')
         / ko if: can_cancel()
         = btn('cancel_build',      'Cancel this build',       'Cancel')

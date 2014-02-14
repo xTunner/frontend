@@ -564,7 +564,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       event: event
     false
 
-  toggle_usage_queue_why: () =>
+  toggle_queue: () =>
     if @usage_queue_visible()
       @usage_queue_visible(!@usage_queue_visible())
       @clean_usage_queue_why()
