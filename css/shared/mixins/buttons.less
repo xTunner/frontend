@@ -117,5 +117,16 @@
   }
 }
 
+// A Row of Buttons
+// a row of buttons that rounds only at each end
+
+.aRowOfButtons(@radius) {
+  border-radius: 0;
+  margin: 0 0 0 -1px;
+  &:first-child {
+    border-radius: @radius 0 0 @radius;
+  }
+  &:last-child {
+    border-radius: 0 @radius @radius 0;
   }
 }
