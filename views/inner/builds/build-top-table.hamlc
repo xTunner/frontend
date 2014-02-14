@@ -8,16 +8,16 @@
         %tbody
 
           %tr
-            %th Author:
+            %th Authored:
             %td
               %a{data-bind: "text: author, attr: {href: author_mailto}"}
             %th Started:
             %td{data-bind: "text: pretty_start_time"}
 
           %tr
-            %th Trigger:
+            %th Triggered:
             %td{data-bind: "text: why_in_words"}
-            %th Duration:
+            %th Lasted:
             %td{data-bind: "text: duration"}
 
           %tr
