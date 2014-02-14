@@ -82,10 +82,19 @@
   outline: none;
   border: 1px solid @color;
   color: @color;
+  transition: .2s;
   &:hover {
     background: @hover;
     border-color: @hover;
     .subtleBtnTextColor(@hover);
+    transition: .1s;
+  }
+  &:active {
+    @active: darken(@hover, 5);
+    background: @hover;
+    border-color: @hover;
+    .subtleBtnTextColor(@hover);
+    box-shadow: 0 1px @active inset;
   }
 }
 .subtleButtonColor(@color) {
@@ -95,8 +104,18 @@
   border-color: @color;
   color: @color;
   &:hover {
+    .subtleBtnTextColor(@hover);
     background: @hover;
     border-color: @hover;
+  }
+  &:active {
+    @active: darken(@hover, 5);
     .subtleBtnTextColor(@hover);
+    background: @hover;
+    border-color: @hover;
+    box-shadow: 0 2px @active inset;
+  }
+}
+
   }
 }
