@@ -81,24 +81,24 @@
     }
   }
   .proj-wrapper {
-    display: inline-block;
+    .box-sizing(border-box);
     overflow: hidden;
     width: 70%;
     float: left;
     background: @whiten;
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
-    margin-bottom: 10%;
+    margin-bottom: 20vh;
     // padding: 1vw; (for later use with tabbing visual)
-    .box-sizing(border-box);
-    #loading-spinner {
-      margin: 34vh auto;
+    .loading-spinner {
+      margin: 20vh auto;
     }
   }
   .proj-list {
     // border: 1px solid darken(@grayBorder,1%); (for later use with tabbing visual)
     list-style: none;
     margin: 0;
+    width: 100%;
   }
   .side-list {
     float: left;

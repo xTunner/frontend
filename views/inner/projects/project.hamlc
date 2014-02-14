@@ -1,7 +1,13 @@
 != HAML.invite_form({})
 
-.container-fluid#dashboard
+#dashboard
 
+  / ko ifnot: project_dashboard_ready
+  .loading-spinner
+    != HAML.spinner({})
+  / /ko
+
+  / ko if: project_dashboard_ready
   %aside
     != HAML['action_sidebar']({})
     != HAML['followed_sidebar']({})
@@ -10,24 +16,20 @@
     != HAML['flashes']({})
 
     .dashboard-main
-      %div{data-bind: "ifnot: project_dashboard_ready"}
-        != HAML.fast_spinner({})
+      %h2
+        %span{data-bind: "if: VM.selected().page == 'project_branch'"}
+          Latest builds on
+          %span{data-bind: "text: CI.stringHelpers.trimMiddle(VM.selected().branch, 45)"}
+        %span{data-bind: "ifnot: VM.selected().page == 'project_branch'"}
+          Latest builds for
+          %span{data-bind: "text: VM.selected().project_name"}
+        //%a.btn.pull-right#invite{data-bind: "if: project().followed", data-toggle: "modal", data-target: "#inviteForm"} Invite Collaborators
+        %span{data-bind: "ifnot: project().followed"}
+          %a.btn.pull-right.follow{ data-bind: 'click: project().follow' }
+            Follow
 
-      %div{data-bind: "if: project_dashboard_ready"}
-
-        %h2
-          %span{data-bind: "if: VM.selected().page == 'project_branch'"}
-            Latest builds on
-            %span{data-bind: "text: CI.stringHelpers.trimMiddle(VM.selected().branch, 45)"}
-          %span{data-bind: "ifnot: VM.selected().page == 'project_branch'"}
-            Latest builds for
-            %span{data-bind: "text: VM.selected().project_name"}
-          //%a.btn.pull-right#invite{data-bind: "if: project().followed", data-toggle: "modal", data-target: "#inviteForm"} Invite Collaborators
-          %span{data-bind: "ifnot: project().followed"}
-            %a.btn.pull-right.follow{ data-bind: 'click: project().follow' }
-              Follow
-
-        != HAML['builds']({builds: "builds", mention_project: false, pagination: false})
+      != HAML['builds']({builds: "builds", mention_project: false, pagination: false})
+  / /ko
 
 
 
