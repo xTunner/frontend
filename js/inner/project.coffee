@@ -494,11 +494,13 @@ CI.inner.Project = class Project extends CI.inner.Obj
     $.ajax
       type: "GET"
       url: "/api/v1/project/#{@project_name()}/users"
-      success: (result) =>
-        @users(result)
+      success: (results) =>
+        @users((new CI.inner.User result) for result in results)
+        _.each(@users(), (u) -> u.get_email_unauthenticated())
         @loading_users(false)
         true
     false
+
 
   invite_user: (user) =>
     $.ajax

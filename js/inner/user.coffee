@@ -25,6 +25,7 @@ CI.inner.User = class User extends CI.inner.Obj
     github_id: null
     github_oauth_scopes: []
     repo_filter: ""
+    unauthenticated_email: null
 
   constructor: (json) ->
     super json,
@@ -192,6 +193,11 @@ CI.inner.User = class User extends CI.inner.Obj
       @organizations(data)
       @setActiveOrganization(data[0])
       @loadingOrganizations(false)
+
+
+  get_email_unauthenticated: () =>
+    $.get "https://api.github.com/users/#{@login}", (data) =>
+      @unauthenticated_email(data.email)
 
 
   loadCollaboratorAccounts: () =>
