@@ -125,11 +125,17 @@ j.describe "CI.stringHelpers.trimMiddle", ->
     @expect(CI.stringHelpers.trimMiddle(twenty, 10).length).toEqual 10
     @expect(CI.stringHelpers.trimMiddle(twenty, 10)).toEqual "012...6789"
 
-j.describe "time works", ->
+j.describe "time duration works", ->
   j.it "over 1 minute is correct", ->
     @expect(CI.time.as_duration(1000)).toEqual "00:01"
     @expect(CI.time.as_duration(100000)).toEqual "01:40"
     @expect(CI.time.as_duration(1000000)).toEqual "16:40"
+
+j.describe "time stamp works", ->
+  j.it "apr 15 is correct with dls", ->
+    @expect(CI.time.as_timestamp("1990-02-11T08:00:00.000Z")).toEqual "Sun, Feb 11 1990 12:00 AM -0800"
+    @expect(CI.time.as_timestamp("1991-01-02T08:00:00.000Z")).toEqual "Wed, Jan 2 1991 12:00 AM -0800"
+    @expect(CI.time.as_timestamp("2011-04-15T08:00:00.000Z")).toEqual "Fri, Apr 15 2011 1:00 AM -0700"
 
 
 j.describe "headings get link anchors correctly", ->
