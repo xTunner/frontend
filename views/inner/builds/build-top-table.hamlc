@@ -96,6 +96,7 @@
         .artifacts-title{data-bind: "click: toggle_artifacts", role: "button"}
           %span Build Artifacts
           %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
-
+        / ko if: artifacts_visible
         != HAML.artifacts_table({})
+        / /ko
     <!-- /ko -->
