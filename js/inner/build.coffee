@@ -218,7 +218,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @start_time_stamp = @komp =>
       if @start_time()
         window.updator() # update every second
-        CI.time.time_since_timestamp(@start_time())
+        CI.time.as_timestamp(@start_time())
 
     @previous_build = @komp =>
       @previous()? and @previous().build_num
