@@ -1,0 +1,18 @@
+.page.changelog
+  .banner
+    .container
+      %h1 ChangeLog
+      %h3 A mostly complete list of CircleCI changes
+
+  .content.container
+    .entries{data-bind: "foreach: VM.changelog.entries"}
+      .entry
+        .description{data-bind: "html: description"}
+        .author{data-bind: "text: author"}
+        .title{data-bind: "text: title"}
+        .link{data-bind: "text: link"}
+        .date{data-bind: "text: pubDate"}
+        .link{data-bind: "text: guid"}
+        .categories{data-bind: "foreach: categories"}
+          #
+          .category{data-bind: "text: guid"}
