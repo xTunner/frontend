@@ -14,10 +14,10 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
       type: "GET"
       dataType: "xml"
       success: (results) =>
-        @setEntries(results)
+        @entries(@doc2entries(results))
 
-  setEntries: (document) =>
-    list = for i in $(document).find("item")
+  doc2entries: (document) =>
+    for i in $(document).find("item")
       elem = $(i)
       title: elem.find('title').text()
       description: elem.find('description').text()
@@ -28,4 +28,3 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
       categories:
         for c in elem.find('category')
           $(c).text()
-    @entries(list)
