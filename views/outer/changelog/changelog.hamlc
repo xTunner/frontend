@@ -7,12 +7,28 @@
   .content.container
     .entries{data-bind: "foreach: VM.changelog.entries"}
       .entry
-        .description{data-bind: "html: description"}
-        .author{data-bind: "text: author"}
-        .title{data-bind: "text: title"}
-        .link{data-bind: "text: link"}
-        .date{data-bind: "text: pubDate"}
-        .link{data-bind: "text: guid"}
-        .categories{data-bind: "foreach: categories"}
-          #
-          .category{data-bind: "text: guid"}
+        .meta
+          %img.avatar{data-bind: "src: {href: $data.author}"}
+        %span.date{data-bind: "text: pubDate"}
+        %p.description{data-bind: "html: description"}
+
+-# .author
+-# .title{data-bind: "text: title"}
+-# .link{data-bind: "text: link"}
+-# .link{data-bind: "text: guid"}
+-# .categories{data-bind: "foreach: categories"}
+-#   .category{data-bind: "text: guid"}
+
+  %div.entry
+    %div.meta
+      %img{class: "avatar"}
+      %span.label.label-success Update
+    %span.timestamp 6/6/13
+    %p This is an update.
+
+  %div.entry
+    %div.meta
+      %img{class: "avatar"}
+      %span.label.label-important Bugfix
+    %span.timestamp 6/6/13
+    %p This is a bugfix.
