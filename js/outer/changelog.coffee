@@ -4,6 +4,10 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
     @name = "changelog"
     @entries = ko.observableArray([])
 
+  image: (author) =>
+    VM.about.team[author]?.img_path
+
+
   render: (cx) =>
     @fetchContent()
     super cx

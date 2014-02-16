@@ -8,7 +8,7 @@
     .entries{data-bind: "foreach: VM.changelog.entries"}
       .entry
         .meta
-          %img.avatar{data-bind: "src: {href: $data.author}"}
+          %img.avatar{data-bind: "attr: {src: VM.changelog.image(author)}"}
         %span.date{data-bind: "text: pubDate"}
         %p.description{data-bind: "html: description"}
 
