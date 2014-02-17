@@ -68,19 +68,19 @@
       != HAML.usage_queue_table({})
 
     <!-- ko if: rest_commits().length -->
-      .build-commit-log
-        .commit-log-title
+      .build-commit
+        .build-commit-title
           %span Commit Log:
           %span{data-bind: "text: rest_commits().length"}
           %a{data-bind: "click: toggle_rest_commits", role: "button"} view
           %i.fa.fa-caret-down
-        .commit-log-list
+        .build-commit-list
           != HAML.build_commit_log()
     <!-- /ko -->
 
     <!-- ko if: ssh_enabled_now() -->
       .build-ssh
-        .ssh-title
+        .build-ssh-title
           %span SSH Info
           %i.fa.fa-question-circle{data-bind: "popover: {placement: 'right', title: 'SSH', content: 'You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done.'}", role: "button"}
         != HAML.ssh_info_table({})
@@ -88,7 +88,7 @@
 
     <!-- ko if: has_artifacts -->
       .build-artifacts
-        .artifacts-title
+        .build-artifacts-title
           %span Build Artifacts:
           %span{data-bind: "text: artifacts.length"}
           %a{data-bind: "click: toggle_artifacts", role: "button"} view

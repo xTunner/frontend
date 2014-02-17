@@ -2,7 +2,7 @@
 != HAML.fast_spinner({})
 / /ko
 / ko if: artifacts
-%ol.artifacts-list
+%ol.build-artifacts-list
   / ko foreach: artifacts
   %li
     / ko ifnot: VM.current_user().admin
