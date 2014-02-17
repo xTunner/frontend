@@ -7,6 +7,17 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   image: (author) =>
     VM.about.team[author]?.img_path
 
+  # We want a HTML id, but have a timestamp. All the timestamp characters are
+  # valid (':' and '-') but we need to start with a letter
+  pubDate2id: (ts) =>
+    "t#{ts}"
+
+  type2class: (type) =>
+    # map types to bootstrap label styles
+    map =
+      "bugfix": "warning"
+      "feature": "success"
+    "label-" + map[type]
 
   render: (cx) =>
     @fetchContent()
@@ -29,6 +40,7 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
       author: elem.find('author').text()
       pubDate: elem.find('pubDate').text()
       guid: elem.find('guid').text()
+      type: elem.find('type').text()
       categories:
         for c in elem.find('category')
           $(c).text()
