@@ -68,6 +68,6 @@
 
     != HAML.build_commits({})
 
-    != HAML.ssh_info_table({})
+    != HAML.build_ssh({})
 
     != HAML.artifacts_table({})
