@@ -19,6 +19,11 @@
 .build-header {
   max-width: 80%;
   margin: 0 auto;
+  section {
+    margin: @innerContentPadding 0 0 0;
+    padding-top: @innerContentPadding;
+    box-shadow: 0 1px @grayBoxBorder inset;
+  }
 }
 .build-info {
   .flexBox();
@@ -97,13 +102,6 @@
       font-weight: bold;
     }
   }
-}
-.build-ssh,
-.build-artifacts {
-  list-style: none;
-  margin: @innerContentPadding 0 0 0;
-  padding-top: @innerContentPadding;
-  box-shadow: 0 1px @grayBoxBorder inset;
 }
 .build-ssh-list {
   dt {
