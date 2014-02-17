@@ -35,7 +35,7 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
 
    reloadHash: () =>
     # The hash is created after the page loads, which I think is why we need this.
-    window.SammyApp.setLocation(window.location.hash)
+    window.SammyApp.setLocation("/changelog" + window.location.hash)
 
   doc2entries: (document) =>
     for i in $(document).find("item")
