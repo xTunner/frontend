@@ -92,7 +92,7 @@
           %span Build Artifacts:
           %span{data-bind: "text: artifacts.length"}
           %a{data-bind: "click: toggle_artifacts", role: "button"} view
-          %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
+          %i.fa.fa-caret-down
         / ko if: artifacts_visible
         != HAML.artifacts_table({})
         / /ko
