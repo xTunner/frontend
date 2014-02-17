@@ -1,33 +1,39 @@
-/ ko ifnot: usage_queue_why
-!= HAML.fast_spinner({})
-/ /ko
+<!-- ko if: usage_queue_visible -->
 
-<!-- ko if: usage_queue_why -->
-  -# <!-- ko ifnot: usage_queued -->
-  -#   / ko if: run_queued
-  -#   %p
-  -#     %span Circle has spent
-  -#     %strong{data-bind: "duration: run_queued_time"}
-  -#     %span acquiring containers to run your build.
-  -#   / /ko
-  -#   / ko if: run_queued_time == true && run_queued == false
-  -#   %p
-  -#     %span Circle spent
-  -#     %strong{data-bind: "duration: run_queued_time"}
-  -#     %span acquiring containers to run your build.
-  -#   / /ko
-  -# <!-- /ko -->
+  .build-usage-queue{data-bind: "css: {active: usage_queue_visible}"}
 
-  <!--  ko if: usage_queue_why().length -->
-    %span Waiting for these...
-    != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
-  <!-- /ko -->
-  <!--  ko with: $root.project -->
-    / ko if: billing.existing_plan_loaded
-    %p
-      %span Too much waiting? You can
-      %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
-      %span and finish even faster.
+    / ko ifnot: usage_queue_why
+    != HAML.fast_spinner({})
     / /ko
-  <!-- /ko -->
+
+    <!-- ko if: usage_queue_why -->
+      -# <!-- ko ifnot: usage_queued -->
+      -#   / ko if: run_queued
+      -#   %p
+      -#     %span Circle has spent
+      -#     %strong{data-bind: "duration: run_queued_time"}
+      -#     %span acquiring containers to run your build.
+      -#   / /ko
+      -#   / ko if: run_queued_time == true && run_queued == false
+      -#   %p
+      -#     %span Circle spent
+      -#     %strong{data-bind: "duration: run_queued_time"}
+      -#     %span acquiring containers to run your build.
+      -#   / /ko
+      -# <!-- /ko -->
+
+      <!--  ko if: usage_queue_why().length -->
+        %span Waiting for these...
+        != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
+      <!-- /ko -->
+      <!--  ko with: $root.project -->
+        / ko if: billing.existing_plan_loaded
+        %p
+          %span Too much waiting? You can
+          %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
+          %span and finish even faster.
+        / /ko
+      <!-- /ko -->
+    <!-- /ko -->
+
 <!-- /ko -->
