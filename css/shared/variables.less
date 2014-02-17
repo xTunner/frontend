@@ -66,6 +66,10 @@
 @fontSizeSmall:            round((@baseFontSize * 0.85), 0); // 12px
 @fontSizeMini:             round((@baseFontSize * 0.75), 0); // 11px
 
+@codeFontFamily:           @monoFontFamily;
+@codeFontSize:             @fontSizeSmall;
+@codeCharacterWidth:       round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
+
 // Links
 
 @linkColor:                @blue;
