@@ -70,7 +70,7 @@
     <!-- /ko -->
 
     <!-- ko if: rest_commits().length -->
-      .build-commit
+      .build-commit{data-bind: "css: {active: rest_commits_visible}"}
         .build-commit-title
           %span Commit Log:
           %span{data-bind: "text: rest_commits().length"}
@@ -89,7 +89,7 @@
     <!-- /ko -->
 
     <!-- ko if: has_artifacts -->
-      .build-artifacts
+      .build-artifacts{data-bind: "css: {active: artifacts_visible}"}
         .build-artifacts-title
           %span Build Artifacts:
           %span{data-bind: "text: artifacts.length"}
