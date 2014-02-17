@@ -1,4 +1,4 @@
-.ssh-info-table
+.build-ssh-list
   %dl.dl-horizontal{data-bind: "foreach: node"}
     %dt
       %span{data-bind: "if: $parent.node().length > 1"}

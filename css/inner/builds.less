@@ -15,19 +15,6 @@
     padding-bottom: 15px;
     margin: 0 0 15px 0;
   }
-  .ssh-info-table {
-    dt {
-      width: 20px;
-    }
-    dd {
-      margin-left: 1em;
-      font-family: monospace;
-      color: lightgray;
-    }
-    .connected {
-      color: #666;
-    }
-  }
 }
 .build-header {
   max-width: 80%;
@@ -114,8 +101,8 @@
     }
   }
 }
-.build-artifacts,
-.build-ssh {
+.build-ssh,
+.build-artifacts {
   list-style: none;
   margin: @innerContentPadding 0 0 0;
   padding-top: @innerContentPadding;
@@ -124,6 +111,19 @@
     > span {
       font-weight: bold;
     }
+  }
+}
+.build-ssh-list {
+  dt {
+    width: 20px;
+  }
+  dd {
+    margin-left: 1em;
+    font-family: monospace;
+    color: lightgray;
+  }
+  .connected {
+    color: #666;
   }
 }
 .build-artifacts-list {
