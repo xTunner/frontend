@@ -131,13 +131,13 @@
   margin: 1em 0 0;
   font-family: @codeFontFamily;
   font-size: @codeFontSize;
-}
-.artifact {
-  width: ~'calc(@{codeCharacterWidth} * 81)'; // 80 truncate target length for artifact.pretty_path = CI.stringHelpers.trimMiddle artifact.pretty_path, 80
-  margin: 0 ~'calc(7px *  3)';
-  float: left;
-  a {
-    margin-left: ~'calc(-@{codeCharacterWidth} * 1)';
+  li {
+    width: ~'calc(@{codeCharacterWidth} * 80)'; // 80 truncate target length for artifact.pretty_path = CI.stringHelpers.trimMiddle artifact.pretty_path, 80
+    margin: 0 ~'calc(7px *  3)';
+    float: left;
+    a {
+      margin-left: ~'calc(-@{codeCharacterWidth} * 1)';
+    }
   }
 }
 #action-log-messages {

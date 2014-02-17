@@ -4,7 +4,7 @@
 / ko if: artifacts
 %ol.artifacts-list
   / ko foreach: artifacts
-  %li.artifact
+  %li
     / ko ifnot: VM.current_user().admin
     %a{target: "_blank", data-bind: "attr: {href: url}"}
       %span{data-bind: "text: pretty_path"}
