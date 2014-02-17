@@ -1,12 +1,12 @@
 <!-- ko if: rest_commits().length -->
 
-  %section.build-commit{data-bind: "css: {active: rest_commits_visible}"}
-    .build-commit-title
+  %section.build-commits{data-bind: "css: {active: rest_commits_visible}"}
+    .build-commits-title
       %strong Commit Log:
       %span{data-bind: "text: rest_commits().length"}
       %a{data-bind: "click: toggle_rest_commits", role: "button"} view
       %i.fa.fa-caret-down
-    .build-commit-list
+    .build-commits-list
       <!-- ko ifnot: head_commits().length -->
         / ko if: body
         %a{href: '#', data-bind: "attr: { href: github_url }, text: subject, tooltip: {title: body}"}}
