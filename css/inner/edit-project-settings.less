@@ -551,7 +551,7 @@
         right: 0;
         top: 0;
         margin: 1em;
-        background-image: url('@{imgPath}/chat-sprite1.png');
+        background-image: url('@{imgPath}/chat-sprite2.png');
         transition: opacity .4s ease-in-out;
       }
       &:before {
@@ -576,6 +576,10 @@
     .chat-i-irc {
       &:before { background-position: (-@logoHeight * 3) -@logoHeight;}
       &:after  { background-position: (-@logoHeight * 3)  0          ;}
+    }
+    .chat-i-slack {
+      &:before { background-position: (-@logoHeight * 4) -@logoHeight;}
+      &:after  { background-position: (-@logoHeight * 4)  0          ;}
     }
   }
   .chat-room-body {

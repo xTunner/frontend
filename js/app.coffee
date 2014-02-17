@@ -58,8 +58,9 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @error = new CI.outer.Error("error", "Error")
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI", "View jobs")
+    @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
-    @changelog = new CI.outer.Changelog("changelog", "ChangeLog", "View Changelog")
+    @changelog = new CI.outer.Changelog("changelog", "ChangeLog", "View ChangeLog")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
     # @security = new CI.outer.Page("security", "Security", "View Security")
 
@@ -156,9 +157,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
-    display "dashboard",
-      builds_table: 'user_builds_table'
-
+    display "dashboard"
 
   loadAddProjects: (cx) =>
     @current_user().loadOrganizations()
@@ -443,7 +442,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/privacy.*", (cx) => VM.privacy.display(cx)
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/changelog.*", (cx) => VM.changelog.display(cx)
-  @get "^/contact.*", (cx) => VM.contact.display(cx)
+  @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
   # @get "^/security.*", (cx) => VM.security.display(cx)
 

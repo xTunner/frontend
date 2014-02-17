@@ -3,10 +3,13 @@
   != HAML.missing_scopes_notice()
   != HAML['org_sidebar']({})
   .proj-wrapper
-    %div{data-bind: "if: showLoading"}
-      != HAML.fast_spinner({})
-    %div{data-bind: "ifnot: showLoading"}
-      != HAML['add_projects_main']({})
+    / ko if: showLoading
+    .loading-spinner
+      != HAML.spinner({})
+    / /ko
+    / ko ifnot: showLoading
+    != HAML['add_projects_main']({})
+    / /ko
   .side-return
     %h3 Start watching your projects
     %p Choose a repo from your Github and we'll watch it for you. Choose any repo from one of your organizations, your own repos, or repos you share with others. We'll show you the first build immediately; come back here to watch more.

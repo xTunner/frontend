@@ -1,7 +1,9 @@
 .row-fluid{data-bind: "visible: artifacts_visible"}
   .artifacts.span12.well
-    .spinner-container{data-bind: "ifnot: artifacts"}
-      != HAML.fast_spinner({})
+    / ko ifnot: artifacts
+    .loading-spinner
+      != HAML.spinner({})
+    / /ko
     %div{data-bind: "if: artifacts"}
       %ul{data-bind: "foreach: artifacts"}
         %li.artifact
