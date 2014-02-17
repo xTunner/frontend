@@ -1,6 +1,6 @@
-.build-header-wrapper
+.build-head-wrapper
 
-  .build-header
+  .build-head
 
     .build-info
 
@@ -70,4 +70,4 @@
 
     != HAML.build_ssh({})
 
-    != HAML.artifacts_table({})
+    != HAML.build_artifacts({})

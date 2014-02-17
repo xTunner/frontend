@@ -7,7 +7,7 @@
 
     %div{data-bind: "with: build"}
 
-      != HAML.build_top_table({})
+      != HAML.build_head({})
 
       != HAML.flashes({})
 
@@ -42,7 +42,7 @@
             %a.container-selector{href:"#", data-bind: "text: name
                                                         , click: $parent.select_container
                                                         , css: status_style"}
-      
+
       != HAML.container_build_steps({})
       / /ko
 
