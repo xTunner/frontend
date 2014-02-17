@@ -70,7 +70,7 @@
     <!-- /ko -->
 
     <!-- ko if: rest_commits().length -->
-      .build-commit{data-bind: "css: {active: rest_commits_visible}"}
+      %section.build-commit{data-bind: "css: {active: rest_commits_visible}"}
         .build-commit-title
           %strong Commit Log:
           %span{data-bind: "text: rest_commits().length"}
