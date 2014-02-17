@@ -64,8 +64,10 @@
         = btn('cancel_build',      'Cancel this build',       'Cancel')
         / /ko
 
-    .build-usage-queue{data-bind: "visible: usage_queue_visible, css: {active: usage_queue_visible}"}
-      != HAML.usage_queue_table({})
+    <!-- ko if: usage_queue_visible -->
+      .build-usage-queue{data-bind: "css: {active: usage_queue_visible}"}
+        != HAML.usage_queue_table({})
+    <!-- /ko -->
 
     <!-- ko if: rest_commits().length -->
       .build-commit
