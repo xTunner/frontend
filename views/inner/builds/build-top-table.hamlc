@@ -73,14 +73,4 @@
 
     != HAML.ssh_info_table({})
 
-    <!-- ko if: has_artifacts -->
-      %section.build-artifacts{data-bind: "css: {active: artifacts_visible}"}
-        .build-artifacts-title
-          %strong Build Artifacts:
-          %span{data-bind: "text: artifacts.length"}
-          %a{data-bind: "click: toggle_artifacts", role: "button"} view
-          %i.fa.fa-caret-down
-        / ko if: artifacts_visible
-        != HAML.artifacts_table({})
-        / /ko
-    <!-- /ko -->
+    != HAML.artifacts_table({})
