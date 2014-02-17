@@ -75,7 +75,7 @@
           %a{data-bind: "click: toggle_rest_commits", role: "button"} view
           %i.fa.fa-caret-down
         .build-commit-list
-          != HAML.build_commit_log()
+          != HAML.build_commit_log({})
     <!-- /ko -->
 
     <!-- ko if: ssh_enabled_now() -->
