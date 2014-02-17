@@ -30,6 +30,12 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
       dataType: "xml"
       success: (results) =>
         @entries(@doc2entries(results))
+        @reloadHash()
+
+
+   reloadHash: () =>
+    # The hash is created after the page loads, which I think is why we need this.
+    window.SammyApp.setLocation(window.location.hash)
 
   doc2entries: (document) =>
     for i in $(document).find("item")
