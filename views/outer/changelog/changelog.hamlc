@@ -10,7 +10,7 @@
         .meta
           %img.avatar{data-bind: "attr: {src: VM.changelog.image(author)}"}
           %span.label{data-bind: "text: type, attr: {class: VM.changelog.type2class(type)}"}
-        %a{data-bind: "attr: {href: link, id: VM.changelog.pubDate2id(pubDate)}"}
+        %a{data-bind: "attr: {href: link, id: VM.changelog.pubDate2id(pubDate)}}"}
           %span.date{data-bind: "text: pubDate"}
         %h3.title{data-bind: "text: title"}
         %p.description{data-bind: "html: description"}
