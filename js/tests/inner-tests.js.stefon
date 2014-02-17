@@ -4,5 +4,6 @@
   "../../../components/jquery-mockjax/jquery.mockjax.js"
   "prepare-test-runner.coffee"
   "inner-tests.coffee"
+  "action-log-tests.coffee"
   "process-test-results.coffee"
 ]
