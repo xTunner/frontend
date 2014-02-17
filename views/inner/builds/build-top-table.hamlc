@@ -64,7 +64,7 @@
         = btn('cancel_build',      'Cancel this build',       'Cancel')
         / /ko
 
-    != HAML.usage_queue_table({})
+    != HAML.build_queue({})
 
     != HAML.build_commit_log({})
 
