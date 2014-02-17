@@ -65,7 +65,7 @@
         / /ko
 
     <!-- ko if: usage_queue_visible -->
-      .build-usage-queue{data-bind: "css: {active: usage_queue_visible}"}
+      .build-queue{data-bind: "css: {active: usage_queue_visible}"}
         != HAML.usage_queue_table({})
     <!-- /ko -->
 
