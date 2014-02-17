@@ -39,7 +39,7 @@
               %th Queued:
               %td
                 %span{data-bind: "text: queued_time_summary"}
-                %a{data-bind: "click: toggle_queue"} view queue
+                %a{data-bind: "click: toggle_queue"} view
                 %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
               / /ko
               / ko if: author_isnt_committer
@@ -93,8 +93,10 @@
 
     <!-- ko if: has_artifacts -->
       .build-artifacts
-        .artifacts-title{data-bind: "click: toggle_artifacts", role: "button"}
-          %span Build Artifacts
+        .artifacts-title
+          %span Build Artifacts:
+          %span{data-bind: "text: artifacts.length"}
+          %a{data-bind: "click: toggle_artifacts", role: "button"} view
           %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': artifacts_visible }"}
         / ko if: artifacts_visible
         != HAML.artifacts_table({})
