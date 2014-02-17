@@ -69,16 +69,7 @@
         != HAML.usage_queue_table({})
     <!-- /ko -->
 
-    <!-- ko if: rest_commits().length -->
-      %section.build-commit{data-bind: "css: {active: rest_commits_visible}"}
-        .build-commit-title
-          %strong Commit Log:
-          %span{data-bind: "text: rest_commits().length"}
-          %a{data-bind: "click: toggle_rest_commits", role: "button"} view
-          %i.fa.fa-caret-down
-        .build-commit-list
-          != HAML.build_commit_log({})
-    <!-- /ko -->
+    != HAML.build_commit_log({})
 
     <!-- ko if: ssh_enabled_now() -->
       %section.build-ssh
