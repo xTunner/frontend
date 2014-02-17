@@ -71,13 +71,7 @@
 
     != HAML.build_commit_log({})
 
-    <!-- ko if: ssh_enabled_now() -->
-      %section.build-ssh
-        .build-ssh-title
-          %strong SSH Info
-          %i.fa.fa-question-circle{data-bind: "popover: {placement: 'right', title: 'SSH', content: 'You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done.'}", role: "button"}
-        != HAML.ssh_info_table({})
-    <!-- /ko -->
+    != HAML.ssh_info_table({})
 
     <!-- ko if: has_artifacts -->
       %section.build-artifacts{data-bind: "css: {active: artifacts_visible}"}
