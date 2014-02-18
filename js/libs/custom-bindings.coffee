@@ -99,11 +99,7 @@ ieVersion = () ->
   if version > 4 then version else undefined
 
 addCommas = (num) ->
-  num_str = num.toString()
-  i = num_str.length % 3
-  prefix = num_str.substr(0, i) + if i > 0 and num_str.length > 3 then "," else ""
-  suffix = num_str.substr(i).replace(/(\d{3})(?=\d)/g, "$1" + ",")
-  prefix + suffix
+  num.toLocaleString()
 
 # Copy of setTextContent in ko's utils
 transformContent = (f, element, textContent) ->
