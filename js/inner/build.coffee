@@ -504,9 +504,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       @fillActions(json.step, json.index)
 
       # Only append the output if it's for the current container
-      console.log("json.index:" + json.index + " current_container:" + @current_container().container_index)
       if @current_container().container_index == json.index
-        console.log("Appending output")
         @containers()[json.index].actions()[json.step].append_output([json.out])
     else
       # adds output to the action
