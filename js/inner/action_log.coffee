@@ -37,7 +37,6 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     # Ensure that failed actions have output
     @failed.subscribe((failed) =>
                         if failed
-                          console.log("action failed, retrieving output")
                           @maybe_retrieve_output())
 
     # Expand failing actions
@@ -47,6 +46,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       else
         @success() and not @messages().length > 0
 
+    # Fetch output (if any) for an action that starts expanded
     if !@minimize()
       @maybe_retrieve_output()
 
@@ -168,26 +168,29 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     if @has_output() and !@minimize() and !@retrieved_output() and !@retrieving_output()
       @retrieve_output()
 
-  maybe_drop_output: () =>
-    # There's a potential race here with the AJAX call in maybe_retrieve_output
+  drop_output: () =>
+    # There's a potential race here with the AJAX call in retrieve_output
     #
-    # 1) maybe_retrieve_output: sets retrieved_output(true)
-    # 2) maybe_drop_output: removes final_out, trailing_out
-    # 3) maybe_retrieve_output: appends output
-    # 4) maybe_drop_output: sets retrieved_output(false)
-    # 5) maybe_retrieve_output will fetch and append the output again next time
-    #    it's called
+    # 1) retrieve_output: sets retrieved_output(true)
+    # 2) drop_output: removes final_out, trailing_out
+    # 3) retrieve_output: appends output
+    # 4) drop_output: sets retrieved_output(false)
+    # 5) retrieve_output will fetch and append the output again next time it's
+    # called
     #
     # The internet swears that there is only a single Javascript thread in a
     # browser, that functions cannot be interrupted, and AJAX callbacks are
     # queued until no other code is running, thus avoiding races. I'd love a
     # reference for this that's more concrete than stackoverflow.
+    @final_out.removeAll()
+    @trailing_out("")
+    # Leave @retrieving_output alone, that's for maybe_retrieve_output to
+    # manage
+    @retrieved_output(false)
+
+  maybe_drop_output: () =>
     if @minimize()
-      @final_out.removeAll()
-      @trailing_out("")
-      @retrieved_output(false)
-      # Leave @retrieving_output alone, that's for maybe_retrieve_output to
-      # manage
+      @drop_output()
 
 class Step extends CI.inner.Obj
 
