@@ -127,6 +127,18 @@ ko.bindingHandlers.money =
     f = (value) -> "$#{addCommas(value)}"
     transformContent(f, el, valueAccessor())
 
+ko.bindingHandlers.accountBalance =
+  update: (el, valueAccessor) =>
+    amount = ko.utils.unwrapObservable(valueAccessor())
+    suffix = if amount < 0
+               "in credit."
+             else if amount > 0
+               "payment outstanding."
+             else
+               ""
+    f = (value) -> "$#{addCommas(Math.abs(value) / 100)} #{suffix}"
+    transformContent(f, el, valueAccessor())
+
 ko.bindingHandlers.duration =
   update: (el, valueAccessor) =>
     f = (value) -> CI.time.as_duration(value)
