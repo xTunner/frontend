@@ -188,6 +188,15 @@
       line-height: 1em;
       min-width: 6em;
       &.loading {
+        position: relative;
+        &:before {
+          content: "Starting first build...";
+          position: absolute;
+          right: 100%;
+          white-space: nowrap;
+          margin-right: 1em;
+          color: @grayLight;
+        }
         svg {
           display: block;
           margin: auto;
@@ -211,7 +220,7 @@
       }
     }
     .repoButtonColor(@color) {
-      button {
+      button:not(.disabled) {
         &:hover {
           background-color: @color;
           color: @white;
