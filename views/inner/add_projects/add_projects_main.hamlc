@@ -43,22 +43,6 @@
       %i.fa.fa-lock
   / /ko
 
-
-/ .add-projects{data-bind: "foreach: repos"}
-
-/   .add-project{data-bind: "attr: { class: addProjectType }"}
-
-/     .add-project-icon
-/       %i.fa.fa-folder
-
-/     .add-project-name
-/       %span{data-bind: "text: name, attr: {title: displayName}"}
-
-/     .add-project-action
-/       %button{data-bind: "click: follow, text: buttonText", data-loading-text: "..."}
-
-
-
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
   .modal-header
     %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
