@@ -16,7 +16,7 @@
       %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
       %i.fa.fa-chevron-down
     %label.sticky
-      %input#label{type: "text", required:""}
+      %input#label{type: "text", required:"", data-bind: "value: tokenLabel"}
       %label{for: "label"} Label
     %input{type: "submit",
           value: "Create token",

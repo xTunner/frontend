@@ -1,4 +1,4 @@
-.page.contact
+.page.contact#contact
   .banner
     .container
       %h1 Contact us
@@ -8,14 +8,7 @@
     .row
       .span6
         %h3 Fill the form
-        %form#contactUs{ action: "/about/contact", method: "POST" }
-          %label{for: "name"} Full name
-          %input#name{name: "name", placeholder: "Your Name", type: "text"}
-          %label{for: "email"} Email address
-          %input#email{name: "email", placeholder: "Your email address", type: "email"}
-          %label{for: "message"} Message
-          %textarea#message{name: "message", placeholder: "Tell us what you're thinking"}
-          %button.btn-primary{type: "submit"} Send
+        != HAML.contact_form({})
       .span6.vcard
         %h3 Don't like forms? Contact us anyway!
         %ul

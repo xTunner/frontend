@@ -76,6 +76,16 @@ jQueryExt = (type) =>
 ko.bindingHandlers.popover = jQueryExt('popover')
 ko.bindingHandlers.tooltip = jQueryExt('tooltip')
 ko.bindingHandlers.typeahead = jQueryExt('typeahead')
+ko.bindingHandlers.sticky_waypoint = { init: (el, valueAccessor) =>
+                                        options = ko.toJS(valueAccessor())
+                                        $(el).waypoint('sticky', options) }
+
+# Usage: %div{data-bind: "on_window_event: {event: 'resize', fn: function(event) { console.log('event was: ' + event) }}"}
+ko.bindingHandlers.on_window_event = { init: (el, valueAccessor) =>
+                                        options = valueAccessor()
+                                        $(window).on(options.event, (event) =>
+                                          options.fn(event)
+                                        ) }
 
 ## Money custom binding
 
@@ -89,11 +99,7 @@ ieVersion = () ->
   if version > 4 then version else undefined
 
 addCommas = (num) ->
-  num_str = num.toString()
-  i = num_str.length % 3
-  prefix = num_str.substr(0, i) + if i > 0 and num_str.length > 3 then "," else ""
-  suffix = num_str.substr(i).replace(/(\d{3})(?=\d)/g, "$1" + ",")
-  prefix + suffix
+  num.toLocaleString()
 
 # Copy of setTextContent in ko's utils
 transformContent = (f, element, textContent) ->
@@ -115,6 +121,18 @@ transformContent = (f, element, textContent) ->
 ko.bindingHandlers.money =
   update: (el, valueAccessor) =>
     f = (value) -> "$#{addCommas(value)}"
+    transformContent(f, el, valueAccessor())
+
+ko.bindingHandlers.accountBalance =
+  update: (el, valueAccessor) =>
+    amount = ko.utils.unwrapObservable(valueAccessor())
+    suffix = if amount < 0
+               "in credit."
+             else if amount > 0
+               "payment outstanding."
+             else
+               ""
+    f = (value) -> "$#{addCommas(Math.abs(value) / 100)} #{suffix}"
     transformContent(f, el, valueAccessor())
 
 ko.bindingHandlers.duration =

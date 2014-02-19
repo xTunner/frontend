@@ -1,9 +1,10 @@
-.add-repos{data-bind: "ifnot: repos().length"}
+/ ko ifnot: repos().length
+.add-repos
   %h3 Welcome to Circle
   %ul
     %li Get started by selecting your GitHub username or organization on the left.
     %li Choose a repo you want to test and we'll do the rest!
-
+/ /ko
 
 %ul.proj-list{data-bind: "foreach: repos"}
   / ko if: canFollow

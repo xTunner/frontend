@@ -1,0 +1,46 @@
+%nav.header-nav{data-bind: "with: current_user"}
+  .header-nav-logo
+    %a{href: "/"}
+  .header-nav-breadcrumb
+    != HAML.crumbs({})
+  .header-nav-environment{data-bind: "if: showEnvironment,
+                                      tooltip: {title: \"You're the best\",
+                                                placement: 'left',
+                                                trigger: 'click',
+                                                animation: false}"}
+    %span{data-bind: "text: environment, css: environmentColor"}
+  .header-nav-docs
+    %a.menu-item{href: "/docs",target: "_blank"}
+      %i.fa.fa-files-o
+      %span Documentation
+  .header-nav-menu
+    %a{data-toggle: "dropdown"}
+      <!-- ko ifnot: gravatar_url() -->
+        %span{data-bind: "text: login"}
+      <!-- /ko -->
+      <!-- ko if: gravatar_url() -->
+        %img{data-bind: "attr: {src: gravatar_url(30), width: 30, height: 30}"}
+      <!-- /ko -->
+      %i.fa.fa-caret-down
+    %aside
+      %a.menu-item{href: '/account'}
+        %i.fa.fa-gears
+        %span Settings
+      <!-- ko ifnot: VM.from_heroku -->
+        %a.menu-item#logout-link{ href: '/logout'}
+          %i.fa.fa-sign-out
+          %span Logout
+      <!-- /ko -->
+      %a.menu-item{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
+        %i.fa.fa-bullhorn
+        %span Support
+      %a.menu-item{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+        %i.fa.fa-comments
+        %span Chat support
+      <!-- ko if: admin -->
+        %a.menu-item{href: "/admin"} Admin
+        %a.menu-item{href: "/admin/users"} Users
+        %a.menu-item{href: "/admin/recent-builds"} Recent builds
+        %a.menu-item{href: "/admin/projects"} Projects
+        %a.menu-item{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+      <!-- /ko -->

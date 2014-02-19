@@ -53,7 +53,7 @@
     display: inline-block;
     width: 15%;
     float: left;
-    padding: 0 1vw;
+    padding: 0 1em;
     .box-sizing(border-box);
     a {
       font-size: 1em;
@@ -81,30 +81,34 @@
     }
   }
   .proj-wrapper {
+<<<<<<< HEAD
     display: inline-block;
+=======
+    .box-sizing(border-box);
+    overflow: hidden;
+>>>>>>> master
     width: 70%;
     float: left;
     background: @whiten;
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
-    margin-bottom: 10%;
+    margin-bottom: 20vh;
     // padding: 1vw; (for later use with tabbing visual)
-    .box-sizing(border-box);
-    .centered-spinner {
-      margin: 25vh 0;
+    .loading-spinner {
+      margin: 20vh auto;
     }
   }
   .proj-list {
     // border: 1px solid darken(@grayBorder,1%); (for later use with tabbing visual)
     list-style: none;
     margin: 0;
+    width: 100%;
   }
   .side-list {
     float: left;
     width: 15%;
     display: inline-block;
     margin: 0;
-    margin-bottom: @footerActualHeight * 1.5;
     .box-sizing(border-box);
     a {
       cursor: pointer;
@@ -126,7 +130,7 @@
       white-space: normal;
     }
     li {
-      padding: 0 1vw;
+      padding: 0 1em;
     }
   }
   .add-orgs, .add-collabs, .add-you {

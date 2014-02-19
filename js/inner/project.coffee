@@ -11,6 +11,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
     hipchat_api_token: null
     hipchat_notify: false
     hipchat_notify_prefs: null
+    slack_channel: null
+    slack_subdomain: null
+    slack_api_token: null
+    slack_notify_prefs: null
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
@@ -350,6 +354,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
         hipchat_api_token: @hipchat_api_token()
         hipchat_notify: @hipchat_notify()
         hipchat_notify_prefs: @hipchat_notify_prefs()
+        slack_channel: @slack_channel()
+        slack_subdomain: @slack_subdomain()
+        slack_api_token: @slack_api_token()
+        slack_notify_prefs: @slack_notify_prefs()
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()

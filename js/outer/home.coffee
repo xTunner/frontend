@@ -1,7 +1,9 @@
 class CI.outer.Home extends CI.outer.Page
   lib: () =>
     _gaq.push(['_trackPageview', '/homepage'])
-    mixpanel.track("Outer Home Page")
+    mixpanel.track("Outer Home Page", {
+      'window height': $( window ).height();
+      })
 
   viewContext: =>
     features: [
@@ -29,4 +31,3 @@ class CI.outer.Home extends CI.outer.Page
       headline: "Incredible support"
       teaser: "We respond to support requests immediately, every day. Most requests are responded to within an hour. No-one ever waits more than 12 hours for a response."
     ]  
-

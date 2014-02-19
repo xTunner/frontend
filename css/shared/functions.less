@@ -168,6 +168,18 @@
   display: -webkit-flex;
   display:         flex;
 }
+.flexJustify(@arg) { // flex-start, flex-end, center, space-between, space-around
+  -webkit-justify-content: @arg;
+          justify-content: @arg;
+}
+.flex-direction(@arg) {
+  -webkit-flex-direction: @arg;
+          flex-direction: @arg;
+}
+.align-items(@arg) {
+  -webkit-align-items: @arg;
+          align-items: @arg;
+}
 
 .fontFace(@font, @weight, @style: normal){
   @font-face{
@@ -198,7 +210,7 @@
     text-align: left;
     white-space: nowrap;
     &:first-child {
-      padding-left: 1vw;
+      padding-left: 1em;
     }
     &:last-child {
       width: 70px;
@@ -237,7 +249,7 @@
       padding: .5em 0 .5em .5em;
     }
     &:first-child a {
-      padding-left: 1vw;
+      padding-left: 1em;
     }
     &:last-child {
       vertical-align: middle;
