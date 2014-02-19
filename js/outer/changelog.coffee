@@ -19,6 +19,8 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   pubDate2id: (ts) =>
     "t#{ts}"
 
+  pubDate2href: (ts) =>
+    "#t#{ts}"
 
   render: (cx) =>
     @fetchContent()
