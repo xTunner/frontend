@@ -210,12 +210,19 @@
       }
     }
     .repoButtonColor(@color) {
-      button:hover {
-        background-color: @color;
-        color: @white;
-        svg {
-          > * {
-            fill: @white;
+      button {
+        &:hover {
+          background-color: @color;
+          color: @white;
+          text-shadow: none;
+          svg {
+            > * {
+              fill: @white;
+            }
+          }
+          &:active {
+            box-shadow: 0 3px (darken(@color, 5)) inset;
+            text-shadow: none;
           }
         }
       }
