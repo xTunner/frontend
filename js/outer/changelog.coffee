@@ -7,6 +7,13 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   image: (author) =>
     VM.about.team[author]?.img_path
 
+  author: (author) =>
+    VM.about.team[author]?.name
+
+  twitter: (author) =>
+    url = VM.about.team[author]?.twitter
+    "https://twitter.com/#{url}"
+
   # We want a HTML id, but have a timestamp. All the timestamp characters are
   # valid (':' and '-') but we need to start with a letter
   pubDate2id: (ts) =>
