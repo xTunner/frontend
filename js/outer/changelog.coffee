@@ -17,9 +17,11 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   # We want a HTML id, but have a timestamp. All the timestamp characters are
   # valid (':' and '-') but we need to start with a letter
   pubDate2id: (ts) =>
+    ts = ts.replace(/-/g, '').replace(/:/g, '').replace(/Z/g, '')
     "t#{ts}"
 
   pubDate2href: (ts) =>
+    ts = ts.replace(/-/g, '').replace(/:/g, '').replace(/Z/g, '')
     "#t#{ts}"
 
   render: (cx) =>
