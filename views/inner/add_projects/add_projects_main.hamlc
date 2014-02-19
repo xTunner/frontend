@@ -12,12 +12,16 @@
     / ko if: shouldDoFirstFollowerBuild
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    %button{data-bind: "click: follow, text: buttonText", data-loading-text: "..."}
+    %button{data-bind: "click: follow", data-loading-text: "...", type: "button"}
+      != HAML.spinner({})
+      %span Follow
     / /ko
     / ko ifnot: shouldDoFirstFollowerBuild
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    %button.join-project{data-bind: "click: follow", data-loading-text: "..."} Follow
+    %button.join-project{data-bind: "click: follow", data-loading-text: "...", type: "button"}
+      != HAML.spinner({})
+      %span Follow
     / /ko
   / /ko
   / ko if: following
@@ -26,7 +30,9 @@
       %span{data-bind: "text: name, attr: {title: displayName}"}
       %a{data-bind: "tooltip: {title: repoToolTip}"}
         %i.fa.fa-external-link
-    %button{data-bind: "click: unfollow", data-loading-text: "..."} Unfollow
+    %button{data-bind: "click: unfollow", type: "button"}
+      != HAML.spinner({})
+      %span Unfollow
   / /ko
   / ko if: requiresInvite
   %li.repo-nofollow
@@ -34,7 +40,7 @@
       %span{data-bind: "text: name, attr: {title: displayName}"}
     %i.fa.fa-lock
     %button{data-toggle: "modal", data-target: "#inviteForm"}
-      %span{data-bind: "text: buttonText"}
+      %span Follow
   / /ko
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}

@@ -18,6 +18,7 @@ finishAjax = (event, attrName, buttonName) ->
     func = () =>
       textVal t, event.savedText
       t.removeClass "disabled"
+      t.removeClass "loading"
     setTimeout(func, 1500)
 
 $(document).ajaxSuccess (ev, xhr, options) ->
@@ -56,10 +57,11 @@ $(document).ajaxSend (ev, xhr, options) ->
   if xhr.event
     t = $(xhr.event.currentTarget)
     t.addClass "disabled"
+    t.addClass "loading"
     # change to loading text
     loading = t.attr("data-loading-text") or "..."
     xhr.event.savedText = textVal t
-    if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
+    if not (t.prop("type").toLowerCase() in ["radio", "checkbox", "button"])
       textVal t, loading
 
 CI.sendCSRFtoken = (settings) ->

@@ -186,6 +186,23 @@
       padding: .75em;
       line-height: 1em;
       min-width: 6em;
+      &.loading {
+        svg {
+          display: block;
+          margin: auto;
+          > * {
+            fill: @grayDark;
+          }
+        }
+        span {
+          display: none;
+        }
+      }
+      svg {
+        display: none;
+        height: 1em;
+        width: 1em;
+      }
       i {
         position: absolute;
         margin-left: .5ex;
@@ -196,6 +213,11 @@
       button:hover {
         background-color: @color;
         color: @white;
+        svg {
+          > * {
+            fill: @white;
+          }
+        }
       }
     }
     .repo-unfollow {
