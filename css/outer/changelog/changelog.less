@@ -1,51 +1,66 @@
 .page.changelog {
-
-	.content {
-
-		background: none;
-		section {
-			padding: 20px 0;
+	// Styles specific to changelog page on outer
+	@avatar: 4em;
+	@spacing: ((1 / 2) * @avatar);
+	h3 {
+		margin-top: 0;
+	}
+	.entry {
+		.flexBox();
+		padding-bottom: @spacing;
+		box-shadow: 0 1px @grayBoxBorder;
+		margin-bottom: @spacing;
+		&:first-child {
+			margin-top: @spacing;
+			padding-top: @spacing;
+			box-shadow: 0 1px @grayBoxBorder inset, 0 1px @grayBoxBorder;
 		}
-
-		.entry {
-
-			min-height: 80px;
-			padding: 15px 0;
-			border-bottom: 1px solid @grayLighter;
-			position: relative;
-			&:last-child {
-				border: none;
-			}
-
-			.label {
-				position: absolute;
-				text-shadow: none;
-				bottom: 0;
-				left: 0;
-				width: 53px;
-				text-align: center;
-				font-size: 0.75em;
-			}
-
-			img {
-				float: left;
-				margin-right: 20px;
-				height: 60px;
-				width: 60px;
-				background: @grayLight;
-				border: none;
-			}
-
-			.date {
-				font-size: 0.75em;
-				color: @grayLight;
-			}
-
-			.meta {
-				float: left;
-			 	position: relative;
-			 	height: 80px;
-			}
+	}
+	.entry-info {
+	 	font-size: @fontSizeSmall;
+	 	color: @grayLight;
+	 	a {
+	 		&:not(:hover) {
+	 			color: inherit;
+	 		}
+	 	}
+	 	strong {
+	 		&.bugfix {
+	 			color: @orange;
+	 		}
+	 		&.feature {
+	 			color: @green;
+	 		}
+	 		&.performance {
+	 			color: @blue;
+	 		}
+	 	}
+	}
+	.changeTypeColor(@color) {
+		strong {
+			color: @color;
+		}
+	}
+	.bugfix {
+		.changeTypeColor(@orange);
+	}
+	.feature {
+		.changeTypeColor(@green);
+	}
+	.performance {
+		.changeTypeColor(@blue);
+	}
+	.entry-main {
+		.flex(1, 1);
+		margin-right: @spacing;
+	}
+	.entry-avatar {
+		.flexBox();
+		.align-items(center);
+		.flex(0, 0, @avatar);
+		img {
+			max-height: @avatar;
+			border-radius: ((1 / 2) * @avatar);
 		}
 	}
 }
