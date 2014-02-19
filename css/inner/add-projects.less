@@ -129,7 +129,9 @@
       padding: 0 1em;
     }
   }
-  .add-orgs, .add-collabs, .add-you {
+  .add-orgs,
+  .add-collabs,
+  .add-you {
     display: inline-block;
     .box-sizing(border-box);
     text-overflow: ellipsis;
@@ -216,19 +218,21 @@
       }
     }
     .repoButtonColor(@color) {
-      button:not(.disabled) {
-        &:hover {
-          background-color: @color;
-          color: @white;
-          text-shadow: none;
-          svg {
-            > * {
-              fill: @white;
-            }
-          }
-          &:active {
-            box-shadow: 0 3px (darken(@color, 5)) inset;
+      button {
+        &:not(.disabled) {
+          &:hover {
+            background-color: @color;
+            color: @white;
             text-shadow: none;
+            svg {
+              > * {
+                fill: @white;
+              }
+            }
+            &:active {
+              box-shadow: 0 3px (darken(@color, 5)) inset;
+              text-shadow: none;
+            }
           }
         }
       }
