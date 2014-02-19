@@ -38,9 +38,9 @@
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
     -# %img{src: assetPath("/img/switchOff.svg")}
+    %i.fa.fa-lock
     %button{data-toggle: "modal", data-target: "#inviteForm"}
       %span{data-bind: "text: buttonText"}
-      %i.fa.fa-lock
   / /ko
 
 #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
