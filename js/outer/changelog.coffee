@@ -19,12 +19,6 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   pubDate2id: (ts) =>
     "t#{ts}"
 
-  type2class: (type) =>
-    # map types to bootstrap label styles
-    map =
-      "bugfix": "warning"
-      "feature": "success"
-    "label-" + map[type]
 
   render: (cx) =>
     @fetchContent()
