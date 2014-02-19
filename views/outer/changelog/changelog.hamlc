@@ -14,7 +14,7 @@
           .entry-info{data-bind: "css: type"}
             %strong{data-bind: "text: type"}
             != surround 'by', ' on', ->
-              %span{data-bind: "text: author"}
+              %a{data-bind: "text: $parent.author(author), attr: {href: $parent.twitter(author)}"}
             %a{data-bind: "attr: {href: $parent.pubDate2href(pubDate), id: $parent.pubDate2id(pubDate)}, text: CI.time.as_time_since(pubDate)"}
         .entry-avatar
           %img{data-bind: "attr: {src: $parent.image(author)}"}
