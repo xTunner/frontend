@@ -35,9 +35,9 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     @infrastructure_fail = @komp => @status() == "infrastructure_fail"
 
     # Ensure that failed actions have output
-    @failed.subscribe((failed) =>
-                        if failed
-                          @maybe_retrieve_output())
+    @failed.subscribe (failed) =>
+      if failed
+        @maybe_retrieve_output()
 
     # Expand failing actions
     @minimize = @komp =>
