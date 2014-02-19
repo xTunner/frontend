@@ -12,14 +12,14 @@
     / ko if: shouldDoFirstFollowerBuild
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    %button{data-bind: "click: follow", data-loading-text: "...", type: "button"}
+    %button{data-bind: "click: follow", type: "button"}
       != HAML.spinner({})
       %span Follow
     / /ko
     / ko ifnot: shouldDoFirstFollowerBuild
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    %button.join-project{data-bind: "click: follow", data-loading-text: "...", type: "button"}
+    %button.join-project{data-bind: "click: follow", type: "button"}
       != HAML.spinner({})
       %span Follow
     / /ko
