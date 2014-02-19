@@ -12,15 +12,11 @@
     / ko if: shouldDoFirstFollowerBuild
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    -# %img{src: assetPath("/img/switchBounce.svg")}
-    -# %i.fa.fa-caret-right
-    -# %span Start this repo!
     %button{data-bind: "click: follow, text: buttonText", data-loading-text: "..."}
     / /ko
     / ko ifnot: shouldDoFirstFollowerBuild
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    -# %img{src: assetPath("/img/switchOff.svg")}
     %button.join-project{data-bind: "click: follow", data-loading-text: "..."} Follow
     / /ko
   / /ko
@@ -30,14 +26,12 @@
       %span{data-bind: "text: name, attr: {title: displayName}"}
       %a{data-bind: "tooltip: {title: repoToolTip}"}
         %i.fa.fa-external-link
-    -# %img{src: assetPath("/img/switchOn.svg")}
     %button{data-bind: "click: unfollow", data-loading-text: "..."} Unfollow
   / /ko
   / ko if: requiresInvite
   %li.repo-nofollow
     .proj-name{data-bind: "css: {'forked': fork}"}
       %span{data-bind: "text: name, attr: {title: displayName}"}
-    -# %img{src: assetPath("/img/switchOff.svg")}
     %i.fa.fa-lock
     %button{data-toggle: "modal", data-target: "#inviteForm"}
       %span{data-bind: "text: buttonText"}
