@@ -63,7 +63,7 @@
 
 
     %h2 Changelog
-    %ul.changelog
+    %ul.privacy-changelog
       %li
         %strong Nov 5, 2013
         Add mixpanel; remove KissMetrics.
