@@ -1,4 +1,5 @@
 CI.outer.Changelog = class Changelog extends CI.outer.Page
+
   constructor: ->
     super
     @name = "changelog"
@@ -36,7 +37,6 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
       success: (results) =>
         @entries(@doc2entries(results))
         @reloadHash()
-
 
    reloadHash: () =>
     # The hash is created after the page loads, which I think is why we need this.
