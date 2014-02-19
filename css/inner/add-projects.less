@@ -160,38 +160,50 @@
   }
   .proj-list {
     li {
-      display: block;
+      .flexBox();
+      .align-items(center);
       box-shadow: 0 1px lighten(@grayLightest, .5) inset, 0 2px @white inset;
-      line-height: 1em;
+      line-height: 1.5em;
       position: relative;
-      .clearfix();
+      height: 1.5em;
+      padding: 1em;
+      padding-right: .5em;
+      .fa-lock {
+        width: 1em;
+        height: 1em;
+        margin-right: .5ex;
+        color: @grayLight;
+      }
     }
     button {
-      .subtleButton();
-      width: 12ex;
+      .circleButton();
+      padding: .75em;
+      line-height: 1em;
+      min-width: 6em;
       i {
         position: absolute;
         margin-left: .5ex;
         .scale3d(.75, .75);
       }
     }
-    .repoButtonColor(@color, @colorHover) {
-      button {
-        .subtleButtonColor(@color, @colorHover);
-        .subtleButtonFill(@colorHover);
+    .repoButtonColor(@color) {
+      button:hover {
+        background-color: @color;
+        color: @white;
       }
     }
     .repo-unfollow {
-      .repoButtonColor(@grayLight, @redLight);
+      .repoButtonColor(@redLight);
+    }
+    .repo-nofollow {
+      .repoButtonColor(@green);
     }
     .repo-1stfollow {
-      .repoButtonColor(@greenLight, @green);
+      .repoButtonColor(@green);
     }
   }
   .proj-name {
-    padding: 1em;
-    float: left;
-    display: inline;
+    margin-right: auto;
     i {
       font-size: @fontSizeMini;
     }
