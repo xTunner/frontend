@@ -30,12 +30,21 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       else
         "View #{name} project"
 
-
     @buttonText = @komp =>
       if not @following() and @has_followers
         "Follow"
       if not @following() and not @has_followers
         "Setup"
+
+    # @addProjectType = @komp =>
+    #   if @following()
+    #     "unfollow-project"
+    #   if @requiresInvite()
+    #     "locked-project"
+    #   if @canFollow() && shouldDoFirstFollowerBuild
+    #     "setup-project"
+    #   if @canFollow()
+    #     "follow-project"
 
   unfollow: (data, event) =>
     $.ajax
