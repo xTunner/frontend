@@ -19,7 +19,7 @@
       / ko ifnot: shouldDoFirstFollowerBuild
       .proj-name{data-bind: "css: {'forked': fork}"}
         %span{data-bind: "text: name, attr: {title: displayName}"}
-      %button.join-project{data-bind: "click: follow", type: "button"}
+      %button.join-project{data-bind: "click: follow", data-spinner: "true"}
         %span Follow
       / /ko
   <!-- /ko -->
@@ -30,7 +30,7 @@
         %span{data-bind: "text: name, attr: {title: displayName}"}
         %a{data-bind: "tooltip: {title: repoToolTip}, attr: {href: project_path}"}
           %i.fa.fa-external-link
-      %button{data-bind: "click: unfollow", type: "button"}
+      %button{data-bind: "click: unfollow", data-spinner: "true"}
         %span Unfollow
   <!-- /ko -->
 
