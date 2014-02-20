@@ -645,7 +645,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # Multiple mouse clicks cause the transition to get out of sync with the
     # selected container, ignore double clicks etc.
     # http://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
-    if event instanceof MouseEvent and event?.originalEvent?.detail != 1
+    if event?.originalEvent instanceof MouseEvent and event?.originalEvent?.detail != 1
       return
 
     @current_container().deselect()
