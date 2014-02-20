@@ -1,7 +1,9 @@
 .dashboard-main
-  %div{data-bind: "ifnot: builds_have_been_loaded"}
-    != HAML.fast_spinner({})
-  %div{data-bind: "if: builds_have_been_loaded"}
+  / ko ifnot: builds_have_been_loaded
+  .loading-spinner
+    != HAML.spinner({})
+  / /ko
+  / ko if: builds_have_been_loaded
     %h2
       Latest builds for the
       %span{data-bind: "text: VM.selected().username"}
@@ -10,4 +12,9 @@
         %a.btn.pull-right#invite{data-toggle: "modal", data-target: "#inviteForm"}
           Invite Collaborators
 
+<<<<<<< HEAD
     != HAML.recent_builds_table({builds: "builds", mention_project: true})
+=======
+    != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+  / /ko
+>>>>>>> master

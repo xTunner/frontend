@@ -5,7 +5,11 @@
 
 #dashboard
 
+  != HAML.flashes({})
+
+  / ko if: projects_have_been_loaded
   %aside
+<<<<<<< HEAD
     != HAML.sidebar({})
 
   %section
@@ -35,3 +39,39 @@
       / /ko
 
     <!-- /ko -->
+=======
+    != HAML['action_sidebar']({})
+    != HAML['followed_sidebar']({})
+    .shadowX
+  / /ko
+
+  / ko ifnot: dashboard_ready
+  .loading-spinner
+    != HAML.spinner({})
+  / /ko
+
+  / ko if: builds_have_been_loaded
+  .dash-wrap
+    .dashboard-main
+
+      / ko if: dashboard_ready
+
+      %div{data-bind: "if: show_add_projects()"}
+        %h2 You don't have any projects in CircleCI!
+        %p
+          %span Why don't you add a repository or two on
+          %a{href: "/add-projects"} the Manage Projects
+          %span page?
+
+      %div{data-bind: "if: show_build_table()"}
+
+        != HAML.project_trial_notice()
+
+        != HAML.project_enable_notice()
+
+        != HAML['builds']({builds: "builds", mention_project: true, pagination: false})
+
+      / /ko
+
+  / /ko
+>>>>>>> master
