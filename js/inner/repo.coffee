@@ -21,7 +21,7 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       if @fork
         "#{name} (forked)"
       else
-        @name
+        name
 
     @repoToolTip = @komp =>
       if @fork
