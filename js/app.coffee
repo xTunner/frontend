@@ -449,6 +449,8 @@ window.SammyApp = Sammy 'body', (n) ->
     # force them to inner.
     if VM.logged_in()
       return cx.redirect "/account/plans"
+    else
+      mixpanel.register_once {"view-pricing": true}
 
     # TODO: move this out of billing somehow
     VM.billing().loadPlans()
