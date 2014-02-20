@@ -28,7 +28,7 @@
     %li.repo-unfollow
       .proj-name{data-bind: "css: {'forked': fork}"}
         %span{data-bind: "text: name, attr: {title: displayName}"}
-        %a{data-bind: "tooltip: {title: repoToolTip}"}
+        %a{data-bind: "tooltip: {title: repoToolTip}, attr: {href: project_path}"}
           %i.fa.fa-external-link
       %button{data-bind: "click: unfollow", type: "button"}
         %span Unfollow
