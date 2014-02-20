@@ -3,7 +3,8 @@
   .build-queue{data-bind: "css: {active: usage_queue_visible}"}
 
     / ko ifnot: usage_queue_why
-    != HAML.fast_spinner({})
+    .loading-spinner
+      != HAML.spinner({})
     / /ko
 
     <!-- ko if: usage_queue_why -->

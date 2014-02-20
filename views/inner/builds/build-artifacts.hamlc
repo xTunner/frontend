@@ -8,7 +8,8 @@
       %i.fa.fa-caret-down
     <!-- ko if: artifacts_visible -->
       / ko ifnot: artifacts
-      != HAML.fast_spinner({})
+      .loading-spinner
+        != HAML.spinner({})
       / /ko
       / ko if: artifacts
       %ol.build-artifacts-list
