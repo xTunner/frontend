@@ -156,9 +156,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
-    display "dashboard",
-      builds_table: 'user_builds_table'
-
+    display "dashboard"
 
   loadAddProjects: (cx) =>
     @current_user().loadOrganizations()
@@ -451,6 +449,8 @@ window.SammyApp = Sammy 'body', (n) ->
     # force them to inner.
     if VM.logged_in()
       return cx.redirect "/account/plans"
+    else
+      mixpanel.register_once {"view-pricing": true}
 
     # TODO: move this out of billing somehow
     VM.billing().loadPlans()

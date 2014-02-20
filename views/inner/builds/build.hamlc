@@ -1,7 +1,8 @@
 #build-log-container
   %div{data-bind: "ifnot: build_has_been_loaded"}
     != HAML['flashes']({})
-    != HAML.fast_spinner({})
+    .loading-spinner
+      != HAML.spinner({})
 
   %div{data-bind: "if: build_has_been_loaded"}
 
