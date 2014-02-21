@@ -233,7 +233,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
           "canceled"
         else if @start_time()
           duration_millis = @updatingDuration(@start_time())
-          CI.time.as_duration(duration_millis) + @estimated_time(duration_millis)
+          CI.time.as_duration(duration_millis)
 
     # don't try to show queue information if the build is pre-usage_queue
     @show_queued_p = @komp =>
