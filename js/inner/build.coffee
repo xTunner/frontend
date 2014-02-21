@@ -384,7 +384,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       estimated_millis = @previous_successful_build().build_time_millis
 
       if valid estimated_millis
-        return " / ~" + CI.time.as_estimated_duration(estimated_millis)
+        estimated_duration = CI.time.as_estimated_duration(estimated_millis)
+        return " of an estimated #{estimated_duration}"
     ""
 
   urlForBuildNum: (num) =>
