@@ -46,3 +46,15 @@ CI.inner.Container = class Container extends CI.inner.Obj
 
   jquery_element: () =>
     $("#" + @container_id)
+
+  deselect: () =>
+    for action in @actions()
+      action.maybe_drop_output()
+
+  select: () =>
+    for action in @actions()
+      action.maybe_retrieve_output()
+
+  clean: () =>
+    super
+    VM.cleanObjs(@actions())

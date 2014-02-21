@@ -322,7 +322,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (data) =>
         @followed(data.followed)
         _gaq.push(['_trackEvent', 'Projects', 'Add'])
-        if callback? then callback()
+        if callback? then callback(data)
 
   enable: (data, event, callback) =>
     $.ajax
