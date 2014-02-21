@@ -51,7 +51,7 @@
         %a{data-bind: "attr: { href: url, title: start_time_stamp }, text: pretty_start_time"}
 
       %td.live.time
-        %a{data-bind: "attr: { href: url, title: duration }, text: duration"}
+        %a{data-bind: "attr: { href: url, title: duration_w_estimate}, text: duration"}
       / /ko
 
       / ko if: status() == 'not_run'

@@ -235,6 +235,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
           duration_millis = @updatingDuration(@start_time())
           CI.time.as_duration(duration_millis)
 
+    @duration_w_estimate = @komp () =>
+      if @start_time() and @stop_time()
+        CI.time.as_duration(moment(@stop_time()).diff(moment(@start_time())))
+      else
+        if @status() == "canceled"
+          # build was canceled from the queue
+          "canceled"
+        else if @start_time()
+          duration_millis = @updatingDuration(@start_time())
+          CI.time.as_duration(duration_millis) + @estimated_time(duration_millis)
+
     # don't try to show queue information if the build is pre-usage_queue
     @show_queued_p = @komp =>
       @usage_queued_at()?
