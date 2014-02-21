@@ -16,30 +16,35 @@ CI.inner.Container = class Container extends CI.inner.Obj
       # Result from calling action_log.action_header_style is a map
       # { failed: <val>
       #   running: <val>
-      #   success: <val> }
+      #   success: <val>
+      #   canceled: <val> }
       #
       # combine with these rules:
       # all children == success { success: true } -> success reduces with 'and'
       # any child == failure { failure: true } -> failure reduces with 'or'
       # any child == running { running: true } -> running reduces with 'or'
+      # any child == canceled { canceled: true } -> canceled reduces with 'or'
       reducer = (accum, e) ->
         success: accum.success and e.success()
         failed: accum.failed or e.failed()
         running: accum.running or e.running()
+        canceled: accum.canceled or e.canceled()
 
       child_styles = (action.action_header_style for action in @actions())
 
-      # This is horrible, but works. Failed is reported immediately, success
-      # only happens when the build is finished
       if child_styles.length > 0
-        style = child_styles.reduce(reducer, { success: true, failed: false, running: false })
-        if not style.failed and not @build.finished()
-          {success: false, failed: false, running: true}
-        else
-          style
-      else
-        # assume running if there are no child actions
-        {success: false, failed: false, running: true}
+        style = child_styles.reduce(reducer, {success: true, failed: false, running: false, canceled: false})
+
+        if style.failed
+          return {failed: true}
+        if style.canceled
+          return {canceled: true}
+        if style.success and @build.finished()
+          return {success: true}
+
+      # assume running if there are no child actions or the build hasn't
+      # finished, and no actions are canceled or failed.
+      return {running: true}
 
     @position_style = 
       left: (@container_index * 100) + "%"
