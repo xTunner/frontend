@@ -34,6 +34,10 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     @canceled = @komp => @status() == "canceled"
     @infrastructure_fail = @komp => @status() == "infrastructure_fail"
 
+    # Ensure that failed actions have output
+    @failed.subscribe (failed) =>
+      if failed
+        @maybe_retrieve_output()
 
     # Expand failing actions
     @minimize = @komp =>
@@ -42,6 +46,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       else
         @success() and not @messages().length > 0
 
+    # Fetch output (if any) for an action that starts expanded
     if !@minimize()
       @maybe_retrieve_output()
 
@@ -135,24 +140,57 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   report_build: () =>
     VM.raiseIntercomDialog('I think I found a bug in Circle at ' + window.location + '\n\n')
 
+  retrieve_output: () =>
+    @retrieving_output(true)
+    url = if @output_url
+            @output_url
+          else
+            "/api/v1/project/#{@build.project_name()}/#{@build.build_num}/output/#{@step()}/#{@index()}"
+    $.ajax
+      url: url
+      type: "GET"
+      success: (data) =>
+        @retrieved_output(true)
+        ## reset the converters
+        @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
+        @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+
+        # Reset the output so far
+        @final_out.removeAll()
+        @trailing_out("")
+
+        # And replace with what's been fetched from the API
+        @append_output(data)
+      complete: (data, status) =>
+        @retrieving_output(false)
+
   maybe_retrieve_output: () =>
-    if @has_output() and !@retrieved_output() and !@retrieving_output()
-      @retrieving_output(true)
-      url = if @output_url
-              @output_url
-            else
-              "/api/v1/project/#{@build.project_name()}/#{@build.build_num}/output/#{@step()}/#{@index()}"
-      $.ajax
-        url: url
-        type: "GET"
-        success: (data) =>
-          @retrieved_output(true)
-          ## reset the converters
-          @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
-          @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
-          @append_output(data)
-        complete: (data, status) =>
-          @retrieving_output(false)
+    if @has_output() and !@minimize() and !@retrieved_output() and !@retrieving_output()
+      @retrieve_output()
+
+  drop_output: () =>
+    # There's a potential race here with the AJAX call in retrieve_output
+    #
+    # 1) retrieve_output: sets retrieved_output(true)
+    # 2) drop_output: removes final_out, trailing_out
+    # 3) retrieve_output: appends output
+    # 4) drop_output: sets retrieved_output(false)
+    # 5) retrieve_output will fetch and append the output again next time it's
+    # called
+    #
+    # The internet swears that there is only a single Javascript thread in a
+    # browser, that functions cannot be interrupted, and AJAX callbacks are
+    # queued until no other code is running, thus avoiding races. I'd love a
+    # reference for this that's more concrete than stackoverflow.
+    @final_out.removeAll()
+    @trailing_out("")
+    # Leave @retrieving_output alone, that's for maybe_retrieve_output to
+    # manage
+    @retrieved_output(false)
+
+  maybe_drop_output: () =>
+    if @minimize()
+      @drop_output()
 
 class Step extends CI.inner.Obj
 

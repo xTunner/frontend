@@ -17,10 +17,17 @@ CI.inner.Repo = class Repo extends CI.inner.Obj
       not @following() and not @admin and not @has_followers
 
     @displayName = @komp =>
+      name = @project_name()
       if @fork
-        @project_name()
+        "#{name} (forked)"
       else
-        @name
+        name
+
+    @repoToolTip = @komp =>
+      if @fork
+        "View #{@name} (forked) project"
+      else
+        "View #{@name} project"
 
     @buttonText = @komp =>
       if not @following() and @has_followers
