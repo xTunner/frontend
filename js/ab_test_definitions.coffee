@@ -12,3 +12,4 @@ exports.ab_test_definitions =
   github_modal: [true, false]
   old_font: [true, false]
   customer_logos: [true, false]
+  github_header: [true, false]
