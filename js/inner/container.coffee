@@ -36,17 +36,19 @@ CI.inner.Container = class Container extends CI.inner.Obj
         style = child_styles.reduce(reducer, {success: true, failed: false, running: false, canceled: false})
 
         if style.failed
-          return {failed: true}
+          return @status({ failed: true })
         if style.canceled
-          return {canceled: true}
-        if style.success and @build.finished()
-          return {success: true}
+          return @status({ canceled: true })
+        if style.success
+          if @build.finished()
+            return @status({ success: true })
+          return @status({ running: true })
 
       # assume running if there are no child actions or the build hasn't
       # finished, and no actions are canceled or failed.
-      return {running: true}
+      return @status({ running: true })
 
-    @position_style = 
+    @position_style =
       left: (@container_index * 100) + "%"
 
   jquery_element: () =>
@@ -63,3 +65,15 @@ CI.inner.Container = class Container extends CI.inner.Obj
   clean: () =>
     super
     VM.cleanObjs(@actions())
+
+  status: (s) =>
+    status =
+      success: false
+      failed: false
+      running: false
+      canceled: false
+
+    for key, value of s
+      status[key] = value
+
+    status
