@@ -24,7 +24,7 @@
       .request-auth{data-bind: "ifnot: $root.current_user().has_public_key_scope"}
         %a.btn{data-bind: "tooltip: { title: 'We need additional authorization to add a new SSH key to your GitHub account',
                                       animation: false }",
-               href: CI.github.authUrl(["write:public_key", "user", "repo"])}
+               href: CI.github.authUrl(["admin:public_key", "user", "repo"])}
           %span Authorize w/ Github
           %i.fa.fa-exclamation-circle
 
