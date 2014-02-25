@@ -4,16 +4,16 @@
 	Sign in
 %span.seperator 
 	|
-<!-- ko if: VM.ab().github_modal() -->
-	%a#login.login-link{ title: 'Sign up with Github',
-	                          data-bind: "click: githubModalHeader"}
-		Sign up
-		%i.fa.fa-github-alt 
-<!-- /ko -->
-<!-- ko ifnot: VM.ab().github_modal() -->
-	%a#login.login-link{href: CI.github.authUrl(),
-	                          title: 'Sign up with Github',
-	                          data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'header sign-up', 'url' : window.location.pathname}}"}
-		Sign up
-		%i.fa.fa-github-alt 
-<!-- /ko -->
+/ ko if: VM.ab().github_modal() 
+%a#login.login-link{ title: 'Sign up with Github',
+                          data-bind: "click: githubModalHeader"}
+	Sign up
+	%i.fa.fa-github-alt 
+/ /ko 
+/ ko ifnot: VM.ab().github_modal()
+%a#login.login-link{href: CI.github.authUrl(),
+                          title: 'Sign up with Github',
+                          data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'header sign-up', 'url' : window.location.pathname}}"}
+	Sign up
+	%i.fa.fa-github-alt 
+/ /ko 
