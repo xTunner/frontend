@@ -42,7 +42,7 @@ CI.inner.Container = class Container extends CI.inner.Obj
         if style.success
           if @build.finished()
             return @status({ success: true })
-          return @status({ running: true })
+          return @status({ waiting: true })
 
       # assume running if there are no child actions or the build hasn't
       # finished, and no actions are canceled or failed.
@@ -72,6 +72,7 @@ CI.inner.Container = class Container extends CI.inner.Obj
       failed: false
       running: false
       canceled: false
+      waiting: false
 
     for key, value of s
       status[key] = value

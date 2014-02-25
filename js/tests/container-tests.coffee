@@ -7,6 +7,7 @@ j.describe "status_style", =>
       failed: false
       running: false
       canceled: false
+      waiting: false
 
     for key, value of desired
       expected[key] = value
@@ -23,12 +24,12 @@ j.describe "status_style", =>
     @container = new CI.inner.Container("Test", 0, @actions, @build)
 
 
-  j.it "should be running if all actions have been successful but the build has not finished", =>
+  j.it "should be waiting if all actions have been successful but the build has not finished", =>
     for action in @actions
       action.status("success")
 
     @build.stop_time(null)
-    check_status(@container.status_style(), {running: true})
+    check_status(@container.status_style(), {waiting: true})
 
 
   j.it "should be successful if all actions have been successful and the build is finished", =>
