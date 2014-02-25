@@ -83,8 +83,8 @@ CI.inner.User = class User extends CI.inner.Obj
 
       _.sortBy @organizations().concat(user_org), 'login'
 
-    @has_user_scope = @komp =>
-      _.contains(@github_oauth_scopes(), 'user')
+    @has_public_key_scope = @komp =>
+      _.contains(@github_oauth_scopes(), 'write:public_key')
 
 
   missing_scopes: () =>
