@@ -42,15 +42,15 @@
         / /ko
 
       / ko if: VM.current_page().show_queued
-      %td
+      %td.recent-time-queued
         %a{data-bind: "attr: { href: url }, duration: queued_time"}
       / /ko
 
       / ko if: status() != 'not_run'
-      %td.live.time
+      %td.recent-time-started
         %a{data-bind: "attr: { href: url, title: start_time_stamp }, text: pretty_start_time"}
 
-      %td.live.time
+      %td.recent-time-duration
         %a{data-bind: "attr: { href: url, title: duration }, text: duration"}
       / /ko
 
