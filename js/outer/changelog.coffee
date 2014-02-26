@@ -18,10 +18,11 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   # We want a HTML id, but have a timestamp. All the timestamp characters are
   # valid (':' and '-').
   pubDate2id: (ts) =>
-    ts
+    ts = ts.replace(/-/g, '').replace(/:/g, '')
+    "#{ts}"
 
   pubDate2href: (ts) =>
-    "#" + pubDate2id(ts)
+    "#" + @pubDate2id(ts)
 
   render: (cx) =>
     @fetchContent()
