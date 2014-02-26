@@ -5,6 +5,7 @@
 
   .environment-variables-inner
     %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
+    %p Note that the '&#36;' character in a value will not be automatically escaped. If you want to set a variable to the literal string '&#36;HOME' you must use '&#92;&#36;HOME' in the value field below.
     .env-table
       %form
         %ul
