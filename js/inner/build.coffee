@@ -317,6 +317,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+    @autoscroll = false
+
     # Containers use @finished() to determine their status. Create the
     # Container instances *after* the Build komps are created or container
     # status can be reported incorrectly.
@@ -703,3 +705,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $container_parent = $("#container_parent")
     container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
     @select_container(@containers()[container_index])
+
+  refresh_waypoints: () =>
+    $.waypoints("refresh")
+
+  enable_autoscroll: (direction) =>
+    @autoscroll = direction is "down" and not @finished()
+
+  maybe_scroll: () =>
+    if @autoscroll
+      $("body").animate({scrollTop: document.body.offsetHeight}, 'fast')
+
+  height_changed: () =>
+    @refresh_waypoints()
+    @maybe_scroll()
