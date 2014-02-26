@@ -5,14 +5,15 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
     @name = "changelog"
     @entries = ko.observableArray([])
 
+  # NOTE: You cannot add a user who does not appear on the about page. This is intentional.
   image: (author) =>
-    VM.about.team[author]?.img_path
+    VM.about.team[author].img_path
 
   author: (author) =>
-    VM.about.team[author]?.name
+    VM.about.team[author].name
 
   twitter: (author) =>
-    url = VM.about.team[author]?.twitter
+    url = VM.about.team[author].twitter
     "https://twitter.com/#{url}"
 
   # We want a HTML id, but have a timestamp. All the timestamp characters are
@@ -20,9 +21,6 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
   pubDate2id: (ts) =>
     ts = ts.replace(/-/g, '').replace(/:/g, '')
     "#{ts}"
-
-  pubDate2href: (ts) =>
-    "#" + @pubDate2id(ts)
 
   render: (cx) =>
     @fetchContent()
