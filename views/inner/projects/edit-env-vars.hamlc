@@ -5,6 +5,8 @@
 
   .environment-variables-inner
     %p Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository.
+    %p The values can be any bash expression and can reference other variables (e.g. setting M2_MAVEN to "${HOME}/.m2").
+    %p To disable string substitution you need to escape the '$' characters by prefixing them with '&#92;' (e.g., for a crypt'ed password like "&#36;1&#36;O3JMY.Tw&#36;AdLnLjQ/5jXF9.MTp3gHv/" you would enter "&#92;&#36;1&#92;&#36;O3JMY.Tw&#92;&#36;AdLnLjQ/5jXF9.MTp3gHv/").
     .env-table
       %form
         %ul
