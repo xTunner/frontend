@@ -831,7 +831,7 @@
   %code<>
     :preserves
       general:
-        build-dir: api
+        build_dir: api
 
 %p
   Circle will run its inference as well as all build commands at that directory.
