@@ -86,13 +86,3 @@ CI.inner.Foundation = class Foundation extends CI.inner.Obj
     window.SammyApp.setLocation("/privacy#security")
     mixpanel.track("Modal Privacy Link")
 
-  githubModal: (data, event) =>
-    $('#githubModal').modal('show')
-    mixpanel.track("Fire GH Modal")
-
-  enterpriseModal: (data, event) =>
-    $('#enterpriseModal').modal('show')
-    mixpanel.track("Fire enterprise Modal")
-
-
-
