@@ -30,16 +30,16 @@
       <!-- /ko -->
       %td
         %a{data-bind: "attr: {href: url, title: author}, text: author"}
-      %td
+      %td.recent-log
         %a{data-bind: "attr: {href: url, title: body}, text: subject"}
       <!-- ko if: VM.current_page().show_queued -->
-        %td
+        %td.recent-time-queued
           %a{data-bind: "attr: {href: url}, duration: queued_time"}
       <!-- /ko -->
       <!-- ko ifnot: status() == 'not_run' -->
-        %td.live.time
+        %td.recent-time-started
           %a{data-bind: "attr: {href: url, title: start_time_stamp}, text: pretty_start_time"}
-        %td.live.time
+        %td.recent-time-duration
           %a{data-bind: "attr: {href: url, title: duration}, text: duration"}
       <!-- /ko -->
       <!-- ko if: status() == 'not_run' -->
