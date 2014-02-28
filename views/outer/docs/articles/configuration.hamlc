@@ -824,7 +824,7 @@
 %p
   Circle runs all commands on the repository root, by default.  However, if
   you store your application code in a subdirectory instead of the root, you
-  specify the build directory in circle.yml.  For example, to set the build
+  can specify the build directory in circle.yml.  For example, to set the build
   directory to `api` sub-directory, you can use the following configuration:
 
 %pre
@@ -834,7 +834,7 @@
         build_dir: api
 
 %p
-  Circle will run its inference as well as all build commands at that directory.
+  Circle will run its inference as well as all build commands from that directory.
 
 
 %h2#help Need anything else?
