@@ -11,7 +11,7 @@
     .center-btn
       %a.btn.btn-primary.bold-btn{href: CI.github.authUrl(),
                                   title: 'Sign up with Github',
-                                  data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'modal'}}"}
+                                  data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'modal', 'url' : window.location.pathname}}"}
         %i.fa.fa-github-alt
         Go To
         %strong.white Github

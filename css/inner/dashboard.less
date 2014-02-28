@@ -1,13 +1,51 @@
+<<<<<<< HEAD
 .live {
   &.time {
     white-space: nowrap;
     min-width: 10ex;
   }
+=======
+.dark-links {
+  color: @gray;
+  font-weight: normal;
+  text-decoration: none;
+  transition-duration: .3s;
+  transition-property: color;
+  transition-timing-function: ease-in-out;
+  &:hover {
+    color: @blueLight;
+    transition-duration: .1s;
+    transition-property: color;
+    transition-timing-function: ease-in-out;
+  }
+}
+[class^="recent-time-"] {
+  white-space: nowrap;
+  min-width: 8ex;
+}
+.recent-time-duration {
+  min-width: 13ex;
+>>>>>>> master
 }
 #dashboard {
   .flexBox();
   .align-items(flex-start);
   padding: 0 1em;
+<<<<<<< HEAD
+=======
+  .build_log {
+    word-break: break-all;
+  }
+  li {
+    line-height: 1em;
+  }
+  .builds-table {
+    .tableLight();
+    a {
+      .dark-links;
+    }
+  }
+>>>>>>> master
   aside {
     .outlineFlat();
     .flex(0, 0, 250px);
