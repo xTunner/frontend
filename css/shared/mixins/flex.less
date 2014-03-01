@@ -29,8 +29,8 @@
             box-pack: end;
 }
 .flexJustBugCenter(@arg) when (@arg = center) {
-    -webkit-box-pack: center;
-            box-pack: center;
+    -webkit-box-pack: @arg;
+            box-pack: @arg;
 }
 .flexJustBugBetween(@arg) when (@arg = space-between) {
     -webkit-box-pack: justify;
