@@ -1,0 +1,30 @@
+.flex(@grow: 0, @shrink: 1, @basis: auto) {
+  -webkit-flex: @grow @shrink @basis;
+          flex: @grow @shrink @basis;
+}
+
+
+.flexBox {
+  display: -webkit-flex;
+  display:         flex;
+}
+
+
+.flexJustify(@arg) { // flex-start, flex-end, center, space-between, space-around
+  -webkit-justify-content: @arg;
+          justify-content: @arg;
+}
+
+
+
+.flex-direction(@arg) { // row, row-reverse, column, column-reverse
+  -webkit-flex-direction: @arg;
+          flex-direction: @arg;
+}
+
+
+
+.align-items(@arg) {
+  -webkit-align-items: @arg;
+          align-items: @arg;
+}
