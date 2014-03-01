@@ -4,20 +4,75 @@
 }
 
 
+.flexBoxBug() {
+  display:  -webkit-box;
+  display:          box;
+}
 .flexBox {
+  .flexBoxBug();
   display: -webkit-flex;
   display:         flex;
 }
 
 
+.flexJustBugStart(@arg) when (@arg = flex-start) {
+    -webkit-box-pack: start;
+            box-pack: start;
+}
+.flexJustBugEnd(@arg) when (@arg = flex-end) {
+    -webkit-box-pack: end;
+            box-pack: end;
+}
+.flexJustBugCenter(@arg) when (@arg = center) {
+    -webkit-box-pack: center;
+            box-pack: center;
+}
+.flexJustBugBetween(@arg) when (@arg = space-between) {
+    -webkit-box-pack: justify;
+            box-pack: justify;
+}
+.flexJustBug(@arg) {
+  .flexJustBugStart(@arg);
+  .flexJustBugEnd(@arg);
+  .flexJustBugCenter(@arg);
+  .flexJustBugBetween(@arg);
+}
 .flexJustify(@arg) { // flex-start, flex-end, center, space-between, space-around
+  .flexJustBug(@arg);
   -webkit-justify-content: @arg;
           justify-content: @arg;
 }
 
 
 
+.flexDirBugRow(@arg) when (@arg = row) {
+    -webkit-box-orient: horizontal;
+            box-orient: horizontal;
+}
+.flexDirBugRowRev(@arg) when (@arg = row-reverse) {
+  -webkit-box-direction: reverse;
+          box-direction: reverse;
+     -webkit-box-orient: horizontal;
+             box-orient: horizontal;
+}
+.flexDirBugCol(@arg) when (@arg = column) {
+     -webkit-box-orient: vertical;
+             box-orient: vertical;
+}
+.flexDirBugColRev(@arg) when (@arg = column-reverse) {
+  -webkit-box-direction: reverse;
+          box-direction: reverse;
+     -webkit-box-orient: vertical;
+             box-orient: vertical;
+}
+.flexDirBug(@arg) {
+  .flexDirBugRow(@arg);
+  .flexDirBugRowRev(@arg);
+  .flexDirBugCol(@arg);
+  .flexDirBugColRev(@arg);
+}
 .flex-direction(@arg) { // row, row-reverse, column, column-reverse
+  .flexDirBug(@arg);
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
 }
