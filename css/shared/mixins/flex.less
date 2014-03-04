@@ -1,6 +1,5 @@
 //
-// display: flex
-// includes polyfill for old flex syntax to fix safari 6.0 bug
+// display flex
 //
 .displayFlex {
   .poly() {
@@ -12,23 +11,21 @@
   display:         flex;
 }
 //
-// flex
-// includes polyfill for old flex syntax to fix safari 6.0 bug
+// flex grow
 //
 .flex(@grow: 0, @shrink: 1, @basis: auto) {
-  .poly(@arg) {
+  .oldSyntax(@arg) {
     -webkit-box-flex: @arg;
             box-flex: @arg;
   }
-  .poly(@grow);
+  .oldSyntax(@grow);
   -webkit-flex: @grow @shrink @basis;
           flex: @grow @shrink @basis;
 }
 //
 // justify-content
-// includes polyfill for old flex syntax to fix safari 6.0 bug
 //
-.justify-content(@arg) { // flex-start, flex-end, center, space-between, space-around
+.justify-content(@arg) {
   .start(@arg) when (@arg = flex-start) {
       -webkit-box-pack: start;
               box-pack: start;
@@ -45,22 +42,21 @@
       -webkit-box-pack: justify;
               box-pack: justify;
   }
-  .poly(@arg) {
+  .oldSyntax(@arg) {
     .start(@arg);
     .end(@arg);
     .center(@arg);
     .between(@arg);
   }
-  .poly(@arg);
+  .oldSyntax(@arg);
   -webkit-justify-content: @arg;
           justify-content: @arg;
 }
 //
 // flex-direction
-// includes polyfill for old flex syntax to fix safari 6.0 bug
 //
-.flex-direction(@arg) { // row, row-reverse, column, column-reverse
-  .poly(@arg) {
+.flex-direction(@arg) {
+  .oldSyntax(@arg) {
     .row(@arg) when (@arg = row) {
          -webkit-box-orient: horizontal;
                  box-orient: horizontal;
@@ -86,16 +82,15 @@
     .col(@arg);
     .col-rev(@arg);
   }
-  .poly(@arg);
+  .oldSyntax(@arg);
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
 }
 //
 // align-items
-// includes polyfill for old flex syntax to fix safari 6.0 bug
 //
 .align-items(@arg) {
-  .poly(@arg) {
+  .oldSyntax(@arg) {
     .start(@arg) when (@arg = flex-start) {
       -webkit-box-align: start;
               box-align: start;
@@ -112,7 +107,7 @@
     .end(@arg);
     .else(@arg);
   }
-  .poly(@arg);
+  .oldSyntax(@arg);
   -webkit-align-items: @arg;
           align-items: @arg;
 }
