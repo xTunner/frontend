@@ -8,13 +8,12 @@
           flex: @grow @shrink @basis;
 }
 
-
-.displayFlexBug() {
-  display:  -webkit-box;
-  display:          box;
-}
 .displayFlex {
-  .displayFlexBug();
+  .poly() {
+    display: -webkit-box;
+    display:         box;
+  }
+  .poly();
   display: -webkit-flex;
   display:         flex;
 }
