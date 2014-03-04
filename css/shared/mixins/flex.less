@@ -11,7 +11,10 @@
   -webkit-flex: @grow @shrink @basis;
           flex: @grow @shrink @basis;
 }
-
+//
+// display: flex
+// includes polyfill for old flex syntax to fix safari 6.0 bug
+//
 .displayFlex {
   .poly() {
     display: -webkit-box;
