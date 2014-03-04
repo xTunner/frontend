@@ -81,8 +81,9 @@
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
 }
-
-
+//
+// align-items
+//
 .alignItemBugStart(@arg) when (@arg = flex-start) {
   -webkit-box-align: start;
           box-align: start;
@@ -91,27 +92,17 @@
   -webkit-box-align: end;
           box-align: end;
 }
-.alignItemBugCenter(@arg) when (@arg = center) {
-  -webkit-box-align: reverse;
-          box-align: reverse;
+.alignItemBug(@arg) when (@arg = center), (@arg = baseline), (@arg = stretch) {
+  -webkit-box-align: @arg;
+          box-align: @arg;
 }
-.alignItemBugBase(@arg) when (@arg = baseline) {
-  -webkit-box-align: reverse;
-          box-align: reverse;
-}
-.alignItemBugStretch(@arg) when (@arg = stretch) {
-  -webkit-box-align: reverse;
-          box-align: reverse;
-}
-.alignItemBug(@arg) {
+.alignItemPoly(@arg) {
   .alignItemBugStart(@arg);
   .alignItemBugEnd(@arg);
-  .alignItemBugCenter(@arg);
-  .alignItemBugBase(@arg);
-  .alignItemBugStretch(@arg);
-}
-.align-items(@arg) { // flex-start, flex-end, center, baseline, stretch
   .alignItemBug(@arg);
+}
+.align-items(@arg) {
+  .alignItemPoly(@arg);
   -webkit-align-items: @arg;
           align-items: @arg;
 }
