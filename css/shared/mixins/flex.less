@@ -47,62 +47,62 @@
   -webkit-justify-content: @arg;
           justify-content: @arg;
 }
-
-
-
-.flexDirBugRow(@arg) when (@arg = row) {
-     -webkit-box-orient: horizontal;
-             box-orient: horizontal;
-}
-.flexDirBugRowRev(@arg) when (@arg = row-reverse) {
-  -webkit-box-direction: reverse;
-          box-direction: reverse;
-     -webkit-box-orient: horizontal;
-             box-orient: horizontal;
-}
-.flexDirBugCol(@arg) when (@arg = column) {
-     -webkit-box-orient: vertical;
-             box-orient: vertical;
-}
-.flexDirBugColRev(@arg) when (@arg = column-reverse) {
-  -webkit-box-direction: reverse;
-          box-direction: reverse;
-     -webkit-box-orient: vertical;
-             box-orient: vertical;
-}
-.flexDirBug(@arg) {
-  .flexDirBugRow(@arg);
-  .flexDirBugRowRev(@arg);
-  .flexDirBugCol(@arg);
-  .flexDirBugColRev(@arg);
-}
+//
+// flex-direction
+//
 .flex-direction(@arg) { // row, row-reverse, column, column-reverse
-  .flexDirBug(@arg);
+  .poly(@arg) {
+    .row(@arg) when (@arg = row) {
+         -webkit-box-orient: horizontal;
+                 box-orient: horizontal;
+    }
+    .row-rev(@arg) when (@arg = row-reverse) {
+      -webkit-box-direction: reverse;
+              box-direction: reverse;
+         -webkit-box-orient: horizontal;
+                 box-orient: horizontal;
+    }
+    .col(@arg) when (@arg = column) {
+         -webkit-box-orient: vertical;
+                 box-orient: vertical;
+    }
+    .col-rev(@arg) when (@arg = column-reverse) {
+      -webkit-box-direction: reverse;
+              box-direction: reverse;
+         -webkit-box-orient: vertical;
+                 box-orient: vertical;
+    }
+    .row(@arg);
+    .row-rev(@arg);
+    .col(@arg);
+    .col-rev(@arg);
+  }
+  .poly(@arg);
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
 }
 //
 // align-items
-//
-.alignItemsPoly(@arg) {
-  .start(@arg) when (@arg = flex-start) {
-    -webkit-box-align: start;
-            box-align: start;
-  }
-  .end(@arg) when (@arg = flex-end) {
-    -webkit-box-align: end;
-            box-align: end;
-  }
-  .else(@arg) when (@arg = center), (@arg = baseline), (@arg = stretch) {
-    -webkit-box-align: @arg;
-            box-align: @arg;
-  }
-  .start(@arg);
-  .end(@arg);
-  .else(@arg);
-}
+// includes polyfill for old flex syntax to fix safari 6.0 bug
 .align-items(@arg) {
-  .alignItemsPoly(@arg);
+  .poly(@arg) {
+    .start(@arg) when (@arg = flex-start) {
+      -webkit-box-align: start;
+              box-align: start;
+    }
+    .end(@arg) when (@arg = flex-end) {
+      -webkit-box-align: end;
+              box-align: end;
+    }
+    .else(@arg) when (@arg = center), (@arg = baseline), (@arg = stretch) {
+      -webkit-box-align: @arg;
+              box-align: @arg;
+    }
+    .start(@arg);
+    .end(@arg);
+    .else(@arg);
+  }
+  .poly(@arg);
   -webkit-align-items: @arg;
           align-items: @arg;
 }
