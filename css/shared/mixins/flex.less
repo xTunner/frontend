@@ -49,6 +49,7 @@
 }
 //
 // flex-direction
+// includes polyfill for old flex syntax to fix safari 6.0 bug
 //
 .flex-direction(@arg) { // row, row-reverse, column, column-reverse
   .poly(@arg) {
@@ -84,6 +85,7 @@
 //
 // align-items
 // includes polyfill for old flex syntax to fix safari 6.0 bug
+//
 .align-items(@arg) {
   .poly(@arg) {
     .start(@arg) when (@arg = flex-start) {
