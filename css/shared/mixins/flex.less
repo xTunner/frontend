@@ -1,17 +1,4 @@
 //
-// flex
-// includes polyfill for old flex syntax to fix safari 6.0 bug
-//
-.flex(@grow: 0, @shrink: 1, @basis: auto) {
-  .poly(@arg) {
-    -webkit-box-flex: @arg;
-            box-flex: @arg;
-  }
-  .poly(@grow);
-  -webkit-flex: @grow @shrink @basis;
-          flex: @grow @shrink @basis;
-}
-//
 // display: flex
 // includes polyfill for old flex syntax to fix safari 6.0 bug
 //
@@ -23,6 +10,19 @@
   .poly();
   display: -webkit-flex;
   display:         flex;
+}
+//
+// flex
+// includes polyfill for old flex syntax to fix safari 6.0 bug
+//
+.flex(@grow: 0, @shrink: 1, @basis: auto) {
+  .poly(@arg) {
+    -webkit-box-flex: @arg;
+            box-flex: @arg;
+  }
+  .poly(@grow);
+  -webkit-flex: @grow @shrink @basis;
+          flex: @grow @shrink @basis;
 }
 //
 // justify-content
