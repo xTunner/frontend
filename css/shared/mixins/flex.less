@@ -17,32 +17,34 @@
   display: -webkit-flex;
   display:         flex;
 }
-
-
-.flexJustBugStart(@arg) when (@arg = flex-start) {
-    -webkit-box-pack: start;
-            box-pack: start;
-}
-.flexJustBugEnd(@arg) when (@arg = flex-end) {
-    -webkit-box-pack: end;
-            box-pack: end;
-}
-.flexJustBugCenter(@arg) when (@arg = center) {
-    -webkit-box-pack: @arg;
-            box-pack: @arg;
-}
-.flexJustBugBetween(@arg) when (@arg = space-between) {
-    -webkit-box-pack: justify;
-            box-pack: justify;
-}
-.flexJustBug(@arg) {
-  .flexJustBugStart(@arg);
-  .flexJustBugEnd(@arg);
-  .flexJustBugCenter(@arg);
-  .flexJustBugBetween(@arg);
-}
+//
+// justify-content
+// includes polyfill for old flex syntax to fix safari 6.0 bug
+//
 .justify-content(@arg) { // flex-start, flex-end, center, space-between, space-around
-  .flexJustBug(@arg);
+  .start(@arg) when (@arg = flex-start) {
+      -webkit-box-pack: start;
+              box-pack: start;
+  }
+  .end(@arg) when (@arg = flex-end) {
+      -webkit-box-pack: end;
+              box-pack: end;
+  }
+  .center(@arg) when (@arg = center) {
+      -webkit-box-pack: @arg;
+              box-pack: @arg;
+  }
+  .between(@arg) when (@arg = space-between) {
+      -webkit-box-pack: justify;
+              box-pack: justify;
+  }
+  .poly(@arg) {
+    .start(@arg);
+    .end(@arg);
+    .center(@arg);
+    .between(@arg);
+  }
+  .poly(@arg);
   -webkit-justify-content: @arg;
           justify-content: @arg;
 }
