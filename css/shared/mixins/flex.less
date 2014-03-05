@@ -1,33 +1,21 @@
-//
-// display flex
-//
 .displayFlex {
   display: -webkit-box; // Old Syntax
   display:         box; // Old Syntax
   display: -webkit-flex;
   display:         flex;
 }
-//
-// flex grow
-//
 .flex(@grow: 0, @shrink: 1, @basis: auto) {
   -webkit-box-flex: @grow; // Old Syntax
           box-flex: @grow; // Old Syntax
   -webkit-flex: @grow @shrink @basis;
           flex: @grow @shrink @basis;
 }
-//
-// justify-content
-//
 .justify-content(@arg) {
   -webkit-box-pack: ~`"@{arg}".replace("flex-", "").replace("space-between", "justify")`; // Old Syntax
           box-pack: ~`"@{arg}".replace("flex-", "").replace("space-between", "justify")`; // Old Syntax
   -webkit-justify-content: @arg;
           justify-content: @arg;
 }
-//
-// flex-direction
-//
 .flex-direction(@arg) {
   .reverse(@arg) when (@arg = row-reverse), (@arg = column-reverse) {
     -webkit-box-direction: reverse;
@@ -39,9 +27,6 @@
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
 }
-//
-// align-items
-//
 .align-items(@arg) {
   -webkit-box-align: ~`"@{arg}".replace("flex-", "")`; // Old Syntax
           box-align: ~`"@{arg}".replace("flex-", "")`; // Old Syntax
