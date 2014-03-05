@@ -2,11 +2,8 @@
 // display flex
 //
 .displayFlex {
-  .poly() {
-    display: -webkit-box;
-    display:         box;
-  }
-  .poly();
+  display: -webkit-box; // Old Syntax
+  display:         box; // Old Syntax
   display: -webkit-flex;
   display:         flex;
 }
@@ -14,11 +11,8 @@
 // flex grow
 //
 .flex(@grow: 0, @shrink: 1, @basis: auto) {
-  .oldSyntax(@arg) {
-    -webkit-box-flex: @arg;
-            box-flex: @arg;
-  }
-  .oldSyntax(@grow);
+  -webkit-box-flex: @grow; // Old Syntax
+          box-flex: @grow; // Old Syntax
   -webkit-flex: @grow @shrink @basis;
           flex: @grow @shrink @basis;
 }
@@ -26,29 +20,8 @@
 // justify-content
 //
 .justify-content(@arg) {
-  .start(@arg) when (@arg = flex-start) {
-      -webkit-box-pack: start;
-              box-pack: start;
-  }
-  .end(@arg) when (@arg = flex-end) {
-      -webkit-box-pack: end;
-              box-pack: end;
-  }
-  .center(@arg) when (@arg = center) {
-      -webkit-box-pack: @arg;
-              box-pack: @arg;
-  }
-  .between(@arg) when (@arg = space-between) {
-      -webkit-box-pack: justify;
-              box-pack: justify;
-  }
-  .oldSyntax(@arg) {
-    .start(@arg);
-    .end(@arg);
-    .center(@arg);
-    .between(@arg);
-  }
-  .oldSyntax(@arg);
+  -webkit-box-pack: ~`"@{arg}".replace("flex-", "").replace("space-between", "justify")`; // Old Syntax
+          box-pack: ~`"@{arg}".replace("flex-", "").replace("space-between", "justify")`; // Old Syntax
   -webkit-justify-content: @arg;
           justify-content: @arg;
 }
@@ -56,33 +29,13 @@
 // flex-direction
 //
 .flex-direction(@arg) {
-  .oldSyntax(@arg) {
-    .row(@arg) when (@arg = row) {
-         -webkit-box-orient: horizontal;
-                 box-orient: horizontal;
-    }
-    .row-rev(@arg) when (@arg = row-reverse) {
-      -webkit-box-direction: reverse;
-              box-direction: reverse;
-         -webkit-box-orient: horizontal;
-                 box-orient: horizontal;
-    }
-    .col(@arg) when (@arg = column) {
-         -webkit-box-orient: vertical;
-                 box-orient: vertical;
-    }
-    .col-rev(@arg) when (@arg = column-reverse) {
-      -webkit-box-direction: reverse;
-              box-direction: reverse;
-         -webkit-box-orient: vertical;
-                 box-orient: vertical;
-    }
-    .row(@arg);
-    .row-rev(@arg);
-    .col(@arg);
-    .col-rev(@arg);
+  .reverse(@arg) when (@arg = row-reverse), (@arg = column-reverse) {
+    -webkit-box-direction: reverse;
+            box-direction: reverse;
   }
-  .oldSyntax(@arg);
+  .reverse(@arg);
+  -webkit-box-orient: ~`"@{arg}".replace("column", "vertical").replace("row", "horizontal").replace("-reverse", "")`; // Old Syntax
+          box-orient: ~`"@{arg}".replace("column", "vertical").replace("row", "horizontal").replace("-reverse", "")`; // Old Syntax
   -webkit-flex-direction: @arg;
           flex-direction: @arg;
 }
@@ -90,24 +43,8 @@
 // align-items
 //
 .align-items(@arg) {
-  .oldSyntax(@arg) {
-    .start(@arg) when (@arg = flex-start) {
-      -webkit-box-align: start;
-              box-align: start;
-    }
-    .end(@arg) when (@arg = flex-end) {
-      -webkit-box-align: end;
-              box-align: end;
-    }
-    .else(@arg) when (@arg = center), (@arg = baseline), (@arg = stretch) {
-      -webkit-box-align: @arg;
-              box-align: @arg;
-    }
-    .start(@arg);
-    .end(@arg);
-    .else(@arg);
-  }
-  .oldSyntax(@arg);
+  -webkit-box-align: ~`"@{arg}".replace("flex-", "")`; // Old Syntax
+          box-align: ~`"@{arg}".replace("flex-", "")`; // Old Syntax
   -webkit-align-items: @arg;
           align-items: @arg;
 }
