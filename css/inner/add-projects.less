@@ -249,18 +249,11 @@
   }
   .proj-name {
     margin-right: auto;
-    i {
+    .fa-external-link {
       font-size: @fontSizeMini;
     }
-    &.forked {
-      span {
-        &:after {
-          content: ~"'\f126'"; // fa-code-fork in FontAwesome
-          margin-left: .5ex;
-          font-family: FontAwesome;
-          color: @grayLight;
-        }
-      }
+    .forked {
+      color: @grayLighter;
     }
   }
   .tooltip {
