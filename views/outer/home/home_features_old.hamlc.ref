@@ -10,7 +10,7 @@
         .section-graphic
           %i.fa.fa-magic
         .section-content
-          %h6 Quick Setup
+          %h3 Quick Setup
           %p
             <strong>Set up your continuous integration in 20 seconds</strong>,
             not two days. With one click CircleCI detects test settings for a wide range of web apps, and set them up automatically on our servers.
@@ -18,7 +18,7 @@
         .section-graphic
           %i.fa.fa-bolt
         .section-content
-          %h6 Fast Tests
+          %h3 Fast Tests
           %p
             Your productivity relies on fast test results. CircleCI runs your tests
             <strong>faster than your Macbook Pro</strong>,
@@ -27,7 +27,7 @@
         .section-graphic
           %i.fa.fa-flask
         .section-content
-          %h6 Deep Customization
+          %h3 Deep Customization
           %p
             Real applications often deviate slightly from standard configurations, so CircleCI does too. Our configuration is so flexible that it's easy to
             %strong tweak almost anything
@@ -37,7 +37,7 @@
         .section-graphic
           %i.fa.fa-cog
         .section-content
-          %h6 Debug with Ease
+          %h3 Debug with Ease
           %p
             When your tests are broken, we help you get them fixed. We auto-detect errors, have great support, and even allow you to
             %strong SSH into our machines
@@ -46,7 +46,7 @@
         .section-graphic
           %i.fa.fa-bullhorn
         .section-content
-          %h6 Smart Notifications
+          %h3 Smart Notifications
           %p
             CircleCI intelligently notifies you via email, Hipchat, Campfire and more. You won't be flooded with useless notifications about other people's builds and passing tests,
             %strong we only notify you when it matters.
@@ -54,7 +54,7 @@
         .section-graphic
           %i.fa.fa-heart
         .section-content
-          %h6 Loving support
+          %h3 Loving support
           %p
             We respond to support requests as soon as possible, every day. Most requests get a response responded to
             %strong within an hour.
@@ -64,20 +64,20 @@
         .section-graphic
           %i.fa.fa-fullscreen
         .section-content
-          %h6 Automatic Parallelization
+          %h3 Automatic Parallelization
           %p
             We can automatically parallelize your tests across multiple machines. <strong>With up to 16-way parallelization</strong>, your test turn-around time can be massively reduced.
       .span4.section.continuous-deployment.clearfix
         .section-graphic
           %i.fa.fa-refresh
         .section-content
-          %h6 Continuous Deployment
+          %h3 Continuous Deployment
           %p
             <strong>Get code to your customers faster</strong>, as soon as the tests pass. CircleCI supports branch-specific deployments, SSH key management and supports any hosting environment using custom commands, auto-merging, and uploading packages.
       .span4.section.more-to-come.clearfix
         .section-graphic
           %i.fa.fa-lightbulb-o
         .section-content
-          %h6 More to come.
+          %h3 More to come.
           %p
             At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know.
