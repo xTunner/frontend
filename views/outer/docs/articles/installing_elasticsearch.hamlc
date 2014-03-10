@@ -2,12 +2,6 @@
 - @lastUpdated = "March 10, 2014"
 - @v = CI.Versions
 
--# Main points
-  - We have a default version that you can use
-  - You can install a custom version from your circle.yml
-  -
-
-
 %p
   CircleCI supports a large number of
   <a href="/docs/environment#databases">services</a> which can be enabled from a circle.yml file checked into your repo's root directory. To enable Elasticsearch, add the following to your circle.yml:
