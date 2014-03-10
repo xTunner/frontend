@@ -125,47 +125,22 @@
       }
     }
   }
-<<<<<<< HEAD
 }
 .aside-project-branch {
-  .flexBox();
-  .flexJustify(space-between);
+  .displayFlex();
+  .justify-content(space-between);
   > * {
     padding: .5em 0;
   }
 }
 .aside-status-icons {
   max-width: 34%;
-  .flexBox();
-  .flexJustify(flex-end);
+  .displayFlex();
+  .justify-content(flex-end);
   &:hover {
     a {
       &:nth-last-of-type(1) {
         i {
-=======
-  .branch {
-    .displayFlex();
-    .justify-content(space-between);
-    padding: .5em 1.5em;
-  }
-  .branch-name {
-    .box-sizing(border-box);
-    font-weight: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-    min-width: 66%;
-    margin-right: -4px;
-  }
-  .build-circles {
-    max-width: 34%;
-    .displayFlex();
-    .justify-content(flex-end);
-    &:hover {
-      a {
-        &:nth-last-of-type(1) {
->>>>>>> master
           opacity: .34;
           transition: none;
         }
