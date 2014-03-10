@@ -117,10 +117,14 @@
   .toggle-all {
     i {
       transition: .4s all;
+      &:before {
+        display: block;
+        text-align: center;
+      }
     }
     &.active {
       i {
-        .rotate(90);
+        .rotate(180);
         transition-duration: .1s;
       }
     }
