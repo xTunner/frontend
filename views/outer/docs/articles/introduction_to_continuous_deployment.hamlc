@@ -7,7 +7,7 @@
   and Google App Engine, hosted cloud servers (like EC2 and Rackspace),
   and to private and colo servers&mdash;even behind firewalls.
   Some use tools like Capistrano, Fabric, and Paver.
-  However you want to deploy your code, Circle makes such
+  However you want to deploy your code, Circle makes
   Continuous Deployment easy.
 
 %h3 Deployment syntax
@@ -18,15 +18,23 @@
   %a{href: '/docs/configuration'}
     circle.yml
   file.
-  Within this section, you can can define custom deployment <code>commands</code> for each
+  Within this section, you can can define custom deployment for each
   branch, directing Circle to use specific deployment tools or custom scripts.
   Deployment-related commands are triggered only after a successful build.
+
+
+%p
+  The following example will run the
+  %code deploy-to-production.sh
+  script when the tests pass on the master branch and run the
+  %code deploy-to-staging.sh
+  script when the tests pass on the staging branch.
 
 %pre
   %code.no-highlight<>
     :preserve
       deployment:
-        production:        # just a label; label names are completely up to you
+        production: # just a label; label names are completely up to you
           branch: master
           commands:
             - ./deploy-to-production.sh
@@ -34,20 +42,14 @@
           branch: staging
           commands:
             - ./deploy-to-staging.sh
-%p
-  When the tests pass on the master branch,
-  Circle will run the deploy-to-production.sh script,
-  and when the tests pass on the staging branch,
-  we'll run the deploy-to-staging.sh script.
 
-
-%h2 Deploying over SSH
+%h3 Deploy over SSH
 
 %p
-  Most of our customers deploy to servers using SSH.
-  You need to upload your SSH keys from your project's
+  First you need to upload your SSH keys from your project's
   <b>Edit settings > SSH keys</b> page in the Circle UI.
-  Circle adds them to the <code>ssh-agent</code>, so they are available for forwarding.
+  Circle will automatically add them to the <code>ssh-agent</code>,
+  so they are available for forwarding.
 
 %p
   You can list commands or include bash scripts for SSH deployment in the
@@ -78,36 +80,24 @@
           commands:
             - fab deploy
 
-%h2 PaaS deployments
+%h3 Deploy to a PaaS
 
 %p
-  Circle deploys to Heroku, Engine Yard, Google App Engine, and other
-  PaaSes.
-  Of course, first you'll need to provide us with proper permissions and SSH keys.
-
-%p
-  Circle provides
+  Circle has customers deploying to Heroku, Engine Yard, Google App Engine, Elastic Beanstalk, Dot Cloud, Nodejistu and other PaaSes. We have detailed instructions on
   %a{href: '/docs/continuous-deployment-with-heroku'}
-    Continuous Deployment with Heroku.
-  Likewise, Circle makes it easy to continuously
-  %a{href: '/docs/deploy-google-app-engine'}
-    deploy to Google App Engine.
-  We will be adding documents about deploying to other PaaS providers soon,
-  but you can probably get the gist of things from the aforementioned write-ups.
-  If not,
-  = HAML['contact_us']()
-  and we'll help with your deployment.
+    deployment to Heroku
+  and <a href='/docs/deploy-google-app-engine'>deployment to Google App Engine</a>.
+  If you'd like help setting up your deployment, please
+  != succeed ".", ->
+    = HAML['contact_us']()
 
-%h2 Firewalls, webhooks, and Circle's Public IP address ranges
+%h3 Firewalls, webhooks, and Circle's Public IP address ranges
 
 %p
-  If you want to use webhooks to deploy from Circle to a private server behind
-  a firewall, to a VPN, or to an AWS VPC, you can set up such deployments.
-  Similarly, Circle enables you to configure access to a remote server to
-  utilize a stored database, an artifacts server, a private gem server, etc.
+  You may need our IP range our AWS account information if you want to deploy to a firewalled server.
 
 %p
-  Circle is hosted in EC2's US East, so our Amazon
+  Circle is hosted in EC2's US East region, so our Amazon
   %a{href: 'https://forums.aws.amazon.com/ann.jspa?annID=1701'} EC2 public IP address ranges
   are there.
   (Be aware that this link can sometimes be broken when Amazon make updates.
@@ -116,7 +106,7 @@
   page.)
 
 %p
-  Circle's AWS security group is sg-f98a8290.
+  Circle's AWS security group has id sg-f98a8290 and is named www. Our account id is 183081753049.
 
 %p
   Use the IP address ranges and security group number as needed to configure
