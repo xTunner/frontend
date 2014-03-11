@@ -764,21 +764,23 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
 
   # Select all
   all: () =>
-    for name of @team()
+    for name in @team
       @inviting[name] true
 
   # Select none
   none: () =>
-    for name of @team()
+    for name in @team
       @inviting[name] false
 
   constructor: (team, json={}) ->
     super json
+    @team = []
     @email = {}
     @inviting = {}
     # Prepopulate the list of team members to invite with the ones
     # whose email addresses we already know.
     for name, email of team
+      @team.push name
       @email[name] = @observable email
       @inviting[name] = @observable !!email
 
