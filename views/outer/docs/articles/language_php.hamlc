@@ -3,51 +3,43 @@
 - @lastUpdated = "Jun 19, 2013"
 
 %p
-  Circle works seamlessly with all the tools and package managers,
-  such as <code>composer</code>, that help PHP developers test and deploy their code.
-  Circle looks at your code and determines what version of PHP you use.
-  We run your specified tests.
-  Circle has your project's DB requirements covered because we have pre-installed
-  the most-used databases.
-  To complete the process, we can&mdash;if you tell us where&mdash;deploy your code once your build is green.
+  Circle works seamlessly with all the tools and package managers that help PHP developers test and deploy their code. We can generally infer most of your dependencies and test commands, but we also provide custom configuration via a
+  %code circle.yml
+  checked into your repo's root directory.
 
-%p
-  If your project has any special requirements, tell us about them by including a
-  %a{href: "/docs/configuration"} circle.yml
-  file in your repo.
-
-%h2 Version
+%h3 Version
 
 %p
   Circle supports more than a dozen
   %a{href: "/docs/environment#php"} versions of PHP,
   and uses
   %code= CI.Versions.default_php
-  as the default.
+  as the default. You can set a custom version of PHP in the machine section of your circle.yml:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      machine:
+        php:
+          version: 5.5.7
+
+%p
   Please
   = HAML.contact_us()
   if you need a different version; we'll be happy to install it for you.
 
-%h2#composer-pear-pecl Dependencies&mdash;including composer, pear, and pecl
+%h3#composer-pear-pecl Dependencies&mdash;including composer, pear, and pecl
 
 %p
-  Circle has all three of these package managers installed.
-  You don't need to specify anything in your <code>circle.yml</code> file
-  if you are using <code>composer</code>.
-  When Circle encounters a <code>composer.json</code> file in your code,
-  CircleCI has all three of these package managers installed.
-
-%p
-  You don't need to specify anything in your <code>circle.yml</code>
-  file if you are using <code>composer</code>.
-  When CircleCI encounters a <code>composer.json</code> file in your code,
-  we automatically install your <code>composer</code> dependencies.
+  Circle has the composer, pear, and pecl package managers installed.
+  If we find a composer.json file, then we'll automatically run <code>composer install</code>.
 
 %p
   To install your dependencies with either <code>pear</code> or <code>pecl</code>,
-  you have to include pre-dependency commands in your <code>circle.yml</code> file.
-  The following example shows how you would tell CircleCI to invoke <code>pecl</code>
-  to include the MongoDB extension.
+  you have to include
+  %a{href: "/docs/configuration#dependencies"} dependency commands
+  in your <code>circle.yml</code> file.
+  The following example shows how to install the MongoDB extension using <code>pecl</code>.
 
 
 %pre
@@ -58,12 +50,7 @@
           - pecl install mongo
 
 %p
-  Your <code>circle.yml</code> file is the way to handle customization.
-  Let's say that you need to change your <code>config.ini</code> file,
-  and you want to make sure that CircleCI knows your tests use <code>php 5.4.6</code>.
-  Here is an example that states the version number and
-  includes a pre-dependency command telling CircleCI your repo contains
-  a file named <code>config/custom.ini</code>.
+  You can also edit your PHP configuration from your <code>circle.yml</code>. For example, if you have a custom configuration file checked in to your repo, then you could do:
 
 %pre
   %code.no-highlight<>
@@ -73,7 +60,8 @@
           - cp config/custom.ini ~/.phpenv/versions/$(phpenv global)/etc/conf.d/
 
 %p
-  Note: <code>phpenv global</code> returns the PHP version that has been
+  %span.label.label-info Note:
+  <code>phpenv global</code> returns the PHP version that has been
   specified in your <code>circle.yml</code> file.
 
 %p
@@ -87,7 +75,12 @@
         pre:
           - echo "memory_limit = 64M" > ~/.phpenv/versions/$(phpenv global)/etc/conf.d/memory.ini
 
-%h2 Databases
+%p
+  %span.label.label-info Note:
+  you'll have to specify your PHP version in your <code>circle.yml</code> in order to edit PHP's configuration files.
+
+
+%h3 Databases
 
 %p
   We have pre-installed more than a dozen
@@ -98,7 +91,7 @@
   = succeed '.', ->
     %a{href: "/docs/manually#dependencies"} manually setting up your test database
 
-%h2#php-apache Using the Apache Webserver
+%h3#php-apache Using the Apache Webserver
 %p
   Apache2 is already installed on CircleCI containers but it needs to be
   configured to host your PHP application.
@@ -144,13 +137,10 @@
           - a2ensite MY-SITE
           - sudo service apache2 restart
 
-%h2 Testing
+%h3 Testing
 
 %p
-  Circle always runs your tests on a fresh machine.
-  The <code>test</code> section of your <code>circle.yml</code> file is where
-  you specify your customized testing needs, such as including your own
-  testing script.
+  Circle always runs your tests on a fresh machine. If we find a <code>phpunit.xml</code> file in your repo, then we'll run <code>phpunit</code> for you. You can add custom test commands to the test section of your <code>circle.yml</code>:
 
 %pre
   %code.no-highlight<>
@@ -175,7 +165,7 @@
 
 %p
 
-%h2 Deployment
+%h3 Deployment
 
 %p
   Circle offers first-class support for
