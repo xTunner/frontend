@@ -14,6 +14,9 @@
 
       .row-fluid
         .offset1.span10
+          / ko if: invites
+          != HAML.build_invite()
+          / /ko
           %div{data-bind: "if: messages().length"}
             != HAML['messages']()
           %div{data-bind: "ifnot: messages().length"}

@@ -363,6 +363,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if @containers()[0]?
         @current_container(@containers()[0])
 
+    @invites = @komp =>
+      if not @previous_successful_build() and @outcome() == "success" and VM.project()
+        users = {}
+        for user in VM.project().users()
+          users[user.login] = user.unauthenticated_email()
+        new CI.inner.BuildInvite users
+
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
 
@@ -748,3 +755,34 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $.waypoints("refresh")
 
     $autoscroll_trigger.waypoint("enable")
+
+# The prompt that comes up on a user's first green build so that
+# they can invite their favorite team members.
+CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
+  toggle: (name) => () =>
+    @inviting[name] !@inviting[name]()
+
+  # Select all
+  all: () =>
+    for name of @team()
+      @inviting[name] true
+
+  # Select none
+  none: () =>
+    for name of @team()
+      @inviting[name] false
+
+  constructor: (team, json={}) ->
+    super json
+    @email = {}
+    @inviting = {}
+    # Prepopulate the list of team members to invite with the ones
+    # whose email addresses we already know.
+    for name, email of team
+      @email[name] = @observable email
+      @inviting[name] = @observable !!email
+
+  send: () =>
+    for name, email of @inviting()
+      VM.project().invite_team_member name, email
+
