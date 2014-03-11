@@ -1,8 +1,6 @@
 - @title = 'Sample circle.yml file'
 - @lastUpdated = "May 2, 2013"
 
-%h2 Overview
-
 %p
   In our
   %a{href: "/docs/configuration"}

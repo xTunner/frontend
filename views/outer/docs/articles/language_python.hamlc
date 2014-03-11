@@ -2,8 +2,6 @@
 - @short_title = 'Python'
 - @lastUpdated = "Jun 19, 2013"
 
-%h2 Overview
-
 %p
 
   CircleCI has great support for Python.

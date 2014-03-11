@@ -2,9 +2,6 @@
 - @short_title = 'PHP'
 - @lastUpdated = "Jun 19, 2013"
 
-
-%h2 Overview
-
 %p
   Circle works seamlessly with all the tools and package managers,
   such as <code>composer</code>, that help PHP developers test and deploy their code.

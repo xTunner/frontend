@@ -2,9 +2,6 @@
 - @short_title = 'Node.js'
 - @lastUpdated = "Jun 19, 2013"
 
-
-%h2 Overview
-
 %p
   Circle supports Node.js applications development.
   We can infer a substantial amount of your settings and required dependencies

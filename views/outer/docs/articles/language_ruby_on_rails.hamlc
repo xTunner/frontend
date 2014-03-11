@@ -2,8 +2,6 @@
 - @short_title = 'Ruby/Rails'
 - @lastUpdated = "Jun 20, 2013"
 
-%h2 Overview
-
 %p
   Good tests make good code.
   Circle makes Rails testing simple and uncomplicated.

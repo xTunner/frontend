@@ -1,8 +1,6 @@
 - @title = "Introduction to Continuous Deployment"
 - @lastUpdated = "Jun 18, 2013"
 
-%h2 Overview
-
 %p
   Circle enables you to automatically deploy after green builds.
   We have customers deploying to PaaSes such as Heroku, Engine Yard,
