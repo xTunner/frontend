@@ -509,7 +509,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
   invite_team_member: (login, email) =>
     $.ajax
       type: "POST"
-      url: "/api/v1/project/#{@project_name()}/invite-team-member"
+      url: "/api/v1/project/#{@project_name()}/users/invite"
       data: JSON.stringify
         login: login
         email: email
