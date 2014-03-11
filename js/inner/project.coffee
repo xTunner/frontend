@@ -496,7 +496,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/users"
       success: (results) =>
         @users((new CI.inner.User result) for result in results)
-        _.each(@users(), (u) -> u.get_email_unauthenticated())
         @loading_users(false)
         true
     false

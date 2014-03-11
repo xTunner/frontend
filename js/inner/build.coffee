@@ -371,7 +371,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if not @previous_successful_build() and @outcome() == "success" and VM.project()
         users = {}
         for user in VM.project().users()
-          users[user.login] = user.unauthenticated_email()
+          users[user.login] = user.email()
         new CI.inner.BuildInvite users
 
   feature_enabled: (feature_name) =>

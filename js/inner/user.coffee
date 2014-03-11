@@ -24,11 +24,14 @@ CI.inner.User = class User extends CI.inner.Obj
     gravatar_id: null
     github_oauth_scopes: []
     repo_filter: ""
-    unauthenticated_email: null
+    email: null
 
   constructor: (json) ->
     super json,
       login: ""
+
+    if @all_emails()
+      @email @all_emails()[0]
 
     @environment = window.renderContext.env
 
@@ -192,12 +195,6 @@ CI.inner.User = class User extends CI.inner.Obj
       @organizations(data)
       @setActiveOrganization(data[0])
       @loadingOrganizations(false)
-
-
-  get_email_unauthenticated: () =>
-    $.get "https://api.github.com/users/#{@login}", (data) =>
-      @unauthenticated_email(data.email)
-
 
   loadCollaboratorAccounts: () =>
     @loadingOrganizations(true)
