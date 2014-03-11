@@ -2,10 +2,7 @@
 - @lastUpdated = "Jun 19, 2013"
 
 %p
-  You may need Circle's Amazon Web Services information if you want to use
-  webhooks to deploy from Circle to a private server behind a firewall or
-  to an AWS VPC, or if your Circle project needs to access
-  a remote database or remote gem server.
+  You may need Circle's AWS information if you have a firewalled server that you need to access as part of your builds.
 
 %p
   Circle is hosted in EC2's US East region, so our Amazon
