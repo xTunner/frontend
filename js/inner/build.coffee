@@ -783,6 +783,6 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
       @inviting[name] = @observable !!email
 
   send: () =>
-    for name, email of @inviting()
+    for name, email of @inviting when email()
       VM.project().invite_team_member name, email
 
