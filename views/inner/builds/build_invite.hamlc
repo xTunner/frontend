@@ -17,5 +17,5 @@
         %input{"data-bind" => "value: $parent.email[login]", "type" => "email", "placeholder" => "Please input email manually"}
       %input.email-select{type: "checkbox", "data-bind" => "checked: $parent.inviting[login], click: $parent.toggle[login]"}
   %div.clearfix
-    %button.invite Invite To CircleCI
+    %button.invite{"data-bind": "click: send"} Invite To CircleCI
 / /ko
