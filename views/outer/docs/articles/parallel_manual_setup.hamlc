@@ -8,11 +8,11 @@
 
 %p
   To begin with, you'll need to turn on parallelism from your project's settings page.
-  Go to <strong>Edit settings > Build speed</strong> to adjust the settings.
+  Go to <strong>Edit settings > Parallelism</strong> to adjust the settings.
 
-%h2 Spliting your test suite
+%h2 Splitting your test suite
 %p
-  When you use Circle's parallelization, we run your code on multiple separate VMs.
+  When you use CircleCI's parallelization, we run your code on multiple separate VMs.
   To use parallelism, you make your test runner run only a subset of tests on each VM.
   We use environment variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
 
@@ -70,7 +70,7 @@
 
       i=0
       files=()
-      for file in $(find ./test -name "*.py")
+      for file in $(find ./test -name "*.py" | sort)
       do
         if [ $(($i % $CIRCLE_NODE_TOTAL)) -eq $CIRCLE_NODE_INDEX ]
         then
@@ -89,5 +89,5 @@
 
   If you set this up for a library or framework that we should be
   able to infer automatically, please
-  = HAML.contact_us({succeed: "."})
+  != HAML.contact_us({succeed: "."})
   We are always interested in adding support for more languages and frameworks.

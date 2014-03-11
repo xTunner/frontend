@@ -3,9 +3,9 @@
 
 %p
   GitHub has two different SSH keys&mdash;a <i>deploy</i> key and a <i>user</i> key.
-  When you add a GitHub repository to Circle, we automatically add a deploy
+  When you add a GitHub repository to CircleCI, we automatically add a deploy
   key that references this repository.
-  For most customers, this is all Circle needs to run their tests.
+  For most customers, this is all CircleCI needs to run their tests.
 
 %p
   Each deploy key is valid for only <i>one</i> repository.
@@ -16,22 +16,22 @@
   (if you have a Gemfile that points at a  private
   %code git
   repository, for example),
-  Circle will be unable to check out such repositories with only a deploy key.
-  When testing requires access to different repositories, Circle will need a GitHub user key.
+  CircleCI will be unable to check out such repositories with only a deploy key.
+  When testing requires access to different repositories, CircleCI will need a GitHub user key.
 
 %p
-  You can provide Circle with a GitHub user key
-  = succeed ".", ->
-    %a{ href: "/account/ssh"} here
+  You can provide CircleCI with a GitHub user key on your project's
+  %strong
+    Edit settings > GitHub user
+  page.
 
-
-  Circle creates and associates this new SSH key with your GitHub user account
+  CircleCI creates and associates this new SSH key with your GitHub user account
   and then has access to all your repositories.
 
 
 %h2#security User key security
 %p
-  Circle is serious when it comes to security.
+  CircleCI is serious when it comes to security.
   We will never make your SSH keys public.
 
 

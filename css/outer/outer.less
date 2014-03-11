@@ -1,60 +1,121 @@
-// Bootstrap
-// -------------------------
-@import "bootstrap-variables.less";
-@import "../shared/bootstrap-files.less";
-
-// Image path helper
-// -------------------------
-@imgPath: "../../img";
-
-// Navbar
-// -------------------------
-.navbar {
-  background: #134374;
-
-  .container {
-    height: 50px;
+.outer {
+  h1,
+  h2,
+  h3 {
+    line-height: 40px;
   }
-}
-
-.navbar-inner {
-  margin-top: 4px;
-
-  .navbar-inverse & {
-    background-color: #4e7297;
-    background-image: url("@{imgPath}/navbar-texture.png");
-    background-position-y: 1px;
-    border-bottom: 1px solid #214062;
-    border-top: 1px solid #0d2e50;
+  h4,
+  h5,
+  h6 {
+    line-height: 20px;
   }
+  h1 {
+    font-size: 44px;
+    small{
+      font-size: 24.5px;
+    }
+  }
+  h2 {
+    font-size: 30px;
+    line-height: 29px;
+    margin: 30px 0;
+    small{
+      font-size: 17.5px;
+    }
+  }
+  h3 {
+    line-height: 26px;
+    font-size: 20px;
+    small{
+      font-size: 14px;
+    }
+  }
+  h4 {
+    font-size: 17.5px;
+    small{
+      font-size: 14px;
+    }
+  }
+  h5 {
+    font-size: 14px;
+  }
+  h6 {
+    font-size: 11.9px;
+  }
+  .content {
+    padding-top: 20px;
+    padding-bottom: 50px;
+  }
+  form {
+    margin: 20px 0 0 0;
+  }
+  input[type=text],
+  input[type=email] {
+    height: 30px;
+  }
+  input[type=text],
+  input[type=email],
+  textarea {
+    margin-bottom: 20px;
+    padding: 4px 10px;
+    background-color: lighten(@grayLighter, 3%);
+    border: none;
+    resize: none;
+    box-shadow: none;
+  }
+  label {
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    color: @gray;
+  }
+  // high specificity, hence all the hacks
+  .btn,
+  button {
+    &:not(.close) {
+      @btnBorder: @grayLighter;
+      border-color: @btnBorder;
+      border-bottom-color: darken(@btnBorder, 10%);
+      border: none;
+      text-shadow: none;
+      background: @circleBlue;
+      color: #6a93a3;
+      &:hover, &:focus {
+        background: lighten(@circleBlue, 5%);
+        color: white;
+      }
+    }
+    &:not(.btn-large) {
+      font-size: 14px;
+      border-radius: 3px;
+      line-height: 30px;
+      min-height: 30px;
+    }
+    &.btn-primary {
+      background: @circleAccent;
+      color: @circleAccentText;
+      &:hover,
+      &:focus {
+        background: lighten(@circleAccent, 5%);
+      }
+      i {
+        margin-right: 7px;
+        font-size: 1.1em;
+      }
+    }
+  }
+  @import "shared/banner.less";
+  @import "shared/navbar.less";
+  @import "shared/additional.less";
+  @import "home/home.less";
+  @import "about/about.less";
+  @import "blog/blog.less";
+  @import "contact/contact.less";
+  @import "docs/docs.less";
+  @import "error/error.less";
+  @import "jobs/jobs.less";
+  @import "enterprise/enterprise.less";
+  @import "privacy/privacy.less";
+  @import "privacy/changelog.less";
 }
-
-html { height: 100%; }
-body {
-  padding: 0;
-  margin: 0;
-}
-
-// Legacy imports
-// -------------------------
-@import "../shared/grid";
-@import "../shared/blocks/header";
-@import "../shared/blocks/footer";
-@import "../shared/blocks/title";
-@import "../shared/blocks/flash";
-@import "../shared/blocks/wrap";
-@import "../shared/blocks/content";
-@import "../shared/syntax/solarized_light";
-
-@import "about/team";
-@import "jobs/jobs";
-@import "about/contact";
-@import "privacy/privacy";
-@import "docs/article";
-@import "docs/categories";
-@import "docs/sidebar";
-@import "docs/related";
-@import "error/error";
-@import "homeb.less"; // TODO: rename to home
-@import "../shared/functions";
-@import "../inner/billing";

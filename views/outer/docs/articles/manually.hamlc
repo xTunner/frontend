@@ -2,7 +2,7 @@
 - @lastUpdated = "April 29, 2013"
 
 %p
-  Circle is designed to set up most tests automatically because we infer your settings from your code.
+  CircleCI is designed to set up most tests automatically because we infer your settings from your code.
   However, if you have an unusual setup or work in a framework that has no idiomatic way to set up your project, you'll need to set it up manually.
   Fortunately, this is a pretty straightforward procedure.
   If you follow this guide, you should be running your tests in 20 minutes or less.
@@ -12,7 +12,7 @@
 %p
   Before we get into the details of a manual setup, here is a quick fix to a common problem first-timers can experience.
   If you have a standard project and received a "no test" status, it is probably because the project is in a subdirectory.
-  This is easy to fix: add an empty file called <code>circle.yml</code> and Circle will pick up the file and run your tests from that subdirectory.
+  This is easy to fix: add an empty file called <code>circle.yml</code> and CircleCI will pick up the file and run your tests from that subdirectory.
 
 
 %h2#yml The circle.yml file
@@ -53,7 +53,7 @@
 
 %p
   Each phase consists of a list of bash commands.
-  Normally, these commands are inferred by Circle, but if you are reading this, you will likely be manually adding some commands to the
+  Normally, these commands are inferred by CircleCI, but if you are reading this, you will likely be manually adding some commands to the
   %code circle.yml
   file.
   You can modify which&mdash;and in what order&mdash;commands are run by adding
@@ -78,11 +78,11 @@
   For the most part, there is nothing that you have to add to configure the test machine.
   We have already installed the most common libraries, languages, browsers, and databases that you'll need.
   See
-  %a{ href: "/docs/environment" } the Circle environment
+  %a{ href: "/docs/environment" } the CircleCI environment
   for a comprehensive list of what we have installed.
   If you need anything else installed, please
-  = HAML.contact_us({succeed: ""})
-  and Circle support should be able to accommodate you.
+  != HAML.contact_us({succeed: ""})
+  and CircleCI support should be able to accommodate you.
   Be aware that for security reasons, we don't provide root access.
 
 
@@ -102,7 +102,7 @@
 %h2#checkout Checking out code
 
 %p
-  Circle will check out your code from your GitHub repository.
+  CircleCI will check out your code from your GitHub repository.
   Currently, we don't check out submodules.
   If your project requires that, add the appropriate commands.
 
@@ -111,6 +111,7 @@
     :preserve
       checkout:
         post:
+          \- git submodule sync
           \- git submodule update --init
 
 %p
@@ -128,8 +129,8 @@
 
 %p
   In all likelihood, you'll have a list of libraries and dependencies that your app requires.
-  Circle automatically detects Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj, and Node's package.json, and then runs the appropriate commands to install the dependencies.
-  Circle also supports PHP's Composer.
+  CircleCI automatically detects Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj, and Node's package.json, and then runs the appropriate commands to install the dependencies.
+  CircleCI also supports PHP's Composer.
   When needed, you can modify which dependencies-related commands are run using
   %code override
   ,
@@ -142,7 +143,7 @@
 %pre
   %code.no-highlight<>
     :preserve
-      checkout:
+      dependencies:
         post:
           \- python ./install-packages
 
@@ -202,8 +203,8 @@
 %h2#next Next steps
 
 %p
-  If your tests fail and you need to fix something, Circle has a
+  If your tests fail and you need to fix something, CircleCI has a
   %a{href: "/docs/troubleshooting"} list of common problems and their solutions
   that can help you debug many issues.
   You might also like to know that we allow you to SSH in during your builds.
-  This lets you check out how Circle works and facilitates nimble and efficient debugging.
+  This lets you check out how CircleCI works and facilitates nimble and efficient debugging.

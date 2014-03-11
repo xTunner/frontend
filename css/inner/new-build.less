@@ -1,0 +1,76 @@
+#container_parent {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  margin-left: 8.5%;
+  margin-right: 8.5%;
+}
+
+.containers {
+  background-color: @appBackgroundColor;
+  height: 30px;
+  margin: 0px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.containers.stuck {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 10;
+}
+
+#topbar {
+/* I really want the topbar fixed on the build page, but it interferes with
+ * other pages
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+*/
+}
+
+
+/* This .class { ... }
+ *      .class:not(.other_class) { position:absolute }
+ *      .class.other_class { position:relative }
+ * trick for setting the panel position attributes is inspired by
+ * http://tympanus.net/codrops/2013/09/05/sliding-horizontal-layout/
+ */
+.container-view {
+  width: 100%;
+  top: 0px;
+}
+
+.container-view:not(.current_container) {
+  position: absolute;
+}
+
+.container-view.current_container {
+  position: relative;
+}
+
+
+/* Set up a :after pseudo-element to reflect the build status */
+ul.container-list {
+  li > a.container-selector {
+    position:relative;
+
+    &:after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      bottom: 2px;
+      left: 0;
+      height: @sideLineWidth;
+      width: 70%;
+      margin-left: 15%;
+      border-radius: 2px;
+    }
+
+    &.success:after { background: @green; }
+    &.running:after { background: @yellow; }
+    &.canceled:after {background: @grayLight; }
+    &.failed:after { background: @redLight; }
+  }
+}

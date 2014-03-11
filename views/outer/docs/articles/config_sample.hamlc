@@ -48,12 +48,13 @@
       ## Customize checkout
       checkout:
         post:
+          - git submodule sync
           - git submodule update --init # use submodules
 
       ## Customize dependencies
       dependencies:
         pre:
-          - install coffeescript # install from a different package manager
+          - npm install coffeescript # install from a different package manager
           - gem uninstall bundler # use a custom version of bundler
           - gem install bundler --pre
 
@@ -70,7 +71,7 @@
       ## Customize database setup
       database:
         override:
-          # replace Circle's generated database.yml
+          # replace CircleCI's generated database.yml
           - cp config/database.yml.ci config/database.yml
           - bundle exec rake db:create db:schema:load
 

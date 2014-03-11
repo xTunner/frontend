@@ -1,12 +1,12 @@
-- @title = "Circle is running the wrong Ruby commands"
+- @title = "CircleCI is running the wrong Ruby commands"
 - @lastUpdated = "Feb 3, 2013"
 
 %p
-  Circle infers your test settings from the code in your repository, typically looking at the packages you use.
+  CircleCI infers your test settings from the code in your repository, typically looking at the packages you use.
   Most problems occur when there is some error in how the packages are specified.
 
 %p
-  If you require custom commands, it obviously won't be possible for Circle to infer them correctly.
+  If you require custom commands, it obviously won't be possible for CircleCI to infer them correctly.
   In that case, you can
   %a{href: "/docs/configuration"} specify your commands
   using a
@@ -25,7 +25,7 @@
   This commonly causes us to call
   %code spec
   instead of
-  = succeed ',', ->
+  != succeed ',', ->
     %code rspec
   or use the wrong database.
   You should check in your Gemfile.lock if possible, or manually add your test steps.
@@ -34,8 +34,8 @@
 
 %h2#wrong-dependencies Have you listed all your dependencies?
 %p
-  Circle always prefixes its commands with
-  = succeed '.', ->
+  CircleCI always prefixes its commands with
+  != succeed '.', ->
     %code bundle exec
   This ensures that the only gems used are the ones specified in the Gemfile.
   Unfortunately, developers commonly omit gems from their Gemfiles, but do not notice because they have them installed locally.

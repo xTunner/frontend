@@ -1,0 +1,20 @@
+.row-fluid.plans.pricing#billing{data-bind: "with: billing"}
+
+  / ko if: trial
+  != HAML.plans_trial_notification()
+  / /ko
+
+  / ko if: piggieback_plan_p
+  != HAML.plans_piggieback_plan_notification()
+  / /ko
+  != HAML.org_plan_summary()
+
+  != HAML.pricing_plans()
+  / ko if: VM.ab().customer_logos
+  != HAML.customers_trust()
+  / /ko
+
+  != HAML.pricing_features()
+  != HAML.pricing_faq()
+
+  != HAML.confirm_plan_modal()

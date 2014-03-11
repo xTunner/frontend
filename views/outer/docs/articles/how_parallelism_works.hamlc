@@ -6,7 +6,7 @@
   Most attempt to run multiple tests within the same language runtime, or within multiple processes on the same system.
 
 %p
-  Circle doesn't do that.
+  CircleCI doesn't do that.
   We split your tests up and run them on completely different machines, which share no memory, processes or databases.
   This fixes the vast majority of the problems that people experience with parallel testing.
 

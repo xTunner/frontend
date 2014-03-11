@@ -1,5 +1,5 @@
 - @title = "Test with Solr"
-- @lastUpdated = "Feb 2, 2013"
+- @lastUpdated = "Jul 23, 2013"
 
 %p
   If your tests require a running solr instance, you will need to configure
@@ -16,17 +16,19 @@
 %p
   If you're using a library or module with similar functionality (i.e. one
   that provides a bundled solr, and a wrapper for booting it), please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   so that we can extend our inference to make it work automatically!
 
 %h2 The Hard Way
 
 %p
   Even if we aren't able to do things automatically,
-  %code solr 4.2.1
+  %code
+    solr
+    = CI.Versions.solr
   is installed on your build system. It will need to be configured with your
   schema.xml, and booted via
-  = succeed '.', ->
+  != succeed '.', ->
     %a{ href: "/docs/configuration" }
       circle.yml
   Here's an example of how to do so:
@@ -36,10 +38,11 @@
     :preserve
       database:
         post:
-          - cp -R /opt/solr-4.2.1 $HOME/solr
+          - cp -R /opt/solr-4.3.1 $HOME/solr
           - cp config/schema.xml $HOME/solr/example/solr/collection1/conf
           # optional: - cp config/solrconfig.xml $HOME/solr/example/solr/collection1/conf
-          - nohup bash -c "cd $HOME/solr/example; java -jar start.jar &" &gt; $HOME/solr.log
+          - cd $HOME/solr/example; java -jar start.jar $HOME/solr.log:
+              background: true
 
 %p
   This configuration does three things. You may need to fine-tune the exact commands
@@ -48,7 +51,7 @@
   %ol
     %li
       Copy a skeletal solr installation from
-      %code /opt/solr-4.2.1
+      %code /opt/solr-4.3.1
       into your home directory.
     %li
       Copy your configuration (<code>schema.xml</code> at least, and
@@ -57,7 +60,7 @@
       into place.
     %li
       Launch solr as a
-      = succeed '.', ->
+      != succeed '.', ->
         %a{ href: "/docs/background-process" }
           background process
 
@@ -68,6 +71,6 @@
 
 %p
   Please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   and let us know if you're using solr this way! Your feedback helps us keep our
   documentation up to date, and our services as useable as possible.

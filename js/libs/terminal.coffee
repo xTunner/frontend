@@ -1,17 +1,14 @@
 CI.terminal =
-  ansiToHtml: (str) ->
-    # http://en.wikipedia.org/wiki/ANSI_escape_code
-    start   = 0
-    current = str
-    output  = ""
-
+  ansiToHtmlConverter: (defaultColor) ->
+    trailing_raw = ""
+    trailing_out = ""
     style =
-      color: null
+      color: defaultColor
       italic: false
       bold: false
 
       reset: () ->
-        @color = null
+        @color = defaultColor
         @italic = false
         @bold = false
 
@@ -22,7 +19,7 @@ CI.terminal =
           when 3 then @italic = true
           when 22 then @bold = false
           when 23 then @italic = false
-          when 30 then @color = "darkgrey"
+          when 30 then @color = "white" ## actually black, but we use a black background
           when 31 then @color = "red"
           when 32 then @color = "green"
           when 33 then @color = "yellow"
@@ -30,20 +27,20 @@ CI.terminal =
           when 35 then @color = "magenta"
           when 36 then @color = "cyan"
           when 37 then @color = "white"
-          when 39 then @color = null
+          when 39 then @color = defaultColor
 
       openSpan: () ->
-        styles = []
-        if @color?
-          styles.push("color: #{@color}")
+        classes = []
+        if @bold and not @color.match(/^br/)
+          classes.push("br#{@color}")
+        else
+          classes.push("#{@color}")
         if @italic
-          styles.push("font-style: italic")
-        if @bold
-          styles.push("font-weight: bold")
+          classes.push("italic")
 
         s = "<span"
-        if styles.length > 0
-          s += " style='" + styles.join("; ") + "'"
+        if classes.length > 0
+          s += " class='" + classes.join(" ") + "'"
         s += ">"
 
       applyTo: (content) ->
@@ -52,27 +49,67 @@ CI.terminal =
         else
           ""
 
-    # loop over escape sequences
-    while (escape_start = current.indexOf('\u001B[')) != -1
-      # append everything up to the start of the escape sequence to the output
-      output += style.applyTo(current.slice(0, escape_start))
+    get_trailing: () ->
+      trailing_out
 
-      # find the end of the escape sequence -- a single letter
-      rest = current.slice(escape_start + 2)
-      escape_end = rest.search(/[A-Za-z]/)
+    append: (str) ->
+      # http://en.wikipedia.org/wiki/ANSI_escape_code
+      start   = 0
+      current = trailing_raw + str
+      output  = ""
 
-      # point "current" at first character after the end of the escape sequence
-      current = rest.slice(escape_end + 1)
+      trailing_raw = ""
+      trailing_out = ""
 
-      # only actually deal with 'm' escapes
-      if rest.charAt(escape_end) == 'm'
-        escape_sequence = rest.slice(0, escape_end)
-        if escape_sequence == ''
-          # \esc[m is equivalent to \esc[0m
-          style.reset()
+      # loop over lines
+      while current.length and ((line_end = current.search(/\r|\n|$/)) != -1)
+        next_line_start = current.slice(line_end).search(/[^\r\n]/)
+        if next_line_start == -1
+          terminator = current.slice(line_end)
         else
-          escape_codes = escape_sequence.split(';')
-          style.add esc for esc in escape_codes
+          terminator = current.slice(line_end, line_end + next_line_start)
+        input_line = current.slice(0, line_end + terminator.length)
+        original_input_line = input_line
+        output_line = ""
 
-    output += style.applyTo(current)
-    output
+        # loop over escape sequences within the line
+        while (escape_start = input_line.indexOf('\u001B[')) != -1
+          # append everything up to the start of the escape sequence to the output
+          output_line += style.applyTo(input_line.slice(0, escape_start))
+
+          # find the end of the escape sequence -- a single letter
+          rest = input_line.slice(escape_start + 2)
+          escape_end = rest.search(/[A-Za-z]/)
+
+          # point "input_line" at first character after the end of the escape sequence
+          input_line = rest.slice(escape_end + 1)
+
+          # only actually deal with 'm' escapes
+          if rest.charAt(escape_end) == 'm'
+            escape_sequence = rest.slice(0, escape_end)
+            if escape_sequence == ''
+              # \esc[m is equivalent to \esc[0m
+              style.reset()
+            else
+              escape_codes = escape_sequence.split(';')
+              style.add esc for esc in escape_codes
+
+        current = current.slice(line_end + terminator.length)
+        output_line += style.applyTo(input_line)
+
+        if not current.length
+          ## the last line is "trailing"
+          trailing_raw = original_input_line
+          trailing_out = output_line
+        else
+          # don't write the output line if it ends with a carriage return, for primitive
+          # terminal animations...
+          if terminator.search(/^\r+$/) == -1
+            output += output_line
+
+      output
+
+  ansiToHtml: (str) ->
+    # convenience function for testing
+    converter = @ansiToHtmlConverter("brblue")
+    converter.append(str) + converter.get_trailing()

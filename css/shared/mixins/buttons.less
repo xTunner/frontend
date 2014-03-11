@@ -1,0 +1,57 @@
+
+// Dynamic text color
+// determines appropriate text color based on button background
+
+.dynamicTextColor (@bkg) when (lightness(@bkg) < 50%) {
+  color: @grayLightest;
+  text-shadow: 0 -1px 1px darken(saturate(@bkg, 8), 21),
+               0  1px 1px lighten(@bkg, 8);
+}
+.dynamicTextColor (@bkg) when (lightness(@bkg) >= 50%) {
+  color: @grayDark;
+  text-shadow: 0 1px 1px lighten(@bkg, 8);
+}
+
+// Circle Button
+// button with circular sides (no corners)
+
+.circleButton(@color: @grayLightest) {
+  .circleButton(@color, @color);
+}
+.circleButton(@colorOfBackground, @colorOfHover) {
+  text-align: center;
+  outline: none;
+  padding: .75em 2em;
+  line-height: 1.5em;
+  background-color: @colorOfBackground;
+  transition: all .3s ease-in-out;
+  .vertGradient(@lightSoft 0%, @shadowSoft 100%);
+  .dynamicTextColor(@colorOfBackground);
+  .outlineEmboss(@colorOfBackground);
+  .stretchOutBkg();
+  .roundedOff();
+  &:hover, &:active {
+    .dynamicTextColor(@colorOfHover);
+    background-size: 300%;
+  }
+  &:hover {
+    @hoverDark: darken(saturate(@colorOfHover, 3), 3);
+    background-color: @hoverDark;
+    text-shadow: none;
+    transition-duration: .1s;
+    box-shadow: none;
+  }
+  &:active {
+    @activeDark: darken(saturate(@colorOfHover, 5), 8);
+    background-color: @activeDark;
+    text-shadow: 0 2px darken(@activeDark, 5);
+    transition-duration: .2s;
+    .outlinePress(@activeDark);
+  }
+}
+
+.bold-btn {
+  .white {
+    color: #fff;
+  }
+}

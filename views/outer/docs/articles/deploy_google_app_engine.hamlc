@@ -1,5 +1,5 @@
 - @title = "Continuous Deployment to Google App Engine"
-- @lastUpdated = "Feb 2, 2013"
+- @lastUpdated = "July 19, 2013"
 
 %p
   Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
@@ -16,7 +16,7 @@
 %p
   You'll need to find the download URL for the SDK that you need. The official source for
   SDK downloads is
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "https://code.google.com/p/googleappengine/downloads/list"}
       https://code.google.com/p/googleappengine/downloads/list
 
@@ -56,7 +56,7 @@
 
 %p
   Using
-  = succeed ':', ->
+  != succeed ':', ->
     %a{href: 'https://developers.google.com/appengine/docs/python/gettingstarted/uploading'} appcfg.py update
 
 %pre
@@ -66,13 +66,13 @@
         appengine:
           branch: master
           commands:
-            - echo "my-password" | $HOME/google-appengine/appcfg.py update --email=me@example.com --passin .
+            - echo $APPENGINE_PASSWORD | $HOME/google-appengine/appcfg.py update --email=$APPENGINE_EMAIL --passin .
 
 %h3 Java
 
 %p
   Using
-  = succeed ':', ->
+  != succeed ':', ->
     %a{href: 'https://developers.google.com/appengine/docs/java/tools/uploadinganapp'} appcfg.sh update
 
 %pre
@@ -82,13 +82,13 @@
         appengine:
           branch: master
           commands:
-            - echo "my-password" | $HOME/appengine-java-sdk/bin/appcfg.sh update --email=me@example.com --passin .
+            - echo $APPENGINE_PASSWORD | $HOME/appengine-java-sdk/bin/appcfg.sh update --email=$APPENGINE_EMAIL --passin .
 
 %h3 Go
 
 %p
   Using
-  = succeed ':', ->
+  != succeed ':', ->
     %a{href: 'https://developers.google.com/appengine/docs/go/tools/uploadinganapp'} appcfg.py update
 
 %pre
@@ -98,18 +98,18 @@
         appengine:
           branch: master
           commands:
-            - echo "my-password" | $HOME/google_appengine/appcfg.py update --email=me@example.com --passin .
+            - echo $APPENGINE_PASSWORD | $HOME/google_appengine/appcfg.py update --email=$APPENGINE_EMAIL --passin .
 
 %h3 Credentials
 
 %p
   In all three cases, the deployment command passes an email address and password to
-  the appcfg command. Python and Go users can also configure it to use non-interactive
-  oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
-  usage.)
+  the appcfg command. The credentials are stored in environment variables, which you can
+  manage through the web UI as described
+  != succeed '.', ->
+    %a{href: "/docs/environment-variables#setting-environment-variables-for-all-commands-without-adding-them-to-git"} in this document
 
 %p
-  We know that storing your credentials in plain text in circle.yml isn't a good solution.
-  We'll be adding secure credential management soon. Please
-  = HAML['contact_us']()
-  to make sure you're informed when we add this feature!
+  Python and Go users can also configure it to use non-interactive
+  oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
+  usage.)

@@ -1,27 +1,15 @@
 # 1. Don't define a test with null as one of the options
 # 2. If you change a test's options, you must also change the test's name
+# 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
 #
 # You can add overrides, which will set the option if override_p returns true.
 
 exports = this
 
 exports.ab_test_definitions =
-  options:
-    github_warning_modal: [true, false]
-    home_red_buttons: [true, false]
-    home_text_hero: [true, false]
-    show_add_repos_blank_slate: [true, false] # true shows the show_add_repos_blank_slate div, false hides it
-    home_extra_ctas: [true, false]
-    home_cta_plan_price_trial: [true, false] # around the home button CTA, include text about plans starting from $19, and 14 day trial
-    number_one_instead_of_happy_customers_callout: [true, false]
-    home_speed_level: ["4-way", "8-way", "12-way"]
-    stripe_v3: [true, false]
-
-  overrides:
-    [
-      override_p: ->
-        window.circleEnvironment is 'test'
-      options:
-        github_warning_modal: false
-        stripe_v3: false
-    ]
+  a_is_a: [true, false]
+  pricing_maintain_infrastructure: [true, false]
+  github_modal: [true, false]
+  old_font: [true, false]
+  customer_logos: [true, false]
+  github_header: [true, false]

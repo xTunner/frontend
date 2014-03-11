@@ -1,33 +1,79 @@
-
-.follow-align {
-   padding-bottom: 10px;
-   text-align: center;
+#account-settings {
+  line-height: 1.5em;
+  color: @grayLight;
+  a {
+    .dark-links;
+    color: @blue;
+  }
+  small {
+    color: @grayLight;
+  }
+  .btn {
+    outline: none;
+  }
+  .account-top {
+    box-shadow: 0 -1px @grayBoxBorder inset;
+    padding: 0 1em;
+  }
+  .nav {
+    border: none; // BS RESET
+    &.nav-tabs {
+      max-width: @minimumContentWidth;
+      margin: 0 auto;
+      .active a {
+        background: none; // BS RESET
+        color: @blue; // BS RESET
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
+      }
+    }
+    li {
+      margin: 0; // BS RESET
+    }
+    a {
+      color: @grayLight;
+      line-height: 1em;
+      padding: 0 1em 2em 1em;
+      border: none; // BS RESET
+      margin: 0; // BS RESET
+      &:hover {
+        background: none; // BS RESET
+        color: @blue; // BS RESET
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
+      }
+    }
+  }
+  legend,
+  h2 {
+    font-weight: bold;
+    color: @gray;
+    font-size: 2em;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    line-height: 2em;
+    border: none;
+  }
+  h4 {
+    font-weight: bold;
+    color: @gray;
+    margin: 0;
+    font-size: 1em;
+    line-height: 2em;
+  }
 }
-
-.follow-status {
-   margin-top: 15px
-}
-
-.settings-list {
-   h2 {
-      margin-top: 40px;
-      margin-bottom: 10px;
-   }
-
-   li {
-      font-size: 16px;
-      padding: 10px;
-   }
-}
-
-.collaborators-table {
-  td {
-    vertical-align: middle;
+.settings-item {
+  padding: 2em;
+  .settings-item-inner {
+    max-width: @minimumContentWidth;
+    margin: 0 auto;
   }
 }
 
-.spec_form {
-  textarea {
-    position: relative;
-  }
-}
+@import "settings/notification.less";
+@import "settings/api.less";
+@import "settings/ssh.less";
+@import "settings/heroku.less";
+@import "settings/plans.less";

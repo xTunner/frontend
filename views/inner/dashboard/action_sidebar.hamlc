@@ -1,2 +1,12 @@
-%a.btn.btn-large.btn-block.btn-primary#add-projects{href: "/add-projects"}
-   Add projects
+.side-actions
+  %a#add-projects{href: "/add-projects"}
+    %i.fa.fa-plus
+    %span Projects
+  %a#invite{href: "#", data-toggle: "modal", data-target: "#inviteForm"}
+    %i.fa.fa-plus
+    %span Collaborator
+  %div{data-bind: "if: show_follow_project_button"}
+    %button#follow-project-button{href: "#", data-bind: "click: project().follow"}
+      %i.fa.fa-plus
+      %span Follow
+      %span{data-bind: "text: project().project_name"}

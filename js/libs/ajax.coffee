@@ -8,6 +8,9 @@ textVal = (elem, val) ->
   else # button or a
     if val? then elem.text(val) else elem.text()
 
+insertSpinner = (elem) ->
+  elem.html(HAML.spinner())
+
 finishAjax = (event, attrName, buttonName) ->
   if event
     t = $(event.currentTarget)
@@ -37,6 +40,9 @@ $(document).ajaxError (ev, xhr, settings, errorThrown) ->
   if xhr.status == 401
     error_object.message = "You've been logged out, <a href='#{CI.github.authUrl()}'>log back in</a> to continue."
     notifyError error_object
+  else if not resp and (xhr.statusText == "error" or xhr.statusText == "timeout")
+    error_object.message = "A network #{xhr.statusText} occurred, trying to talk with #{error_object.url}."
+    notifyError error_object
   else if resp.indexOf("<!DOCTYPE") is 0 or resp.length > 500
     error_object.message = "An unknown error occurred: (#{xhr.status} - #{xhr.statusText})."
     notifyError error_object
@@ -56,9 +62,13 @@ $(document).ajaxSend (ev, xhr, options) ->
     # change to loading text
     loading = t.attr("data-loading-text") or "..."
     xhr.event.savedText = textVal t
-    if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
+    if t.attr("data-spinner") is "true"
+      insertSpinner(t)
+    else if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
       textVal t, loading
 
+CI.sendCSRFtoken = (settings) ->
+  return /^\//.test(settings.url)
 
 # Make the buttons disabled when clicked
 CI.ajax =
@@ -67,3 +77,6 @@ CI.ajax =
       contentType: "application/json"
       accepts: {json: "application/json"}
       dataType: "json"
+      beforeSend: (xhr, settings) ->
+        if CI.sendCSRFtoken(settings)
+           xhr.setRequestHeader("X-CSRFToken", CSRFToken)

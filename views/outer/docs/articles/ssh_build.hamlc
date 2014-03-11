@@ -38,7 +38,7 @@
 %p
   The build VM will remain available for
   %b
-    15 minutes after the build finishes running
+    30 minutes after the build finishes running
   and then automatically shut down. (Or you can cancel it.)
 
 %h4 Parallelism and SSH Builds
@@ -77,7 +77,7 @@
   If you
   %em don't
   see output like that, you need to start by
-  = succeed '.', ->
+  != succeed '.', ->
     %a{ href: "https://help.github.com/articles/error-permission-denied-publickey" }
       troubleshooting your ssh keys with github
 
@@ -144,7 +144,7 @@
 
 %p
   Make sure that the key which github accepted (in our
-  example, /Users/me/.ssh/id_rsa_github) was also offered to Circle.
+  example, /Users/me/.ssh/id_rsa_github) was also offered to CircleCI.
 
 %p
   If it was not offered, you can specify it via the -i command-line
@@ -159,5 +159,5 @@
 
 %p
   Drat! Well,
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   and we'll try to help.

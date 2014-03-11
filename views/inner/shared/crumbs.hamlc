@@ -1,0 +1,4 @@
+%nav{data-bind: "foreach: {data: VM.current_page().crumbs, as: 'crumb'}"}
+  %a{data-bind: "text: name(),
+                 attr: {href: path(),
+                        title: name()}"}

@@ -1,0 +1,47 @@
+// sticky - see http://mystrd.at/modern-clean-css-sticky-footer/
+footer {
+  padding: @footerItemSize 0;
+  box-shadow: 0 1px @grayLightest inset;
+  .logo {
+    display: block;
+    height: @footerItemSize;
+    width: @footerItemSize;
+    background-image: url("@{imgPath}/logomark.svg");
+    background-size: @footerItemSize;
+    background-position: center left;
+    background-repeat: no-repeat;
+  }
+}
+.footer-nav {
+  width: @minimumContentWidth;
+  margin: 0 auto;
+  ul {
+    .clearfix();
+    list-style: none;
+    margin: 0;
+    li {
+      display: inline-block;
+      float: left;
+      &:last-of-type {
+        float: right;
+      }
+      a {
+        display: block;
+        padding: @footerItemSize @footerItemSize @footerItemSize 0;
+        height: @footerItemSize;
+        line-height: @footerItemSize;
+        color: @grayLight;
+        opacity: .66;
+        transition: opacity .3s ease-in-out;
+        &:hover,
+        &:focus,
+        &.active {
+          text-decoration: none;
+          color: @grayLight;
+          transition-duration: .1s;
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-- @title = "Why does Circle need all those permissions?"
+- @title = "Why does CircleCI need all those permissions?"
 - @lastUpdated = "Feb 3, 2013"
 
 %p
@@ -8,7 +8,7 @@
   unfortunately.
 
 %p
-  Circle actually needs the following concrete permissions:
+  CircleCI actually needs the following concrete permissions:
 
 %ul
   %li add deploy keys to a repo
@@ -21,9 +21,6 @@
   The first two obviously need write-permission to a repo.
   Getting a list of a user's repos requires write-access because GitHub does not provide a way to ask for only read-access.
   If that were possible, then we could delay asking for write-permission until we actually needed it.
-
-%p
-  Similarly, while adding an SSH key to your user is only occasionally needed, finding out your email address currently requires write-access in GitHub's model.
 
 %p
   We feel strongly about only asking for the permissions we need, and have asked GitHub to help a number of times.

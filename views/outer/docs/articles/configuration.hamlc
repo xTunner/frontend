@@ -1,21 +1,21 @@
-- @title = 'Configuring Circle'
+- @title = 'Configuring CircleCI'
 - @lastUpdated = "May 2, 2013"
 
 %h2 Overview
 
 %p
-  Circle automatically infers your settings from your code, so Circle's normal processing works just fine in most circumstances.
+  CircleCI automatically infers your settings from your code, so CircleCI's normal processing works just fine in most circumstances.
   When it doesn't, the
   %code circle.yml
-  file makes it easy to tell Circle what you need.
+  file makes it easy to tell CircleCI what you need.
   This is a simple YAML file where you spell out any tweaks required for your web app.
-  You place the file in your git repo's root directory and Circle reads the file each time it runs a build.
+  You place the file in your git repo's root directory and CircleCI reads the file each time it runs a build.
 
 %p
   If you want a quick look at how to set up your
   %code circle.yml
   file, check out our
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/config-sample"} sample file
 
 
@@ -24,20 +24,11 @@
   %a{ href: "/docs/troubleshooting" } troubleshooting section
   can likely tell you the best way to solve the problem.
   If you find yourself repeateadly consulting this guide, please
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   and let us know what you're working on.
   We'll try to make it easier for you.
 
 
-
-
-%p
-  One more thing&mdash;most projects should put the
-  %code circle.yml
-  file in their repo's root directory.
-  However, if you store your application code in a subdirectory instead of the root, putting the
-  %code circle.yml
-  file in that subdirectory tells Circle to look for your app in that subdirectory.
 
 
 %h2#phases File structure and content
@@ -45,7 +36,7 @@
 %p
   The
   %code circle.yml
-  file is made up of six sections.
+  file is made up of six primary sections.
   Each section represents a
   %em phase
   of running your tests:
@@ -61,23 +52,30 @@
   %li <b>deployment</b>: deploying your code to your web servers
 
 %p
+  The
+  %code circle.yml
+  file contains another <b>general</b> section for general build-related configurations
+  that are not related to a specific phase.
+
+%p
   Remember: most projects won't need to specify anything for many of the phases.
 
 
 %p
-  The sections contain lists of bash commands.
-  If you don't specify commands, Circle infers them from your code.
-  Commands are run in the order they appear in the file; testing stops when any command returns a non-zero exit code.
-  You can modify which&mdash;and when&mdash;commands are run by adding
-  <code>override</code>, <code>pre</code> and/or <code>post</code>
-  to adjust Circle's inferred commands.
-  Here's how it works:
+  The sections contain lists of bash commands.  If you don't specify
+  commands, CircleCI infers them from your code.  Commands are run in
+  the order they appear in the file; all test commands are run to
+  completion, but a non-zero exit code during setup will cause the
+  build to fail early.  You can modify which&mdash;and
+  when&mdash;commands are run by adding <code>override</code>,
+  <code>pre</code> and/or <code>post</code> to adjust CircleCI's
+  inferred commands.  Here's how it works:
 
 
 %ul
-  %li <b>pre</b>: commands run before Circle's inferred commands
-  %li <b>override</b>: commands run instead of Circle's inferred commands
-  %li <b>post</b>:  commands run after Circle's inferred commands
+  %li <b>pre</b>: commands run before CircleCI's inferred commands
+  %li <b>override</b>: commands run instead of CircleCI's inferred commands
+  %li <b>post</b>:  commands run after CircleCI's inferred commands
 
 
 %p
@@ -102,7 +100,8 @@
   %li
     <b>parallel</b>: (only used with commands in the <code>test</code> section)
     if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a>, set this to true to run a command across all VMs
-
+  %li
+    <b>background</b>: when "true", runs a command in the background.  It is similar to ending a shell command with '&amp;', but works correctly over ssh.  Useful for starting servers, which your tests will connect to.
 
 %p
   Note that YAML is very strict about indentation each time you add a new property.
@@ -153,7 +152,7 @@
 %p
 %p
   This example sets the
-  = succeed ",", ->
+  != succeed ",", ->
     %a{ href: "#timezone" }<
       time zone
   chooses a
@@ -175,7 +174,7 @@
   is not.
   Here's how you might adjust the <code>circle.yml</code> file using
   %code pre
-  to install a different version of <code>phantomjs</code> than the version Circle has installed.
+  to install a different version of <code>phantomjs</code> than the version CircleCI has installed.
 
 %pre
   %code.no-highlight<>
@@ -194,7 +193,7 @@
   to the
   %code machine
   section.
-  Remember that Circle uses a new shell for every command; as previously mentioned
+  Remember that CircleCI uses a new shell for every command; as previously mentioned
   %code export foo=bar
   won't work. Instead, you must include something like this.
 
@@ -220,7 +219,7 @@
   Changing the time to your <i>development</i> machine's time zone is <b>asking for trouble</b>.
 
 %p
-  This modifier tells Circle to
+  This modifier tells CircleCI to
   overwrite
   %code /etc/timezone
   and then restart all databases and services that rely on it.
@@ -230,7 +229,7 @@
   on your Unix machine or in the
   %strong TZ
   column in
-  = succeed ".", ->
+  != succeed ".", ->
     %a{href: "http://en.wikipedia.org/wiki/List_of_tz_database_time_zones"}<
       Wikipedia's list of TZ database time zones
 
@@ -260,7 +259,7 @@
   Ruby version
 
 %p
-  Circle uses
+  CircleCI uses
   %a{ href: "https://rvm.io/" } RVM
   to manage Ruby versions.
   We use the Ruby version you specify in your <code>.rvmrc</code>, your
@@ -271,10 +270,10 @@
   %code
     = CI.Versions.default_ruby
   or
-  = succeed ',', ->
+  != succeed ',', ->
     %code= CI.Versions.old_ruby
   whichever we think is better.
-  If you use a different Ruby version let Circle know by including that information in the
+  If you use a different Ruby version let CircleCI know by including that information in the
   %code machine
   section. Here's an example of how you do that.
 
@@ -286,7 +285,7 @@
           version: 1.9.3-p0-falcon
 %p
   The complete list of supported Ruby versions is found
-  = succeed ".", ->
+  != succeed ".", ->
     %a{href: "/docs/environment#ruby"} here
 
 %h3#node-version
@@ -294,14 +293,14 @@
 
 
 %p
-  Circle uses
+  CircleCI uses
   %a{ href: "https://github.com/creationix/nvm" } NVM
   to manage Node versions.
   See
   %a{href: "/docs/environment#nodejs"} supported Node versions
   for a complete list.
-  If you do not specify a version, Circle uses
-  = succeed '.', ->
+  If you do not specify a version, CircleCI uses
+  != succeed '.', ->
     %code= CI.Versions.default_node
   Note that recent versions of NVM support selecting versions through
   package.json.
@@ -340,7 +339,7 @@
   PHP version
 
 %p
-  Circle uses
+  CircleCI uses
   %a{href: "https://github.com/CHH/php-build"} php-build
   and
   %a{href: "https://github.com/CHH/phpenv"} phpenv
@@ -363,7 +362,7 @@
   Python version
 
 %p
-  Circle uses
+  CircleCI uses
   %a{href: "https://github.com/yyuu/pyenv"} pyenv
   to manage Python versions.
   Here's an example of how to set the version of Python used for your tests.
@@ -378,7 +377,7 @@
 %p
 %p
   See
-  %a{href: "/doc/environment#python"} supported Python versions
+  %a{href: "/docs/environment#python"} supported Python versions
   for a complete list.
 
 %h3
@@ -402,9 +401,9 @@
   Databases and other services
 
 %p
-  Circle supports a large number of
+  CircleCI supports a large number of
   <a href="/docs/environment#databases">databases and other services</a>.
-  Most popular ones are running by default on our build machines, including Postgres, MySQL, Redis and MongoDB.
+  Most popular ones are running by default on our build machines (bound to localhost), including Postgres, MySQL, Redis and MongoDB.
 
 %p
   You can enable other databases and services from the
@@ -423,6 +422,7 @@
           - beanstalkd
           - couchbase-server
           - neo4j
+          - sphinxsearch
 
 
 %h2#checkout Code checkout from GitHub
@@ -439,12 +439,12 @@
     :preserves
       checkout:
         post:
-          - git submodule init
-          - git submodule update
+          - git submodule sync
+          - git submodule update --init
 %p
 
 .top-caption
-  Example: overwriting configuration files on Circle
+  Example: overwriting configuration files on CircleCI
 %pre
   %code.bash<>
     :preserves
@@ -456,7 +456,7 @@
 
 %p
   Most web programming languages and frameworks, including Ruby's bundler, npm for Node.js, and Python's pip, have some form of dependency specification;
-  Circle automatically runs commands to fetch such dependencies.
+  CircleCI automatically runs commands to fetch such dependencies.
 
 %p
   You can use <code>override</code>, <code>pre</code>, and/or <code>post</code> to modify
@@ -510,7 +510,7 @@
   Custom Cache Directories
 
 %p
-  Circle caches dependencies between builds.
+  CircleCI caches dependencies between builds.
   To include any custom directories in our caching, you can use
   %code cache_directories
   to list any additional directories you'd like cached between builds.
@@ -539,7 +539,7 @@
 %p
   If our inferred <code>database.yml</code> isn't working for you, you may need to <code>override</code> our setup commands (as shown in the following example).
   If that is the case, please
-  = HAML["contact_us"]()
+  != HAML["contact_us"]()
   and let Circle know so that we can improve our inference.
 
 %p
@@ -569,7 +569,9 @@
   The most important part of testing is actually running the tests!
 
 %p
-  Circle supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
+  CircleCI supports the use of <code>override</code>, <code>pre</code>, and/or <code>post</code> in the <code>test</code> section.
+  However, this section has one minor difference: all test commands will run, even if one fails.
+  This allows our test output to tell you about all the tests that fail, not just the first error.
 
 
 .top-caption
@@ -594,13 +596,13 @@
         override:
           - phpunit my/special/subdirectory/tests
 %p
-  Circle also supports the use of <code>minitest_globs</code>
+  CircleCI also supports the use of <code>minitest_globs</code>
   (a list of file globs, using <a href="http://ruby-doc.org/core-2.0/Dir.html#glob-method">Ruby's Dir.glob syntax</a>)
   that can list the file globs to be used during testing.
 
 %p
 %p
-  By default, when testing in parallel, Circle runs all tests in the test/unit, test/integration, and
+  By default, when testing in parallel, CircleCI runs all tests in the test/unit, test/integration, and
   test/functional directories.
   You can add <code>minitest_globs</code> to replace the
   standard directories with your own.
@@ -666,13 +668,30 @@
             - ./merge_to_master.sh
 %p
 
+  The <i>branch</i> field can also specify regular expressions, surrounded with
+  %code /
+  (e.g.
+  %code /feature_.*/
+  ):
+
+%pre
+  %code.bash<>
+    :preserves
+      deployment:
+        feature:
+          branch: /feature_.*/
+          commands:
+            - ./deploy_feature.sh
+
+%p
+
 
 %h3
   SSH Keys
 %p
   If deploying to your servers requires SSH access, you'll need to
-  upload the keys to Circle.
-  Circle's UI enables you to do this on your project's <b>Edit settings > SSH keys</b> page.
+  upload the keys to CircleCI.
+  CircleCI's UI enables you to do this on your project's <b>Edit settings > SSH keys</b> page.
   Add and then submit the one or more SSH keys needed
   for deploying to your machines. If you leave the <b>Hostname</b> field blank,
   the public key will be used for all hosts.
@@ -682,7 +701,7 @@
   Heroku
 
 %p
-  Circle also has first-class support for deploying to Heroku.
+  CircleCI also has first-class support for deploying to Heroku.
   Specify the app you'd like to
   %code git push
   to under <code>appname</code>.
@@ -701,7 +720,7 @@
   Setting up our deployment to Heroku requires one extra step.
   Due to Heroku's architecture and security model, we need to deploy as a particular user.
   A member of your project, possibly you, will need to register as that user.
-  Circle's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
+  CircleCI's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
 
 %h3#heroku-extra
   Heroku with pre or post-deployment steps
@@ -723,33 +742,99 @@
 %h2#notify Notifications
 
 %p
-  Circle sends personalized notifications by email.
+  CircleCI sends personalized notifications by email.
 
 %p
-  In addition to these per-user emails, Circle sends notifications on a per-project basis.
-  Circle supports sending webhooks when your build completes.
-  Circle also supports HipChat, Campfire, and Flowdock notifications; you configure these notifications from your project's
+  In addition to these per-user emails, CircleCI sends notifications on a per-project basis.
+  CircleCI supports sending webhooks when your build completes.
+  CircleCI also supports HipChat, Campfire, Flowdock and IRC notifications; you configure these notifications from your project's
   <b>Edit settings > Notifications </b> page.
 
 
 %p
   This example sends a JSON packet to the specified URL.
-  The JSON packet is identical to the result of the
-  %a{ href: "/docs/reference-api#build" } Build API
-  call for the same build.
-
-
 
 %pre
   %code<>
     :preserves
       notify:
         webhooks:
-          # A list of hashes representing hooks. Only the url field is supported.
+          # A list of hook hashes, containing the url field
           - url: https://example.com/hooks/circle
+
+%p
+  The JSON packet is identical to the result of the
+  %a{ href: "/docs/api#build" }
+    Build API
+  call for the same build, except that it is wrapped in a "payload" key:
+
+%pre
+  %code<>
+    :preserves
+      {
+        "payload": {
+          "vcs_url" : "https://github.com/circleci/mongofinil",
+          "build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+          "build_num" : 22,
+          "branch" : "master",
+          ...
+        }
+      }
+
+
 %p
 
 
+%h2#branches Specifying branches to build
+
+%p
+  CircleCI by default tests every push to <i>any</i> branch in the repository.
+  Testing all branches maintains quality in all branches and adds
+  confidence when the branches are to be merged with default branch.
+
+%p
+  You may, however, blacklist branches from being built in CircleCI.  This example
+  excludes
+  %code gh-pages
+  from being built in circle:
+
+%pre
+  %code<>
+    :preserves
+      general:
+        branches:
+          ignore:
+            - gh-pages # list of branches to ignore
+            - /release\\/.*/ # or ignore regexes
+
+%p
+  We deliberately don't support branch whitelisting, it means work-in-progress
+  code can go a long time without being integrated and tested and we've found
+  it leads to problems when that untested code gets merged.
+  However, if this is an important issue to you, it can be
+  accomplished with an advanced regex, an exercise which is left to the reader.
+
+%p
+  %code circle.yml
+  is per-branch configuration file, and the branch ignore list in one branch will
+  only affect that branch and no other one.
+
+%h2#build-dir Specifying build directory
+
+%p
+  Circle runs all commands on the repository root, by default.  However, if
+  you store your application code in a subdirectory instead of the root, you
+  can specify the build directory in circle.yml.  For example, to set the build
+  directory to `api` sub-directory, you can use the following configuration:
+
+%pre
+  %code<>
+    :preserves
+      general:
+        build_dir: api
+
+%p
+  Circle will run its inference as well as all build commands from that directory.
 
 
 %h2#help Need anything else?
@@ -757,5 +842,5 @@
 %p
   We are adding support for configuring every part of your build.
   If you need to tweak something that isn't currently supported, please
-  = HAML["contact_us"]()
+  != HAML["contact_us"]()
   and we'll figure out how to make it happen.

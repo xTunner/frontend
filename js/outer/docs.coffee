@@ -1,6 +1,10 @@
 CI.outer.Docs = class Docs extends CI.outer.Page
   constructor: ->
+    super
     @name = "docs"
+    @query_results_query = ko.observable(null)
+    @query_results = ko.observableArray([])
+
 
   rewrite_old_name: (name) =>
     switch name
@@ -33,6 +37,8 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
       when "/wrong-commands" then "/wrong-ruby-commands"
       when "/configure-php" then "/language-php"
+      when "/reference-api" then "/api"
+      when "/reference-api#build" then "/api#build"
 
       else false
 
@@ -66,6 +72,18 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       a.children = for c in a.children
         @articles[c] or throw "Missing child article #{c}"
 
+    # sort the categories
+    @sorted_categories = [
+      @categories.gettingstarted,
+      @categories.languages,
+      @categories.how_to,
+      @categories.troubleshooting,
+      @categories.reference,
+      @categories.parallelism,
+      @categories.privacy_security,
+      ]
+
+
 
   article_info: (slug, node, cx) =>
     uriFragment = slug.replace(/_/g, '-')
@@ -95,7 +113,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   viewContext: (cx) =>
     result =
-      categories: @categories
+      categories: @sorted_categories
       articles: @articles
       slug: @filename cx
       article: @articles[@filename cx]
@@ -134,7 +152,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
   addLinkTargets: =>
     # Add a link target to every heading. If there's an existing id, it won't override it
-    h = "article .doc" # hierarchy
+    h = "article"
     for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
       @addLinkTarget heading
 
@@ -151,3 +169,33 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
 
     jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
+
+
+  ####################
+  # search
+  ####################
+  performDocSearch: (query) =>
+    $.ajax
+      url: "/search-articles"
+      type: "GET"
+      data:
+        query: query
+      success: (results) =>
+        window.SammyApp.setLocation("/docs")
+        @query_results results.results
+        @query_results_query results.query
+    query
+
+  searchArticles: (form) =>
+    @performDocSearch($(form).find('#searchQuery').val())
+    return false
+
+  suggestArticles: (query, process) =>
+    $.ajax
+      url: "/autocomplete-articles"
+      type: "GET"
+      data:
+        query: query
+      success: (autocomplete) =>
+        process autocomplete.suggestions
+    null

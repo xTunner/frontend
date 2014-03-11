@@ -14,7 +14,9 @@
   your code once your build is green.
 
 %p
-  The majority of the time, this just works.
+  CircleCI makes Rails testing simple and uncomplicated.
+  CircleCI looks at your code, infers your build environment, and runs your tests.
+  The majority of the time, this just works&mdash;and works well.
   Of course, it helps if your project adheres to standard practices
   (i.e., "convention over configuration") for standard Ruby testing frameworks.
 
@@ -26,8 +28,9 @@
   to provide access to a wide variety of
   = succeed '.', ->
     %a{href: "/docs/environment#languages"} Ruby versions
-%p
-  To enable you to use certain tools and frameworks directly, Circle has pre-installed:
+  CircleCI has a number of Ruby- and Rails-related tools and frameworks
+  pre-installed so that you can use them directly if needed.
+  These include:
 
 %ul
   %li
@@ -56,7 +59,7 @@
 
 %p
   If Circle detects a Gemfile, we automatically run <code>bundle install</code>.
-  You can specify other  project dependencies by including a
+  You can specify other project dependencies by including a
   %a{href: "/docs/configuration"} circle.yml
   file in your repo.
 
@@ -91,6 +94,26 @@
   Circle automatically sets up for RSpec, Cucumber, and Test::Unit.
 
 %p
+  For more specifics, you can look at our
+    %a{href: "/docs/environment"} Test environment
+  documentation, which includes a complete listing of all the versions of Ruby
+  that we support as well as a brief description of how CircleCI selects the
+  default version of Ruby.
+  The document also describes how CircleCI makes it easy to use testing tools that require a browser.
+
+%p
+  As we mentioned, CircleCI automatically infers your settings from your code.
+  This works fine in most cases for our Ruby on Rails customers.
+  When it doesn't (your web app has a special dependency, for example),
+  all that you need to do is add a <code>circle.yml</code> file.
+  You can find all the information that you need to create that file in our
+  %a{href: "/docs/configuration"} Configuring CircleCI
+  document.
+
+%p
+  Should you need to run your tests in parallel, you can choose a plan and
+  set up parallelism for your project on the <b>Edit settings > Build Speed</b> page.
+  CircleCI automatically sets up for RSpec, Cucumber, and Test::Unit.
   If you've overridden the test command or have other custom requirements,
   you can
   = succeed '.', ->
@@ -118,5 +141,5 @@
 
 %p
   If you are still having trouble, please
-  = HAML.contact_us()
+  != HAML.contact_us({succeed: ""})
   and we will be happy to help.

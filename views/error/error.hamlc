@@ -1,8 +1,10 @@
-#title
-  %h1=@title
-
-#content
-  %section
-    .story
+.page.error
+  .banner
+    .container
       %h1=@error
-      %p=@message
+      %h3=@title
+
+
+  .container
+    %p
+      !=@message

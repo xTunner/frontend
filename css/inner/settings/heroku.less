@@ -1,0 +1,30 @@
+#settings-heroku {
+  label.sticky {
+    display: inline-block;
+  }
+  #heroku-key {
+    width: @standardBlockSize * 2;
+  }
+  .heroku-api-display {
+    position: relative;
+    margin: 2em 0;
+    div[class^="heroku-key-"] {
+      .stickyLabel-shared-text();
+      width: @standardBlockSize * 2;
+      &:empty {
+        display: none;
+      }
+    }
+    .heroku-label-key {
+      .stickyLabel-shared-label();
+      .stickyLabel-shared-validLabel();
+    }
+  }
+  input.btn {
+    .circleButton(@grayLightest, @grayLighter);
+    margin-bottom: 1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}

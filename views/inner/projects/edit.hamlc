@@ -1,79 +1,50 @@
-= HAML['_topbar']({crumbs: HAML['topbar_project_edit']({project: @project})})
-
-.container-fluid
-  .span3
-
-    %ul.nav.nav-list.well
-      %li.nav-header
-        Project settings
+#project-settings
+  %aside
+    %ul.side-list
+      %li.side-title Project Settings
       %li
-        %a{ href: "edit" }
-          Overview
-      %li.divider
-
-      %li.nav-header
-        Tweaks
+        %a{href: "edit"} Overview
+      %li.side-title Tweaks
       %li
-        %a{ href: "edit#parallel-builds" } Build speed
+        %a{ href: "#parallel-builds"} Parallelism
       %li
-        %a{ href: "edit#env-vars" } Environment variables
-      %li.divider
-
-      %li.nav-header
-        Test commands
+        %a{ href: "#env-vars"} Environment variables
+      %li.side-title Test Commands
       %li
-        %a{ href: "edit#setup" } Dependencies
+        %a{ href: "#setup"} Dependencies
       %li
-        %a{ href: "edit#tests" } Tests
-      %li.divider
-
-
-      %li.nav-header
-        Hooks
+        %a{ href: "#tests"} Tests
+      %li.side-title Notifications
       %li
-        %a{ href: "edit#hooks" } Notifications
-      %li.divider
-
-      %li.nav-header
-        Permissions
-      -# %li
-      -#   %a{ href: "edit#collaborators" } Collaborators
+        %a{ href: "#hooks"} Chatrooms
       %li
-        %a{ href: "edit#ssh" } SSH keys
+        %a{ href: "#webhooks"} Webhooks
+      %li.side-title Permissions
       %li
-        %a{ href: "edit#github" } GitHub user
+        %a{ href: "#ssh"} SSH keys
       %li
-        %a{ href: "edit#api" } API tokens
-
-
-      %li.nav-header
-        Continuous Deployment
+        %a{ href: "#github"} GitHub user
       %li
-        %a{ href: "edit#heroku" } Heroku settings
-
-
-    .well.follow-status{data-bind: "with: project"}
-      %div{data-bind: "if: followed"}
-        .follow-align
-          %button.followed.btn.btn-primary.btn-large{ data-bind: 'click: unfollow' }
-            Unfollow
-        %p
-          You are following this project, and will receive build emails.
-
-
-      %div{data-bind: "ifnot: followed"}
-        .follow-align
-          %button.btn.btn-primary.btn-large{ data-bind: 'click: follow' }
-            Follow
-        %p
-          You are not following this project, and will not receive build emails.
-          Projects are only tested if they have a follower.
-
-
-
-  .span9
-    = HAML['flashes']({})
-
+        %a{ href: "#api"} API tokens
+      %li.side-title Build Artifacts
+      %li
+        %a{ href: "#artifacts"} Artifacts
+      %li.side-title Continuous Deployment
+      %li
+        %a{href: "#heroku"} Heroku
+      %li
+        %a{href: "#deployment"} Other Deployments
+  .project-settings-inner
+    != HAML['flashes']({})
     #subpage{data-bind: "with: project"}
-      %p
-        Loading...
+      %p Loading...
+  .follow-status{data-bind: "with: project"}
+    .followed{data-bind: "if: followed"}
+      %i.fa.fa-group
+      %h4 You're following this repo
+      %p We'll keep an eye on this and update you with personalized build emails. You can stop these any time from your <a href="/account">account settings</a>.
+      %button{ data-bind: 'click: unfollow' } Unfollow
+    .not-followed{data-bind: "ifnot: followed"}
+      %h4 You're not following this repo
+      %p We can't update you with personalized build emails unless you follow this project. Projects are only tested if they have a follower.
+      %button{data-bind: 'click: follow_and_maybe_visit'} Follow

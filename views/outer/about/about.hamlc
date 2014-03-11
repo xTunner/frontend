@@ -1,99 +1,39 @@
-#title
-  %h1 About Us
+.page.about
+  .banner
+    .container
+      %h1 About us
+      %h3 CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools.
 
-#content
-  %section.about#watermark
+  .container.content
+    %h2 Meet the CircleCI Team
 
-    .story
-      %p In 2011, Paul & Allen got frustrated with the state of software testing and decided to solve the problem.
-      %p CircleCI was founded with the mission of giving every developer state of the art automated testing and continuous integration tools.
-
-    %h1 Meet the CircleCI Team
-    %hr
-
-    -# Iterate over team members and print their information as hCard
-    -# http://html5doctor.com/microformats/#hcard
     - for member of @team
-
       - user = @team[member]
+      .member.row{ class: "#{if member%2 != 0 then 'right' else 'left'}" }
+        %img{alt: user.name,
+             height: "150",
+             src: assetPath("#{user.img_path}"),
+             width: "150",
+             class: "#{if member%2 != 0 then 'pull-right' else 'pull-left'}"}
+        .span9
+          %h3= user.name
+          %h4= user.role
+          %ul.clearfix
+            %li
+              %a.fa.fa-envelope{href: "mailto:#{user.email}"}
+            %li
+              %a.fa.fa-github{href: "https://github.com/#{user.github}"}
+            %li
+              %a.fa.fa-twitter{href: "https://twitter.com/#{user.twitter}"}
+          - for p in user.bio
+            %p
+              = p
 
-      - if user.visible
-        %figure.vcard{ class: "#{if member%2 != 0 then 'right'}" }
+    #jobs-cta
+      %p
+        We're looking for amazing people to join us on this journey.
+        Want to join the team?
+      %a.btn.btn-primary.btn-large{href: "/jobs"}
+        CircleCI is hiring!
 
-          %figcaption{ class: "#{user.github}" }
-            %div
-              %h4.fn= user.name
-              %h5.title= user.role
-
-            - for b in user.bio
-              %p.note= b
-
-          .social
-            - if user.email
-              %a.email{ href: "mailto:#{user.email}" } Email Address
-
-            %a.github{ href: "https://github.com/#{user.github}" } Github
-
-            - if user.twitter
-              %a.twitter{ href: "https://twitter.com/#{user.twitter}" } Twitter
-
-          .visual
-            -# If photo has not been defined for user, use .visual bg image
-            - if user.photo
-              %img.photo{ src: assetPath("img/team-#{user.photo}-tb.jpg") }
-
-  %section.contact
-    %a{name: 'contact'}
-
-    %h1#contact Contact Us
-    %p We'd love to hear from you.
-    %hr
-
-    %form{ action: "/about/contact", method: "POST" }
-
-      // Name
-      %label{ for: 'name'} Name:
-      %input{ type: 'text', name: 'name', id: 'name', placeholder: 'Your Name', tabindex: '1', required: '' }
-
-      // Email
-      %label{ for: 'email'} Email Address:
-      %input{ type: 'email', name: 'email', id: 'email', placeholder: 'Your Email Address', tabindex: '2', required: '' }
-
-      // Message
-      %label{ for: 'message'} Message:
-      %textarea{ name: 'message', id: 'message', tabindex: '3', required: '' }
-
-      %button{ class: 'button green', type: 'submit' } Send
-
-    %aside.info
-      %p Don't like forms? Contact us anyway:
-
-      %ul
-        %li
-          %i.icon-envelope-alt
-          %a{ href: 'mailto:sayhi@circleci.com' } sayhi@circleci.com
-
-        %li
-          %i.icon-comments
-          %a{ href: 'https://www.hipchat.com/gjwkHcrD5', target: "_blank", title: 'Go to our pre-sales support chatroom' }
-            Live support
-
-        %li
-          %i.icon-twitter
-          %a{ href: 'https://twitter.com/circleci' } @circleci
-
-        %li
-          %i.icon-phone
-          (800) 585-7075
-
-        %li
-          %i.icon-globe
-          %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
-            325 9th Street, San Francisco CA 94103
-
-      %p Press Inquiries:
-
-      %ul
-        %li.email
-          %i.icon-envelope-alt
-          %a{ href: 'mailto:press@circleci.com' } press@circleci.com
+!= HAML.contact()

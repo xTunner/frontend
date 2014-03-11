@@ -5,16 +5,15 @@
 %h2 Overview
 
 %p
-  Circle has great support for Python.
-  We infer a substantial amount of your settings and required dependencies from your code.
-  This allows Circle to configure the VM to your preferences and requirements,
-  set up your dependencies, recognize what database (if any) your tests use,
-  and run your tests. If directed, Circle will also deploy your green build.
 
-%p
-  If your project has any special requirements, tell us about them by including a
+  CircleCI has great support for Python.
+  We can infer a substantial amount of your settings and required
+  dependencies from your code.
+  When we don't, just create a
   %a{href: "/docs/configuration"} circle.yml
-  file in your repo.
+  file and place this
+  file in your git repo's root directory.
+  CircleCI then reads your <code>circle.yml</code> file each time we run a build.
 
 %h2 Version
 
@@ -71,25 +70,27 @@
 %h2 Testing
 
 %p
-  Circle automatically runs tests for Django, nose, and Tox.
+  CircleCI automatically runs <code>tox</code> when we find a <code>tox.ini</code> file,
+  and runs <code>nosetests</code> when we find a <code>unittest.py</code> file.
+  CircleCI runs <code>manage.py test</code> if you are using Django.
   If none of those work for your project,
-  you can override Circle's testing by including your own testing script.
+  you can override CircleCI's testing by including your own testing script.
 
 %pre
   %code.no-highlight<>
     :preserve
-      dependencies:
+      test:
         override:
           - ./my_testing_script.sh
 
 %h2 Deployment
 
 %p
-  Circle has first-class support for
+  CircleCI has first-class support for
   %a{href: "/docs/configuration#deployment"} deployment
   with Fabric or Paver.
   Include information in your <code>circle.yml</code> file to let
-  Circle know that your Python project uses one of these tools.
+  CircleCI know that your Python project uses one of these tools.
   Here's an example of how to do that.
 
 %pre

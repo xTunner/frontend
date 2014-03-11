@@ -1,7 +1,19 @@
-#title
-  %h1 Plans and Pricing
+.page.pricing
+  .banner
+    .container
+      / ko if: VM.ab().pricing_maintain_infrastructure
+      %h1 Why Waste Expensive Time Maintaining Build Infrastructure?
+      / /ko
+      / ko ifnot: VM.ab().pricing_maintain_infrastructure
+      %h1 Plans and Pricing
+      / /ko
 
-#content.row{data-bind: "with: $root.billing"}
-  #billing.offset1
-    = HAML['account_plans_table']()
-    = HAML['account_plans_common_questions']()
+
+  .container.content{data-bind: "with: $root.billing"}
+    != HAML.pricing_plans_heading()
+    != HAML.pricing_plans()
+    / ko if: VM.ab().customer_logos
+    != HAML.customers_trust()
+    / /ko
+    != HAML.pricing_features()
+    != HAML.pricing_faq()

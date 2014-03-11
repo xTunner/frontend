@@ -6,7 +6,6 @@
           &times;
         Error:
         %span{data-bind: "html: error_message"}
-        %br
         If we can help,
-        = succeed '.', ->
-          = HAML['contact_us_inner']()
+        != succeed '.', ->
+          != HAML['contact_us_inner']()

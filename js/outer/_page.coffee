@@ -1,11 +1,12 @@
 CI.outer.Page = class Page
-  constructor: (@name, @_title) ->
+  constructor: (@name, @_title, @mixpanelID=null) ->
 
   display: (cx) =>
     @setPageTitle(cx)
 
+    @maybeTrackMixpanel()
+
     # Render content
-    @clearIntercom()
     @render(cx)
 
     # Land at the right anchor on the page
@@ -18,18 +19,45 @@ CI.outer.Page = class Page
 
     ko.applyBindings(VM)
 
+  maybeTrackMixpanel: () =>
+    if @mixpanelID?
+      mixpanel.track @mixpanelID
+
   viewContext: (cx) =>
     {}
 
   render: (cx) =>
-    params = $.extend renderContext, @viewContext(cx)
-    $('html').addClass('outer').removeClass('inner')
-    $('body').attr("id", "#{@name}-page")
-    $("#main").html HAML['header'](params)
-    $("#main").append HAML[@name](params)
-    if @useStickyFooter? and @useStickyFooter
-      $('#main > div').wrapAll "<div id='wrap' />"
-    $("#main").append HAML['footer'](params)
+    template = @name
+    klass = "outer"
+
+    args = $.extend renderContext, @viewContext(cx)
+    header =
+      $("<header></header>")
+        .append(HAML.header(args))
+
+    content =
+      $("<main></main>")
+        .attr("id", "#{@name}-page")
+        .append(HAML[template](args))
+
+    footer =
+      $("<footer></footer>")
+        .append(HAML["footer"](args))
+
+
+    $('#app')
+      .html("")
+      .removeClass('outer')
+      .removeClass('inner')
+      .addClass(klass)
+      .append(header)
+      .append(content)
+      .append(footer)
+
+    if VM.ab().old_font()
+      $('#app').addClass('old-font')
+
+
 
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"
@@ -41,9 +69,6 @@ CI.outer.Page = class Page
 
   setPageTitle: (cx) =>
     document.title = @title(cx) + " - CircleCI"
-
-  clearIntercom: =>
-    $('#IntercomTab').text "" # clear the intercom tab
 
   placeholder: () =>
     $("input, textarea").placeholder()

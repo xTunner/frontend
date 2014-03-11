@@ -11,6 +11,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
     hipchat_api_token: null
     hipchat_notify: false
     hipchat_notify_prefs: null
+    slack_channel: null
+    slack_subdomain: null
+    slack_api_token: null
+    slack_notify_prefs: null
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
@@ -21,15 +25,17 @@ CI.inner.Project = class Project extends CI.inner.Obj
     irc_keyword: null
     irc_username: null
     irc_password: null
+    irc_notify_prefs: null
     github_user: null
     heroku_deploy_user: null
     ssh_keys: []
     followed: null
     loading_users: false
+    loading_billing: false
     users: []
     parallel: 1
-    paying_user: null
-    loaded_paying_user: null
+    focused_parallel: 1
+    has_usable_key: true
     retried_build: null
     branches: null
     default_branch: null
@@ -40,6 +46,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
     env_vars: []
     env_varName: ""
     env_varValue: ""
+    show_branch_input: false
+    settings_branch: null
+    show_test_new_settings: false
+    loaded_settings: false
 
   constructor: (json) ->
 
@@ -49,7 +59,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
     CI.inner.VcsUrlMixin(@)
 
-    @parallelism_options = [1..24]
     # Make sure @parallel remains an integer
     @editParallel = @komp
       read: ->
@@ -61,66 +70,64 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @build_url = @komp =>
       @vcs_url() + '/build'
 
+    @default_branch.subscribe (val) =>
+      @settings_branch(val)
+
     @has_settings = @komp =>
       @setup() or @dependencies() or @post_dependencies() or @test() or @extra()
 
     ## Parallelism
     @billing = new CI.inner.Billing
+      org_name: @org_name()
 
-    @containers_p = @komp =>
-      @billing.chosen_plan_containers_p()
+    # use safe defaults in case chosenPlan is null
+    @plan = @komp =>
+      @billing.chosenPlan() || new CI.inner.Plan
 
-    # Allows for user parallelism to trump the plan's max_parallelism
-    @plan_max_speed = @komp =>
-      if @billing.chosenPlan() && @billing.chosenPlan().max_parallelism?
-        @billing.chosenPlan().max_parallelism
+    @parallelism_options = @komp =>
+      [1..Math.max(@plan().max_parallelism(), 24)]
 
-    # Trial speed is counted as paid here
-    @paid_speed = @komp =>
-      if @containers_p()
-        Math.min @plan_max_speed(), @billing.containers()
-      else
-        @billing.parallelism()
+    # Trial parallelism is counted as paid here
+    @paid_parallelism = @komp =>
+      Math.min @plan().max_parallelism(), @billing.usable_containers()
 
-    @focused_parallel = ko.observable @parallel()
-
-    @payor_login = @komp =>
-      @billing.payor() && @billing.payor().login
-
-    @current_user_is_payor_p = @komp =>
-      @payor_login() is VM.current_user().login
+    @parallel.subscribe (val) =>
+      @focused_parallel(val)
 
     @parallel_label_style = (num) =>
       disabled: @komp =>
         # weirdly sends num as string when num is same as parallel
-        parseInt(num) > @paid_speed()
+        parseInt(num) > @paid_parallelism()
       selected: @komp =>
         parseInt(num) is @parallel()
       bad_choice: @komp =>
-        if @containers_p()
-          parseInt(num) <= @paid_speed() && @billing.containers() % parseInt(num) isnt 0
+        parseInt(num) <= @paid_parallelism() && @billing.usable_containers() % parseInt(num) isnt 0
 
-    @show_parallel_upgrade_plan_p = @komp =>
-      @plan_max_speed() && @plan_max_speed() < @focused_parallel()
+    @show_upgrade_plan = @komp =>
+      @plan().max_parallelism() < @focused_parallel()
 
-    @show_parallel_upgrade_speed_p = @komp =>
-      @paid_speed() && @plan_max_speed && (@paid_speed() < @focused_parallel() <= @plan_max_speed())
+    @show_add_containers = @komp =>
+      @paid_parallelism() < @focused_parallel() <= @plan().max_parallelism()
+
+    @show_upgrade_trial = @komp =>
+      @paid_parallelism() < @focused_parallel()
 
     @show_uneven_divisor_warning_p = @komp =>
-      if @containers_p()
-        @focused_parallel() <= @paid_speed() && @billing.containers() % @focused_parallel() isnt 0
+      @focused_parallel() <= @paid_parallelism() && @billing.usable_containers() % @focused_parallel() isnt 0
 
     @simultaneous_builds = @komp =>
-      if @containers_p
-        Math.floor(@billing.containers() / @focused_parallel())
+      Math.floor(@billing.usable_containers() / @focused_parallel())
 
     @show_number_of_simultaneous_builds_p = @komp =>
-      @containers_p && (@focused_parallel() <= @paid_speed())
+      @focused_parallel() <= @paid_parallelism()
 
     ## Sidebar
     @branch_names = @komp =>
       names = (k for own k, v of @branches())
       names.sort()
+
+    @pretty_branch_names = @komp =>
+      decodeURIComponent(name) for name in @branch_names()
 
     @personal_branch_p = (branch_name) =>
       if branch_name is @default_branch()
@@ -186,6 +193,37 @@ CI.inner.Project = class Project extends CI.inner.Obj
         write: (newVal) ->
           if newVal then pref_observable("smart") else pref_observable(null)
 
+    @show_trial_notice = @komp =>
+      @billing.existing_plan_loaded() &&
+        @billing.trial() &&
+          @billing.trial_end() &&
+            @billing.trial_days() < 15 # we probably hacked the db here
+
+    @show_enable_project_notice = @komp =>
+       !@has_usable_key()
+
+    @show_build_page_trial_notice = @komp =>
+      @show_trial_notice() &&
+       !@billing.trial_over() &&
+         @billing.trial_days() < 4
+
+    # This is inserted as html, so be careful that everything is escaped properly
+    @trial_notice_text = @komp =>
+      org_name = _.escape(@billing.org_name())
+      plan_path = CI.paths.org_settings org_name, 'plan'
+      days = @billing.trial_days()
+      if @billing.trial_over()
+        "#{org_name}'s trial is over. <a href='#{plan_path}'>Add a plan to continue running your builds</a>."
+      else if days > 10
+        "#{org_name} is in a 2-week trial, enjoy! (or check out <a href='#{plan_path}'>our plans</a>)"
+      else if days > 7
+        "#{org_name}'s trial has #{days} days left. <a href='#{plan_path}'>Check out our plans</a>."
+      else if days > 4
+        "#{org_name}'s trial has #{days} days left. <a href='#{plan_path}'>Add a plan</a> to keep running your builds."
+      else
+        "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
+
+
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
       if l.latest_build().build_num > r.latest_build().build_num then -1 else 1
@@ -225,6 +263,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
     else
       time_sort
 
+  too_much_parallelism_text: () =>
+    n = @focused_parallel()
+    "You need #{n} containers on your plan to use #{n}x parallelism."
+
   compute_latest_build: () =>
     if @branches()? and @branches()[@default_branch()] and @branches()[@default_branch()].recent_builds?
       new CI.inner.Build @branches()[@default_branch()].recent_builds[0]
@@ -239,27 +281,25 @@ CI.inner.Project = class Project extends CI.inner.Obj
   retry_latest_build: =>
     @latest_build().retry_build()
 
-  speed_description_style: =>
+  parallelism_description_style: =>
     'selected-label': @focused_parallel() == @parallel()
 
   disable_parallel_input: (num) =>
-    num > @paid_speed()
+    num > @paid_parallelism()
+
+  maybe_load_billing: =>
+    if not @billing.existing_plan_loaded()
+      @load_billing()
 
   load_billing: =>
+    @loading_billing(true)
     $.ajax
       type: "GET"
       url: "/api/v1/project/#{@project_name()}/plan"
       success: (result) =>
         @billing.loadPlanData(result)
-
-  load_paying_user: =>
-    $.ajax
-      type: "GET"
-      url: "/api/v1/project/#{@project_name()}/paying_user"
-      success: (result) =>
-        if result?
-          @paying_user(new CI.inner.User(result))
-          @loaded_paying_user(true)
+        @billing.existing_plan_loaded(true)
+        @loading_billing(false)
 
   checkbox_title: =>
     "Add CI to #{@project_name()}"
@@ -272,20 +312,37 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (data) =>
         @followed(data.followed)
         _gaq.push(['_trackEvent', 'Projects', 'Remove']);
+        VM.loadProjects() # refresh sidebar
 
-  follow: (data, event) =>
+  follow: (data, event, callback) =>
     $.ajax
       type: "POST"
       event: event
       url: "/api/v1/project/#{@project_name()}/follow"
       success: (data) =>
-        _gaq.push(['_trackEvent', 'Projects', 'Add']);
-        if data.first_build
-          (new CI.inner.Build(data.first_build)).visit()
-        else
-          $('html, body').animate({ scrollTop: 0 }, 0);
-          @followed(data.followed)
-          VM.loadRecentBuilds()
+        @followed(data.followed)
+        _gaq.push(['_trackEvent', 'Projects', 'Add'])
+        if callback? then callback(data)
+
+  enable: (data, event, callback) =>
+    $.ajax
+      type: "POST"
+      event: event
+      url: "/api/v1/project/#{@project_name()}/enable"
+      success: (data) =>
+        @has_usable_key(data.has_usable_key)
+
+  follow_and_maybe_visit: (data, event) =>
+    callback = (data) =>
+      if data.first_build
+        VM.visit_local_url data.build_url
+      else
+        $('html, body').animate({ scrollTop: 0 }, 0);
+        @followed(data.followed)
+        VM.loadRecentBuilds()
+      VM.loadProjects() # refresh sidebar
+
+    @follow(data, event, callback)
 
   save_hooks: (data, event) =>
     $.ajax
@@ -297,6 +354,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
         hipchat_api_token: @hipchat_api_token()
         hipchat_notify: @hipchat_notify()
         hipchat_notify_prefs: @hipchat_notify_prefs()
+        slack_channel: @slack_channel()
+        slack_subdomain: @slack_subdomain()
+        slack_api_token: @slack_api_token()
+        slack_notify_prefs: @slack_notify_prefs()
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()
@@ -307,24 +368,22 @@ CI.inner.Project = class Project extends CI.inner.Obj
         irc_keyword: @irc_keyword()
         irc_username: @irc_username()
         irc_password: @irc_password()
-
+        irc_notify_prefs: @irc_notify_prefs()
 
     false # dont bubble the event up
 
+  toggle_show_branch_input: (data, event) =>
+    @show_branch_input(!@show_branch_input())
+    $(event.target).tooltip('hide')
+    # hasfocus binding is bad here: closes the form when you click the button
+    if @show_branch_input()
+      $(event.target).siblings("input").focus()
+
   save_dependencies: (data, event) =>
-    # Comment this out until changing settings doesn't kick off a new build
-    # $.ajax
-    #   type: "PUT"
-    #   event: event
-    #   url: "/api/v1/project/#{@project_name()}/settings"
-    #   data: JSON.stringify
-    #     setup: @setup()
-    #     dependencies: @dependencies()
-    #     post_dependencies: @post_dependencies()
-    true # bubble up so that we move to the test step
+    @save_specs data, event, =>
+      window.location.hash = "#tests"
 
-
-  save_specs: (data, event) =>
+  save_specs: (data, event, callback) =>
     $.ajax
       type: "PUT"
       event: event
@@ -335,9 +394,25 @@ CI.inner.Project = class Project extends CI.inner.Obj
         post_dependencies: @post_dependencies()
         test: @test()
         extra: @extra()
-      success: (data) =>
-        (new CI.inner.Build(data)).visit()
+      success: () =>
+        if callback
+          callback.call(data, event)
     false # dont bubble the event up
+
+  create_settings_build: (data, event) =>
+    url = "/api/v1/project/#{@project_name()}"
+    if not _.isEmpty(@settings_branch())
+      url += "/tree/#{encodeURIComponent(@settings_branch())}"
+    $.ajax
+      type: "POST"
+      event: event
+      url: url
+      success: (data) =>
+        VM.visit_local_url data.build_url
+    false # dont bubble the event up
+
+  save_and_create_settings_build: (data, event) =>
+    @save_specs data, event, @create_settings_build
 
   set_heroku_deploy_user: (data, event) =>
     $.ajax
@@ -437,10 +512,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
       data: JSON.stringify
         parallel: @parallel()
       success: (data) =>
-        @retried_build(new CI.inner.Build(data))
+        @show_test_new_settings(true)
       error: (data) =>
         @refresh()
-        @load_paying_user()
     true
 
   parallel_input_id: (num) =>
@@ -506,3 +580,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (result) =>
         @load_env_vars()
     false
+
+  maybe_load_settings: () =>
+    if not @loaded_settings()
+      @load_settings()
+
+  load_settings: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
+      @updateObservables(data)
+      @loaded_settings(true)

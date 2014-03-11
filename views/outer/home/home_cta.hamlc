@@ -1,19 +1,17 @@
-.main-cta
-  .container
-    .span12
-      .center
-        .ctabox{class: @first and "line"}
-          - if @first
-            %div{data-bind: "if: VM.ab().home_cta_plan_price_trial"}
-              %p
-                Plans start at $19 per month. All plans include a free 14 day trial.
+.ctabox{class: @first and "line"}
+  - if @first
+    %div
+      %p
+        Plans start at $19 per month. All plans include a free 14 day trial.
 
-          %p
-            = HAML.home_button({text: @text})
+  - if VM.ab().github_modal()
+    != HAML.home_button_modal({source: "hero"})
+  - else
+    != HAML.home_button({source: "hero"})
 
-          - if @first
-            %div{data-bind: "if: VM.ab().home_cta_plan_price_trial"}
-              %p
-                %i
-                  CircleCI keeps your code safe.
-                  %a{href:"/privacy", title:"Privacy and Security"} Learn how.
+  - if @first
+    %div
+      %p
+        %i
+          CircleCI keeps your code safe.
+          %a{href: "/privacy#security", title: "Security"} Learn how.

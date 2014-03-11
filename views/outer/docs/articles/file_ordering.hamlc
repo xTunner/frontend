@@ -2,7 +2,7 @@
 - @lastUpdated = "Feb 2, 2013"
 
 %p
-  If your tests work on your local machine, but fail randomly on Circle, the most likely culprit is the dreaded file-ordering bug.
+  If your tests work on your local machine, but fail randomly on CircleCI, the most likely culprit is the dreaded file-ordering bug.
   Fortunately, if you understand your code base and your tests, fixing your tests can be quite simple.
 
 %h2 How file-ordering affects tests
@@ -16,7 +16,7 @@
 
 %p
   This means every OSX system will run tests in the same order, but different linux machines will run tests in different orders.
-  With Circle, where you get a new Linux machine each time you push, the tests will run in different orders on different test runs.
+  With CircleCI, where you get a new Linux machine each time you push, the tests will run in different orders on different test runs.
   This explains why a revision's tests will sometimes fail, only to pass when retried.
 
 %h2 Why these tests fail
@@ -34,7 +34,7 @@
   then
   %code bunny.rb
   might rely on code loaded by
-  = succeed ".", ->
+  != succeed ".", ->
     %code aardvark.rb
   If you run
   %code bunny.rb
@@ -55,7 +55,7 @@
   has been declared before it is used, typically by adding a
   %code require
   call to
-  = succeed '.', ->
+  != succeed '.', ->
     %code api_token_generator.rb
 
 
@@ -108,5 +108,5 @@
   This will allow you to just load the code which a test <i>thinks</i> it needs, often pointing to an overlooked dependency.
 
 %p
-  Finally, if you still can't do reduce the test case, Circle's SSH feature is a useful way to debug the error on our actual virtual machines.
+  Finally, if you still can't do reduce the test case, CircleCI's SSH feature is a useful way to debug the error on our actual virtual machines.
   It will create a machine, start the tests running, and let you SSH in to debug.

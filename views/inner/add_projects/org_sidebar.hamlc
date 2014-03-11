@@ -1,38 +1,27 @@
-#org-sidebar.nav.nav-list.span3
-  %li.nav-header
-    Organizations
+%ul.side-list
+  %li.add-orgs Your Organizations
 
-  :plain
-    <!-- ko foreach: organizations -->
+  / ko foreach: organizations
 
-  %li
+  %li.side-item
     %a{data-bind: "click: $root.current_user().setActiveOrganization"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
-      %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
-      %i.icon-chevron-right
+      .orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
 
-  :plain
-    <!-- /ko -->
+  / /ko
 
-  %li.nav-header
-    You
-  %li{data-bind: "with: collaborator(login)"}
+  %li.add-you Your Projects
+  %li.side-item{data-bind: "with: collaborator(login), css: {active: $root.current_user().activeOrganization() == login}"}
     %a{data-bind: "click: $root.current_user().setActiveOrganization"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
-      %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
-      %i.icon-chevron-right
+      .orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
 
-  %li.nav-header
-    Your Collaborators
-    %span.explanation
-      %i.icon-question-sign{data-bind: "tooltip: { title: 'These are the collaborators for all of your repos and forks'}"}
-  :plain
-    <!-- ko foreach: collaboratorsWithout(login) -->
-  %li
+  %li.add-collabs{data-bind: "tooltip: { title: 'For all repos &amp; forks'}", data-placement: "bottom"} Your Collaborators
+
+  / ko foreach: collaboratorsWithout(login)
+  %li.side-item
     %a{data-bind: "click: $root.current_user().setActiveOrganization"}
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
-      %div.orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
-      %i.icon-chevron-right
+      .orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
 
-  :plain
-    <!-- /ko -->
+  / /ko
