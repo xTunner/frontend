@@ -369,10 +369,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @invites = @komp =>
       if not @previous_successful_build() and @outcome() == "success" and VM.project()
-        users = {}
-        for user in VM.project().users()
-          users[user.login] = user.email()
-        new CI.inner.BuildInvite users
+        new CI.inner.BuildInvite VM.project().users()
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -768,27 +765,24 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
 
   # Select all
   all: () =>
-    for name in @team
-      @inviting[name] true
+    for user in @users
+      @inviting[user.login] true
 
   # Select none
   none: () =>
-    for name in @team
-      @inviting[name] false
+    for user in @users
+      @inviting[user.login] false
 
-  constructor: (team, json={}) ->
+  constructor: (users, json={}) ->
     super json
-    @team = []
-    @email = {}
+    @users = users
     @inviting = {}
     # Prepopulate the list of team members to invite with the ones
     # whose email addresses we already know.
-    for name, email of team
-      @team.push name
-      @email[name] = @observable email
-      @inviting[name] = @observable !!email
+    for user in users
+      @inviting[user.login] = @observable !!user.email()
 
   send: () =>
-    for name, email of @inviting when email()
-      VM.project().invite_team_member name, email
+    for user of @users when inviting[user.login] and user.email()
+      VM.project().invite_team_member user.login, user.email()
 
