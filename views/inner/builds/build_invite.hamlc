@@ -18,6 +18,7 @@
             %i.fa.fa-exclamation-circle
             %span Fix Email
         %label.invite-select
+          %input{type: "checkbox", data-bind: "checked: $parent.inviting[login], click: $parent.toggle[login]"}
   .first-green-foot
     %button{data-bind: "click: send"} Invite To CircleCI
 / /ko
