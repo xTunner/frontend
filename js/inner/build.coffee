@@ -760,9 +760,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
 # The prompt that comes up on a user's first green build so that
 # they can invite their favorite team members.
 CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
-  toggle: (name) => () =>
-    @inviting[name] !@inviting[name]()
-
   # Select all
   all: () =>
     for user in @users
