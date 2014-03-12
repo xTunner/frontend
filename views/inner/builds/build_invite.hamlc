@@ -1,5 +1,6 @@
 / ko with: invites
 .first-green
+  %button{data-dismiss: "alert"} &times
   .first-green-head
   .first-green-body
     %ul{data-bind: "foreach: $root.project().users"}
