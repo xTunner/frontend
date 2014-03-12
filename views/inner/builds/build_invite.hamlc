@@ -12,6 +12,7 @@
         .invite-gravatar
           %img{data-bind: "attr: {src: gravatar_url(100)}"}
         .invite-profile
+          %span{data-bind: "text: login"}
         %label.invite-select
   .first-green-foot
 / /ko
