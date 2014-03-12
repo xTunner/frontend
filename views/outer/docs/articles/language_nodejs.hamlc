@@ -24,12 +24,7 @@
   %code= CI.Versions.default_node
   as our default version. If you'd like a specific version, then you can specify it in your circle.yml:
 
-%pre
-  %code.no-highlight<>
-    :preserve
-      machine:
-        node:
-          version: 0.10.26
+!= HAML.circleyml_language_example({language: "node"})
 
 %h3 Dependencies
 

@@ -16,12 +16,7 @@
   %code= CI.Versions.default_php
   as the default. You can set a custom version of PHP in the machine section of your circle.yml:
 
-%pre
-  %code.no-highlight<>
-    :preserve
-      machine:
-        php:
-          version: 5.5.7
+!= HAML.circleyml_language_example({language: "php"})
 
 %p
   Please
