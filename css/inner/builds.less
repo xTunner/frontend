@@ -432,62 +432,12 @@
   }
 }
 // ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
-.invite-box {
-  .collaborators-container {
-    width: 100%;
-    .collaborators { 
-      display: flex;
-      align-items: center;
-      width: 450px;
-      text-align: center;
-      margin: 10px;
-      float: left;
-
-      input[type="checkbox"] {
-        margin-bottom: 10px;
-        margin-left: 8px;
-        width: 20px;
-      }
-      .profile{
-        width: 150px;
-      }
-      .gravatar {
-        border: 3px solid @gray;
-        &.active {
-          border: 3px solid @green;
         }
       }
-      .name {
-        color: @gray;      
       }
-      .active ~ .name{
-        color: @green;
-      }
-
-      .active ~ .collab-emails {
-        visibility: visible;
-      }
-      .collab-emails {
-        width: 100%;
-      }
-      input[type="email"]{ 
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        border: none;
-        box-shadow: 0 1px #cccccc inset,0 -1px #cccccc inset,1px 0 #cccccc inset,-1px 0 #cccccc inset;
-        line-height: 2em;
-        padding: 0.5em 1em;
-        border-radius: 1.5em;
-        height: 2.5em;
-        width: 100%;
-        background: transparent;
-        resize: none;
-        color: @green;
       }
     }
   }
-  .invite {
     display: block;
     width: 500px;
     .center;

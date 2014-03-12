@@ -1,21 +1,2 @@
 / ko with: invites
-.alert.alert-info.clearfix.invite-box
-  %button.close{"data-dismiss" => "alert"} &times
-  %div.center-text 
-    %h4 Congrats on your first green build! Select collaborators below to invite them to CircleCI, and never test alone!
-    %div
-      %a{"data-bind" => "click: all"} select all
-    %div
-      %a{"data-bind" => "click: none"} select none
-  %hr
-  %div.collaborators-container.clearfix{data-bind: "foreach: $root.project().users"}
-    .collaborators
-      .profile
-        %img.gravatar{"data-bind" => "attr: {src: gravatar_url(50, true)}"}
-        %div.name{data-bind: "text: login"}
-      %span.collab-emails
-        %input{"data-bind" => "value: $parent.email[login]", "type" => "email", "placeholder" => "Please input email manually"}
-      %input.email-select{type: "checkbox", "data-bind" => "checked: $parent.inviting[login], click: $parent.toggle[login]"}
-  %div.clearfix
-    %button.invite{"data-bind": "click: send"} Invite To CircleCI
 / /ko
