@@ -1,2 +1,9 @@
 / ko with: invites
+.first-green
+  .first-green-head
+  .first-green-body
+        .invite-gravatar
+        .invite-profile
+        %label.invite-select
+  .first-green-foot
 / /ko
