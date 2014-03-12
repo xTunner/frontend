@@ -535,11 +535,12 @@
     .invite-gravatar {
       box-shadow: -1px 0 @grayBoxBorder inset;
       img {
-        @invite_img_space: .5em;
-        width: @invite_img_height;
-        height: @invite_img_height;
+        @invite_img_border: 1px;
         @invite_img_height: (@invite_box_height - (@invite_box_padding * 2));
+        width : ~"calc(@{invite_img_height} - (@{invite_img_border} * 2))";
+        height: ~"calc(@{invite_img_height} - (@{invite_img_border} * 2))";
         margin: @invite_box_padding;
+        border: @invite_img_border solid @grayLightest;
         border-radius: (@invite_img_height / 2);
       }
     }
