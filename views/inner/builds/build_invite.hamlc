@@ -2,6 +2,7 @@
 .first-green
   %button{data-dismiss: "alert"} &times
   .first-green-head
+    %h4 Congrats on your first green build! Select collaborators below to invite them to CircleCI, and never test alone!
   .first-green-body
     %ul{data-bind: "foreach: $root.project().users"}
       %li
