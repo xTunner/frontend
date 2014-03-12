@@ -7,6 +7,8 @@
   and Google App Engine, hosted cloud servers (like EC2 and Rackspace),
   and to private and colo servers&mdash;even behind firewalls.
   Some use tools like Capistrano, Fabric, and Paver.
+
+%p
   However you want to deploy your code, Circle makes
   Continuous Deployment easy.
 
