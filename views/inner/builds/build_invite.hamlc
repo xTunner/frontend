@@ -13,6 +13,10 @@
           %img{data-bind: "attr: {src: gravatar_url(100)}"}
         .invite-profile
           %span{data-bind: "text: login"}
+          %input{data-bind: "value: $parent.email[login], attr: {id: login + '-email'}", type: "email", required: ""}
+          %label{data-bind: "attr: {for: login + '-email'}"}
+            %i.fa.fa-exclamation-circle
+            %span Fix Email
         %label.invite-select
   .first-green-foot
 / /ko
