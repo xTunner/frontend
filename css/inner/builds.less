@@ -462,6 +462,22 @@
         border-radius: (@invite_img_height / 2);
       }
     }
+    .invite-profile{
+      .displayFlex();
+      .flex-direction(column);
+      .justify-content(center);
+      .box-sizing(border-box);
+      min-width: 250px;
+      padding: .5em;
+    }
+    .invite-select {
+      .displayFlex();
+      .align-items(center);
+      .justify-content(center);
+      width: @invite_box_height;
+      height: @invite_box_height;
+      box-shadow: 1px 0 @grayBoxBorder inset;
+    }
   }
 }
 .first-green-foot {
