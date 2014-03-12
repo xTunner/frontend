@@ -14,7 +14,7 @@
 %p
   When Circle detects Python, we automatically initiate <code>virtualenv</code>
   to create an isolated Python environment using Python
-  = succeed '.', ->
+  != succeed '.', ->
     %code= CI.Versions.default_python
 
 %p
@@ -34,7 +34,7 @@
   %span.label.label-info Note:
   Circle will set up <code>virtualenv</code> if you specify your Python version in your <code>circle.yml</code>. This can be useful if we didn't automatically detect that you're using Python.
 
-%h3#package-mgrs-dependencies Package managers and dependencies
+%h3 Package managers and dependencies
 
 %p
   Circle automatically installs your dependencies using either <code>pip</code>

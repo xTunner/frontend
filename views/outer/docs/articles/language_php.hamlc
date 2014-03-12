@@ -23,7 +23,7 @@
   = HAML.contact_us()
   if you need a different version; we'll be happy to install it for you.
 
-%h3#composer-pear-pecl Dependencies&mdash;including composer, pear, and pecl
+%h3 Dependencies
 
 %p
   Circle has the composer, pear, and pecl package managers installed.
