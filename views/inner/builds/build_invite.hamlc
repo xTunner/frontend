@@ -10,6 +10,7 @@
     %ul{data-bind: "foreach: $root.project().users"}
       %li
         .invite-gravatar
+          %img{data-bind: "attr: {src: gravatar_url(100)}"}
         .invite-profile
         %label.invite-select
   .first-green-foot
