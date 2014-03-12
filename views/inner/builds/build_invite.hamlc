@@ -2,6 +2,8 @@
 .first-green
   .first-green-head
   .first-green-body
+    %ul{data-bind: "foreach: $root.project().users"}
+      %li
         .invite-gravatar
         .invite-profile
         %label.invite-select
