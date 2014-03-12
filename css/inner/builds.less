@@ -432,6 +432,7 @@
   }
 }
 // ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
+@invite_box_height: 5em;
 .first-green {
   width: 100%;
   > button {
@@ -450,6 +451,15 @@
         }
       }
       }
+    .invite-gravatar {
+      box-shadow: -1px 0 @grayBoxBorder inset;
+      img {
+        @invite_img_space: .5em;
+        @invite_img_height: (@invite_box_height - (@invite_img_space * 2));
+        width: @invite_img_height;
+        height: @invite_img_height;
+        margin: @invite_img_space;
+        border-radius: (@invite_img_height / 2);
       }
     }
   }
