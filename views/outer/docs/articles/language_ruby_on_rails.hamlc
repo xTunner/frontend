@@ -3,65 +3,64 @@
 - @lastUpdated = "Jun 20, 2013"
 
 %p
-  Good tests make good code.
-  Circle makes Rails testing simple and uncomplicated.
-  Circle looks at your code, determines what version of Ruby you use,
-  infers your test configuration, runs your tests, and handles testing database
-  requirements.
-  To complete the process, we can&mdash;if you tell us where&mdash;deploy
-  your code once your build is green.
-
-%p
-  CircleCI makes Rails testing simple and uncomplicated.
-  CircleCI looks at your code, infers your build environment, and runs your tests.
+  CircleCI makes Rails testing simple. During each build, Circle looks at your code,
+  infers your build environment, and runs your tests.
   The majority of the time, this just works&mdash;and works well.
   Of course, it helps if your project adheres to standard practices
   (i.e., "convention over configuration") for standard Ruby testing frameworks.
 
-%h2 Version
+%p
+  You can
+  %a{href: "/docs/configuration"}
+    add any custom configuration
+  or set up deployment from a
+  %a{href: "/docs/config-sample"}
+    circle.yml file
+  checked into your repo's root directory.
+
+%h3 Version
 
 %p
   We use
   %a{href: "https://rvm.io/" } RVM
   to provide access to a wide variety of
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/environment#languages"} Ruby versions
-  CircleCI has a number of Ruby- and Rails-related tools and frameworks
-  pre-installed so that you can use them directly if needed.
-  These include:
 
-%ul
-  %li
-    Bundler
-
-  %li
-    Cucumber
-
-  %li
-    RSpec
-
-  %li
-    Rake
+  The default version of Ruby is either
+  = CI.Versions.default_ruby
+  or
+  = succeed ',', ->
+    = CI.Versions.old_ruby
+  whichever we think is best for your project.
 
 %p
-  These tools and frameworks are available globally without any need for special
-  configuration.
+  You can manually set your Ruby version from your <code>circle.yml</code>:
+
+!= HAML.circleyml_language_example({language: "ruby"})
 
 %p
   Our
-    %a{href: "/docs/environment"} test environment
+    %a{href: "/docs/environment"} test environment doc
   covers more details about language versions and tools; it also explains how Circle
   works with testing tools that require a browser.
 
-%h2 Dependencies
+%h3 Dependencies
 
 %p
-  If Circle detects a Gemfile, we automatically run <code>bundle install</code>.
-  You can specify other project dependencies by including a
-  %a{href: "/docs/configuration"} circle.yml
-  file in your repo.
+  If Circle detects a Gemfile, we automatically run <code>bundle install</code>. Your
+  gems are automatically cached between builds to save time downloading dependencies.
+  You can add additional project dependencies from the
+  <a href="/docs/configuration#dependencies">dependencies section of your circle.yml</a>:
 
-%h2 Databases
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        post:
+          - bundle exec rake assets:precompile
+
+%h3 Databases
 
 %p
   Circle manages all your database requirements,
@@ -71,63 +70,48 @@
   = succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
   including PostgreSQL, MySQL, and MongoDB.
-  If needed, you have the option of
-    %a{href: "/docs/manually#dependencies"} manually setting up your test database
-  or including commands in your <code>circle.yml</code> file to override
-  the order that database-related processes occur.
+  You can add custom database commands from the
+  <a href="/docs/configuration#database">database section of your circle.yml</a>.
 
-%h2 Testing
+%h3 Testing
 
 %p
-  Circle runs all tests automatically, working in tandem with
-  Ruby on Rails built-in testing functionality and following any
-  custom testing specifications in your <code>circle.yml</code> file.
+  Circle will automatically infer your test commands if you're
+  using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha.
 
-%h2 Testing in Parallel
+  You can also add additional commands from the <a href="/docs/configuration#test">test section of your circle.yml</a>:
 
-%p
-  Should you need faster testing, you can run your tests in parallel.
-  You set up parallelism on your project's
-  <b>Edit settings > Build speed</b> page of the Circle UI.
-  Circle automatically sets up for RSpec, Cucumber, and Test::Unit.
+  %pre
+    %code.no-highlight<>
+      :preserve
+        test:
+          post:
+            - bundle exec rake test:custom
 
-%p
-  For more specifics, you can look at our
-    %a{href: "/docs/environment"} Test environment
-  documentation, which includes a complete listing of all the versions of Ruby
-  that we support as well as a brief description of how CircleCI selects the
-  default version of Ruby.
-  The document also describes how CircleCI makes it easy to use testing tools that require a browser.
+%h3 Testing in Parallel
 
 %p
-  As we mentioned, CircleCI automatically infers your settings from your code.
-  This works fine in most cases for our Ruby on Rails customers.
-  When it doesn't (your web app has a special dependency, for example),
-  all that you need to do is add a <code>circle.yml</code> file.
-  You can find all the information that you need to create that file in our
-  %a{href: "/docs/configuration"} Configuring CircleCI
-  document.
+  Should you need faster testing, Circle can automatically split your
+  tests and run them in parallel across multiple machines.
+  You can enable parallelism on your project's <b>Edit settings > Parallelism</b>
+  page in the Circle UI.
 
 %p
-  Should you need to run your tests in parallel, you can choose a plan and
-  set up parallelism for your project on the <b>Edit settings > Build Speed</b> page.
-  CircleCI automatically sets up for RSpec, Cucumber, and Test::Unit.
-  If you've overridden the test command or have other custom requirements,
-  you can
-  = succeed '.', ->
-    %a{href: "/docs/parallel-manual-setup"} manually set up parallelism
+  Circle can automatically split tests for RSpec, Cucumber, and Test::Unit.
+  For other testing libraries, we have instructions for <a href="/docs/parallel-manual-setup">manually setting up parallelism</a>.
 
-%h2 Deployment
+%h3 Deployment
 
 %p
-  Circle offers first-class support for
-  = succeed '.', ->
-    %a{href: "/docs/configuration#deployment"} deployment
-  When a build is green, Circle will deploy your Ruby on Rails project as directed
-  in your <code>circle.yml</code> file.
+  Circle offers first-class support for deployment to your staging and production environments.
+  When your build is green, Circle will run the commands from the <a href="/docs/configuration#deployment">deployment section of your circle.yml</a>.
+
+%p
+  You can find more detailed instructions in the <a href="/docs/introduction-to-continuous-deployment">Continuous Deployment doc</a>.
 
 
-%h2#troubleshooting Troubleshooting for Ruby on Rails
+
+%h3 Troubleshooting for Ruby on Rails
 
 %p
   Our
