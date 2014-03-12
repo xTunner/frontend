@@ -777,7 +777,7 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
     # Prepopulate the list of team members to invite with the ones
     # whose email addresses we already know.
     for user in users
-      @inviting[user.login] = @observable !!user.email()
+      @inviting[user.login] = @observable !!user.email.peek()
 
   send: () =>
     to_invite = user for user in @users when @inviting[user.login]() and user.email()
