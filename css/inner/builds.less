@@ -433,6 +433,8 @@
 }
 // ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
 @invite_box_height: 5em;
+@invite_box_bkg: @whiten;
+@invite_label_bkg: @invite_box_bkg;
 .first-green {
   width: 100%;
   > button {
@@ -448,9 +450,84 @@
 .first-green-head {
   text-align: center;
 }
+.first-green-body {
+  .clearfix();
+  li {
+    .displayFlex();
+    .outlineInside(@grayBoxBorder);
+    background: @whiten;
+    float: left;
+    margin: 0 1em 1em 0;
+    > label {
+      margin: 0;
+    }
+    input {
+      margin: 0;
+      display: block;
+      border: none;
+      padding: 0;
+      &[type="email"] {
+        width: auto;
+        background: none;
+        border-radius: 1em;
+        box-shadow: none;
+        transition: .3s;
+        &:valid {
+          + label {
+            opacity: 0;
+            pointer-events: none;
+          }
+          &:focus {
+            color: @grayLight;
+          }
+          &:not(:focus) {
+            cursor: default;
+          }
+        }
+        &:focus {
+          .outlineInside(@grayBoxBorder);
+          padding-left: 1ex;
+          &:valid {
+            .outlineInside(@blueLight);
+            padding-left: 1ex;
+            color: @blueLight;
+          }
+          &:invalid {
+            .outlineInside(@redLight);
+            padding-left: 1ex;
+            color: @redLight;
+          }
+          + label {
+            opacity: 0;
+            padding-left: 1ex;
+          }
+        }
+        + label {
+          margin: (-@baseLineHeight) 0 0;
+          transition: .3s;
+          opacity: 1;
+          background: @invite_label_bkg;
+          box-shadow: -2px 0 @invite_label_bkg;
+          i {
+            color: @redLight;
+          }
         }
       }
+      &[type="checkbox"] {
+        visibility: hidden;
+        &:before {
+          content: "\f096";
+          font-family: FontAwesome;
+          visibility: visible;
+        }
+        &:checked {
+          &:before {
+            content: "\f046";
+            color: @green;
+          }
+        }
       }
+    }
     .invite-gravatar {
       box-shadow: -1px 0 @grayBoxBorder inset;
       img {
