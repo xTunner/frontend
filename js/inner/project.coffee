@@ -505,13 +505,13 @@ CI.inner.Project = class Project extends CI.inner.Obj
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
 
-  invite_team_member: (login, email) =>
+  invite_team_members: (users) =>
+    to_invite = {}
+    to_invite[user.login] = user.email() for user in users
     $.ajax
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/users/invite"
-      data: JSON.stringify
-        login: login
-        email: email
+      data: JSON.stringify to_invite
 
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>

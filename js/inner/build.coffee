@@ -783,6 +783,7 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
       @inviting[user.login] = @observable !!user.email()
 
   send: () =>
-    for user of @users when inviting[user.login] and user.email()
-      VM.project().invite_team_member user.login, user.email()
+    to_invite = user for user in @users when @inviting[user.login]() and user.email()
+    if to_invite.length > 0
+      VM.project().invite_team_members to_invite
 
