@@ -433,6 +433,7 @@
 }
 // ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
 @invite_box_height: 5em;
+@invite_box_padding: 1em;
 @invite_box_bkg: @whiten;
 @invite_label_bkg: @invite_box_bkg;
 .first-green {
@@ -535,10 +536,10 @@
       box-shadow: -1px 0 @grayBoxBorder inset;
       img {
         @invite_img_space: .5em;
-        @invite_img_height: (@invite_box_height - (@invite_img_space * 2));
         width: @invite_img_height;
         height: @invite_img_height;
-        margin: @invite_img_space;
+        @invite_img_height: (@invite_box_height - (@invite_box_padding * 2));
+        margin: @invite_box_padding;
         border-radius: (@invite_img_height / 2);
       }
     }
@@ -548,7 +549,7 @@
       .justify-content(center);
       .box-sizing(border-box);
       min-width: 250px;
-      padding: .5em;
+      padding: @invite_box_padding;
     }
     .invite-select {
       .displayFlex();
