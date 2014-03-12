@@ -1,5 +1,5 @@
 - @title = "Introduction to Continuous Deployment"
-- @lastUpdated = "Jun 18, 2013"
+- @lastUpdated = "March 12, 2014"
 
 %p
   Circle enables you to automatically deploy after green builds.

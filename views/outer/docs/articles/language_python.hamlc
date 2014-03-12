@@ -1,6 +1,6 @@
 - @title = 'Continuous Integration and Continuous Deployment with Python'
 - @short_title = 'Python'
-- @lastUpdated = "Jun 19, 2013"
+- @lastUpdated = "March 12, 2014"
 
 %p
   CircleCI works very well for Python projects.

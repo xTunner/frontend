@@ -1,6 +1,6 @@
 - @title = 'Continuous Integration and Continuous Deployment with Node.js'
 - @short_title = 'Node.js'
-- @lastUpdated = "Jun 19, 2013"
+- @lastUpdated = "March 12, 2014"
 
 %p
   Circle has great support for Node.js applications.
