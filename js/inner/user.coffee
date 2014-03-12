@@ -25,6 +25,7 @@ CI.inner.User = class User extends CI.inner.Obj
     github_oauth_scopes: []
     repo_filter: ""
     email: null
+    id: null
 
   constructor: (json) ->
     super json,
@@ -71,8 +72,8 @@ CI.inner.User = class User extends CI.inner.Obj
       @komp =>
         if @gravatar_id() and @gravatar_id() isnt ""
           url = "https://secure.gravatar.com/avatar/#{@gravatar_id()}?s=#{size}"
-          if @login
-            hash = CryptoJS.MD5(@login.toString()).toString()
+          if @id()
+            hash = CryptoJS.MD5(@id().toString()).toString()
             d = URI.encode("https://identicons.github.com/#{hash}.png")
             url += "&d=#{d}"
           url
