@@ -440,7 +440,9 @@
 @invite_container_width: (2 * @invite_box_width) + @invite_box_padding;
 @invite_label_bkg: @invite_box_bkg;
 .first-green {
-  width: 100%;
+  // width: 100%;
+  width: @invite_container_width;
+  margin: 0 auto;
   > button {
     border: none;
     float: right;
@@ -454,8 +456,8 @@
 .first-green-head {
   // text-align: center;
   .displayFlex();
-  width: @invite_container_width;
-  margin: 0 auto;
+  // width: @invite_container_width;
+  // margin: 0 auto;
   .head-left {
     width : (5 * @invite_box_height);
     height: (3 * @invite_box_height);
@@ -478,8 +480,6 @@
   }
 }
 .first-green-body {
-  width: @invite_container_width;
-  margin: 0 auto;
   ul {
     .clearfix();
     margin: 0;
@@ -595,10 +595,10 @@
 }
 .first-green-foot {
   button {
-    display: block;
-    width: 500px;
-    .center;
-    .circleButton(@blue, @blueDark)
+    // display: block;
+    // width: 500px;
+    // .center;
+    .circleButton(@grayLightest, @green)
   }
 }
 
