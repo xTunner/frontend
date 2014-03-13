@@ -432,9 +432,12 @@
   }
 }
 // ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
-@invite_box_height: 5em;
 @invite_box_padding: 1em;
+@invite_box_height: 5em;
+@invite_box_inner_width: 18em;
+@invite_box_width: (2 * @invite_box_height) + @invite_box_inner_width;
 @invite_box_bkg: @whiten;
+@invite_container_width: (2 * @invite_box_width) + @invite_box_padding;
 @invite_label_bkg: @invite_box_bkg;
 .first-green {
   width: 100%;
@@ -449,9 +452,34 @@
   }
 }
 .first-green-head {
-  text-align: center;
+  // text-align: center;
+  .displayFlex();
+  width: @invite_container_width;
+  margin: 0 auto;
+  .head-left {
+    width : (5 * @invite_box_height);
+    height: (3 * @invite_box_height);
+  }
+  .first-green {
+    .turn {
+      fill: @green;
+    }
+    .circle {
+      fill: none;
+    }
+    .check {
+      fill: @green;
+    }
+  }
+  .head-right {
+    .displayFlex();
+    .flex-direction(column);
+    .justify-content(center);
+  }
 }
 .first-green-body {
+  width: @invite_container_width;
+  margin: 0 auto;
   ul {
     .clearfix();
     margin: 0;
@@ -461,7 +489,10 @@
     .outlineInside(@grayBoxBorder);
     background: @whiten;
     float: left;
-    margin: 0 1em 1em 0;
+    margin-bottom: 1em;
+    &:nth-child(2n + 1) {
+      margin-right: 1em;
+    }
     > label {
       margin: 0;
     }
@@ -549,7 +580,7 @@
       .flex-direction(column);
       .justify-content(center);
       .box-sizing(border-box);
-      min-width: 250px;
+      width: @invite_box_inner_width;
       padding: @invite_box_padding;
     }
     .invite-select {
