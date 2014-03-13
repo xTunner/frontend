@@ -31,9 +31,6 @@ CI.inner.User = class User extends CI.inner.Obj
     super json,
       login: ""
 
-    if @all_emails()
-      @email @all_emails()[0]
-
     @environment = window.renderContext.env
 
     @showEnvironment = @komp =>
