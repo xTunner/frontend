@@ -27,5 +27,7 @@
           %input{type: "checkbox", data-bind: "checked: $parent.inviting[login]"}
 
   .first-green-foot
-    %button{data-bind: "click: send"} Invite To CircleCI
+    %button{data-bind: "click: send"}
+      %span Send Invites
+      %i.fa.fa-envelope-o
 / /ko

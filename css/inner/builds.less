@@ -594,11 +594,22 @@
   }
 }
 .first-green-foot {
+  margin-bottom: @invite_box_height;
   button {
-    // display: block;
-    // width: 500px;
-    // .center;
-    .circleButton(@grayLightest, @green)
+    .circleButton(@grayLightest, @green);
+    font-size: 1.5em;
+    display: block;
+    margin: 1em auto;
+    &:hover {
+      i {
+        .translate(.3em, 0);
+        transition: .1s;
+      }
+    }
+  }
+  i {
+    font-size: .8em;
+    transition: .2s;
   }
 }
 
