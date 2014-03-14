@@ -1,6 +1,6 @@
 / ko with: invites
 .first-green
-  %button{data-dismiss: "alert"} &times
+  %button{data-bind: "click: close"} &times
   .first-green-head
     .head-left
       != HAML.first_green({})

@@ -366,8 +366,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @invites = @komp =>
       if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
-        new CI.inner.BuildInvite VM.project().users(), () =>
-          $(".first-green").addClass("animation-fadeout")
+        new CI.inner.BuildInvite VM.project().users(), (sent) =>
+          node = $ ".first-green"
+          node.addClass "animation-fadeout"
+          if sent
+            node.addClass "success"
           window.setTimeout (() => @invite_sent(true)), 2000
 
   feature_enabled: (feature_name) =>
@@ -768,7 +771,7 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
     for user in @users
       @inviting[user.login] false
 
-  constructor: (@users, @sent, json={}) ->
+  constructor: (@users, @callback, json={}) ->
     super json
     @inviting = {}
     # Prepopulate the list of team members to invite with the ones
@@ -780,5 +783,8 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
     to_invite = (user for user in @users when @inviting[user.login]() and user.email())
     if to_invite.length > 0
       VM.project().invite_team_members to_invite
-    @sent()
+    @callback(true)
+
+  close: () =>
+    @callback(false)
 
