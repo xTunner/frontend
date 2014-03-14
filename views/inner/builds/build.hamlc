@@ -14,9 +14,6 @@
 
       .row-fluid
         .offset1.span10
-          / ko if: invites
-          != HAML.build_invite()
-          / /ko
           %div{data-bind: "if: messages().length"}
             != HAML['messages']()
           %div{data-bind: "ifnot: messages().length"}
@@ -38,6 +35,9 @@
                 to add
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
+          / ko if: invites
+          != HAML.build_invite()
+          / /ko
 
       / ko if: feature_enabled("build_GH1157_container_oriented_ui") && containers().length > 1
       %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 0}"}
