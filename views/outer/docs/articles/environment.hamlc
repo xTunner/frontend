@@ -146,7 +146,7 @@
   %a{ href: "/docs/configuration#ruby-version" }
   choose the exact version you need directly, from the following list:
   %ul
-    - for r in @v.rubies
+    - for r in @v.ruby_versions
       %li
         %code= r
 
@@ -188,7 +188,7 @@
   Currently we have
 
 %ul
-  - for n in @v.nodes
+  - for n in @v.node_versions
     %li
       %code= n
 
@@ -216,11 +216,11 @@
   Supported versions are:
   .row
     - cols = 4
-    - per_col = (Math.ceil(@v.pythons.length / 4.0))
+    - per_col = (Math.ceil(@v.python_versions.length / 4.0))
     - for i in [0..cols]
       .span2
         %ul
-          - for v in @v.pythons[(i*per_col)...((i+1)*per_col)]
+          - for v in @v.python_versions[(i*per_col)...((i+1)*per_col)]
             %li
               %code
                 = v
@@ -246,7 +246,7 @@
 
 %p
   Supported versions are:
-  - php_versions = @v.phps
+  - php_versions = @v.php_versions
   .row
     - cols = 4
     - per_col = (Math.ceil(php_versions.length / 4.0))
@@ -303,7 +303,7 @@
 
 We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
   %ul
-    - for s in @v.scalas
+    - for s in @v.scala_versions
       %li
         %code= s
 

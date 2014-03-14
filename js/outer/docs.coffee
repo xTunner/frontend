@@ -56,7 +56,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     for slug of HAML
       try
         # extract the metadata, which is actually in the file, writing into the context
-        context = {}
+        context = {include_article: => }
         node = $(window.HAML[slug](context))
         if context.title
           @articles[slug] = @article_info(slug, node, context)
@@ -115,9 +115,16 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     result =
       categories: @sorted_categories
       articles: @articles
-      children: @children
       slug: @filename cx
       article: @articles[@filename cx]
+
+    include_article = (name) =>
+      new_cx = $.extend {}, result, {article: @articles[name]}
+      HAML[name](new_cx)
+
+    $.extend {}, result, {include_article: include_article}
+
+
 
   title: (cx) =>
     try
