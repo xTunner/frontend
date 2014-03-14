@@ -27,7 +27,6 @@ CI.inner.User = class User extends CI.inner.Obj
     email: null
     id: null
     following: false
-    registered: false
 
   constructor: (json) ->
     super json,
