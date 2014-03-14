@@ -147,8 +147,8 @@
 %h3#xdebug Enable Xdebug
 
 %p
-  Xdebug is installed for all versions of PHP, but is disabled by default.
-  It is simple to reactivate this tool by adding the following to your
+  Xdebug is installed for all versions of PHP, but is disabled (for performance reasons) by
+  default. It is simple to enable this tool by adding the following to your
   <code>circle.yml</code> file:
 
 %pre

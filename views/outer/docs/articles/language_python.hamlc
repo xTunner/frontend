@@ -3,7 +3,7 @@
 - @lastUpdated = "March 12, 2014"
 
 %p
-  CircleCI works very well for Python projects.
+  CircleCI works well for Python projects.
   We run automatic inference on each build to determine your dependencies and test commands.
   If we don't infer all of your settings, you can also add custom configuration to a
   %a{href: "/docs/configuration"} circle.yml
