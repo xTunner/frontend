@@ -367,7 +367,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @invites = @komp =>
       if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
         new CI.inner.BuildInvite VM.project().users(), () =>
-          @invite_sent(true)
+          $(".first-green").addClass("animation-fadeout")
+          window.setTimeout (() => @invite_sent(true)), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -407,7 +408,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       estimate_is_not_too_low = current_build_millis < estimated_millis * 1.5
       estimate_is_positive = estimated_millis > 0
 
-      return estimate_is_positive and estimate_is_not_too_low
+      return estimate_is_positive and esXbtimate_is_not_too_low
 
     if @previous_successful_build()?
       estimated_millis = @previous_successful_build().build_time_millis
