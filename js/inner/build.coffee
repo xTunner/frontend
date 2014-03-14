@@ -40,6 +40,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     rest_commits_visible: false
     node: []
     feature_flags: {}
+    invite_sent: false
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -364,8 +365,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @current_container(@containers()[0])
 
     @invites = @komp =>
-      if not @previous_successful_build() and @outcome() == "success" and VM.project()
-        new CI.inner.BuildInvite VM.project().users()
+      if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
+        new CI.inner.BuildInvite VM.project().users(), () =>
+          @invite_sent(true)
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -765,9 +767,8 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
     for user in @users
       @inviting[user.login] false
 
-  constructor: (users, json={}) ->
+  constructor: (@users, @sent, json={}) ->
     super json
-    @users = users
     @inviting = {}
     # Prepopulate the list of team members to invite with the ones
     # whose email addresses we already know.
@@ -778,4 +779,5 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
     to_invite = (user for user in @users when @inviting[user.login]() and user.email())
     if to_invite.length > 0
       VM.project().invite_team_members to_invite
+    @sent()
 
