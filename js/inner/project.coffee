@@ -229,6 +229,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
+    @get_users()
+
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?

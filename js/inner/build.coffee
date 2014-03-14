@@ -115,10 +115,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
         else
           false
 
-    @load_users_first_green = @komp =>
-      if !@previous_successful_build() and @outcome() == 'success'
-        VM.project()?.get_users()
-          
     @style =
       "label-important": @important_style
       "label-warning": @warning_style
