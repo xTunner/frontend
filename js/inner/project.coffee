@@ -502,11 +502,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
         true
     false
 
-  invite_user: (user) =>
-    $.ajax
-      type: "POST"
-      url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
-
   invite_team_members: (users) =>
     to_invite = for user in users
       login: user.login

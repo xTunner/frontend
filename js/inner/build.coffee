@@ -428,7 +428,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
         build_num: @build_num
     event.stopPropagation()
 
-
   visit: () =>
     SammyApp.setLocation @url()
 
