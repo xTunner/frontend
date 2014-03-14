@@ -8,12 +8,12 @@
       %h2 Congratulations!
       %p You just got your first green build! The only thing better than that is helping your colleagues get their first green builds. Try inviting some of your collaborators below and never test alone again!
 
-  / ko if: $root.project().loading_users
-  .loading-spinner
-    != HAML.spinner({})
-  / /ko
-  / ko ifnot: $root.project().loading_users
   .first-green-body
+    / ko if: $root.project().loading_users
+    .loading-spinner
+      != HAML.spinner({})
+    / /ko
+    / ko ifnot: $root.project().loading_users
     %a{data-bind:"click: all", role: "button"} all
     %span /
     %a{data-bind:"click: none", role: "button"} none
@@ -31,9 +31,11 @@
         %label.invite-select
           %input{type: "checkbox", data-bind: "checked: $parent.inviting[login]"}
       / /ko
+    / /ko
   .first-green-foot
+    / ko ifnot: $root.project().loading_users
     %button{data-bind: "click: send"}
       %span Send Invites
       %i.fa.fa-envelope-o
-  / /ko
+    / /ko
 / /ko
