@@ -20,7 +20,7 @@
 
 %p
   Please
-  = HAML.contact_us()
+  != HAML.contact_us()
   if you need a different version; we'll be happy to install it for you.
 
 %h3 Dependencies
@@ -79,11 +79,11 @@
 
 %p
   We have pre-installed more than a dozen
-  = succeed ',', ->
+  != succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
   including PostgreSQL and MySQL.
   If needed, you have the option of
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/manually#dependencies"} manually setting up your test database
 
 %h3#php-apache Using the Apache Webserver
@@ -164,7 +164,7 @@
 
 %p
   Circle offers first-class support for
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/configuration#deployment"} deployment
   When a build is green, Circle will deploy your project as directed
   in your <code>circle.yml</code> file.
@@ -179,9 +179,9 @@
     PHP troubleshooting
   write-ups about these issues:
 
-= @include_article('troubleshooting_php')
+!= @include_article('troubleshooting_php')
 
 %p
   If you are still having trouble, please
-  = HAML.contact_us()
+  != HAML.contact_us()
   and we will be happy to help.

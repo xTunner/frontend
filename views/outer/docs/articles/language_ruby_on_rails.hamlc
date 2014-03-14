@@ -67,7 +67,7 @@
   such as running your <code>rake</code> commands for creating, loading,
   and migrating your database.
   We have pre-installed more than a dozen
-  = succeed ',', ->
+  != succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
   including PostgreSQL, MySQL, and MongoDB.
   You can add custom database commands from the
@@ -119,7 +119,7 @@
     Ruby troubleshooting
   documentation has information about the following issues and problems:
 
-= @include_article('troubleshooting_ruby')
+!= @include_article('troubleshooting_ruby')
 
 %p
   If you are still having trouble, please

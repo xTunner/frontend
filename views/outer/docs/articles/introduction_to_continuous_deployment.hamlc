@@ -20,9 +20,9 @@
   %a{href: '/docs/configuration'}
     circle.yml
   file.
-  Within this section, you can can define custom deployment for each
+  Within this section, you can can define custom deployment steps for each
   branch, directing Circle to use specific deployment tools or custom scripts.
-  Deployment-related commands are triggered only after a successful build.
+  Deployment commands are triggered only after a successful build.
 
 
 %p
@@ -57,7 +57,7 @@
   You can list commands or include bash scripts for SSH deployment in the
   <code>circle.yml</code> file.
   You can also use tools such as Capistrano or Fabric when deploying to
-  private servers as well as to EC2, Rackspace, and other cloud hosting providers.
+  private servers or to EC2, Rackspace, and other cloud hosting providers.
 
 %p
   You can use your existing Capistrano recipes, for example:
@@ -90,13 +90,12 @@
     deployment to Heroku
   and <a href='/docs/deploy-google-app-engine'>deployment to Google App Engine</a>.
   If you'd like help setting up your deployment, please
-  != succeed ".", ->
-    = HAML['contact_us']()
+  != HAML['contact_us']({succeed: '.'})
 
 %h3 Firewalls, webhooks, and Circle's Public IP address ranges
 
 %p
-  You may need our IP range our AWS account information if you want to deploy to a firewalled server.
+  You may need our IP range or AWS security group information if you want to deploy to a firewalled server.
 
 %p
   Circle is hosted in EC2's US East region, so our Amazon
@@ -114,5 +113,5 @@
   Use the IP address ranges and security group number as needed to configure
   a physical or in-the-cloud server under your control.
   If you run into any problems,
-  = HAML['contact_us']()
+  != HAML['contact_us']()
   and we'll be happy to help.

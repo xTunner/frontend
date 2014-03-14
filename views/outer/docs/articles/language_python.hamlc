@@ -12,7 +12,7 @@
 %h3 Version
 
 %p
-  When Circle detects Python, we automatically initiate <code>virtualenv</code>
+  When Circle detects Python, we automatically use <code>virtualenv</code>
   to create an isolated Python environment using Python
   != succeed '.', ->
     %code= CI.Versions.default_python
@@ -27,7 +27,7 @@
 
 %p
   Please
-  = HAML.contact_us()
+  != HAML.contact_us()
   if other versions of Python would be of use to you.
 
 %p
@@ -44,7 +44,7 @@
 %p
   You can also
   %a{href: "/docs/configuration#dependencies"} add custom dependencies commands
-  from your <code>circle.yml</code>:
+  from your <code>circle.yml</code>, for example:
 
 %pre
   %code.no-highlight<>
@@ -57,7 +57,7 @@
 
 %p
   Circle has pre-installed more than a dozen
-  = succeed ',', ->
+  != succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
   including PostgreSQL and MySQL.
   If needed, you can
@@ -110,9 +110,9 @@
     Python troubleshooting
   information:
 
-= @include_article('troubleshooting_python')
+!= @include_article('troubleshooting_python')
 
 %p
   If you are still having trouble, please
-  = HAML.contact_us()
+  != HAML.contact_us()
   and we will be happy to help.

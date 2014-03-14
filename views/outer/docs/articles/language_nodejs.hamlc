@@ -47,7 +47,7 @@
 
 %p
   We have pre-installed more than a dozen
-  = succeed ',', ->
+  != succeed ',', ->
     %a{href: "/docs/environment#databases"} databases and queues
   including PostgreSQL and MySQL. 
   If needed, you can
@@ -80,7 +80,7 @@
 
 %p
   Circle offers first-class support for
-  = succeed '.', ->
+  != succeed '.', ->
     %a{href: "/docs/configuration#deployment"} deployment
   When a build is green, Circle will deploy your project as directed
   in your <code>circle.yml</code> file.
@@ -89,5 +89,5 @@
 
 %p
   If you have any trouble, please
-  = HAML.contact_us()
+  != HAML.contact_us()
   and we will be happy to help.
