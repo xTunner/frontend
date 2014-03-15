@@ -1,14 +1,14 @@
 / ko with: invites
 .first-green
   %button{data-bind: "click: close"} &times
-  .first-green-head
+  %header
     .head-left
       != HAML.first_green({})
     .head-right
       %h2 Congratulations!
       %p You just got your first green build! The only thing better than that is helping your colleagues get their first green builds. Try inviting some of your collaborators below and never test alone again!
 
-  .first-green-body
+  %section
     / ko if: $root.project().loading_users
     .loading-spinner
       != HAML.spinner({})
@@ -32,7 +32,7 @@
           %input{type: "checkbox", data-bind: "checked: $parent.inviting[login]"}
       / /ko
     / /ko
-  .first-green-foot
+  %footer
     / ko ifnot: $root.project().loading_users
     %button{data-bind: "click: send"}
       %span Send Invites
