@@ -452,18 +452,24 @@
   transition: 1s;
   height: @all_height;
   overflow: hidden;
+  position: relative;
   &.animation-fadeout-collapse {
     opacity: 0;
     height: 0;
   }
   > button {
+    position: absolute;
+    top: 0;
+    right: 0;
     border: none;
-    float: right;
-    font-size: 20px;
-    font-weight: bold;
-    opacity: 0.2;
+    opacity: 0.13;
     outline: none;
     background: none;
+    transition: .4s;
+    &:hover {
+      opacity: .34;
+      transition: .2s;
+    }
   }
   header {
     .displayFlex();
