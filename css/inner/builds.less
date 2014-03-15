@@ -438,11 +438,22 @@
 @invite_box_width: (2 * @invite_box_height) + @invite_box_inner_width;
 @invite_box_bkg: @whiten;
 @invite_container_width: (2 * @invite_box_width) + @invite_box_padding;
-@invite_label_bkg: @invite_box_bkg;
+@invite_container_holds: 6.5;
+@invite_container_height: (@invite_box_height * @invite_container_holds) + ((@invite_container_holds - 1) * @invite_box_padding);
+@invite_head_height: (3 * @invite_box_height);
+@invite_foot_height: @invite_head_height;
+@first_green_height: @invite_container_height + @invite_head_height + @invite_foot_height;
 .first-green {
-  // width: 100%;
   width: @invite_container_width;
   margin: 0 auto;
+  opacity: 1;
+  transition: 1s;
+  height: @first_green_height;
+  overflow: hidden;
+  &.animation-fadeout-collapse {
+    opacity: 0;
+    height: 0;
+  }
   > button {
     border: none;
     float: right;
@@ -454,13 +465,10 @@
   }
 }
 .first-green-head {
-  // text-align: center;
   .displayFlex();
-  // width: @invite_container_width;
-  // margin: 0 auto;
   .head-left {
     width : (5 * @invite_box_height);
-    height: (3 * @invite_box_height);
+    height: @invite_head_height;
   }
   .first-green-icon {
     .turn {
@@ -480,9 +488,27 @@
   }
 }
 .first-green-body {
+  position: relative;
   ul {
+
     .clearfix();
     margin: 0;
+    max-height: @invite_container_height;
+    overflow-y: auto;
+    margin-right: -15px; // pushes scroll bar out of container
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      .radiGradient(fade(@black, 21) fade(@black, 0));
+      background-size: 100% 200%;
+      background-position: top center;
+      background-repeat: no-repeat;
+    }
   }
   li {
     .displayFlex();
@@ -541,8 +567,8 @@
           margin: (-@baseLineHeight) 0 0;
           transition: .3s;
           opacity: 1;
-          background: @invite_label_bkg;
-          box-shadow: -2px 0 @invite_label_bkg;
+          background: @invite_box_bkg;
+          box-shadow: -2px 0 @invite_box_bkg;
           i {
             color: @redLight;
           }
@@ -594,12 +620,14 @@
   }
 }
 .first-green-foot {
-  margin-bottom: @invite_box_height;
+  .displayFlex();
+  .align-items(center);
+  .justify-content(center);
+  height: @invite_foot_height;
   button {
     .circleButton(@grayLightest, @green);
-    font-size: 1.5em;
+    font-size: 1.2em;
     display: block;
-    margin: 1em auto;
     &:hover {
       i {
         .translate(.3em, 0);

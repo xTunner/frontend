@@ -368,7 +368,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
         new CI.inner.BuildInvite VM.project().users(), (sent) =>
           node = $ ".first-green"
-          node.addClass "animation-fadeout"
+          node.addClass "animation-fadeout-collapse"
           if sent
             node.addClass "success"
           window.setTimeout (() => @invite_sent(true)), 2000
