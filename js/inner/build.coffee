@@ -783,8 +783,8 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
     to_invite = (user for user in @users when @inviting[user.login]() and user.email())
     if to_invite.length > 0
       VM.project().invite_team_members to_invite
-    @callback(true)
+    @callback true
 
   close: () =>
-    @callback(false)
+    @callback false
 
