@@ -229,6 +229,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
+    @not_followers = @komp =>
+      return (user for user in @users() when not user.following())
+
     @get_users()
 
 

@@ -21,8 +21,7 @@
     %a{data-bind:"click: all", role: "button"} all
     %span /
     %a{data-bind:"click: none", role: "button"} none
-    %ul{data-bind: "foreach: $root.project().users"}
-      / ko ifnot: following
+    %ul{data-bind: "foreach: $root.project().not_followers"}
       %li
         .invite-gravatar
           %img{data-bind: "attr: {src: gravatar_url(100)}"}
@@ -34,7 +33,6 @@
             %span Fix Email
         %label.invite-select
           %input{type: "checkbox", data-bind: "checked: $parent.inviting[login]"}
-      / /ko
   %footer
     / ko ifnot: $root.project().loading_users
     %button{data-bind: "click: send"}
