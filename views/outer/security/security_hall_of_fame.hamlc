@@ -10,10 +10,14 @@
 
     %ul
       %li
-        <a href="https://www.facebook.com/junior.ns1de">Rodolfo Godalle, Jr.</a> (2014-03-15)
+        %a{:href => "https://www.facebook.com/junior.ns1de"}
+          Rodolfo Godalle, Jr.
+        (2014-03-15)
 
       %li
-        <a href="https://twitter.com/Silent_Screamr">Jayvardhan Singh</a> (2014-02-03)
+        %a{:href => "https://twitter.com/Silent_Screamr"}
+          Jayvardhan Singh
+        (2014-02-03)
 
     %p
       To be included on this list, <a
