@@ -25,7 +25,7 @@
         Your build will start when some of these builds finish and free up containers:
       %h5{data-bind: "ifnot: usage_queued"}
         Your build was queued behind these builds:
-      != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
+      != HAML.recent_builds_table({builds: "usage_queue_why", mention_project: true})
     %div{data-bind: "with: $root.project"}
       %div{data-bind: "if: billing.existing_plan_loaded"}
         If your builds spend a lot of time waiting for other builds to finish, you can

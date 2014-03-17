@@ -33,4 +33,3 @@
         %td
           %span{data-bind: "click: $root.current_user().delete_token"}
             %a.revoke-token{href: '#', title: 'Revoke this token'} <i class="fa fa-times-circle"></i> revoke
-    .shadowX
