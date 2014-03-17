@@ -61,7 +61,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
-    # @security = new CI.outer.Page("security", "Security", "View Security")
+    @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
 
     @sticky_help_is_open = ko.observable(false)
 
@@ -442,7 +442,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
-  # @get "^/security.*", (cx) => VM.security.display(cx)
+  @get "^/security", (cx) => VM.security.display(cx)
 
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
