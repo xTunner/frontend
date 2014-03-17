@@ -366,7 +366,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @invites = @komp =>
       if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
-        new CI.inner.BuildInvite VM.project().users(), (sent) =>
+        new CI.inner.BuildInvite VM.project().not_followers(), (sent) =>
           node = $ ".first-green"
           node.addClass "animation-fadeout-collapse"
           if sent
