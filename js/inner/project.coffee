@@ -32,7 +32,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
     followed: null
     loading_users: false
     loading_billing: false
-    users: []
     parallel: 1
     focused_parallel: 1
     has_usable_key: true
@@ -229,11 +228,27 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
-    @not_followers = @komp =>
-      return (user for user in @users() when not user.following())
+    # Make the AJAX call for @users only if we really need it.
+    users_requested = false
+    users = @observable []
+    @users = @komp
+      deferEvaluation: true
+      read: =>
+        if not users_requested
+          users_requested = true
+          @loading_users true
+          $.ajax
+            type: "GET"
+            url: "/api/v1/project/#{@project_name()}/users"
+            success: (results) =>
+              users ((new CI.inner.User result) for result in results)
+              @loading_users false
+            true
+        users()
 
-    @get_users()
-
+    @not_followers = @komp
+      deferEvaluation: true
+      read: => (user for user in @users() when not user.following())
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
@@ -492,17 +507,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       success: (result) =>
         @refresh()
         false
-    false
-
-  get_users: () =>
-    @loading_users(true)
-    $.ajax
-      type: "GET"
-      url: "/api/v1/project/#{@project_name()}/users"
-      success: (results) =>
-        @users((new CI.inner.User result) for result in results)
-        @loading_users(false)
-        true
     false
 
   invite_team_members: (users) =>
