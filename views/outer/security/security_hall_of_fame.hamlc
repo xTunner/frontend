@@ -1,0 +1,23 @@
+.page.security
+  .banner
+    .container
+      %h1 Security Researcher Hall of Fame
+
+  .container.content
+    %section
+      %p
+        We would like to thank the following people for responsibly disclosing security issues to us.
+
+    %ul
+      %li
+        <a href="https://www.facebook.com/junior.ns1de">Rodolfo Godalle, Jr.</a> (2014-03-15)
+
+      %li
+        <a href="https://twitter.com/Silent_Screamr">Jayvardhan Singh</a> (2014-02-03)
+
+    %p
+      To be included on this list, <a
+      href="/security#disclosure">responsibly disclose</a> a security
+      report to use, and provide adequate time to fix the issue. We'll
+      link to your professional website, and send you a CircleCI
+      t-shirt.
