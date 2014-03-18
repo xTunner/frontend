@@ -1,7 +1,5 @@
-
-
 / ko with: first_green_build_invitations
-.first-green
+.invite-form.first-green
   / ko if: $root.project().loading_github_users
   .loading-spinner
     != HAML.spinner({})

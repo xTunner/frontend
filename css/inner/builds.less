@@ -432,7 +432,7 @@
   }
 }
 // ... by re-writing the build page's 'table-top' (TODO, #1351). thanks
-.first-green {
+.invite-form {
   @box_padding: 1em;
   @box_height: 5em;
   @box_inner_width: 18em;
@@ -446,13 +446,15 @@
   @head_height: (3 * @box_height);
   @foot_height: @head_height;
   @all_height: @body_height + @head_height + @foot_height;
-  width: @body_width;
-  margin: 0 auto;
-  opacity: 1;
-  transition: 1s;
-  height: @all_height;
-  overflow: hidden;
-  position: relative;
+  &.first-green {
+    width: @body_width;
+    margin: 0 auto;
+    opacity: 1;
+    transition: 1s;
+    height: @all_height;
+    overflow: hidden;
+    position: relative;
+  }
   &.animation-fadeout-collapse {
     opacity: 0;
     height: 0;
