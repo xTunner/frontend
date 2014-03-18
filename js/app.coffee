@@ -492,8 +492,7 @@ $(document).ready () ->
 
   # Register whether this user was invited by someone.
   mixpanel.register_once
-    invited_by: URI.parseQuery(URI.parse(document.URL).query)
-      .join?.match(/invited-by-(.*)/)?[1]
+    invited_by: URI.parseQuery(URI.parse(document.URL).query)['invited-by']
 
 
   SammyApp.run path + window.location.search
