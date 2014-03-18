@@ -490,4 +490,10 @@ $(document).ready () ->
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
 
+  # Register whether this user was invited by someone.
+  mixpanel.register_once
+    invited_by: URI.parseQuery(URI.parse(document.URL).query)
+      .join?.match(/invited-by-(.*)/)?[1]
+
+
   SammyApp.run path + window.location.search
