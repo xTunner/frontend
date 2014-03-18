@@ -18,6 +18,8 @@ CI.inner.Crumb = class Crumb extends CI.inner.Obj
     # url-path to where this crumb goes when you click it
     throw Error("must override")
 
+  is_active: () =>
+    @active
 
 CI.inner.ProjectCrumb = class ProjectCrumb extends Crumb
   constructor: (@username, @project, options) ->

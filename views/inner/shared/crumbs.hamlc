@@ -1,4 +1,9 @@
 %nav{data-bind: "foreach: {data: VM.current_page().crumbs, as: 'crumb'}"}
-  %a{data-bind: "text: name(),
-                 attr: {href: path(),
-                        title: name()}"}
+  <!-- ko if: is_active() -->
+    %span{data-bind: "text: name()"}
+  <!-- /ko -->
+  <!-- ko ifnot: is_active() -->
+    %a{data-bind: "text: name(),
+                   attr: {href: path(),
+                          title: name()}"}
+  <!-- /ko -->
