@@ -510,9 +510,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     false
 
   invite_team_members: (users) =>
-    to_invite = {}
+    to_invite = ({id: user.id(), email: user.email()} for user in users)
     for user in users
-      to_invite[user.id()] = user.email()
       mixpanel.track "Sent invitation",
         project: @project_name()
         login: user.login
