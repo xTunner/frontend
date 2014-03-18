@@ -63,6 +63,3 @@
                       -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}
-
-  %div.bottom-marker{data-bind: "waypoint: {offset: 'bottom-in-view'}
-                                 , waypoint_callback: enable_autoscroll"}
