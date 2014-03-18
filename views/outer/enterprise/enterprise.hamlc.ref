@@ -65,7 +65,7 @@
     %section.enterprise-cta-wrapper
 
       .enterprise-cta-contact
-        %button{"title" => "Contact Us", "href" => "#", "data-toggle" => "modal", "data-target" => "#enterpriseModal", "data-bind" => "track_link: {event: 'Fire enterprise Modal', properties: {'source': 'hero'}}"} Learn More Contact Us
+        %button{"title" => "Contact Us", "href" => "#", "data-toggle" => "modal", "data-target" => "#enterpriseModal", "data-bind" => "track_link: {event: 'Fire enterprise Modal', properties: {'source': 'hero'}}"} Contact Us
 
       .enterprise-cta-trust
         != HAML.customers_trust()
