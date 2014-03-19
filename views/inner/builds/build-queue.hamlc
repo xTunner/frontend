@@ -25,7 +25,7 @@
 
       <!--  ko if: usage_queue_why().length -->
         %span Waiting for these...
-        != HAML.builds({builds: "usage_queue_why", mention_project: true, actions: true})
+        != HAML.recent_builds_table({builds: "usage_queue_why", mention_project: true, actions: true})
       <!-- /ko -->
       <!--  ko with: $root.project -->
         / ko if: billing.existing_plan_loaded
