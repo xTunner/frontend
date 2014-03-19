@@ -15,7 +15,7 @@
       != HAML.first_green({})
     .head-right
       %h2 Congratulations!
-      %p You just got your first green build! The only thing better than that is helping your colleagues get their first green builds. Try inviting some of your collaborators below and never test alone again!
+      %p You just got your first green build! Invite some of your collaborators below and never test alone!
 
   %section
     %a{data-bind:"click: all", role: "button"} all
