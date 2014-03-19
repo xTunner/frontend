@@ -40,7 +40,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     rest_commits_visible: false
     node: []
     feature_flags: {}
-    invite_sent: false
+    first_green_build_invitations_sent: false
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -364,9 +364,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if @containers()[0]?
         @current_container(@containers()[0])
 
-    @invites = @komp =>
-      if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
-        new CI.inner.BuildInvite VM.project().not_followers(), (sending, users) =>
+    @first_green_build_invitations = @komp =>
+      if not @first_green_build_invitations_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
+        new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
           node = $ ".first-green"
           node.addClass "animation-fadeout-collapse"
           if sending
@@ -378,7 +378,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
                 id: user.id()
                 email: user.email()
             VM.project().invite_team_members users
-          window.setTimeout (=> @invite_sent true), 2000
+          window.setTimeout (=> @first_green_build_invitations_sent true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -764,32 +764,3 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $.waypoints("refresh")
 
     $autoscroll_trigger.waypoint("enable")
-
-# The prompt that comes up on a user's first green build so that
-# they can invite their favorite team members.
-CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
-  # Select all
-  all: () =>
-    for user in @users
-      @inviting[user.login] true
-
-  # Select none
-  none: () =>
-    for user in @users
-      @inviting[user.login] false
-
-  constructor: (@users, @callback, json={}) ->
-    super json
-    @inviting = {}
-    # Prepopulate the list of team members to invite with the ones
-    # whose email addresses we already know.
-    for user in users
-      @inviting[user.login] = @observable !!user.email.peek()
-
-  send: () =>
-    @callback true,
-      (user for user in @users when @inviting[user.login]() and user.email())
-
-  close: () =>
-    @callback false
-

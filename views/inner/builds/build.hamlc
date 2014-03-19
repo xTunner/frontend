@@ -35,7 +35,7 @@
                 to add
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
-          / ko if: invites
+          / ko if: first_green_build_invitations
           != HAML.build_invite()
           / /ko
 

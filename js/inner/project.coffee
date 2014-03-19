@@ -30,7 +30,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     heroku_deploy_user: null
     ssh_keys: []
     followed: null
-    loading_users: false
+    loading_github_users: false
     loading_billing: false
     parallel: 1
     focused_parallel: 1
@@ -229,26 +229,26 @@ CI.inner.Project = class Project extends CI.inner.Obj
         "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
     # Make the AJAX call for @users only if we really need it.
-    users_requested = false
-    users = @observable []
-    @users = @komp
+    github_users_requested = false
+    github_users = @observable []
+    @github_users = @komp
       deferEvaluation: true
       read: =>
-        if not users_requested
-          users_requested = true
-          @loading_users true
+        if not github_users_requested
+          github_users_requested = true
+          @loading_github_users true
           $.ajax
             type: "GET"
             url: "/api/v1/project/#{@project_name()}/users"
             success: (results) =>
-              users ((new CI.inner.User result) for result in results)
-              @loading_users false
+              github_users ((new CI.inner.GithubUser result) for result in results)
+              @loading_github_users false
             true
-        users()
+        github_users()
 
-    @not_followers = @komp
+    @github_users_not_following = @komp
       deferEvaluation: true
-      read: => (user for user in @users() when not user.following())
+      read: => (user for user in @github_users() when not user.following())
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
