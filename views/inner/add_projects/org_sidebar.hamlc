@@ -1,4 +1,4 @@
-%ul.side-list
+%ul.nav.nav-pills.nav-stacked
   %li.add-orgs Your Organizations
 
   / ko foreach: organizations
