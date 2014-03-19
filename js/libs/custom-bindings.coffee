@@ -89,11 +89,11 @@ ko.bindingHandlers.sticky_waypoint =
     options = ko.toJS(valueAccessor())
     $(el).waypoint('sticky', options)
 
-# Usage: %div{data-bind: "on_window_event: {event: 'resize', fn: function(event) { console.log('event was: ' + event) }}"}
+# Usage: %div{data-bind: "on_window_event: {event: 'resize', callback: function(event) { console.log('event was: ' + event) }}"}
 ko.bindingHandlers.on_window_event =
   init: (el, valueAccessor) =>
     options = ko.toJS(valueAccessor())
-    $(window).on(options.event, (event) => options.fn(event))
+    $(window).on(options.event, (event) => options.callback(event))
 
 # Creates a ResizeSensor that calls 'callback' when a change in element size is
 # detected. To avoid memory leaks the ResizeSensor object is stored as data
