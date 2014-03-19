@@ -150,27 +150,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       return cx.redirect "/docs"
 
 
-  addLinkTargets: =>
-    # Add a link target to every heading. If there's an existing id, it won't override it
-    h = "article"
-    for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
-      @addLinkTarget heading
-
-  addLinkTarget: (heading) =>
-    jqh = $(heading)
-    title = jqh.text()
-    id = jqh.attr("id")
-
-    if not id?
-      id = title.toLowerCase()
-      id = id.replace(/^\s+/g, '').replace(/\s+$/g, '') # strip whitespace
-      id = id.replace(/\'/, '') # heroku's -> herokus
-      id = id.replace(/[^a-z0-9]+/g, '-') # dashes everywhere
-      id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
-
-    jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
-
-
   ####################
   # search
   ####################
