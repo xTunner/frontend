@@ -95,6 +95,17 @@ ko.bindingHandlers.on_window_event =
     options = ko.toJS(valueAccessor())
     $(window).on(options.event, (event) => options.fn(event))
 
+# Creates a ResizeSensor that calls 'callback' when a change in element size is
+# detected. To avoid memory leaks the ResizeSensor object is stored as data
+# belonging to the element using JQuery's .data() function with the key
+# "resize_sensor".
+ko.bindingHandlers.resize_sensor =
+  init: (el, valueAccessor) =>
+    options = valueAccessor()
+    callback = options.callback
+    $el = $(el)
+    $el.data("resize_sensor", new ResizeSensor($el, callback))
+
 ## Money custom binding
 
 # Add helper that was minified
