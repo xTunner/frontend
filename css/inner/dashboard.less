@@ -87,6 +87,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding: .5em 0;
   }
 }
 .aside-project-info {
@@ -133,14 +134,12 @@
 .aside-project-branch {
   .displayFlex();
   .justify-content(space-between);
-  > * {
-    padding: .5em 0;
-  }
 }
 .aside-status-icons {
   max-width: 34%;
   .displayFlex();
   .justify-content(flex-end);
+  margin: .5em 0;
   &:hover {
     a {
       &:nth-last-of-type(1) {
