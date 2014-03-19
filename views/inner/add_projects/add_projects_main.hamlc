@@ -11,14 +11,20 @@
   <!-- ko if: canFollow -->
     %li.repo-follow{data-bind: "css: {'repo-1stfollow': shouldDoFirstFollowerBuild}"}
       / ko if: shouldDoFirstFollowerBuild
-      .proj-name{data-bind: "css: {'forked': fork}"}
+      .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
+        / ko if: fork
+        %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
+        / /ko
       %button{data-bind: "click: follow", data-spinner: "true"}
         %span Follow
       / /ko
       / ko ifnot: shouldDoFirstFollowerBuild
-      .proj-name{data-bind: "css: {'forked': fork}"}
+      .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
+        / ko if: fork
+        %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
+        / /ko
       %button.join-project{data-bind: "click: follow", data-spinner: "true"}
         %span Follow
       / /ko
@@ -26,18 +32,24 @@
 
   <!-- ko if: following -->
     %li.repo-unfollow
-      .proj-name{data-bind: "css: {'forked': fork}"}
+      .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
         %a{data-bind: "tooltip: {title: repoToolTip}, attr: {href: project_path}"}
           %i.fa.fa-external-link
+        / ko if: fork
+        %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
+        / /ko
       %button{data-bind: "click: unfollow", data-spinner: "true"}
         %span Unfollow
   <!-- /ko -->
 
   <!-- ko if: requiresInvite -->
     %li.repo-nofollow
-      .proj-name{data-bind: "css: {'forked': fork}"}
+      .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
+        / ko if: fork
+        %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
+        / /ko
       %i.fa.fa-lock
       %button{data-toggle: "modal", data-target: "#inviteForm"}
         %span Follow

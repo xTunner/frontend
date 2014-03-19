@@ -20,6 +20,7 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     retrieved_output: false
     retrieving_output: false
     user_minimized: null # tracks whether the user explicitly minimized. nil means they haven't touched it
+    truncated: false
 
 
   constructor: (json, build) ->

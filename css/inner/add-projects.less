@@ -108,9 +108,10 @@
     .box-sizing(border-box);
     a {
       cursor: pointer;
-      .dark-links;
+      color: @gray;
       text-decoration: none;
       &:hover {
+        color: @blueLight;
         text-decoration: none;
       }
     }
@@ -249,18 +250,11 @@
   }
   .proj-name {
     margin-right: auto;
-    i {
+    .fa-external-link {
       font-size: @fontSizeMini;
     }
-    &.forked {
-      span {
-        &:after {
-          content: ~"'\f126'"; // fa-code-fork in FontAwesome
-          margin-left: .5ex;
-          font-family: FontAwesome;
-          color: @grayLight;
-        }
-      }
+    .forked {
+      color: @grayLighter;
     }
   }
   .tooltip {
