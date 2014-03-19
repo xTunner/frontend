@@ -57,4 +57,4 @@
         != HAML.messages()
 
       %div.autoscroll-trigger{data-bind: "waypoint: {offset: 'bottom-in-view'}
-                                                     , waypoint_callback: enable_autoscroll"}
+                                          , waypoint_callback: enable_autoscroll"}
