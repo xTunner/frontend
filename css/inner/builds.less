@@ -225,6 +225,12 @@
         margin-right: 1ex;
       }
     }
+    .truncated {
+      display: block;
+      text-align: center;
+      color: @white;
+      font-weight: bold;
+    }
   }
   .failed {
     .command-text, .time {
@@ -322,14 +328,6 @@
     }
   }
 }
-.dont_build {
-  .build_log {
-    text-decoration: line-through;
-  }
-  .not_run_message {
-    text-align: center;
-  }
-}
 #build-log-container {
   // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
   .tooltip-inner {
@@ -422,10 +420,11 @@
     text-align: center;
     margin: 0 auto;
   }
+
 }
 // hi, i am a mortal sin-of-a-hack, please kill me...
 .build-info-actions {
-  .flexBox();
+  .displayFlex();
   .build-table-top { display: block; }
   .actions {
     .flex(0, 0);

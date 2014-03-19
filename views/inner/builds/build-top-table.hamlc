@@ -48,6 +48,11 @@
 
 
           %tr
+            %th Parallelism
+            %td
+              %a{data-bind: "text: parallelism, attr: {title: parallelism_title, href: urlForParallelismSetting()}"}
+
+          %tr
             %td{colspan: "4"}
               != HAML.usage_queue_table({})
 

@@ -108,6 +108,9 @@
         %a{href: "/circleci-security.pub", target: '_blank' } our security team's GPG key
         (ID: 0x4013DDA7, fingerprint: 3CD2 A48F 2071 61C0 B9B7  1AE2 6170 15B8 4013 DDA7).
 
+      %p
+        We also maintain a Security Researcher Hall of Fame to thank individuals who have discovered vulnerabilities and worked with us to resolve them, <a href="/security/hall-of-fame">located here</a>
+
     %section
       %h3 Partners with access to your source code
       %p
@@ -132,6 +135,9 @@
 
     %h2 Changelog
     %ul.changelog
+      %li
+        %strong Mar 17, 2014
+        Move the Security page to it's own page
       %li
         %strong Nov 5, 2013
         Rotate GPG key.

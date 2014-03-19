@@ -49,7 +49,11 @@
                   Output:
 
                   %pre.output.solarized{style: "white-space: normal;"}
+                    %span.truncated{data-bind: "if: truncated"}
+                      (this output has been truncated)
                     %span{data-bind: "foreach: final_out"}
                       -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}
+                    %span.truncated{data-bind: "if: truncated"}
+                      (this output has been truncated)
