@@ -199,6 +199,11 @@
         display: block;
         .animation(spin-right .8s infinite linear);
       }
+      &.fa-pause {
+        &:before {
+          font-size: 11.5px; // dirty hack to size fontawesome nicely
+        }
+      }
     }
   }
   .statusIconColor(@color) {
