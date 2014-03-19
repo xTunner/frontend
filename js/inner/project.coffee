@@ -511,12 +511,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
   invite_team_members: (users) =>
     to_invite = ({id: user.id(), email: user.email()} for user in users)
-    for user in users
-      mixpanel.track "Sent invitation",
-        project: @project_name()
-        login: user.login
-        id: user.id()
-        email: user.email()
     $.ajax
       type: "POST"
       url: "/api/v1/project/#{@project_name()}/users/invite"

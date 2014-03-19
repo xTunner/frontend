@@ -366,12 +366,19 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @invites = @komp =>
       if not @invite_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
-        new CI.inner.BuildInvite VM.project().not_followers(), (sent) =>
+        new CI.inner.BuildInvite VM.project().not_followers(), (sending, users) =>
           node = $ ".first-green"
           node.addClass "animation-fadeout-collapse"
-          if sent
+          if sending
             node.addClass "success"
-          window.setTimeout (() => @invite_sent(true)), 2000
+            for user in users
+              mixpanel.track "Sent invitation",
+                project: VM.project().project_name()
+                login: user.login
+                id: user.id()
+                email: user.email()
+            VM.project().invite_team_members users
+          window.setTimeout (=> @invite_sent true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -780,10 +787,8 @@ CI.inner.BuildInvite = class BuildInvite extends CI.inner.Obj
       @inviting[user.login] = @observable !!user.email.peek()
 
   send: () =>
-    to_invite = (user for user in @users when @inviting[user.login]() and user.email())
-    if to_invite.length > 0
-      VM.project().invite_team_members to_invite
-    @callback true
+    @callback true,
+      (user for user in @users when @inviting[user.login]() and user.email())
 
   close: () =>
     @callback false
