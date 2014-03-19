@@ -317,6 +317,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+    # Autoscrolling. A waypoint is set at the bottom of the build page which
+    # changes @autoscroll based on the scroll direction. Scrolling to the
+    # bottom of the page enables, scrolling up disables.
     @autoscroll = false
 
     # Containers use @finished() to determine their status. Create the
@@ -706,16 +709,29 @@ CI.inner.Build = class Build extends CI.inner.Obj
     container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
     @select_container(@containers()[container_index])
 
-  refresh_waypoints: () =>
-    $.waypoints("refresh")
-
   enable_autoscroll: (direction) =>
+    # Autoscrolling on a finished build would be a horrible user experience.
     @autoscroll = direction is "down" and not @finished()
+
+  height_changed: () =>
+    @maybe_scroll()
+    @refresh_waypoints()
 
   maybe_scroll: () =>
     if @autoscroll
-      $("body").animate({scrollTop: document.body.offsetHeight}, 'fast')
+      # Scrolling instantly is actually a smoother experience than
+      # incorporating a delay. When the animation takes some time to run the
+      # page jumps unpleasantly when new content is added.
+      # Delays also fight the user if they try to scroll up at the same time
+      # the animation is scrolling down.
+      $("body").animate({scrollTop: document.body.offsetHeight}, 0)
 
-  height_changed: () =>
-    @refresh_waypoints()
-    @maybe_scroll()
+  refresh_waypoints: () =>
+    # Prevent accidentally toggling the autoscroll waypoint while they're being
+    # refreshed
+    $autoscroll_trigger = $('.autoscroll-trigger')
+    $autoscroll_trigger.waypoint("disable")
+
+    $.waypoints("refresh")
+
+    $autoscroll_trigger.waypoint("enable")
