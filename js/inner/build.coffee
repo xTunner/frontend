@@ -63,8 +63,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @url = @komp =>
       @urlForBuildNum @build_num
 
-    @parallelismURL = @komp =>
-      @urlForParallelismSetting()
+    @parallelism_url = @komp =>
+     "#{@project_path()}/edit#parallel-builds"
 
     @important_style = @komp =>
       switch @status()
@@ -397,9 +397,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   urlForBuildNum: (num) =>
     "#{@project_path()}/#{num}"
-
-  urlForParallelismSetting: () =>
-    "#{@project_path()}/edit#parallel-builds"
 
   invite_user: (data, event) =>
     $.ajax

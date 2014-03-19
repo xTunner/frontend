@@ -50,7 +50,7 @@
           %tr
             %th Parallelism
             %td
-              %a{data-bind: "text: parallelism, attr: {title: parallelism_title, href: urlForParallelismSetting()}"}
+              %a{data-bind: "text: parallelism, attr: {title: parallelism_title, href: parallelism_url}"}
 
           %tr
             %td{colspan: "4"}
