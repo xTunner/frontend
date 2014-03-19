@@ -724,7 +724,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       # page jumps unpleasantly when new content is added.
       # Delays also fight the user if they try to scroll up at the same time
       # the animation is scrolling down.
-      $("body").animate({scrollTop: document.body.offsetHeight}, 0)
+      CI.Browser.scroll_to("bottom")
 
   refresh_waypoints: () =>
     # Prevent accidentally toggling the autoscroll waypoint while they're being
