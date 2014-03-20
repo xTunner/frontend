@@ -1,19 +1,19 @@
-/ ko if: showLoading
-.loading-spinner
-!= HAML.spinner({})
-/ /ko
-/ ko ifnot: showLoading
-/ ko ifnot: repos().length
-.add-repos
-  %h3 Welcome to Circle
-  %ul
-    %li Get started by selecting your GitHub username or organization on the left.
-    %li Choose a repo you want to test and we'll do the rest!
-/ /ko
 .repo-filter
   %i.fa.fa-search
   %input.unobtrusive-search.input-large{type: "search", placeholder: "Filter", data-bind: "value: repo_filter, valueUpdate: 'afterkeydown'"}
 .proj-wrapper
+  / ko if: showLoading
+  .loading-spinner
+    != HAML.spinner({})
+  / /ko
+  / ko ifnot: showLoading
+  / ko ifnot: repos().length
+  .add-repos
+    %h3 Welcome to Circle
+    %ul
+      %li Get started by selecting your GitHub username or organization on the left.
+      %li Choose a repo you want to test and we'll do the rest!
+  / /ko
   %ul.proj-list{data-bind: "foreach: filtered_repos"}
     / ko if: canFollow
     %li.repo-follow{data-bind: "css: {'repo-1stfollow': shouldDoFirstFollowerBuild}"}
@@ -59,6 +59,7 @@
       %button{data-toggle: "modal", data-target: "#inviteForm"}
         %span Follow
     / /ko
+  / /ko
 
   #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
     .modal-header
@@ -70,4 +71,3 @@
           %input{type: "text", value: "https://circleci.com/?join=dont-test-alone"}
     .modal-footer
       %button.btn.btn-primary{"aria-hidden" => "true", "data-dismiss" => "modal"} Got it
-/ /ko
