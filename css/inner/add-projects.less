@@ -1,29 +1,6 @@
 #add-projects {
   .displayFlex();
 
-  .well {
-    padding: 14px;
-  }
-
-  .nav-pills {
-    margin: 0;
-    padding: 0;
-
-    a {
-      padding: 5px;
-
-      &:hover {
-          background-color: transparent;
-      }
-    }
-
-    img {
-      width: 25px;
-      height: 25px;
-      border-radius:25px;
-    }
-  }
-
   .repo-filter {
     margin-bottom: 10px;
     border-bottom: 1px #d8d8d8 solid;
@@ -143,7 +120,14 @@
     width: 100%;
   }
   .side-list {
-    margin: 0;
+    list-style-type: none;
+
+    img {
+      width: 25px;
+      height: 25px;
+      border-radius:25px;
+    }
+
     a {
       cursor: pointer;
       color: @gray;
@@ -153,18 +137,16 @@
         text-decoration: none;
       }
     }
+
     & > span {
       text-align: center;
       display: block;
       line-height: 13em;
     }
-    img {
-      max-height: 1.5em;
-    }
     .tooltip {
       white-space: normal;
     }
-  }
+ }
   .add-orgs,
   .add-collabs,
   .add-you {

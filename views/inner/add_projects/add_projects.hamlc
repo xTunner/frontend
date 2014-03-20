@@ -5,8 +5,7 @@
     != HAML['org_sidebar']({})
   .project-listing
     .overview
-      %h3 Start watching your projects
-      %p Choose a repo from your Github and we'll watch it for you. Choose any repo from one of your organizations, your own repos, or repos you share with others. We'll show you the first build immediately; come back here to watch more.
+      %h3 Start following your projects
+      %p Choose a repo in GitHub from one of your organizations, your own repos, or repos you share with others, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits; come back here to follow more projects.
     != HAML['add_projects_main']({})
   .sidebar
-

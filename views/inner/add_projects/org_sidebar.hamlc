@@ -1,4 +1,4 @@
-%ul.nav.nav-pills.nav-stacked
+%ul.side-list
   %li.add-orgs Your Organizations
 
   / ko foreach: organizations
@@ -16,7 +16,8 @@
       %img{height: 25, data-bind: "attr: {src: avatar_url}"}
       .orgname{data-bind: "text: login, click: $root.current_user().setActiveOrganization"}
 
-  %li.add-collabs{data-bind: "tooltip: { title: 'For all repos &amp; forks'}", data-placement: "bottom"} Your Collaborators
+  %li.add-collabs
+    %span{data-bind: "tooltip: { title: 'For all repos &amp; forks'}", data-placement: "right"} Your Collaborators
 
   / ko foreach: collaboratorsWithout(login)
   %li.side-item
