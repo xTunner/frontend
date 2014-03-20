@@ -2,64 +2,64 @@
   %i.fa.fa-search
   %input.unobtrusive-search.input-large{type: "search", placeholder: "Filter repos...", data-bind: "value: repo_filter, valueUpdate: 'afterkeydown'"}
 .proj-wrapper
-  / ko if: showLoading
+  <!-- ko if: showLoading -->
   .loading-spinner
     != HAML.spinner({})
-  / /ko
-  / ko ifnot: showLoading
-  / ko ifnot: repos().length
+  <!-- /ko -->
+  <!-- ko ifnot: showLoading -->
+  <!-- ko ifnot: repos().length -->
   .add-repos
     %h3 Welcome to Circle
     %ul
       %li Get started by selecting your GitHub username or organization on the left.
       %li Choose a repo you want to test and we'll do the rest!
-  / /ko
+  <!-- /ko -->
   %ul.proj-list{data-bind: "foreach: filtered_repos"}
-    / ko if: canFollow
+    <!-- ko if: canFollow -->
     %li.repo-follow{data-bind: "css: {'repo-1stfollow': shouldDoFirstFollowerBuild}"}
-      / ko if: shouldDoFirstFollowerBuild
+      <!-- ko if: shouldDoFirstFollowerBuild -->
       .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
-        / ko if: fork
+        <!-- ko if: fork -->
         %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
-        / /ko
+        <!-- /ko -->
       %button{data-bind: "click: follow", data-spinner: "true"}
         %span Follow
-      / /ko
-      / ko ifnot: shouldDoFirstFollowerBuild
+      <!-- /ko -->
+      <!-- ko ifnot: shouldDoFirstFollowerBuild -->
       .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
-        / ko if: fork
+        <!-- ko if: fork -->
         %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
-        / /ko
+        <!-- /ko -->
       %button.join-project{data-bind: "click: follow", data-spinner: "true"}
         %span Follow
-      / /ko
-    / /ko
-    / ko if: following
+      <!-- /ko -->
+    <!-- /ko -->
+    <!-- ko if: following -->
     %li.repo-unfollow
       .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
         %a{data-bind: "tooltip: {title: repoToolTip}, attr: {href: project_path}"}
           %i.fa.fa-external-link
-          / ko if: fork
+          <!-- ko if: fork -->
           %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
-          / /ko
+          <!-- /ko -->
       %button{data-bind: "click: unfollow", data-spinner: "true"}
         %span Unfollow
-    / /ko
-    / ko if: requiresInvite
+    <!-- /ko -->
+    <!-- ko if: requiresInvite -->
     %li.repo-nofollow
       .proj-name
         %span{data-bind: "text: name, attr: {title: displayName}"}
-        / ko if: fork
+        <!-- ko if: fork -->
         %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
-        / /ko
+        <!-- /ko -->
       %i.fa.fa-lock
       %button{data-toggle: "modal", data-target: "#inviteForm"}
         %span Follow
-    / /ko
-  / /ko
+    <!-- /ko -->
+  <!-- /ko -->
 
   #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
     .modal-header
