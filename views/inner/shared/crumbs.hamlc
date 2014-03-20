@@ -1,5 +1,10 @@
-.repo-breadcrumb
-  %ul.nav.crumbs{data-bind: "foreach: {data: VM.current_page().crumbs, as: 'crumb'}"}
-    %li{data-bind: "attr: {class: css_class}"}
-      %a{data-bind: "attr: {href: path(), title: name()}, css: styles()"}
-        %span{data-bind: "text: name()"}
+%nav{data-bind: "foreach: {data: VM.current_page().crumbs, as: 'crumb'}"}
+  / ko if: active
+  %span{data-bind: "text: name(),
+                    attr: {title: name()}"}
+  / /ko
+  / ko ifnot: active
+  %a{data-bind: "text: name(),
+                 attr: {href: path(),
+                        title: name()}"}
+  / /ko

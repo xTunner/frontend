@@ -2,8 +2,6 @@
 - @title = 'Test Android applications'
 - @lastUpdated = "March 22, 2013"
 
-%h2 Overview
-
 %p
   CircleCI support testing Android applications. The SDK is
   already installed on the VM at

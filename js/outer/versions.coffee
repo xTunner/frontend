@@ -9,7 +9,7 @@ CI.Versions =
 
   default_ruby: "1.9.3-p448"
   old_ruby: "1.8.7-p358"
-  rubies: [
+  ruby_versions: [
     "1.8.7-p302",
     "1.8.7-p334",
     "1.8.7-p352",
@@ -63,7 +63,7 @@ CI.Versions =
   rake: "10.1.0"
 
   default_node: "0.8.12"
-  nodes: [
+  node_versions: [
     "0.6.18",
     "0.8.2",
     "0.8.12",
@@ -83,7 +83,7 @@ CI.Versions =
 
   default_python: "2.7.3"
   python: "2.7.3"
-  pythons: [
+  python_versions: [
      "2.5",
      "2.5.1",
      "2.5.2",
@@ -137,7 +137,7 @@ CI.Versions =
 
   default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.5"
-  phps: [
+  php_versions: [
     "5.3.3",
     "5.3.10",
     "5.3.20",
@@ -159,7 +159,8 @@ CI.Versions =
     "5.4.21",
     "5.5.0",
     "5.5.2",
-    "5.5.3"
+    "5.5.3",
+    "5.5.7"
   ]
 
   golang: 'go1'
@@ -167,7 +168,7 @@ CI.Versions =
 
   gradle: "1.7"
   play: "2.2.1"
-  scalas: [
+  scala_versions: [
     "0.11.3",
     "0.12.0",
     "0.12.1",

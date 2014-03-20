@@ -1,95 +1,127 @@
-- @title = 'Continuous Integration and Continuous Deployment with Ruby and Rails'
-- @short_title = 'Ruby and Rails'
-- @lastUpdated = "Jun 4, 2013"
-
-%h2 Overview
+- @title = 'Continuous Integration and Continuous Deployment with Ruby/Rails'
+- @short_title = 'Ruby/Rails'
+- @lastUpdated = "March 12, 2014"
 
 %p
-  Good tests make good code.
-  Rails was developed and structured to incorporate robust testing functionality.
-
-%p
-  CircleCI makes Rails testing simple and uncomplicated.
-  CircleCI looks at your code, infers your build environment, and runs your tests.
+  CircleCI makes Rails testing simple. During each build, Circle looks at your code,
+  infers your build environment, and runs your tests.
   The majority of the time, this just works&mdash;and works well.
   Of course, it helps if your project adheres to standard practices
-  (i.e., "convention over configuration") for the Ruby on Rails testing framework.
-  For that reason, the best method is to specify all your project dependencies in a Gemfile.
+  (i.e., "convention over configuration") for standard Ruby testing frameworks.
+
+%p
+  You can
+  %a{href: "/docs/configuration"}
+    add any custom configuration
+  or set up deployment from a
+  %a{href: "/docs/config-sample"}
+    circle.yml file
+  checked into your repo's root directory.
+
+%h3 Version
 
 %p
   We use
-  %a{ href: "https://rvm.io/" } RVM
-  to provide access to a wide variety of Ruby versions.
-  CircleCI has a number of Ruby- and Rails-related tools and frameworks
-  pre-installed so that you can use them directly if needed.
-  These include:
+  %a{href: "https://rvm.io/" } RVM
+  to provide access to a wide variety of
+  != succeed '.', ->
+    %a{href: "/docs/environment#languages"} Ruby versions
 
-%ul
-  %li
-    Bundler
-
-  %li
-    Cucumber
-
-  %li
-    RSpec
-
-  %li
-    Rake
+  The default version of Ruby is either
+  = CI.Versions.default_ruby
+  or
+  = succeed ',', ->
+    = CI.Versions.old_ruby
+  whichever we think is best for your project.
 
 %p
-  For more specifics, you can look at our
-    %a{href: "/docs/environment"} Test environment
-  documentation, which includes a complete listing of all the versions of Ruby
-  that we support as well as a brief description of how CircleCI selects the
-  default version of Ruby.
-  The document also describes how CircleCI makes it easy to use testing tools that require a browser.
+  You can manually set your Ruby version from your <code>circle.yml</code>:
+
+!= HAML.circleyml_language_example({language: "ruby"})
 
 %p
-  As we mentioned, CircleCI automatically infers your settings from your code.
-  This works fine in most cases for our Ruby on Rails customers.
-  When it doesn't (your web app has a special dependency, for example),
-  all that you need to do is add a <code>circle.yml</code> file.
-  You can find all the information that you need to create that file in our
-  %a{href: "/docs/configuration"} Configuring CircleCI
-  document.
+  Our
+    %a{href: "/docs/environment"} test environment doc
+  covers more details about language versions and tools; it also explains how Circle
+  works with testing tools that require a browser.
+
+%h3 Dependencies
 
 %p
-  Should you need to run your tests in parallel, you can choose a plan and
-  set up parallelism for your project on the <b>Edit settings > Build Speed</b> page.
-  CircleCI automatically sets up for RSpec, Cucumber, and Test::Unit.
-  If you've overridden the test command or have other custom requirements,
-  you might want to read
-  %a{href: "/docs/parallel-manual-setup"} this document
-  first.
+  If Circle detects a Gemfile, we automatically run <code>bundle install</code>. Your
+  gems are automatically cached between builds to save time downloading dependencies.
+  You can add additional project dependencies from the
+  <a href="/docs/configuration#dependencies">dependencies section of your circle.yml</a>:
 
-%h2#troubleshooting Troubleshooting for Ruby on Rails
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        post:
+          - bundle exec rake assets:precompile
+
+%h3 Databases
+
+%p
+  Circle manages all your database requirements,
+  such as running your <code>rake</code> commands for creating, loading,
+  and migrating your database.
+  We have pre-installed more than a dozen
+  != succeed ',', ->
+    %a{href: "/docs/environment#databases"} databases and queues
+  including PostgreSQL, MySQL, and MongoDB.
+  You can add custom database commands from the
+  <a href="/docs/configuration#database">database section of your circle.yml</a>.
+
+%h3 Testing
+
+%p
+  Circle will automatically infer your test commands if you're
+  using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha.
+
+  You can also add additional commands from the <a href="/docs/configuration#test">test section of your circle.yml</a>:
+
+  %pre
+    %code.no-highlight<>
+      :preserve
+        test:
+          post:
+            - bundle exec rake test:custom
+
+%h3 Testing in Parallel
+
+%p
+  Should you need faster testing, Circle can automatically split your
+  tests and run them in parallel across multiple machines.
+  You can enable parallelism on your project's <b>Edit settings > Parallelism</b>
+  page in the Circle UI.
+
+%p
+  Circle can automatically split tests for RSpec, Cucumber, and Test::Unit.
+  For other testing libraries, we have instructions for <a href="/docs/parallel-manual-setup">manually setting up parallelism</a>.
+
+%h3 Deployment
+
+%p
+  Circle offers first-class support for deployment to your staging and production environments.
+  When your build is green, Circle will run the commands from the <a href="/docs/configuration#deployment">deployment section of your circle.yml</a>.
+
+%p
+  You can find more detailed instructions in the <a href="/docs/introduction-to-continuous-deployment">Continuous Deployment doc</a>.
+
+
+
+%h3 Troubleshooting for Ruby on Rails
 
 %p
   Our
   %a{href: "/docs/troubleshooting-ruby"}
-    Ruby Troubleshooting
+    Ruby troubleshooting
   documentation has information about the following issues and problems:
 
-%ul
-  %li
-    Do you need the latest version of Bundler?
+!= @include_article('troubleshooting_ruby')
 
-  %li
-    Error message: "unable to obtain stable firefox connection in 60 seconds"
-
-  %li
-    Git errors during a bundle install
-
-  %li
-    rake db:schema:load fails
-
-  %li
-    CircleCI is running the wrong Ruby commands
-
-  %li
-    CircleCI uses the wrong Ruby version
 %p
-  If you still having trouble, please
+  If you are still having trouble, please
   != HAML.contact_us({succeed: ""})
   and we will be happy to help.

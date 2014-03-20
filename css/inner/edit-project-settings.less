@@ -83,7 +83,7 @@
   }
 }
 #project-settings {
-  .flexBox();
+  .displayFlex();
   padding: 0 2em;
   a {
     color: @blueDark;
@@ -235,7 +235,7 @@
             .insufficient-containers,
             .insufficient-plan,
             .insufficient-trial {
-              .translate3d(0, 0, 0);
+              .translate(0);
               transition-duration: .1s;
               opacity: 1;
             }
@@ -259,7 +259,7 @@
     .disabled {
       &:hover {
         .insufficient-minimum {
-          .translate3d(0, 0, 0);
+          .translate(0);
           transition-duration: .1s;
           opacity: 1;
         }
@@ -324,7 +324,7 @@
       height: 94%;
       border-radius: 3px;
       text-align: center;
-      .translate3d(0, 110%, 0);
+      .translate(0, 110%);
       transition: all .3s ease-in-out;
       opacity: 0;
       a {
@@ -351,7 +351,7 @@
       }
     }
     .insufficient-minimum {
-      .translate3d(0, 0, 0);
+      .translate(0);
       background: @redLight;
       z-index: 1;
       .tooltip {
@@ -551,7 +551,7 @@
         right: 0;
         top: 0;
         margin: 1em;
-        background-image: url('@{imgPath}/chat-sprite1.png');
+        background-image: url('@{imgPath}/chat-sprite2.png');
         transition: opacity .4s ease-in-out;
       }
       &:before {
@@ -576,6 +576,10 @@
     .chat-i-irc {
       &:before { background-position: (-@logoHeight * 3) -@logoHeight;}
       &:after  { background-position: (-@logoHeight * 3)  0          ;}
+    }
+    .chat-i-slack {
+      &:before { background-position: (-@logoHeight * 4) -@logoHeight;}
+      &:after  { background-position: (-@logoHeight * 4)  0          ;}
     }
   }
   .chat-room-body {

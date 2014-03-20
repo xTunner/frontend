@@ -80,3 +80,9 @@ CI.inner.Foundation = class Foundation extends CI.inner.Obj
   goDashboard: (data, event) =>
     # signature so this can be used as knockout click handler
     window.SammyApp.setLocation("/")
+
+  goPrivacy: (data, event) => 
+    $('#githubModal').modal('hide');
+    window.SammyApp.setLocation("/privacy#security")
+    mixpanel.track("Modal Privacy Link")
+

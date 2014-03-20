@@ -157,18 +157,6 @@
   background-image: radial-gradient(ellipse at center, @joined);
 }
 
-// Flexbox
-// makes very simple/powerful grids (good til IE10 [easy fix below 10] but Safari needs vendor temporarily)
-
-.flex(@grow: 0, @shrink: 1, @basis: auto) {
-  -webkit-flex: @grow @shrink @basis;
-          flex: @grow @shrink @basis;
-}
-.flexBox {
-  display: -webkit-flex;
-  display:         flex;
-}
-
 .fontFace(@font, @weight, @style: normal){
   @font-face{
     font-family: @font;
@@ -198,7 +186,7 @@
     text-align: left;
     white-space: nowrap;
     &:first-child {
-      padding-left: 1vw;
+      padding-left: 1em;
     }
     &:last-child {
       width: 70px;
@@ -237,7 +225,7 @@
       padding: .5em 0 .5em .5em;
     }
     &:first-child a {
-      padding-left: 1vw;
+      padding-left: 1em;
     }
     &:last-child {
       vertical-align: middle;
@@ -257,3 +245,4 @@
 @import "mixins/buttons.less";
 @import "mixins/animations.less";
 @import "mixins/stickylabel.less";
+@import "mixins/flex.less";

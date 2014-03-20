@@ -6,3 +6,7 @@ CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.Page
                new CI.inner.OrgSettingsCrumb(@username)]
 
     @title = @username
+    @show_branch = true
+
+  refresh: () =>
+    VM.loadOrg(@username, true)

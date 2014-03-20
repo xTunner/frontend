@@ -1,5 +1,4 @@
 @sideLineWidth: 5px;
-
 .usage-queue-why {
   margin-top: 20px;
   .spinner-container {
@@ -14,7 +13,6 @@
     .tableLight();
   }
 }
-
 #action-log-messages {
   border-radius: 5px;
   overflow: hidden;
@@ -43,14 +41,12 @@
     }
   }
 }
-
 .build-table {
   background: @whiten;
-  top: 83px;
   color: @gray;
-  padding-top: 1em;
-  box-shadow: 0 1px lighten(@gray,55.50%);
+  box-shadow: 0 1px @grayBorder;
   margin-bottom: 1.5em;
+  margin-top: -2em;
   h4 {
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
@@ -105,30 +101,26 @@
   .artifacts-def {
     cursor: pointer;
   }
-
   p.reponame {
     font-weight: bold;
   }
-
   dd {
     float: left;
     display: block;
   }
-  .actions {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-  }
+  // (TODO, #1351) part of overlapping buttons bug
+  // .actions {
+  //   position: absolute;
+  //   top: 2em;
+  //   right: 0;
+  //   margin: 0;
+  // }
   .commit-log {
-    padding-top: 1em;
+    // padding-top: 1em; // (TODO, #1351) part of overlapping buttons bug
     margin: 1em 0;
-    border-top: 1px solid lighten(@gray,55.50%);
+    // border-top: 1px solid lighten(@gray,55.50%); // (TODO, #1351) part of overlapping buttons bug
     dd {
       max-width: 80%; // prevent overflow
-    }
-    .rest-commits:hover {
-      cursor: pointer;
     }
     a.sha-one {
       color: @blue;
@@ -162,7 +154,6 @@
     }
   }
 }
-
 .action-source {
   float: right;
   font-style: italic;
@@ -172,15 +163,13 @@
   border-bottom: 1px solid #777;
   line-height: 0.1em;
   margin: 30px 0 7px;
-
   span {
-    background: @outerBodyBackground;
+    background: @appBackgroundColor;
     color: #777;
     font-size: 16px;
     padding: 0 10px;
   }
 }
-
 .build-output-active {
   background: #d7dce3;
   .action_header {
@@ -190,32 +179,27 @@
 
 .build-output  {
   background-color: @whiten;
-  .rotate3d(0, 0, 0, 0deg);
   .border-radius;
-
   .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
   margin-bottom: 5px;
   margin-left: 2px;
   margin-right: 2px;
   color: @gray;
   font-weight: normal;
-
   .action_header {
-
     &.success > .ah_wrapper:before { background: @green; }
     &.failed > .ah_wrapper:before { background: @redLight; }
     &.running > .ah_wrapper:before { background: @yellow; }
+    &.canceled > .ah_wrapper:before { background: @grayLight; }
     &.failed .header.running { background: @lightYellow; }
-
    &.failed .header.failed { background: @redLight; height: 40px; }
    &.failed .header.running { background: @lightYellow; }
-
     .time {
       float: right;
       margin: 0 1em;
+      min-width: 2.75em;
     }
   }
-
   .output {
     margin: 0;
     border: none;
@@ -225,7 +209,6 @@
     border-radius: 0;
     padding: 1em;
   }
-
   .detail {
     text-shadow: none;
     padding: 1em;
@@ -241,6 +224,12 @@
         content: "$";
         margin-right: 1ex;
       }
+    }
+    .truncated {
+      display: block;
+      text-align: center;
+      color: @white;
+      font-weight: bold;
     }
   }
   .failed {
@@ -281,13 +270,12 @@
       }
     }
   }
-  .minimize .ah_wrapper {
-    .fa.fa-chevron-up {
-      .rotate3d(1, 0, 0, 180deg);
+  .action_header:not(.minimize) .ah_wrapper {
+    .fa.fa-chevron-down {
+      .rotate(180);
     }
   }
   .ah_wrapper {
-
     &:before {
       content: "";
       position: absolute;
@@ -297,12 +285,10 @@
       height: 100%;
       width: @sideLineWidth;
     }
-
     .header.contents {
       // only show the cursor if clicking gets you anywhere
       cursor: pointer;
     }
-
     min-height: 40px;
     position: relative;
     border: 1px solid lighten(@gray,55.50%);
@@ -311,7 +297,6 @@
     text-shadow: 0 1px 0 rgba(255,255,255,.1);
     box-shadow: 0 1px @white inset;
     overflow: hidden; // put the contents beside each other
-
     .button {
       float: left; // put to the right of .command
       background-repeat: no-repeat;
@@ -322,9 +307,8 @@
       margin-left: 10px;
       height: 30px; // the button has no size without this
       width: 30px; // the button has no size without this
-
     }
-    .fa.fa-chevron-up {
+    .fa.fa-chevron-down {
       color: @whiten;
       display: inline-block;
       transition: all .2s ease;
@@ -344,39 +328,76 @@
     }
   }
 }
-
-.dont_build {
-  .build_log {
-    text-decoration: line-through;
-  }
-
-  .not_run_message {
-    text-align: center;
-  }
-}
-
 #build-log-container {
-
   // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
   .tooltip-inner {
     max-width: 500px;
   }
-
-
   .container-fluid.row-fluid {
     padding: 0 2%;
     width: 96%;
   }
-
-  top: -1vw;
-  position: relative;
-
+  .stages {
+    margin: 0;
+    h4 {
+      margin: 0 0 10px 20px;
+      line-height: 22px;
+    }
+    > ul {
+      padding: 10px 0 0 0;
+      list-style-type: none;
+      li:not(:first-child) {
+        counter-increment: stage-counter;
+        border-top: 1px solid #e3e3e3;
+        padding: 0;
+        a {
+          display: block;
+          margin: 0;
+          position: relative;
+          padding: 8px 0 8px 45px;
+          cursor: pointer;
+          .fa.fa-refresh {
+            float: right;
+            margin: 3px 10px 0 0;
+          }
+          &.active {
+            background: #EBF3FC;
+            font-weight: bold;
+            &:before {
+              background: #366aa4;
+            }
+          }
+          &:before {
+            content: counter(stage-counter);
+            position: absolute;
+            top: 8px;
+            left: 15px;
+            border-radius: 20px;
+            height: 20px;
+            width: 20px;
+            color: white;
+            background: #D4D4D4;
+            font-weight: bold;
+            font-size: .8em;
+            text-align: center;
+            text-shadow: none;
+          }
+          ul {
+            margin: 10px 0 0 20px;
+            list-style-type: decimal;
+            li {
+              border-top: none;
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+  }
   .output-spin {
     font-size: 20px;
     text-align: center;
-
   }
-
   .alert {
     margin-bottom: 1.5em;
     &.alert-danger {
@@ -399,4 +420,15 @@
     text-align: center;
     margin: 0 auto;
   }
+
 }
+// hi, i am a mortal sin-of-a-hack, please kill me...
+.build-info-actions {
+  .displayFlex();
+  .build-table-top { display: block; }
+  .actions {
+    .flex(0, 0);
+    margin: 2em 0;
+  }
+}
+// ... by re-writing the build page's 'table-top' (TODO, #1351). thanks

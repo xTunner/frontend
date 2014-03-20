@@ -53,7 +53,7 @@
     display: inline-block;
     width: 15%;
     float: left;
-    padding: 0 1vw;
+    padding: 0 1em;
     .box-sizing(border-box);
     a {
       font-size: 1em;
@@ -81,37 +81,37 @@
     }
   }
   .proj-wrapper {
+    .box-sizing(border-box);
     display: inline-block;
-    overflow: hidden;
     width: 70%;
     float: left;
     background: @whiten;
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
-    margin-bottom: 10%;
+    margin-bottom: 20vh;
     // padding: 1vw; (for later use with tabbing visual)
-    .box-sizing(border-box);
-    .centered-spinner {
-      margin: 25vh 0;
+    .loading-spinner {
+      margin: 20vh auto;
     }
   }
   .proj-list {
     // border: 1px solid darken(@grayBorder,1%); (for later use with tabbing visual)
     list-style: none;
     margin: 0;
+    width: 100%;
   }
   .side-list {
     float: left;
     width: 15%;
     display: inline-block;
     margin: 0;
-    margin-bottom: @footerActualHeight * 1.5;
     .box-sizing(border-box);
     a {
       cursor: pointer;
-      .dark-links;
+      color: @gray;
       text-decoration: none;
       &:hover {
+        color: @blueLight;
         text-decoration: none;
       }
     }
@@ -127,10 +127,12 @@
       white-space: normal;
     }
     li {
-      padding: 0 1vw;
+      padding: 0 1em;
     }
   }
-  .add-orgs, .add-collabs, .add-you {
+  .add-orgs,
+  .add-collabs,
+  .add-you {
     display: inline-block;
     .box-sizing(border-box);
     text-overflow: ellipsis;
@@ -159,128 +161,108 @@
   .orgname {
     display: inline-block;
   }
-  .repo {
-    width: 100%;
-    .clearfix();
-    a {
-      display: block;
-      line-height: 1em;
-      text-decoration: none;
-      transition: all .2s ease-in-out;
-      color: #555;
-      font-weight: normal;
-      text-decoration: none;
-      box-shadow: 0 1px @white inset;
-      padding: 0 1em;
-      line-height: 3em;
-      overflow: hidden;
-      cursor: pointer;
-      &:hover {
-        background-color: lighten(@grayBorder,8%);
-        color: @blueLight;
-        transition-duration: .1s;
-      }
-      &:active {
-        background-color: lighten(@grayBorder,5%);
-        transition-duration: .1s;
-      }
-    }
-    &:not(:first-child) a {
+  .proj-list {
+    li {
+      .displayFlex();
+      .align-items(center);
       box-shadow: 0 1px lighten(@grayLightest, .5) inset, 0 2px @white inset;
-      &:hover {
-        box-shadow: 0 1px lighten(@grayBorder, 3) inset;
-      }
-      &:active {
-        box-shadow: 0 1px 1px lighten(@grayBorder, 1) inset;
-      }
-    }
-    // TODO Danny take a look
-    // span {
-    //   line-height: 3em;
-    //   float: right;
-    //   margin-top: -3em;
-    //   margin-right: 6em;
-    //   pointer-events: none;
-    // }
-    [class^="repo-"] {
-      overflow: hidden;
+      line-height: 1.5em;
       position: relative;
+      height: 1.5em;
+      padding: 1em;
+      padding-right: .5em;
+      &:first-child {
+        box-shadow: none;
+      }
+      &:hover {
+        background-color: darken(@whiten, 1);
+        box-shadow: none;
+      }
+      .fa-lock {
+        width: 1em;
+        height: 1em;
+        margin-right: .5ex;
+        color: @grayLight;
+      }
     }
-    // To replace switches
+    button {
+      .circleButton();
+      padding: .75em;
+      line-height: 1em;
+      min-width: 6em;
+      &.disabled {
+        position: relative;
+        &:before {
+          content: "Starting first build...";
+          position: absolute;
+          right: 100%;
+          white-space: nowrap;
+          margin-right: 1em;
+          color: @grayLight;
+        }
+        span {
+          display: none;
+        }
+      }
+      svg {
+        height: 1em;
+        width: 1em;
+        margin: auto;
+        > * {
+          fill: @grayDark;
+        }
+      }
+      i {
+        position: absolute;
+        margin-left: .5ex;
+        .scale3d(.75, .75);
+      }
+    }
+    .repoButtonColor(@color) {
+      button {
+        &:not(.disabled) {
+          &:hover {
+            background-color: @color;
+            color: @white;
+            text-shadow: none;
+            svg {
+              > * {
+                fill: @white;
+              }
+            }
+            &:active {
+              box-shadow: 0 3px (darken(@color, 5)) inset;
+              text-shadow: none;
+            }
+          }
+        }
+      }
+    }
     .repo-unfollow {
-      button {
-        .buttonDark(@redLight);
-      }
-    }
-    .repo-follow {
-      button {
-        .buttonDark;
-      }
-      .join-project {
-        .buttonDark(@green);
-        line-height: 2em;
-      }
+      .repoButtonColor(@redLight);
     }
     .repo-nofollow {
-      button {
-        .buttonDark;
-      }
+      .repoButtonColor(@green);
     }
-    [class^="repo-"] {
-      button {
-        line-height: 2em;
-        padding: 0;
-        position: absolute;
-        right: 0;
-        top: 1px;
-        margin: .5em;
-        width: 11ex;
-        outline: none;
-        border-radius: 3px;
-        pointer-events: none;
-      }
+    .repo-1stfollow {
+      .repoButtonColor(@green);
     }
-    // Style items for switches > buttons. WIP
-    //
-    // .repo-1stfollow {
-    //   color: @blueLight;
-    //   span {
-    //     opacity: 0;
-    //     .translate(0,100%);
-    //     transition: all .3s ease-out, opacity .1s linear;
-    //   }
-    //   i {
-    //     display: inline-block;
-    //     line-height: 3em;
-    //     float: right;
-    //     margin-top: -3em;
-    //     margin-right: 5em;
-    //     pointer-events: none;
-    //     .translate(0,0);
-    //     .animation(point-right 3s ease infinite);
-    //     -webkit-backface-visibility: hidden;
-    //   }
-    // }
-    // &:hover [class^="repo-"] span {
-    //   opacity: 1;
-    //   .translate(0,0);
-    //   transition: all .1s ease-in, opacity .2s linear .1s;
-    // }
-    // img {
-    //   height: 3em;
-    //   padding: .5em;
-    //   .box-sizing(border-box);
-    //   margin-right: .5em;
-    //   pointer-events: none;
-    //   position: absolute;
-    //   right: 0;
-    //   top: 1px;
-    // }
   }
-  // @-webkit-keyframes point-right {
-  //    50% {-webkit-transform: translate(5px,0);}
-  // }
-  // @keyframes point-right {
-  //    50% {transform: translate(5px,0);}
-  // }
+  .proj-name {
+    margin-right: auto;
+    .fa-external-link {
+      font-size: @fontSizeMini;
+    }
+    .forked {
+      color: @grayLighter;
+    }
+  }
+  .tooltip {
+    font-size: inherit;
+    opacity: .89;
+    .tooltip-inner {
+      padding: 1em;
+      .box-sizing(border-box);
+    }
+  }
 }

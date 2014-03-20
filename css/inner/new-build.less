@@ -7,7 +7,7 @@
 }
 
 .containers {
-  background-color: @outerBodyBackground;
+  background-color: @appBackgroundColor;
   height: 30px;
   margin: 0px;
   padding-top: 5px;
@@ -18,7 +18,7 @@
   position: fixed;
   top: 0px;
   width: 100%;
-  z-index: 1;
+  z-index: 10;
 }
 
 #topbar {
@@ -70,6 +70,8 @@ ul.container-list {
 
     &.success:after { background: @green; }
     &.running:after { background: @yellow; }
+    &.waiting:after { background: fadeout(@yellow, 70%); }
+    &.canceled:after {background: @grayLight; }
     &.failed:after { background: @redLight; }
   }
 }

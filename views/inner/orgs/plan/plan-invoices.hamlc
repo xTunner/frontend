@@ -9,7 +9,7 @@
                               data-bind: "popover: {animation: false, trigger: 'hover', html: true}"}
 
       %dd
-        %span{data-bind: "money: account_balance"}
+        %span{data-bind: "accountBalance: account_balance"}
     %table.table-striped.table.table-bordered
       %theader
         %tr

@@ -12,7 +12,7 @@
             .header{data-bind: "css: action_header_button_style, click: toggle_minimize"}
               .button{data-bind: "css: action_header_button_style"}
                 %span{data-bind: "if: has_content"}
-                  %i.fa.fa-chevron-up
+                  %i.fa.fa-chevron-down
               .command{data-bind: "css: action_header_style"}
                 %span.command-text
                   %span{data-bind: "if: $data.bash_command() == $data.name()"}
@@ -30,8 +30,10 @@
 
             .detail-wrapper{data-bind: "if: has_content"}
               .detail{data-bind: "css: action_log_style, visible: !minimize()"}
-                .output-spin{data-bind: "if: retrieving_output"}
-                  != HAML['fast_spinner']()
+                / ko if: retrieving_output
+                .loading-spinner
+                  != HAML.spinner({})
+                / /ko
 
                 %div#action-log-messages{data-bind: "ifnot: retrieving_output"}
                   %i.fa.fa-arrow-circle-o-down.pull-right.click-to-scroll{data-bind: "scrollOnClick: {selector: '.detail-wrapper', position: 'bottom'}"}
@@ -47,7 +49,11 @@
                   Output:
 
                   %pre.output.solarized{style: "white-space: normal;"}
+                    %span.truncated{data-bind: "if: truncated"}
+                      (this output has been truncated)
                     %span{data-bind: "foreach: final_out"}
                       -# These are escaped in the action_log class
                       %span.pre{data-bind: "html: $data"}
                     %span.pre{data-bind: "html: trailing_out"}
+                    %span.truncated{data-bind: "if: truncated"}
+                      (this output has been truncated)

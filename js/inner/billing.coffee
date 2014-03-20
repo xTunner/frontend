@@ -69,6 +69,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     invoices_loaded: false
     existing_plan_loaded: false
     stripe_loaded: false
+    too_many_extensions: false
 
   constructor: ->
     super
@@ -104,6 +105,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @trial_days = @komp =>
       if @trial() && @trial_end()
         moment(@trial_end()).diff(moment(), 'days') + 1
+
+    @show_extend_trial_button = @komp =>
+      !@too_many_extensions() && (@trial_over() or @trial_days() < 3)
 
     @pretty_trial_time = @komp =>
       if @trial() && @trial_end()

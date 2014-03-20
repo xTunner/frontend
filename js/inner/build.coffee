@@ -48,6 +48,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     super
     VM.cleanObjs(@steps())
+    VM.cleanObjs(@containers())
     @clean_usage_queue_why()
 
   constructor: (json) ->
@@ -61,6 +62,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @url = @komp =>
       @urlForBuildNum @build_num
+
+    @parallelism_url = @komp =>
+     "#{@project_path()}/edit#parallel-builds"
 
     @important_style = @komp =>
       switch @status()
@@ -215,6 +219,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
         window.updator() # update every second
         CI.time.as_time_since(@start_time())
 
+    @start_time_stamp = @komp =>
+      if @start_time()
+        window.updator() # update every second
+        CI.time.as_timestamp(@start_time())
+
     @previous_build = @komp =>
       @previous()? and @previous().build_num
 
@@ -310,6 +319,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
+
+    @parallelism = @parallel() + 'x'
+
+    @parallelism_title = @komp =>
+      'This build used ' + @parallel() + ' containers. Click here to change parallelism for future builds.'
 
     # Containers use @finished() to determine their status. Create the
     # Container instances *after* the Build komps are created or container
@@ -502,7 +516,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
       # adds output to the action
       @fillActions(json.step, json.index)
 
-      @containers()[json.index].actions()[json.step].append_output([json.out])
+      # Only append the output if it's for the current container
+      if @current_container().container_index == json.index
+        @containers()[json.index].actions()[json.step].append_output([json.out])
     else
       # adds output to the action
       @fillActions(json.step, json.index)
@@ -642,8 +658,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # Multiple mouse clicks cause the transition to get out of sync with the
     # selected container, ignore double clicks etc.
     # http://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
-    if event instanceof MouseEvent and event?.originalEvent?.detail != 1
+    if event?.originalEvent instanceof MouseEvent and event?.originalEvent?.detail != 1
       return
+
+    @current_container().deselect()
+    container.select()
 
     @current_container(container)
     @switch_container_viewport(@current_container())

@@ -8,6 +8,9 @@ textVal = (elem, val) ->
   else # button or a
     if val? then elem.text(val) else elem.text()
 
+insertSpinner = (elem) ->
+  elem.html(HAML.spinner())
+
 finishAjax = (event, attrName, buttonName) ->
   if event
     t = $(event.currentTarget)
@@ -59,7 +62,9 @@ $(document).ajaxSend (ev, xhr, options) ->
     # change to loading text
     loading = t.attr("data-loading-text") or "..."
     xhr.event.savedText = textVal t
-    if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
+    if t.attr("data-spinner") is "true"
+      insertSpinner(t)
+    else if not (t.prop("type").toLowerCase() in ["radio", "checkbox"])
       textVal t, loading
 
 CI.sendCSRFtoken = (settings) ->

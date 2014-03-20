@@ -1,57 +1,80 @@
 - @title = 'Continuous Integration and Continuous Deployment with Python'
 - @short_title = 'Python'
-- @lastUpdated = "Jun 3, 2013"
-
-%h2 Overview
+- @lastUpdated = "March 12, 2014"
 
 %p
-  CircleCI has great support for Python.
-  We can infer a substantial amount of your settings and required
-  dependencies from your code.
-  When we don't, just create a
+  CircleCI works well for Python projects.
+  We run automatic inference on each build to determine your dependencies and test commands.
+  If we don't infer all of your settings, you can also add custom configuration to a
   %a{href: "/docs/configuration"} circle.yml
-  file and place this
-  file in your git repo's root directory.
-  CircleCI then reads your <code>circle.yml</code> file each time we run a build.
+  file checked into your repo's root directory.
+
+%h3 Version
 
 %p
-  When CircleCI detects Python, we automatically initiate <code>virtualenv</code>
-  to create an isolated Python environment using <code>python 2.7.3</code>.
+  When Circle detects Python, we automatically use <code>virtualenv</code>
+  to create an isolated Python environment using Python
+  != succeed '.', ->
+    %code= CI.Versions.default_python
+
+%p
+  We have
+  %a{href: "/docs/environment#python"}
+    many versions of Python
+  pre-installed. If you don't want to use the default, you can specify your Python version from your circle.yml:
+
+!= HAML.circleyml_language_example({language: "python"})
+
+%p
   Please
-  != HAML.contact_us({succeed: ""})
+  != HAML.contact_us()
   if other versions of Python would be of use to you.
 
-%h2#package-mgrs-dependencies Package managers and dependencies
+%p
+  %span.label.label-info Note:
+  Circle will set up <code>virtualenv</code> if you specify your Python version in your <code>circle.yml</code>. This can be useful if we didn't automatically detect that you're using Python.
+
+%h3 Package managers and dependencies
 
 %p
-  Python is a popular language with many packages and package managers.
-  CircleCI automatically installs your dependencies using either <code>pip</code>
-  or <code>distutils</code> when you create a <code>requirements.txt</code> or a <code>setup.py</code> file.
+  Circle automatically installs your dependencies using either <code>pip</code>
+  when we find a <code>requirements.txt</code>, or <code>distutils</code>
+  when we find a <code>setup.py</code> file.
+
 %p
-  Alternatively, you can install each package individually,
-  although this is seldom necessary.
-  In such rare cases, you specify each dependency you need in the <code>circle.yml</code> file.
-  Here's an example of how you would do that using <code>pip</code>.
+  You can also
+  %a{href: "/docs/configuration#dependencies"} add custom dependencies commands
+  from your <code>circle.yml</code>, for example:
 
 %pre
   %code.no-highlight<>
     :preserve
       dependencies:
-        post:
-          - pip install a-python-package
+        pre:
+          - pip install PIL --allow-external PIL --allow-unverified PIL
 %p
-  Please read our documentation about
-  %a{href: "/docs/git-pip-install"}git errors during pip install
-  to avoid problems.
+%h3 Databases
 
-%h2 Testing
+%p
+  Circle has pre-installed more than a dozen
+  != succeed ',', ->
+    %a{href: "/docs/environment#databases"} databases and queues
+  including PostgreSQL and MySQL.
+  If needed, you can
+  %a{href: "/docs/manually#dependencies"} manually set up your test database
+  from your <code>circle.yml</code>.
+
+%h3 Testing
 
 %p
   CircleCI automatically runs <code>tox</code> when we find a <code>tox.ini</code> file,
   and runs <code>nosetests</code> when we find a <code>unittest.py</code> file.
-  CircleCI runs <code>manage.py test</code> if you are using Django.
-  If none of those work for your project,
-  you can override CircleCI's testing by including your own testing script.
+  If you are using Django, then Circle will run <code>manage.py test</code>.
+
+  You can
+  %a{href: "/docs/configuration#test"}
+    add custom test commands
+  from your <code>circle.yml</code>:
 
 %pre
   %code.no-highlight<>
@@ -60,15 +83,14 @@
         override:
           - ./my_testing_script.sh
 
-%h2 Deployment
+%h3 Deployment
 
 %p
-  CircleCI has first-class support for
-  %a{href: "/docs/configuration#deployment"} deployment
+  CircleCI has
+  %a{href: "/docs/configuration#deployment"}
+    first-class support for deployment
   with Fabric or Paver.
-  Include information in your <code>circle.yml</code> file to let
-  CircleCI know that your Python project uses one of these tools.
-  Here's an example of how to do that.
+  To set up deployment after green builds, you can add commands to the deployment section of your <code>circle.yml</code>:
 
 %pre
   %code.no-highlight<>
@@ -79,3 +101,18 @@
           commands:
             - fab deploy
 %p
+%h3 Troubleshooting for Python
+
+%p
+  Problems?
+  Check out our
+  %a{href: "/docs/troubleshooting-python"}
+    Python troubleshooting
+  information:
+
+!= @include_article('troubleshooting_python')
+
+%p
+  If you are still having trouble, please
+  != HAML.contact_us()
+  and we will be happy to help.
