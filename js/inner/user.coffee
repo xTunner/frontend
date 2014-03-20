@@ -88,9 +88,9 @@ CI.inner.User = class User extends CI.inner.Obj
       _.contains(@github_oauth_scopes(), 'admin:public_key')
 
     @filtered_repos = @komp =>
-      current_filter = @repo_filter()
+      current_filter = @repo_filter().toLowerCase()
       current_repos = if @repos then @repos() else []
-      current_repos.filter (repo) -> repo.name.indexOf(current_filter) != -1
+      current_repos.filter (repo) -> repo.name.toLowerCase().indexOf(current_filter) != -1
 
   missing_scopes: () =>
     user_scopes = ['user', 'user:email']
