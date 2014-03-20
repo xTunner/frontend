@@ -1,6 +1,6 @@
 .repo-filter
   %i.fa.fa-search
-  %input.unobtrusive-search.input-large{type: "search", placeholder: "Filter", data-bind: "value: repo_filter, valueUpdate: 'afterkeydown'"}
+  %input.unobtrusive-search.input-large{type: "search", placeholder: "Filter repos...", data-bind: "value: repo_filter, valueUpdate: 'afterkeydown'"}
 .proj-wrapper
   / ko if: showLoading
   .loading-spinner
