@@ -80,8 +80,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
           true
         when "killed"
           true
-        when "not_run"
-          true
         else
           false
 
@@ -108,6 +106,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
         when "scheduled"
           true
         when "retried"
+          true
+        when "not_run"
           true
         else
           false
