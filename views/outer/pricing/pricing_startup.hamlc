@@ -1,0 +1,17 @@
+%div.span3.plan.recommended
+  %h2 Startup
+  %h4 for small teams
+  %p
+    %strong
+      %span{data-bind: "text: '#{@plan_price}'"}
+    \/ month
+  %ul
+    %li Includes 
+      %span{data-bind: "text: '#{@number_containers}'"} 
+      containers
+    %li Up to 16-way parallelism
+    %li Unlimited private repositories 
+  %span{data-bind: "ifnot: $root.logged_in"}
+    %a.btn.btn-primary{href: CI.github.authUrl(),  
+                      data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-startup'}}"} 
+      Start your 14-day trial
