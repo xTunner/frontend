@@ -115,6 +115,8 @@
         "start_time" : "2013-02-12T21:33:38Z", // time build started
         "stop_time" : "2013-02-12T21:34:01Z", // time build finished
         "build_time_millis" : 23505,
+        "username" : "circleci",
+        "reponame" : "mongofinil",
         "lifecycle" : "finished",
         "outcome" : "failed",
         "status" : "failed",
@@ -144,6 +146,8 @@
           "start_time" : "2013-02-12T21:33:38Z", // time build started
           "stop_time" : "2013-02-12T21:34:01Z", // time build finished
           "build_time_millis" : 23505,
+          "username" : "circleci",
+          "reponame" : "mongofinil",
           "lifecycle" : "finished",
           "outcome" : "success", // all successful builds have "success"
           "status" : "success",
@@ -243,6 +247,8 @@
           "start_time" : "2013-04-12T21:33:38Z", // time build started running
           "stop_time" : "2013-04-12T21:34:01Z", // time build finished running
           "build_time_millis" : 23505,
+          "username" : "circleci",
+          "reponame" : "mongofinil",
           "lifecycle" : "queued",
           "outcome" : null,
           "status" : "queued",
@@ -273,6 +279,8 @@
           "start_time" : null, // time build started running
           "stop_time" : null, // time build finished running
           "build_time_millis" : null,
+          "username" : "circleci",
+          "reponame" : "mongofinil",
           "lifecycle" : "queued",
           "outcome" : "canceled",
           "status" : "canceled",
