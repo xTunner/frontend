@@ -1,18 +1,20 @@
 CI.content = {}
 CI.content.pricing_features = [
   {
-    headline: "Email support",
-    detail: "You email us your question, we email you back. Simple as that."
+    headline: "Unlimited Private Repositories",
+    detail: "No repo limits, follow as many as you like."
   },
   {
-    headline: "Immediate support",
-    detail: "We respond to support requests immediately, every day (yes, on weekends and holidays). Most requests are responded to within the hour, 99% are responded to in 12 hours. We're also available for live chat support.",
-    name: "fast-support"
+    headline: "Unlimited parallelism",
+    detail: "Subject to number of containers. ex. if you have 6 containers you can run up to 6x parallelism."
   },
   {
-    headline: "Phone Support",
-    detail: "Our phone number is +1 415 341 2432. No-one ever calls because our email support is so good. But in theory, if you called, we'd answer. Try it.",
-    name: "phone"
+    headline: "Unlimited collaborators",
+    detail: "Invite as many members of your team as you want to use CircleCI with you, we never limit your users."
+  },
+  {
+    headline: "Phenomenal support",
+    detail: "We respond to support requests immediately, every day (yes, on weekends and holidays). Most requests are responded to within the hour, 99% are responded to in 12 hours. We're also available for live chat support."
   },
   {
     headline: "Custom NDA",
@@ -20,8 +22,23 @@ CI.content.pricing_features = [
     name: "nda"
   },
   {
-    headline: "Predictable pricing",
-    detail: "Our pricing is the same every month, no matter how often you push. There are no charges for using machine time."
+    headline: "Service-level agreements",
+    detail: "If you require a service contract we're happy to provide it.",
+    name: "nda"
+  },
+  {
+  headline: "Amazon VPC support",
+  detail: "CircleCI allows you to run your builds on your own Amazon Virtual Private Cloud.",
+  name: "nda"
+  },
+  {
+  headline: "Data retention",
+  detail: "Retain long-term build data and logs.",
+  name: "nda"
+  },
+  {
+    headline: "Scaleable and transparent pricing",
+    detail: "Our pricing is container based, allowing you add as many containers as you need for $50/each. There are no charges for using machine time."
   },
   {
     headline: "Unlimited builds",
