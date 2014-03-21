@@ -9,7 +9,7 @@
       containers
     %li Up to 64-way parallelism
     %li Unlimited private repositories 
-  %span{data-bind: "ifnot: $root.logged_in"}
+  %span
     %a.btn.btn-primary{href: "/enterprise",
                       data-bind: "track_link: {event: 'Enterprise contact us', properties: {'source': 'pricing-enterprise'}}"} 
       Learn More

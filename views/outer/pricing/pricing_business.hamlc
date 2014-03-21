@@ -11,6 +11,14 @@
       containers
     %li Up to 16-way parallelism
     %li Unlimited private repositories 
+  %span{data-bind: "if: $root.logged_in"}
+    %button.btn.btn-primary{data-bind: "click: function (d,e) { $parent.selectPlan($data, e)}",
+                       data-success-text: "Paid!",
+                       data-failed-text: "Failed!",
+                       data-loading-text: "Paying..."}
+      Sign Up Now For 
+      %span{data-bind: "text: '#{@plan_price}'"}
+      \/month
   %span{data-bind: "ifnot: $root.logged_in"}
     %a.btn.btn-primary{href: CI.github.authUrl(),  
                       data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"} 
