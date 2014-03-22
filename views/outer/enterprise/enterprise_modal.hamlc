@@ -3,7 +3,7 @@
     %h4
       Contact us to learn more about enterprise Continous Delivery
     %hr
-    %form.contact-us{data-bind: "with: new CI.outer.ContactUsForm($element)"}
+    %form.contact-us{data-bind: "with: new CI.outer.ContactUsForm($element, {enterprise: true})"}
 
       %label{for: "name"} Name*
       %input{name: "name",

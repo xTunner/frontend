@@ -63,6 +63,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @url = @komp =>
       @urlForBuildNum @build_num
 
+    @parallelism_url = @komp =>
+     "#{@project_path()}/edit#parallel-builds"
+
     @important_style = @komp =>
       switch @status()
         when "failed"
@@ -323,6 +326,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
+
+    @parallelism = @parallel() + 'x'
+
+    @parallelism_title = @komp =>
+      'This build used ' + @parallel() + ' containers. Click here to change parallelism for future builds.'
 
     # Containers use @finished() to determine their status. Create the
     # Container instances *after* the Build komps are created or container
