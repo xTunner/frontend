@@ -151,6 +151,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @not_running = @komp =>
       @status() == 'not_running'
 
+    @infrastructure_fail = @komp =>
+      @status() == 'circle_bug'
+
     @finished = @komp =>
       @stop_time()? or @canceled()
 
@@ -160,7 +163,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       "fa-clock-o": @komp => @queued() || @not_running()
       "fa-refresh": @komp => @info_style()
       "fa-calendar-o": @komp => @scheduled()
-      "fa-ban": @komp => @not_run()
+      "fa-ban": @komp => @not_run() || @circle_bug()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
