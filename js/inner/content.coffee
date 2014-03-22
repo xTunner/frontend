@@ -19,22 +19,22 @@ CI.content.pricing_features = [
   {
     headline: "Custom NDA",
     detail: "Naturally we never look at your code. We also have a great security policy, which gives us no rights whatsoever to your code. However, if you would prefer that we sign your custom NDA, we'd be happy to.",
-    name: "nda"
+    enterprise: true
   },
   {
     headline: "Service-level agreements",
     detail: "If you require a service contract we're happy to provide it.",
-    name: "nda"
+    enterprise: true
   },
   {
   headline: "Amazon VPC support",
   detail: "CircleCI allows you to run your builds on your own Amazon Virtual Private Cloud.",
-  name: "nda"
+  enterprise: true
   },
   {
   headline: "Data retention",
   detail: "Retain long-term build data and logs.",
-  name: "nda"
+  enterprise: true
   },
   {
     headline: "Scaleable and transparent pricing",
