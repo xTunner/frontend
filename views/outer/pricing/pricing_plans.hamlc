@@ -2,7 +2,7 @@
   .span12
     .row-fluid
       != HAML.pricing_solo({number_containers : 1, plan_price : "$19"})
-      != HAML.pricing_startup({number_containers : 2, plan_price : "$79"})
+      != HAML.pricing_startup({number_containers : 2, plan_price : "$69"})
       != HAML.pricing_business({number_containers : 6, plan_price : "$269"})
       != HAML.pricing_enterprise({number_containers : "unlimited"})
 
