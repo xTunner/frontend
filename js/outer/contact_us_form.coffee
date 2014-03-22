@@ -1,6 +1,6 @@
 CI.outer.ContactUsForm = class ContactUsForm
 
-  constructor: (@form) ->
+  constructor: (@form, @opts={}) ->
     @notice = ko.observable()
     @name = ko.observable()
     @email = ko.observable()
@@ -25,6 +25,7 @@ CI.outer.ContactUsForm = class ContactUsForm
           name: @name()
           email: @email()
           message: @message()
+          enterprise: @opts.enterprise
 
         contentType: "application/x-www-form-urlencoded; charset=UTF-8"
         success: (data) =>
