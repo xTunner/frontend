@@ -151,8 +151,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @not_running = @komp =>
       @status() == 'not_running'
 
-    @infrastructure_fail = @komp =>
-      @status() == 'circle_bug'
+    @circle_bug = @komp =>
+      @status() == 'infrastructure_fail'
 
     @finished = @komp =>
       @stop_time()? or @canceled()
