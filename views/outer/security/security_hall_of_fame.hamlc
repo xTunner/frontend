@@ -10,6 +10,11 @@
 
     %ul
       %li
+        %a{:href => "https://twitter.com/OsandaMalith"}
+          Osanda Malith Jayathissa
+        (2014-03-21)
+
+      %li
         %a{:href => "https://www.facebook.com/junior.ns1de"}
           Rodolfo Godalle, Jr.
         (2014-03-15)
