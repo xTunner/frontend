@@ -1,13 +1,13 @@
 %div.span3.plan{:class => ("recommended" if @plan_recommended)}
-  %h2{data-bind: "text: '#{@plan_name}'"}
-  %h4{data-bind: "text: '#{@plan_for}'"}
+  %h2 = @plan_name
+  %h4 = @plan_for
   %p
     %strong
-      %span{data-bind: "text: '#{@plan_price}'"}
+      %span = @plan_price
     \/ month
   %ul
     %li Includes 
-      %span{data-bind: "text: '#{@number_containers}'"}
+      %span = @number_containers
       - if @number_containers is 1 
         container
       - else
@@ -21,7 +21,7 @@
                        data-failed-text: "Failed!",
                        data-loading-text: "Paying..."}
       Sign Up Now For 
-      %span{data-bind: "text: '#{@plan_price}'"}
+      %span = @plan_price
       \/month
   %span{data-bind: "ifnot: $root.logged_in"}
     %a.btn.btn-primary{href: CI.github.authUrl(),  
