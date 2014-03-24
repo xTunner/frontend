@@ -4,9 +4,9 @@
   %p
     %span Contact us to request a quote
   %ul
-    %li Includes unlimited containers
-    %li Up to 64-way parallelism
-    %li Unlimited private repositories 
+    %li Support for on-premise deployment
+    %li Support for GitHub Enterprise
+    %li Support for Amazon VPC
   %span
     %a.btn.btn-primary{href: "/enterprise",
                       data-bind: "track_link: {event: 'Enterprise contact us', properties: {'source': 'pricing-enterprise'}}"} 

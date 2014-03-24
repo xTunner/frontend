@@ -1,7 +1,7 @@
 CI.content = {}
 CI.content.pricing_features = [
   {
-    headline: "Unlimited Private Repositories",
+    headline: "Unlimited private repositories",
     detail: "No repo limits, follow as many as you like."
   },
   {
@@ -11,6 +11,15 @@ CI.content.pricing_features = [
   {
     headline: "Unlimited collaborators",
     detail: "Invite as many members of your team as you want to use CircleCI with you, we never limit your users."
+  },
+  {
+    headline: "Unlimited builds",
+    detail: "There's no limit to how often you can push.
+You queue them up, we'll knock 'em down."
+  },
+  {
+    headline: "Unlimited build time",
+    detail: "Great testing means using Circle as much as possible. You don't want to weigh good testing against possible charges or monthly fees. So we have no limit, no per-hour cost, no overages. Just simple, predictable pricing."
   },
   {
     headline: "Phenomenal support",
@@ -39,15 +48,6 @@ CI.content.pricing_features = [
   {
     headline: "Scaleable and transparent pricing",
     detail: "Our pricing is container based, allowing you add as many containers as you need for $50/each. There are no charges for using machine time."
-  },
-  {
-    headline: "Unlimited builds",
-    detail: "There's no limit to how often you can push.
-You queue them up, we'll knock 'em down."
-  },
-  {
-    headline: "Unlimited build time",
-    detail: "Great testing means using Circle as much as possible. You don't want to weigh good testing against possible charges or monthly fees. So we have no limit, no per-hour cost, no overages. Just simple, predictable pricing."
   },
   {
     headline: "Lightning fast hardware",

@@ -11,10 +11,10 @@
       - if @number_containers is 1 
         container
       - else
-        containers
+        containers  
     %li Additional containers for $50/each
-    %li Up to 16-way parallelism
-    %li Unlimited private repositories 
+    %li
+      %strong No other limits
   %span{data-bind: "if: $root.logged_in"}
     %button.btn.btn-primary{data-bind: "click: function (d,e) { $parent.selectPlan($data, e)}",
                        data-success-text: "Paid!",
