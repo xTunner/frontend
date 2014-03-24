@@ -4,9 +4,7 @@
   %p
     %span Contact us to request a quote
   %ul
-    %li Includes 
-      %span{data-bind: "text: '#{@number_containers}'"} 
-      containers
+    %li Includes unlimited containers
     %li Up to 64-way parallelism
     %li Unlimited private repositories 
   %span
