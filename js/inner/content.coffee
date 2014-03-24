@@ -6,7 +6,7 @@ CI.content.pricing_features = [
   },
   {
     headline: "Unlimited parallelism",
-    detail: "Subject to number of containers. ex. if you have 6 containers you can run up to 6x parallelism."
+    detail: "Subject to number of containers. For example, if you have 6 containers you can run up to 6x parallelism."
   },
   {
     headline: "Unlimited collaborators",
