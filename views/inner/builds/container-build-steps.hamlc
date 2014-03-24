@@ -1,8 +1,9 @@
 %div
   -# The sliding is handled by scrolling #container_parent left and right
   %div#container_parent{data-bind: "foreach: containers
-                                    , on_window_event: {event: 'resize', fn: realign_container_viewport}
-                                    , event: {scroll: handle_browser_scroll}"}
+                                    , on_window_event: {event: 'resize', callback: realign_container_viewport}
+                                    , event: {scroll: handle_browser_scroll}
+                                    , resize_sensor: {callback: height_changed}"}
     -# The style: binding sets the "left" property of the container to index * 100%
     -# The attr: binding sets a known id attribute for each container
     -# The css: binding sets the current_container class on the selected

@@ -320,6 +320,11 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+    # Autoscrolling. A waypoint is set at the bottom of the build page which
+    # changes @autoscroll based on the scroll direction. Scrolling to the
+    # bottom of the page enables, scrolling up disables.
+    @autoscroll = false
+
     @parallelism = @parallel() + 'x'
 
     @parallelism_title = @komp =>
@@ -711,3 +716,25 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $container_parent = $("#container_parent")
     container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
     @select_container(@containers()[container_index])
+
+  enable_autoscroll: (direction) =>
+    # Autoscrolling on a finished build would be a horrible user experience.
+    @autoscroll = direction is "down" and not @finished()
+
+  height_changed: () =>
+    @maybe_scroll()
+    @refresh_waypoints()
+
+  maybe_scroll: () =>
+    if @autoscroll
+      CI.Browser.scroll_to("bottom")
+
+  refresh_waypoints: () =>
+    # Prevent accidentally toggling the autoscroll waypoint while they're being
+    # refreshed
+    $autoscroll_trigger = $('.autoscroll-trigger')
+    $autoscroll_trigger.waypoint("disable")
+
+    $.waypoints("refresh")
+
+    $autoscroll_trigger.waypoint("enable")
