@@ -10,6 +10,4 @@ exports.ab_test_definitions =
   a_is_a: [true, false]
   pricing_maintain_infrastructure: [true, false]
   github_modal: [true, false]
-  old_font: [true, false]
-  customer_logos: [true, false]
   github_header: [true, false]

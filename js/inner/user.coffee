@@ -24,6 +24,7 @@ CI.inner.User = class User extends CI.inner.Obj
     gravatar_id: null
     github_id: null
     github_oauth_scopes: []
+    repo_filter: ""
 
   constructor: (json) ->
     super json,
@@ -86,6 +87,10 @@ CI.inner.User = class User extends CI.inner.Obj
     @has_public_key_scope = @komp =>
       _.contains(@github_oauth_scopes(), 'admin:public_key')
 
+    @filtered_repos = @komp =>
+      current_filter = @repo_filter().toLowerCase()
+      current_repos = if @repos then @repos() else []
+      current_repos.filter (repo) -> repo.name.toLowerCase().indexOf(current_filter) != -1
 
   missing_scopes: () =>
     user_scopes = ['user', 'user:email']

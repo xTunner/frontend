@@ -54,9 +54,6 @@ CI.outer.Page = class Page
       .append(content)
       .append(footer)
 
-    if VM.ab().old_font()
-      $('#app').addClass('old-font')
-
     if @opts.addLinkTargets == true
       console.log("Page:", @name, "adding link targets")
       @addLinkTargets()
