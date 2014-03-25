@@ -4,7 +4,7 @@
   %p
     %span Contact us to request a quote
   %ul
-    %li Support for on-premise deployment
+    %li Support for on-premises deployment
     %li Support for GitHub Enterprise
     %li Support for Amazon VPC
   %span
