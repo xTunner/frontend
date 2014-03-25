@@ -10,6 +10,11 @@
 
     %ul
       %li
+        %a{:href => "https://twitter.com/NiteshShilpkar"}
+          Nitesh Kumar Shilpkar
+        (2014-03-25)
+
+      %li
         %a{:href => "https://twitter.com/OsandaMalith"}
           Osanda Malith Jayathissa
         (2014-03-21)
