@@ -1,15 +1,4 @@
 .row
-  / ko if: VM.ab().pricing_maintain_infrastructure
-  .span12.intro
-    If your time is worth just $50 an hour, CircleCI pays for itself dozens of times over...
-    %em
-      each month!
-    %div
-      %strong
-        Free trial! No credit card required! Choose any plan - and cancel, downgrade or upgrade easily...
-  / /ko
-  / ko ifnot: VM.ab().pricing_maintain_infrastructure
   %p.intro
     All plans include
     %strong free, 14-day trial.
-  / /ko
