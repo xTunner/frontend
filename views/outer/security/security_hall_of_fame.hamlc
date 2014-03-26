@@ -10,6 +10,16 @@
 
     %ul
       %li
+        %a{:href => "https://www.randomstorm.com/"}
+          Scott Glossop
+        (2014-03-26)
+
+      %li
+        %a{:href => "https://twitter.com/pranavvenkats"}
+          S.Venkatesh
+        (2014-03-26)
+
+      %li
         %a{:href => "https://twitter.com/NiteshShilpkar"}
           Nitesh Kumar Shilpkar
         (2014-03-25)
