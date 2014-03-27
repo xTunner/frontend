@@ -10,6 +10,11 @@
 
     %ul
       %li
+        %a{:href => "https://twitter.com/gazly"}
+          J.m.Gazzaly
+        (2014-03-27)
+
+      %li
         %a{:href => "https://twitter.com/ashishbdhaduk"}
           Ashishkumar B. Dhaduk
         (2014-03-26)
