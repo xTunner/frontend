@@ -29,7 +29,7 @@
           %label{data-bind: "attr: {for: login() + '-email'}"}
             %i.fa.fa-exclamation-circle
             %span Fix Email
-        %label.invite-select
+        %label.invite-select{data-bind: "attr: {id: login() + '-checkbox'}"}
           %input{type: "checkbox", data-bind: "checked: $parent.inviting[login()]"}
   %footer
     / ko ifnot: $root.project().loading_github_users
