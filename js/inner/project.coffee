@@ -234,16 +234,17 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @github_users = @komp
       deferEvaluation: true
       read: =>
-        if not github_users_requested
-          github_users_requested = true
-          @loading_github_users true
-          $.ajax
-            type: "GET"
-            url: "/api/v1/project/#{@project_name()}/users"
-            success: (results) =>
-              github_users ((new CI.inner.GithubUser result) for result in results)
-              @loading_github_users false
-            true
+        # FIXME: Revert this change when permissions is sorted out
+        #if not github_users_requested
+        #  github_users_requested = true
+        #  @loading_github_users true
+        #  $.ajax
+        #    type: "GET"
+        #    url: "/api/v1/project/#{@project_name()}/users"
+        #    success: (results) =>
+        #      github_users ((new CI.inner.GithubUser result) for result in results)
+        #      @loading_github_users false
+        #    true
         github_users()
 
     @github_users_not_following = @komp
