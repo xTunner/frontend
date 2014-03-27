@@ -364,8 +364,13 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if @containers()[0]?
         @current_container(@containers()[0])
 
-    @first_green_build_invitations = @komp =>
-      if not @first_green_build_invitations_sent() and not @previous_successful_build() and @outcome() == "success" and VM.project()
+    @display_first_green_build_invitations = @komp =>
+      not @first_green_build_invitations_sent() and not
+      @previous_successful_build() and @outcome() == "success"
+
+    @first_green_build_invitations = @komp
+      deferEvaluation: true
+      read: =>
         new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
           node = $ ".first-green"
           node.addClass "animation-fadeout-collapse"
