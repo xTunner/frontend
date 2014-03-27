@@ -1,6 +1,7 @@
 CI.inner.Project = class Project extends CI.inner.Obj
   ## A project in the DB
   observables: =>
+    admin: false
     setup: null
     dependencies: null
     post_dependencies: null
