@@ -40,7 +40,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     rest_commits_visible: false
     node: []
     feature_flags: {}
-    first_green_build_invitations_sent: false
+    dismiss_first_green_build_invitations: false
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -365,7 +365,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @current_container(@containers()[0])
 
     @display_first_green_build_invitations = @komp =>
-      not @first_green_build_invitations_sent() and not
+      not @dismiss_first_green_build_invitations() and not
       @previous_successful_build() and @outcome() == "success"
 
     @first_green_build_invitations = @komp
@@ -383,7 +383,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
                 id: user.id()
                 email: user.email()
             VM.project().invite_team_members users
-          window.setTimeout (=> @first_green_build_invitations_sent true), 2000
+          window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
