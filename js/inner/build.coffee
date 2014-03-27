@@ -40,6 +40,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     rest_commits_visible: false
     node: []
     feature_flags: {}
+    compare: null
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
