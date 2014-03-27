@@ -176,5 +176,5 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       data:
         query: query
       success: (autocomplete) =>
-        process autocomplete.suggestions
+        process (_.escape suggestion for suggestion in autocomplete.suggestions)
     null
