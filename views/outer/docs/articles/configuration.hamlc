@@ -1,8 +1,6 @@
 - @title = 'Configuring CircleCI'
 - @lastUpdated = "May 2, 2013"
 
-%h2 Overview
-
 %p
   CircleCI automatically infers your settings from your code, so CircleCI's normal processing works just fine in most circumstances.
   When it doesn't, the
@@ -29,15 +27,6 @@
   We'll try to make it easier for you.
 
 
-
-
-%p
-  One more thing&mdash;most projects should put the
-  %code circle.yml
-  file in their repo's root directory.
-  However, if you store your application code in a subdirectory instead of the root, putting the
-  %code circle.yml
-  file in that subdirectory tells CircleCI to look for your app in that subdirectory.
 
 
 %h2#phases File structure and content
@@ -110,7 +99,7 @@
     <b>parallel</b>: (only used with commands in the <code>test</code> section)
     if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a>, set this to true to run a command across all VMs
   %li
-    <b>background</b>: when "true", runs a command in the background.  It is similar to ending a shell command with '&amp;', but works correctly over ssh.  Useful for starting servers, which your tests will connect to.  
+    <b>background</b>: when "true", runs a command in the background.  It is similar to ending a shell command with '&amp;', but works correctly over ssh.  Useful for starting servers, which your tests will connect to.
 
 %p
   Note that YAML is very strict about indentation each time you add a new property.
@@ -817,16 +806,49 @@
             - /release\\/.*/ # or ignore regexes
 
 %p
-  We deliberately don't support branch whitelisting, it means work-in-progress
+  You may also whitelist branches, so only whitelisted branches will trigger a build.
+  This example limit builds in circle to
+  %code master
+  and
+  %code feature-.*
+  branches:
+
+%pre
+  %code<>
+    :preserves
+      general:
+        branches:
+          only:
+            - master # list of branches to build
+            - /feature-.*/ # or regexes
+
+%p
+  We discourage branch whitelisting, it means work-in-progress
   code can go a long time without being integrated and tested and we've found
   it leads to problems when that untested code gets merged.
-  However, if this is an important issue to you, it can be
-  accomplished with an advanced regex, an exercise which is left to the reader.
 
 %p
   %code circle.yml
   is per-branch configuration file, and the branch ignore list in one branch will
   only affect that branch and no other one.
+
+%h2#build-dir Specifying build directory
+
+%p
+  Circle runs all commands on the repository root, by default.  However, if
+  you store your application code in a subdirectory instead of the root, you
+  can specify the build directory in circle.yml.  For example, to set the build
+  directory to `api` sub-directory, you can use the following configuration:
+
+%pre
+  %code<>
+    :preserves
+      general:
+        build_dir: api
+
+%p
+  Circle will run its inference as well as all build commands from that directory.
+
 
 %h2#help Need anything else?
 

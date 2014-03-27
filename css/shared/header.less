@@ -4,7 +4,7 @@
   background: @blueDarker;
   height: @navbarHeight;
   min-width: @minimumContentWidth;
-  .flexBox();
+  .displayFlex();
   .menu-item {
     height: @navbarHeight;
     float: left;
@@ -78,7 +78,7 @@
     .clearfix();
     margin-left: 2em;
   }
-  a {
+  a, span {
     line-height: 1em;
     padding: @crumbVertPadding 0 @crumbVertPadding @crumbHorizPadding ;
     float: left;
@@ -98,6 +98,10 @@
         font-weight: normal;
       }
     }
+  }
+  span {
+    color: @white;
+    font-weight: bold;
   }
 }
 @headerMenuToggleWidth: @navbarHeight + (@baseFontSize * 2);

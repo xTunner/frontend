@@ -40,6 +40,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     rest_commits_visible: false
     node: []
     feature_flags: {}
+    first_green_build_invitations_sent: false
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -62,6 +63,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @url = @komp =>
       @urlForBuildNum @build_num
+
+    @parallelism_url = @komp =>
+     "#{@project_path()}/edit#parallel-builds"
 
     @important_style = @komp =>
       switch @status()
@@ -142,15 +146,25 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @scheduled = @komp =>
       @status() == 'scheduled'
 
+    @not_run = @komp =>
+      @status() == 'not_run'
+
+    @not_running = @komp =>
+      @status() == 'not_running'
+
+    @circle_bug = @komp =>
+      @status() == 'infrastructure_fail'
+
     @finished = @komp =>
       @stop_time()? or @canceled()
 
     @status_icon_class =
       "fa-check": @success_style
       "fa-times": @komp => @important_style() || @warning_style() || @canceled()
-      "fa-clock-o": @komp => @queued()
+      "fa-clock-o": @komp => @queued() || @not_running()
       "fa-refresh": @komp => @info_style()
       "fa-calendar-o": @komp => @scheduled()
+      "fa-ban": @komp => @not_run() || @circle_bug()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
@@ -317,6 +331,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
 
+    # Autoscrolling. A waypoint is set at the bottom of the build page which
+    # changes @autoscroll based on the scroll direction. Scrolling to the
+    # bottom of the page enables, scrolling up disables.
+    @autoscroll = false
+
+    @parallelism = @parallel() + 'x'
+
+    @parallelism_title = @komp =>
+      'This build used ' + @parallel() + ' containers. Click here to change parallelism for future builds.'
+
     # Containers use @finished() to determine their status. Create the
     # Container instances *after* the Build komps are created or container
     # status can be reported incorrectly.
@@ -339,6 +363,27 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
       if @containers()[0]?
         @current_container(@containers()[0])
+
+    @display_first_green_build_invitations = @komp =>
+      not @first_green_build_invitations_sent() and not
+      @previous_successful_build() and @outcome() == "success"
+
+    @first_green_build_invitations = @komp
+      deferEvaluation: true
+      read: =>
+        new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
+          node = $ ".first-green"
+          node.addClass "animation-fadeout-collapse"
+          if sending
+            node.addClass "success"
+            for user in users
+              mixpanel.track "Sent invitation",
+                project: VM.project().project_name()
+                login: user.login
+                id: user.id()
+                email: user.email()
+            VM.project().invite_team_members users
+          window.setTimeout (=> @first_green_build_invitations_sent true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -400,7 +445,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
         vcs_url: @vcs_url()
         build_num: @build_num
     event.stopPropagation()
-
 
   visit: () =>
     SammyApp.setLocation @url()
@@ -650,7 +694,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     # Multiple mouse clicks cause the transition to get out of sync with the
     # selected container, ignore double clicks etc.
     # http://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
-    if event instanceof MouseEvent and event?.originalEvent?.detail != 1
+    if event?.originalEvent instanceof MouseEvent and event?.originalEvent?.detail != 1
       return
 
     @current_container().deselect()
@@ -703,3 +747,25 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $container_parent = $("#container_parent")
     container_index = Math.round($container_parent.scrollLeft() / $container_parent.width())
     @select_container(@containers()[container_index])
+
+  enable_autoscroll: (direction) =>
+    # Autoscrolling on a finished build would be a horrible user experience.
+    @autoscroll = direction is "down" and not @finished()
+
+  height_changed: () =>
+    @maybe_scroll()
+    @refresh_waypoints()
+
+  maybe_scroll: () =>
+    if @autoscroll
+      CI.Browser.scroll_to("bottom")
+
+  refresh_waypoints: () =>
+    # Prevent accidentally toggling the autoscroll waypoint while they're being
+    # refreshed
+    $autoscroll_trigger = $('.autoscroll-trigger')
+    $autoscroll_trigger.waypoint("disable")
+
+    $.waypoints("refresh")
+
+    $autoscroll_trigger.waypoint("enable")

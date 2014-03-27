@@ -1,7 +1,5 @@
 #enterprise
 
-
-
   .enterprise-hero
 
     %section.enterprise-hero-wrapper
@@ -38,7 +36,7 @@
         %article
           %h4 Maintain complete control
           %p With on-premises and private cloud options, role-based access control, and enterprise grade security you can maintain complete control of your source code and deployment process.
-          %a{href: "#", data-bind: "click: enterpriseModal"} Learn More
+          %a{"href" => "#", "data-toggle" => "modal", "data-target" => "#enterpriseModal", "data-bind" => "track_link: {event: 'Fire enterprise Modal', properties: {'source': 'control'}}"} Learn More
 
         != HAML.enterprise_control({})
 
@@ -49,14 +47,14 @@
         %article
           %h4 Enterprise support
           %p Your success is our number one priority which is why we offer 24/7 support and multiple deployment options with service-level agreements.
-          %a{href: "#", data-bind: "click: enterpriseModal"} Learn More
+          %a{"href" => "#", "data-toggle" => "modal", "data-target" => "#enterpriseModal", "data-bind" => "track_link: {event: 'Fire enterprise Modal', properties: {'source': 'support'}}"} Learn More
 
       .enterprise-feature
 
         %article
           %h4 Seamless integration
           %p We integrate with your current workflow via Github Enterprise, Amazon VPC, and more.
-          %a{href: "#", data-bind: "click: enterpriseModal"} Learn More
+          %a{"href" => "#", "data-toggle" => "modal", "data-target" => "#enterpriseModal", "data-bind" => "track_link: {event: 'Fire enterprise Modal', properties: {'source': 'integration'}}"} Learn More
 
         != HAML.enterprise_integration({})
 
@@ -67,7 +65,7 @@
     %section.enterprise-cta-wrapper
 
       .enterprise-cta-contact
-        %button{title: 'Contact Us', data-bind: "click: enterpriseModal"} Contact Us
+        %button{"title" => "Contact Us", "href" => "#", "data-toggle" => "modal", "data-target" => "#enterpriseModal", "data-bind" => "track_link: {event: 'Fire enterprise Modal', properties: {'source': 'hero'}}"} Contact Us
 
       .enterprise-cta-trust
         != HAML.customers_trust()

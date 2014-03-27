@@ -1,8 +1,6 @@
 - @title = "Getting started with CircleCI"
 - @lastUpdated = "April 29, 2013"
 
-%h2#overview Overview
-
 %p Setting up CircleCI usually takes only three mouse clicks:
 %ol
   %li Sign up with CircleCI.

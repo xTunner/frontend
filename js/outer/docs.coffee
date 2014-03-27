@@ -56,7 +56,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     for slug of HAML
       try
         # extract the metadata, which is actually in the file, writing into the context
-        context = {}
+        context = {include_article: => }
         node = $(window.HAML[slug](context))
         if context.title
           @articles[slug] = @article_info(slug, node, context)
@@ -115,9 +115,16 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     result =
       categories: @sorted_categories
       articles: @articles
-      children: @children
       slug: @filename cx
       article: @articles[@filename cx]
+
+    include_article = (name) =>
+      new_cx = $.extend {}, result, {article: @articles[name]}
+      HAML[name](new_cx)
+
+    $.extend {}, result, {include_article: include_article}
+
+
 
   title: (cx) =>
     try
@@ -141,27 +148,6 @@ CI.outer.Docs = class Docs extends CI.outer.Page
     catch e
       # TODO: go to 404 page
       return cx.redirect "/docs"
-
-
-  addLinkTargets: =>
-    # Add a link target to every heading. If there's an existing id, it won't override it
-    h = "article"
-    for heading in $("#{h} h2, #{h} h3, #{h} h4, #{h} h5, #{h} h6")
-      @addLinkTarget heading
-
-  addLinkTarget: (heading) =>
-    jqh = $(heading)
-    title = jqh.text()
-    id = jqh.attr("id")
-
-    if not id?
-      id = title.toLowerCase()
-      id = id.replace(/^\s+/g, '').replace(/\s+$/g, '') # strip whitespace
-      id = id.replace(/\'/, '') # heroku's -> herokus
-      id = id.replace(/[^a-z0-9]+/g, '-') # dashes everywhere
-      id = id.replace(/^-/, '').replace(/-$/, '') # dont let first and last chars be dashes
-
-    jqh.html("<a href='##{id}'>#{title}</a>").attr("id", id)
 
 
   ####################
