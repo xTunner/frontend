@@ -10,6 +10,11 @@
 
     %ul
       %li
+        %a{:href => "https://twitter.com/ashishbdhaduk"}
+          Ashishkumar B. Dhaduk
+        (2014-03-26)
+
+      %li
         %a{:href => "http://www.facebook.com/mtk911"}
           Muhammad Talha Khan
         (2014-03-26)
