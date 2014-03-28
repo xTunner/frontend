@@ -41,6 +41,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     node: []
     feature_flags: {}
     dismiss_first_green_build_invitations: false
+    compare: null
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
