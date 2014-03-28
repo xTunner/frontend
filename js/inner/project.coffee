@@ -243,7 +243,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
             success: (results) =>
               github_users ((new CI.inner.GithubUser result) for result in results)
               @loading_github_users false
-            true
         github_users()
 
     @github_users_not_following = @komp
