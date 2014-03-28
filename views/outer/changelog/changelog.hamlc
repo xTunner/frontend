@@ -2,7 +2,7 @@
   .banner
     .container
       %h1 ChangeLog
-      %h3 A mostly complete list of CircleCI changes
+      %h3 What's changed in CircleCI recently
 
   .content.container{data-bind: "with: changelog"}
     .entries{data-bind: "foreach: entries"}
