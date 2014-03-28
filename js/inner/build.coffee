@@ -367,7 +367,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @display_first_green_build_invitations = @komp =>
       not @dismiss_first_green_build_invitations() and not
-      @previous_successful_build() and @outcome() == "success" and VM.project()?.admin()
+      @previous_successful_build() and @outcome() == "success"
 
     @first_green_build_invitations = @komp
       deferEvaluation: true
