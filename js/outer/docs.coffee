@@ -57,9 +57,10 @@ CI.outer.Docs = class Docs extends CI.outer.Page
       try
         # extract the metadata, which is actually in the file, writing into the context
         context = {include_article: => }
-        node = $(window.HAML[slug](context))
+        # we're just calling the template for the side effects on context
+        window.HAML[slug](context)
         if context.title
-          @articles[slug] = @article_info(slug, node, context)
+          @articles[slug] = @article_info(slug, context)
           if context.category
             @categories[slug] = @articles[slug]
 
@@ -85,7 +86,7 @@ CI.outer.Docs = class Docs extends CI.outer.Page
 
 
 
-  article_info: (slug, node, cx) =>
+  article_info: (slug, cx) =>
     uriFragment = slug.replace(/_/g, '-')
     children = cx.children or []
     result =
