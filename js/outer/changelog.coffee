@@ -16,12 +16,6 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
     url = VM.about.team[author].twitter
     "https://twitter.com/#{url}"
 
-  # We want a HTML id, but have a timestamp. All the timestamp characters are
-  # valid (':' and '-').
-  pubDate2id: (ts) =>
-    ts = ts.replace(/-/g, '').replace(/:/g, '')
-    "#{ts}"
-
   render: (cx) =>
     @fetchContent()
     super cx
