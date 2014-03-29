@@ -380,7 +380,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
             for user in users
               mixpanel.track "Sent invitation",
                 project: VM.project().project_name()
-                login: user.login
+                login: user.login()
                 id: user.id()
                 email: user.email()
             VM.project().invite_team_members users
