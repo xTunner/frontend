@@ -49,6 +49,11 @@
               / /ko
           <!-- /ko -->
 
+          %tr
+            %th Parallelism
+            %td
+              %a{data-bind: "text: parallelism, attr: {title: parallelism_title, href: parallelism_url}"}
+
       .build-actions
         - btn = (b, t, n) ->
           %button{data-bind: "click: #{b}", title: "#{t}", data-loading-text: "...", class: "#{b}"}= n
