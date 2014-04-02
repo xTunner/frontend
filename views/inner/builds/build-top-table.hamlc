@@ -57,7 +57,7 @@
 
           %tr
             %td{colspan: "4"}
-              != HAML.build_commit_log()
+              != HAML.build_commits()
 
       %dl.actions
         %dd
