@@ -3,9 +3,9 @@
 -# hold off on visual change, work in progress
 -# .dashboard-messages
 
-#dashboard
+!= HAML.flashes({})
 
-  != HAML.flashes({})
+#dashboard
 
   / ko if: projects_have_been_loaded
   %aside

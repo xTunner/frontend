@@ -76,16 +76,35 @@ jQueryExt = (type) =>
 ko.bindingHandlers.popover = jQueryExt('popover')
 ko.bindingHandlers.tooltip = jQueryExt('tooltip')
 ko.bindingHandlers.typeahead = jQueryExt('typeahead')
-ko.bindingHandlers.sticky_waypoint = { init: (el, valueAccessor) =>
-                                        options = ko.toJS(valueAccessor())
-                                        $(el).waypoint('sticky', options) }
 
-# Usage: %div{data-bind: "on_window_event: {event: 'resize', fn: function(event) { console.log('event was: ' + event) }}"}
-ko.bindingHandlers.on_window_event = { init: (el, valueAccessor) =>
-                                        options = valueAccessor()
-                                        $(window).on(options.event, (event) =>
-                                          options.fn(event)
-                                        ) }
+ko.bindingHandlers.waypoint =
+  init: (el, valueAccessor, allBindings) =>
+    options = valueAccessor()
+    allBindings = allBindings()
+    callback = allBindings["waypoint_callback"]
+    $(el).waypoint(callback, options)
+
+ko.bindingHandlers.sticky_waypoint =
+  init: (el, valueAccessor) =>
+    options = ko.toJS(valueAccessor())
+    $(el).waypoint('sticky', options)
+
+# Usage: %div{data-bind: "on_window_event: {event: 'resize', callback: function(event) { console.log('event was: ' + event) }}"}
+ko.bindingHandlers.on_window_event =
+  init: (el, valueAccessor) =>
+    options = ko.toJS(valueAccessor())
+    $(window).on(options.event, (event) => options.callback(event))
+
+# Creates a ResizeSensor that calls 'callback' when a change in element size is
+# detected. To avoid memory leaks the ResizeSensor object is stored as data
+# belonging to the element using JQuery's .data() function with the key
+# "resize_sensor".
+ko.bindingHandlers.resize_sensor =
+  init: (el, valueAccessor) =>
+    options = valueAccessor()
+    callback = options.callback
+    $el = $(el)
+    $el.data("resize_sensor", new ResizeSensor($el, callback))
 
 ## Money custom binding
 

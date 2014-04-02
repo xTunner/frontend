@@ -61,7 +61,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
-    # @security = new CI.outer.Page("security", "Security", "View Security")
+    @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
+    @securityHOF = new CI.outer.Page("security_hall_of_fame", "Security Hall of Fame", "View Security Hall of Fame")
 
     @sticky_help_is_open = ko.observable(false)
 
@@ -175,6 +176,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @builds_have_been_loaded(true)
+    .fail (request) => VM.error.display()
 
   loadRecentBuilds: (refresh) =>
     @loadBuilds('/api/v1/recent-builds', refresh)
@@ -442,7 +444,8 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
-  # @get "^/security.*", (cx) => VM.security.display(cx)
+  @get "^/security(#.*)?", (cx) => VM.security.display(cx)
+  @get "^/security/hall-of-fame", (cx) => VM.securityHOF.display(cx)
 
   @get "^/pricing.*", (cx) =>
     # the pricing page has broken links if served from outer to a logged-in user;
@@ -487,5 +490,10 @@ $(document).ready () ->
 
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
+
+  # Register whether this user was invited by someone.
+  mixpanel.register_once
+    invited_by: URI.parseQuery(URI.parse(document.URL).query)['invited-by']
+
 
   SammyApp.run path + window.location.search
