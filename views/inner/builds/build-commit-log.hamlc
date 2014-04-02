@@ -1,8 +1,13 @@
 %dl.commit-log
   %dt
-    %span{data-bind: "click: toggle_rest_commits, css: {'rest-commits': rest_commits().length}"}
+    %span{data-bind: "css: {'rest-commits': rest_commits().length}"}
       Commit Log
-      %a.count{data-bind: "visible: rest_commits().length"}
+      / ko if: compare
+      %a.compare{data-bind: "attr: {href: compare}"}
+        compare
+        %i.fa.fa-github
+      / /ko
+      %a.count{data-bind: "visible: rest_commits().length, click: toggle_rest_commits"}
         %span{data-bind: "text: rest_commits().length, if: !rest_commits_visible()"} 
         %span{data-bind: "if: !rest_commits_visible()"} more
         %span{data-bind: "if: rest_commits_visible()"} Hide

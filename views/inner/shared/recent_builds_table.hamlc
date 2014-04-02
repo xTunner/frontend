@@ -42,6 +42,9 @@
         %td.recent-time-duration
           %a{data-bind: "attr: {href: url, title: duration}, text: duration"}
       <!-- /ko -->
+      <!-- ko if: status() == 'not_run' -->
+        %td{colspan: 2}
+      <!-- /ko -->
       %td
         %a.recent-status-badge{data-bind: "attr: { href: url, title: status_words }"}
           %span{data-bind: "text: status_words, css: style"}
