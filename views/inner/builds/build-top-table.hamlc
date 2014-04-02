@@ -57,7 +57,9 @@
 
           %tr
             %td{colspan: "4"}
+              / ko if: rest_commits().length
               != HAML.build_commits()
+              / /ko
 
       %dl.actions
         %dd
