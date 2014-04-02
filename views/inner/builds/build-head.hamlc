@@ -70,4 +70,4 @@
 
     != HAML.build_ssh({})
 
-    != HAML.build_artifacts({})
+    != HAML.build_artifacts_list({})
