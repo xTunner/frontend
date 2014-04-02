@@ -50,7 +50,7 @@
           <!-- /ko -->
 
           %tr
-            %th Parallelism
+            %th Parallelism:
             %td
               %a{data-bind: "text: parallelism, attr: {title: parallelism_title, href: parallelism_url}"}
 
