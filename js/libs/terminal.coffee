@@ -52,7 +52,10 @@ CI.terminal =
           ""
 
     wrapDefaultColor: (content) ->
-      "<span class='#{defaultColor}'>#{content or ""}</span>"
+      if (not content?) or (content is "")
+        ""
+      else
+        "<span class='#{defaultColor}'>#{content}</span>"
 
     get_trailing: () ->
       @wrapDefaultColor(trailing_out)
