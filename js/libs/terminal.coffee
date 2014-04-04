@@ -51,8 +51,11 @@ CI.terminal =
         else
           ""
 
+    wrapDefaultColor: (content) ->
+      "<span class='#{defaultColor}'>#{content or ""}</span>"
+
     get_trailing: () ->
-      trailing_out
+      @wrapDefaultColor(trailing_out)
 
     append: (str) ->
       # http://en.wikipedia.org/wiki/ANSI_escape_code
@@ -109,7 +112,7 @@ CI.terminal =
           if terminator.search(/^\r+$/) == -1
             output += output_line
 
-      output
+      @wrapDefaultColor(output)
 
   ansiToHtml: (str) ->
     # convenience function for testing
