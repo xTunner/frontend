@@ -578,6 +578,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
       type: "POST"
       event: event
+      data: JSON.stringify
+        "no-cache": clearCache
       success: (data) =>
         console.log("retry build data", data)
         console.log("retry event", event)
@@ -585,14 +587,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @trackRetryBuild data, clearCache, false
     false
 
-  clear_cache_and_retry_build: (data, event) =>
-    $.ajax
-      url: "/api/v1/project/#{@project_name()}/build-cache"
-      type: "DELETE"
-      event: event
-      success: (data) =>
-        @retry_build data, event, true
-    false
+  retry_build_no_cache: (data, event) =>
+    @retry_build data, event, true
 
   ssh_build: (data, event) =>
     $.ajax
