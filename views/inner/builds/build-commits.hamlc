@@ -1,9 +1,17 @@
 %section.build-commits{data-bind: "css: {active: rest_commits_visible}"}
   .build-commits-title
-    %strong Commit Log:
-    %span{data-bind: "text: rest_commits().length"}
-    %a{data-bind: "click: toggle_rest_commits", role: "button"} view
-    %i.fa.fa-caret-down
+    %strong Commit Log
+    / ko if: compare
+    %a.compare{data-bind: "attr: {href: compare}"}
+      compare
+      %i.fa.fa-github
+    / /ko
+    / ko if: rest_commits().length
+    %a{data-bind: "click: toggle_rest_commits", role: "button"}
+      %span{data-bind: "text: rest_commits().length"}
+      %span more
+      %i.fa.fa-caret-down
+    / /ko
   .build-commits-list
     <!-- ko ifnot: head_commits().length -->
       / ko if: body
