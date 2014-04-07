@@ -59,11 +59,8 @@
           %button{data-bind: "click: #{b}", title: "#{t}", data-loading-text: "...", class: "#{b}"}= n
 
         = btn('retry_build',       'Retry same tests',        'Rebuild')
-        = btn('clear_cache_retry', 'Clear cache and retry',   'Clear Cache')
-        = btn('ssh_build',         'Retry with SSH in VM',    'SSH')
-        / ko if: show_queued_p
-        = btn('toggle_queue',      'View usage queue',        'Queue')
-        / /ko
+        = btn('clear_cache_retry', 'Clear cache and retry',   'w/ cleared cache')
+        = btn('ssh_build',         'Retry with SSH in VM',    'w/ ssh enabled')
         = btn('report_build',      'Report error with build', 'Report')
         / ko if: can_cancel()
         = btn('cancel_build',      'Cancel this build',       'Cancel')
