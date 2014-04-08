@@ -14,9 +14,9 @@
       <!-- /ko -->
       %th Started at
       %th Length
-      %th Status
+      %th.condense Status
       - if @actions
-        %th Actions
+        %th.condense Actions
 
   %tbody{data-bind: "foreach: {data: #{@builds}}"}
     %tr{data-bind: "css: {dont_build: dont_build}"}
