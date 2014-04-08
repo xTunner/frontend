@@ -29,5 +29,6 @@
 
   "ab_test_definitions.coffee"
 
+  "../../components/react/react.js"
   ;; "app.coffee"
 ]
