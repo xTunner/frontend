@@ -21,12 +21,13 @@
   "../vendor/md5.js"
   "../vendor/stickyMojo.js"
 
-  "module_setup.coffee"
-  "../views/"
-  "libs/"
-  "inner/"
-  "outer/"
+  ;; "module_setup.coffee"
+  ;; "../views/"
+  ;; "libs/"
+  ;; "inner/"
+  ;; "outer/"
 
   "ab_test_definitions.coffee"
-  "app.coffee"
+
+  ;; "app.coffee"
 ]
