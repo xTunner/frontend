@@ -42,18 +42,8 @@
   roughly <code>1/N</code> of the files on each VM.
 
 %p
-  By default, the file arguments will be ammended to the end of the command.
-  To position test file arguments in mid command, you can a special syntax <code>{{}}</code>:
-
-%pre
-  %code<>
-    :preserve
-      test:
-        override:
-          - bundle exec rspec {{}} --format documentation: # test files will be inserted in place of {{}}
-              parallel: true
-              files:
-                - spec/**/*.rb
+  By default, the file arguments will be appended to the end of the command.
+  Support for positional arguments is coming very soon.
 
 %h2#env-splitting Using environment variables
 %p
