@@ -285,7 +285,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       run = @run_queued_time()
       if run
         if use < 1000
-          "#{time(run)}"
+          time(run + use)
         else
           "#{time(use)} waiting, #{time(run)} queued"
       else
