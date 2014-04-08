@@ -321,8 +321,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
         "mailto:#{@committer_email}"
 
     @author_mailto = @komp =>
-      if @committer_email()
-        "mailto:#{@committer_email()}"
+      if @author_email()
+        "mailto:#{@author_email()}"
 
     @author_isnt_committer = @komp =>
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
