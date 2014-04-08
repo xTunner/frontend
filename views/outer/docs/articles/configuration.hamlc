@@ -99,6 +99,11 @@
     <b>parallel</b>: (only used with commands in the <code>test</code> section)
     if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a>, set this to true to run a command across all VMs
   %li
+    <b>files</b>:
+    A list of files (or globs) to be appended to the command arguments.  When
+    in parallel build, the arguments will be distributed among nodes.  Check
+    <a href="/docs/parallel-manual-setup#auto-splitting">manual parallelism setup document</a> for more details.
+  %li
     <b>background</b>: when "true", runs a command in the background.  It is similar to ending a shell command with '&amp;', but works correctly over ssh.  Useful for starting servers, which your tests will connect to.
 
 %p
