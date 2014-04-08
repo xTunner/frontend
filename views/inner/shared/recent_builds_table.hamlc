@@ -51,5 +51,5 @@
 
       - if @actions
         %td.build_actions{data-bind: "if: can_cancel"}
-          %button{data-bind: "click: cancel_build"}
+          %a{data-bind: "click: cancel_build", role: "button"}
             Cancel
