@@ -15,9 +15,9 @@
   When you use CircleCI's parallelization, we run your code on multiple separate VMs.
   To use parallelism, you make your test runner run only a subset of tests on each VM.
 
-  There are two mechanisms for splitting tests among nodes: Using the <code>files</code>
-  configuration modifier - a simple way of splitting test files, and using parallelism environment
-  variables - that is more powerful.
+  There are two mechanisms for splitting tests among nodes:  Using the <code>files</code>
+  configuration modifier - a very simply and straightforward way for most use cases, and
+  using parallelism environment variables - aimed for the more complex scenarios.
 
 %h2#files-splitting Using configuration <code>files</code> modifier
 %p
@@ -39,7 +39,7 @@
 
 %p
   In this example, we will run `bundle exec rspec` in all nodes appended with
-  roughly <code>1/N</code> of the files.  Non-existing files will be ignored.
+  roughly <code>1/N</code> of the files on each VM.
 
 %p
   By default, the file arguments will be ammended to the end of the command.
