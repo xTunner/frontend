@@ -33,21 +33,19 @@
             %td
               %span.build-status{data-bind: "text: status_words, css: status"}
 
-          <!-- ko if: show_queued_p || author_isnt_committer -->
-            %tr
-              / ko if: show_queued_p
-              %th Queued
-              %td
-                %span{data-bind: "text: queued_time_summary"}
-                %a{data-bind: "click: toggle_queue"} view
-                %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
-              / /ko
-              / ko if: author_isnt_committer
-              %th Committer
-              %td
-                %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
-              / /ko
-          <!-- /ko -->
+          %tr
+            / ko if: show_queued_p
+            %th Queued
+            %td
+              %span{data-bind: "text: queued_time_summary"}
+              %a{data-bind: "click: toggle_queue"} view
+              %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
+            / /ko
+            / ko if: author_isnt_committer
+            %th Committer
+            %td
+              %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
+            / /ko
 
           %tr
             %th Parallelism
