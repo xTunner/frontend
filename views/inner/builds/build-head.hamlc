@@ -54,7 +54,7 @@
 
       .build-actions
         %button.retry_build{data-bind: "click: retry_build", title: "Retry the same tests", data-loading-text: "Rebuilding"} Rebuild
-        %button.clear_cache_retry{data-bind: "click: clear_cache_retry", title: "Clear cache and retry", data-loading-text: "Rebuilding"} w/ cleared cache
+        %button.clear_cache_retry{data-bind: "click: retry_build_no_cache", title: "Clear cache and retry", data-loading-text: "Rebuilding"} w/ cleared cache
         %button.ssh_build{data-bind: "click: ssh_build", title: "Retry with SSH in VM", data-loading-text: "Rebuilding"} w/ ssh enabled
         %button.report_build{data-bind: "click: report_build", title: "Report error with build"} Report
         / ko if: can_cancel()
