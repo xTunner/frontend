@@ -22,23 +22,6 @@
       %form
         %select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
 
-
-      %p.help-block
-        You'll need more containers if you:
-        %ul
-          %li have a large team - 1 concurrent build per 3 full-time developers is typical,
-          %li have a long test suite - add 20% more concurrent builds for every 7 minutes of test time,
-          %li build frequently - if your developers push more than 5 times per day on average, you should scale up your concurrent builds linearly.
-
-      %p.help-block
-        You can split your build across up to 16 containers to reduce your test time
-        by up to 16x.
-
-      %p.help-block
-        Some customer examples:
-        %ul
-          %li a 20 minute build with 2x parallelization runs in 11 minutes
-          %li a 45 minute build with 3x parallelization runs in 18 minutes
     .right-section
 
       %h3
