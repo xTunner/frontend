@@ -66,7 +66,7 @@
         uri-path                              (.getPath utils/parsed-uri)
         [_ maybe-deep-link]                   (re-matches #"^/app/(.*)" uri-path)
         history-path "/";;(str (.getPath (goog.Uri. js/document.location.href)) "/")
-        history-el (dommy/append! top-level-node [:input.history])
+        history-el (dommy/append! top-level-node [:input.history {:style "display:none"}])
         _ (print "history-path: " history-path)
         history-imp (doto (goog.history.Html5History.)
                       (.setUseFragment false)
