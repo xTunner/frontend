@@ -8,13 +8,13 @@
     / /ko
 
     <!-- ko if: usage_queue_why -->
+      / ko if: run_queued
+      %span Circle is acquiring containers for you...
+      / /ko
+      / ko ifnot: run_queued
+      %span Waiting for these...
+      / /ko
       <!--  ko if: usage_queue_why().length -->
-        / ko if: run_queued
-        %span Circle is acquiring containers for you...
-        / /ko
-        / ko ifnot: run_queued
-        %span Waiting for these...
-        / /ko
         != HAML.recent_builds_table({builds: "usage_queue_why", mention_project: true, actions: true})
       <!-- /ko -->
       <!--  ko with: $root.project -->
