@@ -20,8 +20,18 @@
       %p You can add or remove conatiners below; more containers means faster builds and lower que times. 
 
       %form
-        %select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
-
+        /%select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
+        .container-picker
+          .container-slider
+            %span 1
+            %input#rangevalue{data-bind: "value: containers",
+                              type: "range",
+                              min: "1",
+                              max: "80"}
+            %span 80
+          .container-input
+            %input{data-bind: "value: containers, valueUpdate: 'afterkeydown'",
+                              type: "text"}
     .right-section
 
       %h3
