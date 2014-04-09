@@ -10,6 +10,11 @@
 
     %ul
       %li
+        %a{:href => "http://kevinmccarthy.org/"}
+          Kevin McCarthy
+        (2014-04-07)
+
+      %li
         %a{:href => "https://twitter.com/gazly"}
           J.m.Gazzaly
         (2014-03-27)
