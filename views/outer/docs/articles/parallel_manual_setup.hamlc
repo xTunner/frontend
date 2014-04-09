@@ -52,7 +52,7 @@
   Note the final colon, and
   %code parallel: true
   on the next line.
-  This is a command modifier which tells circle that the command should be run in parallel on all test machines.
+  This is a command modifier which tells circle that the command should be run in parallel on all test machines. It defaults to true for commands in the machine, checkout, dependencies and database build phases, and it defaults to false for commands in the test and deployment phases.
 
 %p
   Obviously, this is slightly limited because it's hard-coded to

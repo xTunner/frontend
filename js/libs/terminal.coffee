@@ -29,28 +29,36 @@ CI.terminal =
           when 37 then @color = "white"
           when 39 then @color = defaultColor
 
-      openSpan: () ->
+      classes: () ->
         classes = []
         if @bold and not @color.match(/^br/)
           classes.push("br#{@color}")
-        else
+        else if @color != defaultColor
           classes.push("#{@color}")
         if @italic
           classes.push("italic")
 
-        s = "<span"
-        if classes.length > 0
-          s += " class='" + classes.join(" ") + "'"
-        s += ">"
+        classes
+
 
       applyTo: (content) ->
         if content
-          @openSpan() + content + "</span>"
+          classes = @classes()
+          if classes.length
+            "<span class='#{classes.join(' ')}'>#{content}</span>"
+          else
+            content
         else
           ""
 
+    wrapDefaultColor: (content) ->
+      if (not content?) or (content is "")
+        ""
+      else
+        "<span class='#{defaultColor}'>#{content}</span>"
+
     get_trailing: () ->
-      trailing_out
+      @wrapDefaultColor(trailing_out)
 
     append: (str) ->
       # http://en.wikipedia.org/wiki/ANSI_escape_code
@@ -107,7 +115,7 @@ CI.terminal =
           if terminator.search(/^\r+$/) == -1
             output += output_line
 
-      output
+      @wrapDefaultColor(output)
 
   ansiToHtml: (str) ->
     # convenience function for testing

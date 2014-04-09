@@ -48,6 +48,11 @@
     The SHA1 of the commit being tested.
 
   %dt
+    %code CIRCLE_COMPARE_URL
+  %dd
+    A link to GitHub's comparison view for this push. Not present for builds that are triggered by GitHub pushes.
+
+  %dt
     %code CIRCLE_BUILD_NUM
   %dd
     The build number, same as in circleci.com/gh/foo/bar/123

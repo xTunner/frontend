@@ -1,12 +1,15 @@
 .row-fluid
   .span8
-    %legend Add containers
+    %legend Edit Plan
 
 .row-fluid
   .span4
     %p
-      More containers allows us to test more GitHub pushes at the same time.
-      Other pushes will queue up waiting to be tested.
+      You currenlty have 
+      %strong
+        %span{data-bind: "text: containers"}
+        containers. 
+      Edit your conatiners below; more containers means faster builds and lower que times. 
 
     %form
       %select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
@@ -60,3 +63,6 @@
       %span.help-block
         We'll credit your account, for the prorated difference between your new and old plans.
       / /ko
+  .row-fluid
+    .span10
+      != HAML.pricing_faq()
