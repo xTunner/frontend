@@ -230,6 +230,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         'base-template-id': plan_id
         'billing-email': @billing_email() || VM.current_user().selected_email()
         'billing-name': @billing_name() || @org_name()
+        'containers' : @containers()
       success: (data) =>
         mixpanel.track('Paid')
         @loadPlanData(data)
@@ -309,6 +310,11 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @oldTotal(data.amount / 100)
     @chosenPlan(new CI.inner.Plan(data.template_properties, @)) if data.template_properties
     @special_price_p(@oldTotal() <  @total())
+    @current_containers = @containers()
+    if @current_containers < 10
+      @max_containers = 80
+    else 
+      @max_containers = @current_containers + 80
 
   loadExistingPlans: () =>
     $.getJSON @apiURL('plan'), (data) =>
@@ -383,3 +389,5 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       options[k] = v
 
     options
+
+
