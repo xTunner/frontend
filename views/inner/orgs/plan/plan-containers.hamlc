@@ -32,10 +32,22 @@
                                 data-bind: "tooltip: {animation: false}"}
           %span<>
             )
-
+      %form
+        /%select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
+        .container-picker
+          %p You can add or remove conatiners below; more containers means faster builds and lower que times. 
+          .container-slider
+            %span 1
+            %input#rangevalue{data-bind: "value: containers, attr: {max: max_containers}",
+                              type: "range",
+                              min: "1"}
+            %span{data-bind: "text: max_containers"}
+          .container-input
+            %input{data-bind: "value: containers, valueUpdate: 'afterkeydown'",
+                              type: "text"}
 
       %fieldset
-        %button.btn.btn-primary.btn-large{data-bind: "click: saveContainers",
+        %button.btn.btn-primary.btn-large.center{data-bind: "click: saveContainers",
                                           type: "submit",
                                           data-loading-text: "Saving...",
                                           data-success-text: "Saved"}
