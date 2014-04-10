@@ -92,12 +92,6 @@
         %em Admin
         pages.
 
-      %p Upon discovering a vulnerability, we ask that you act in a way to protect our users' data:
-      %ul
-        %li inform us as soon as possible,
-        %li test against fake data and accounts, not our users' private data (please ask if you'd like a free account to work on this),
-        %li work with us to close the vulnerability before disclosing it to others.
-
     %section
       %h3 Disclosure
       %p
@@ -108,8 +102,15 @@
         %a{href: "/circleci-security.pub", target: '_blank' } our security team's GPG key
         (ID: 0x4013DDA7, fingerprint: 3CD2 A48F 2071 61C0 B9B7  1AE2 6170 15B8 4013 DDA7).
 
+
+      %p Upon discovering a vulnerability, we ask that you act in a way to protect our users' data:
+      %ul
+        %li inform us as soon as possible,
+        %li test against fake data and accounts, not our users' private data (please ask if you'd like a free account to work on this),
+        %li work with us to close the vulnerability before disclosing it to others.
+
       %p
-        We also maintain a Security Researcher Hall of Fame to thank individuals who have discovered vulnerabilities and worked with us to resolve them, <a href="/security/hall-of-fame">located here</a>
+        We also maintain a <a href="/security/hall-of-fame">Security Researcher Hall of Fame</a> to thank individuals who have discovered vulnerabilities and worked with us to resolve them.
 
     %section
       %h3 Partners with access to your source code
@@ -138,6 +139,9 @@
       %li
         %strong Mar 17, 2014
         Move the Security page to it's own page
+      %li
+        %strong Mar 15, 2014
+        Add a Hall of Fame.
       %li
         %strong Nov 5, 2013
         Rotate GPG key.
