@@ -9,5 +9,5 @@
     %li Support for Amazon VPC
   %span
     %a.btn.btn-primary{href: "/enterprise",
-                      data-bind: "track_link: {event: 'Enterprise contact us', properties: {'source': 'pricing-enterprise'}}"} 
+                      data-bind: "track: {event: 'Enterprise contact us', properties: {'source': 'pricing-enterprise'}}"} 
       Learn More

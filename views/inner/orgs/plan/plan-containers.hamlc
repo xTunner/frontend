@@ -40,7 +40,7 @@
             %span 1
             %input#rangevalue{data-bind: "value: containers, attr: {max: max_containers}",
                               type: "range",
-                              min: "1"}
+                              min: 1}
             %span{data-bind: "text: max_containers"}
           .container-input
             %input{data-bind: "value: containers, valueUpdate: 'afterkeydown'",

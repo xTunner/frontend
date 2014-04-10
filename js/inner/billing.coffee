@@ -70,6 +70,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     existing_plan_loaded: false
     stripe_loaded: false
     too_many_extensions: false
+    current_containers: null
 
   constructor: ->
     super
@@ -105,6 +106,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @trial_days = @komp =>
       if @trial() && @trial_end()
         moment(@trial_end()).diff(moment(), 'days') + 1
+
+    @max_containers = @komp =>
+      if @current_containers() < 10
+        80
+      else 
+        num = @current_containers() + 80
+        num - num % 10 + 10
 
     @show_extend_trial_button = @komp =>
       !@too_many_extensions() && (@trial_over() or @trial_days() < 3)
@@ -273,7 +281,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   saveContainers: (data, event) =>
     mixpanel.track("Save Containers")
-    @ajaxUpdatePlan {containers: @containers()}, event
+    
+    @ajaxUpdatePlan {containers: parseInt(@containers())}, event
 
   load: (hash="small") =>
     @loadPlans()
@@ -310,11 +319,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @oldTotal(data.amount / 100)
     @chosenPlan(new CI.inner.Plan(data.template_properties, @)) if data.template_properties
     @special_price_p(@oldTotal() <  @total())
-    @current_containers = @containers()
-    if @current_containers < 10
-      @max_containers = 80
-    else 
-      @max_containers = @current_containers + 80
+    @current_containers(@containers())
 
   loadExistingPlans: () =>
     $.getJSON @apiURL('plan'), (data) =>
