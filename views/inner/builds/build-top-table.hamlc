@@ -75,8 +75,8 @@
               %span.caret
             %ul.dropdown-menu
               %li
-                %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
-                  Clear Cache &amp; Retry
+                %a{href: '#', data-bind: "click: retry_build_no_cache"}
+                  Retry without Cache
 
           %button.btn.btn-primary{data-bind: "click: ssh_build",
                                 title: "Rerun the tests, with SSH into the VM",
