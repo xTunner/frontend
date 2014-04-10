@@ -138,7 +138,7 @@
     %ul.changelog
       %li
         %strong Mar 17, 2014
-        Move the Security page to it's own page
+        Move the Security page to its own page
       %li
         %strong Mar 15, 2014
         Add a Hall of Fame.
