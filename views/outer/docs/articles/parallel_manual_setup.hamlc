@@ -14,7 +14,40 @@
 %p
   When you use CircleCI's parallelization, we run your code on multiple separate VMs.
   To use parallelism, you make your test runner run only a subset of tests on each VM.
-  We use environment variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
+
+  There are two mechanisms for splitting tests among nodes:  Using the <code>files</code>
+  configuration modifier - a very simply and straightforward way for most use cases, and
+  using parallelism environment variables - aimed for the more complex scenarios.
+
+%h2#files-splitting Using configuration <code>files</code> modifier
+%p
+  Parallelizing test runners that accept file names is straightforward!  The <code>files</code> modifier
+  can list paths to the test files, and CircleCI will run the test runners with different test files in each node.
+
+  For example, to parallelize an rspec command, you can set the following:
+
+%pre
+  %code<>
+    :preserve
+      test:
+        override:
+          - bundle exec rspec:
+              parallel: true
+              files:
+                - spec/unit/sample.rb   # can be a direct path to file
+                - spec/**/*.rb          # or a glob (ruby globs)
+
+%p
+  In this example, we will run `bundle exec rspec` in all nodes appended with
+  roughly <code>1/N</code> of the files on each VM.
+
+%p
+  By default, the file arguments will be appended to the end of the command.
+  Support for positional arguments is coming very soon.
+
+%h2#env-splitting Using environment variables
+%p
+  For more control over parallelism, we use environment variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
 
 %dl
   %dt
@@ -31,7 +64,7 @@
 
 
 
-%h2#simple-example A simple example
+%h3#simple-example A simple example
 
 %p
   If you want to run the two commands
@@ -59,7 +92,7 @@
   only work with two nodes, and the test time might not balance
   across all nodes equally.
 
-%h2 Balancing
+%h3#balancing Balancing
 
 %p
   A more powerful version evenly splits all test files across N nodes. We recommend you write a script that does something like:
