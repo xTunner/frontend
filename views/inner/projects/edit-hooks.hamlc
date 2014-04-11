@@ -84,7 +84,7 @@
       %h4.chat-i-slack Slack
     .chat-room-body
       %section
-        %p To get your API token, visit Slack's <a href="https://my.slack.com/services/new/circleci">New CircleCI Integration</a> page, choose a default channel, and click the green "Add CircleCI Integration" button at the bottom of the page.
+        %p To get your Webhook URL, visit Slack's <a href="https://my.slack.com/services/new/circleci">CircleCI Integration</a> page, choose a default channel, and click the green "Add CircleCI Integration" button at the bottom of the page. 
       %section
         %label.sticky
           %input#slack-webhook-url{data-bind: "value: slack_webhook_url", type: "text", required:""}
