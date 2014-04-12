@@ -1,5 +1,7 @@
 (ns frontend.core
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+            ;; XXX remove browser repl in prod
+            [clojure.browser.repl :as repl]
             [dommy.core :as dommy]
             [goog.dom.DomHelper]
             [frontend.components.app :as app]
