@@ -61,10 +61,19 @@
         %button.cancel_build{data-bind: "click: cancel_build", title: "Cancel this build", data-loading-text: "Canceling"} Cancel
         / /ko
 
+
+    / ko if: usage_queue_visible
     != HAML.build_queue({})
+    / /ko
 
+    / ko if: subject
     != HAML.build_commits({})
+    / /ko
 
+    / ko if: ssh_enabled_now()
     != HAML.build_ssh({})
+    / /ko
 
+    / ko if: has_artifacts
     != HAML.build_artifacts_list({})
+    / /ko
