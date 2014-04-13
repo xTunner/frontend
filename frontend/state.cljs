@@ -42,7 +42,7 @@
             {:type :settings
              :name "Edit settings"
              :path "/gh/circleci/circle/edit"}]
-   :current-repos nil
+   :current-repos []
    :render-context {:status nil,
                     :githubPrivateAuthURL "https://github.com/login/oauth/authorize?client_id=78a2ba87f071c28e65bb&red…2Fgh%252Forganizations%252Fcircleci%252Fsettings&scope=user%3Aemail%2Crepo",
                     :heroku false,
