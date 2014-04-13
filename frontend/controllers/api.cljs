@@ -12,22 +12,24 @@
 ;; the api controller will do assoc-in
 ;; the api-post-controller can do any other actions
 
-(defn ajax-get [url message channel & {:keys [params format response-format keywords? context]
-                                        :or {params {}
-                                             format :json
-                                             response-format :json
-                                             keywords? true}}]
+(defn ajax [method url message channel & {:keys [params format response-format keywords? context]
+                                          :or {params {}
+                                               format :json
+                                               response-format :json
+                                               keywords? true}}]
   (put! channel [message :started context])
-  (ajax/GET url {:format format
-                 :response-format response-format
-                 :keywords? keywords?
-                 :params params
-                 :headers {:Accept "application/json"}
-                 :handler #(put! channel [message :success {:resp %
-                                                            :context context}])
-                 :error-handler #(put! channel [message :failed {:resp %
-                                                                 :context context}])
-                 :finally #(put! channel [message :finished context])}))
+  (ajax/ajax-request url method
+                     (ajax/transform-opts
+                      {:format format
+                       :response-format response-format
+                       :keywords? keywords?
+                       :params params
+                       :headers {:Accept "application/json"}
+                       :handler #(put! channel [message :success {:resp %
+                                                                  :context context}])
+                       :error-handler #(put! channel [message :failed {:resp %
+                                                                       :context context}])
+                       :finally #(put! channel [message :finished context])})))
 
 
 (defmulti api-event

@@ -19,8 +19,8 @@
   [target to [project-id build-num] state]
   (mlog "Navigated from " (from state) " to " to)
   (let [api-ch (-> state :comms :api)]
-    (api/ajax-get "/api/v1/projects" :projects api-ch)
-    (api/ajax-get "/api/v1/recent-builds" :recent-builds api-ch))
+    (api/ajax :get "/api/v1/projects" :projects api-ch)
+    (api/ajax :get "/api/v1/recent-builds" :recent-builds api-ch))
 
 
   (assoc-in state [:inspected-project] {}))

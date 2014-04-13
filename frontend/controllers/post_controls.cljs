@@ -69,7 +69,7 @@
   (let [org-name (:org-name args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
-    (api/ajax-get (gstring/format "/api/v1/user/%s/%s/repos" (name type) org-name)
-                  :repos
-                  api-ch
-                  :context args)))
+    (api/ajax :get
+              (gstring/format "/api/v1/user/%s/%s/repos" (name type) org-name)
+              :repos api-ch
+              :context args)))
