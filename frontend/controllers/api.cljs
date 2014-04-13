@@ -113,9 +113,7 @@
 (defmethod api-event [:repos :success]
   [target message status args state]
   ;; prevent delayed api responses if the user has moved on
-  (if (= (get-in state [:settings :add-projects :selected-org])
-         (get-in args [:context :org-name]))
-    (assoc state :current-repos (:resp args))
-    (do
-      (println "skipping update, user selected another org")
-      state)))
+  (let [login (get-in args [:context :login])
+        type (get-in args [:context :type])
+        repo-key (str login "." type)]
+    (assoc-in state [:current-user :repos repo-key] (:resp args))))

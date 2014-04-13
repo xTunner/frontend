@@ -3,7 +3,9 @@
 (defn initial-state []
   {:environment "development"
    :settings {:projects {}
-              :add-projects {:repo-filter-string ""}}
+              :add-projects {:repo-filter-string ""
+                             :selected-org {:login nil
+                                            :type :org}}}
    :navigation-point :dashboard
    :current-user {:plan "p19",
                   :user_key_fingerprint "9c:ae:90:91:0d:e7:78:0a:9f:eb:f6:2b:11:7f:20:d3",
@@ -23,6 +25,7 @@
                   :github_id 476818,
                   :github_oauth_scopes ["user:email" "repo"],
                   :admin true
+                  :repos {":login.:type" [{:repo :info}]}
                   :organizations [{:org true, :avatar_url "https://avatars.githubusercontent.com/u/587399?", :login "cakehealth"}
                                   {:org true, :avatar_url "https://avatars.githubusercontent.com/u/1231870?", :login "circleci"}
                                   {:org true, :avatar_url "https://avatars.githubusercontent.com/u/4412941?", :login "heavybit"}]

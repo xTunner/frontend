@@ -66,10 +66,10 @@
 
 (defmethod post-control-event! :selected-add-projects-org
   [target message args previous-state current-state]
-  (let [org-name (:org-name args)
+  (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
     (api/ajax :get
-              (gstring/format "/api/v1/user/%s/%s/repos" (name type) org-name)
+              (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
               :repos api-ch
               :context args)))

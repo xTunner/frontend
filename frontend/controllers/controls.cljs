@@ -43,10 +43,9 @@
 
 (defmethod control-event :selected-add-projects-org
   [target message args state]
-  (let [org-name (:org-name args)]
-    (-> state
-        (assoc-in [:settings :add-projects :selected-org] org-name)
-        (assoc-in [:settings :add-projects :repo-filter-string] ""))))
+  (-> state
+      (assoc-in [:settings :add-projects :selected-org] args)
+      (assoc-in [:settings :add-projects :repo-filter-string] "")))
 
 (defmethod control-event :edit-repo-filter-string
   [target message filter-string state]

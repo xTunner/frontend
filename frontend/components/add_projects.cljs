@@ -25,14 +25,14 @@
                      (if (< 1 (count missing-scopes)) "scope" "scopes"))]]])
 
 (defn side-item [org settings ch]
-  (let [org-name (:login org)
+  (let [login (:login org)
         type (if (:org org) :org :user)]
-    [:li.side-item {:class (when (= org-name (get-in settings [:add-projects :selected-org])) "active")}
-     [:a {:on-click #(put! ch [:selected-add-projects-org {:org-name org-name :type type}])}
+    [:li.side-item {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
+     [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
       [:img {:src (:avatar_url org)
              :height 25}]
-      [:div.orgname {:on-click #(put! ch [:selected-add-projects-org {:org-name org-name :type type}])}
-       org-name]]]))
+      [:div.orgname {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
+       login]]]))
 
 (defn org-sidebar [data owner opts]
   (reify
@@ -206,10 +206,10 @@
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
         (html
          [:div.proj-wrapper
-          (if-not repos ;; XXX separate loading attribute in app-state?
-            [:div.loading-spinner common/spinner]
+          (if-not (get-in settings [:add-projects :selected-org :login])
+            repos-explanation
             (if-not (seq repos)
-              repos-explanation
+              [:div.loading-spinner common/spinner]
               [:ul.proj-list
                (let [filtered-repos (filter (fn [repo]
                                               (-> repo
@@ -232,7 +232,11 @@
       (let [user (:current-user data)
             controls-ch (get-in data [:comms :controls])
             api-ch (get-in data [:comms :api])
-            settings (:settings data)]
+            settings (:settings data)
+            repo-key (gstring/format "%s.%s"
+                                     (get-in settings [:add-projects :selected-org :login])
+                                     (get-in settings [:add-projects :selected-org :type]))
+            repos (get-in user [:repos repo-key])]
         (html
          ;; XXX flashes
          [:div#add-projects
@@ -253,7 +257,7 @@
                                   :controls-ch controls-ch})
 
            (om/build main {:user user
-                           :repos (:current-repos data)
+                           :repos repos
                            :controls-ch controls-ch
                            :api-ch api-ch
                            :settings settings})]
