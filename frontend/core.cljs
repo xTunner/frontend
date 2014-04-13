@@ -127,7 +127,7 @@
 (defn setup! []
   (main app-state (sel1 :body))
   ;; XXX direct dispatching is probably the wrong approach
-  (sec/dispatch! (.getPath (goog.Uri. js/document.location.href)) "/"))
+  (sec/dispatch! (.getPath (goog.Uri. js/document.location.href))))
 
 ;; Wait for the page to finish loading before we kick off the setup
 ;; process
