@@ -11,7 +11,8 @@
             [sablono.core :as html :refer-macros [html]]
             [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format]))
+            [goog.string.format])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
@@ -64,6 +65,42 @@
      "Get started by selecting your GitHub username or organization on the left."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
+(defn start-first-build-after-follow
+  "Starts first build by tapping the API channel and starting a build when we successfully follow"
+  [repo-id controls-ch api-ch]
+  (let [api-tap (chan (sliding-buffer 10))
+        timeout (async/timeout 30000)]
+    (async/tap (async/mult api-ch) api-tap)
+    (go-loop []
+             (alt! api-tap ([v]
+                              (condp = v
+                                [:followed-repo :success repo-id]
+                                (do (put! controls-ch [:start-first-build {:repo-id repo-id}])
+                                    (close! api-tap))
+
+                                [:followed-repo :failed repo-id] (close! api-tap)
+
+                                nil (println "not recurring on closed channel")
+
+                                (recur)))
+
+                   timeout (do (close! api-tap)
+                               (print "gave up on first build after 30 seconds"))))))
+
+(defn start-first-build-after-follow-watcher
+  "Starts first build by watching app-state noticing when we successfully follow"
+  [app repo-id controls-ch]
+  (let [listener-id (utils/uuid)]
+    (add-watch app listener-id (fn [_ _ _ new-state]
+                                 (when (->> new-state
+                                            :current-repos
+                                            (filter #(= repo-id (repo-model/id %)))
+                                            first
+                                            :following)
+                                   (remove-watch app listener-id)
+                                   (put! controls-ch [:start-first-build {:repo-id repo-id}]))))
+    (js/setTimeout #(remove-watch app listener-id) 30000)))
+
 (defn repo-item [data owner opts]
   (reify
     om/IRender
@@ -71,17 +108,21 @@
       (let [repo (:repo data)
             repo-id (repo-model/id repo)
             controls-ch (:controls-ch data)
-            settings (:settings data)]
+            api-ch (:api-ch data)
+            settings (:settings data)
+            should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
          (cond (repo-model/can-follow? repo)
-               [:li.repo-follow {:class (when (repo-model/should-do-first-follower-build? repo) "repo-1stfollow")}
+               [:li.repo-follow {:class (when should-build? "repo-1stfollow")}
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:on-click #(put! controls-ch [:followed-repo repo-id])
+                [:button {:on-click #(do (when should-build?
+                                           (start-first-build-after-follow repo-id controls-ch api-ch))
+                                         (put! controls-ch [:followed-repo repo-id]))
                           ;; XXX implement data-spinner
                           :data-spinner "true"}
                  [:span "Follow"]]]
@@ -147,10 +188,11 @@
         (html
          [:div.repo-filter
           [:i.fa.fa-search]
-          [:input.unobtrusive-search.input-large {:placeholder "Filter repos..."
-                                                  :type "search"
-                                                  :value repo-filter-string
-                                                  :onChange #(put! controls-ch [:edit-repo-filter-string (.. % -target -value)])}]])))))
+          [:input.unobtrusive-search.input-large
+           {:placeholder "Filter repos..."
+            :type "search"
+            :value repo-filter-string
+            :onChange #(put! controls-ch [:edit-repo-filter-string (.. % -target -value)])}]])))))
 
 (defn main [data owner opts]
   (reify
@@ -158,6 +200,7 @@
     (render [_]
       (let [user (:current-user data)
             controls-ch (:controls-ch data)
+            api-ch (:api-ch data)
             settings (:settings data)
             repos (:repos data)
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
@@ -177,6 +220,7 @@
                                             repos)]
                  (map (fn [repo] (om/build repo-item {:repo repo
                                                       :controls-ch controls-ch
+                                                      :api-ch api-ch
                                                       :settings settings}))
                       filtered-repos))]))
           invite-modal])))))
@@ -187,6 +231,7 @@
     (render [_]
       (let [user (:current-user data)
             controls-ch (get-in data [:comms :controls])
+            api-ch (get-in data [:comms :api])
             settings (:settings data)]
         (html
          ;; XXX flashes
@@ -210,5 +255,6 @@
            (om/build main {:user user
                            :repos (:current-repos data)
                            :controls-ch controls-ch
+                           :api-ch api-ch
                            :settings settings})]
           [:div.sidebar]])))))
