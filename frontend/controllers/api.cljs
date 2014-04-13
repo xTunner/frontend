@@ -12,7 +12,7 @@
 ;; the api controller will do assoc-in
 ;; the api-post-controller can do any other actions
 
-(defn ajax-get [url message channel & {:keys [params format response-format keywords?]
+(defn ajax-get [url message channel & {:keys [params format response-format keywords? context]
                                         :or {params {}
                                              format :json
                                              response-format :json
@@ -23,8 +23,10 @@
                  :keywords? keywords?
                  :params params
                  :headers {:Accept "application/json"}
-                 :handler #(put! channel [message :success %])
-                 :error-handler #(put! channel [message :failed %])
+                 :handler #(put! channel [message :success {:resp %
+                                                            :context context}])
+                 :error-handler #(put! channel [message :failed {:resp %
+                                                                 :context context}])
                  :finally #(put! channel [message :finished])}))
 
 
@@ -73,14 +75,12 @@
 (defmethod api-event [:projects :success]
   [target message status args state]
   (mlog "projects success")
-  (assoc-in state [:projects] args))
+  (assoc-in state [:projects] (:resp args)))
 
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
   (mlog "recentbuilds success")
-  (assoc-in state [:recent-builds] args)
-;  (assoc-in state [:recent-builds] (inspect args))
-  )
+  (assoc-in state [:recent-builds] (:resp args)))
 
 (defmethod api-event [:retry-build :started]
   [target message status {:keys [build-id]} state]
@@ -110,4 +110,10 @@
 
 (defmethod api-event [:repos :success]
   [target message status args state]
-  (assoc state :current-repos args))
+  ;; prevent delayed api responses if the user has moved on
+  (if (= (get-in state [:settings :add-projects :selected-org])
+         (get-in args [:context :org-name]))
+    (assoc state :current-repos (:resp args))
+    (do
+      (println "skipping update, user selected another org")
+      state)))
