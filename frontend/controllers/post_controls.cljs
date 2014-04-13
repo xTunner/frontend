@@ -66,11 +66,14 @@
 
 (defmethod post-control-event! :selected-add-projects-org
   [target message args previous-state current-state]
-  (when (not= (get-in previous-state [:settings :add-projects :selected-org])
-              (get-in current-state [:settings :add-projects :selected-org]))
-    (let [org-name (:org-name args)
-          type (:type args)
-          api-ch (get-in current-state [:comms :api])]
+  (let [previous-org (get-in previous-state [:settings :add-projects :selected-org])
+        new-org (get-in current-state [:settings :add-projects :selected-org])
+        org-name (:org-name args)
+        type (:type args)
+        api-ch (get-in current-state [:comms :api])]
+    (when (and (not= previous-org new-org)
+               (= new-org org-name))
       (api/ajax-get (gstring/format "/api/v1/user/%s/%s/repos" (name type) org-name)
                     :repos
-                    api-ch))))
+                    api-ch
+                    :context args))))
