@@ -3,6 +3,7 @@
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
+            [frontend.components.add-projects :as add-projects]
             [frontend.components.footer :as footer]
             [frontend.components.key-queue :as keyq]
             [frontend.components.navbar :as navbar]
@@ -37,6 +38,6 @@
           [:header
            (om/build navbar/navbar app {:opts opts})]
           [:main
-           (om/build dom-com app {:opts opts})]
+           (om/build add-projects/add-projects app {:opts opts})]
           [:footer
            (footer/footer)]])))))

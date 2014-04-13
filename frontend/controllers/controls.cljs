@@ -40,3 +40,8 @@
 (defmethod control-event :usage-queue-why-toggled
   [target message build-id state]
   (update-in state [:settings :builds build-id :show-usage-queue] not))
+
+(defmethod control-event :selected-add-projects-org
+  [target message args state]
+  (let [org-name (:org-name args)]
+    (assoc-in state [:settings :add-projects :selected-org] org-name)))

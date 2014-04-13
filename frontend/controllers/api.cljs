@@ -97,3 +97,17 @@
   (update-in state [:current-build] (fn [b] (if-not (= build-id (build-model/id b))
                                               b
                                               (dissoc b :retry-state)))))
+
+(defmethod api-event [:retry-build :finished]
+  [target message status {:keys [build-id]} state]
+  (update-in state [:current-build] (fn [b] (if-not (= build-id (build-model/id b))
+                                              b
+                                              (dissoc b :retry-state)))))
+
+(defmethod api-event [:repos :started]
+  [target message status args state]
+  (dissoc state :current-repos))
+
+(defmethod api-event [:repos :success]
+  [target message status args state]
+  (assoc state :current-repos args))

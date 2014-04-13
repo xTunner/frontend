@@ -63,3 +63,14 @@
                   (put! api-ch [:retry-build :failed e])
                   (put! api-ch [:retry-build :finished args]))
                 #js {:Accept "application/json"})))
+
+(defmethod post-control-event! :selected-add-projects-org
+  [target message args previous-state current-state]
+  (when (not= (get-in previous-state [:settings :add-projects :selected-org])
+              (get-in current-state [:settings :add-projects :selected-org]))
+    (let [org-name (:org-name args)
+          type (:type args)
+          api-ch (get-in current-state [:comms :api])]
+      (api/ajax-get (gstring/format "/api/v1/user/%s/%s/repos" (name type) org-name)
+                    :repos
+                    api-ch))))
