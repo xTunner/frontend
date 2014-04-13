@@ -17,7 +17,7 @@
                                              format :json
                                              response-format :json
                                              keywords? true}}]
-  (put! channel [message :started])
+  (put! channel [message :started context])
   (ajax/GET url {:format format
                  :response-format response-format
                  :keywords? keywords?
@@ -27,7 +27,7 @@
                                                             :context context}])
                  :error-handler #(put! channel [message :failed {:resp %
                                                                  :context context}])
-                 :finally #(put! channel [message :finished])}))
+                 :finally #(put! channel [message :finished context])}))
 
 
 (defmulti api-event
