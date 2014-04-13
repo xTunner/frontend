@@ -8,7 +8,7 @@
   "../../components/jquery-waypoints/shortcuts/sticky-elements/waypoints-sticky.js"
   "../../components/uri.js/src/URI.min.js"
   "../../components/knockout/build/output/knockout-latest.js"
-  "../../components/sammy/lib/sammy.js"
+;  "../../components/sammy/lib/sammy.js"
   "../../components/moment/moment.js"
 ;  "../../components/retina.js/src/retina_image_path.coffee"
 ;  "../../components/retina.js/src/retina_image.coffee"
@@ -21,9 +21,9 @@
   "../vendor/md5.js"
   "../vendor/stickyMojo.js"
 
-  ;; "module_setup.coffee"
+  "module_setup.coffee"
   ;; "../views/"
-  ;; "libs/"
+ "libs/"
   ;; "inner/"
   ;; "outer/"
 
