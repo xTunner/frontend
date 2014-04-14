@@ -51,25 +51,17 @@
   (aset js/window "test" build-id)
   (let [api-ch (-> current-state :comms :api)]
     (put! api-ch [:retry-build :started args])
-    (utils/ajax (gstring/format "/api/v1/project/%s/%s/%s/retry" username reponame build_num)
-                "POST"
-                ""
-                (fn [d]
-                  (inspect d)
-                  (put! api-ch [:retry-build :success d])
-                  (put! api-ch [:retry-build :finished args]))
-                (fn [& e]
-                  (print "e is " e)
-                  (put! api-ch [:retry-build :failed e])
-                  (put! api-ch [:retry-build :finished args]))
-                #js {:Accept "application/json"})))
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/%s/%s/retry" username reponame build_num)
+                :retry-build
+                api-ch)))
 
 (defmethod post-control-event! :selected-add-projects-org
   [target message args previous-state current-state]
   (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
-    (api/ajax :get
+    (utils/ajax :get
               (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
               :repos api-ch
               :context args)))

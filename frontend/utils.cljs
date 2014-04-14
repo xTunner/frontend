@@ -1,13 +1,12 @@
 (ns frontend.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+            [ajax.core :as ajax]
             [goog.crypt :as crypt]
             [goog.crypt.Md5 :as md5]
             [goog.Uri]
             [goog.events :as ge]
             [goog.net.EventType :as gevt])
-  (:require-macros [frontend.utils :refer (inspect)])
-  (:import [goog.net XhrIo]
-           [goog.async Deferred]))
+  (:require-macros [frontend.utils :refer (inspect)]))
 
 (defn mlog [& messages]
   (.apply (.-log js/console) js/console (clj->js messages)))
@@ -51,26 +50,26 @@
   ;; XXX Implement proper middle-trim
   (subs s 0 (min length (count s))))
 
-(defn ajax [url method data-string success & [error headers]]
-  (let [request (XhrIo.)
-        d (goog.async.Deferred.)
-        listener-id (ge/listen request gevt/COMPLETE (fn [response]
-                                                       (let [target (.-target response)
-                                                             data (if (= method "DELETE")
-                                                                    nil
-                                                                    (.getResponseJson target))]
-                                                         (.callback d data))))]
-
-    ;; Setup deferred callbacks
-    (.addErrback d  (fn [error] (.log js/console "Error on ajax: " error)))
-    (when success (.addCallback d #(success (js->clj % :keywordize-keys true))))
-    (when error (.addErrback d error))
-    (.addBoth d (fn [value] (ge/unlistenByKey listener-id) (.dispose request)))
-    (mlog "Firing request to " url " via " method " and data - : " data-string)
-
-    ;; Fire request
-    (.send request url method data-string headers)
-    request))
-
 (defn third [coll]
   (nth coll 2 nil))
+
+(defn ajax [method url message channel & {:keys [params format response-format keywords? context]
+                                          :or {params {}
+                                               format :json
+                                               response-format :json
+                                               keywords? true}}]
+  (put! channel [message :started context])
+  (ajax/ajax-request url method
+                     (ajax/transform-opts
+                      {:format format
+                       :response-format response-format
+                       :keywords? keywords?
+                       :params params
+                       :headers (merge {:Accept "application/json"}
+                                       (when (re-find #"^/" url)
+                                         {:X-CSRFToken (aget js/window "CSRFToken")}))
+                       :handler #(put! channel [message :success {:resp %
+                                                                  :context context}])
+                       :error-handler #(put! channel [message :failed {:resp %
+                                                                       :context context}])
+                       :finally #(put! channel [message :finished context])})))
