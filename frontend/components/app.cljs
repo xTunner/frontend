@@ -8,6 +8,7 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.navbar :as navbar]
             [frontend.components.placeholder :as placeholder]
+            [frontend.components.common :as common]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
@@ -15,10 +16,17 @@
 (def keymap
   (atom nil))
 
+(defn loading [app owner opts]
+  (reify
+    om/IRender
+    (render [_] (html [:div.loading-spinner common/spinner]))))
+
 (defn dominant-component [app-state]
-  (if (get-in app-state [:inspected-project :build-num])
-    build-com/build
-    dashboard/dashboard))
+  (condp = (get-in app-state [:navigation-point])
+    :build build-com/build
+    :dashboard dashboard/dashboard
+    :add-projects add-projects/add-projects
+    :loading loading))
 
 (defn app [app owner opts]
   (reify
@@ -38,6 +46,6 @@
           [:header
            (om/build navbar/navbar app {:opts opts})]
           [:main
-           (om/build add-projects/add-projects app {:opts opts})]
+           (om/build dom-com app {:opts opts})]
           [:footer
            (footer/footer)]])))))
