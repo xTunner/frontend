@@ -92,3 +92,11 @@
         type (get-in args [:context :type])
         repo-key (str login "." type)]
     (assoc-in state [:current-user :repos repo-key] (:resp args))))
+
+(defmethod api-event [:organizations :success]
+  [target message status args state]
+  (assoc-in state [:current-user :organizations] (:resp args)))
+
+(defmethod api-event [:collaborators :success]
+  [target message status args state]
+  (assoc-in state [:current-user :collaborators] (:resp args)))

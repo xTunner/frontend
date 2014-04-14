@@ -28,11 +28,16 @@
 (defn open-to-root! [nav-ch]
   (put! nav-ch [:root]))
 
+(defn open-to-add-projects! [nav-ch]
+  (put! nav-ch [:add-projects]))
+
 (defn define-routes! [app history-imp]
   (let [nav-ch (get-in @app [:comms :nav])]
     (defroute v1-inspect-build "/gh/:org-id/:repo-id/:build-num"
       [org-id repo-id build-num]
       (open-build-inspector! app nav-ch org-id repo-id build-num))
+    (defroute v1-add-projects "/add-projects" []
+      (open-to-add-projects! nav-ch))
     (defroute v1-root "/"
       [org-id repo-id build-num]
       (open-to-root! nav-ch)))
