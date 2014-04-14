@@ -35,3 +35,27 @@
 (defmethod post-api-event! [:default :finished]
   [target message status args previous-state current-state]
   (mlog "No post-api for: " [message status]))
+
+(defmethod post-api-event! [:followed-repo :success]
+  [target message status args previous-state current-state]
+  (js/_gaq.push ["_trackEvent" "Repos" "Add"])
+  (if-let [first-build (get-in args [:resp :first_build])]
+    (.setToken (:history-imp current-state) (-> first-build
+                                                :build_url
+                                                (goog.Uri.)
+                                                (.getPath)
+                                                (subs 1)))
+    (when (repo-model/should-do-first-follower-build? (:context args))
+      (utils/ajax :post
+                  (gstring/format "/api/v1/project/" (vcs-url/project-name (:vcs_url (:context args))))
+                  :start-build
+                  (get-in current-state [:comms :api])))))
+
+(defmethod post-api-event! [:start-build :success]
+  [target message status args previous-state current-state]
+  (.setToken (:history-imp current-state) (-> args
+                                              :resp
+                                              :build_url
+                                              (goog.Uri.)
+                                              (.getPath)
+                                              (subs 1))))

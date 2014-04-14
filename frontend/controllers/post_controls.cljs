@@ -5,6 +5,7 @@
             [goog.string :as gstring]
             goog.string.format
             [frontend.intercom :as intercom]
+            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]])
   (:require-macros [frontend.utils :refer [inspect]]))
 
@@ -65,3 +66,12 @@
               (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
               :repos api-ch
               :context args)))
+
+(defmethod post-control-event! :followed-repo
+  [target message repo previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (api/ajax :post
+              (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
+              :followed-repo
+              api-ch
+              :context repo)))
