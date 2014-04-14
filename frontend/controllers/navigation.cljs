@@ -15,10 +15,10 @@
   (mlog "Unknown nav event: " (pr-str to))
   state)
 
-(defmethod navigated-to :root
-  [target to [project-id build-num] state]
+(defmethod navigated-to :dashboard
+  [target to args state]
   (mlog "Navigated from " (from state) " to " to)
-  (assoc state :navigation-point :dashboard))
+  (assoc state :navigation-point :dashboard :current-builds nil))
 
 (defmethod navigated-to :build-inspector
   [target to [project-id build-num] state]

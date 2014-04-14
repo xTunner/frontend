@@ -3,6 +3,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.components.sidebar :as sidebar]
+            [frontend.components.common :as common]
             [frontend.utils :as utils]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -18,10 +19,11 @@
         :href url}
        (str (:username build) "/" (:reponame build) " #" (:build_num build))]]
      [:td
-      [:a
-       {:title (build-model/github-revision build)
-        :href url}
-       (build-model/github-revision build)]]
+      (if-not (:vcs_revision build)
+        [:a {:href url}]
+        [:a {:title (build-model/github-revision build)
+             :href url}
+         (build-model/github-revision build)])]
      [:td
       [:a
        {:title (build-model/branch-in-words build)

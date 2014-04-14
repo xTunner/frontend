@@ -50,4 +50,4 @@
                     :from_heroku nil,
                     :githubNoPermAuthURL "https://github.com/login/oauth/authorize?client_id=78a2ba87f071c28e65bb&red…b%3Freturn-to%3D%252Fgh%252Forganizations%252Fcircleci%252Fsettings&scope="}
    :projects []
-   :recent-builds []})
+   :recent-builds nil})

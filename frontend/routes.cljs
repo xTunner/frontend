@@ -25,14 +25,20 @@
   (let [id (str org-id "/" repo-id)]
     (put! nav-ch [:build-inspector [id build-num]])))
 
-(defn open-to-root! [nav-ch]
-  (put! nav-ch [:root]))
+(defn open-to-dashboard! [nav-ch & [args]]
+  (put! nav-ch [:dashboard args]))
 
 (defn open-to-add-projects! [nav-ch]
   (put! nav-ch [:add-projects]))
 
 (defn define-routes! [app history-imp]
   (let [nav-ch (get-in @app [:comms :nav])]
+    (defroute v1-org-dashboard "/gh/:org" {:as params}
+      (open-to-dashboard! nav-ch params))
+    (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
+      (open-to-dashboard! nav-ch params))
+    (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
+      (open-to-dashboard! nav-ch params))
     (defroute v1-inspect-build "/gh/:org-id/:repo-id/:build-num"
       [org-id repo-id build-num]
       (open-build-inspector! app nav-ch org-id repo-id build-num))
@@ -40,7 +46,7 @@
       (open-to-add-projects! nav-ch))
     (defroute v1-root "/"
       [org-id repo-id build-num]
-      (open-to-root! nav-ch)))
+      (open-to-dashboard! nav-ch)))
   ;; This triggers the dispatch on the above routes, when a deep link URL is provided.
   ;; goog.History(opt_invisible, opt_blankPageUrl, opt_input, opt_iframe)
   ;; (let [history-el (goog.history.Html5History. false nil history-el)]
