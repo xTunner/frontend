@@ -84,20 +84,29 @@
       %h4.chat-i-slack Slack
     .chat-room-body
       %section
-        %p To get your API token, visit Slack's <a href="https://slack.com/services/new/incoming-webhook">Incoming Webhooks</a> page and click the green "Add Integration" button at the bottom of the page.
+        %p To get your Webhook URL, visit Slack's <a href="https://my.slack.com/services/new/circleci">CircleCI Integration</a> page, choose a default channel, and click the green "Add CircleCI Integration" button at the bottom of the page. 
       %section
         %label.sticky
-          %input#slack-channel{data-bind: "value: slack_channel", type: "text", required:""}
-          %label{for: "slack-channel"} Channel
-        %label.sticky
-          %input#slack-subdomain{data-bind: "value: slack_subdomain", type: "text", required:""}
-          %label{for: "slack-subdomain"} Subdomain
-        %label.sticky
-          %input#slack-token{data-bind: "value: slack_api_token", type: "text", required:""}
-          %label{for: "slack-token"} API
+          %input#slack-webhook-url{data-bind: "value: slack_webhook_url", type: "text", required:""}
+          %label{for: "slack-webhook"} Webhook URL
     .chat-room-foot
       %label{for: "slack-notify-prefs"}
         %input#slack-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(slack_notify_prefs)"}
+        %span Fixed/Failed Only
+        %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
+  .chat-room-item
+    .chat-room-head
+      %h4.chat-i-hall Hall
+    .chat-room-body
+      %section
+        %p To get your Room / Group API token, visit Hall's <a href="https://hall.com/docs/integrations/generic/">Generic Integration</a> page and copy the "Group API Token" after selecting your room from the drop-down menu.
+      %section
+        %label.sticky
+          %input#hall-token{data-bind: "value: hall_room_api_token", type: "text", required:""}
+          %label{for: "hall-token"} API
+    .chat-room-foot
+      %label{for: "hall-notify-prefs"}
+        %input#hall-notify-prefs{type: "checkbox", value: "smart", data-bind: "checked: translate_checked(hall_notify_prefs)"}
         %span Fixed/Failed Only
         %i.fa.fa-question-circle{title: "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build.", data-bind: "tooltip: {}"}
 .chat-room-save
