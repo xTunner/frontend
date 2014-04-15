@@ -26,6 +26,70 @@ label.sticky {
 }
 label.stickyArea {
   .stickyLabelTextarea();
+//
+// Smart Label
+//
+input {
+  @input_height: 3em;
+  @input_margin: (@input_height / 3);
+  @input_border: 1px;
+  .box-sizing(border-box);
+  outline: none;
+  &[type="text"],
+  &[type="email"] {
+    height: @input_height;
+    width: 100%;
+    margin: 0 0 @input_margin;
+    padding: @input_margin;
+    border: @input_border solid @grayLighter;
+    border-radius: (@input_height / 2);
+    background: @whiten;
+    &[required] {
+      &:focus {
+        border-color: @blueLighter !important; // BS RESET
+        box-shadow: none           !important; // BS RESET
+        + span {
+          &[placeholder] {
+            &:before {
+              color: @blueLighter;
+            }
+          }
+        }
+      }
+      &:focus,
+      &:valid {
+        + span {
+          &[placeholder] {
+            &:before {
+              transition-duration: .2s;
+              -webkit-transform: translate(0, -1.5em) scale(0.9, 0.9);
+                      transform: translate(0, -1.5em) scale(0.9, 0.9);
+            }
+          }
+        }
+      }
+      + span {
+        &[placeholder] {
+          display: block;
+          pointer-events: none;
+          margin: ~"calc(-@{input_height} - (@{input_border} * 2))" 0 ((2 / 3) * @input_height);
+          &:before {
+            content: attr(placeholder);
+            display: inline-block;
+            margin: 0 ~"calc(@{input_margin} + (@{input_border} * 2))";
+            padding: 0 2px;
+            color: @grayLight;
+            white-space: nowrap;
+            transition: .3s ease-in-out;
+            background-image: linear-gradient(to bottom, @whiten, @whiten);
+            background-size: 100% 3px;
+            background-repeat: no-repeat;
+            background-position: center;
+          }
+        }
+      }
+    }
+  }
 }
 .loading-spinner {
   svg {
