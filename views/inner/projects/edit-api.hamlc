@@ -17,7 +17,7 @@
         %select{name: "scope", data-bind: "options: ['status', 'all'], value: tokenScope"}
         %i.fa.fa-chevron-down
       %input{data-bind: "value: tokenLabel", type: "text", required: ""}
-      %span{placeholder: "Label"}
+      %label{placeholder: "Token label"}
       %input{type: "submit", value: "Create token", data-bind: "click: create_token", data-loading-text: "Creating...", data-success-text: "Created", data-failed-text: "Failed"}
     %div{data-bind: "if: tokens().length"}
       %table

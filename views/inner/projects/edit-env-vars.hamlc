@@ -21,9 +21,9 @@
       %span .
     %form
       %input{data-bind: "value: env_varName", type: "text", required: ""}
-      %span{placeholder: "Name"}
+      %label{placeholder: "Name"}
       %input{data-bind: "value: env_varValue", type: "text", required:""}
-      %span{placeholder: "Value"}
+      %label{placeholder: "Value"}
       %input{type: "submit", value: "Save variable", data-bind: "click: create_env_var", data-loading-text: "Adding...", data-success-text: "Added", data-failed-text: "Failed"}
     / ko if: env_vars().length
     %table

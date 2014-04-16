@@ -5,11 +5,11 @@
     %p Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts.
     %form
       %input{type: "text", required: ""}
-      %span{placeholder: "Hostname"}
+      %label{placeholder: "Hostname"}
       %input{type: "text", required: ""}
-      %span{placeholder: "Public Key"}
+      %label{placeholder: "Public Key"}
       %textarea{required: ""}
-      %span{placeholder: "Private Key"}
+      %label{placeholder: "Private Key"}
       %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", value: "Submit", data-loading-text: "Saving..", data-success-text: "Saved", data-failed-text: "Failed"}
     %table{data-bind: "if: ssh_keys().length"}
       %thead

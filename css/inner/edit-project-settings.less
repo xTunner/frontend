@@ -605,12 +605,10 @@
       &[type="text"] {
         &[required] {
           &:invalid {
-            &:not(:focus) {
-              + span {
-                &[placeholder^="Current"] {
-                  &:before {
-                    content: "none";
-                  }
+            + label {
+              &[placeholder^="Current"] {
+                &:before {
+                  content: "Enter Github username";
                 }
               }
             }

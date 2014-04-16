@@ -13,7 +13,7 @@
     &:focus {
       border-color: @blueLighter !important; // BS RESET
       box-shadow: none           !important; // BS RESET
-      + span {
+      + label {
         &[placeholder] {
           &:before {
             color: @blueLighter;
@@ -23,7 +23,7 @@
     }
     &:focus,
     &:valid {
-      + span {
+      + label {
         &[placeholder] {
           &:before {
             transition-duration: .2s;
@@ -33,7 +33,7 @@
         }
       }
     }
-    + span {
+    + label {
       &[placeholder] {
         display: block;
         pointer-events: none;

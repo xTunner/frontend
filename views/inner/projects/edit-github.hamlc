@@ -7,7 +7,7 @@
 
     .current-gh-user
       %input{data-bind: "value: github_user", type: "text", required: ""}
-      %span{placeholder: "Current GitHub User"}
+      %label{placeholder: "Current GitHub username"}
 
     %div{data-bind: "if: github_user() != $root.current_user().login"}
       .request-user{data-bind: "if: $root.current_user().has_public_key_scope"}
