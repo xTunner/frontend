@@ -362,17 +362,14 @@
   // Dependencies Page
   .dependencies-page {
     fieldset {
-      a.btn {
-        .circleButton();
-        margin-top: 2em;
-        display: inline-block;
-        i {
-          margin-left: 1ex;
-          font-size: @baseFontSize;
+      input {
+        &[type="submit"] {
+          .circleButton();
         }
       }
       p {
         max-width: 66%;
+        margin-bottom: 2em;
       }
     }
   }
