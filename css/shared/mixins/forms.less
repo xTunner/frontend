@@ -1,0 +1,57 @@
+.smart_label(@height, @radius, @margin: 1em, @border: 1px) {
+  .box-sizing(border-box);
+  outline: none;
+  height: @height;
+  width: 100%;
+  margin: 0 0 @margin;
+  padding: @margin;
+  border: @border solid @grayLighter;
+  background: @whiten;
+  border-radius: @radius;
+  resize: none;
+  &[required] {
+    &:focus {
+      border-color: @blueLighter !important; // BS RESET
+      box-shadow: none           !important; // BS RESET
+      + span {
+        &[placeholder] {
+          &:before {
+            color: @blueLighter;
+          }
+        }
+      }
+    }
+    &:focus,
+    &:valid {
+      + span {
+        &[placeholder] {
+          &:before {
+            transition-duration: .2s;
+            -webkit-transform: translate(0, -1.5em) scale(0.9, 0.9);
+                    transform: translate(0, -1.5em) scale(0.9, 0.9);
+          }
+        }
+      }
+    }
+    + span {
+      &[placeholder] {
+        display: block;
+        pointer-events: none;
+        margin: ~"calc(-@{height} - (@{border} * 2))" 0 (@height - 1);
+        &:before {
+          content: attr(placeholder);
+          display: inline-block;
+          margin: 0 ~"calc(@{margin} + (@{border} * 2))";
+          padding: 0 2px;
+          color: @grayLight;
+          white-space: nowrap;
+          transition: .3s ease-in-out;
+          background-image: linear-gradient(to bottom, @whiten, @whiten);
+          background-size: 100% 5px;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+      }
+    }
+  }
+}
