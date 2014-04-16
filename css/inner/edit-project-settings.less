@@ -378,17 +378,14 @@
   }
   // Tests Page
   .tests-page {
-    a.btn {
-      .circleButton();
-      margin-top: 2em;
-      display: inline-block;
-      i {
-        margin-left: 1ex;
-        font-size: @baseFontSize;
-      }
-    }
     p {
       max-width: 66%;
+      margin-bottom: 2em;
+    }
+    input {
+      &[type="submit"] {
+        .circleButton();
+      }
     }
   }
   .tests-inner {
