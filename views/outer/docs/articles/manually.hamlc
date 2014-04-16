@@ -12,8 +12,15 @@
 %p
   Before we get into the details of a manual setup, here is a quick fix to a common problem first-timers can experience.
   If you have a standard project and received a "no test" status, it is probably because the project is in a subdirectory.
-  This is easy to fix: add an empty file called <code>circle.yml</code> and CircleCI will pick up the file and run your tests from that subdirectory.
+  This is easy to fix: add a file named <code>circle.yml</code> on the project repo pointing to build directory and
+  CircleCI will run your tests from that subdirectory.  For example, to set the build directory to <code>api</code>
+  sub-directory, you can use the following <code>circle.yml</code>
 
+%pre
+  %code<>
+    :preserves
+      general:
+        build_dir: api
 
 %h2#yml The circle.yml file
 %p

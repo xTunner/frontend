@@ -15,6 +15,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     slack_subdomain: null
     slack_api_token: null
     slack_notify_prefs: null
+    slack_webhook_url: null
+    hall_room_api_token: null
+    hall_notify_prefs: null
     campfire_room: null
     campfire_token: null
     campfire_subdomain: null
@@ -30,9 +33,8 @@ CI.inner.Project = class Project extends CI.inner.Obj
     heroku_deploy_user: null
     ssh_keys: []
     followed: null
-    loading_users: false
+    loading_github_users: false
     loading_billing: false
-    users: []
     parallel: 1
     focused_parallel: 1
     has_usable_key: true
@@ -229,6 +231,26 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
+    # Make the AJAX call for @users only if we really need it.
+    github_users_requested = false
+    github_users = @observable []
+    @github_users = @komp
+      deferEvaluation: true
+      read: =>
+        if not github_users_requested
+          github_users_requested = true
+          @loading_github_users true
+          $.ajax
+            type: "GET"
+            url: "/api/v1/project/#{@project_name()}/users"
+            success: (results) =>
+              github_users ((new CI.inner.GithubUser result) for result in results)
+              @loading_github_users false
+        github_users()
+
+    @github_users_not_following = @komp
+      deferEvaluation: true
+      read: => (user for user in @github_users() when not user.following())
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
@@ -364,6 +386,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
         slack_subdomain: @slack_subdomain()
         slack_api_token: @slack_api_token()
         slack_notify_prefs: @slack_notify_prefs()
+        slack_webhook_url: @slack_webhook_url()
+        hall_room_api_token: @hall_room_api_token()
+        hall_notify_prefs: @hall_notify_prefs()
         campfire_room: @campfire_room()
         campfire_token: @campfire_token()
         campfire_subdomain: @campfire_subdomain()
@@ -489,21 +514,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
         false
     false
 
-  get_users: () =>
-    @loading_users(true)
-    $.ajax
-      type: "GET"
-      url: "/api/v1/project/#{@project_name()}/users"
-      success: (result) =>
-        @users(result)
-        @loading_users(false)
-        true
-    false
-
-  invite_user: (user) =>
+  invite_team_members: (users) =>
+    to_invite = ({id: user.id(), email: user.email()} for user in users)
     $.ajax
       type: "POST"
-      url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
+      url: "/api/v1/project/#{@project_name()}/users/invite"
+      data: JSON.stringify to_invite
 
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>

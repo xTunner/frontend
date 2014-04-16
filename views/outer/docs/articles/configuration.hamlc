@@ -99,6 +99,12 @@
     <b>parallel</b>: (only used with commands in the <code>test</code> section)
     if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a>, set this to true to run a command across all VMs
   %li
+    <b>files</b>:
+    The files identified by the file list (or globs) will be appended to the
+    command arguments. The files will be distributed across all containers
+    running the build. Check
+    <a href="/docs/parallel-manual-setup#auto-splitting">manual parallelism setup document</a> for more details.
+  %li
     <b>background</b>: when "true", runs a command in the background.  It is similar to ending a shell command with '&amp;', but works correctly over ssh.  Useful for starting servers, which your tests will connect to.
 
 %p
@@ -806,11 +812,26 @@
             - /release\\/.*/ # or ignore regexes
 
 %p
-  We deliberately don't support branch whitelisting, it means work-in-progress
+  You may also whitelist branches, so only whitelisted branches will trigger a build.
+  This example limit builds in circle to
+  %code master
+  and
+  %code feature-.*
+  branches:
+
+%pre
+  %code<>
+    :preserves
+      general:
+        branches:
+          only:
+            - master # list of branches to build
+            - /feature-.*/ # or regexes
+
+%p
+  We discourage branch whitelisting, it means work-in-progress
   code can go a long time without being integrated and tested and we've found
   it leads to problems when that untested code gets merged.
-  However, if this is an important issue to you, it can be
-  accomplished with an advanced regex, an exercise which is left to the reader.
 
 %p
   %code circle.yml
