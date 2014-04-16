@@ -389,44 +389,20 @@
   .environment-variables-inner{
     margin: 2em 0;
     max-width: @gridRowWidth;
-    .env-table {
-      .outlineFlat();
-      border-radius: 4px;
-    }
     form {
-      margin: 0;
-      + ul li:last-of-type {
-          box-shadow: none;
+      margin-top: 2em;
+      width: 50%;
+    }
+    table {
+      .tableLight();
+      td {
+        &:not(:last-child) {
+          padding: 1em;
+        }
       }
-    }
-    li {
-      display: flex;
-      justify-content: space-between;
-      line-height: 3em;
-      box-shadow: 0 1px @grayBoxBorder;
-    }
-    span {
-      display: block;
-      &:not(:last-of-type) {
-        .flex(1, 1, 44%);
-        padding-left: 1em;
-      }
-      &:last-of-type {
-        flex: 0 0 140px;
-      }
-    }
-    .sticky {
-      margin-top: 1em;
-    }
-    input[type="text"] {
-      margin-bottom: 0;
     }
     input[type=submit] {
       .circleButton(@grayLightest, @green);
-      font-size: 1em;
-      margin: 1em;
-      line-height: 3em;
-      padding: 0 3em;
     }
     a {
       .tableDrawerBtn();
