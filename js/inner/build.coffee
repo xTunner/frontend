@@ -373,6 +373,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
       deferEvaluation: true
       read: =>
         if VM.project().github_users_not_following()
+          mixpanel.track "Saw invitations prompt",
+            first_green_build: true
+            project: VM.project().project_name()
           new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
             node = $ ".first-green"
             node.addClass "animation-fadeout-collapse"
@@ -380,6 +383,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
               node.addClass "success"
               for user in users
                 mixpanel.track "Sent invitation",
+                  first_green_build: true
                   project: VM.project().project_name()
                   login: user.login()
                   id: user.id()
