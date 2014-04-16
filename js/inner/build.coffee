@@ -381,6 +381,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
             node.addClass "animation-fadeout-collapse"
             if sending
               node.addClass "success"
+              mixpanel.track "Sent invitations",
+                first_green_build: true
+                project: VM.project().project_name()
+                users: user.login() for user in users
               for user in users
                 mixpanel.track "Sent invitation",
                   first_green_build: true
