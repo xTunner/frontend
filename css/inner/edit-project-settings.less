@@ -633,21 +633,8 @@
       }
     }
     form {
-      margin: 2em 0;
-    }
-    label.sticky {
-      max-width: @standardBlockSize;
-    }
-    label.stickyArea {
-      @sshCharCount: 64;
-      @sshTextAreaWidth: (@sshCharCount) + ((10 / 100) * @sshCharCount) + 1ex;
-      display: inline-block;
-      #privateKey {
-        font-family: @monoFontFamily;
-        font-size: @fontSizeSmall;
-        width: @sshTextAreaWidth;
-        .box-sizing(content-box);
-      }
+      margin-top: 2em;
+      width: 50%;
     }
     input {
       &[type="submit"] {
