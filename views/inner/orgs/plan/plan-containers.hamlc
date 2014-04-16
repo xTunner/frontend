@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #edit-plan
   %legend Our pricing is flexible and scales with you. Add as many containers as you want for $50/month each.
   .main-content
@@ -29,8 +28,6 @@
     %p
       More containers allows us to test more GitHub pushes at the same time.
       Other pushes will queue up waiting to be tested.
->>>>>>> parent of 788eca2... copy changes
-
       %h3
         New total: $
         %span{data-bind: "text: total"}<>
