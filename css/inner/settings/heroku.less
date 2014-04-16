@@ -7,6 +7,17 @@
       &[required] {
         background: transparent;
         width: 50%;
+        &:invalid {
+          &:not(:focus) {
+            + span {
+              &[placeholder^="Current"] {
+                &:before {
+                  content: "none";
+                }
+              }
+            }
+          }
+        }
       }
     }
     &[type="submit"] {

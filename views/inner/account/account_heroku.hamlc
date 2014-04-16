@@ -7,4 +7,4 @@
       %span{placeholder: "Current Heroku Key"}
       %input{data-bind: "value: herokuApiKeyInput", type: "text", required:""}
       %span{placeholder: "Add new key"}
-      %input{type: "submit", value: "Save", data-bind: "click: save_heroku_key", data-loading-text: "Saving...", data-success-text: "Saved"}
+      %input{type: "submit", value: "Save Heroku key", data-bind: "click: save_heroku_key", data-loading-text: "Saving...", data-success-text: "Saved"}

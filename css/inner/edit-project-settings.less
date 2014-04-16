@@ -601,6 +601,23 @@
   }
   // Github Page
   .github-page {
+    input {
+      &[type="text"] {
+        &[required] {
+          &:invalid {
+            &:not(:focus) {
+              + span {
+                &[placeholder^="Current"] {
+                  &:before {
+                    content: "none";
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     .btn {
       .circleButton();
       font-size: @baseFontSize;
@@ -629,16 +646,6 @@
       p {
         margin-top: 1em;
       }
-    }
-    div[class^="gh-user-"] {
-      .stickyLabel-shared-text();
-      &:empty {
-        display: none;
-      }
-    }
-    .gh-label-user {
-      .stickyLabel-shared-label();
-      .stickyLabel-shared-validLabel();
     }
   }
   // Circle API Page
