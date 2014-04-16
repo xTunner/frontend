@@ -87,7 +87,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding: .5em 0;
   }
 }
 .aside-project-info {
@@ -134,12 +133,14 @@
 .aside-project-branch {
   .displayFlex();
   .justify-content(space-between);
+  > * {
+    padding: .5em 0;
+  }
 }
 .aside-status-icons {
   max-width: 34%;
   .displayFlex();
   .justify-content(flex-end);
-  margin: .5em 0;
   &:hover {
     a {
       &:nth-last-of-type(1) {
@@ -190,19 +191,14 @@
         opacity: 1;
         transition-duration: .1s;
         width: 100%;
+        &.fa-refresh:before {
+          display: block;
+          .animation(spin-right .8s infinite linear);
+        }
       }
     }
     i {
       width: 100%;
-      &.fa-refresh:before {
-        display: block;
-        .animation(spin-right .8s infinite linear);
-      }
-      &.fa-pause {
-        &:before {
-          font-size: 11.5px; // dirty hack to size fontawesome nicely
-        }
-      }
     }
   }
   .statusIconColor(@color) {
@@ -224,12 +220,10 @@
   .running {
     .statusIconColor(@blueDark);
   }
-  .queued,
-  .not_running {
+  .queued {
     .statusIconColor(@gray);
   }
-  .not_run,
-  .circle_bug {
+  .not_run {
     .statusIconColor(@orange);
   }
 }

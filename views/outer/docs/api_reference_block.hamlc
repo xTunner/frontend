@@ -1,6 +1,6 @@
 - data = @api_data[@url]
 %p
-  != data.description
+  = data.description
 
 %h4 Method
 %p

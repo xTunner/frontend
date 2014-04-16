@@ -30,8 +30,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
     heroku_deploy_user: null
     ssh_keys: []
     followed: null
-    loading_github_users: false
+    loading_users: false
     loading_billing: false
+    users: []
     parallel: 1
     focused_parallel: 1
     has_usable_key: true
@@ -228,26 +229,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       else
         "#{org_name}'s trial expires in #{@billing.pretty_trial_time()}! <a href='#{plan_path}'>Add a plan to keep running your builds</a>."
 
-    # Make the AJAX call for @users only if we really need it.
-    github_users_requested = false
-    github_users = @observable []
-    @github_users = @komp
-      deferEvaluation: true
-      read: =>
-        if not github_users_requested
-          github_users_requested = true
-          @loading_github_users true
-          $.ajax
-            type: "GET"
-            url: "/api/v1/project/#{@project_name()}/users"
-            success: (results) =>
-              github_users ((new CI.inner.GithubUser result) for result in results)
-              @loading_github_users false
-        github_users()
-
-    @github_users_not_following = @komp
-      deferEvaluation: true
-      read: => (user for user in @github_users() when not user.following())
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
@@ -508,12 +489,21 @@ CI.inner.Project = class Project extends CI.inner.Obj
         false
     false
 
-  invite_team_members: (users) =>
-    to_invite = ({id: user.id(), email: user.email()} for user in users)
+  get_users: () =>
+    @loading_users(true)
+    $.ajax
+      type: "GET"
+      url: "/api/v1/project/#{@project_name()}/users"
+      success: (result) =>
+        @users(result)
+        @loading_users(false)
+        true
+    false
+
+  invite_user: (user) =>
     $.ajax
       type: "POST"
-      url: "/api/v1/project/#{@project_name()}/users/invite"
-      data: JSON.stringify to_invite
+      url: "/api/v1/project/#{@project_name()}/invite/#{user.login}"
 
   refresh: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>

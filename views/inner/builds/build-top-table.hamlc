@@ -46,6 +46,7 @@
               %a{data-bind: "text: committer, attr: {href: committer_mailto}"}
             / /ko
 
+
           %tr
             %th Parallelism
             %td
@@ -58,6 +59,9 @@
           %tr
             %td{colspan: "4"}
               != HAML.build_commit_log()
+
+
+
 
       %dl.actions
         %dd
@@ -75,8 +79,8 @@
               %span.caret
             %ul.dropdown-menu
               %li
-                %a{href: '#', data-bind: "click: retry_build_no_cache"}
-                  Retry without Cache
+                %a{href: '#', data-bind: "click: clear_cache_and_retry_build"}
+                  Clear Cache &amp; Retry
 
           %button.btn.btn-primary{data-bind: "click: ssh_build",
                                 title: "Rerun the tests, with SSH into the VM",
@@ -89,6 +93,7 @@
                                     data-loading-text: "Canceling...",
                                     data-success-text: "Canceled"}
               Cancel
+
 
     / ko if: ssh_enabled_now()
     %dl.ssh_info

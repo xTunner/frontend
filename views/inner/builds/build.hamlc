@@ -35,9 +35,6 @@
                 to add
                 %span{data-bind: "text: VM.project().project_name()"}
                 to your sidebar and get build notifications.
-          / ko if: display_first_green_build_invitations
-          != HAML.build_invite()
-          / /ko
 
       / ko if: feature_enabled("build_GH1157_container_oriented_ui") && containers().length > 1
       %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 0}"}

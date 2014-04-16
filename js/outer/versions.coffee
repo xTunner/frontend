@@ -3,8 +3,8 @@ CI.Versions =
     "#{v} #{CI.Versions[v]}"
 
   Firefox: "26.0"
-  Chrome: "33.0.1750.152"
-  chromedriver: "2.9"
+  Chrome: "30.0"
+  chromedriver: "2.2"
 
 
   default_ruby: "1.9.3-p448"
@@ -30,12 +30,13 @@ CI.Versions =
     "1.9.3-p0-falcon",
     "1.9.3-p0",
     "1.9.3-p125",
+    "1.9.3-p125-perf",
     "1.9.3-p194",
+    "1.9.3-p194-perf",
     "1.9.3-p194-falcon",
     "1.9.3-p286",
     "1.9.3-p327",
     "1.9.3-p327-falcon",
-    "1.9.3-p327-railsexpress",
     "1.9.3-p362",
     "1.9.3-p374",
     "1.9.3-p385",
@@ -43,29 +44,18 @@ CI.Versions =
     "1.9.3-p429",
     "1.9.3-p448",
     "1.9.3-p484",
-    "1.9.3-p484-railsexpress",
-    "1.9.3-p545",
     "2.0.0-p0",
     "2.0.0-p195",
     "2.0.0-p247",
     "2.0.0-p353",
-    "2.0.0-p353-railsexpress",
-    "2.0.0-p451",
     "2.1.0-preview1",
     "2.1.0-preview2",
     "2.1.0",
-    "2.1.0-p0",
-    "2.1.1",
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4",
-    "jruby-1.7.10"
     "jruby-1.7.5",
-    "jruby-1.7.6",
-    "jruby-1.7.8",
-    "jruby-1.7.9",
-    "jruby-1.7.10",
-    "jruby-1.7.11"
+    "jruby-1.7.6"
     ]
   bundler: "1.3.5"
   cucumber: "1.2.0"
@@ -74,21 +64,17 @@ CI.Versions =
 
   default_node: "0.8.12"
   node_versions: [
-     "0.10.22"
-     "0.11.8",
-     "0.10.26",
-     "0.10.24",
-     "0.10.22",
-     "0.10.21",
-     "0.10.20",
-     "0.10.11",
-     "0.10.5",
-     "0.10.0",
-     "0.8.24",
-     "0.8.22",
-     "0.8.19",
-     "0.8.12",
-     "v0.8.2"
+    "0.6.18",
+    "0.8.2",
+    "0.8.12",
+    "0.8.19",
+    "0.8.22",
+    "0.10.0",
+    "0.10.5",
+    "0.10.11",
+    "0.10.20",
+    "0.10.21",
+    "0.10.22"
   ]
 
   lein: "2.3.1"
@@ -132,10 +118,8 @@ CI.Versions =
      "3.3.0",
      "3.3.1",
      "3.3.2",
-     "3.3.3",
      "3.3-dev",
      "3.4-dev",
-     "3.4.0",
      "jython-2.5.0",
      "jython-2.5.1",
      "jython-2.5.2",
@@ -149,7 +133,7 @@ CI.Versions =
      "stackless-3.2.2"
   ]
   pip: "1.4.1"
-  virtualenv: "1.11.4"
+  virtualenv: "1.7.1.2"
 
   default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.5"
@@ -176,14 +160,13 @@ CI.Versions =
     "5.5.0",
     "5.5.2",
     "5.5.3",
-    "5.5.7",
-    "5.5.8"
+    "5.5.7"
   ]
 
-  golang: '1.2.1'
+  golang: 'go1'
   erlang: 'r14b04'
 
-  gradle: "1.10"
+  gradle: "1.7"
   play: "2.2.1"
   scala_versions: [
     "0.11.3",
@@ -196,23 +179,23 @@ CI.Versions =
     "0.13.1"]
 
   solr: "4.3.1"
-  postgresql: "9.3"
+  postgresql: "9.2.5"
   mysql: "5.5.32"
-  mongodb: "2.4.10"
-  riak: "1.4.8-1"
-  cassandra: "2.0.6"
-  redis: "2.8.8"
-  memcache: "1.4.13"
+  mongodb: "2.4.6"
+  riak: "1.2.1"
+  cassandra: "2.0.3"
+  redis: "2.6.16"
+  memcache: "1.4.13-0ubuntu2"
   sphinx: "2.0.4-release"
   elasticsearch: "0.90.2"
   beanstalkd: "1.4.6"
   couchbase: "2.0.0"
   couchdb: "1.3.0"
-  neo4j: "2.0.1"
-  rabbitmq: "3.3.1"
+  neo4j: "2.0.0"
+  rabbitmq: "3.0.3"
 
 
   git: "1.8.5.1"
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
-  casperjs: "1.0.9"
+  casperjs: "1.0.2"

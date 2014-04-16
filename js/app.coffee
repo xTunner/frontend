@@ -176,7 +176,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     $.getJSON path, (data) =>
       @builds((new CI.inner.Build d for d in data))
       @builds_have_been_loaded(true)
-    .fail (request) => VM.error.display()
 
   loadRecentBuilds: (refresh) =>
     @loadBuilds('/api/v1/recent-builds', refresh)
@@ -490,10 +489,5 @@ $(document).ready () ->
 
   if window.circleEnvironment is 'development'
     CI.maybeOverrideABTests(window.location.search, VM.ab)
-
-  # Register whether this user was invited by someone.
-  mixpanel.register_once
-    invited_by: URI.parseQuery(URI.parse(document.URL).query)['invited-by']
-
 
   SammyApp.run path + window.location.search

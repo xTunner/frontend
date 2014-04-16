@@ -806,26 +806,11 @@
             - /release\\/.*/ # or ignore regexes
 
 %p
-  You may also whitelist branches, so only whitelisted branches will trigger a build.
-  This example limit builds in circle to
-  %code master
-  and
-  %code feature-.*
-  branches:
-
-%pre
-  %code<>
-    :preserves
-      general:
-        branches:
-          only:
-            - master # list of branches to build
-            - /feature-.*/ # or regexes
-
-%p
-  We discourage branch whitelisting, it means work-in-progress
+  We deliberately don't support branch whitelisting, it means work-in-progress
   code can go a long time without being integrated and tested and we've found
   it leads to problems when that untested code gets merged.
+  However, if this is an important issue to you, it can be
+  accomplished with an advanced regex, an exercise which is left to the reader.
 
 %p
   %code circle.yml

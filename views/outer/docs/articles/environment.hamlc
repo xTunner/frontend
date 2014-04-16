@@ -291,8 +291,6 @@
   You can specify the following JVM versions in your <code>circle.yml</code> file:
     %ul
       %li
-        %code oraclejdk8
-      %li
         <code>oraclejdk7</code> (default)
       %li
         %code oraclejdk6

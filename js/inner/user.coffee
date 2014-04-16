@@ -193,6 +193,7 @@ CI.inner.User = class User extends CI.inner.Obj
       @setActiveOrganization(data[0])
       @loadingOrganizations(false)
 
+
   loadCollaboratorAccounts: () =>
     @loadingOrganizations(true)
     $.getJSON '/api/v1/user/collaborator-accounts', (data) =>

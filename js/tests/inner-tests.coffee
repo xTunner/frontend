@@ -53,31 +53,31 @@ j.describe "ansiToHtml", ->
 
   j.it "should work for the following simple escape sequences", ->
     @expect(t.ansiToHtml "\u001b[1mfoo\u001b[m").toEqual "<span class='brblue'>foo</span>"
-    @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span class='brblue'><span class='italic'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='brblue'><span class='white'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span class='brblue'><span class='red'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span class='brblue'><span class='green'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span class='brblue'><span class='yellow'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[34mfoo\u001b[m").toEqual "<span class='brblue'><span class='blue'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[35mfoo\u001b[m").toEqual "<span class='brblue'><span class='magenta'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[36mfoo\u001b[m").toEqual "<span class='brblue'><span class='cyan'>foo</span></span>"
-    @expect(t.ansiToHtml "\u001b[37mfoo\u001b[m").toEqual "<span class='brblue'><span class='white'>foo</span></span>"
+    @expect(t.ansiToHtml "\u001b[3mfoo\u001b[m").toEqual "<span class='brblue italic'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[30mfoo\u001b[m").toEqual "<span class='white'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[31mfoo\u001b[m").toEqual "<span class='red'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[m").toEqual "<span class='green'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[33mfoo\u001b[m").toEqual "<span class='yellow'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[34mfoo\u001b[m").toEqual "<span class='blue'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[35mfoo\u001b[m").toEqual "<span class='magenta'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[36mfoo\u001b[m").toEqual "<span class='cyan'>foo</span>"
+    @expect(t.ansiToHtml "\u001b[37mfoo\u001b[m").toEqual "<span class='white'>foo</span>"
 
   j.it "shouldn't leave an open span even when the escape isn't reset", ->
-    @expect(t.ansiToHtml "\u001b[32mfoo").toEqual "<span class='brblue'><span class='green'>foo</span></span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo").toEqual "<span class='green'>foo</span>"
 
   j.it "should cope with leading text", ->
-    @expect(t.ansiToHtml "foo\u001b[32mbar").toEqual "<span class='brblue'>foo<span class='green'>bar</span></span>"
+    @expect(t.ansiToHtml "foo\u001b[32mbar").toEqual "<span class='brblue'>foo</span><span class='green'>bar</span>"
 
   j.it "should cope with trailing text, and correctly clear styles", ->
-    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[mbar").toEqual "<span class='brblue'><span class='green'>foo</span>bar</span>"
-    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[0mbar").toEqual "<span class='brblue'><span class='green'>foo</span>bar</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[mbar").toEqual "<span class='green'>foo</span><span class='brblue'>bar</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[0mbar").toEqual "<span class='green'>foo</span><span class='brblue'>bar</span>"
 
   j.it "should allow multiple escapes in sequence", ->
-    @expect(t.ansiToHtml "\u001b[1;3;32mfoo").toEqual "<span class='brblue'><span class='brgreen italic'>foo</span></span>"
+    @expect(t.ansiToHtml "\u001b[1;3;32mfoo").toEqual "<span class='brgreen italic'>foo</span>"
 
   j.it "should allow independent changes to styles", ->
-    @expect(t.ansiToHtml "\u001b[1;3;32mfoo\u001b[22mbar\u001b[23mbaz\u001b[39mbarney").toEqual "<span class='brblue'><span class='brgreen italic'>foo</span><span class='green italic'>bar</span><span class='green'>baz</span>barney</span>"
+    @expect(t.ansiToHtml "\u001b[1;3;32mfoo\u001b[22mbar\u001b[23mbaz\u001b[39mbarney").toEqual "<span class='brgreen italic'>foo</span><span class='green italic'>bar</span><span class='green'>baz</span><span class='brblue'>barney</span>"
 
   j.it "should strip escapes it doesn't understand", ->
     # only 'm' escapes are known currently

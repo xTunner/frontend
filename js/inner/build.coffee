@@ -40,8 +40,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     rest_commits_visible: false
     node: []
     feature_flags: {}
-    dismiss_first_green_build_invitations: false
-    compare: null
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -147,25 +145,15 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @scheduled = @komp =>
       @status() == 'scheduled'
 
-    @not_run = @komp =>
-      @status() == 'not_run'
-
-    @not_running = @komp =>
-      @status() == 'not_running'
-
-    @circle_bug = @komp =>
-      @status() == 'infrastructure_fail'
-
     @finished = @komp =>
       @stop_time()? or @canceled()
 
     @status_icon_class =
       "fa-check": @success_style
       "fa-times": @komp => @important_style() || @warning_style() || @canceled()
-      "fa-clock-o": @komp => @queued() || @not_running()
+      "fa-clock-o": @komp => @queued()
       "fa-refresh": @komp => @info_style()
       "fa-calendar-o": @komp => @scheduled()
-      "fa-ban": @komp => @not_run() || @circle_bug()
 
     @status_words = @komp => switch @status()
       when "infrastructure_fail"
@@ -365,27 +353,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
       if @containers()[0]?
         @current_container(@containers()[0])
 
-    @display_first_green_build_invitations = @komp =>
-      not @dismiss_first_green_build_invitations() and not
-      @previous_successful_build() and @outcome() == "success"
-
-    @first_green_build_invitations = @komp
-      deferEvaluation: true
-      read: =>
-        new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
-          node = $ ".first-green"
-          node.addClass "animation-fadeout-collapse"
-          if sending
-            node.addClass "success"
-            for user in users
-              mixpanel.track "Sent invitation",
-                project: VM.project().project_name()
-                login: user.login()
-                id: user.id()
-                email: user.email()
-            VM.project().invite_team_members users
-          window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
-
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
 
@@ -446,6 +413,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         vcs_url: @vcs_url()
         build_num: @build_num
     event.stopPropagation()
+
 
   visit: () =>
     SammyApp.setLocation @url()
@@ -578,8 +546,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
       type: "POST"
       event: event
-      data: JSON.stringify
-        "no-cache": clearCache
       success: (data) =>
         console.log("retry build data", data)
         console.log("retry event", event)
@@ -587,8 +553,14 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @trackRetryBuild data, clearCache, false
     false
 
-  retry_build_no_cache: (data, event) =>
-    @retry_build data, event, true
+  clear_cache_and_retry_build: (data, event) =>
+    $.ajax
+      url: "/api/v1/project/#{@project_name()}/build-cache"
+      type: "DELETE"
+      event: event
+      success: (data) =>
+        @retry_build data, event, true
+    false
 
   ssh_build: (data, event) =>
     $.ajax
