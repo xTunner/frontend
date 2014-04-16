@@ -369,13 +369,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
       not @dismiss_first_green_build_invitations() and not
       @previous_successful_build() and @outcome() == "success"
 
+    saw_invitations_prompt = false
     @first_green_build_invitations = @komp
       deferEvaluation: true
       read: =>
         if VM.project().github_users_not_following()
-          mixpanel.track "Saw invitations prompt",
-            first_green_build: true
-            project: VM.project().project_name()
+          if not saw_invitations_prompt
+            saw_invitations_prompt = true
+            mixpanel.track "Saw invitations prompt",
+              first_green_build: true
+              project: VM.project().project_name()
           new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
             node = $ ".first-green"
             node.addClass "animation-fadeout-collapse"
