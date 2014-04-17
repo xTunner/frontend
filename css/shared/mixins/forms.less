@@ -28,8 +28,8 @@
         &[placeholder] {
           &:before {
             transition-duration: .2s;
-            -webkit-transform: translate(0, -1.5em) scale(0.9, 0.9);
-                    transform: translate(0, -1.5em) scale(0.9, 0.9);
+            -webkit-transform: translate(0, (@margin * -1.5)) scale(0.9, 0.9);
+                    transform: translate(0, (@margin * -1.5)) scale(0.9, 0.9);
           }
         }
       }
@@ -38,7 +38,7 @@
       &[placeholder] {
         display: block;
         pointer-events: none;
-        line-height: 1em;
+        line-height: @margin;
         margin-top: ~"calc(-@{height} - @{borders})";
         margin-bottom: ~"calc((@{height} - @{margin}) + @{borders})";
         &:before {
