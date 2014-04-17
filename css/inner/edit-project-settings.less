@@ -616,21 +616,6 @@
   }
   // Github Page
   .github-page {
-    input {
-      &[type="text"] {
-        &[required] {
-          &:invalid {
-            + label {
-              &[placeholder^="Current"] {
-                &:before {
-                  content: "Enter Github username";
-                }
-              }
-            }
-          }
-        }
-      }
-    }
     .btn {
       .circleButton();
       font-size: @baseFontSize;
