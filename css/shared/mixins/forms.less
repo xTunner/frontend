@@ -42,6 +42,11 @@
               content: attr(alt);
             }
           }
+          &[itemprop] {
+            &:before {
+              content: attr(itemprop) " " attr(placeholder);
+            }
+          }
         }
       }
     }
@@ -52,6 +57,7 @@
         line-height: @margin;
         margin-top: ~"calc(-@{height} - @{borders})";
         margin-bottom: ~"calc((@{height} - @{margin}) + @{borders})";
+        text-transform: capitalize;
         &:before {
           content: attr(placeholder);
           display: inline-block;
