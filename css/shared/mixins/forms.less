@@ -10,10 +10,10 @@
   background: @whiten;
   border-radius: @radius;
   resize: none;
+  box-shadow: none !important; // BS RESET = "!important"
   &[required] {
     &:focus {
       border-color: @blueLighter !important; // BS RESET = "!important"
-      box-shadow: none           !important; // BS RESET = "!important"
       + label {
         &[placeholder] {
           &:before {
