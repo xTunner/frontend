@@ -1,7 +1,8 @@
 .smart_label(@height, @radius, @margin: 1em, @border: 1px) {
+  @borders: (@border * 2);
   .box-sizing(border-box);
   outline: none;
-  height: @height;
+  height: ~"calc(@{height} + @{borders})";
   width: 100%;
   margin: 0 0 @margin;
   padding: @margin;
@@ -11,8 +12,8 @@
   resize: none;
   &[required] {
     &:focus {
-      border-color: @blueLighter !important; // BS RESET
-      box-shadow: none           !important; // BS RESET
+      border-color: @blueLighter !important; // BS RESET = "!important"
+      box-shadow: none           !important; // BS RESET = "!important"
       + label {
         &[placeholder] {
           &:before {
@@ -37,11 +38,13 @@
       &[placeholder] {
         display: block;
         pointer-events: none;
-        margin: ~"calc(-@{height} - (@{border} * 2))" 0 (@height - 1);
+        line-height: 1em;
+        margin-top: ~"calc(-@{height} - @{borders})";
+        margin-bottom: ~"calc((@{height} - @{margin}) + @{borders})";
         &:before {
           content: attr(placeholder);
           display: inline-block;
-          margin: 0 ~"calc(@{margin} + (@{border} * 2))";
+          margin: 0 ~"calc(@{margin} + @{borders})";
           padding: 0 2px;
           color: @grayLight;
           white-space: nowrap;
