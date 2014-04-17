@@ -335,6 +335,9 @@ We also install some release candidate and beta versions (see the above URL for 
     %code= @v.v('golang')
   %li
     %code= @v.v('erlang')
+  - for v in @v.ghc_versions
+    %li
+      %code= 'ghc ' + v
 
 %h2#databases Databases and Services
 
