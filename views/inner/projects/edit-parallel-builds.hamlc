@@ -6,15 +6,7 @@
 / /ko
 
 .try-out-build{data-bind: "if: show_test_new_settings"}
-  - prepend = "Try running a build on"
-  - append = "now with <span data-bind='text: parallel'></span>x containers."
-  - text = "Try it now!"
-  != HAML.branch_picker({                              |
-      button_binding: "click: create_settings_build",  |
-      loading_text: "Starting...",                     |
-      prepend_text: prepend,                           |
-      append_text: append,                             |
-      button_text: text})                              |
+  != HAML.branch_picker({button_binding: "click: create_settings_build"})
 
 .parallelism-picker{data-bind: "ifnot: loading_billing"}
 

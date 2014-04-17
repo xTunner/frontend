@@ -13,30 +13,19 @@
     margin: 0;
     opacity: 0;
   }
-  input {
-    &[type="submit"] {
-      .circleButton();
-      display: block;
-      margin: 1em auto;
-    }
-  }
   form {
-    margin-top: 2em;
-    text-align: center;
-    max-width: 80em;
-    > span {
-      width: 200px;
-      display: inline-block;
-      white-space: nowrap;
-      text-align: right;
-      &:not(:first-child) {
-        text-align: left;
-      }
-    }
+    width: 300px;
+    margin: 0 auto;
     input {
       &[type="text"] {
-        width: 200px;
-        margin-bottom: 0;
+        width: 100%;
+        border-radius: 3px 3px 0 0;
+      }
+      &[type="submit"] {
+        .circleButton();
+        width: 100%;
+        border-radius: 0 0 3px 3px;
+        margin-top: ~"calc(-1px - 1em)";
       }
     }
   }
@@ -397,15 +386,15 @@
       max-width: 66%;
       margin-bottom: 2em;
     }
+  }
+  .tests-inner {
+    margin: 2em 0;
+    max-width: @gridRowWidth;
     input {
       &[type="submit"] {
         .circleButton();
       }
     }
-  }
-  .tests-inner {
-    margin: 2em 0;
-    max-width: @gridRowWidth;
   }
   // Chatrooms Page
   .chat-rooms {

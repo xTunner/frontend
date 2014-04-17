@@ -1,7 +1,4 @@
 %form
-  %span
-    != @prepend_text
-  %input{type: "text", data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}", placeholder: "Branch name", required: ""}
-  %span
-    != @append_text
-  %input{type: "submit", data-bind: "#{@button_binding}", data-loading-text: "#{@loading_text}", value: "#{@button_text}"}
+  %input{type: "text", data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}", required: ""}
+  %label{placeholder: "Test these settings on this branch", alt: "Enter a branch name"}
+  %input{type: "submit", data-bind: "#{@button_binding}", data-loading-text: "Starting...", value: "Try it now!"}
