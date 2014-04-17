@@ -5,21 +5,14 @@
     %hr
     %form.contact-us{data-bind: "with: new CI.outer.ContactUsForm($element, {enterprise: true})"}
 
-      %label{for: "name"} Name*
-      %input{name: "name",
-             type: "text",
-             data-bind: "value: name"}
+      %input{type: "text", data-bind: "value: name", required: ""}
+      %label{placeholder: "Name", alt: "Enter name"}
 
-      %label{for: "email"} Email*
-      %input{name: "email",
-             type: "email",
-             data-bind: "value: email"}
+      %input{type: "text", data-bind: "value: email", required: ""}
+      %label{placeholder: "Email", alt: "Enter email"}
 
-      %label{for: "message"} Phone number
-      %input{name: "message",
-             type: "text",
-             placeholder: "optional",
-             data-bind: "value: message"}
+      %input{type: "text", data-bind: "value: message", required: ""}
+      %label{placeholder: "Phone", alt: "Enter Phone (optional)"}
 
       .notice{data-bind: "with: notice"}
         %div{data-bind: "text: message, attr: {class: type}"}
