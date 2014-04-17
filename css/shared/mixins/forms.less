@@ -2,7 +2,7 @@
   @borders: (@border * 2);
   .box-sizing(border-box);
   outline: none;
-  height: ~"calc(@{height} + @{borders})";
+  height: ~"calc(@{height} + @{borders})"; // Our version of LESS can't calculate this without CSS '
   width: 100%;
   margin: 0 0 @margin;
   padding: @margin;
