@@ -17,7 +17,7 @@
               %a{data-bind: "text: $parent.author(author), attr: {href: $parent.twitter(author)}"}
             %a{data-bind: "attr: {href: link, id: pubDate}, text: CI.time.as_time_since(pubDate)"}
         .entry-avatar
-          %img{data-bind: "attr: {src: $parent.image(author)}"}
+          %img{data-bind: "attr: {src: assetPath($parent.image(author))}"}
 
         -# these are intended to be hashtags, that can then be used to filter
         -# .categories{data-bind: "foreach: categories"}
