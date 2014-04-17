@@ -15,6 +15,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     slack_subdomain: null
     slack_api_token: null
     slack_notify_prefs: null
+    slack_webhook_url: null
     hall_room_api_token: null
     hall_notify_prefs: null
     campfire_room: null
@@ -385,6 +386,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         slack_subdomain: @slack_subdomain()
         slack_api_token: @slack_api_token()
         slack_notify_prefs: @slack_notify_prefs()
+        slack_webhook_url: @slack_webhook_url()
         hall_room_api_token: @hall_room_api_token()
         hall_notify_prefs: @hall_notify_prefs()
         campfire_room: @campfire_room()

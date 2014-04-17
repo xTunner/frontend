@@ -372,19 +372,20 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @first_green_build_invitations = @komp
       deferEvaluation: true
       read: =>
-        new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
-          node = $ ".first-green"
-          node.addClass "animation-fadeout-collapse"
-          if sending
-            node.addClass "success"
-            for user in users
-              mixpanel.track "Sent invitation",
-                project: VM.project().project_name()
-                login: user.login()
-                id: user.id()
-                email: user.email()
-            VM.project().invite_team_members users
-          window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
+        if VM.project().github_users_not_following()
+          new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
+            node = $ ".first-green"
+            node.addClass "animation-fadeout-collapse"
+            if sending
+              node.addClass "success"
+              for user in users
+                mixpanel.track "Sent invitation",
+                  project: VM.project().project_name()
+                  login: user.login()
+                  id: user.id()
+                  email: user.email()
+              VM.project().invite_team_members users
+            window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
