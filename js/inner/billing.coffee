@@ -189,17 +189,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     else
       0
 
-  selectPlan: (plan, event) =>
-    if plan.price?
-      if @can_edit_plan()
-        @oldPlan(@chosenPlan())
-        @chosenPlan(plan)
-        $("#confirmForm").modal({keyboard: false}) # TODO: eww
-      else
-        @newPlan(plan, event)
-    else
-      VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
-
   cancelUpdate: (data, event) =>
     $('#confirmForm').modal('hide') # TODO: eww
     @chosenPlan(@oldPlan())
