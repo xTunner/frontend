@@ -3,40 +3,6 @@
     vertical-align: top;
   }
 }
-.try-out-build {
-  max-height: 8em;
-  margin: 1em 0;
-  opacity: 1;
-  transition: all .3s ease-in-out;
-  &:empty {
-    max-height: 0;
-    margin: 0;
-    opacity: 0;
-  }
-  form {
-    width: 300px;
-    margin: 0 auto;
-    input {
-      &[type="text"] {
-        width: 100%;
-        border-radius: 3px 3px 0 0;
-      }
-      &[type="submit"] {
-        .circleButton();
-        width: 100%;
-        border-radius: 0 0 3px 3px;
-        margin-top: ~"calc(-1px - 1em)";
-      }
-    }
-  }
-  .typeahead {
-    .active {
-      a {
-        background: @grayLightest;
-      }
-    }
-  }
-}
 #project-settings {
   .displayFlex();
   padding: 0 2em;
@@ -85,6 +51,46 @@
     width: @standardBlockSize;
     min-width: 200px;
     .flex(0, 1.1);
+  }
+  .try-out-build {
+    max-height: 8em;
+    // margin: 1em 0;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+    display: inline-block;
+    &:empty {
+      max-height: 0;
+      margin: 0;
+      opacity: 0;
+    }
+    form {
+      width: 300px;
+      margin: 0 auto;
+      position: relative;
+      input {
+        &[type="text"] {
+          width: 100%;
+        }
+        &[type="submit"] {
+          .circleButton();
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 5em;
+          padding: .75em 0;
+          box-shadow: none;
+          margin: 1px;
+          border-radius: 0 2em 2em 0;
+        }
+      }
+    }
+    .typeahead {
+      .active {
+        a {
+          background: @grayLightest;
+        }
+      }
+    }
   }
   .side-list {
     margin: 0;
@@ -164,6 +170,11 @@
     }
   }
   // Parallelism Page
+  .parallelism-picker {
+    .try-out-build {
+      padding-top: 1em;
+    }
+  }
   .parallelism-items {
     .clearfix();
     @blockSize: 10em;
@@ -385,6 +396,9 @@
     p {
       max-width: 66%;
       margin-bottom: 2em;
+    }
+    .try-out-build {
+      margin-left: 2em;
     }
   }
   .tests-inner {
