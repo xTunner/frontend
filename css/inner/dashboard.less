@@ -245,6 +245,12 @@
   }
 }
 .recent-status-badge {
+  vertical-align: middle;
+  a {
+    padding-top: 2px;
+    box-sizing: border-box;
+    .box-sizing(border-box);
+  }
   span {
     display: block;
     color: @white;
@@ -254,12 +260,20 @@
     padding: 2px 1ex;
     text-align: center;
     white-space: nowrap;
-    max-height: 2em;
-    line-height: 2em;
     border-radius: 25px;
     box-sizing: border-box;
+    line-height: 1.75em;
   }
-  a {
-    padding: 0;
+  + .build_actions {
+    vertical-align: middle;
+    a {
+      .subtleButton(@redLight);
+      margin: 0 1ex;
+      float: none;
+      text-align: center;
+      line-height: ~"calc(1.75em - 2px)";
+      min-height: ~"calc(1.75em - 2px)";
+      padding: 0 1ex;
+    }
   }
 }

@@ -8,7 +8,7 @@
 
     %div{data-bind: "with: build"}
 
-      != HAML.build_top_table({})
+      != HAML.build_head({})
 
       != HAML.flashes({})
 
