@@ -8,9 +8,11 @@
   setups should work automatically.
 
 %p
-  If you'd like something specific that's not being inferred, you can add
-  != succeed '.', ->
-    %a{href: "/docs/configuration"} a configuration file
+  If you'd like something specific that's not being inferred,
+  %a{href: "/docs/configuration"}you can say so
+  with
+  %a{href: "/docs/config-sample"} a configuration file
+  checked into the root of your repository.
 
 %h3 Version
 
@@ -33,7 +35,15 @@
 
   You can customize this easily in your <code>circle.yml</code> by setting
   the <code>override</code>, <code>pre</code>, and <code>post</code> properties
-  in the <code>dependencies</code> and <code>test</code> sections:
+  in the
+  %code<
+    %a{href: "/docs/configuration#dependencies"}<
+      dependencies
+  and 
+  %code<
+    %a{href: "/docs/configuration#test"}<
+      test
+  sections.
 
 %pre
   %code.no-highlight<>
@@ -43,8 +53,12 @@
           - cabal bench
 
 %p
-  We build your project in a Cabal sandbox and cache the sandbox across
-  runs so that your builds run as quickly as possible.
+  Circle can
+  %a{href: "/docs/configuration#cache-directories"}
+    cache directories
+  in between builds to avoid unnecessary work. If you use Cabal, our inferred
+  commands build your project in a Cabal sandbox and cache the sandbox.
+  This helps your build run as quickly as possible.
 
 %h3 Artifacts
 
