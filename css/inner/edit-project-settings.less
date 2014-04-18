@@ -53,6 +53,7 @@
     .flex(0, 1.1);
   }
   .try-out-build {
+    @input_width: 7em;
     max-height: 8em;
     // margin: 1em 0;
     opacity: 1;
@@ -70,13 +71,14 @@
       input {
         &[type="text"] {
           width: 100%;
+          padding-right: @input_width;
         }
         &[type="submit"] {
           .circleButton();
           position: absolute;
           top: 0;
           right: 0;
-          width: 5em;
+          width: @input_width;
           padding: .75em 0;
           box-shadow: none;
           margin: 1px;
