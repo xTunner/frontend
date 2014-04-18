@@ -10,5 +10,5 @@
       %label{placeholder: "Post-test commands"}
       %p Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet.
       %input{type: "submit", value: "Save commands", data-bind: "click: save_specs", data-loading-text: "Saving..."}
-  .try-out-build
-    != HAML.branch_picker({button_binding: "click: save_and_create_settings_build"})
+      .try-out-build
+        != HAML.branch_picker({button_binding: "click: save_and_create_settings_build"})

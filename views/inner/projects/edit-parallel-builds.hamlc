@@ -5,10 +5,10 @@
   != HAML.spinner({})
 / /ko
 
-.try-out-build{data-bind: "if: show_test_new_settings"}
-  != HAML.branch_picker({button_binding: "click: create_settings_build"})
-
 .parallelism-picker{data-bind: "ifnot: loading_billing"}
+
+  .try-out-build{data-bind: "if: show_test_new_settings"}
+    != HAML.branch_picker({button_binding: "click: create_settings_build"})
 
   %form.parallelism-items{data-bind: "foreach: parallelism_options"}
     %label{data-bind: "css: $parent.parallel_label_style($data),
