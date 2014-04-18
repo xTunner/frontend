@@ -51,8 +51,12 @@
     }
   }
   .build-status {
+    padding: 2px 5px;
+    border-radius: 1em;
+    color: @white;
+    text-transform: capitalize;
     .statusColor(@color) {
-      color: @color;
+      background: @color;
     }
     &.success {
       .statusColor(@green);
