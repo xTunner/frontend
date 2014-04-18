@@ -1,4 +1,5 @@
 CI.ajax.init()
+CI.instrumentation.init()
 
 display = (template, args, subpage, hash) ->
   klass = 'inner'
