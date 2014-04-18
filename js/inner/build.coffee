@@ -375,22 +375,34 @@ CI.inner.Build = class Build extends CI.inner.Obj
       not @dismiss_first_green_build_invitations() and not
       @previous_successful_build() and @outcome() == "success"
 
+    saw_invitations_prompt = false
     @first_green_build_invitations = @komp
       deferEvaluation: true
       read: =>
-        new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
-          node = $ ".first-green"
-          node.addClass "animation-fadeout-collapse"
-          if sending
-            node.addClass "success"
-            for user in users
-              mixpanel.track "Sent invitation",
+        if VM.project().github_users_not_following()
+          if not saw_invitations_prompt
+            saw_invitations_prompt = true
+            mixpanel.track "Saw invitations prompt",
+              first_green_build: true
+              project: VM.project().project_name()
+          new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
+            node = $ ".first-green"
+            node.addClass "animation-fadeout-collapse"
+            if sending
+              node.addClass "success"
+              mixpanel.track "Sent invitations",
+                first_green_build: true
                 project: VM.project().project_name()
-                login: user.login()
-                id: user.id()
-                email: user.email()
-            VM.project().invite_team_members users
-          window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
+                users: user.login() for user in users
+              for user in users
+                mixpanel.track "Sent invitation",
+                  first_green_build: true
+                  project: VM.project().project_name()
+                  login: user.login()
+                  id: user.id()
+                  email: user.email()
+              VM.project().invite_team_members users
+            window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
