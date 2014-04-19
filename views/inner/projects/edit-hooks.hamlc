@@ -61,7 +61,7 @@
         %label{placeholder: "Private Keyword"}
         %input#irc_username{data-bind: "value: irc_username", type: "text", required: ""}
         %label{placeholder: "Username"}
-        %input#irc_password{{data-bind: "value: irc_password", type: "text", required: ""}
+        %input#irc_password{data-bind: "value: irc_password", type: "text", required: ""}
         %label{placeholder: "Password (optional)"}
     .chat-room-foot
       %label.control-label{for: "irc-notify-prefs"}
