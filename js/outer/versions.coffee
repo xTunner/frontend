@@ -213,6 +213,13 @@ CI.Versions =
 
 
   git: "1.8.5.1"
+
+  ghc: "7.6.3"
+  ghc_versions: [
+    "7.4.2",
+    "7.6.3",
+    "7.8.2"]
+
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.9"

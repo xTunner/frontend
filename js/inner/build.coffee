@@ -280,10 +280,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
       (@run_queued_time() || 0) + (@usage_queued_time() || 0)
 
     @queued_time_summary = @komp =>
-      if @run_queued_time()
-        "#{CI.time.as_duration(@usage_queued_time())} waiting + #{CI.time.as_duration(@run_queued_time())} in queue"
+      time = CI.time.as_duration
+      use = @usage_queued_time()
+      run = @run_queued_time()
+      if run
+        if use < 1000
+          time(run + use)
+        else
+          "#{time(use)} waiting, #{time(run)} queued"
       else
-        "#{CI.time.as_duration(@usage_queued_time())} waiting for builds to finish"
+        "#{time(use)} waiting for builds to finish"
 
     @branch_in_words = @komp =>
       return "unknown" unless @branch()
@@ -315,8 +321,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
         "mailto:#{@committer_email}"
 
     @author_mailto = @komp =>
-      if @committer_email()
-        "mailto:#{@committer_email()}"
+      if @author_email()
+        "mailto:#{@author_email()}"
 
     @author_isnt_committer = @komp =>
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
@@ -369,22 +375,34 @@ CI.inner.Build = class Build extends CI.inner.Obj
       not @dismiss_first_green_build_invitations() and not
       @previous_successful_build() and @outcome() == "success"
 
+    saw_invitations_prompt = false
     @first_green_build_invitations = @komp
       deferEvaluation: true
       read: =>
-        new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
-          node = $ ".first-green"
-          node.addClass "animation-fadeout-collapse"
-          if sending
-            node.addClass "success"
-            for user in users
-              mixpanel.track "Sent invitation",
+        if VM.project().github_users_not_following()
+          if not saw_invitations_prompt
+            saw_invitations_prompt = true
+            mixpanel.track "Saw invitations prompt",
+              first_green_build: true
+              project: VM.project().project_name()
+          new CI.inner.Invitations VM.project().github_users_not_following(), (sending, users) =>
+            node = $ ".first-green"
+            node.addClass "animation-fadeout-collapse"
+            if sending
+              node.addClass "success"
+              mixpanel.track "Sent invitations",
+                first_green_build: true
                 project: VM.project().project_name()
-                login: user.login()
-                id: user.id()
-                email: user.email()
-            VM.project().invite_team_members users
-          window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
+                users: user.login() for user in users
+              for user in users
+                mixpanel.track "Sent invitation",
+                  first_green_build: true
+                  project: VM.project().project_name()
+                  login: user.login()
+                  id: user.id()
+                  email: user.email()
+              VM.project().invite_team_members users
+            window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -578,6 +596,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
       url: "/api/v1/project/#{@project_name()}/#{@build_num}/retry"
       type: "POST"
       event: event
+      data: JSON.stringify
+        "no-cache": clearCache
       success: (data) =>
         console.log("retry build data", data)
         console.log("retry event", event)
@@ -585,7 +605,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @trackRetryBuild data, clearCache, false
     false
 
-  clear_cache_and_retry_build: (data, event) =>
+  clear_cache_retry: (data, event) =>
     $.ajax
       url: "/api/v1/project/#{@project_name()}/build-cache"
       type: "DELETE"
@@ -593,6 +613,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
       success: (data) =>
         @retry_build data, event, true
     false
+
+  retry_build_no_cache: (data, event) =>
+    @retry_build data, event, true
 
   ssh_build: (data, event) =>
     $.ajax
@@ -611,7 +634,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       event: event
     false
 
-  toggle_usage_queue_why: () =>
+  toggle_queue: () =>
     if @usage_queue_visible()
       @usage_queue_visible(!@usage_queue_visible())
       @clean_usage_queue_why()

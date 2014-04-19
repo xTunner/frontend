@@ -136,10 +136,7 @@
 %h3 Ruby
 
 %p We use RVM to give you access to a wide variety of Ruby
-  versions. In general, we try to have most commonly used versions
-  installed. If there's a recently released version of ruby that's not
-  on this list, it's likely we already have it installed or we can
-  quickly install it for you.
+  versions. Below are the versions of Ruby that we pre-install; you can specify versions not listed here (supported by RVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly. 
 
 %p
   You can
@@ -185,7 +182,7 @@
   will install instantly, so it's easy to use any Node version.
 
 %p
-  Currently we have
+  Below are the versions of Node.js that we pre-install; you can specify versions not listed here (supported by NVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly. 
 
 %ul
   - for n in @v.node_versions
@@ -201,7 +198,7 @@
 %h3 Python
 %p
   We use
-  != succeed ",", ->
+  != succeed "", ->
     %code= @v.v('python')
   by default, although you can
   != succeed '.', ->
@@ -213,7 +210,7 @@
     %code= @v.v('virtualenv')
 
 %p
-  Supported versions are:
+  Below are the versions of Python that we pre-install; you can specify versions not listed here (supported by pyenv) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly. 
   .row
     - cols = 4
     - per_col = (Math.ceil(@v.python_versions.length / 4.0))
@@ -325,6 +322,27 @@ We also install some release candidate and beta versions (see the above URL for 
   Other JVM-based languages should also work. please
   != HAML['contact_us']()
   let us know if you need anything else installed to run your JVM language of choice.
+
+%h3 Haskell
+
+%p
+  We have the following tools installed:
+
+%ul
+  - for v in @v.ghc_versions
+    %li
+      %code= 'ghc ' + v
+  %li
+    %code= 'cabal-install-1.18'
+  %li
+    %code= 'happy-1.19.3'
+  %li
+    %code= 'alex-3.1.3'
+
+%p
+  You can
+  %a{href: "/docs/configuration#ghc-version"}specify which GHC version
+  you'd like in your <code>circle.yml</code>.
 
 %h3#other Other languages
 %p

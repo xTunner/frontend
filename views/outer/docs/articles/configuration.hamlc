@@ -91,13 +91,19 @@
 
 %ul
   %li <b>timeout</b>: if a command runs this many seconds without output, kill it (default:180s)
-  %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project)
+  %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project, except in the <code>machine</code> and <code>checkout/pre</code> sections, where it defaults to $HOME.)
   %li
     <b>environment</b>: a hash creating a list of environment variables set for this command
     (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine</code> section of the file)
   %li
     <b>parallel</b>: (only used with commands in the <code>test</code> section)
     if you have <a href="/docs/parallel-manual-setup"> manually set up parallelism</a>, set this to true to run a command across all VMs
+  %li
+    <b>files</b>:
+    The files identified by the file list (or globs) will be appended to the
+    command arguments. The files will be distributed across all containers
+    running the build. Check
+    <a href="/docs/parallel-manual-setup#auto-splitting">manual parallelism setup document</a> for more details.
   %li
     <b>background</b>: when "true", runs a command in the background.  It is similar to ending a shell command with '&amp;', but works correctly over ssh.  Useful for starting servers, which your tests will connect to.
 
@@ -377,6 +383,15 @@
   See
   %a{href: "/docs/environment#python"} supported Python versions
   for a complete list.
+
+%h3 GHC version
+
+%p
+  You can choose from a
+  %a{href: "/docs/configuration#Haskell"}number of available GHC versions
+  in your <code>circle.yml</code>:
+
+!= HAML.circleyml_language_example({language: "ghc"})
 
 %h3
   Other languages

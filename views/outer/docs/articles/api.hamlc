@@ -443,4 +443,4 @@
   %dt
     = "#{data.method}: /#{url}"
   %dd
-    = data.description
+    != data.description
