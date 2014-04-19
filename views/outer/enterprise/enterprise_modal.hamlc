@@ -8,7 +8,7 @@
       %input{type: "text", data-bind: "value: name", required: "", name: "name"}
       %label{placeholder: "Name", alt: "Enter name"}
 
-      %input{type: "text", data-bind: "value: email", required: "", email: "email"}
+      %input{type: "text", data-bind: "value: email", required: "", name: "email"}
       %label{placeholder: "Email", alt: "Enter email"}
 
       %input{type: "text", data-bind: "value: message", required: ""}
