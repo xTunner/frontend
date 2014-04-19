@@ -5,10 +5,10 @@
     %hr
     %form.contact-us{data-bind: "with: new CI.outer.ContactUsForm($element, {enterprise: true})"}
 
-      %input{type: "text", data-bind: "value: name", required: ""}
+      %input{type: "text", data-bind: "value: name", required: "", name: "name"}
       %label{placeholder: "Name", alt: "Enter name"}
 
-      %input{type: "text", data-bind: "value: email", required: ""}
+      %input{type: "text", data-bind: "value: email", required: "", email: "email"}
       %label{placeholder: "Email", alt: "Enter email"}
 
       %input{type: "text", data-bind: "value: message", required: ""}

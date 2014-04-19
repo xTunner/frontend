@@ -11,9 +11,9 @@
           %input#hipchat-notify{type: "checkbox", data-bind: "checked: hipchat_notify"}
           %span Show popups
       %section
-        %input{data-bind: "value: hipchat_room", type: "text", required: ""}
+        %input#hipchat-room{data-bind: "value: hipchat_room", type: "text", required: ""}
         %label{placeholder: "Room"}
-        %input{data-bind: "value: hipchat_api_token", type: "text", required: ""}
+        %input#hipchat-token{data-bind: "value: hipchat_api_token", type: "text", required: ""}
         %label{placeholder: "API"}
     .chat-room-foot
       %label{for: "hipchat-notify-prefs"}
@@ -27,11 +27,11 @@
       %section
         %p To get your API token, visit your company Campfire, then click "My info". Note that if you use your personal API token, campfire won't show the notifications to you!
       %section
-        %input{data-bind: "value: campfire_room", type: "text", required: ""}
+        %input#campfire-room{data-bind: "value: campfire_room", type: "text", required: ""}
         %label{placeholder: "Room"}
-        %input{data-bind: "value: campfire_subdomain", type: "text", required: ""}
+        %input#campfire-subdomain{data-bind: "value: campfire_subdomain", type: "text", required: ""}
         %label{placeholder: "Subdomain"}
-        %input{data-bind: "value: campfire_token", type: "text", required: ""}
+        %input#campfire-token{data-bind: "value: campfire_token", type: "text", required: ""}
         %label{placeholder: "API"}
     .chat-room-foot
       %label.control-label{for: "campfire-notify-prefs"}
@@ -53,15 +53,15 @@
       %h4.chat-i-irc IRC
     .chat-room-body
       %section
-        %input{data-bind: "value: irc_server", type: "text", required: ""}
+        %input#irc_server{data-bind: "value: irc_server", type: "text", required: ""}
         %label{placeholder: "Hostname"}
-        %input{data-bind: "value: irc_channel", type: "text", required: ""}
+        %input#irc_channel{data-bind: "value: irc_channel", type: "text", required: ""}
         %label{placeholder: "Channel"}
-        %input{data-bind: "value: irc_keyword", type: "text", required: ""}
+        %input#irc_keyword{data-bind: "value: irc_keyword", type: "text", required: ""}
         %label{placeholder: "Private Keyword"}
-        %input{data-bind: "value: irc_username", type: "text", required: ""}
+        %input#irc_username{data-bind: "value: irc_username", type: "text", required: ""}
         %label{placeholder: "Username"}
-        %input{data-bind: "value: irc_password", type: "text", required: ""}
+        %input#irc_password{{data-bind: "value: irc_password", type: "text", required: ""}
         %label{placeholder: "Password (optional)"}
     .chat-room-foot
       %label.control-label{for: "irc-notify-prefs"}
@@ -75,7 +75,7 @@
       %section
         %p To get your Webhook URL, visit Slack's <a href="https://my.slack.com/services/new/circleci">CircleCI Integration</a> page, choose a default channel, and click the green "Add CircleCI Integration" button at the bottom of the page.
       %section
-        %input{data-bind: "value: slack_webhook_url", type: "text", required: ""}
+        %input#slack-webhook-url{data-bind: "value: slack_webhook_url", type: "text", required: ""}
         %label{placeholder: "Webhook URL"}
     .chat-room-foot
       %label{for: "slack-notify-prefs"}
@@ -89,7 +89,7 @@
       %section
         %p To get your Room / Group API token, visit Hall's <a href="https://hall.com/docs/integrations/generic/">Generic Integration</a> page and copy the "Group API Token" after selecting your room from the drop-down menu.
       %section
-        %input{data-bind: "value: hall_room_api_token", type: "text", required: ""}
+        %input#hall-token{data-bind: "value: hall_room_api_token", type: "text", required: ""}
         %label{placeholder: "API"}
     .chat-room-foot
       %label{for: "hall-notify-prefs"}
