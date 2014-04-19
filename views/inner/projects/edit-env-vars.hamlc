@@ -20,11 +20,11 @@
       %code \\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/
       %span .
     %form
-      %input{data-bind: "value: env_varName", type: "text", required: ""}
+      %input#env-var-name{data-bind: "value: env_varName", type: "text", required: ""}
       %label{placeholder: "Name"}
-      %input{data-bind: "value: env_varValue", type: "text", required:""}
+      %input#env-var-value{data-bind: "value: env_varValue", type: "text", required:""}
       %label{placeholder: "Value"}
-      %input{type: "submit", value: "Save variable", data-bind: "click: create_env_var", data-loading-text: "Adding...", data-success-text: "Added", data-failed-text: "Failed"}
+      %input{type: "submit", value: "Save variables", data-bind: "click: create_env_var", data-loading-text: "Adding...", data-success-text: "Added", data-failed-text: "Failed"}
     / ko if: env_vars().length
     %table
       %thead
