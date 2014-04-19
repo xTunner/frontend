@@ -12,7 +12,7 @@
       %label{placeholder: "Email", alt: "Enter email"}
 
       %input{type: "text", data-bind: "value: message", required: ""}
-      %label{placeholder: "Phone", alt: "Enter Phone (optional)"}
+      %label{placeholder: "Phone", alt: "Enter phone (optional)"}
 
       .notice{data-bind: "with: notice"}
         %div{data-bind: "text: message, attr: {class: type}"}
