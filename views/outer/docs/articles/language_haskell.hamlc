@@ -18,7 +18,7 @@
 
 %p
   Circle has
-  %a{href: "/docs/environment#other"} several versions of GHC
+  %a{href: "/docs/environment#haskell"} several versions of GHC
   available. We use
   %code= CI.Versions.ghc
   as the default; if you'd like a particular version, you

@@ -384,6 +384,15 @@
   %a{href: "/docs/environment#python"} supported Python versions
   for a complete list.
 
+%h3 GHC version
+
+%p
+  You can choose from a
+  %a{href: "/docs/configuration#Haskell"}number of available GHC versions
+  in your <code>circle.yml</code>:
+
+!= HAML.circleyml_language_example({language: "ghc"})
+
 %h3
   Other languages
 

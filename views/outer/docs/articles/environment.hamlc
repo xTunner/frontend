@@ -323,6 +323,27 @@ We also install some release candidate and beta versions (see the above URL for 
   != HAML['contact_us']()
   let us know if you need anything else installed to run your JVM language of choice.
 
+%h3 Haskell
+
+%p
+  We have the following tools installed:
+
+%ul
+  - for v in @v.ghc_versions
+    %li
+      %code= 'ghc ' + v
+  %li
+    %code= 'cabal-install-1.18'
+  %li
+    %code= 'happy-1.19.3'
+  %li
+    %code= 'alex-3.1.3'
+
+%p
+  You can
+  %a{href: "/docs/configuration#ghc-version"}specify which GHC version
+  you'd like in your <code>circle.yml</code>.
+
 %h3#other Other languages
 %p
   We currently have a number of packages installed to help you test your backend applications, including:
@@ -335,9 +356,6 @@ We also install some release candidate and beta versions (see the above URL for 
     %code= @v.v('golang')
   %li
     %code= @v.v('erlang')
-  - for v in @v.ghc_versions
-    %li
-      %code= 'ghc ' + v
 
 %h2#databases Databases and Services
 
