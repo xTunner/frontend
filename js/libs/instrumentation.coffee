@@ -1,11 +1,15 @@
 CI.instrumentation =
-  response_data: ko.observable([])
+  response_data: ko.observableArray([])
+  expanded: ko.observable(false)
 
   recordResponse: (data) ->
-    @response_data().push(data)
+    @response_data.push(data)
 
   clearResponses: () ->
     @response_data([])
+
+  toggleExpanded: () ->
+    @expanded(not @expanded())
 
   maybeRecordResponse: (xhr, options) ->
     if xhr.getResponseHeader("X-CircleCI-Latency")

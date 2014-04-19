@@ -1,3 +1,43 @@
+<!-- ko if: current_user().admin -->
+%nav.instrumentation{data-bind: "with: CI.instrumentation"}
+  %span
+    api calls:
+    %span{data-bind: "text: response_data().length"}
+
+    total client-measured latency:
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0)"}
+
+    total circle-measured latency:
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0)"}
+
+    total query count:
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0)"}
+
+    total query latency:
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0)"}
+
+
+  %button{data-bind: "click: toggleExpanded"}
+    expand
+  %button{data-bind: "click: clearResponses"}
+    clear
+  %table{data-bind: "visible: expanded"}
+    %thead
+      %tr
+        %th url
+        %th client-measured latency
+        %th circle-measured latency
+        %th query count
+        %th total query latency
+    %tbody{data-bind: "foreach: response_data"}
+      %tr
+        %td{data-bind: "text: url"}
+        %td{data-bind: "text: client_latency"}
+        %td{data-bind: "text: circle_latency"}
+        %td{data-bind: "text: query_count"}
+        %td{data-bind: "text: query_latency"}
+<!-- /ko -->
+
 %nav.header-nav{data-bind: "with: current_user"}
   .header-nav-logo
     %a{href: "/"}
