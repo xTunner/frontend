@@ -111,5 +111,9 @@
       (:job_name build)
       "unknown")))
 
+(defn can-cancel? [build]
+  (and (not= "canceled" (:status build))
+       (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
+
 (defn id [build]
   (:build_url build))
