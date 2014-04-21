@@ -10,5 +10,3 @@
     != HAML.home_technologies()
     != HAML.home_features_old()
     != HAML.home_get_started()
-
-  != HAML.home_github_modal()
