@@ -22,9 +22,11 @@
 
 (defmethod navigated-to :build-inspector
   [target to [project-id build-num] state]
-  (assoc state :inspected-project {:project project-id
-                                   :build-num build-num}
-         :navigation-point :build))
+  (assoc state
+    :inspected-project {:project project-id
+                        :build-num build-num}
+    :navigation-point :build
+    :current-build nil))
 
 (defmethod navigated-to :add-projects
   [target to [project-id build-num] state]

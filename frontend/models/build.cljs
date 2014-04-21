@@ -12,7 +12,12 @@
   (str "/gh/" (:username build) "/" (:reponame build) "/edit#parallel-builds"))
 
 (defn github-revision [build]
-  (subs (:vcs_revision build) 0 7))
+  (when (:vcs_revision build)
+    (subs (:vcs_revision build) 0 7)))
+
+(defn github-commit-url [build]
+  (when (:vcs_revision build)
+    (gstring/format "%s/commit/%s" (:vcs_url build) (:vcs_revision build))))
 
 (defn branch-in-words [build]
   (if-let [branch (:branch build)]
@@ -50,6 +55,18 @@
 (defn pretty-start-time [build]
   (str (datetime/time-ago (js/Date.parse (:start_time build)))
        " ago"))
+
+(defn finished? [build]
+  (or (:stop_time build) (:canceled build)))
+
+(defn in-usage-queue? [build]
+  (and (not (finished? build))
+       (not (:queued_at build))))
+
+(defn in-run-queue? [build]
+  (and (not (finished? build))
+       (:queued_at build)
+       (not (:start_time build))))
 
 ;; XXX figure out how to update duration
 (defn run-queued-time [{:keys [start_time stop_time queued_at] :as build}]
@@ -114,6 +131,27 @@
 (defn can-cancel? [build]
   (and (not= "canceled" (:status build))
        (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
+
+(defn ssh-enabled-now? [build]
+  (and (:ssh_enabled build)
+       (:node build)
+       (every? :ssh_enabled (:node build))))
+
+;; XXX display-build-invite logic
+(defn display-build-invite [build]
+  false)
+
+(defn containers [build]
+  (let [steps (:steps build)
+        actions (reduce (fn [groups step]
+                          (map (fn [group action]
+                                 (conj group action))
+                               groups (lazy-cat (:actions step))))
+                        (repeat (or (:parallel build) 1) [])
+                        steps)]
+    (map (fn [i actions] {:actions actions
+                          :index i})
+         (range) actions)))
 
 (defn id [build]
   (:build_url build))

@@ -1,4 +1,5 @@
-(ns frontend.components.common)
+(ns frontend.components.common
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]))
 
 ;; XXX flashes
 (defn flashes []
@@ -12,3 +13,17 @@
                          <animateTransform attributeName=\"transform\" begin=\"0ms\" dur=\"600ms\" fill=\"freeze\" type=\"rotate\" repeatDur=\"indefinite\" values=\"0 50 50;359 50 50\" keyTimes=\"0;1\" calcMode=\"spline\" keySplines=\"0.42 0 0.58 1\"></animateTransform>
                        </path>
                        <circle fill=\"#ccc\" cx=\"50\" cy=\"50\" r=\"11.905\"></circle>"})}])
+
+(defn contact-us-inner [controls-ch]
+  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
+   " contact us "])
+
+(defn messages [messages]
+  [:div.row-fluid
+   (when (pos? (count messages))
+     [:div#build-messages.offset1.span10
+      (map (fn [message]
+             [:div.alert.alert-info
+              [:strong "Warning: "]
+              [:span {:dangerouslySetInnerHTML #js {"__html" (:message message)}}]])
+           messages)])])

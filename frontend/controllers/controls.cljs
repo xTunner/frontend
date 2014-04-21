@@ -38,8 +38,8 @@
       state)))
 
 (defmethod control-event :usage-queue-why-toggled
-  [target message build-id state]
-  (update-in state [:settings :builds build-id :show-usage-queue] not))
+  [target message {:keys [build-id]} state]
+  (update-in state [:current-build :show-usage-queue] not))
 
 (defmethod control-event :selected-add-projects-org
   [target message args state]
@@ -50,3 +50,15 @@
 (defmethod control-event :edit-repo-filter-string
   [target message filter-string state]
   (assoc-in state [:settings :add-projects :repo-filter-string] filter-string))
+
+(defmethod control-event :show-artifacts-toggled
+  [target message build-id state]
+  (update-in state [:current-build :show-artifacts] not))
+
+(defmethod control-event :container-selected
+  [target message container-id state]
+  (assoc-in state [:current-build :current-container-id] container-id))
+
+(defmethod control-event :action-log-output-toggled
+  [target message {:keys [index step]} state]
+  (update-in state [:current-build :steps step :actions index :show-output] not))

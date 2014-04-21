@@ -34,6 +34,11 @@
 
 (defmethod post-navigated-to! :build-inspector
   [target to [project-id build-num] previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :get
+                (gstring/format "/api/v1/project/%s/%s" project-id build-num)
+                :build
+                api-ch))
   (set-page-title! (str project-id " #" build-num)))
 
 (defmethod post-navigated-to! :add-projects

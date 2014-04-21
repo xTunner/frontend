@@ -42,16 +42,32 @@
             (pr-str (dissoc current-state :comms))))
 
 (defmethod post-control-event! :usage-queue-why-toggled
-  [target message build-id previous-state current-state]
-  ;; XXX these should probably be component-local
-  (when (get-in current-state [:settings :builds build-id :show-usage-queue])
-    (mlog "make this work")))
+  [target message {:keys [username reponame
+                          build_num build-id]} previous-state current-state]
+  (when (get-in current-state [:current-build :show-usage-queue])
+    (let [api-ch (get-in current-state [:comms :api])]
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
+                                  username reponame build_num)
+                  :usage-queue
+                  api-ch
+                  :context build-id))))
+
+(defmethod post-control-event! :show-artifacts-toggled
+  [target message {:keys [username reponame
+                          build_num build-id]} previous-state current-state]
+  (when (get-in current-state [:current-build :show-artifacts])
+    (let [api-ch (get-in current-state [:comms :api])]
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/%s/%s/artifacts"
+                                  username reponame build_num)
+                  :build-artifacts
+                  api-ch
+                  :context build-id))))
 
 (defmethod post-control-event! :retry-build-clicked
   [target message {:keys [username reponame build_num build-id] :as args} previous-state current-state]
-  (aset js/window "test" build-id)
   (let [api-ch (-> current-state :comms :api)]
-    (put! api-ch [:retry-build :started args])
     (utils/ajax :post
                 (gstring/format "/api/v1/project/%s/%s/%s/retry" username reponame build_num)
                 :retry-build
@@ -64,7 +80,8 @@
         api-ch (get-in current-state [:comms :api])]
     (utils/ajax :get
               (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
-              :repos api-ch
+              :repos
+              api-ch
               :context args)))
 
 (defmethod post-control-event! :followed-repo
@@ -75,3 +92,7 @@
               :followed-repo
               api-ch
               :context repo)))
+
+(defmethod post-control-event! :container-selected
+  [target message container-id previous-state current-state]
+  (assoc-in state [:current-build :current-container-id] container-id))

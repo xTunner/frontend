@@ -63,6 +63,11 @@
   (mlog "recentbuilds success")
   (assoc-in state [:recent-builds] (:resp args)))
 
+(defmethod api-event [:build :success]
+  [target message status args state]
+  (mlog "build success")
+  (assoc-in state [:current-build] (:resp args)))
+
 (defmethod api-event [:retry-build :started]
   [target message status {:keys [build-id]} state]
   (update-in state [:current-build] (fn [b] (if-not (= build-id (build-model/id b))
@@ -100,3 +105,19 @@
 (defmethod api-event [:collaborators :success]
   [target message status args state]
   (assoc-in state [:current-user :collaborators] (:resp args)))
+
+(defmethod api-event [:usage-queue :success]
+  [target message status args state]
+  (let [usage-queue-builds (:resp args)
+        build-id (:context args)]
+    (if-not (= build-id (-> state :current-build build-model/id))
+      state
+      (assoc-in state [:current-build :usage-queue-builds] usage-queue-builds))))
+
+(defmethod api-event [:build-artifacts :success]
+  [target message status args state]
+  (let [artifacts (:resp args)
+        build-id (:context args)]
+    (if-not (= build-id (-> state :current-build build-model/id))
+      state
+      (assoc-in state [:current-build :artifacts] artifacts))))
