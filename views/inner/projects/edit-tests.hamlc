@@ -3,31 +3,12 @@
     %span{data-bind: "text: project_name"}
   .tests-inner
     %fieldset.spec_form
-      %label.stickyArea
-        %textarea#test-commands{rows: 7,
-                                name: "test",
-                                data-bind: "value: test, valueUpdate: 'keyup'",
-                                required: ""}
-        %label{for: "test-commands"} Test commands
+      %textarea{data-bind: "value: test, valueUpdate: 'keyup'", required: "", name: "test"}
+      %label{placeholder: "Test commands"}
       %p Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04.
-      %label.stickyArea
-        %textarea#post-test{name: "extra",
-                            rows: 7,
-                            data-bind: "value: extra, valueUpdate: 'keyup'",
-                            required: ""}
-        %label{for: "post-test"} Post-test commands
+      %textarea{data-bind: "value: extra, valueUpdate: 'keyup'", required: "", name: "extra"}
+      %label{placeholder: "Post-test commands"}
       %p Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet.
+      %input{type: "submit", value: "Save commands", data-bind: "click: save_specs", data-loading-text: "Saving...", name: "save"}
       .try-out-build
-        %button{type: "submit",
-                name: "save",
-                data-bind: "click: save_specs",
-                data-loading-text: "Saving..."} Save.
-        - prepend = "Save and run a build on"
-        - append = "with these commands."
-        - text = "Try it now!"
-        != HAML.branch_picker({                                       |
-            button_binding: "click: save_and_create_settings_build",  |
-            loading_text: "Saving...",                                |
-            prepend_text: prepend,                                    |
-            append_text: append,                                      |
-            button_text: text})                                       |
+        != HAML.branch_picker({button_binding: "click: save_and_create_settings_build"})
