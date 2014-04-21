@@ -17,6 +17,9 @@
           - cabal test:
               timeout: 300
 %p
-  Note that inferred <code>cabal test</code> commands already have a higher
-  timeout set for this reason, so this is only necessary if you override the
-  inferred commands or run <code>cabal test</code> elsewhere.
+  Note that inferred <code>cabal test</code> commands are already set to time
+  out only after 10 minutes without output, so this is only necessary if
+  you override the inferred commands, run <code>cabal test</code> elsewhere,
+  or have a particular cabal test suite that you expect to take longer than
+  10 minutes.
+
