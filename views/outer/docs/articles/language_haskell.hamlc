@@ -81,6 +81,14 @@
 %h3 Troubleshooting
 
 %p
-  If you have any trouble, please
+  Our
+  %a{href: "/docs/troubleshooting-haskell"}
+    Haskell troubleshooting
+  documentation has information about the following issues:
+
+!= @include_article('troubleshooting_haskell')
+
+%p
+  If you have any further trouble, please
   != succeed '.', -> HAML.contact_us()
   We'll be happy to help!
