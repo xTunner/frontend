@@ -267,14 +267,11 @@
   CircleCI has the following languages and tools installed:
 
 %ul
-  %li
-    <code>oracle JDK 7, using Java 1.7.0_21</code> (default)
-  %li
-    %code oracle JDK 6, using Java 1.6.0u37
-  %li
-    %code openjdk7
-  %li
-    %code openjdk6
+  - for j in @v.java_packages
+    %li
+      %code= j.name + (if j.version then ', using Java ' + j.version else '')
+      - if j.default
+        (default)
   %li
     %code= @v.v('ant')
   %li
@@ -286,17 +283,12 @@
 
 %p
   You can specify the following JVM versions in your <code>circle.yml</code> file:
-    %ul
+  %ul
+    - for j in @v.java_packages
       %li
-        %code oraclejdk8
-      %li
-        <code>oraclejdk7</code> (default)
-      %li
-        %code oraclejdk6
-      %li
-        %code openjdk7
-      %li
-        %code openjdk6
+        %code= j.package
+        - if j.default
+          (default)
 
 %h4 Scala
 
