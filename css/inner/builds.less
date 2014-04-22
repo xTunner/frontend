@@ -55,19 +55,24 @@
     border-radius: 1em;
     color: @white;
     text-transform: capitalize;
+    background: @grayLight; // for queued, not_running, canceled
     .statusColor(@color) {
       background: @color;
     }
-    &.success {
+    &.success,
+    &.fixed {
       .statusColor(@green);
     }
-    &.failed {
+    &.no_tests,
+    &.failed,
+    &.timedout {
       .statusColor(@redLight);
     }
     &.running {
       .statusColor(@blueLight);
     }
-    &.not_run {
+    &.not_run,
+    &.circle_bug {
       .statusColor(@orange);
     }
   }
