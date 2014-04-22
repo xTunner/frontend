@@ -61,7 +61,7 @@
 
 
     %h2 Changelog
-    %ul.changelog
+    %ul.privacy-changelog
       %li
         %strong Mar 17, 2014
         Moved the security content to its own page, <a href="/security">located here</a>

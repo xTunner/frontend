@@ -1,4 +1,4 @@
-- @langauge or= "python"
+- @language or= "python"
 - @versions = CI.Versions["#{@language}_versions"]
 - @latest_version = @versions[@versions.length - 1]
 

@@ -188,7 +188,7 @@
     &:first-child {
       padding-left: 1em;
     }
-    &:last-child {
+    &.condense {
       width: 70px;
       text-align: center;
     }
@@ -221,21 +221,11 @@
     .box-sizing(border-box);
     a {
       display: block;
-      line-height: 1.25em;
-      padding: .5em 0 .5em .5em;
+      line-height: 2em;
+      min-height: 2em;
     }
     &:first-child a {
       padding-left: 1em;
-    }
-    &:last-child {
-      vertical-align: middle;
-      a {
-        padding: 0 5px;
-      }
-    }
-    &:not(:last-child) a:after {
-      content: "\000";
-      visibility: hidden;
     }
   }
 }
@@ -244,5 +234,5 @@
 @import "mixins/skins.less";
 @import "mixins/buttons.less";
 @import "mixins/animations.less";
-@import "mixins/stickylabel.less";
 @import "mixins/flex.less";
+@import "mixins/forms.less";

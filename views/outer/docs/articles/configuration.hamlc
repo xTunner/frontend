@@ -91,7 +91,7 @@
 
 %ul
   %li <b>timeout</b>: if a command runs this many seconds without output, kill it (default:180s)
-  %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project)
+  %li <b>pwd</b>: run commands using this value as the current working directory (default: the checkout directory named for your project, except in the <code>machine</code> and <code>checkout/pre</code> sections, where it defaults to $HOME.)
   %li
     <b>environment</b>: a hash creating a list of environment variables set for this command
     (see <a href="#machine">Machine configuration</a> for this modifier's properties when used in the <code>machine</code> section of the file)
@@ -383,6 +383,15 @@
   See
   %a{href: "/docs/environment#python"} supported Python versions
   for a complete list.
+
+%h3 GHC version
+
+%p
+  You can choose from a
+  %a{href: "/docs/configuration#Haskell"}number of available GHC versions
+  in your <code>circle.yml</code>:
+
+!= HAML.circleyml_language_example({language: "ghc"})
 
 %h3
   Other languages

@@ -1,4 +1,5 @@
 CI.ajax.init()
+CI.instrumentation.init()
 
 display = (template, args, subpage, hash) ->
   klass = 'inner'
@@ -57,9 +58,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @docs = new CI.outer.Docs("docs", "Documentation", "View Docs")
     @error = new CI.outer.Error("error", "Error")
 
-    @jobs = new CI.outer.Page("jobs", "Work at CircleCI")
+    @jobs = new CI.outer.Page("jobs", "Work at CircleCI", "View jobs")
     @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
+    @changelog = new CI.outer.Changelog("changelog", "ChangeLog", "View ChangeLog")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
     @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
     @securityHOF = new CI.outer.Page("security_hall_of_fame", "Security Hall of Fame", "View Security Hall of Fame")
@@ -442,6 +444,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/about.*", (cx) => VM.about.display(cx)
   @get "^/privacy.*", (cx) => VM.privacy.display(cx)
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
+  @get "^/changelog.*", (cx) => VM.changelog.display(cx)
   @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
   @get "^/security(#.*)?", (cx) => VM.security.display(cx)

@@ -1,18 +1,4 @@
 %form
-  .inline-input-text
-    != @prepend_text
-  %label.sticky
-    %input#branch-picker{type: "text",
-                         name: "branch",
-                         autocomplete: "off",
-                         data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}",
-                         required: ""}
-    %label{for: "branch-picker"} Branch name
-
-  .inline-input-text
-    != @append_text
-  %button{type: "submit",
-          name: "save-and-test",
-          data-bind: @button_binding,
-          data-loading-text: @loading_text}
-    != @button_text
+  %input{type: "text", data-bind: "value: settings_branch, typeahead: {source: pretty_branch_names}", required: "", name: "branch"}
+  %label{placeholder: "Test settings on..."}
+  %input{type: "submit", data-bind: "#{@button_binding}", data-loading-text: "Starting...", value: "Save & Go!"}

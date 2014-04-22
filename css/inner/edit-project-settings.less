@@ -3,85 +3,6 @@
     vertical-align: top;
   }
 }
-.try-out-build {
-  line-height: 3em;
-  height: 3em;
-  margin: 1em 0;
-  transition: all .3s ease-in-out;
-  opacity: 1;
-  &:empty {
-    margin: 0;
-    opacity: 0;
-  }
-  label.sticky {
-    display: inline-block;
-    > input[type="text"] {
-      display: inline-block;
-      width: @standardBlockSize;
-      margin: 0;
-    }
-  }
-  .inline-input-text {
-    display: inline-block;
-    margin: 0 .5em;
-  }
-  .styled-select {
-    position: relative;
-    width: @standardBlockSize;
-    display: inline-block;
-    vertical-align: top;
-    select {
-      background: transparent;
-      -webkit-appearance: none;
-      outline: none;
-      .outlineInside(@grayLighter);
-      border-radius: 5em;
-      .box-sizing(border-box);
-      line-height: 2em;
-      height: 3em;
-      width: 100%;
-      padding: .5em 1.34em;
-      -webkit-font-smoothing: antialiased;
-      &:hover ~ i.fa-chevron-down {
-        color: @blueLight;
-        transition-duration: .1s;
-      }
-    }
-    i {
-      &.fa-chevron-down {
-        right: 8%;
-        pointer-events: none;
-        position: absolute;
-        top: 25%;
-        transition: color .3s ease-in-out;
-      }
-    }
-  }
-  form {
-    display: inline-block;
-  }
-  button[type="submit"] {
-    font-size: @baseFontSize;
-    border: none;
-    background: none;
-    outline: none;
-    color: @blueDark;
-    border-bottom: 1px dotted @blueLight;
-    padding: 0;
-    vertical-align: middle;
-    &:hover {
-      color: @blueLight;
-      border-bottom-color: @blueDark;
-    }
-  }
-  .typeahead {
-    .active {
-      a {
-        background: @grayLightest;
-      }
-    }
-  }
-}
 #project-settings {
   .displayFlex();
   padding: 0 2em;
@@ -130,6 +51,49 @@
     width: @standardBlockSize;
     min-width: 200px;
     .flex(0, 1.1);
+  }
+  .try-out-build {
+    @input_width: 7em;
+    max-height: 8em;
+    // margin: 1em 0;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+    display: inline-block;
+    &:empty {
+      max-height: 0;
+      margin: 0;
+      opacity: 0;
+    }
+    form {
+      width: 300px;
+      margin: 0 auto;
+      position: relative;
+      input {
+        &[type="text"] {
+          width: 100%;
+          padding-right: @input_width;
+        }
+        &[type="submit"] {
+          .circleButton();
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: @input_width;
+          padding: .75em 0;
+          box-shadow: none;
+          margin: 1px;
+          border-radius: 0 2em 2em 0;
+          height: 3em;
+        }
+      }
+    }
+    .typeahead {
+      .active {
+        a {
+          background: @grayLightest;
+        }
+      }
+    }
   }
   .side-list {
     margin: 0;
@@ -209,6 +173,11 @@
     }
   }
   // Parallelism Page
+  .parallelism-picker {
+    .try-out-build {
+      padding-top: 1em;
+    }
+  }
   .parallelism-items {
     .clearfix();
     @blockSize: 10em;
@@ -293,7 +262,6 @@
         border-radius: 3px;
         line-height: 1em;
         text-align: center;
-        transition: box-shadow .2s ease-in-out;
         color: @whiten;
         &:after {
           content: "x";
@@ -389,44 +357,20 @@
   .environment-variables-inner{
     margin: 2em 0;
     max-width: @gridRowWidth;
-    .env-table {
-      .outlineFlat();
-      border-radius: 4px;
-    }
     form {
-      margin: 0;
-      + ul li:last-of-type {
-          box-shadow: none;
+      margin-top: 2em;
+      width: 50%;
+    }
+    table {
+      .tableLight();
+      td {
+        &:not(:last-child) {
+          padding: 1em;
+        }
       }
-    }
-    li {
-      display: flex;
-      justify-content: space-between;
-      line-height: 3em;
-      box-shadow: 0 1px @grayBoxBorder;
-    }
-    span {
-      display: block;
-      &:not(:last-of-type) {
-        .flex(1, 1, 44%);
-        padding-left: 1em;
-      }
-      &:last-of-type {
-        flex: 0 0 140px;
-      }
-    }
-    .sticky {
-      margin-top: 1em;
-    }
-    input[type="text"] {
-      margin-bottom: 0;
     }
     input[type=submit] {
       .circleButton(@grayLightest, @green);
-      font-size: 1em;
-      margin: 1em;
-      line-height: 3em;
-      padding: 0 3em;
     }
     a {
       .tableDrawerBtn();
@@ -435,17 +379,14 @@
   // Dependencies Page
   .dependencies-page {
     fieldset {
-      a.btn {
-        .circleButton();
-        margin-top: 2em;
-        display: inline-block;
-        i {
-          margin-left: 1ex;
-          font-size: @baseFontSize;
+      input {
+        &[type="submit"] {
+          .circleButton();
         }
       }
       p {
         max-width: 66%;
+        margin-bottom: 2em;
       }
     }
   }
@@ -455,22 +396,22 @@
   }
   // Tests Page
   .tests-page {
-    a.btn {
-      .circleButton();
-      margin-top: 2em;
-      display: inline-block;
-      i {
-        margin-left: 1ex;
-        font-size: @baseFontSize;
-      }
-    }
     p {
       max-width: 66%;
+      margin-bottom: 2em;
+    }
+    .try-out-build {
+      margin-left: 2em;
     }
   }
   .tests-inner {
     margin: 2em 0;
     max-width: @gridRowWidth;
+    input {
+      &[type="submit"] {
+        .circleButton();
+      }
+    }
   }
   // Chatrooms Page
   .chat-rooms {
@@ -657,21 +598,8 @@
       }
     }
     form {
-      margin: 2em 0;
-    }
-    label.sticky {
-      max-width: @standardBlockSize;
-    }
-    label.stickyArea {
-      @sshCharCount: 64;
-      @sshTextAreaWidth: (@sshCharCount) + ((10 / 100) * @sshCharCount) + 1ex;
-      display: inline-block;
-      #privateKey {
-        font-family: @monoFontFamily;
-        font-size: @fontSizeSmall;
-        width: @sshTextAreaWidth;
-        .box-sizing(content-box);
-      }
+      margin-top: 2em;
+      width: 50%;
     }
     input {
       &[type="submit"] {
@@ -723,16 +651,6 @@
         margin-top: 1em;
       }
     }
-    div[class^="gh-user-"] {
-      .stickyLabel-shared-text();
-      &:empty {
-        display: none;
-      }
-    }
-    .gh-label-user {
-      .stickyLabel-shared-label();
-      .stickyLabel-shared-validLabel();
-    }
   }
   // Circle API Page
   .circle-api-page {
@@ -766,17 +684,13 @@
       top: 66px;
       left: 340px;
     }
-    label.sticky {
-      width: @standardBlockSize;
-      display: inline-block;
-      margin-left: 1em;
+    form {
+      margin-top: 2em;
+      width: 50%;
     }
     input {
       &[type="submit"] {
         .circleButton();
-        font-size: inherit;
-        vertical-align: top;
-        margin-left: 1em;
       }
     }
     i {
@@ -784,7 +698,7 @@
     }
     .styled-select {
       position: relative;
-      width: @standardBlockSize;
+      width: 100%;
       display: inline-block;
       select {
         background: transparent;
@@ -806,7 +720,7 @@
       }
       i {
         &.fa-chevron-down {
-          right: 8%;
+          right: 1.5em;
           pointer-events: none;
           position: absolute;
           top: 24%;

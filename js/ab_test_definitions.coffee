@@ -8,5 +8,3 @@ exports = this
 
 exports.ab_test_definitions =
   a_is_a: [true, false]
-  github_modal: [true, false]
-

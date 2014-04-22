@@ -135,7 +135,7 @@
 
 
     %h2 Changelog
-    %ul.changelog
+    %ul.privacy-changelog
       %li
         %strong Mar 17, 2014
         Move the Security page to its own page
