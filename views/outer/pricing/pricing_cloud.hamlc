@@ -6,17 +6,17 @@
       %span = @plan_price
     \/ month
   %ul
-    %li Includes 
+    %li Includes
       %span = @number_containers
-      - if @number_containers is 1 
+      - if @number_containers is 1
         container
       - else
-        containers  
+        containers
     %li Additional containers for $50/each
     %li
       %strong No other limits
   %span{data-bind: "if: $root.logged_in"}
-    %button.btn.btn-primary{data-bind: "click: function (d,e) { $parent.selectPlan($data, e)}",
+    %button.btn.btn-primary{data-bind: "click: function (d,e) { newPlan(#{@number_containers}, e)}",
                        data-success-text: "Paid!",
                        data-failed-text: "Failed!",
                        data-loading-text: "Paying..."}
@@ -24,6 +24,6 @@
       %span = @plan_price
       \/month
   %span{data-bind: "ifnot: $root.logged_in"}
-    %a.btn.btn-primary{href: CI.github.authUrl(),  
-                      data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"} 
+    %a.btn.btn-primary{href: CI.github.authUrl(),
+                      data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"}
       Start your 14-day trial
