@@ -1,5 +1,6 @@
 CI.instrumentation =
   response_data: ko.observableArray([])
+  display: ko.observable(true)
   expanded: ko.observable(false)
 
   recordResponse: (data) ->
@@ -7,6 +8,9 @@ CI.instrumentation =
 
   clearResponses: () ->
     @response_data([])
+
+  toggleDisplay: () ->
+    @display(not @display())
 
   toggleExpanded: () ->
     @expanded(not @expanded())
