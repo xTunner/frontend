@@ -1,6 +1,6 @@
 CI.instrumentation =
   response_data: ko.observableArray([])
-  display: ko.observable(false)
+  display: ko.observable(true)
   expanded: ko.observable(false)
 
   recordResponse: (data) ->
