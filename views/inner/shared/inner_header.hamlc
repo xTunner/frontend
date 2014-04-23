@@ -41,7 +41,7 @@
         %a.menu-item{href: "/admin/projects"} Projects
         %a.menu-item{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
       <!-- /ko -->
-<!-- ko if: current_user().admin && CI.instrumentation.display() -->
+<!-- ko if: current_user().admin() && CI.instrumentation.display() -->
 %nav.instrumentation{data-bind: "with: CI.instrumentation"}
   .metric
     %span{data-bind: "text: response_data().length"}
