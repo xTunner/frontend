@@ -171,3 +171,44 @@
     width: @headerDocsWidth;
   }
 }
+.instrumentation {
+  padding: 0.5em 1em;
+  color: @grayLightest;
+  background: @blueLight;
+  line-height: 200%;
+
+  tr:first {
+    font-weight: strong;
+  }
+
+  button {
+    .subtleButton(@grayLightest);
+    .aRowOfButtons(2em);
+
+  }
+
+  .info-expand {
+    border-top-left-radius: 2em;
+    border-bottom-left-radius: 2em;
+  }
+
+  .info-clear {
+    border-top-right-radius: 2em;
+    border-bottom-right-radius: 2em;
+  }
+
+  th {
+    padding-right: 1em;
+  }
+}
+
+.metric {
+  display: inline-block;
+  padding-right: 1em;
+}
+
+.metric-label {
+  font-size: @fontSizeSmall;
+  font-weight: bold;
+  color: @grayLightest;
+}

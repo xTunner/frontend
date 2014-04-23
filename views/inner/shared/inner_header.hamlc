@@ -1,53 +1,10 @@
-<!-- ko if: current_user().admin -->
-%nav.instrumentation{data-bind: "with: CI.instrumentation"}
-  %span
-    api calls:
-    %span{data-bind: "text: response_data().length"}
-
-    total client-measured latency:
-    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0)"}
-
-    total circle-measured latency:
-    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0)"}
-
-    total query count:
-    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0)"}
-
-    total query latency:
-    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0)"}
-
-
-  %button{data-bind: "click: toggleExpanded"}
-    expand
-  %button{data-bind: "click: clearResponses"}
-    clear
-  %table{data-bind: "visible: expanded"}
-    %thead
-      %tr
-        %th url
-        %th client-measured latency
-        %th circle-measured latency
-        %th query count
-        %th total query latency
-    %tbody{data-bind: "foreach: response_data"}
-      %tr
-        %td{data-bind: "text: url"}
-        %td{data-bind: "text: client_latency"}
-        %td{data-bind: "text: circle_latency"}
-        %td{data-bind: "text: query_count"}
-        %td{data-bind: "text: query_latency"}
-<!-- /ko -->
-
 %nav.header-nav{data-bind: "with: current_user"}
   .header-nav-logo
     %a{href: "/"}
   .header-nav-breadcrumb
     != HAML.crumbs({})
   .header-nav-environment{data-bind: "if: showEnvironment,
-                                      tooltip: {title: \"You're the best\",
-                                                placement: 'left',
-                                                trigger: 'click',
-                                                animation: false}"}
+                                      click: function() { CI.instrumentation.toggleDisplay() }"}
     %span{data-bind: "text: environment, css: environmentColor"}
   .header-nav-docs
     %a.menu-item{href: "/docs",target: "_blank"}
@@ -84,3 +41,42 @@
         %a.menu-item{href: "/admin/projects"} Projects
         %a.menu-item{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
       <!-- /ko -->
+<!-- ko if: current_user().admin && CI.instrumentation.display() -->
+%nav.instrumentation{data-bind: "with: CI.instrumentation"}
+  .metric
+    %span{data-bind: "text: response_data().length"}
+    %span.metric-label requests
+  .metric
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0)"}
+    ms
+    %span.metric-label client
+  .metric
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0)"}
+    ms
+    %span.metric-label server
+  .metric
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0)"}
+    ms \/
+    %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0)"}
+    queries
+    %span.metric-label mongo
+  %button.info-clear{data-bind: "click: clearResponses"}
+    clear
+  %button.info-expand{data-bind: "click: toggleExpanded"}
+    expand
+  %table{data-bind: "visible: expanded"}
+    %thead
+      %tr
+        %th Url
+        %th Client latency
+        %th Server latency
+        %th Mongo queries
+        %th Total query latency
+    %tbody{data-bind: "foreach: response_data"}
+      %tr
+        %td{data-bind: "text: url"}
+        %td{data-bind: "text: client_latency"}
+        %td{data-bind: "text: circle_latency"}
+        %td{data-bind: "text: query_count"}
+        %td{data-bind: "text: query_latency"}
+<!-- /ko -->
