@@ -112,7 +112,7 @@
                                     (swap! state (partial controls-con/control-event container (first v) (second v)))
                                     (controls-pcon/post-control-event! container (first v) (second v) previous-state @state))
                                   (catch js/Error e
-                                    (js/alert e))))
+                                    (.error js/console e))))
            (:nav comms) ([v]
                            (when true (:log-channels? utils/initial-query-map)
                                  (mlog "Navigation Verbose: " v))
@@ -121,7 +121,7 @@
                                (swap! state (partial nav-con/navigated-to container (first v) (second v)))
                                (nav-pcon/post-navigated-to! container (first v) (second v) previous-state @state))
                              (catch js/Error e
-                               (js/alert e))))
+                               (.error js/console e))))
            (:api comms) ([v]
                            (when true (:log-channels? utils/initial-query-map)
                                  (mlog "API Verbose: " (first v) (second v) (drop 2 v)))
@@ -130,7 +130,7 @@
                                (swap! state (partial api-con/api-event container (first v) (second v) (utils/third v)))
                                (api-pcon/post-api-event! container (first v) (second v) (utils/third v) previous-state @state))
                              (catch js/Error e
-                               (js/alert e))))
+                               (.error js/console e))))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))
