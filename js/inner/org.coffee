@@ -66,11 +66,13 @@ CI.inner.Org = class Org extends CI.inner.Obj
 
     # This is a computed observable that only exists for its side-effects
     @redirect_to_plan = ko.computed
-      read: () =>
-        if @billing().loaded() && _.contains(@billing_subpages, @subpage())
-          if !@billing().can_edit_plan()
-            @subpage('plan')
-      deferEvaluation: false # insurance in case we make true the default
+      read: () =>
+        if @billing().loaded() && _.contains(@billing_subpages, @subpage())
+          if !@billing().can_edit_plan()
+            @subpage('plan')
+          else if @subpage() is 'plan'
+            @subpage('containers')
+      deferEvaluation: false # insurance in case we make true the default
 
   loadSettings: () =>
     $.ajax
