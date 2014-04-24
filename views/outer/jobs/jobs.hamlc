@@ -3,3 +3,13 @@
     %h1 Join us &amp; do what you love.
     %p We'll even pay you for it.
   .jobs-body
+    .jobs-types
+      %a{href: "#"}
+        %i.fa.fa-code
+        %h3 Engineering
+      %a{href: "#"}
+        %i.fa.fa-pencil
+        %h3 Design
+      %a{href: "#"}
+        %i.fa.fa-bar-chart-o
+        %h3 Business

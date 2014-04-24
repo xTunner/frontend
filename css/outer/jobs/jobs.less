@@ -48,3 +48,18 @@
     color: @grayLight;
   }
 }
+.jobs-types {
+  @columns: 3;
+  .flexy(stretch);
+  .outlineFlat();
+  border-radius: 4px;
+  height: (@minimumContentWidth / 4);
+  margin: (@jobs_section_padding / 2) 0;
+  a {
+    .flexy(center, center, column);
+    width: 100% / @columns;
+    &:not(:first-child) {
+      box-shadow: -1px 0 @grayBoxBorder;
+    }
+  }
+}
