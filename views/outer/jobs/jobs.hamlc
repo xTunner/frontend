@@ -1,18 +1,1 @@
 .page.jobs
-  .banner
-    .container
-      %h1 We're hiring.
-      %h3 We're currently looking for great engineers and designers, for roles in product and customer happiness.
-
-  .container.content
-    .row
-      %h2.aside
-        Get on board with a rapidly growing company with a deeply technical team, a focus on productivity (for our customers and ourselves), a flat organization, an important mission, and a great culture.
-
-      != HAML['jobs_intro']()
-      != HAML['jobs_who']()
-      != HAML['jobs_values']()
-      != HAML['jobs_where']()
-      != HAML['jobs_how']()
-
-      %h2.aside No recruiters, thank you.
