@@ -18,21 +18,6 @@
         %span acquiring containers for this build
     <!-- /ko -->
 
-<<<<<<< HEAD
-    <!--  ko if: usage_queue_why().length -->
-      %p
-        %span This build
-        / ko if: usage_queued
-        %span has been
-        / /ko
-        / ko ifnot: usage_queued
-        %span was
-        / /ko
-        %span queued behind the following builds for
-        %span{data-bind: "duration: usage_queued_time"}
-      != HAML.recent_builds_table({builds: "usage_queue_why", mention_project: true, actions: true})
-    <!-- /ko -->
-=======
     <!-- ko if: usage_queue_why -->
 
       <!-- ko ifnot: usage_queued -->
@@ -43,16 +28,10 @@
           %span{data-bind: "duration: run_queued_time"}
           %span acquiring containers for this build
       <!-- /ko -->
->>>>>>> master
 
     <!--  ko with: $root.project -->
       <!-- ko if: billing.existing_plan_loaded -->
         %p
-<<<<<<< HEAD
-          %span Too much waiting? You can
-          %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
-          %span and finish even faster.
-=======
           %span This build
           %span{data-bind: "if: usage_queued"} has been
           %span{data-bind: "ifnot: usage_queued"} was
@@ -68,7 +47,6 @@
             %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
             %span and finish even faster.
         <!-- /ko -->
->>>>>>> master
       <!-- /ko -->
     <!-- /ko -->
 
