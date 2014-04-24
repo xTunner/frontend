@@ -63,3 +63,15 @@
     }
   }
 }
+.jobs-location {
+  @split_by: (1 / 3);
+  .flexy(stretch);
+  margin: (@jobs_section_padding / 2) 0;
+  aside {
+    .flexy(center, center, column);
+    width: (@split_by * 100%);
+  }
+  article {
+    width: ((1 - @split_by) * 100%);
+  }
+}

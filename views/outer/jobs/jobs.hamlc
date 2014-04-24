@@ -16,3 +16,18 @@
     .jobs-intro
       %h3 Why You'll Love Circle
       %p Circle is the market leader in continuous integration and deployment, and we're loved by thousands of developers all over the world. Our team is a rapidly growing group of highly talented, technical individuals. We value productivity and distributed decision making, which ultimately creates better solutions for our company and our customers. Circle has already generated significant revenue and raised millions in funding &#8212; and we're just getting started.
+    .jobs-locations
+      .jobs-location
+        %aside
+          %i.fa.fa-building
+          %h2 Local
+        %article
+          %h3 Work at our beautiful San Francisco office
+          %p Our home office is located in beautiful downtown San Francisco. Our office encompasses an entire highrise floor, with amazing views of the city. We value productivity, and to create the most productive environment possible we give every team member their own private office.
+      .jobs-location
+        %article
+          %h3 Or work from the comfort of home
+          %p We're a very remote-friendly company. We currently have people working in Oregon, Ireland, Texas, Boston, and more. Enjoy the luxury of setting up office anywhere in the world, and make your own hours. We'll fly you into town every few months to catch up with the rest of the team, all expenses paid.
+        %aside
+          %i.fa.fa-globe
+          %h2 Remote
