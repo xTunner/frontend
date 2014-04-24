@@ -31,3 +31,24 @@
         %aside
           %i.fa.fa-globe
           %h2 Remote
+    .jobs-perks-buckets
+      .jobs-perks
+        %article
+          %h3 Flat Organization
+          %p We value teamwork. That's why everyone has an equal say at Circle. We hire the best &#8212; to us that means you're capable of managing yourself.
+        %article
+          %h3 Happy Environment
+          %p We want every team member to balance work and life responsibly. You'll regularly catch us playing ping pong, board games, and Xbox after or during "work hours".
+        %article
+          %h3 Free Lunch
+          %p We provide catered meals every day and our office is fully stocked with snacks and drinks. If we don't have your favorites, just ask and we'll make it happen.
+      .jobs-perks
+        %article
+          %h3 Top-Notch Tech
+          %p Let us know your flavor of Apple hardware and we'll dial it up to 11. Anything else you need to get the job done is on the house, as well as plenty of Circle swag.
+        %article
+          %h3 Your Own Office
+          %p Each team member gets their own private office. Seriously. Style it however you want. Wanna go tropical and work on an office-sized beach? Go for it! (BYOS)
+        %article
+          %h3 Compensation
+          %p We want all of our team members to feel invested in Circle's success. To prove it we offer very competitive salaries and meaningful equity to all team members.

@@ -75,3 +75,11 @@
     width: ((1 - @split_by) * 100%);
   }
 }
+.jobs-perks {
+  @columns: 3;
+  .flexy(stretch, space-between);
+  article {
+    .flexy(column);
+    width: (round(100% / @columns) - 1);
+  }
+}
