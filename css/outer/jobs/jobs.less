@@ -83,3 +83,15 @@
     width: (round(100% / @columns) - 1);
   }
 }
+.jobs-listings {
+  article {
+    .flexy();
+    border-top: 1px solid @grayBoxBorder;
+    &:last-child {
+      border-bottom: 1px solid @grayBoxBorder;
+    }
+  }
+  a {
+    line-height: 3em;
+  }
+}

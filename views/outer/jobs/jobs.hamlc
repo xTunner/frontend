@@ -52,3 +52,10 @@
         %article
           %h3 Compensation
           %p We want all of our team members to feel invested in Circle's success. To prove it we offer very competitive salaries and meaningful equity to all team members.
+    .jobs-listings
+      %article
+        %a Back-end Full Stack Engineer
+      %article
+        %a Front-end Developer
+      %article
+        %a Customer Success Developer
