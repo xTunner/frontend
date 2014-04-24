@@ -8,6 +8,7 @@
 - @children.push 'troubleshooting_nodejs'
 - @children.push 'troubleshooting_php'
 - @children.push 'troubleshooting_clojure'
+- @children.push 'troubleshooting_haskell'
 - @children.push 'oom'
 - @children.push 'file_ordering'
 - @children.push 'filesystem'

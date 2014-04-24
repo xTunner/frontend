@@ -4,18 +4,13 @@
   .sshkeys-inner
     %p Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts.
     %form
-      %label.sticky
-        %input#hostname{type: "text", required:""}
-        %label{for: "hostname"} Hostname
-      %label.sticky
-        %input#publicKey{type: "text", required:""}
-        %label{for: "publicKey"} Public Key
-      %label.stickyArea
-        %textarea#privateKey{rows: 7,
-                             required:""}
-        %label{for: "privateKey"} Private Key
+      %input#hostname{type: "text", required: ""}
+      %label{placeholder: "Hostname"}
+      %input#publicKey{type: "text", required: ""}
+      %label{placeholder: "Public Key"}
+      %textarea#privateKey{required: ""}
+      %label{placeholder: "Private Key"}
       %input#submit.btn{type: "submit", data-bind: "click: save_ssh_key", value: "Submit", data-loading-text: "Saving..", data-success-text: "Saved", data-failed-text: "Failed"}
-
     %table{data-bind: "if: ssh_keys().length"}
       %thead
         %tr

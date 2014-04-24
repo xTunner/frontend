@@ -5,12 +5,12 @@
     %p Create and revoke API tokens to access this account's details using our API.
       Apps using these tokens can act as you, and have full read- and write-permissions!
 
-    %label.sticky
+    %form
       %input#api-token{data-bind: "value: tokenLabel",
                        type: "text",
                        name: "label",
                        required:""}
-      %label{for: "api-token"} Token name
+      %label{placeholder: "Token name"}
       %input.btn{type: "submit",
                  value: "Create",
                  data-bind: "click: create_token",

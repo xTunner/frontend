@@ -5,18 +5,10 @@
   != HAML.spinner({})
 / /ko
 
-.try-out-build{data-bind: "if: show_test_new_settings"}
-  - prepend = "Run a build on"
-  - append = "with <span data-bind='text: parallel'></span>x containers."
-  - text = "Try it now!"
-  != HAML.branch_picker({                              |
-      button_binding: "click: create_settings_build",  |
-      loading_text: "Starting...",                     |
-      prepend_text: prepend,                           |
-      append_text: append,                             |
-      button_text: text})                              |
-
 .parallelism-picker{data-bind: "ifnot: loading_billing"}
+
+  .try-out-build{data-bind: "if: show_test_new_settings"}
+    != HAML.branch_picker({button_binding: "click: create_settings_build"})
 
   %form.parallelism-items{data-bind: "foreach: parallelism_options"}
     %label{data-bind: "css: $parent.parallel_label_style($data),

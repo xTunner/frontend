@@ -384,6 +384,15 @@
   %a{href: "/docs/environment#python"} supported Python versions
   for a complete list.
 
+%h3 GHC version
+
+%p
+  You can choose from a
+  %a{href: "/docs/configuration#Haskell"}number of available GHC versions
+  in your <code>circle.yml</code>:
+
+!= HAML.circleyml_language_example({language: "ghc"})
+
 %h3
   Other languages
 
@@ -689,6 +698,21 @@
 
 %p
 
+  You can also optionally specify a repository <i>owner</i> in any deployment subsection.
+  This can be useful if you have multiple forks of the project, but only one should be
+  deployed. For example, a deployment subsection like this will only deploy if the project
+  belongs to "circleci", and other users can push to the master branch of their fork without
+  triggering a deployment:
+
+%pre
+  %code.bash<>
+    :preserves
+      deployment:
+        master:
+          branch: master
+          owner: circleci
+          commands:
+            - ./deploy_master.sh
 
 %h3
   SSH Keys
