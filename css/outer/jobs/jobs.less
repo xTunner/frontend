@@ -1,0 +1,30 @@
+@jobs_font_size: 16px;
+@jobs_trans1: 200ms;
+@jobs_trans2: 400ms;
+.jobs {
+  font-size: @jobs_font_size;
+  line-height: 24px;
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: normal;
+    line-height: 1em;
+    margin: @jobs_font_size 0;
+  }
+  h1 {
+    font-size: 60px;
+  }
+  a {
+    transition: @jobs_trans2 ease-in-out;
+    &:hover {
+      transition: @jobs_trans1 ease-in-out;
+    }
+    &:not(:hover) {
+      color: inherit;
+    }
+  }
+  i {
+    font-size: 2em;
+  }
+}
