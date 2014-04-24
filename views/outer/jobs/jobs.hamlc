@@ -1,1 +1,4 @@
 .page.jobs
+  .jobs-head
+    %h1 Join us &amp; do what you love.
+    %p We'll even pay you for it.
