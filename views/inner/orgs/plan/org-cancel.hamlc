@@ -1,0 +1,17 @@
+.row-fluid.card
+  %legend.span8 Cancel
+.row-fluid
+  %p
+    We'd love it if you could tell us why you're canceling. This helps us make a better product!
+  .span6
+    %form
+      <!-- ko foreach: CI.inner.Plan.cancelReasons -->
+      %label.radio
+        %input{type: "radio", name: "reason_radio", data-bind: "attr: {value: value}, checked: VM.org().billing().cancel_reason"}
+          <!-- ko text: text -->
+          <!-- /ko -->
+      <!-- /ko -->
+      %label Any other information that would be helpful
+        %textarea
+      %button.btn.btn-danger
+        Cancel Plan
