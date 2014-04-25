@@ -4,7 +4,6 @@
     .left-section
       %div.plan
         %h2 Your Current Plan
-        /%h4 blah
         %p
           %strong $
             %span{data-bind: "text: oldTotal"}<>
