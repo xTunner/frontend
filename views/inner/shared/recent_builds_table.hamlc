@@ -53,3 +53,12 @@
         %td.build_actions{data-bind: "if: can_cancel"}
           %a{data-bind: "click: cancel_build", role: "button"}
             Cancel
+
+%div.load-more
+  %span.left
+    %a.btn.btn-primary{data-bind: "click: pageForward"}
+      &lt;&lt;&lt;
+
+  %span.right
+    %a.btn.btn-primary{data-bind: "click: pageBack"}
+      &gt;&gt;&gt;

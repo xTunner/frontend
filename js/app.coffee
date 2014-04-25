@@ -65,6 +65,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
     @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
     @securityHOF = new CI.outer.Page("security_hall_of_fame", "Security Hall of Fame", "View Security Hall of Fame")
+    @build_list_position = {offset: 0, limit: 30}
+    @builds_list_path = null
 
     @sticky_help_is_open = ko.observable(false)
 
@@ -168,6 +170,22 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     if @current_user().repos().length == 0
       track_signup_conversion()
 
+  # Rules for sorting builds
+  # 1) builds for the same project are in build-num order
+  # 2) builds for different projects are sorted by usage-queued time
+  # 3) builds with no usage-queued time are sorted by URL (basically project + build number)
+  #
+  # not_running builds have no usage_queued_at (not running if there's no
+  # plan). Not Running builds are not scheduled. They should be in the build
+  # list relative to other builds for that project.
+  #
+  # So:
+  sortBuilds: (builds) =>
+    sorted_builds = _.sortBy(builds, (b) -> b.usage_queued_at())
+    # Needs a better equality function. My local DB has duplicate builds which
+    # then breaks the hacky end-of-list detection
+    #_.uniq(sorted_builds, true, (b) -> b.url())
+
   loadBuilds: (path, refresh) =>
     @cleanObjs(@builds())
 
@@ -175,10 +193,28 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @builds.removeAll()
       @builds_have_been_loaded(false)
 
-    $.getJSON path, (data) =>
-      @builds((new CI.inner.Build d for d in data))
+    console.log("Fetching builds from " + path)
+    $.getJSON path, @build_list_position, (data) =>
+      @builds_list_path = path
+      @builds(@sortBuilds(new CI.inner.Build d for d in data))
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
+
+  pageBack: (object) =>
+    console.log(object)
+    delta = if @builds().length < @build_list_position.limit
+              0
+            else
+              30
+    new_offset = @build_list_position.offset + delta
+    @build_list_position = {offset: new_offset, limit: @build_list_position.limit}
+    @loadBuilds(@builds_list_path, true)
+
+  pageForward: (object) =>
+    console.log(object)
+    new_offset = _.max([@build_list_position.offset - 30, 0])
+    @build_list_position = {offset: new_offset, limit: @build_list_position.limit}
+    @loadBuilds(@builds_list_path, true)
 
   loadRecentBuilds: (refresh) =>
     @loadBuilds('/api/v1/recent-builds', refresh)
@@ -186,6 +222,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
   loadOrg: (username, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
 
+    console.log("loadOrg: loading builds")
     @loadBuilds("/api/v1/organization/#{username}", refresh)
 
     if not refresh
