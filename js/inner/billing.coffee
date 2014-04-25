@@ -70,6 +70,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     existing_plan_loaded: false
     stripe_loaded: false
     too_many_extensions: false
+    current_containers: null
 
   constructor: ->
     super
@@ -105,6 +106,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @trial_days = @komp =>
       if @trial() && @trial_end()
         moment(@trial_end()).diff(moment(), 'days') + 1
+
+    @max_containers = @komp =>
+      if @current_containers() < 10
+        80
+      else 
+        num = @current_containers() + 80
+        num - num % 10 + 10
 
     @show_extend_trial_button = @komp =>
       !@too_many_extensions() && (@trial_over() or @trial_days() < 3)
@@ -181,17 +189,6 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     else
       0
 
-  selectPlan: (plan, event) =>
-    if plan.price?
-      if @can_edit_plan()
-        @oldPlan(@chosenPlan())
-        @chosenPlan(plan)
-        $("#confirmForm").modal({keyboard: false}) # TODO: eww
-      else
-        @newPlan(plan, event)
-    else
-      VM.raiseIntercomDialog("I'd like ask about enterprise pricing...\n\n")
-
   cancelUpdate: (data, event) =>
     $('#confirmForm').modal('hide') # TODO: eww
     @chosenPlan(@oldPlan())
@@ -220,16 +217,17 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     StripeCheckout.open($.extend @stripeDefaults(), vals)
 
-  ajaxNewPlan: (plan_id, token, event) =>
+  ajaxNewPlan: (plan, token, event) =>
     $.ajax
       url: @apiURL('plan')
       event: event
       type: 'POST'
       data: JSON.stringify
         token: token
-        'base-template-id': plan_id
+        'base-template-id': plan.id # all new plans are p18
         'billing-email': @billing_email() || VM.current_user().selected_email()
         'billing-name': @billing_name() || @org_name()
+        'containers' : plan.containers
       success: (data) =>
         mixpanel.track('Paid')
         @loadPlanData(data)
@@ -249,14 +247,20 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
           $('#confirmForm').modal('hide') # TODO: eww
           VM.org().subpage('containers')
 
-  newPlan: (plan, event) =>
+  newPlan: (containers, event) =>
+    # hard-coded single plan
+    plan = new CI.inner.Plan
+      price: 19
+      container_cost: 50
+      id: "p18"
+      containers: containers
     vals =
       panelLabel: 'Pay' # TODO: better label (?)
-      price: 100 * plan.price
+      price: 100 * @calculateCost(plan, containers)
       description: "#{plan.name} plan"
       token: (token) =>
         @cardInfo(token.card)
-        @ajaxNewPlan(plan.id, token, event)
+        @ajaxNewPlan(plan, token, event)
 
     StripeCheckout.open(_.extend @stripeDefaults(), vals)
 
@@ -272,7 +276,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   saveContainers: (data, event) =>
     mixpanel.track("Save Containers")
-    @ajaxUpdatePlan {containers: @containers()}, event
+    
+    @ajaxUpdatePlan {containers: parseInt(@containers())}, event
 
   load: (hash="small") =>
     @loadPlans()
@@ -309,6 +314,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @oldTotal(data.amount / 100)
     @chosenPlan(new CI.inner.Plan(data.template_properties, @)) if data.template_properties
     @special_price_p(@oldTotal() <  @total())
+    @current_containers(@containers())
 
   loadExistingPlans: () =>
     $.getJSON @apiURL('plan'), (data) =>
@@ -383,3 +389,5 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       options[k] = v
 
     options
+
+
