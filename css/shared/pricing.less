@@ -18,63 +18,6 @@
     font-size: 20px;
     text-align: center;
   }
-
-  .plan {
-    padding: 20px 0;
-    text-align: center;
-    background: lighten(@grayLighter, 4%);
-    .border-radius(3px);
-
-    ul {
-      list-style-type: none;
-      margin: 0 0 20px 0;
-      font-size: 13px;
-    }
-
-    &.recommended {
-      background: lighten(@circleBlueLight, 20%);
-
-      p, h4, li {
-        color: darken(@circleBlueLight, 10%);
-      }
-
-      p {
-        border-top: 1px solid lighten(@circleBlueLight, 15%);
-      }
-
-      h2, p strong {
-        color: darken(@circleBlueLight, 40%);
-      }
-    }
-
-    h2 {
-      margin: 0;
-      font-size: 24px;
-      text-align: center;
-    }
-
-    h4 {
-      margin-top: 0;
-      font-size: 12px;
-      text-transform: uppercase;
-      font-weight: normal;
-    }
-
-    h4, p, li {
-      color: @grayLight;
-    }
-
-    p {
-      padding: 20px 0;
-      border-top: 1px solid #eee;
-      font-size: 12px;
-
-      strong {
-        font-size: 22px;
-        color: @circleBlue;
-      }
-    }
-  }
   .customers{
     padding: 3% 0;
     h3{
@@ -169,4 +112,79 @@
 
   }
 
+}
+.pricing-plans {
+  margin: 5em 0 8em;
+  .plan {
+    .displayFlex();
+    .flex-direction(column);
+    .outlineFlat();
+    position: relative;
+    border-radius: 4px;
+    h3 {
+      font-weight: normal;
+      margin: @baseFontSize 0;
+    }
+    &:not(.recommended) {
+      color: @grayLight;
+    }
+    &.recommended {
+      position: relative;
+      overflow: hidden;
+      .popular-ribbon {
+        @height: @baseLineHeight;
+        .displayFlex();
+        .align-items(flex-end);
+        .justify-content(center);
+        position: absolute;
+        top: @height;
+        left: ((@height * -6) / 4);
+        font-size: @fontSizeSmall;
+        font-weight: bold;
+        color: @white;
+        width: (@height * 6);
+        height: @height;
+        background: @green;
+        .rotate(-45);
+      }
+      .plan-foot {
+        a {
+          .circleButton(@green);
+          text-shadow: none;
+          box-shadow: none;
+          color: @white;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  .plan-head {
+    text-align: center;
+    box-shadow: 0 1px @grayBoxBorder;
+    color: @grayDark;
+  }
+  .plan-body {
+    h2 {
+      text-align: center;
+      font-weight: normal;
+      margin: (@baseFontSize * 2) 0;
+    }
+    ul {
+      list-style: none;
+      margin: 2em 0;
+      text-align: center;
+    }
+  }
+  .plan-foot {
+    .displayFlex();
+    .flex-direction(column);
+    .align-items(center);
+    margin-bottom: 2em;
+    a {
+      .box-sizing(border-box);
+      .circleButton();
+      text-shadow: none;
+      min-width: 75%;
+    }
+  }
 }
