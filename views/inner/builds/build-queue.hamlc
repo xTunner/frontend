@@ -12,9 +12,7 @@
       <!-- ko ifnot: usage_queued -->
         %p
           %span Circle
-          / ko: ifnot: run_queued
-          %span has
-          / /ko
+          %span{data-bind: "ifnot: run_queued"} has
           %span spent
           %span{data-bind: "duration: run_queued_time"}
           %span acquiring containers for this build
@@ -23,12 +21,8 @@
       <!--  ko if: usage_queue_why().length -->
         %p
           %span This build
-          / ko if: usage_queued
-          %span has been
-          / /ko
-          / ko ifnot: usage_queued
-          %span was
-          / /ko
+          %span{data-bind: "if: usage_queued"} has been
+          %span{data-bind: "ifnot: usage_queued"} was
           %span queued behind the following builds for
           %span{data-bind: "duration: usage_queued_time"}
         != HAML.recent_builds_table({builds: "usage_queue_why", mention_project: true, actions: true})
