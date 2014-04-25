@@ -34,7 +34,7 @@
       %form
         /%select{data-bind: "value: containers, options: chosenPlan().container_options, optionsText: containers_option_text"}
         .container-picker
-          %p You can add or remove conatiners below; more containers means faster builds and lower que times. 
+          %p You can add or remove containers below; more containers means faster builds and lower queue times. 
           .container-slider
             %span 1
             %input#rangevalue{data-bind: "value: containers, attr: {max: max_containers}",
