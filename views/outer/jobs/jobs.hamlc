@@ -27,7 +27,7 @@
       .jobs-location
         %article
           %h3 Or work from the comfort of home
-          %p We're a very remote-friendly company. We currently have people working in Oregon, Ireland, Texas, Boston, and more. Enjoy the luxury of setting up office anywhere in the world, and make your own hours. We'll fly you into town every few months to catch up with the rest of the team, all expenses paid.
+          %p We believe people should live wherever they want, regardless of where they work. We have team members living in Oregon, Washington, Ireland, Texas, Boston, and Turkey. Setup up an office anywhere in the world and choose your own hours. We'll even fly you into town every few months to catch up with the rest of the team, all expenses paid.
         %aside
           %i.fa.fa-globe
           %h2 Remote
