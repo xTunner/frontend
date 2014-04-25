@@ -5,9 +5,7 @@
         This organization is covered under
         != succeed "'s", ->
           %span{data-bind: "text: org_name"}<
-        plan which has 
-        %span{data-bind: "text: containers"}
-        containers.
+        plan.
       %p
         If you're an admin in the
         %span{data-bind: "text: org_name"}
@@ -20,3 +18,10 @@
         You can create a separate plan for
         %span{data-bind: "text: current_org_name"}
         by selecting from the plans below.
+      %p{data-bind: "if: piggieback_plan_name"}
+        %span{data-bind: "text: org_name"}<
+        is on the
+        %strong{data-bind: "text: piggieback_plan_name"}
+        plan with
+        %span{data-bind: "text: containers"}
+        containers.

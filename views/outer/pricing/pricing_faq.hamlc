@@ -7,7 +7,7 @@
     %h4 How do containers work?
     %p Every time you push to GitHub, we checkout your code and run your build inside of a container. If you don't have enough free containers available, then your pushes queue up until other builds finish.
     %p You can buy containers at $50 each to run multiple builds simultaneously.
-    %p You can use our parallelism to speed up your test suite. We automatically split your tests across multiple containers, finishing your build in a fraction of the time.
+    %p If your plan supports it, you can use our parallelism to speed up your test suite. We automatically split your tests across multiple containers, finishing your build in a fraction of the time.
     %p For example, with 4 containers you can run 4 simultaneous builds at 1x parallelism or 2 simultaneous builds in half the time at 2x parallelism.
   %section
     %h4 How many containers do I need?
@@ -19,7 +19,7 @@
     %h4 Really? Unlimited?
     %p For practical purposes, our plans are unlimited. You won't be cut off for pushing too frequently, having a long test suite, or anything like that. However, like all services, we reserve the right to restrict abusive behaviour. If you're pushing a 10 hour test suite every minute, we won't feel bad about cutting you off.
   %section
-    %h4 Why should I pay for this instead of using Jenkins?
+    %h4 Why should I pay this instead of using Jenkins?
     %p Maintaining a CI server takes considerable time - we estimate about 8% of a team's time is spent on maintaining their build infrastructure (of course, much more is wasted if you don't have build infrastructure, but that's a separate question). Circle allows you to buy back this productivity, and let you focus on building your product.
     %p With Circle, you'll never have to buy machines, install plugins, refactor the test suite for speed, or spend any time on your test infrastructure. With Circle, you don't need to worry about your tools - just focus on the product and leave the tools to us.
   %section
