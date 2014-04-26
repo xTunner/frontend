@@ -1,28 +1,23 @@
-.accordion-group
-  .accordion-heading
-    %a.accordion-toggle{"data-parent" => "#openings",
-                        "data-toggle" => "collapse",
-                        :href => "#jobTwo"} For back-end/full stack developers
+%h4 We're looking for
+%ul
+  %li Senior and experienced developers, ones who've worked on a decent number of products.
+  %li Someone who has a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops.
+  %li Young, raw, talented devs who can crank out code.
+  %li Experienced Clojure experts.
+  %li People who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
+  %li People who love trying new, cutting-edge things.
 
-  #jobTwo.accordion-body.collapse
-    .accordion-inner
-      %h4 Some of the characteristics we're looking for:
-      %ul
-        %li senior, experienced developers, who have worked on a decent number of products, have a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops (those having left coding behind them—this isn't the company for you, unfortunately),
-        %li young, raw, talented devs who can crank out code,
-        %li clojure experts,
-        %li people who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc),
-        %li people who love trying new cutting-edge things.
-      %h4 Experience we love to see:
-      %ul
-        %li having worked on significant projects that weren't in Java, JavaScript, Ruby or PHP,
-        %li having built or scaled large distributed systems.
-      %h4 Skills you might have:
-      %ul
-        %li good knowledge of algorithmic design and CS theory (informally, CS degree not required),
-        %li writing Clojure (experience in other functional languages counts),
-        %li designing elegant APIs,
-        %li broad knowledge of important programming languages, such as Python, Node.js, Javascript, Ruby (esp. Rails), Java and PHP,
-        %li scalable cloud and web services,
-        %li dev-ops including machine configuration and deployment on AWS
-        %li low-level Linux hacking (including file-systems, kernels, databases, etc).
+%h4 We'd love to see
+%ul
+  %li If you've worked on significant projects that weren't in Java, JavaScript, Ruby or PHP.
+  %li If you've built or scaled large distributed systems.
+
+%h4 With these skills
+%ul
+  %li Good knowledge of algorithmic design and CS theory (informally, CS degree not required).
+  %li Experience with writing Clojure or other functional languages.
+  %li Experience designing elegant APIs.
+  %li Broad knowledge of important languages; Python, Node, JS, Ruby (especially Rails), Java, and PHP.
+  %li Understanding of scalable cloud and web services.
+  %li Dev-ops experience, including machine configuration and deployment on AWS.
+  %li Low-level Linux hacking knowledge (including file-systems, kernels, databases, etc).
