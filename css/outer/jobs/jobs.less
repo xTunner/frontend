@@ -87,13 +87,22 @@
 }
 .jobs-listings {
   article {
-    .flexy();
-    border-top: 1px solid @grayBoxBorder;
+    .flexy(column);
+    padding-bottom: 3em;
     &:last-child {
       border-bottom: 1px solid @grayBoxBorder;
     }
   }
-  a {
-    line-height: 3em;
+  h2 {
+    margin-bottom: (@jobs_font_size * 2);
+    padding-bottom: @jobs_font_size;
+    box-shadow: 0 1px @grayBoxBorder;
+  }
+  ul {
+    margin: 0 0 @jobs_font_size @jobs_font_size;
+  }
+  li {
+    line-height: 24px;
+    color: @grayLight;
   }
 }
