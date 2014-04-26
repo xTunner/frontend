@@ -4,13 +4,13 @@
     %p We'll even pay you for it.
   .jobs-body
     .jobs-types
-      %a{href: "#"}
+      %a{href: "#engineering"}
         %i.fa.fa-code
         %h3 Engineering
-      %a{href: "#"}
+      %a{href: "#design"}
         %i.fa.fa-pencil
         %h3 Design
-      %a{href: "#"}
+      %a{href: "#business"}
         %i.fa.fa-bar-chart-o
         %h3 Business
     .jobs-intro
@@ -53,9 +53,15 @@
           %h3 Compensation
           %p We want all of our team members to feel invested in Circle's success. To prove it we offer very competitive salaries and meaningful equity to all team members.
     .jobs-listings
-      %article
-        %a Back-end Full Stack Engineer
-      %article
-        %a Front-end Developer
-      %article
-        %a Customer Success Developer
+      %article#engineering
+        %h2
+          %span Engineering
+        != HAML.jobs_backend({})
+      %article#design
+        %h2
+          %span Design
+        != HAML.jobs_designers({})
+      %article#business
+        %h2
+          %span Business
+        != HAML.jobs_everybody({})
