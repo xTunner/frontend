@@ -1,33 +1,25 @@
-.accordion-group
-  .accordion-heading
-    %a.accordion-toggle{"data-parent" => "#openings",
-                        "data-toggle" => "collapse",
-                        :href => "#jobOne"} For everybody
+%h4 What kind of folks do we like:
+%ul
+  %li people who truly care about making developers more productive
 
-  #jobOne.accordion-body.collapse
-    .accordion-inner
-      %h4 What kind of folks do we like:
-      %ul
-        %li people who truly care about making developers more productive
+  %li pleasant people, and good conversationalists - we'll be spending the next few years together after all
 
-        %li pleasant people, and good conversationalists - we'll be spending the next few years together after all
+  %li folks who are easy to work with: we're not interested in solo artists, divas, know-it-alls, or assholes
 
-        %li folks who are easy to work with: we're not interested in solo artists, divas, know-it-alls, or assholes
+  %li we tend to get on well with folks that do not identify with the words "ninja", "pirate", "rock star", or (especially) "brogrammer"
 
-        %li we tend to get on well with folks that do not identify with the words "ninja", "pirate", "rock star", or (especially) "brogrammer"
-
-        %li great communicators
+  %li great communicators
 
 
-      %h4 Extra skills
+%h4 Extra skills
 
-      %p In addition to the standard skill sets for your position, we love to hear from people with:
+%p In addition to the standard skill sets for your position, we love to hear from people with:
 
-      %ul
-        %li
-          A working knowledge of dev-marketing, such as the writings of patio11 or other dev-marketers, and familiarity with conversion rate optimization, customer lifecycle marketing, virality, and other "growth hacks". Experience  putting these into practice a serious plus.
+%ul
+  %li
+    A working knowledge of dev-marketing, such as the writings of patio11 or other dev-marketers, and familiarity with conversion rate optimization, customer lifecycle marketing, virality, and other "growth hacks". Experience  putting these into practice a serious plus.
 
-        %li
-          An interest in the business side of things.
-          We have a flat, transparent organization that allows everyone on the team to take a holistic view of the company.
-          As a result, we really like people who enjoy getting familiar with the whole business. 
+  %li
+    An interest in the business side of things.
+    We have a flat, transparent organization that allows everyone on the team to take a holistic view of the company.
+    As a result, we really like people who enjoy getting familiar with the whole business.
