@@ -1,43 +1,9 @@
 .row
   .span12
     .row-fluid
-      / ko foreach: plans
-      %div.span3.plan{data-bind: "css: {recommended: $data.default}"}
-        %h2{data-bind: "text: name"}
-        %h4{data-bind: "text: why"}
-        %p
-          %span{data-bind: "ifnot: enterprise_p"}
-            %strong
-              %span{data-bind: "money: price"}
-            \/ month
-          %span{data-bind: "if: enterprise_p"}
-            Request a quote by contacting us
+      != HAML.pricing_cloud({number_containers : 1, plan_price : "$19", plan_name : "Solo",plan_for : "for personal projects"})
+      != HAML.pricing_cloud({number_containers : 2, plan_price : "$69", plan_name : "Startup", plan_for : "for small teams", plan_recommended : true})
+      != HAML.pricing_cloud({number_containers : 6, plan_price : "$269", plan_name : "Small Business",plan_for : "for larger teams"})
+      != HAML.pricing_enterprise()
 
-        %ul
-          %li
-            Includes
-            %span{data-bind: "text: freeContainersDescription"}
 
-          %li
-            Up to
-            != succeed '-way', ->
-              %span{data-bind: "text: max_parallelism"}
-            parallelism
-
-          %li
-            %span{data-bind: "text: projects"}
-            private repositories
-
-        %span{data-bind: "if: enterprise_p"}
-          %a.btn.btn-primary{href: "/enterprise"} Contact us
-        %span{data-bind: "ifnot: enterprise_p"}
-          %span{data-bind: "if: $root.logged_in"}
-            %button.btn.btn-primary{data-bind: "text: pricingDescription, click: function (d,e) { $parent.selectPlan($data, e)}",
-                               data-success-text: "Paid!",
-                               data-failed-text: "Failed!",
-                               data-loading-text: "Paying..."}
-          %span{data-bind: "ifnot: $root.logged_in"}
-            %a.btn.btn-primary{href: CI.github.authUrl(),  
-                              data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-' + name}}"} 
-              Start your 14-day trial
-      / /ko

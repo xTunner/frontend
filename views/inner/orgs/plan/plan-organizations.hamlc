@@ -8,10 +8,10 @@
       organization by default.
 
     %p
-      You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan.
+      You can let any GitHub organization you belong to, including personal accounts, piggyback on your plan. Projects in your piggyback organizations will be able to run builds on your plan.
     %p
       %span.label.label-info Note:
-      Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the
+      Members of the piggyback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the
       %span{data-bind: "text: current_org_name"}
       org.
 
