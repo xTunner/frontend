@@ -12,6 +12,6 @@
           <!-- /ko -->
       <!-- /ko -->
       %label Any information that would be helpful
-        %textarea{data-bind: "text: VM.org().billing().cancel_notes"}
+        %textarea{data-bind: "value: VM.org().billing().cancel_notes"}
       %button.btn.btn-danger{data-bind: "click: VM.org().billing().ajaxCancelPlan"}
         Cancel Plan
