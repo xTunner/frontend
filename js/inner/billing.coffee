@@ -33,6 +33,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     cardInfo: null
     invoices: []
     cancel_reasons: []
+    cancel_notes: null
 
     # old data
     oldPlan: null
