@@ -178,24 +178,20 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @builds.removeAll()
       @builds_have_been_loaded(false)
 
-    console.log("Fetching builds from " + path)
     position = {offset: page * @builds_per_page, limit: @builds_per_page}
 
     $.getJSON path, position, (data) =>
       @builds_list_path = path
-      console.log(data)
       @builds(new CI.inner.Build d for d in data)
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
 
   loadRecentBuilds: (page, refresh) =>
-    console.log("loadRecentBuilds " + page + " " + refresh)
     @loadBuilds('/api/v1/recent-builds', page, refresh)
 
   loadOrg: (username, page, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
 
-    console.log("loadOrg: loading builds")
     @loadBuilds("/api/v1/organization/#{username}", page, refresh)
 
     if not refresh
@@ -415,8 +411,6 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
       branch = cx.params.splat.join('/')
-      console.log("params: " + cx.params)
-      console.log("splat: " + cx.params.splat)
 
       VM.current_page new CI.inner.ProjectBranchPage
         username: cx.params.username
