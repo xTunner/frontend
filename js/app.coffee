@@ -65,7 +65,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
     @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
     @securityHOF = new CI.outer.Page("security_hall_of_fame", "Security Hall of Fame", "View Security Hall of Fame")
-    @build_list_position = {offset: 0, limit: 30}
+    @builds_per_page = 30
     @builds_list_path = null
 
     @sticky_help_is_open = ko.observable(false)
@@ -157,7 +157,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   loadDashboard: (cx) =>
     @loadProjects()
-    @loadRecentBuilds()
+    page = parseInt(cx.params.page) or 0
+    @loadRecentBuilds(page)
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
@@ -170,23 +171,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     if @current_user().repos().length == 0
       track_signup_conversion()
 
-  # Rules for sorting builds
-  # 1) builds for the same project are in build-num order
-  # 2) builds for different projects are sorted by usage-queued time
-  # 3) builds with no usage-queued time are sorted by URL (basically project + build number)
-  #
-  # not_running builds have no usage_queued_at (not running if there's no
-  # plan). Not Running builds are not scheduled. They should be in the build
-  # list relative to other builds for that project.
-  #
-  # So:
-  sortBuilds: (builds) =>
-    sorted_builds = _.sortBy(builds, (b) -> b.usage_queued_at())
-    # Needs a better equality function. My local DB has duplicate builds which
-    # then breaks the hacky end-of-list detection
-    #_.uniq(sorted_builds, true, (b) -> b.url())
-
-  loadBuilds: (path, refresh) =>
+  loadBuilds: (path, page, refresh) =>
     @cleanObjs(@builds())
 
     if not refresh
@@ -194,49 +179,37 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @builds_have_been_loaded(false)
 
     console.log("Fetching builds from " + path)
-    $.getJSON path, @build_list_position, (data) =>
+    position = {offset: page * @builds_per_page, limit: @builds_per_page}
+
+    $.getJSON path, position, (data) =>
       @builds_list_path = path
-      @builds(@sortBuilds(new CI.inner.Build d for d in data))
+      console.log(data)
+      @builds(new CI.inner.Build d for d in data)
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
 
-  pageBack: (object) =>
-    console.log(object)
-    delta = if @builds().length < @build_list_position.limit
-              0
-            else
-              30
-    new_offset = @build_list_position.offset + delta
-    @build_list_position = {offset: new_offset, limit: @build_list_position.limit}
-    @loadBuilds(@builds_list_path, true)
+  loadRecentBuilds: (page, refresh) =>
+    console.log("loadRecentBuilds " + page + " " + refresh)
+    @loadBuilds('/api/v1/recent-builds', page, refresh)
 
-  pageForward: (object) =>
-    console.log(object)
-    new_offset = _.max([@build_list_position.offset - 30, 0])
-    @build_list_position = {offset: new_offset, limit: @build_list_position.limit}
-    @loadBuilds(@builds_list_path, true)
-
-  loadRecentBuilds: (refresh) =>
-    @loadBuilds('/api/v1/recent-builds', refresh)
-
-  loadOrg: (username, refresh) =>
+  loadOrg: (username, page, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
 
     console.log("loadOrg: loading builds")
-    @loadBuilds("/api/v1/organization/#{username}", refresh)
+    @loadBuilds("/api/v1/organization/#{username}", page, refresh)
 
     if not refresh
       display "dashboard",
         builds_table: 'org'
 
-  loadProject: (username, project, branch, refresh) =>
+  loadProject: (username, project, branch, page, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @loadBuilds(path, refresh)
+    @loadBuilds(path, page, refresh)
 
     @maybeLoadProjectDetails(project_name)
 
@@ -415,7 +388,9 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.current_page new CI.inner.OrgDashboardPage
       username: cx.params.username
 
-    VM.loadOrg cx.params.username
+      page = parseInt(cx.params.page) or 0
+
+    VM.loadOrg cx.params.username, page
 
   # before any project pages so that it gets routed first
   @get '^/gh/organizations/:username', route_org_dashboard
@@ -440,13 +415,17 @@ window.SammyApp = Sammy 'body', (n) ->
     (cx) ->
       # github allows '/' is branch names, so match more broadly and combine them
       branch = cx.params.splat.join('/')
+      console.log("params: " + cx.params)
+      console.log("splat: " + cx.params.splat)
 
       VM.current_page new CI.inner.ProjectBranchPage
         username: cx.params.username
         project: cx.params.project
         branch: branch
 
-      VM.loadProject cx.params.username, cx.params.project, branch
+      page = parseInt(cx.params.page) or 0
+
+      VM.loadProject cx.params.username, cx.params.project, branch, page
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
@@ -463,7 +442,9 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
 
-      VM.loadProject cx.params.username, cx.params.project
+      page = parseInt(cx.params.page) or 0
+
+      VM.loadProject cx.params.username, cx.params.project, null, page
 
   @get '^/logout', (cx) -> VM.logout cx
 
@@ -521,6 +502,54 @@ window.SammyApp = Sammy 'body', (n) ->
   @bind 'error', (e, data) ->
     if data? and data.error? and window.Airbrake?
       window.notifyError data
+
+
+class CI.inner.BuildPager
+  constructor: ->
+    @pageBackButtonStyle = ko.computed =>
+      if VM.builds().length < VM.builds_per_page
+        disabled: true
+
+    @pageForwardButtonStyle = ko.computed =>
+      location = SammyApp.getLocation()
+
+      uri = URI(location)
+      query_params = uri.search(true)
+      page = parseInt(query_params?.page) or 0
+
+      # Just accessing VM.builds() to force re-evaluation of this computed
+      # observable when the build list changes
+      if VM.builds() && page <= 0
+        disabled: true
+
+  changeBuildsPage: (update_page_fn) =>
+    location = SammyApp.getLocation()
+
+    uri = URI(location)
+    query_params = uri.search(true)
+    page = parseInt(query_params?.page) or 0
+
+    query_params.page = if page? then update_page_fn(page) else 0
+    uri.search(query_params)
+
+    SammyApp.setLocation(uri.toString())
+
+  pageBack: (object) =>
+    @changeBuildsPage((page_num) =>
+      if VM.builds().length >= VM.builds_per_page
+        page_num + 1
+      else
+        page_num)
+
+  pageForward: (object) =>
+    @changeBuildsPage((page_num) =>
+      if page_num > 0
+        page_num - 1
+      else
+        0)
+
+
+window.BuildPager = new CI.inner.BuildPager()
 
 
 $(document).ready () ->

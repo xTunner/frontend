@@ -56,9 +56,9 @@
 
 %div.load-more
   %span.left
-    %a.btn.btn-primary{data-bind: "click: pageForward"}
+    %a.btn.btn-primary{data-bind: "click: BuildPager.pageForward, css: BuildPager.pageForwardButtonStyle"}
       &lt;&lt;&lt;
 
   %span.right
-    %a.btn.btn-primary{data-bind: "click: pageBack"}
+    %a.btn.btn-primary{data-bind: "click: BuildPager.pageBack, css: BuildPager.pageBackButtonStyle"}
       &gt;&gt;&gt;
