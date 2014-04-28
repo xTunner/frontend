@@ -7,7 +7,7 @@
     %form
       <!-- ko foreach: CI.inner.Plan.cancelReasons -->
       %label.radio
-        %input{type: "radio", name: "reason_radio", data-bind: "attr: {value: value}, checked: VM.org().billing().cancel_reason"}
+        %input{type: "checkbox", name: "reason_radio", data-bind: "attr: {value: value}, checked: VM.org().billing().cancel_reason"}
           <!-- ko text: text -->
           <!-- /ko -->
       <!-- /ko -->
