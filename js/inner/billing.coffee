@@ -32,7 +32,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     stripeToken: null
     cardInfo: null
     invoices: []
-    cancel_reason: null
+    cancel_reasons: []
 
     # old data
     oldPlan: null
