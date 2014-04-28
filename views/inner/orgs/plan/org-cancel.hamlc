@@ -11,7 +11,7 @@
           <!-- ko text: text -->
           <!-- /ko -->
       <!-- /ko -->
-      %label Any other information that would be helpful
         %textarea
       %button.btn.btn-danger
+      %label Any information that would be helpful
         Cancel Plan
