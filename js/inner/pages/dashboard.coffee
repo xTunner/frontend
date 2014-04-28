@@ -5,4 +5,6 @@ CI.inner.DashboardPage = class DashboardPage extends CI.inner.Page
     @show_branch = true
 
   refresh: () ->
-    VM.loadRecentBuilds(true)
+    page = BuildPager.currentPage()
+    if page == 0
+      VM.loadRecentBuilds(page, true)

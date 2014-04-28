@@ -185,6 +185,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     .fail (request) => VM.error.display()
 
   loadRecentBuilds: (page, refresh) =>
+    page = 0 if not page
     @loadBuilds('/api/v1/recent-builds', page, refresh)
 
   loadOrg: (username, page, refresh) =>
@@ -513,6 +514,11 @@ class CI.inner.BuildPager
       # observable when the build list changes
       if VM.builds() && page <= 0
         disabled: true
+
+  currentPage: () ->
+    uri = URI(SammyApp.getLocation())
+    query_params = uri.search(true)
+    page = parseInt(query_params?.page) or 0
 
   changeBuildsPage: (update_page_fn) =>
     location = SammyApp.getLocation()

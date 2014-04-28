@@ -15,4 +15,6 @@ CI.inner.ProjectPage = class ProjectPage extends CI.inner.Page
     @show_branch = true
 
   refresh: () ->
-    VM.loadProject(@username, @project, null, true)
+    page = BuildPager.currentPage()
+    if page == 0
+      VM.loadProject(@username, @project, null, page, true)
