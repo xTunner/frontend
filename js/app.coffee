@@ -66,7 +66,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
     @securityHOF = new CI.outer.Page("security_hall_of_fame", "Security Hall of Fame", "View Security Hall of Fame")
     @builds_per_page = 30
-    @builds_list_path = null
 
     @sticky_help_is_open = ko.observable(false)
 
@@ -181,7 +180,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     position = {offset: page * @builds_per_page, limit: @builds_per_page}
 
     $.getJSON path, position, (data) =>
-      @builds_list_path = path
       @builds(new CI.inner.Build d for d in data)
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
