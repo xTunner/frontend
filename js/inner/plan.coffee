@@ -64,12 +64,3 @@ CI.inner.Plan = class Plan extends CI.inner.Obj
     if feature.name?
       result[feature.name] = true
     result
-
-CI.inner.Plan.cancelReasons =
-    [{value: "project-ended", text: "Project Ended"},
-     {value: "slow-performance", text: "Slow Performance"},
-     {value: "unreliable-performance", text: "Unreliable Performance"},
-     {value: "too-expensive", text: "Too Expensive"},
-     {value: "didnt-work", text: "Couldn't Make it Work"},
-     {value: "missing-feature", text: "Missing Feature"},
-     {value: "other", text: "Other"}]

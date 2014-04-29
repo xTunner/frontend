@@ -401,3 +401,15 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       options[k] = v
 
     options
+
+
+CI.inner.Billing.cancelReasons =
+ ## the values (but not text) need to match the SF DB Api, so don't change lightly
+  [{value: "project-ended", text: "Project Ended"},
+   {value: "slow-performance", text: "Slow Performance"},
+   {value: "unreliable-performance", text: "Unreliable Performance"},
+   {value: "too-expensive", text: "Too Expensive"},
+   {value: "didnt-work", text: "Couldn't Make it Work"},
+   {value: "missing-feature", text: "Missing Feature"},
+   {value: "poor-support", text: "Poor Support"},
+   {value: "other", text: "Other"}]
