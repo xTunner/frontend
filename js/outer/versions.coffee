@@ -233,3 +233,4 @@ CI.Versions =
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.9"
+  phantomjs: "1.9.7"
