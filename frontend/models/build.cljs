@@ -143,11 +143,14 @@
 
 (defn containers [build]
   (let [steps (:steps build)
+        parallel (:parallel build)
         actions (reduce (fn [groups step]
                           (map (fn [group action]
                                  (conj group action))
-                               groups (lazy-cat (:actions step))))
-                        (repeat (or (:parallel build) 1) [])
+                               groups (if (> parallel (count (:actions step)))
+                                        (apply concat (repeat parallel (:actions step)))
+                                        (:actions step))))
+                        (repeat (or parallel 1) [])
                         steps)]
     (map (fn [i actions] {:actions actions
                           :index i})
