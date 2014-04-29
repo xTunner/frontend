@@ -1,13 +1,18 @@
 (ns frontend.controllers.post-controls
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [clojure.string :as string]
+            [dommy.core :as dommy]
             [frontend.controllers.api :as api]
+            goog.dom
+            goog.dom.classes
             [goog.string :as gstring]
             goog.string.format
+            goog.style
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]])
-  (:require-macros [frontend.utils :refer [inspect]]))
+  (:require-macros [frontend.utils :refer [inspect]]
+                   [dommy.macros :refer [node sel sel1]]))
 
 (defmulti post-control-event!
   (fn [target message args previous-state current-state] message))
@@ -95,4 +100,31 @@
 
 (defmethod post-control-event! :container-selected
   [target message container-id previous-state current-state]
-  (assoc-in state [:current-build :current-container-id] container-id))
+  (when-not (= (get-in previous-state [:current-build :current-container-id])
+               container-id)
+    (let [parent (sel1 target "#container_parent")
+          width (.-width (goog.style/getSize parent))
+          new-scroll-left (+ (.-scrollLeft parent)
+                             (.-x (goog.style.getPosition (sel1 target (str "#container_" container-id)))))
+          new-scroll-left (* width container-id)]
+      (println "new scroll left" new-scroll-left)
+      (set! (.-scrollLeft parent) new-scroll-left))))
+
+(defmethod post-control-event! :container-parent-scroll
+  [target message _ previous-state current-state]
+  (let [controls-ch (get-in current-state [:comms :controls])
+        current-container-id (get-in current-state [:current-build :current-container-id])
+        parent (sel1 target "#container_parent")
+        container-width (.-width (goog.style/getSize parent))
+        parent-scroll-left (.-scrollLeft parent)
+        parent-scroll-ratio (/ parent-scroll-left container-width)
+        current-selected-container-scroll-left (* container-width current-container-id)
+        ;; if we're scrolling left, then we want the container whose rightmost portion is showing
+        ;; if we're scrolling right, then we want the container whose leftmost portion is showing
+        new-scrolled-container-id (if (> parent-scroll-left current-selected-container-scroll-left)
+                                    (js/Math.ceil parent-scroll-ratio)
+                                    (js/Math.floor parent-scroll-ratio))]
+    ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
+    ;; do a swap here (or find a better way to structure this!)
+    (when-not (= new-scrolled-container-id current-container-id)
+      (put! controls-ch [:container-selected new-scrolled-container-id]))))
