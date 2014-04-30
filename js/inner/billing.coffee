@@ -266,11 +266,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     StripeCheckout.open(_.extend @stripeDefaults(), vals)
 
-  ajaxCancelPlan: () =>
+  ajaxCancelPlan: (_, event) =>
     console.log("ajaxCancelPlan")
     $.ajax
       url: @apiURL('plan')
       type: 'DELETE'
+      event: event
       data: JSON.stringify
         'cancel-reasons': @cancel_reasons()
         'cancel-notes': @cancel_notes()
