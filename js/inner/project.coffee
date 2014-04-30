@@ -52,6 +52,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     settings_branch: null
     show_test_new_settings: false
     loaded_settings: false
+    github_permissions: null
 
   constructor: (json) ->
 
