@@ -19,6 +19,6 @@
 
       %button.btn.btn-danger{data-bind: "click: ajaxCancelPlan",
                              data-success-text: "Cancelled",
-                             data-loading-text: "Cancelling",
+                             data-loading-text: "Cancelling...",
                              data-failed-text: "Failed!"}
         Cancel Plan
