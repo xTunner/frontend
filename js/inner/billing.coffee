@@ -32,8 +32,11 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     stripeToken: null
     cardInfo: null
     invoices: []
+
     cancel_reasons: []
-    cancel_notes: null
+    cancel_notes: ""
+    cancel_errors: null
+    show_cancel_errors: false
 
     # old data
     oldPlan: null
@@ -174,6 +177,15 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         _.without(_.pluck(user_orgs, 'login'), @org_name())
       deferEvaluation: true
 
+    @cancelFormErrorText = @komp =>
+      # returns a string if the user hasn't filled out the cancel form correctly, else nil
+      c = @cancel_reasons()
+      if c.length is 0
+        return "please select at least one reason"
+      if _.contains(c, "other") and not @cancel_notes()
+        return "please tell us about 'other'"
+      null
+
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
@@ -268,6 +280,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   ajaxCancelPlan: (_, event) =>
     console.log("ajaxCancelPlan")
+
+    @show_cancel_errors(false)
+
+    if @cancelFormErrorText()
+      @show_cancel_errors(true)
+      return
+
     $.ajax
       url: @apiURL('plan')
       type: 'DELETE'
@@ -275,7 +294,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       data: JSON.stringify
         'cancel-reasons': @cancel_reasons()
         'cancel-notes': @cancel_notes()
-
+      success: (data) =>
+        @loadExistingPlans()
+        VM.org().subpage('plan')
 
   updatePlan: (data, event) =>
     @ajaxUpdatePlan {"base-template-id": @chosenPlan().id}, event

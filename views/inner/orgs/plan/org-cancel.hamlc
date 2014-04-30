@@ -1,8 +1,10 @@
 .row-fluid.card
   %legend.span8 Cancel
-.row-fluid
+
+.row-fluid{data-bind: "with: billing"}
   %p
     We'd love it if you could tell us why you're canceling. This helps us make a better product!
+
   .span6
     %form
       <!-- ko foreach: CI.inner.Billing.cancelReasons -->
@@ -12,6 +14,12 @@
           <!-- /ko -->
       <!-- /ko -->
       %label Any information that would be helpful
-        %textarea{data-bind: "value: VM.org().billing().cancel_notes"}
-      %button.btn.btn-danger{data-bind: "click: VM.org().billing().ajaxCancelPlan"}
+        %textarea{data-bind: "value: cancel_notes, valueUpdate: 'afterkeydown'"}
+
+      %div.text-error{data-bind: "visible: show_cancel_errors, text: cancelFormErrorText"}
+
+      %button.btn.btn-danger{data-bind: "click: ajaxCancelPlan",
+                             data-success-text: "Cancelled",
+                             data-loading-text: "Cancelling",
+                             data-failed-text: "Failed!"}
         Cancel Plan
