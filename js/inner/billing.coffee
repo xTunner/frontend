@@ -112,7 +112,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @max_containers = @komp =>
       if @current_containers() < 10
         80
-      else 
+      else
         num = @current_containers() + 80
         num - num % 10 + 10
 
@@ -266,6 +266,16 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     StripeCheckout.open(_.extend @stripeDefaults(), vals)
 
+  ajaxCancelPlan: () =>
+    console.log("ajaxCancelPlan")
+    $.ajax
+      url: @apiURL('plan')
+      type: 'DELETE'
+      data: JSON.stringify
+        'cancel-reasons': @cancel_reasons()
+        'cancel-notes': @cancel_notes()
+
+
   updatePlan: (data, event) =>
     @ajaxUpdatePlan {"base-template-id": @chosenPlan().id}, event
 
@@ -278,7 +288,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   saveContainers: (data, event) =>
     mixpanel.track("Save Containers")
-    
+
     @ajaxUpdatePlan {containers: parseInt(@containers())}, event
 
   load: (hash="small") =>
@@ -391,5 +401,3 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       options[k] = v
 
     options
-
-
