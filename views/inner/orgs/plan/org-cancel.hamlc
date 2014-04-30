@@ -7,11 +7,11 @@
 
   .span6
     %form
-      <!-- ko foreach: CI.inner.Billing.cancelReasons -->
+      /ko foreach: CI.inner.Billing.cancelReasons
       %label.radio
         %input{type: "checkbox", name: "reason_radio", data-bind: "attr: {value: value}, checked: VM.org().billing().cancel_reasons"}
           %span{data-bind: "text: text"}
-      <!-- /ko -->
+      / /ko
       %label Any information that would be helpful
         %textarea{data-bind: "value: cancel_notes, valueUpdate: 'afterkeydown'"}
 
