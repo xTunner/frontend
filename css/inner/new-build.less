@@ -1,3 +1,8 @@
+#container_scroll_parent {
+  // hides scrollbar on container_parent
+  overflow: hidden;
+}
+
 #container_parent {
   position: relative;
   overflow-y: hidden;
@@ -5,10 +10,9 @@
   height: 100%;
   margin-left: 8.5%;
   margin-right: 8.5%;
-  &::-webkit-scrollbar:horizontal {
-    // doesn't work yet
-    display: none;
-  }
+  // hides scrollbar on container_parent
+  margin-bottom: -25px;
+  padding-bottom: 25px;
 }
 
 .containers {
