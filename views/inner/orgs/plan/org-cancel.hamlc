@@ -13,7 +13,7 @@
           %span{data-bind: "text: text"}
       / /ko
       %label Any information that would be helpful
-        %textarea{data-bind: "value: cancel_notes, valueUpdate: 'afterkeydown'"}
+        %textarea{data-bind: "value: cancel_notes, valueUpdate: 'keyup'"}
 
       %div.text-error{data-bind: "visible: show_cancel_errors, text: cancelFormErrorText"}
 
