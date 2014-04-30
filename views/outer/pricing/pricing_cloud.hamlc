@@ -28,5 +28,5 @@
     / /ko
     / ko ifnot: $root.logged_in
     %a{href: CI.github.authUrl(), data-bind: "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"}
-      %span Start 14-day trial
+      %span Start 14-day Free Trial
     / /ko
