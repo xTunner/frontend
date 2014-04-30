@@ -101,7 +101,8 @@
   This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly, just like they do when you use them locally.
   You do not need to do anything special to set this up.
   We have
-  <code>phantomjs 1.9.2</code>,
+  != succeed ',', ->
+    %code= @v.v('phantomjs')
   %code= @v.v('casperjs')
   and
   %code libwebkit (2.2.1-1ubuntu4)
@@ -136,7 +137,7 @@
 %h3 Ruby
 
 %p We use RVM to give you access to a wide variety of Ruby
-  versions. Below are the versions of Ruby that we pre-install; you can specify versions not listed here (supported by RVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly. 
+  versions. Below are the versions of Ruby that we pre-install; you can specify versions not listed here (supported by RVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly.
 
 %p
   You can
@@ -182,7 +183,7 @@
   will install instantly, so it's easy to use any Node version.
 
 %p
-  Below are the versions of Node.js that we pre-install; you can specify versions not listed here (supported by NVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly. 
+  Below are the versions of Node.js that we pre-install; you can specify versions not listed here (supported by NVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly.
 
 %ul
   - for n in @v.node_versions
@@ -210,7 +211,7 @@
     %code= @v.v('virtualenv')
 
 %p
-  Below are the versions of Python that we pre-install; you can specify versions not listed here (supported by pyenv) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly. 
+  Below are the versions of Python that we pre-install; you can specify versions not listed here (supported by pyenv) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly.
   .row
     - cols = 4
     - per_col = (Math.ceil(@v.python_versions.length / 4.0))
@@ -267,14 +268,11 @@
   CircleCI has the following languages and tools installed:
 
 %ul
-  %li
-    <code>oracle JDK 7, using Java 1.7.0_21</code> (default)
-  %li
-    %code oracle JDK 6, using Java 1.6.0u37
-  %li
-    %code openjdk7
-  %li
-    %code openjdk6
+  - for j in @v.java_packages
+    %li
+      %code= j.name + (if j.version then ', using Java ' + j.version else '')
+      - if j.default
+        (default)
   %li
     %code= @v.v('ant')
   %li
@@ -286,17 +284,12 @@
 
 %p
   You can specify the following JVM versions in your <code>circle.yml</code> file:
-    %ul
+  %ul
+    - for j in @v.java_packages
       %li
-        %code oraclejdk8
-      %li
-        <code>oraclejdk7</code> (default)
-      %li
-        %code oraclejdk6
-      %li
-        %code openjdk7
-      %li
-        %code openjdk6
+        %code= j.package
+        - if j.default
+          (default)
 
 %h4 Scala
 

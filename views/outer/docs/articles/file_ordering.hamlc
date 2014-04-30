@@ -15,9 +15,8 @@
   On Linux machines however, directory contents do not have a defined order.
 
 %p
-  This means every OSX system will run tests in the same order, but different linux machines will run tests in different orders.
-  With CircleCI, where you get a new Linux machine each time you push, the tests will run in different orders on different test runs.
-  This explains why a revision's tests will sometimes fail, only to pass when retried.
+  This means that repeated runs on OSX systems will have the same order, but
+  that repeated runs on Linux systems may not. This explains why a revision's tests will sometimes fail on CircleCI, only to pass when retried.
 
 %h2 Why these tests fail
 %p

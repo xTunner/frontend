@@ -183,6 +183,16 @@ CI.Versions =
   golang: '1.2.1'
   erlang: 'r14b04'
 
+  default_java_package: "oraclejdk7"
+  default_java_version: "1.7.0_21"
+  java_packages: [
+    { name: "Oracle JDK 8", package: "oraclejdk8", version: "1.8.0" },
+    { name: "Oracle JDK 7", package: "oraclejdk7", version: "1.7.0_21", default: true },
+    { name: "Oracle JDK 6", package: "oraclejdk6", version: "1.6.0_37" },
+    { name: "Open JDK 7", package: "openjdk7" },
+    { name: "Open JDK 6", package: "openjdk6" }
+  ]
+
   gradle: "1.10"
   play: "2.2.1"
   scala_versions: [
@@ -223,3 +233,4 @@ CI.Versions =
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.9"
+  phantomjs: "1.9.7"

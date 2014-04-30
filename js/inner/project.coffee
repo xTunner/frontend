@@ -246,11 +246,15 @@ CI.inner.Project = class Project extends CI.inner.Obj
             success: (results) =>
               github_users ((new CI.inner.GithubUser result) for result in results)
               @loading_github_users false
+            error: () =>
+              github_users null
+              @loading_github_users false
         github_users()
 
     @github_users_not_following = @komp
       deferEvaluation: true
-      read: => (user for user in @github_users() when not user.following())
+      read: => if @github_users()
+        (user for user in @github_users() when not user.following())
 
   @sidebarSort: (l, r) ->
     if l.followed() and r.followed() and l.latest_build()? and r.latest_build()?
