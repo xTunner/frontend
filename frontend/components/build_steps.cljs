@@ -132,15 +132,12 @@
             containers (:containers data)
             controls-ch (:controls-ch data)]
         (html
-         [:div
+         [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
                                               (when (not= 0 (.-deltaX e))
                                                 (.preventDefault e)
                                                 (aset js/document.body "scrollTop" (+ js/document.body.scrollTop (.-deltaY e)))))
-                                  :on-scroll (fn [e]
-                                               (js/console.log e)
-                                               (js/console.log (.-detail e))
-                                               )
+                                  :on-scroll #(put! controls-ch [:container-parent-scroll])
                                   :scroll "handle_browser_scroll"
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"}
