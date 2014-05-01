@@ -54,11 +54,11 @@
           %a{data-bind: "click: cancel_build", role: "button"}
             Cancel
 
-%div.load-more
+%div.load-more{data-bind: "with: current_page()"}
   %span.left
-    %a.btn.btn-primary{data-bind: "click: BuildPager.pageForward, css: BuildPager.pageForwardButtonStyle"}
+    %a.btn.btn-primary{data-bind: "click: load_newer_page, css: newer_page_button_style"}
       &lt;&lt;&lt;
 
   %span.right
-    %a.btn.btn-primary{data-bind: "click: BuildPager.pageBack, css: BuildPager.pageBackButtonStyle"}
+    %a.btn.btn-primary{data-bind: "click: load_older_page, css: older_page_button_style"}
       &gt;&gt;&gt;

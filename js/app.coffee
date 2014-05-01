@@ -497,59 +497,6 @@ window.SammyApp = Sammy 'body', (n) ->
       window.notifyError data
 
 
-class CI.inner.BuildPager
-  constructor: ->
-    @pageBackButtonStyle = ko.computed =>
-      if VM.builds().length < VM.builds_per_page
-        disabled: true
-
-    @pageForwardButtonStyle = ko.computed =>
-      location = SammyApp.getLocation()
-
-      uri = URI(location)
-      query_params = uri.search(true)
-      page = parseInt(query_params?.page) or 0
-
-      # Just accessing VM.builds() to force re-evaluation of this computed
-      # observable when the build list changes
-      if VM.builds() && page <= 0
-        disabled: true
-
-  currentPage: () ->
-    uri = URI(SammyApp.getLocation())
-    query_params = uri.search(true)
-    page = parseInt(query_params?.page) or 0
-
-  changeBuildsPage: (update_page_fn) =>
-    location = SammyApp.getLocation()
-
-    uri = URI(location)
-    query_params = uri.search(true)
-    page = parseInt(query_params?.page) or 0
-
-    query_params.page = if page? then update_page_fn(page) else 0
-    uri.search(query_params)
-
-    SammyApp.setLocation(uri.toString())
-
-  pageBack: (object) =>
-    @changeBuildsPage((page_num) =>
-      if VM.builds().length >= VM.builds_per_page
-        page_num + 1
-      else
-        page_num)
-
-  pageForward: (object) =>
-    @changeBuildsPage((page_num) =>
-      if page_num > 0
-        page_num - 1
-      else
-        0)
-
-
-window.BuildPager = new CI.inner.BuildPager()
-
-
 $(document).ready () ->
   path = window.location.pathname
   path = path.replace(/\/$/, '') # remove trailing slash
