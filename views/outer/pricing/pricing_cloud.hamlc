@@ -16,7 +16,7 @@
         - else
           containers
       -# %li Additional containers for $50/each
-      %li Additional containers $50/ea
+      %li Additional containers $50/mo
       %li No other limits
   .plan-foot
     / ko if: $root.logged_in
