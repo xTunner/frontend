@@ -12,7 +12,7 @@
       %span Documentation
   .header-nav-menu
     %a{data-toggle: "dropdown"}
-      %img{data-bind: "attr: {src: avatar_url(30), width: 30, height: 30}"}
+      %img{data-bind: "attr: {src: gravatar_url(30, true), width: 30, height: 30}"}
       %i.fa.fa-caret-down
     %aside
       %a.menu-item{href: '/account'}
