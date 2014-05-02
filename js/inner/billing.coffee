@@ -181,9 +181,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       # returns a string if the user hasn't filled out the cancel form correctly, else nil
       c = @cancel_reasons()
       if c.length is 0
-        return "please select at least one reason"
+        return "Please select at least one reason."
       if _.contains(c, "other") and not @cancel_notes()
-        return "please tell us about 'other'"
+        return "Please specify above."
       null
 
   containers_option_text: (c) =>
