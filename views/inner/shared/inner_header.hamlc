@@ -13,7 +13,7 @@
   .header-nav-menu
     %a{data-toggle: "dropdown"}
       <!-- ko ifnot: gravatar_url() -->
-        %span{data-bind: "text: login"}
+        %i.fa.fa-user
       <!-- /ko -->
       <!-- ko if: gravatar_url() -->
         %img{data-bind: "attr: {src: gravatar_url(30), width: 30, height: 30}"}
