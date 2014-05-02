@@ -118,8 +118,8 @@
         parent (sel1 target "#container_parent")
         parent-scroll-left (.-scrollLeft parent)
         current-container (sel1 target (str "#container_" current-container-id))
-        current-container-scroll-left (inspect (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent))))
-        parent-scroll-left (inspect (.-scrollLeft parent))
+        current-container-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent)))
+        parent-scroll-left (.-scrollLeft parent)
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
                             (sel parent ".container-view"))
         ;; if we're scrolling left, then we want the container whose rightmost portion is showing
