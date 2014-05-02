@@ -103,28 +103,33 @@
   (when-not (= (get-in previous-state [:current-build :current-container-id])
                container-id)
     (let [parent (sel1 target "#container_parent")
-          width (.-width (goog.style/getSize parent))
-          new-scroll-left (+ (.-scrollLeft parent)
-                             (.-x (goog.style.getPosition (sel1 target (str "#container_" container-id)))))
-          new-scroll-left (* width container-id)]
-      (println "new scroll left" new-scroll-left)
-      (set! (.-scrollLeft parent) new-scroll-left))))
+          container (sel1 target (str "#container_" container-id))
+          new-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto container parent))]
+      (goog.style.scrollIntoContainerView container parent))))
 
+(defn container-id [container]
+  (int (last (re-find #"container_(\d+)" (.-id container)))))
+
+;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
   [target message _ previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])
-        current-container-id (get-in current-state [:current-build :current-container-id])
+        current-container-id (get-in current-state [:current-build :current-container-id] 0)
         parent (sel1 target "#container_parent")
-        container-width (.-width (goog.style/getSize parent))
         parent-scroll-left (.-scrollLeft parent)
-        parent-scroll-ratio (/ parent-scroll-left container-width)
-        current-selected-container-scroll-left (* container-width current-container-id)
+        current-container (sel1 target (str "#container_" current-container-id))
+        current-container-scroll-left (inspect (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent))))
+        parent-scroll-left (inspect (.-scrollLeft parent))
+        containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
+                            (sel parent ".container-view"))
         ;; if we're scrolling left, then we want the container whose rightmost portion is showing
         ;; if we're scrolling right, then we want the container whose leftmost portion is showing
-        new-scrolled-container-id (if (> parent-scroll-left current-selected-container-scroll-left)
-                                    (js/Math.ceil parent-scroll-ratio)
-                                    (js/Math.floor parent-scroll-ratio))]
+        new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
+                                    current-container-id
+                                    (if (< parent-scroll-left current-container-scroll-left)
+                                      (apply min (map container-id (take 2 containers)))
+                                      (apply max (map container-id (take 2 containers)))))]
     ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
     ;; do a swap here (or find a better way to structure this!)
-    (when-not (= new-scrolled-container-id current-container-id)
+    (when (not= current-container-id new-scrolled-container-id)
       (put! controls-ch [:container-selected new-scrolled-container-id]))))
