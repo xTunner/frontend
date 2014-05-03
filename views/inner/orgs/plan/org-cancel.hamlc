@@ -1,24 +1,15 @@
-.row-fluid.card
-  %legend.span8 Cancel
-
-.row-fluid{data-bind: "with: billing"}
-  %p
-    We'd love it if you could tell us why you're canceling. This helps us make a better product!
-
-  .span6
+.org-cancel{data-bind: "with: billing"}
+  .row-fluid
+    %legend Cancel
+  .row-fluid
+    %h3{data-bind: "attr: {alt: cancelFormErrorText}"} Say why you're canceling & we'll make Circle better!
     %form
-      /ko foreach: CI.inner.Billing.cancelReasons
-      %label.radio
-        %input{type: "checkbox", name: "reason_radio", data-bind: "attr: {value: value}, checked: VM.org().billing().cancel_reasons"}
-          %span{data-bind: "text: text"}
-      / /ko
-      %label Any information that would be helpful
-        %textarea{data-bind: "value: cancel_notes, valueUpdate: 'keyup'"}
-
-      %div.text-error{data-bind: "visible: show_cancel_errors, text: cancelFormErrorText"}
-
-      %button.btn.btn-danger{data-bind: "click: ajaxCancelPlan",
-                             data-success-text: "Cancelled",
-                             data-loading-text: "Cancelling...",
-                             data-failed-text: "Failed!"}
-        Cancel Plan
+      <!-- ko foreach: CI.inner.Billing.cancelReasons -->
+        %input{type: "checkbox", data-bind: "attr: {value: value, for: text}, checked: $parent.cancel_reasons"}
+      <!-- /ko -->
+      %textarea{data-bind: "value: cancel_notes", required: ""}
+      %label{title: "Would you mind elaborating some?", alt: "Have any other thoughts?", placeholder: "Thanks for the feedback!"}
+      .hint{data-bind: "css: {error: show_cancel_errors}"}
+        %i.fa.fa-exclamation-circle
+        %span{data-bind: "text: cancelFormErrorText"}
+      %button{data-bind: "click: ajaxCancelPlan", data-spinner: "true"} Cancel Plan
