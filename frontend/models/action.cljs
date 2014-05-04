@@ -18,5 +18,17 @@
 (defn duration [{:keys [start_time stop_time] :as action}]
   (cond (:run_time_millis action) (datetime/as-duration (:run_time_millis action))
         (:start_time action) (datetime/as-duration (- (.getTime (js/Date.))
-                                                      (js/Date.parse start-time)))
+                                                      (js/Date.parse start_time)))
         :else nil))
+
+(defn format-output [action]
+  (let [out-converter (js/CI.terminal.ansiToHtmlConverter "brblue")
+        err-converter (js/CI.terminal.ansiToHtmlConverter "red")]
+    (str (reduce (fn [acc output]
+                   (let [converter (if (= "err" (:type output))
+                                     err-converter
+                                     out-converter)]
+                     (str acc (.append converter (gstring/htmlEscape (:message output))))))
+                 "" (:output action))
+         (.get_trailing out-converter)
+         (.get_trailing err-converter))))

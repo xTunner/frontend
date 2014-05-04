@@ -92,12 +92,9 @@
                        {:title "The full bash comand used to run this setup"}
                        (:bash_command action)]])
                    [:pre.output.solarized {:style {:white-space "normal"}}
-                    [:span
-                     (map (fn [out]
-                            [:span.pre
-                             {:dangerouslySetInnerHTML #js {"__html" out}}])
-                          (:final-out action))]
-                    [:span.pre (:trailing-out action)]]])])]]]])))))
+                    [:span.pre {:dangerouslySetInnerHTML
+                                (clj->js {"__html"
+                                          (action-model/format-output action)})}]]])])]]]])))))
 
 (defn container-view [data owner opts]
   (reify

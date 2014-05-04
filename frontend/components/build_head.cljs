@@ -170,7 +170,7 @@
                    (:previous_build build)]])
                [:th "Status"]
                [:td
-                [:span.build-status {:class (build-model/status-class build)}
+                [:span.build-status {:class (:status build)}
                  (build-model/status-words build)]]]
               [:tr
                (when (:usage_queued_at build)

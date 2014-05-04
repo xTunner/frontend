@@ -121,3 +121,9 @@
     (if-not (= build-id (-> state :current-build build-model/id))
       state
       (assoc-in state [:current-build :artifacts] artifacts))))
+
+(defmethod api-event [:action-log :success]
+  [target message status args state]
+  (let [action-log (:resp args)
+        {:keys [index step]} (:context args)]
+    (assoc-in state [:current-build :steps step :actions index :output] action-log)))

@@ -54,8 +54,7 @@
   (nth coll 2 nil))
 
 (defn ajax [method url message channel & {:keys [params format response-format keywords? context]
-                                          :or {params {}
-                                               format :json
+                                          :or {format :json
                                                response-format :json
                                                keywords? true}}]
   (put! channel [message :started context])

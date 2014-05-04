@@ -133,3 +133,22 @@
     ;; do a swap here (or find a better way to structure this!)
     (when (not= current-container-id new-scrolled-container-id)
       (put! controls-ch [:container-selected new-scrolled-container-id]))))
+
+(defmethod post-control-event! :action-log-output-toggled
+  [target message {:keys [index step] :as args} previous-state current-state]
+  (when (and (get-in current-state [:current-build :steps step :actions index :show-output])
+             (not (get-in current-state [:current-build :steps step :actions index :output])))
+    (let [api-ch (get-in current-state [:comms :api])
+          action (get-in current-state [:current-build :steps step :actions index])
+          url (if (:output_url action)
+                (:output_url action)
+                (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
+                                (vcs-url/project-name (get-in current-state [:current-build :vcs_url]))
+                                (get-in current-state [:current-build :build_num])
+                                step
+                                index))]
+      (utils/ajax :get
+                  url
+                  :action-log
+                  api-ch
+                  :context args))))
