@@ -24,3 +24,6 @@
   %li Ship, believing done is better than perfect and iteration is better than perfection.
   %li Uphold and improve upon existing brand standards and guidelines.
   %li Most importantly, relate to our customers; primarily developers.
+
+%a{href: "", role: "button"}
+  %span Apply to Design
