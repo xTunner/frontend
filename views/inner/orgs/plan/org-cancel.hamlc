@@ -2,7 +2,7 @@
   .row-fluid
     %legend Cancel
   .row-fluid
-    %h3{data-bind: "attr: {alt: cancelFormErrorText}"} Say why you're canceling & we'll make Circle better!
+    %h3{data-bind: "attr: {alt: cancelFormErrorText}"} Please tell us why you're canceling. This helps us make Circle better!
     %form
       <!-- ko foreach: CI.inner.Billing.cancelReasons -->
         %input{type: "checkbox", data-bind: "attr: {value: value, for: text}, checked: $parent.cancel_reasons"}
