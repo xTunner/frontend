@@ -14,7 +14,7 @@
         %i.fa.fa-bar-chart-o
         %h3 Business
     .jobs-intro
-      %h3 Why You'll Love Circle
+      %h3 You're Going to Love Circle
       %p Circle is the market leader in continuous integration and deployment, and we're loved by thousands of developers all over the world. Our team is a rapidly growing group of highly talented, technical individuals. We value productivity and distributed decision making, which ultimately creates better solutions for our company and our customers. Circle has already generated significant revenue and raised millions in funding &#8212; and we're just getting started.
     .jobs-locations
       .jobs-location
@@ -22,36 +22,36 @@
           %i.fa.fa-building
           %h2 Local
         %article
-          %h3 Work at our beautiful San Francisco office
-          %p Our home office is located in San Francisco's beautiful Financial District. We have an entire highrise floor to ourselves, featuring amazing views of the city and plenty or room to grow. We're trying to create the most productive environment possible, and to help us do that we provide every team member their own private office.
+          %h3 Work at Our San Francisco Office
+          %p Our home office is located in San Francisco's beautiful Financial District. We have an entire highrise floor to ourselves, featuring some amazing views of the city and plenty of room for growth. Our team is dedicated to creating the most productive environment possible. That means we ensure everyone is able to enjoy their own personal level of comfort and privacy.
       .jobs-location
         %article
-          %h3 Or work from the comfort of home
-          %p We believe people should live wherever they want, regardless of where they work. We have team members living in Oregon, Washington, Ireland, Texas, Boston, and Turkey. Setup up an office anywhere in the world and choose your own hours. We'll even fly you into town every few months to catch up with the rest of the team, all expenses paid.
+          %h3 Or Work Remotely Where You Want
+          %p We have an asynchronous culture that's well-suited for working remotely. The entire team uses chat and email enough to ensure that everyone feels connected. We currently have teammates living in Oregon, Washington, Ireland, Texas, Boston, and Turkey. We'll even fly you into town every few months to catch up with the team, as your schedule permits.
         %aside
           %i.fa.fa-globe
           %h2 Remote
     .jobs-perks-buckets
       .jobs-perks
         %article
-          %h3 Flat Organization
-          %p We don't have managers at Circle and every team member has a say when making decisions. We hire the best — to us that means you're capable of managing yourself.
+          %h3 Make Change
+          %p You'll have a disproportionate effect on our product, you'll define the values by which we operate, and your views will remain essential (they're why we hired you).
         %article
-          %h3 Happy Environment
-          %p Balancing life and work responsibly is very important to us. You'll regularly catch us playing games and venturing outside the office, after or even during "work hours".
+          %h3 Solve Problems
+          %p You'll meet complex challenges regularly and you'll solve problems previously unencountered. We're looking for people who desire this as frequently as we do.
         %article
-          %h3 Free Lunch
-          %p We provide catered meals every day and our office is fully stocked with snacks and drinks. If we don't have your favorites, just ask and we'll make it happen.
+          %h3 Lead Yourself
+          %p You'll have no managers at Circle and every teammates has a voice when making decisions. We hire the best — to us that means you're capable of managing yourself.
       .jobs-perks
         %article
-          %h3 Top-Notch Tech
-          %p Let us know your flavor of Apple hardware and we'll dial it up to 11. Anything else you need to get the job done is on the house, as well as plenty of Circle swag.
+          %h3 With Intelligent Teammates
+          %p We only hire people that are better than ourselves. We believe this creates a healthy environment for collaboration and learning. We're looking for t-shaped teammates.
         %article
-          %h3 Your Own Office
-          %p Each team member gets their own private office. Seriously. Style it however you want. Wanna go tropical and work on an office-sized beach? Go for it! (BYOS)
+          %h3 With Elegant Software
+          %p We write everything in Clojure &#8212; from our dev-ops, to package management, to serving our REST API. It's the most powerful and elegant language we've ever used.
         %article
-          %h3 Compensation
-          %p We want all of our team members to feel invested in Circle's success. To prove it we offer very competitive salaries and meaningful equity to all team members.
+          %h3 With Product Focus
+          %p We understand product engineering and find inspiration from teams like GitHub, Fog Creek, and Valve. Our customers and even most of our teammates are all engineers.
     .jobs-listings
       %article#engineering
         %h2
