@@ -54,11 +54,10 @@
           %a{data-bind: "click: cancel_build", role: "button"}
             Cancel
 
-%div.load-more{data-bind: "with: current_page()"}
-  %span.left
-    %a.btn.btn-primary{data-bind: "click: load_newer_page, css: newer_page_button_style"}
-      &lt;&lt;&lt;
-
-  %span.right
-    %a.btn.btn-primary{data-bind: "click: load_older_page, css: older_page_button_style"}
-      &gt;&gt;&gt;
+.recent-builds-pager{data-bind: "with: current_page()"}
+  %a{data-bind: "click: load_newer_page, css: newer_page_button_style"}
+    %i.fa.fa-long-arrow-left
+    %span Previous page
+  %a{data-bind: "click: load_older_page, css: older_page_button_style"}
+    %span Next page
+    %i.fa.fa-long-arrow-right
