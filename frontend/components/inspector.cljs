@@ -1,0 +1,16 @@
+(ns frontend.components.inspector
+  (:require [ankha.core :as ankha]
+            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+            [draggable.core :as dnd]
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true]
+            [sablono.core :as html :refer-macros [html]]))
+
+(defn inspector [app owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (println opts)
+      (om/build dnd/draggable
+                (assoc app :sub-com ankha/inspector :sub-com-data app)
+                {:opts {:dragger-fn (fn [owner] (dnd/free-drag owner))}}))))

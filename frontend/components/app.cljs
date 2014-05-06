@@ -5,6 +5,7 @@
             [frontend.components.dashboard :as dashboard]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.footer :as footer]
+            [frontend.components.inspector :as inspector]
             [frontend.components.key-queue :as keyq]
             [frontend.components.navbar :as navbar]
             [frontend.components.placeholder :as placeholder]
@@ -43,6 +44,8 @@
           (om/build keyq/KeyboardHandler app
                     {:opts {:keymap keymap
                             :error-ch (get-in app [:comms :errors])}})
+          ;; for some reason this makes things render 10x slower
+          ;; (om/build inspector/inspector app {:opts opts})
           [:header
            (om/build navbar/navbar app {:opts opts})]
           [:main
