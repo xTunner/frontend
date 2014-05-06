@@ -373,8 +373,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @current_container(@containers()[0])
 
     @display_first_green_build_invitations = @komp =>
-      not @dismiss_first_green_build_invitations() and not
-      @previous_successful_build() and @outcome() == "success"
+      not @dismiss_first_green_build_invitations() and @is_first_green_build()
 
     saw_invitations_prompt = false
     @first_green_build_invitations = @komp
