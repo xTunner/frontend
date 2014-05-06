@@ -71,7 +71,7 @@
 (defn main [state top-level-node]
   (let [comms      (:comms @state)
         target-name                           "app"
-        container                             (sel1 top-level-node (str "div#" target-name))
+        container                             (sel1 top-level-node (str "#" target-name))
         uri-path                              (.getPath utils/parsed-uri)
         [_ maybe-deep-link]                   (re-matches #"^/app/(.*)" uri-path)
         history-path "/";;(str (.getPath (goog.Uri. js/document.location.href)) "/")
