@@ -18,7 +18,11 @@
          ;; XXX logic for trial notices
          ;; XXX logic for show_build_table
          [:div#dashboard
-          (om/build sidebar/sidebar data {:opts opts})
+          (om/build sidebar/sidebar
+                    {:current-user (:current-user data)
+                     :projects (:projects data)
+                     :settings (:settings data)}
+                    {:opts opts})
           [:section
            (om/build builds-table/builds-table
                      {:builds builds
