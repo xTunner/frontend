@@ -88,6 +88,7 @@
                                           (.getAncestorByTagNameAndClass dom-helper -target "A"))
                                  path (when target (.-pathname target))]
                              (when (seq path)
+                               ;; XXX this doesn't work with hashes
                                (.setToken history-imp (subs path 1 (count path)))
                                (.stopPropagation %)
                                (.preventDefault %))))
