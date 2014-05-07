@@ -80,4 +80,29 @@
       margin-top: 20px;
     }
   }
+
+  .bio-coming-soon {
+    position: relative;
+    p {
+      overflow: hidden;
+      padding: 5px;
+      -webkit-filter: blur(3px);
+    }
+    .coming-soon {
+      .displayFlex();
+      .align-items(center);
+      .justify-content(center);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-size: @fontSizeLarge;
+      background-image: linear-gradient(to bottom, fade(@white, 85), fade(@white, 85)),
+                        radial-gradient(ellipse at center, @white 34%, fade(@white, 0) 55%);
+      &:before {
+        content: attr(placeholder);
+      }
+    }
+  }
 }
