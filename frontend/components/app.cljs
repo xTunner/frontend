@@ -1,6 +1,5 @@
 (ns frontend.components.app
-  (:require [ankha.core :as ankha]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.add-projects :as add-projects]
@@ -12,6 +11,7 @@
             [frontend.components.common :as common]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [ankha.core :as ankha]
             [sablono.core :as html :refer-macros [html]]))
 
 (def keymap
