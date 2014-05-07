@@ -21,8 +21,8 @@
 (defn personal-branches [user project]
   (filter (fn [[name-kw branch]]
             (or
-             (default-branch? (name name-kw) project)
-             (personal-branch? user project (name name-kw) branch)))
+             (personal-branch? user project (name name-kw) branch)
+             (default-branch? (name name-kw) project)))
           (:branches project)))
 
 (defn show-toggle-branches? [user project]
