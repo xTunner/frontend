@@ -12,9 +12,15 @@
     text-align: center;
   }
 
-  img {
+  img,
+  svg {
     border-radius: 13px;
     margin: 1em;
+  }
+
+  svg {
+    .outlineInside(@grayBoxBorder);
+    float: right;
   }
 
   .member {
@@ -35,6 +41,10 @@
 
       ul {
         left: 45px;
+      }
+
+      svg {
+        float: left;
       }
     }
 
