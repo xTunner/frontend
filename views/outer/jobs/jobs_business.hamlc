@@ -1,0 +1,21 @@
+%h4 We're looking for
+%ul
+  %li A genuine desire to ensure customers are happy and successful.
+  %li An obsession with data-driven decision making and measuring results.
+  %li A technical background with the desire to learn more about the customer-facing parts of building a company.
+  %li An understanding of modern, low-touch, software-driven marketing techniques.
+
+%h4 We'd love to see
+%ul
+  %li Proven results from previous projects.
+  %li Anything you may have written about conversion rate optimization, AB testing, SaaS metrics or anything else interesting.
+
+%h4 We're looking for
+%ul
+  %li With these skills
+  %li Good analytical skills, ability to analyze data and come to conclusions
+  %li Good communication and writing ability
+  %li Technical enough to understand and explain Continuos Integration and Deployment at a deep level
+
+%a{href: "", role: "button"}
+  %span Apply to Business
