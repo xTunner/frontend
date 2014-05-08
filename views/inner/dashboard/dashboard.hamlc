@@ -7,10 +7,6 @@
 
 #dashboard
 
-  / ko if: projects_have_been_loaded
-  %aside
-    != HAML.sidebar({})
-  / /ko
 
   %section
 
@@ -37,3 +33,8 @@
       / /ko
 
     <!-- /ko -->
+
+  / ko if: projects_have_been_loaded
+  %aside
+    != HAML.sidebar({})
+  / /ko
