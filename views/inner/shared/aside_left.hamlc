@@ -1,0 +1,25 @@
+%nav.aside-left-nav{data-bind: "with: current_user"}
+  .aside-logo
+    != HAML.icon({name: "logo"})
+  %a.aside-item{href: "/"}
+    %i.fa.fa-dashboard
+    %span Dashboard
+  %a.aside-item{href: "/docs",target: "_blank"}
+    %i.fa.fa-files-o
+    %span Documentation
+  %a.aside-item{href: "#", data-bind: "click: $root.raiseIntercomDialog"}
+    %i.fa.fa-bullhorn
+    %span Report a Bug
+  %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
+    %i.fa.fa-comments
+    %span Chat Support
+  .aside-item-drawer
+    %a.aside-item
+      %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
+      %span dannykingme
+    %a.aside-item{href: "/account"}
+      %i.fa.fa-gears
+      %span Settings
+    %a.aside-item{href: "/logout"}
+      %i.fa.fa-sign-out
+      %span Logout
