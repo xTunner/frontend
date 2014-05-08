@@ -33,3 +33,25 @@
   -webkit-align-items: @arg;
           align-items: @arg;
 }
+.flexy() {
+  .displayFlex();
+}
+.flexy(@align) {
+  .displayFlex();
+  .align-items(@align);
+}
+.flexy(@align, @just) {
+  .displayFlex();
+  .align-items(@align);
+  .justify-content(@just);
+}
+.flexy(@align, @just, @dir) {
+  .displayFlex();
+  .align-items(@align);
+  .justify-content(@just);
+  .flex-direction(@dir);
+}
+.flexy(@dir) when (@dir = column) {
+  .displayFlex();
+  .flex-direction(@dir);
+}
