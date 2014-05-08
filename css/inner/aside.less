@@ -1,0 +1,56 @@
+&#app {
+  .displayFlex();
+  .flex-direction(row);
+  .aside-left-nav {
+    .displayFlex();
+    .flex-direction(column);
+    width: @aside_nav_width;
+    height: 100vh;
+    background: @blueDarkest;
+    overflow: hidden;
+  }
+  .aside-logo {
+    .displayFlex();
+    .align-items(center);
+    .justify-content(center);
+    height: @block_size;
+    box-shadow: 0 1px fade(@black, 55), 0 2px fade(@white, 8);
+    .icon {
+      font-size: 2em;
+      path {
+        fill: @white;
+      }
+    }
+  }
+  .aside-item {
+    .displayFlex();
+    .align-items(center);
+    height: @block_size;
+    color: @grayLighter;
+    transition: (@base_transition * 2);
+    &:hover {
+      color: @white;
+      background: @blueDarker;
+      transition: @base_transition;
+    }
+    i {
+      margin: 0 @baseFontSize 0 ((@block_size - @baseFontSize) / 2);
+    }
+    img {
+      @n: (@block_size / 2);
+      width:  @n;
+      height: @n;
+      margin: 0 @baseFontSize 0 ((@block_size - @n) / 2);
+      border-radius: (@n / 2);
+    }
+  }
+  .aside-item-drawer {
+    @items: 3;
+    margin-top: auto;
+    margin-bottom: ((@items - 1) * -@block_size);
+    transition: margin (@base_transition * 4);
+    &:hover {
+      margin-bottom: 0;
+    }
+  }
+}
