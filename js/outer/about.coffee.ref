@@ -100,7 +100,7 @@ CI.outer.About = class About extends CI.outer.Page
       name: "Nick Gottlieb"
       img_path: ''
       visible: true
-      role: "Marketing"
+      role: "Marketing Engineer"
       github: "worldsoup"
       twitter: "worldsoup"
       email: "nick@circleci.com"
