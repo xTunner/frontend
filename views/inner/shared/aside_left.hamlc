@@ -14,7 +14,7 @@
     %i.fa.fa-comments
     %span Chat Support
   .aside-item-drawer
-    %a.aside-item
+    %a.aside-item{href: "/account"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
       %span dannykingme
     %a.aside-item{href: "/account"}

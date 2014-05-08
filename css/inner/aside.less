@@ -46,10 +46,23 @@
   }
   .aside-item-drawer {
     @items: 3;
+    @items_visible: 1;
     margin-top: auto;
-    margin-bottom: ((@items - 1) * -@block_size);
-    transition: margin (@base_transition * 4);
-    &:hover {
+    a {
+      &:last-child {
+        margin-bottom: ((@items - @items_visible) * -@block_size);
+        transition: margin (@base_transition * 4);
+      }
+      &:hover,
+      &:focus {
+        margin-bottom: 0;
+        ~ a:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+    &:hover,
+    &:focus {
       margin-bottom: 0;
     }
   }
