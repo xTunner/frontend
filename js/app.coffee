@@ -8,22 +8,34 @@ display = (template, args, subpage, hash) ->
     $("<header></header>")
       .append(HAML.header(args))
 
-  content =
-    $("<main></main>")
-      .append(HAML[template](args))
-
   footer =
     $("<footer></footer>")
       .append(HAML["footer"](args))
+
+  content =
+    $("<div></div>")
+      .addClass("page")
+      .append(HAML[template](args))
+
+  asideL =
+    $("<aside></aside>")
+      .addClass('app-aside-left')
+      .append(HAML["aside_left"](args))
+
+  main =
+    $("<main></main>")
+      .addClass('app-main')
+      .append(header)
+      .append(content)
+      .append(footer)
 
   $('#app')
     .html("")
     .removeClass('outer')
     .removeClass('inner')
     .addClass(klass)
-    .append(header)
-    .append(content)
-    .append(footer)
+    .append(asideL)
+    .append(main)
 
 
   if subpage
