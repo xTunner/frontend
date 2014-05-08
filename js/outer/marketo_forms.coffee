@@ -28,9 +28,7 @@ CI.outer.MarketoForms = class MarketoForms
         event: event
         data:
           FirstName: @FirstName()
-          LastName: @LastName()
           Email: @Email()
-          repo_solution__c: if @repo_solution__c() == 'other' then @other_input() else @repo_solution__c()  
           Company: @Company()
           munchkinId: @munchkinId
           formid: @formid
