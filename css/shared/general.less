@@ -37,6 +37,9 @@ textarea {
     margin: auto;
     width: 1em;
     height: 1em;
+    [fill] {
+      fill: @grayLighter;
+    }
   }
   &:not(span) {
     svg {
@@ -44,6 +47,11 @@ textarea {
       height: @spinnerSize;
     }
   }
+}
+button [spinner] {
+  width:  @baseLineHeight;
+  height: @baseLineHeight;
+  vertical-align: top;
 }
 .fa.fa-spin {
   -moz-animation: spin 1s infinite linear;

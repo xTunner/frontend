@@ -1,4 +1,5 @@
-.rotate (@deg) {
+.rotate (@arg) {
+  @deg: ~`"@{arg}".replace("deg", "")`;
   -webkit-transform: rotate(~"@{deg}deg");
           transform: rotate(~"@{deg}deg");
 }

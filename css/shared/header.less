@@ -114,9 +114,13 @@
     display: block;
     line-height: @navbarHeight;
     text-align: center;
-    &:hover > i {
-      .outlineFlat(@blue);
-      transition-duration: .1s;
+    &:hover {
+      > i {
+        &[class*="down"] {
+          .outlineFlat(@blue);
+          transition-duration: .1s;
+        }
+      }
     }
     i {
       width: 1em;
@@ -159,7 +163,9 @@
       background-color: @blueDark;
       color: @white;
       > i {
-        .rotate(180deg);
+        &[class*="down"] {
+          .rotate(180deg);
+        }
       }
     }
   }

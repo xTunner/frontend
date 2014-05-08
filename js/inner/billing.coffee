@@ -33,6 +33,11 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     cardInfo: null
     invoices: []
 
+    cancel_reasons: []
+    cancel_notes: ""
+    cancel_errors: null
+    show_cancel_errors: false
+
     # old data
     oldPlan: null
     oldTotal: 0
@@ -110,7 +115,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     @max_containers = @komp =>
       if @current_containers() < 10
         80
-      else 
+      else
         num = @current_containers() + 80
         num - num % 10 + 10
 
@@ -171,6 +176,15 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
         _.without(_.pluck(user_orgs, 'login'), @org_name())
       deferEvaluation: true
+
+    @cancelFormErrorText = @komp =>
+      # returns a string if the user hasn't filled out the cancel form correctly, else nil
+      c = @cancel_reasons()
+      if c.length is 0
+        return "Please select at least one reason."
+      if _.contains(c, "other") and not @cancel_notes()
+        return "Please specify above."
+      null
 
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
@@ -264,6 +278,26 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     StripeCheckout.open(_.extend @stripeDefaults(), vals)
 
+  ajaxCancelPlan: (_, event) =>
+    console.log("ajaxCancelPlan")
+
+    @show_cancel_errors(false)
+
+    if @cancelFormErrorText()
+      @show_cancel_errors(true)
+      return
+
+    $.ajax
+      url: @apiURL('plan')
+      type: 'DELETE'
+      event: event
+      data: JSON.stringify
+        'cancel-reasons': @cancel_reasons()
+        'cancel-notes': @cancel_notes()
+      success: (data) =>
+        @loadExistingPlans()
+        VM.org().subpage('plan')
+
   updatePlan: (data, event) =>
     @ajaxUpdatePlan {"base-template-id": @chosenPlan().id}, event
 
@@ -276,7 +310,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
   saveContainers: (data, event) =>
     mixpanel.track("Save Containers")
-    
+
     @ajaxUpdatePlan {containers: parseInt(@containers())}, event
 
   load: (hash="small") =>
@@ -391,3 +425,13 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
     options
 
 
+CI.inner.Billing.cancelReasons =
+ ## the values (but not text) need to match the SF DB Api, so don't change lightly
+  [{value: "project-ended", text: "Project Ended"},
+   {value: "slow-performance", text: "Slow Performance"},
+   {value: "unreliable-performance", text: "Unreliable Performance"},
+   {value: "too-expensive", text: "Too Expensive"},
+   {value: "didnt-work", text: "Couldn't Make it Work"},
+   {value: "missing-feature", text: "Missing Feature"},
+   {value: "poor-support", text: "Poor Support"},
+   {value: "other", text: "Other"}]
