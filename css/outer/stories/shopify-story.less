@@ -53,21 +53,21 @@
 			font-weight: bold;
 			font-size: 1.7em;
 			&:before {
-			color: #ccc;
-			content: open-quote;
-			font-size: 2em;
-			line-height: 0.1em;
-			margin-right: 0.25em;
-			vertical-align: -0.4em;
-		}
+				color: #ccc;
+				content: open-quote;
+				font-size: 2em;
+				line-height: 0.1em;
+				margin-right: 0.25em;
+				vertical-align: -0.4em;
+			}
 			&:after {
-			color: #ccc;
-			content: close-quote;
-			font-size: 2em;
-			line-height: 0.1em;
-			margin-right: 0.25em;
-			vertical-align: -0.4em;
-		}
+				color: #ccc;
+				content: close-quote;
+				font-size: 2em;
+				line-height: 0.1em;
+				margin-right: 0.25em;
+				vertical-align: -0.4em;
+			}
 		}
 		.author {
 			.flexy(center, flex-end, row);
@@ -163,15 +163,30 @@
 			
 		}
 		form {
-			button {
-				.center;
-				float: none;
-				background: @circleBlue;
-				&:hover {
-					background: @circleBlueDark;
+			.adaptive-inline {
+				.displayFlex;
+				div:nth-of-type(1) {
+					input {
+						border-radius: 1.5em 0 0 1.5em;
+					}
 				}
-				color: @white;
+					div:nth-of-type(2) {
+					input {
+						border-radius:  0 1.5em 1.5em 0;
+					}
+					
+				}
 			}
+		}
+		button {
+			.center;
+			padding: 5px 10px;
+			float: none;
+			background: @circleBlue;
+			&:hover {
+				background: @circleBlueDark;
+			}
+			color: @white;
 		}
 	}
 }
