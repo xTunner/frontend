@@ -33,7 +33,7 @@ CI.outer.Page = class Page
     args = $.extend renderContext, @viewContext(cx)
     header =
       $("<header></header>")
-        .append(HAML.header(args))
+        .append(HAML.outer_header(args))
 
     content =
       $("<main></main>")
