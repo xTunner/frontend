@@ -8,6 +8,9 @@
             [goog.net.EventType :as gevt])
   (:require-macros [frontend.utils :refer (inspect)]))
 
+(defn csrf-token []
+  (aget js/window "CSRFToken"))
+
 (defn mlog [& messages]
   (.apply (.-log js/console) js/console (clj->js messages)))
 
@@ -66,7 +69,7 @@
                        :params params
                        :headers (merge {:Accept "application/json"}
                                        (when (re-find #"^/" url)
-                                         {:X-CSRFToken (aget js/window "CSRFToken")}))
+                                         {:X-CSRFToken (csrf-token)}))
                        :handler #(put! channel [message :success {:resp %
                                                                   :context context}])
                        :error-handler #(put! channel [message :failed {:resp %

@@ -12,12 +12,16 @@
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
             [frontend.controllers.post-api :as api-pcon]
+            [frontend.controllers.ws :as ws-con]
+            [frontend.controllers.post-ws :as ws-pcon]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
+            [frontend.pusher :as pusher]
             [frontend.utils :as utils :refer [mlog third]]
             [secretary.core :as sec])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+                   [frontend.utils :refer [inspect]])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (enable-console-print!)
@@ -48,6 +52,9 @@
 (def navigation-ch
   (chan))
 
+(def ws-ch
+  (chan))
+
 (def app-state
   (atom (assoc (state/initial-state)
           :current-user (-> js/window
@@ -61,6 +68,7 @@
                   :api       api-ch
                   :errors    error-ch
                   :nav       navigation-ch
+                  :ws        ws-ch
                   :mouse-move {:ch mouse-move-ch
                                :mult (async/mult mouse-move-ch)}
                   :mouse-down {:ch mouse-down-ch
@@ -80,7 +88,9 @@
         history-imp (doto (goog.history.Html5History.)
                       (.setUseFragment false)
                       (.setPathPrefix history-path))
-        dom-helper (goog.dom.DomHelper.)]
+        dom-helper (goog.dom.DomHelper.)
+        pusher-imp (pusher/new-pusher-instance)]
+    ;; XXX: Don't store this in state, it's not serializeable
     (swap! state assoc :history-imp history-imp)
     (js/console.log "history-imp " history-imp)
     (print "Target-name: " target-name)
@@ -139,13 +149,29 @@
                                (api-pcon/post-api-event! container (first v) (second v) (utils/third v) previous-state @state))
                              (catch js/Error e
                                (.error js/console e))))
+           (:ws comms) ([v]
+                           (when true (:log-channels? utils/initial-query-map)
+                                 (mlog "websocket Verbose: " (first v) (second v) (drop 2 v)))
+                           (try
+                             (let [previous-state @state]
+                               ;; XXX: should these take the container like the rest of the controllers?
+                               ;(swap! state (partial api-con/api-event pusher-imp (first v) (second v) (utils/third v)))
+                               (ws-pcon/post-ws-event! pusher-imp (first v) (second v) (utils/third v) previous-state @state))
+                             (catch js/Error e
+                               (.error js/console e))))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))
 
+(defn subscribe-to-user-channel [user ws-ch]
+  (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
+                           :messages [:refresh]}]))
+
 (defn setup! []
   (main app-state (sel1 :body))
   ;; XXX direct dispatching is probably the wrong approach
+  (when-let [user (inspect (:current-user @app-state))]
+    (subscribe-to-user-channel user (inspect (get-in @app-state [:comms :ws]))))
   (sec/dispatch! (.getPath (goog.Uri. js/document.location.href))))
 
 ;; Wait for the page to finish loading before we kick off the setup
