@@ -1,0 +1,177 @@
+.shopify-story {
+	.blue-wrapper {
+		position: relative;
+		.flexy(center, center, column);
+		background: @circleBlue;
+		background-image: linear-gradient(to bottom, @circleBlueDark 33%, @circleBlue 100%);
+		color: @white;
+		padding: 20px 0px;
+		height: 80vh;
+		.center-text;
+		h1 {
+			font-size: 52px;
+		}
+		h4 {
+			position: absolute;
+			bottom: 20px;
+			i {
+				margin-top: 20px;
+			}
+		}
+		.logo-container {
+			.displayFlex;
+			.justify-content(center);
+			.align-items(center);
+			img {
+				padding: 30px 50px;
+			}
+		}
+		h4 {
+			font-style: italic;
+		}
+	}
+	.section {
+		padding: 100px 0px;
+		h2 {
+			font-size: 60px;
+			line-height: 59px;
+			margin: 50px 0;
+		}
+	}
+	.screenshot {
+		margin: 12px 0;
+	}
+	blockquote {
+		color: @black;
+		background: #f9f9f9;
+		border-left: 10px solid #ccc;
+		margin: 1.5em 10px;
+		padding: 0.5em 10px;
+		quotes: "\201C""\201D""\2018""\2019";
+		p {
+			display: inline;
+			font-weight: bold;
+			font-size: 1.7em;
+			&:before {
+			color: #ccc;
+			content: open-quote;
+			font-size: 2em;
+			line-height: 0.1em;
+			margin-right: 0.25em;
+			vertical-align: -0.4em;
+		}
+			&:after {
+			color: #ccc;
+			content: close-quote;
+			font-size: 2em;
+			line-height: 0.1em;
+			margin-right: 0.25em;
+			vertical-align: -0.4em;
+		}
+		}
+		.author {
+			.flexy(center, flex-end, row);
+			img {
+				width: 100px;
+				border-radius: 50px;
+			}
+			.name {
+				margin-left: 20px;
+				font-size: 1.5em;
+				font-style: italic;
+			}
+		}
+	}
+
+
+	.background {
+		.flexy(center, center, column);
+		.table-container {
+			table {
+				color: @circleBlueDark;
+				padding: 20px 40px;
+				border: 1px solid @gray;
+				border-collapse: initial;
+				border-radius: 6px;
+				margin-bottom: 30px;
+				h3 {
+					line-height: 30px;
+					font-size: 30px;
+				}
+				td:nth-child(2) {
+					.center-text;
+				}
+				td {
+					padding: 0 12px;
+				}
+				tr {
+					height: 50px;
+					font-size: 24px;
+				}
+			}
+		}
+		.summary-wrap {
+			.flexy(top, space-around, row);
+			p {
+				width: 300px;
+				margin-right: 14px;
+			}
+		}
+	}
+	.analysis {
+		background: @grayLightest;
+		.item-container {
+			padding: 40px 10px;
+			.flexy(top, space-between, row);
+			.item {
+				width: 30%;
+				.center-text;
+				img {
+					margin-bottom: 18px;
+				}
+			}
+		}
+	}
+	.results {
+		background: @circleBlue;
+		color: @white;
+	}
+	.cta-contianer {
+		.flexy(center, center, row);
+		>div {
+			width: 250px;
+		}
+		.btn {
+			.center;
+			width: 200px;
+			height: 50px;
+			line-height: 50px;
+		}
+		.seperator {
+			.flexy(center, center, column);
+			.line {
+				.flexy(center, center, column);
+				width: 2px;
+				height: 150px;
+				background: @black;
+				div {
+					padding: 10px;
+					background: white;
+					font-size: 26px;
+				}
+			}
+			
+		}
+		form {
+			button {
+				.center;
+				float: none;
+				background: @circleBlue;
+				&:hover {
+					background: @circleBlueDark;
+				}
+				color: @white;
+			}
+		}
+	}
+}
