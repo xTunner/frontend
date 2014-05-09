@@ -33,6 +33,7 @@
       (utils/ajax :get builds-url :recent-builds api-ch)))
   (set-page-title!))
 
+;; XXX: add unsubscribe when you leave the build page
 (defmethod post-navigated-to! :build-inspector
   [target to [project-name build-num] previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
