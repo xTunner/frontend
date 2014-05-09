@@ -4,7 +4,8 @@
             [frontend.controllers.api :as api]
             [frontend.utils :as utils :refer [mlog]]
             [frontend.models.build :as build-model]
-            [frontend.pusher :as pusher]))
+            [frontend.pusher :as pusher])
+  (:require-macros [frontend.utils :refer [inspect]]))
 
 (defmulti ws-event
   (fn [pusher-imp message args state] message))
@@ -22,3 +23,18 @@
         (mlog "Ignoring event for old build channel: " channel-name)
         state)
       (update-in state [:current-build] merge (js->clj data :keywordize-keys true)))))
+
+(defmethod ws-event :build/new-action
+  [pusher-imp message {:keys [data channel-name]} state]
+  (let [build (:current-build state)]
+    (if-not (= (pusher/build-channel build) channel-name)
+      (do
+        (mlog "Ignoring event for old build channel: " channel-name)
+        state)
+      (let [{step-index :step action-index :index action-log :log} (js->clj data :keywordize-keys true)]
+        (-> state
+            (update-in [:current-build] build-model/fill-steps step-index)
+            (update-in [:current-build :steps step-index] (fnil identity {:name (:name action-log)
+                                                                          :actions []}))
+            (update-in [:current-build] build-model/fill-actions step-index action-index action-log)
+            (assoc-in [:current-build :steps step-index :actions action-index] action-log))))))

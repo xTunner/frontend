@@ -141,8 +141,36 @@
 (defn display-build-invite [build]
   false)
 
+(defn fill-steps
+  "Steps can arrive out of order, but we need to maintain the indices in the :steps
+  array so that we can find the step on updates."
+  [build step-index]
+  (let [step-count (count (:steps build))]
+    (update-in build [:steps]
+               (fnil (comp vec concat) [])
+               (take (- step-index step-count)
+                     (repeat {:filler-step true})))))
+
+(defn fill-actions
+  "Actions can arrive out of order, but we need to maintain the indices in the
+  array so that we can find the action on updates. Assumes that step-index exists."
+  [build step-index action-index action-log]
+  (let [action-count (count (get-in build [:steps step-index :actions]))]
+    (update-in build [:steps step-index :actions]
+               (fnil (comp vec concat) [])
+               (map (fn [i] (-> action-log
+                                (select-keys [:name :type :parallel :command :bash-command :step :source])
+                                (assoc :index i :status "running")))
+                    (range (- action-index action-count))))))
+
+(defn filler-step?
+  "Steps can arrive out of order, but we need to maintain the indices in the :steps
+  array so that we can find the step on updates."
+  [step]
+  (:filler-step step))
+
 (defn containers [build]
-  (let [steps (:steps build)
+  (let [steps (remove filler-step? (:steps build))
         parallel (:parallel build)
         actions (reduce (fn [groups step]
                           (map (fn [group action]
