@@ -16,9 +16,10 @@
 
 ;; XXX: is this the best place to handle subscriptions?
 (defmethod post-ws-event! :subscribe
-  [pusher-imp message {:keys [channel-name messages]} previous-state current-state]
+  [pusher-imp message {:keys [channel-name messages context]} previous-state current-state]
   (let [ws-ch (get-in current-state [:comms :ws])]
-    (pusher/subscribe pusher-imp channel-name messages ws-ch)))
+    (mlog "subscribing to " channel-name)
+    (pusher/subscribe pusher-imp channel-name ws-ch :messages messages :context context)))
 
 (defmethod post-ws-event! :unsubscribe
   [pusher-imp message channel-name previous-state current-state]

@@ -14,11 +14,12 @@
             [frontend.controllers.post-api :as api-pcon]
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.post-ws :as ws-pcon]
+            [frontend.env :as env]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
             [frontend.pusher :as pusher]
-            [frontend.utils :as utils :refer [mlog third]]
+            [frontend.utils :as utils :refer [mlog merror third]]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect]])
@@ -124,13 +125,14 @@
            (:controls comms) ([v]
                                 (when true (:log-channels? utils/initial-query-map)
                                       (mlog "Controls Verbose: " v))
-                                ;; XXX: replace these alerts with something else
                                 (try
                                   (let [previous-state @state]
                                     (swap! state (partial controls-con/control-event container (first v) (second v)))
                                     (controls-pcon/post-control-event! container (first v) (second v) previous-state @state))
                                   (catch js/Error e
-                                    (.error js/console e))))
+                                    (merror e)
+                                    (when (:rethrow-errors? utils/initial-query-map)
+                                      (throw e)))))
            (:nav comms) ([v]
                            (when true (:log-channels? utils/initial-query-map)
                                  (mlog "Navigation Verbose: " v))
@@ -139,7 +141,9 @@
                                (swap! state (partial nav-con/navigated-to container (first v) (second v)))
                                (nav-pcon/post-navigated-to! container (first v) (second v) previous-state @state))
                              (catch js/Error e
-                               (.error js/console e))))
+                               (merror e)
+                               (when (:rethrow-errors? utils/initial-query-map)
+                                 (throw e)))))
            (:api comms) ([v]
                            (when true (:log-channels? utils/initial-query-map)
                                  (mlog "API Verbose: " (first v) (second v) (drop 2 v)))
@@ -148,17 +152,21 @@
                                (swap! state (partial api-con/api-event container (first v) (second v) (utils/third v)))
                                (api-pcon/post-api-event! container (first v) (second v) (utils/third v) previous-state @state))
                              (catch js/Error e
-                               (.error js/console e))))
+                               (merror e)
+                               (when (:rethrow-errors? utils/initial-query-map)
+                                 (throw e)))))
            (:ws comms) ([v]
                            (when true (:log-channels? utils/initial-query-map)
-                                 (mlog "websocket Verbose: " (first v) (second v) (drop 2 v)))
+                                 (mlog "websocket Verbose: " (pr-str (first v)) (second v) (drop 2 v)))
                            (try
                              (let [previous-state @state]
                                ;; XXX: should these take the container like the rest of the controllers?
-                               ;(swap! state (partial api-con/api-event pusher-imp (first v) (second v) (utils/third v)))
-                               (ws-pcon/post-ws-event! pusher-imp (first v) (second v) (utils/third v) previous-state @state))
+                               (swap! state (partial ws-con/ws-event pusher-imp (first v) (second v)))
+                               (ws-pcon/post-ws-event! pusher-imp (first v) (second v) previous-state @state))
                              (catch js/Error e
-                               (.error js/console e))))
+                               (merror e)
+                               (when (:rethrow-errors? utils/initial-query-map)
+                                 (throw e)))))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))

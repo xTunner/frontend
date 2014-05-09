@@ -21,9 +21,9 @@
   (assoc state :navigation-point :dashboard :current-builds nil))
 
 (defmethod navigated-to :build-inspector
-  [target to [project-id build-num] state]
+  [target to [project-name build-num] state]
   (assoc state
-    :inspected-project {:project project-id
+    :inspected-project {:project project-name
                         :build-num build-num}
     :navigation-point :build
     :current-build nil))

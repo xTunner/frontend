@@ -1,13 +1,14 @@
 (ns frontend.pusher
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             ;; XXX remove browser repl in prod
-            [clojure.browser.repl :as repl]
+            [clojure.string :as string]
             [dommy.core :as dommy]
             [goog.dom.DomHelper]
             [goog.events]
             [om.core :as om :include-macros true]
             [frontend.env :as env]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.vcs-url :as vcs-url]
             [secretary.core :as sec])
 
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -20,12 +21,22 @@
                               :or {key pusher-key}}]
   (aset (aget js/window "Pusher") "channel_auth_endpoint" "/auth/pusher")
   (js/window.Pusher. key (clj->js {:encrypted true
-                                   :auth {:params {:CSRFToken (utils/inspect (utils/csrf-token))}}
+                                   :auth {:params {:CSRFToken (utils/csrf-token)}}
                                    ;; this doesn't seem to work (outdated client library?)
                                    :authEndpoint "/auth/pusher"})))
 
 (defn user-channel [user]
   (str "private-" (:login user)))
+
+(defn build-channel [build]
+  (string/replace (str "private-" (vcs-url/project-name (:vcs_url build)) "@" (:build_num build))
+                  "/" "@"))
+
+(def build-messages [:build/new-action
+                     :build/update-action
+                     :build/append-action
+                     :build/update
+                     :build/add-messages])
 
 ;; TODO: use the same event names on the backend as we do on the frontend
 (def event-translations
@@ -43,11 +54,13 @@
   a channel-name, a list of messages to subscribe to and a websocket channel.
   Will put data from the pusher events onto the websocket
   channel with the message. Returns the channel."
-  [pusher-instance channel-name messages ws-ch]
-  (let [channel (utils/inspect (.subscribe pusher-instance (utils/inspect channel-name)))]
+  [pusher-instance channel-name ws-ch & {:keys [messages context]}]
+  (let [channel (.subscribe pusher-instance (utils/inspect channel-name))]
     (doseq [message messages
             :let [pusher-event (get event-translations message)]]
-      (.bind channel pusher-event #(put! ws-ch [message %])))
+      (.bind channel pusher-event #(put! ws-ch [message {:data %
+                                                         :channel-name channel-name
+                                                         :context context}])))
     (.bind channel "pusher:subscription_error"
            #(put! ws-ch [:subscription-error {:channel-name channel-name
                                               :status %}]))

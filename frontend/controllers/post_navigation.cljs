@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [clojure.string :as string]
             [frontend.utils :as utils :refer [mlog merror]]
+            [frontend.pusher :as pusher]
             [goog.string :as gstring]
             [goog.string.format]))
 
@@ -33,13 +34,17 @@
   (set-page-title!))
 
 (defmethod post-navigated-to! :build-inspector
-  [target to [project-id build-num] previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [target to [project-name build-num] previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])
+        ws-ch (get-in current-state [:comms :ws])]
     (utils/ajax :get
-                (gstring/format "/api/v1/project/%s/%s" project-id build-num)
+                (gstring/format "/api/v1/project/%s/%s" project-name build-num)
                 :build
-                api-ch))
-  (set-page-title! (str project-id " #" build-num)))
+                api-ch)
+    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel {:vcs_url (str "https://github.com/" project-name)
+                                                                  :build_num build-num})
+                             :messages pusher/build-messages}]))
+  (set-page-title! (str project-name " #" build-num)))
 
 (defmethod post-navigated-to! :add-projects
   [target to args previous-state current-state]

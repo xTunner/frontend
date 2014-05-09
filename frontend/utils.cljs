@@ -15,10 +15,10 @@
   (.apply (.-log js/console) js/console (clj->js messages)))
 
 (defn mwarn [& messages]
-  (.apply (.-warn js/console) js/console messages))
+  (.apply (.-warn js/console) js/console (clj->js messages)))
 
 (defn merror [& messages]
-  (.apply (.-error js/console) js/console messages))
+  (.apply (.-error js/console) js/console (clj->js messages)))
 
 (def parsed-uri
   (goog.Uri. (-> (.-location js/window) (.-href))))
@@ -26,7 +26,8 @@
 (def initial-query-map
   {:log-channels?    (or (.getParameterValue parsed-uri "log-channels") false)
    :logging-enabled? (= (.getParameterValue parsed-uri "logging-enabled") "true")
-   :restore-state?   (= (.getParameterValue parsed-uri "restore-state") "true")})
+   :restore-state?   (= (.getParameterValue parsed-uri "restore-state") "true")
+   :rethrow-errors? (= (.getParameterValue parsed-uri "rethrow-errors") "true")})
 
 (defn uuid
   "returns a type 4 random UUID: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
