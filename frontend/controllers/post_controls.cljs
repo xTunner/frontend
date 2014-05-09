@@ -104,8 +104,8 @@
                container-id)
     (let [parent (sel1 target "#container_parent")
           container (sel1 target (str "#container_" container-id))
-          new-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto container parent))]
-      (goog.style.scrollIntoContainerView container parent))))
+          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
+      (aset parent "scrollLeft" new-scroll-left))))
 
 (defn container-id [container]
   (int (last (re-find #"container_(\d+)" (.-id container)))))
