@@ -1,4 +1,5 @@
 (ns frontend.controllers.ws
+  "Websocket controllers"
   (:require [cljs.reader :as reader]
             [clojure.string :as string]
             [frontend.controllers.api :as api]
@@ -6,6 +7,15 @@
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher])
   (:require-macros [frontend.utils :refer [inspect]]))
+
+;; To subscribe to a channel, put a subscribe message in the websocket channel
+;; with the channel name and the messages you want to listen to. That will be
+;; handled in the post-ws controller.
+;; Example: (put! ws-ch [:subscribe {:channel-name "my-channel" :messages [:my-message]}])
+;;
+;; Unsubscribe by putting an unsubscribe message in the channel with the channel name
+;; Exampel: (put! ws-ch [:unsubscribe "my-channel"])
+;; the api-post-controller can do any other actions
 
 (defmulti ws-event
   (fn [pusher-imp message args state] message))

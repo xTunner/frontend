@@ -53,7 +53,8 @@
 (def navigation-ch
   (chan))
 
-(def ws-ch
+(def ^{:doc "websocket channel"}
+  ws-ch
   (chan))
 
 (def app-state
