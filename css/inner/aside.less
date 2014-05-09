@@ -1,9 +1,7 @@
 &#app {
-  .displayFlex();
-  .flex-direction(row);
+  .flexy(row);
   .aside-left-nav {
-    .displayFlex();
-    .flex-direction(column);
+    .flexy(column);
     width: @aside_nav_width;
     height: 100vh;
     background: @blueDarkest;
@@ -13,8 +11,7 @@
     }
   }
   .aside-item {
-    .displayFlex();
-    .align-items(center);
+    .flexy(center);
     height: @block_size;
     &.logo {
       .justify-content(center);
