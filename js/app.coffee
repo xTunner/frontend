@@ -25,6 +25,7 @@ display = (template, args, subpage, hash) ->
   main =
     $("<main></main>")
       .addClass('app-main')
+      .attr('tabindex', '1') # Auto-focus content to enable scrolling immediately
       .append(header)
       .append(content)
       .append(footer)
