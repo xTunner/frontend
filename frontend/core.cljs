@@ -180,6 +180,12 @@
   ;; XXX direct dispatching is probably the wrong approach
   (when-let [user (inspect (:current-user @app-state))]
     (subscribe-to-user-channel user (inspect (get-in @app-state [:comms :ws]))))
+  (when (env/development?)
+    (when-let [repl-url (aget js/window "browser_connected_repl_url")]
+      (try
+        (repl/connect repl-url)
+        (catch js/Error e
+          (merror e)))))
   (sec/dispatch! (.getPath (goog.Uri. js/document.location.href))))
 
 ;; Wait for the page to finish loading before we kick off the setup
