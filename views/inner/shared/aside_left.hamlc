@@ -1,6 +1,6 @@
 %nav.aside-left-nav{data-bind: "with: current_user"}
   .aside-item.logo
-    != HAML.icon({name: "logo"})
+    != HAML.ico(n:'logo')
   %a.aside-item{href: "/"}
     %i.fa.fa-dashboard
     %span Dashboard
@@ -23,3 +23,5 @@
     %a.aside-item{href: "/logout"}
       %i.fa.fa-sign-out
       %span Logout
+
+
