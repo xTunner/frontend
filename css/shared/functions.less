@@ -103,6 +103,21 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+.icon_style(@color) {
+  svg {
+    path {
+      fill: @color;
+    }
+  }
+}
+.icon_style(@color, @size) {
+  svg {
+    font-size: @size;
+    path {
+      fill: @color;
+    }
+  }
+}
 
 // Outline
 // same effect as "border" w/o increasing object size
