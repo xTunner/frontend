@@ -92,11 +92,11 @@
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/ajax :post
-              (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
-              :followed-repo
-              api-ch
-              :context repo)))
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
+                :followed-repo
+                api-ch
+                :context repo)))
 
 (defmethod post-control-event! :container-selected
   [target message container-id previous-state current-state]
