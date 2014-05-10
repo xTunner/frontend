@@ -52,15 +52,14 @@
   .aside-recent-history {
     @opening_duration: 200ms;
     .flexy(column);
-    // height: 0;
     background: linear-gradient(to bottom, darken(@blueDarkest, 1), darken(@blueDarkest, 1)) no-repeat left;
     background-size: 50% 100%;
     margin-left: -@aside_nav_width;
     transition: @opening_duration;
     overflow: hidden;
+    height: 100%;
     &.opened {
       .shadow_deboss(@blueDarkest);
-      height: 100%;
       margin-left: 0;
       background-size: 100% 100%;
       + .aside-slideup {
