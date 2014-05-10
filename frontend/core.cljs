@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             ;; XXX remove browser repl in prod
             [clojure.browser.repl :as repl]
+            [clojure.string :as string]
             [dommy.core :as dommy]
             [goog.dom.DomHelper]
             [frontend.components.app :as app]
@@ -183,14 +184,18 @@
       (catch js/Error e
         (merror e)))))
 
+(defn dispatch-to-current-location! []
+  (let [uri (goog.Uri. js/document.location.href)]
+    (sec/dispatch! (str (.getPath uri) (when-not (string/blank? (.getFragment uri))
+                                         (str "#" (.getFragment uri)))))))
+
 (defn setup! []
   (main app-state (sel1 :body))
-  (when-let [user (inspect (:current-user @app-state))]
-    (subscribe-to-user-channel user (inspect (get-in @app-state [:comms :ws]))))
+  (dispatch-to-current-location!)
+  (when-let [user (:current-user @app-state)]
+    (subscribe-to-user-channel user (get-in @app-state [:comms :ws])))
   (when (env/development?)
-    (setup-browser-repl))
-  ;; XXX direct dispatching is probably the wrong approach
-  (sec/dispatch! (.getPath (goog.Uri. js/document.location.href))))
+    (setup-browser-repl)))
 
 ;; Wait for the page to finish loading before we kick off the setup
 ;; process
