@@ -57,3 +57,44 @@
     (utils/ajax :get "/api/v1/user/organizations" :organizations api-ch)
     (utils/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
   (set-page-title! "Add projects"))
+
+;; XXX: find a better place for all of the ajax functions, maybe a separate api
+;;      namespace that knows about all of the api routes?
+(defmethod post-navigated-to! :project-settings
+  [history-imp to {:keys [project-name subpage]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (if (:current-project current-state)
+      (mlog "project settings already loaded for" project-name)
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/settings" project-name)
+                  :project-settings
+                  api-ch
+                  :context {:project-name project-name}))
+
+    (cond (and (= subpage :parallel-builds)
+               (not (get-in current-state [:current-project :plan])))
+          (utils/ajax :get
+                      (gstring/format "/api/v1/project/%s/plan" project-name)
+                      :project-plan
+                      api-ch
+                      :context {:project-name project-name})
+
+          (and (= subpage :api)
+               (not (get-in current-state [:current-project :tokens])))
+          (utils/ajax :get
+                      (gstring/format "/api/v1/project/%s/token" project-name)
+                      :project-token
+                      api-ch
+                      :context {:project-name project-name})
+
+          (and (= subpage :env-vars)
+               (not (get-in current-state [:current-project :env-vars])))
+          (utils/ajax :get
+                      (gstring/format "/api/v1/project/%s/envvar" project-name)
+                      :project-envvar
+                      api-ch
+                      :context {:project-name project-name})
+          :else nil))
+
+  ;; XXX: check for XSS
+  (set-page-title! (str "Edit settings - " project-name)))

@@ -31,9 +31,10 @@
 (defn open-to-add-projects! [nav-ch]
   (put! nav-ch [:add-projects]))
 
-(defn open-to-project-settings! [nav-ch org-id repo-id]
+(defn open-to-project-settings! [nav-ch org-id repo-id subpage]
   (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:project-settings project-name])))
+    (put! nav-ch [:project-settings {:project-name project-name
+                                     :subpage subpage}])))
 
 (defn define-routes! [app history-imp]
   (let [nav-ch (get-in @app [:comms :nav])]
@@ -48,7 +49,10 @@
       (open-build-inspector! app nav-ch org-id repo-id build-num))
     (defroute v1-project-settings "/gh/:org-id/:repo-id/edit"
       [org-id repo-id]
-      (open-to-project-settings! nav-ch org-id repo-id))
+      (open-to-project-settings! nav-ch org-id repo-id nil))
+    (defroute v1-project-settings-subpage "/gh/:org-id/:repo-id/edit#:subpage"
+      [org-id repo-id subpage]
+      (open-to-project-settings! nav-ch org-id repo-id (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
     (defroute v1-root "/"

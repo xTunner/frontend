@@ -127,3 +127,27 @@
   (let [action-log (:resp args)
         {:keys [index step]} (:context args)]
     (assoc-in state [:current-build :steps step :actions index :output] action-log)))
+
+(defmethod api-event [:project-settings :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (update-in state [:current-project] merge resp)))
+
+(defmethod api-event [:project-plan :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (update-in state [:current-project] merge {:plan resp})))
+
+(defmethod api-event [:project-token :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (update-in state [:current-project] merge {:tokens resp})))
+
+(defmethod api-event [:project-envvar :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (update-in state [:current-project] merge {:env-vars resp})))
