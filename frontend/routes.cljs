@@ -31,6 +31,10 @@
 (defn open-to-add-projects! [nav-ch]
   (put! nav-ch [:add-projects]))
 
+(defn open-to-project-settings! [nav-ch org-id repo-id]
+  (let [project-name (str org-id "/" repo-id)]
+    (put! nav-ch [:project-settings project-name])))
+
 (defn define-routes! [app history-imp]
   (let [nav-ch (get-in @app [:comms :nav])]
     (defroute v1-org-dashboard "/gh/:org" {:as params}
@@ -42,6 +46,9 @@
     (defroute v1-inspect-build #"/gh/[^/]+/[^/]+/\d+"
       [[org-id repo-id build-num]]
       (open-build-inspector! app nav-ch org-id repo-id build-num))
+    (defroute v1-project-settings "/gh/:org-id/:repo-id/edit"
+      [org-id repo-id]
+      (open-to-project-settings! nav-ch org-id repo-id))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
     (defroute v1-root "/"
