@@ -176,17 +176,22 @@
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
                            :messages [:refresh]}]))
 
+(defn setup-browser-repl []
+  (when-let [repl-url (aget js/window "browser_connected_repl_url")]
+    (try
+      (repl/connect repl-url)
+      ;; the repl tries to take over *out*
+      (enable-console-print!)
+      (catch js/Error e
+        (merror e)))))
+
 (defn setup! []
   (main app-state (sel1 :body))
-  ;; XXX direct dispatching is probably the wrong approach
   (when-let [user (inspect (:current-user @app-state))]
     (subscribe-to-user-channel user (inspect (get-in @app-state [:comms :ws]))))
   (when (env/development?)
-    (when-let [repl-url (aget js/window "browser_connected_repl_url")]
-      (try
-        (repl/connect repl-url)
-        (catch js/Error e
-          (merror e)))))
+    (setup-browser-repl))
+  ;; XXX direct dispatching is probably the wrong approach
   (sec/dispatch! (.getPath (goog.Uri. js/document.location.href))))
 
 ;; Wait for the page to finish loading before we kick off the setup
