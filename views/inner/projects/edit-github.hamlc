@@ -14,7 +14,7 @@
           %a.btn.ghu-authorize{data-bind: "tooltip: { title: 'We need additional authorization to add a new SSH key to your GitHub account',
                                         animation: false }",
                  href: CI.github.authUrl(["admin:public_key", "user", "repo"])}
-            %span Authorize w/ Github
+            %span Authorize w/ GitHub
             %i.fa.fa-github
       <!-- /ko -->
 
