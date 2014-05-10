@@ -92,8 +92,6 @@
                       (.setPathPrefix history-path))
         dom-helper (goog.dom.DomHelper.)
         pusher-imp (pusher/new-pusher-instance)]
-    ;; XXX: Don't store this in state, it's not serializeable
-    (swap! state assoc :history-imp history-imp)
     (js/console.log "history-imp " history-imp)
     (print "Target-name: " target-name)
     (print "Container: " container)
@@ -139,8 +137,8 @@
                                  (mlog "Navigation Verbose: " v))
                            (try
                              (let [previous-state @state]
-                               (swap! state (partial nav-con/navigated-to container (first v) (second v)))
-                               (nav-pcon/post-navigated-to! container (first v) (second v) previous-state @state))
+                               (swap! state (partial nav-con/navigated-to history-imp (first v) (second v)))
+                               (nav-pcon/post-navigated-to! history-imp (first v) (second v) previous-state @state))
                              (catch js/Error e
                                (merror e)
                                (when (:rethrow-errors? utils/initial-query-map)

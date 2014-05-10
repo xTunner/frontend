@@ -8,20 +8,20 @@
   :navigation-point)
 
 (defmulti navigated-to
-  (fn [target to args state] to))
+  (fn [history-imp to args state] to))
 
 (defmethod navigated-to :default
-  [target to args state]
+  [history-imp to args state]
   (mlog "Unknown nav event: " (pr-str to))
   state)
 
 (defmethod navigated-to :dashboard
-  [target to args state]
+  [history-imp to args state]
   (mlog "Navigated from " (from state) " to " to)
   (assoc state :navigation-point :dashboard :current-builds nil))
 
 (defmethod navigated-to :build-inspector
-  [target to [project-name build-num] state]
+  [history-imp to [project-name build-num] state]
   (assoc state
     :inspected-project {:project project-name
                         :build-num build-num}
@@ -29,5 +29,5 @@
     :current-build nil))
 
 (defmethod navigated-to :add-projects
-  [target to [project-id build-num] state]
+  [history-imp to [project-id build-num] state]
   (assoc state :navigation-point :add-projects))

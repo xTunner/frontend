@@ -40,11 +40,13 @@
   [target message status args previous-state current-state]
   (js/_gaq.push ["_trackEvent" "Repos" "Add"])
   (if-let [first-build (get-in args [:resp :first_build])]
-    (.setToken (:history-imp current-state) (-> first-build
-                                                :build_url
-                                                (goog.Uri.)
-                                                (.getPath)
-                                                (subs 1)))
+    (let [nav-ch (get-in current-state [:comms :nav])
+          build-path (-> first-build
+                         :build_url
+                         (goog.Uri.)
+                         (.getPath)
+                         (subs 1))]
+      (put! nav-ch [:navigate! build-path]))
     (when (repo-model/should-do-first-follower-build? (:context args))
       (utils/ajax :post
                   (gstring/format "/api/v1/project/" (vcs-url/project-name (:vcs_url (:context args))))
@@ -53,9 +55,6 @@
 
 (defmethod post-api-event! [:start-build :success]
   [target message status args previous-state current-state]
-  (.setToken (:history-imp current-state) (-> args
-                                              :resp
-                                              :build_url
-                                              (goog.Uri.)
-                                              (.getPath)
-                                              (subs 1))))
+  (let [nav-ch (get-in current-state [:comms :nav])
+        build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
+    (put! nav-ch [:navigate! build-url])))
