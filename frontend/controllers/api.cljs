@@ -158,3 +158,21 @@
   (if-not (= (:project-id context) (project-model/id (:current-project state)))
     state
     (assoc-in state [:current-project :parallelism-edited] true)))
+
+(defmethod api-event [:create-env-var :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (-> state
+        (update-in [:current-project :env-vars] (fnil conj []) resp)
+        (assoc-in [:current-project :new-env-var-name] "")
+        (assoc-in [:current-project :new-env-var-value] ""))))
+
+(defmethod api-event [:delete-env-var :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (-> state
+        (update-in [:current-project :env-vars] (fn [vars]
+                                                  (remove #(= (:env-var-name context) (:name %))
+                                                          vars))))))

@@ -208,7 +208,55 @@
            (mini-parallelism-faq project settings controls-ch)))])
 
 (defn env-vars [project settings controls-ch]
-  [:div "env vars"])
+  (let [new-env-var-name (:new-env-var-name project)
+        new-env-var-value (:new-env-var-value project)
+        project-id (project-model/id project)]
+    [:div.environment-variables
+     [:h2 "Environment variables for "  (vcs-url/project-name (:vcs_url project))]
+     [:div.environment-variables-inner
+      [:p
+       "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+       "The values can be any bash expression and can reference other variables, such as setting "
+       [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
+       "To disable string substitution you need to escape the " [:code "$"]
+       " characters by prefixing them with " [:code "\\"] "."
+       "For example a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
+       " you would enter " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
+      [:form {:on-submit #(do (put! controls-ch [:created-env-var {:project-id project-id
+                                                                   :env-var {:name new-env-var-name
+                                                                             :value new-env-var-value}}])
+                              false)}
+       [:input#env-var-name
+        {:required true, :type "text", :value new-env-var-name
+         :on-change #(put! controls-ch [:edited-new-env-var-name {:project-id project-id
+                                                                  :value (.. % -target -value)}])}]
+       [:label {:placeholder "Name"}]
+       [:input#env-var-value
+        {:required true, :type "text", :value new-env-var-value
+         :on-change #(put! controls-ch [:edited-new-env-var-value {:project-id project-id
+                                                                   :value (.. % -target -value)}])}]
+       [:label {:placeholder "Value"}]
+       [:input {:data-failed-text "Failed",
+                :data-success-text "Added",
+                :data-loading-text "Adding...",
+                :value "Save variables",
+                :type "submit"}]]
+      (when-let [env-vars (seq (:env-vars project))]
+        [:table
+         [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
+         [:tbody
+          (for [{:keys [name value]} env-vars]
+            [:tr
+             [:td name]
+             [:td value]
+             [:td
+              [:a
+               {:title "Remove this variable?",
+                :on-click #(put! controls-ch [:deleted-env-var {:project-id project-id
+                                                                :env-var-name name
+                                                                :env-var-value value}])}
+               [:i.fa.fa-times-circle]
+               [:span "Remove"]]]])]])]]))
 
 (defn dependencies [project settings controls-ch]
   [:div "deps"])

@@ -159,10 +159,33 @@
               (get-in current-state [:current-project :parallel]))
     (let [project-name (vcs-url/project-name project-id)
           api-ch (get-in current-state [:comms :api])]
-      ;; TODO: edit project settings api call should responde with updated project settings
+      ;; TODO: edit project settings api call should respond with updated project settings
       (utils/ajax :put
                   (gstring/format "/api/v1/project/%s/settings" project-name)
                   :update-project-parallelism
                   api-ch
                   :params {:parallel parallelism}
                   :context {:project-id project-id}))))
+
+(defmethod post-control-event! :created-env-var
+  [target message {:keys [project-id env-var]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/envvar" project-name)
+                :create-env-var
+                api-ch
+                :params env-var
+                :context {:project-id project-id})))
+
+(defmethod post-control-event! :deleted-env-var
+  [target message {:keys [project-id env-var-name]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :delete
+                (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
+                :delete-env-var
+                api-ch
+                :params env-var
+                :context {:project-id project-id
+                          :env-var-name env-var-name})))

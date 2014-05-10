@@ -66,3 +66,11 @@
 (defmethod control-event :selected-project-parallelism
   [target message {:keys [project-id parallelism]} state]
   (assoc-in state [:current-project :parallel] parallelism))
+
+(defmethod control-event :edited-new-env-var-name
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :new-env-var-name] value))
+
+(defmethod control-event :edited-new-env-var-value
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :new-env-var-value] value))
