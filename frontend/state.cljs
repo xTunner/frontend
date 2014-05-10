@@ -2,7 +2,7 @@
 
 (defn initial-state []
   {:environment "development"
-   :settings {:projects {}
+   :settings {:projects {} ; hash of project-id to settings
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}

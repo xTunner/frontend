@@ -1,8 +1,10 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [frontend.models.build :as build-model]
+            [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.common :as common]
+            [frontend.routes :as routes]
             [frontend.utils :as utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
@@ -32,7 +34,28 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
-(defn overview [project controls-ch]
+(defn branch-picker [project settings controls-ch]
+  (let [project-id (project-model/id project)
+        default-branch (:default_branch project)
+        settings-branch (get-in settings [:projects project-id :settings-branch] default-branch)]
+    [:form {:on-submit #(do (put! controls-ch [:started-edit-settings-build {:project-id project-id
+                                                                             :branch settings-branch}])
+                            false)}
+     [:input {:name "branch"
+              :required ""
+              :type "text"
+              :value settings-branch
+              ;; XXX typeahead
+              :on-change #(put! controls-ch [:edit-project-settings-branch {:value (.. % -target -value)
+                                                                            :project-id project-id}])}]
+     [:label {:placeholder "Test settings on..."}]
+     [:input
+      {:value "Save & Go!"
+       ;; XXX handle data-loading-text
+       :data-loading-text "Starting..."
+       :type "submit"}]]))
+
+(defn overview [project settings controls-ch]
   [:div.project-settings-block
    [:h2 "How to configure " [:span (vcs-url/project-name (:vcs_url project))]]
    [:ul.overview-options
@@ -53,40 +76,167 @@
       [:a {:href "/docs/configuration"} "circle.yml file"]
       " in your repo. Very powerful."]]]])
 
-(defn parallel-builds [project controls-ch]
-  [:div "parallel-builds"])
+(defn mini-parallelism-faq [project settings controls-ch]
+  [:div.mini-faq
+   [:div.mini-faq-item
+    [:h3 "What are containers?"]
+    [:p
+     "Containers are what we call the virtual machines that your tests run in. Your current plan has "
+     (get-in project [:plan :containers])
+     " containers and supports up to "
+     (plan-model/max-parallelism (:plan project))
+     "x paralellism."]
 
-(defn env-vars [project controls-ch]
+    [:p "With 16 containers you could run:"]
+    [:ul
+     [:li "16 simultaneous builds at 1x parallelism"]
+     [:li "8 simultaneous builds at 2x parallelism"]
+     [:li "4 simultaneous builds at 4x parallelism"]
+     [:li "2 simultaneous builds at 8x parallelism"]
+     [:li "1 build at 16x parallelism"]]]
+   [:div.mini-faq-item
+    [:h3 "What is parallelism?"]
+    [:p
+     "We split your tests into groups, and run each group on different machines in parallel. This allows them run in a fraction of the time, for example:"]
+    [:p]
+    [:ul
+     [:li "a 45 minute build fell to 18 minutes with 3x build speed,"]
+     [:li
+      "a 20 minute build dropped to 11 minutes with 2x build speed."]]
+    [:p
+     "Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory."]
+    [:p
+     "For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can "
+     [:a
+      {:href "/docs/parallel-manual-setup"}
+      "control the parallelism directly"]
+     "."]]
+   [:div.mini-faq-item
+    [:h3 "What do others think?"]
+    [:blockquote
+     [:i
+      "The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service."]]
+    [:ul
+     [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
+     [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]]])
+
+(defn parallel-label-classes [project parallelism]
+  (concat
+   []
+   (when (> parallelism (plan-model/max-selectable-parallelism (:plan project))) ["disabled"])
+   (when (= parallelism (:parallel project)) ["selected"])
+   (when (not= 0 (mod (plan-model/usable-containers (:plan project)) parallelism)) ["bad_choice"])))
+
+(defn parallelism-tile
+  "Determines what we show when they hover over the parallelism option"
+  [project parallelism]
+  (let [plan (:plan project)
+        project-id (project-model/id project)]
+    (list
+     [:div.parallelism-upgrades
+      (if-not (= "trial" (get-in project [:plan :type]))
+        (cond (> parallelism (plan-model/max-parallelism plan))
+              [:div.insufficient-plan
+               "Your plan only allows up to "
+               (plan-model/max-parallelism plan) "x parallelism."
+               [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+                                                           :subpage "plan"})}
+                "Upgrade"]]
+
+              (> parallelism (plan-model/max-selectable-parallelism plan))
+              [:div.insufficient-containers
+               "Not enough containers available."
+               [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+                                                           :subpage "containers"})}
+                "Add More"]])
+
+        (when (> parallelism (plan-model/max-selectable-parallelism plan))
+          [:div.insufficient-trial
+           "Trials only come with " (plan-model/usable-containers plan) " available containers."
+               [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+                                                           :subpage "plan"})}
+                "Add a plan"]]))]
+
+     ;; Tell them to upgrade when they're using more parallelism than their plan allows,
+     ;; but only on the tiles between (allowed parallelism and their current parallelism]
+     (when (and (> (:parallel project) (plan-model/usable-containers plan))
+                (>= (:parallel project) parallelism)
+                (> parallelism (plan-model/usable-containers plan)))
+       [:div.insufficient-minimum
+        "Unsupported. Upgrade or lower parallelism."
+        [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
+                                               parallelism "x parallelism.")}]
+        [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+                                                    :subpage "containers"})}
+         "Upgrade"]]))))
+
+(defn parallelism-picker [project settings controls-ch]
+  [:div.parallelism-picker
+   (if-not (:plan project)
+     [:div.loading-spinner common/spinner]
+     (let [plan (:plan project)
+           project-id (project-model/id project)]
+       (list
+        (when (:parallelism-edited project)
+          [:div.try-out-build
+           (branch-picker project settings controls-ch)])
+        [:form.parallelism-items
+         (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
+                                         (inc 24)))]
+           ;; XXX do we need parallel focus in
+           [:label {:class (parallel-label-classes project parallelism)
+                    :for (str "parallel_input_" parallelism)}
+            parallelism
+            (parallelism-tile project parallelism)
+            [:input {:id (str "parallel_input_" parallelism)
+                     :type "radio"
+                     :name "parallel"
+                     :value parallelism
+                     :on-click #(put! controls-ch [:selected-project-parallelism
+                                                   {:project-id project-id
+                                                    :parallelism parallelism}])
+                     :disabled (> parallelism (plan-model/max-selectable-parallelism plan))
+                     :checked (= parallelism (:parallel project))}]])])))])
+
+(defn parallel-builds [project settings controls-ch]
+  [:div
+   [:h2 (str "Change parallelism for " (vcs-url/project-name (:vcs_url project)))]
+   (if-not (:plan project)
+     [:div.loading-spinner common/spinner]
+     (list (parallelism-picker project settings controls-ch)
+           (mini-parallelism-faq project settings controls-ch)))])
+
+(defn env-vars [project settings controls-ch]
   [:div "env vars"])
 
-(defn dependencies [project controls-ch]
+(defn dependencies [project settings controls-ch]
   [:div "deps"])
 
-(defn tests [project controls-ch]
+(defn tests [project settings controls-ch]
   [:div "tests"])
 
-(defn chatrooms [project controls-ch]
+(defn chatrooms [project settings controls-ch]
   [:div "chatrooms"])
 
-(defn webhooks [project controls-ch]
+(defn webhooks [project settings controls-ch]
   [:div "webhooks"])
 
-(defn ssh-keys [project controls-ch]
+(defn ssh-keys [project settings controls-ch]
   [:div "ssh-keys"])
 
-(defn github-user [project controls-ch]
+(defn github-user [project settings controls-ch]
   [:div "github-user"])
 
-(defn api-tokens [project controls-ch]
+(defn api-tokens [project settings controls-ch]
   [:div "api tokesn"])
 
-(defn artifacts [project controls-ch]
+(defn artifacts [project settings controls-ch]
   [:div "artifacts"])
 
-(defn heroku [project controls-ch]
+(defn heroku [project settings controls-ch]
   [:div "heroku"])
 
-(defn other-deployment [project controls-ch]
+(defn other-deployment [project settings controls-ch]
   [:div "deployment"])
 
 (defn subpage-fn [subpage]
@@ -105,7 +255,7 @@
        subpage
        overview))
 
-(defn follow-sidebar [project controls-ch]
+(defn follow-sidebar [project settings controls-ch]
   (let [project-id (project-model/id project)
         vcs-url (:vcs_url project)]
     [:div.follow-status
@@ -138,15 +288,16 @@
     om/IRender
     (render [_]
       (let [project (:current-project data)
+            settings (:settings data)
             subpage (:project-settings-subpage data)
             controls-ch (get-in opts [:comms :controls])]
         (html
-         (if-not project
+         (if-not (:vcs_url project) ; wait for project-settings to load
            [:div.loading-spinner common/spinner]
            [:div#project-settings
             [:aside sidebar]
             [:div.project-settings-inner
              (common/flashes)
              [:div#subpage
-              ((subpage-fn subpage) project controls-ch)]]
-            (follow-sidebar project controls-ch)]))))))
+              ((subpage-fn subpage) project settings controls-ch)]]
+            (follow-sidebar project settings controls-ch)]))))))
