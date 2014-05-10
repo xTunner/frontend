@@ -26,6 +26,8 @@ CI.inner.User = class User extends CI.inner.Obj
     github_oauth_scopes: []
     repo_filter: ""
 
+    recent_history_visible: false;
+
   constructor: (json) ->
     super json,
       login: ""
@@ -220,3 +222,6 @@ CI.inner.User = class User extends CI.inner.Obj
 
   isPaying: () =>
     @plan?
+
+  toggle_recent_history: () =>
+    @recent_history_visible(!@recent_history_visible())

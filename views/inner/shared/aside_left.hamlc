@@ -13,6 +13,13 @@
   %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank"}
     %i.fa.fa-comments
     %span Chat Support
+  %a.aside-item{href: "#", data-bind: "click: toggle_recent_history"}
+    %i.fa.fa-clock-o
+    %span Recent History
+  .aside-recent-history{data-bind: "css: {opened: recent_history_visible}"}
+    -# %ul
+    -#   - for i in [0..50]
+    -#     %li.test test-branch-name
   .aside-slideup
     %a.aside-item{href: "/account"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
