@@ -19,7 +19,12 @@
                                     (str "#" hash))))
             :createUrl (fn [token path-prefix location]
                          (let [[path hash] (string/split token #"#")]
-                           (str path-prefix path (.-search location) (when hash (str "#" hash)))))}))
+                           (str path-prefix
+                                path
+                                ;; comment out for now, need to figure out how to combine
+                                ;; location search and the search already in the token
+                                ;; (.-search location)
+                                (when hash (str "#" hash)))))}))
 
 (defn setup-dispatcher! [history-imp]
   (events/listen history-imp goog.history.EventType.NAVIGATE
