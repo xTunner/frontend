@@ -17,9 +17,9 @@
     %a.aside-item{href: "/account"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
       %span dannykingme
-    %a.aside-item{href: "/account"}
-      %i.fa.fa-gears
-      %span Settings
+    %a.aside-item{href: "#", data-toggle: "modal", data-target: "#inviteForm"}
+      %i.fa.fa-envelope-o
+      %span Invite Teammate
     %a.aside-item{href: "/logout"}
       %i.fa.fa-sign-out
       %span Logout
