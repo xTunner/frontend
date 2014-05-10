@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [cljs.core.async :refer [put!]]
             [frontend.models.build :as build-model]
+            [frontend.models.project :as project-model]
             [frontend.utils :as utils :refer [mlog mwarn merror]])
   (:require-macros [frontend.utils :refer [inspect]]))
 
@@ -151,3 +152,9 @@
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
     (update-in state [:current-project] merge {:env-vars resp})))
+
+(defmethod api-event [:update-project-parallelism :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (assoc-in state [:current-project :parallelism-edited] true)))

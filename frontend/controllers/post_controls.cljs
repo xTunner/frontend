@@ -152,3 +152,17 @@
                   :action-log
                   api-ch
                   :context args))))
+
+(defmethod post-control-event! :selected-project-parallelism
+  [target message {:keys [project-id parallelism]} previous-state current-state]
+  (when (not= (get-in previous-state [:current-project :parallel])
+              (get-in current-state [:current-project :parallel]))
+    (let [project-name (vcs-url/project-name project-id)
+          api-ch (get-in current-state [:comms :api])]
+      ;; TODO: edit project settings api call should responde with updated project settings
+      (utils/ajax :put
+                  (gstring/format "/api/v1/project/%s/settings" project-name)
+                  :update-project-parallelism
+                  api-ch
+                  :params {:parallel parallelism}
+                  :context {:project-id project-id}))))

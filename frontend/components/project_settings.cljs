@@ -34,7 +34,8 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
-(defn branch-picker [project settings controls-ch]
+(defn branch-picker [project settings controls-ch & {:keys [button-text]
+                                                     :or {button-text "Start a build"}}]
   (let [project-id (project-model/id project)
         default-branch (:default_branch project)
         settings-branch (get-in settings [:projects project-id :settings-branch] default-branch)]
@@ -42,7 +43,7 @@
                                                                              :branch settings-branch}])
                             false)}
      [:input {:name "branch"
-              :required ""
+              :required true
               :type "text"
               :value settings-branch
               ;; XXX typeahead
@@ -50,7 +51,7 @@
                                                                             :project-id project-id}])}]
      [:label {:placeholder "Test settings on..."}]
      [:input
-      {:value "Save & Go!"
+      {:value button-text
        ;; XXX handle data-loading-text
        :data-loading-text "Starting..."
        :type "submit"}]]))
@@ -179,7 +180,7 @@
        (list
         (when (:parallelism-edited project)
           [:div.try-out-build
-           (branch-picker project settings controls-ch)])
+           (branch-picker project settings controls-ch :button-text (str "Try a build!"))])
         [:form.parallelism-items
          (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
                                          (inc 24)))]

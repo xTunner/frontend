@@ -62,3 +62,7 @@
 (defmethod control-event :action-log-output-toggled
   [target message {:keys [index step]} state]
   (update-in state [:current-build :steps step :actions index :show-output] not))
+
+(defmethod control-event :selected-project-parallelism
+  [target message {:keys [project-id parallelism]} state]
+  (assoc-in state [:current-project :parallel] parallelism))
