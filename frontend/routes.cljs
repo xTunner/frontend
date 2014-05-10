@@ -53,14 +53,4 @@
       (open-to-add-projects! nav-ch))
     (defroute v1-root "/"
       [org-id repo-id build-num]
-      (open-to-dashboard! nav-ch)))
-  ;; This triggers the dispatch on the above routes, when a deep link URL is provided.
-  ;; goog.History(opt_invisible, opt_blankPageUrl, opt_input, opt_iframe)
-  ;; (let [history-el (goog.history.Html5History. false nil history-el)]
-  ;;   (goog.events/listen history-el "navigate" #(sec/dispatch! (.-token %)))
-  ;;   (doto history-el
-  ;;     (.setEnabled true)))
-  (.setEnabled history-imp true)
-  (goog.events/listen history-imp goog.history.EventType.NAVIGATE
-                      #(do (print "token: " (aget % "token"))
-                           (sec/dispatch! (str "/" (aget % "token"))))))
+      (open-to-dashboard! nav-ch))))

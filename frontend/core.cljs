@@ -20,6 +20,7 @@
             [goog.events]
             [om.core :as om :include-macros true]
             [frontend.pusher :as pusher]
+            [frontend.history :as history]
             [frontend.utils :as utils :refer [mlog merror third]]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
@@ -80,41 +81,14 @@
                              :mult (async/mult mouse-up-ch)}})))
 
 (defn main [state top-level-node]
-  (let [comms      (:comms @state)
-        target-name                           "app"
-        container                             (sel1 top-level-node (str "#" target-name))
-        uri-path                              (.getPath utils/parsed-uri)
-        [_ maybe-deep-link]                   (re-matches #"^/app/(.*)" uri-path)
-        history-path "/";;(str (.getPath (goog.Uri. js/document.location.href)) "/")
-        history-el (dommy/append! top-level-node [:input.history {:style "display:none"}])
-        _ (print "history-path: " history-path)
-        history-imp (doto (goog.history.Html5History.)
-                      (.setUseFragment false)
-                      (.setPathPrefix history-path))
-        dom-helper (goog.dom.DomHelper.)
+  (let [comms       (:comms @state)
+        target-name "app"
+        container   (sel1 top-level-node (str "#" target-name))
+        uri-path    (.getPath utils/parsed-uri)
+        history-path "/"
+        history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance)]
-    (js/console.log "history-imp " history-imp)
-    (print "Target-name: " target-name)
-    (print "Container: " container)
-    (print "tln: " top-level-node)
-    (print "history-el" history-el)
-    (when history-el
-      (goog.events/listen top-level-node "click"
-                          #(let [-target (.. % -target)
-                                 target (if (= (.-tagName -target) "A")
-                                          -target
-                                          (.getAncestorByTagNameAndClass dom-helper -target "A"))
-                                 path (when target (.-pathname target))]
-                             (when (seq path)
-                               ;; XXX this doesn't work with hashes
-                               (.setToken history-imp (subs path 1 (count path)))
-                               (.stopPropagation %)
-                               (.preventDefault %))))
-      ;; If we don't have a history-el, gclosure will literally
-      ;; destroy the entire document to insert its hidden history
-      ;; element via document.write()
-      (print "defining routes")
-      (routes/define-routes! state history-imp))
+    (routes/define-routes! state)
     (om/root
      app/app
      state
