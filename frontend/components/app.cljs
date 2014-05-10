@@ -8,6 +8,7 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.navbar :as navbar]
             [frontend.components.placeholder :as placeholder]
+            [frontend.components.project-settings :as project-settings]
             [frontend.components.common :as common]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -27,7 +28,8 @@
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
-    :loading loading))
+    :loading loading
+    :project-settings project-settings/project-settings))
 
 (defn app [app owner opts]
   (reify
