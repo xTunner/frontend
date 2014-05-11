@@ -491,7 +491,59 @@
    " to merge."])
 
 (defn api-tokens [project settings controls-ch]
-  [:div "api tokesn"])
+  (let [project-id (project-model/id project)
+        {:keys [scope label]
+         :or {scope "status"}} (:new-api-token project)]
+    [:div.circle-api-page
+     [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
+     [:div.circle-api-page-inner
+      [:p "Create and revoke project-specific API tokens to access this project's details using ourAPI. First choose a scope "
+       ;; XXX popovers
+       [:i.fa.fa-question-circle {:data-bind "popover"}]
+       " and then create a label."]
+      [:form
+       [:div.styled-select
+        [:select {:name "scope" :value scope
+                  :on-change #(utils/edit-input controls-ch [:current-project :new-api-token :scope] %)}
+         [:option {:value "status"} "Status"]
+         [:option {:value "all"} "All"]]
+        [:i.fa.fa-chevron-down]]
+       [:input
+        {:required true, :type "text" :value label
+         :on-change #(utils/edit-input controls-ch [:current-project :new-api-token :label] %)}]
+       [:label {:placeholder "Token label"}]
+       [:input
+        {:data-failed-text "Failed",
+         :data-success-text "Created",
+         :data-loading-text "Creating...",
+         :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
+                                                                     :api-token {:scope scope
+                                                                                 :label label}}])
+                        false)
+         :value "Create token",
+         :type "submit"}]]
+      (when-let [tokens (seq (:tokens project))]
+        [:table
+         [:thead
+          [:th "Scope"]
+          [:th "Label"]
+          [:th "Token"]
+          [:th "Created"]
+          [:th]]
+         [:tbody
+          (for [{:keys [scope label token time]} tokens]
+            [:tr
+             [:td scope]
+             [:td label]
+             [:td [:span.code token]]
+             [:td time]
+             [:td
+              [:a.slideBtn
+               {:title "Remove this Key?",
+                :on-click #(put! controls-ch [:deleted-project-api-token {:project-id project-id
+                                                                          :token token}])}
+               [:i.fa.fa-times-circle]
+               [:span " Remove"]]]])]])]]))
 
 (defn artifacts [project settings controls-ch]
   [:div "artifacts"])

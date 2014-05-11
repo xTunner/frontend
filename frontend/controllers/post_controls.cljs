@@ -268,3 +268,25 @@
                 :params {:fingerprint fingerprint}
                 :context {:project-id project-id
                           :fingerprint fingerprint})))
+
+(defmethod post-control-event! :saved-project-api-token
+  [target message {:keys [project-id api-token]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/token" project-name)
+                :save-project-api-token
+                api-ch
+                :params api-token
+                :context {:project-id project-id})))
+
+(defmethod post-control-event! :deleted-project-api-token
+  [target message {:keys [project-id token]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :delete
+                (gstring/format "/api/v1/project/%s/token/%s" project-name token)
+                :delete-project-api-token
+                api-ch
+                :context {:project-id project-id
+                          :token token})))

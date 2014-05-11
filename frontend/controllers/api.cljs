@@ -190,3 +190,19 @@
     (update-in state [:current-project :ssh_keys] (fn [keys]
                                                     (remove #(= (:fingerprint context) (:fingerprint %))
                                                             keys)))))
+
+(defmethod api-event [:save-project-api-token :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (-> state
+        (assoc-in [:current-project :new-api-token] {})
+        (update-in [:current-project :tokens] (fnil conj []) resp))))
+
+(defmethod api-event [:delete-project-api-token :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (update-in state [:current-project :tokens] (fn [tokens]
+                                                  (remove #(= (:token %) (:token context))
+                                                          tokens)))))
