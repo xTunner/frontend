@@ -153,8 +153,9 @@
   (when-let [repl-url (aget js/window "browser_connected_repl_url")]
     (try
       (repl/connect repl-url)
-      ;; the repl tries to take over *out*
-      (enable-console-print!)
+      ;; the repl tries to take over *out*, workaround for
+      ;; https://github.com/cemerick/austin/issues/49
+      (js/setInterval #(enable-console-print!) 1000)
       (catch js/Error e
         (merror e)))))
 
