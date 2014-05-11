@@ -44,8 +44,8 @@
       (open-to-dashboard! nav-ch params))
     (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
       (open-to-dashboard! nav-ch params))
-    (defroute v1-inspect-build #"/gh/[^/]+/[^/]+/\d+"
-      [[org-id repo-id build-num]]
+    (defroute v1-inspect-build #"/gh/([^/]+)/([^/]+)/(\d+)"
+      [org-id repo-id build-num]
       (open-build-inspector! app nav-ch org-id repo-id build-num))
     (defroute v1-project-settings "/gh/:org-id/:repo-id/edit"
       [org-id repo-id]
