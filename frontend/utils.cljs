@@ -77,9 +77,18 @@
                                                                        :context context}])
                        :finally #(put! channel [message :finished context])})))
 
-(defn edit-input [controls-ch path event & {:keys [value]
-                                            :or {value (.. event -target -value)}}]
+(defn edit-input
+  "Meant to be used in a react event handler, usually for the :on-change event on input.
+  Path is the vector of keys you would pass to assoc-in to change the value in state,
+  event is the Synthetic React event. Pulls the value out of the event.
+  Optionally takes :value as a keyword arg to override the event's value"
+  [controls-ch path event & {:keys [value]
+                             :or {value (.. event -target -value)}}]
   (put! controls-ch [:edited-input {:path path :value value}]))
 
-(defn toggle-input [controls-ch path event]
+(defn toggle-input
+  "Meant to be used in a react event handler, usually for the :on-change event on input.
+  Path is the vector of keys you would pass to update-in to toggle the value in state,
+  event is the Synthetic React event."
+  [controls-ch path event]
   (put! controls-ch [:toggled-input {:path path}]))
