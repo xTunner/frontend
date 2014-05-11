@@ -189,3 +189,14 @@
                 :params env-var
                 :context {:project-id project-id
                           :env-var-name env-var-name})))
+
+(defmethod post-control-event! :saved-dependencies-commands
+  [target message {:keys [project-id settings]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :put
+                (gstring/format "/api/v1/project/%s/settings" project-name)
+                :save-dependencies-commands
+                api-ch
+                :params settings
+                :context {:project-id project-id})))

@@ -212,7 +212,7 @@
         new-env-var-value (:new-env-var-value project)
         project-id (project-model/id project)]
     [:div.environment-variables
-     [:h2 "Environment variables for "  (vcs-url/project-name (:vcs_url project))]
+     [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
      [:div.environment-variables-inner
       [:p
        "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
@@ -253,13 +253,51 @@
               [:a
                {:title "Remove this variable?",
                 :on-click #(put! controls-ch [:deleted-env-var {:project-id project-id
-                                                                :env-var-name name
-                                                                :env-var-value value}])}
+                                                                :env-var-name name}])}
                [:i.fa.fa-times-circle]
                [:span "Remove"]]]])]])]]))
 
 (defn dependencies [project settings controls-ch]
-  [:div "deps"])
+  (let [project-id (project-model/id project)
+        {:keys [setup dependencies post_dependencies]} project]
+    [:div.dependencies-page
+     [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
+     [:div.dependencies-inner
+      [:form.spec_form
+       [:fieldset
+        [:textarea {:name "setup",
+                    :required true
+                    :value setup
+                    :on-change #(put! controls-ch [:edited-setup-commands
+                                                   {:project-id project-id
+                                                    :value (.. % -target -value)}])}]
+        [:label {:placeholder "Pre-dependency commands"}]
+        [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
+        [:textarea {:name "dependencies",
+                    :required true
+                    :value dependencies
+                    :on-change #(put! controls-ch [:edited-dependencies-commands
+                                                   {:project-id project-id
+                                                    :value (.. % -target -value)}])}]
+        [:label {:placeholder "Dependency overrides"}]
+        [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
+         [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
+         [:code "configure"] ", " [:code "make"] ", etc."]
+        [:textarea {:required true
+                    :value post_dependencies
+                    :on-change #(put! controls-ch [:edited-post-dependency-commands
+                                                   {:project-id project-id
+                                                    :value (.. % -target -value)}])}]
+        [:label {:placeholder "Post-dependency commands"}]
+        [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
+        [:input {:value "Next, setup your tests",
+                 :type "submit"
+                 :on-click #(do (put! controls-ch [:saved-dependencies-commands
+                                                   {:project-id project-id
+                                                    :settings {:setup setup
+                                                               :dependencies dependencies
+                                                               :post_dependencies post_dependencies}}])
+                                false)}]]]]]))
 
 (defn tests [project settings controls-ch]
   [:div "tests"])

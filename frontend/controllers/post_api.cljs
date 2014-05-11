@@ -3,10 +3,11 @@
             [clojure.string :as string]
             [frontend.intercom :as intercom]
             [frontend.models.repo :as repo-model]
-            [goog.string :as gstring]
-            goog.string.format
+            [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror]])
+            [frontend.utils :as utils :refer [mlog merror]]
+            [goog.string :as gstring]
+            goog.string.format)
   (:require-macros [frontend.utils :refer [inspect]]))
 
 (defmulti post-api-event!
@@ -58,3 +59,12 @@
   (let [nav-ch (get-in current-state [:comms :nav])
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
     (put! nav-ch [:navigate! build-url])))
+
+(defmethod post-api-event! [:save-dependencies-commands :success]
+  [target message status {:keys [context resp]} previous-state current-state]
+  (let [nav-ch (get-in current-state [:comms :nav])
+        org-id (vcs-url/org-name (:project-id context))
+        repo-id (vcs-url/repo-name (:project-id context))]
+    (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org-id org-id
+                                                                  :repo-id repo-id
+                                                                  :subpage "tests"})])))

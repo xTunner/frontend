@@ -74,3 +74,15 @@
 (defmethod control-event :edited-new-env-var-value
   [target message {:keys [value]} state]
   (assoc-in state [:current-project :new-env-var-value] value))
+
+(defmethod control-event :edited-setup-commands
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :setup] value))
+
+(defmethod control-event :edited-dependencies-commands
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :dependencies] value))
+
+(defmethod control-event :edited-post-dependency-commands
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :post_dependencies] value))
