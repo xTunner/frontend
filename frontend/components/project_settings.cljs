@@ -485,7 +485,10 @@
                    [:span " Remove"]]]])]])]]))
 
 (defn github-user [project settings controls-ch]
-  [:div "github-user"])
+  [:div "Wait for "
+   [:a {:href "https://github.com/circleci/circle/pull/2259"}
+    "#2259"]
+   " to merge."])
 
 (defn api-tokens [project settings controls-ch]
   [:div "api tokesn"])
