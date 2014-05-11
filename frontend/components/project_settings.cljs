@@ -443,7 +443,46 @@
       "circle.yml file"] "."]]])
 
 (defn ssh-keys [project settings controls-ch]
-  [:div "ssh-keys"])
+  (let [project-id (project-model/id project)
+        {:keys [hostname public-key private-key]} (:new-ssh-key project)]
+    [:div.sshkeys-page
+     [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
+     [:div.sshkeys-inner
+      [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
+      [:form
+       [:input#hostname {:required true, :type "text" :value hostname
+                         :on-change #(utils/edit-input controls-ch [:current-project :new-ssh-key :hostname] %)}]
+       [:label {:placeholder "Hostname"}]
+       [:input#publicKey {:required true, :type "text" :value public-key
+                          :on-change #(utils/edit-input controls-ch [:current-project :new-ssh-key :public-key] %)}]
+       [:label {:placeholder "Public Key"}]
+       [:textarea#privateKey {:required true :value private-key
+                              :on-change #(utils/edit-input controls-ch [:current-project :new-ssh-key :private-key] %)}]
+       [:label {:placeholder "Private Key"}]
+       [:input#submit.btn
+        {:data-failed-text "Failed",
+         :data-success-text "Saved",
+         :data-loading-text "Saving..",
+         :value "Submit",
+         :type "submit"
+         :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
+                                                           :ssh-key {:hostname hostname
+                                                                     :public_key public-key
+                                                                     :private_key private-key}}])
+                        false)}]]
+      (when-let [ssh-keys (seq (:ssh_keys project))]
+        [:table
+         [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
+         [:tbody
+          (for [{:keys [hostname fingerprint]} ssh-keys]
+            [:tr
+             [:td hostname]
+             [:td fingerprint]
+             [:td [:a {:title "Remove this Key?",
+                       :on-click #(put! controls-ch [:deleted-ssh-key {:project-id project-id
+                                                                       :fingerprint fingerprint}])}
+                   [:i.fa.fa-times-circle]
+                   [:span " Remove"]]]])]])]]))
 
 (defn github-user [project settings controls-ch]
   [:div "github-user"])

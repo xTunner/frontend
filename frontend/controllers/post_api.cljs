@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [clojure.string :as string]
             [frontend.intercom :as intercom]
+            [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
@@ -64,7 +65,7 @@
   [target message status {:keys [context resp]} previous-state current-state]
   (when (and (= (project-model/id (:current-project current-state))
                 (:project-id context))
-             (= "setup" (:project-settings-subpage current-state)))
+             (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
           org-id (vcs-url/org-name (:project-id context))
           repo-id (vcs-url/repo-name (:project-id context))]
@@ -77,3 +78,14 @@
   [target message status {:keys [context resp]} previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])]
     (put! controls-ch [:started-edit-settings-build context])))
+
+(defmethod post-api-event! [:save-ssh-key :success]
+  [target message status {:keys [context resp]} previous-state current-state]
+  (when (= (:project-id context) (project-model/id (:current-project current-state)))
+    (let [project-name (vcs-url/project-name (:project-id context))
+          api-ch (get-in current-state [:comms :api])]
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/settings" project-name)
+                  :project-settings
+                  api-ch
+                  :context {:project-name project-name}))))

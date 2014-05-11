@@ -176,3 +176,17 @@
         (update-in [:current-project :env-vars] (fn [vars]
                                                   (remove #(= (:env-var-name context) (:name %))
                                                           vars))))))
+
+(defmethod api-event [:save-ssh-key :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (assoc-in state [:current-project :new-ssh-key] {})))
+
+(defmethod api-event [:delete-ssh-key :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (update-in state [:current-project :ssh_keys] (fn [keys]
+                                                    (remove #(= (:fingerprint context) (:fingerprint %))
+                                                            keys)))))

@@ -239,10 +239,32 @@
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
         settings (project-model/notification-settings (:current-project current-state))]
-    (print (pr-str settings))
     (utils/ajax :put
                 (gstring/format "/api/v1/project/%s/settings" project-name)
                 :save-notification-hooks
                 api-ch
                 :params settings
                 :context {:project-id project-id})))
+
+(defmethod post-control-event! :saved-ssh-key
+  [target message {:keys [project-id ssh-key]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+                :save-ssh-key
+                api-ch
+                :params ssh-key
+                :context {:project-id project-id})))
+
+(defmethod post-control-event! :deleted-ssh-key
+  [target message {:keys [project-id fingerprint]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :delete
+                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+                :delete-ssh-key
+                api-ch
+                :params {:fingerprint fingerprint}
+                :context {:project-id project-id
+                          :fingerprint fingerprint})))
