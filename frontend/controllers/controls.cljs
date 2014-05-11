@@ -66,3 +66,7 @@
 (defmethod control-event :edited-input
   [target message {:keys [value path]} state]
   (assoc-in state path value))
+
+(defmethod control-event :toggled-input
+  [target message {:keys [path]} state]
+  (update-in state path not))

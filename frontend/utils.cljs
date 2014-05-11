@@ -77,7 +77,9 @@
                                                                        :context context}])
                        :finally #(put! channel [message :finished context])})))
 
-(defn edit-input [controls-ch path event]
-  (put! controls-ch [:edited-input {:path path
-                                    :value (.. event -target -value)
-                                    :input-name input-name}]))
+(defn edit-input [controls-ch path event & {:keys [value]
+                                            :or {value (.. event -target -value)}}]
+  (put! controls-ch [:edited-input {:path path :value value}]))
+
+(defn toggle-input [controls-ch path event]
+  (put! controls-ch [:toggled-input {:path path}]))

@@ -30,5 +30,29 @@
                    (personal-branch? user project (name name-kw) branch))
                  (:branches project))))
 
+(defn notification-settings [project]
+  (select-keys project [:hipchat_room
+                        :hipchat_api_token
+                        :hipchat_notify
+                        :hipchat_notify_prefs
+                        :slack_channel
+                        :slack_subdomain
+                        :slack_api_token
+                        :slack_notify_prefs
+                        :slack_webhook_url
+                        :hall_room_api_token
+                        :hall_notify_prefs
+                        :campfire_room
+                        :campfire_token
+                        :campfire_subdomain
+                        :campfire_notify_prefs
+                        :flowdock_api_token
+                        :irc_server
+                        :irc_channel
+                        :irc_keyword
+                        :irc_username
+                        :irc_password
+                        :irc_notify_prefs]))
+
 (defn id [project]
   (:vcs_url project))

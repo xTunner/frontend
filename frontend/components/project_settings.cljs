@@ -1,5 +1,6 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+            [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
@@ -328,8 +329,109 @@
                                       :settings {:test test
                                                  :extra extra}})]]]]))
 
+(defn fixed-failed-input [project controls-ch field]
+  (let [notify_pref (get project field)
+        id (string/replace (name field) "_" "-")]
+    [:label {:for id}
+     [:input {:id id
+              :checked (= "smart" notify_pref)
+              :on-change #(utils/edit-input controls-ch [:current-project field] %
+                                            :value (if (= "smart" notify_pref) nil "smart"))
+              :value "smart"
+              :type "checkbox"}]
+     [:span "Fixed/Failed Only"]
+     [:i.fa.fa-question-circle
+      {:data-bind "tooltip: {}",
+       :title
+       "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]]))
+
+(defn chatroom-item [project controls-ch {:keys [service icon doc inputs show-fixed-failed?
+                                                 top-section-content]}]
+  [:div.chat-room-item
+   [:div.chat-room-head [:h4 {:class icon} service]]
+   [:div.chat-room-body
+    [:section
+     doc
+     top-section-content]
+    [:section
+     (for [{:keys [field placeholder]} inputs]
+       (list
+        [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
+                 :value (get project field)
+                 :on-change #(utils/edit-input controls-ch [:current-project field] %)}]
+        [:label {:placeholder placeholder}]))]]
+   [:div.chat-room-foot
+    (when show-fixed-failed?
+      (fixed-failed-input project controls-ch :hipchat_notify_prefs))]])
+
 (defn chatrooms [project settings controls-ch]
-  [:div "chatrooms"])
+  (let [project-id (project-model/id project)]
+    [:div
+     [:h2 "Chatroom setup for" (vcs-url/project-name (:vcs_url project))]
+     [:div.chat-rooms
+      (for [chat-spec [{:service "Hipchat"
+                        :icon "chat-i-hip"
+                        :doc (list [:p "To get your API token, create a \"notification\" token via the "
+                                    [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
+                                   [:label ;; hipchat is a special flower
+                                    {:for "hipchat-notify"}
+                                    [:input#hipchat-notify
+                                     {:type "checkbox"
+                                      :checked (:hipchat_notify project)
+                                      :on-change #(utils/toggle-input controls-ch [:current-project :hipchat_notify] %)}]
+                                    [:span "Show popups"]])
+                        :inputs [{:field :hipchat_room :placeholder "Room"}
+                                 {:field :hipchat_api_token :placeholder "API"}]
+                        :show-fixed-failed? true}
+
+                       {:service "Campfire"
+                        :icon "chat-i-camp"
+                        :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
+                        :inputs [{:field :campfire_room :placeholder "Room"}
+                                 {:field :campfire_subdomain :placeholder "Subdomain"}
+                                 {:field :campfire_token :placeholder "API"}]
+                        :show-fixed-failed? true}
+
+                       {:service "Flowdock"
+                        :icon "chat-i-flow"
+                        :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
+                        :inputs [{:field :flowdock_api_token :placeholder "API"}]
+                        :show-fixed-failed? false}
+
+                       {:service "IRC"
+                        :icon "chat-i-flow"
+                        :doc nil
+                        :inputs [{:field :irc_server :placeholder "Hostname"}
+                                 {:field :irc_channel :placeholder "Channel"}
+                                 {:field :irc_keyword :placeholder "Private Keyword"}
+                                 {:field :irc_username :placeholder "Username"}
+                                 {:field :irc_password :placeholder "Password (optional)"}]
+                        :show-fixed-failed? true}
+
+                       {:service "Slack"
+                        :icon "chat-i-slack"
+                        :doc [:p "To get your Webhook URL, visit Slack's "
+                              [:a {:href "https://my.slack.com/services/new/circleci"}
+                               "CircleCI Integration"]
+                              " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
+                        :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
+                        :show-fixed-failed? true}
+
+                       {:service "Hall"
+                        :icon "chat-i-hall"
+                        :doc [:p "To get your Room / Group API token, go to "
+                              [:strong "Settings > Integrations > CircleCI"]
+                              " from within your Hall Group."]
+                        :inputs [{:field :hall_room_api_token :placeholder "API"}]
+                        :show-fixed-failed? true}]]
+        (chatroom-item project controls-ch chat-spec))]
+     [:div.chat-room-save
+      [:input
+       {:data-success-text "Saved",
+        :data-loading-text "Saving",
+        :value "Save notification hooks",
+        :type "submit",
+        :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}]]]))
 
 (defn webhooks [project settings controls-ch]
   [:div "webhooks"])

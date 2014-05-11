@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [clojure.string :as string]
             [dommy.core :as dommy]
+            [frontend.models.project :as project-model]
             [frontend.controllers.api :as api]
             goog.dom
             goog.dom.classes
@@ -232,3 +233,16 @@
                 :params settings
                 :context {:project-id project-id
                           :branch branch})))
+
+(defmethod post-control-event! :saved-notification-hooks
+  [target message {:keys [project-id]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])
+        settings (project-model/notification-settings (:current-project current-state))]
+    (print (pr-str settings))
+    (utils/ajax :put
+                (gstring/format "/api/v1/project/%s/settings" project-name)
+                :save-notification-hooks
+                api-ch
+                :params settings
+                :context {:project-id project-id})))
