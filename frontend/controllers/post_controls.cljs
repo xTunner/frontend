@@ -167,6 +167,16 @@
                   :params {:parallel parallelism}
                   :context {:project-id project-id}))))
 
+(defmethod post-control-event! :started-edit-settings-build
+  [target message {:keys [project-id branch]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    ;; TODO: edit project settings api call should respond with updated project settings
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))
+                :start-build
+                api-ch)))
+
 (defmethod post-control-event! :created-env-var
   [target message {:keys [project-id env-var]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
@@ -186,7 +196,6 @@
                 (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
                 :delete-env-var
                 api-ch
-                :params env-var
                 :context {:project-id project-id
                           :env-var-name env-var-name})))
 
@@ -200,3 +209,26 @@
                 api-ch
                 :params settings
                 :context {:project-id project-id})))
+
+(defmethod post-control-event! :saved-test-commands
+  [target message {:keys [project-id settings]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :put
+                (gstring/format "/api/v1/project/%s/settings" project-name)
+                :save-test-commands
+                api-ch
+                :params settings
+                :context {:project-id project-id})))
+
+(defmethod post-control-event! :saved-test-commands-and-build
+  [target message {:keys [project-id settings branch]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :put
+                (gstring/format "/api/v1/project/%s/settings" project-name)
+                :save-test-commands-and-build
+                api-ch
+                :params settings
+                :context {:project-id project-id
+                          :branch branch})))

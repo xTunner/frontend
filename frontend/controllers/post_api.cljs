@@ -62,9 +62,18 @@
 
 (defmethod post-api-event! [:save-dependencies-commands :success]
   [target message status {:keys [context resp]} previous-state current-state]
-  (let [nav-ch (get-in current-state [:comms :nav])
-        org-id (vcs-url/org-name (:project-id context))
-        repo-id (vcs-url/repo-name (:project-id context))]
-    (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org-id org-id
-                                                                  :repo-id repo-id
-                                                                  :subpage "tests"})])))
+  (when (and (= (project-model/id (:current-project current-state))
+                (:project-id context))
+             (= "setup" (:project-settings-subpage current-state)))
+    (let [nav-ch (get-in current-state [:comms :nav])
+          org-id (vcs-url/org-name (:project-id context))
+          repo-id (vcs-url/repo-name (:project-id context))]
+      (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org-id org-id
+                                                                    :repo-id repo-id
+                                                                    :subpage "tests"})]))))
+
+
+(defmethod post-api-event! [:save-test-commands-and-build :success]
+  [target message status {:keys [context resp]} previous-state current-state]
+  (let [controls-ch (get-in current-state [:comms :controls])]
+    (put! controls-ch [:started-edit-settings-build context])))

@@ -86,3 +86,11 @@
 (defmethod control-event :edited-post-dependency-commands
   [target message {:keys [value]} state]
   (assoc-in state [:current-project :post_dependencies] value))
+
+(defmethod control-event :edited-test-commands
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :text] value))
+
+(defmethod control-event :edited-extra-commands
+  [target message {:keys [value]} state]
+  (assoc-in state [:current-project :extra] value))

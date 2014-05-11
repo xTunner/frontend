@@ -34,13 +34,15 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
-(defn branch-picker [project settings controls-ch & {:keys [button-text]
-                                                     :or {button-text "Start a build"}}]
+(defn branch-picker [project settings controls-ch & {:keys [button-text channel-message channel-args]
+                                                     :or {button-text "Start a build"
+                                                          channel-message :started-edit-settings-build}}]
   (let [project-id (project-model/id project)
         default-branch (:default_branch project)
         settings-branch (get-in settings [:projects project-id :settings-branch] default-branch)]
-    [:form {:on-submit #(do (put! controls-ch [:started-edit-settings-build {:project-id project-id
-                                                                             :branch settings-branch}])
+    [:form {:on-submit #(do (put! controls-ch [channel-message (merge {:project-id project-id
+                                                                       :branch settings-branch}
+                                                                      channel-args)])
                             false)}
      [:input {:name "branch"
               :required true
@@ -300,7 +302,44 @@
                                 false)}]]]]]))
 
 (defn tests [project settings controls-ch]
-  [:div "tests"])
+  (let [project-id (project-model/id project)
+        {:keys [test extra]} project]
+    [:div.tests-page
+     [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
+     [:div.tests-inner
+      [:fieldset.spec_form
+       [:textarea {:name "test",
+                   :required true
+                   :value test
+                   :on-change #(put! controls-ch [:edited-test-commands
+                                                  {:project-id project-id
+                                                   :value (.. % -target -value)}])}]
+       [:label {:placeholder "Test commands"}]
+       [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
+       [:textarea {:name "extra",
+                   :required true
+                   :value extra
+                   :on-change #(put! controls-ch [:edited-extra-commands
+                                                  {:project-id project-id
+                                                   :value (.. % -target -value)}])}]
+       [:label {:placeholder "Post-test commands"}]
+       [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
+       [:input {:name "save",
+                :data-loading-text "Saving...",
+                :value "Save commands",
+                :type "submit"
+                :on-click #(do (put! controls-ch [:saved-test-commands
+                                                  {:project-id project-id
+                                                   :settings {:test test
+                                                              :extra extra}}])
+                               false)}]
+       [:div.try-out-build
+        (branch-picker project settings controls-ch
+                       :button-text "Save & Go!"
+                       :channel-message :saved-test-commands-and-build
+                       :channel-args {:project-id project-id
+                                      :settings {:test test
+                                                 :extra extra}})]]]]))
 
 (defn chatrooms [project settings controls-ch]
   [:div "chatrooms"])
