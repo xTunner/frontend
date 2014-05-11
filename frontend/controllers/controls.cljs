@@ -47,10 +47,6 @@
       (assoc-in [:settings :add-projects :selected-org] args)
       (assoc-in [:settings :add-projects :repo-filter-string] "")))
 
-(defmethod control-event :edit-repo-filter-string
-  [target message filter-string state]
-  (assoc-in state [:settings :add-projects :repo-filter-string] filter-string))
-
 (defmethod control-event :show-artifacts-toggled
   [target message build-id state]
   (update-in state [:current-build :show-artifacts] not))
@@ -67,30 +63,6 @@
   [target message {:keys [project-id parallelism]} state]
   (assoc-in state [:current-project :parallel] parallelism))
 
-(defmethod control-event :edited-new-env-var-name
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :new-env-var-name] value))
-
-(defmethod control-event :edited-new-env-var-value
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :new-env-var-value] value))
-
-(defmethod control-event :edited-setup-commands
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :setup] value))
-
-(defmethod control-event :edited-dependencies-commands
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :dependencies] value))
-
-(defmethod control-event :edited-post-dependency-commands
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :post_dependencies] value))
-
-(defmethod control-event :edited-test-commands
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :text] value))
-
-(defmethod control-event :edited-extra-commands
-  [target message {:keys [value]} state]
-  (assoc-in state [:current-project :extra] value))
+(defmethod control-event :edited-input
+  [target message {:keys [value path]} state]
+  (assoc-in state path value))

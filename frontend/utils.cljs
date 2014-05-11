@@ -76,3 +76,8 @@
                        :error-handler #(put! channel [message :failed {:resp %
                                                                        :context context}])
                        :finally #(put! channel [message :finished context])})))
+
+(defn edit-input [controls-ch path event]
+  (put! controls-ch [:edited-input {:path path
+                                    :value (.. event -target -value)
+                                    :input-name input-name}]))

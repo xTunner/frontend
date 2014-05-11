@@ -154,7 +154,7 @@
            {:placeholder "Filter repos..."
             :type "search"
             :value repo-filter-string
-            :onChange #(put! controls-ch [:edit-repo-filter-string (.. % -target -value)])}]])))))
+            :on-change #(utils/edit-input controls-ch [:settings :add-projects :repo-filter-string] %)}]])))))
 
 (defn main [data owner opts]
   (reify

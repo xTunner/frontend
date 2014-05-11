@@ -49,8 +49,7 @@
               :type "text"
               :value settings-branch
               ;; XXX typeahead
-              :on-change #(put! controls-ch [:edit-project-settings-branch {:value (.. % -target -value)
-                                                                            :project-id project-id}])}]
+              :on-change #(utils/edit-input controls-ch [:projects project-id :settings-branch] %)}]
      [:label {:placeholder "Test settings on..."}]
      [:input
       {:value button-text
@@ -230,13 +229,11 @@
                               false)}
        [:input#env-var-name
         {:required true, :type "text", :value new-env-var-name
-         :on-change #(put! controls-ch [:edited-new-env-var-name {:project-id project-id
-                                                                  :value (.. % -target -value)}])}]
+         :on-change #(utils/edit-input controls-ch [:current-project :new-env-var-name] %)}]
        [:label {:placeholder "Name"}]
        [:input#env-var-value
         {:required true, :type "text", :value new-env-var-value
-         :on-change #(put! controls-ch [:edited-new-env-var-value {:project-id project-id
-                                                                   :value (.. % -target -value)}])}]
+         :on-change #(utils/edit-input controls-ch [:current-project :new-env-var-value] %)}]
        [:label {:placeholder "Value"}]
        [:input {:data-failed-text "Failed",
                 :data-success-text "Added",
@@ -270,26 +267,20 @@
         [:textarea {:name "setup",
                     :required true
                     :value setup
-                    :on-change #(put! controls-ch [:edited-setup-commands
-                                                   {:project-id project-id
-                                                    :value (.. % -target -value)}])}]
+                    :on-change #(utils/edit-input controls-ch [:current-project :setup] %)}]
         [:label {:placeholder "Pre-dependency commands"}]
         [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
         [:textarea {:name "dependencies",
                     :required true
                     :value dependencies
-                    :on-change #(put! controls-ch [:edited-dependencies-commands
-                                                   {:project-id project-id
-                                                    :value (.. % -target -value)}])}]
+                    :on-change #(utils/edit-input controls-ch [:current-project :dependencies] %)}]
         [:label {:placeholder "Dependency overrides"}]
         [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
          [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
          [:code "configure"] ", " [:code "make"] ", etc."]
         [:textarea {:required true
                     :value post_dependencies
-                    :on-change #(put! controls-ch [:edited-post-dependency-commands
-                                                   {:project-id project-id
-                                                    :value (.. % -target -value)}])}]
+                    :on-change #(utils/edit-input controls-ch [:current-project :post_dependencies] %)}]
         [:label {:placeholder "Post-dependency commands"}]
         [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
         [:input {:value "Next, setup your tests",
@@ -311,17 +302,13 @@
        [:textarea {:name "test",
                    :required true
                    :value test
-                   :on-change #(put! controls-ch [:edited-test-commands
-                                                  {:project-id project-id
-                                                   :value (.. % -target -value)}])}]
+                   :on-change #(utils/edit-input controls-ch [:current-project :test] %)}]
        [:label {:placeholder "Test commands"}]
        [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
        [:textarea {:name "extra",
                    :required true
                    :value extra
-                   :on-change #(put! controls-ch [:edited-extra-commands
-                                                  {:project-id project-id
-                                                   :value (.. % -target -value)}])}]
+                   :on-change #(utils/edit-input controls-ch [:current-project :extra] %)}]
        [:label {:placeholder "Post-test commands"}]
        [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
        [:input {:name "save",
