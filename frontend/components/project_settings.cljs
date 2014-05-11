@@ -610,7 +610,15 @@
         "      appname: foo-bar-123"]]]]))
 
 (defn other-deployment [project settings controls-ch]
-  [:div "deployment"])
+  [:div
+   [:h2
+    "Other deployments for " (vcs-url/project-name (:vcs_url project))]
+   [:div.doc
+    [:p "Circle supports deploying to any server, using custom commands. See "
+     [:a {:target "_blank",
+          :href "https://circleci.com/docs/configuration#deployment"}
+      "our deployment documentation"]
+     " to set it up."]]])
 
 (defn subpage-fn [subpage user]
   (get {:parallel-builds parallel-builds
