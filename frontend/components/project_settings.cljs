@@ -546,15 +546,73 @@
                [:span " Remove"]]]])]])]]))
 
 (defn artifacts [project settings controls-ch]
-  [:div "artifacts"])
+ [:div
+  [:h2 "Build artifacts for " (vcs-url/project-name (:vcs_url project))]
+  [:div.doc
+   [:p
+    "Circle supports saving files from any build. See "
+    [:a {:href "/docs/build-artifacts", :target "_blank"}
+     "our build artifact documentation‘"]
+    " to set it up."]]])
 
-(defn heroku [project settings controls-ch]
-  [:div "heroku"])
+(defn heroku [user project settings controls-ch]
+  (let [project-id (project-model/id project)
+        login (:login user)]
+    [:div.heroku-api
+     [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
+     [:div.heroku-step
+      [:h4 "Step 1: Heroku API key"]
+      [:div (when (:heroku_api_key user)
+              [:p "Your Heroku key is entered. Great!"])
+       [:p (:heroku_api_key user)]
+       [:div (when-not (:heroku_api_key user)
+               ;; XXX pull in set heroku-key from accounts
+               (comment (frontend.components.account/heroku user controls-ch)))]
+       [:div (when (:heroku_api_key user)
+               [:p
+                "You can edit your Heroku key from your "
+                [:a {:href "/account/heroku"} "account page"] "."])]]]
+     [:div.heroku-step
+      [:h4 "Step 2: Associate a Heroku SSH key with your account"]
+      [:span "Current deploy user: "
+       [:strong (or (:heroku_deploy_user project) "none") " "]
+       [:i.fa.fa-question-circle
+        {:data-bind "tooltip: {}",
+         :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
+      [:form.api
+       (if (= (:heroku_deploy_user project) (:login user))
+         [:input.remove-user
+          {:data-success-text "Saved",
+           :data-loading-text "Saving...",
+           :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
+                          false)
+           :value "Remove Heroku Deploy User",
+           :type "submit"}]
+
+         [:input.set-user
+          {:data-success-text "Saved",
+           :data-loading-text "Saving...",
+           :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
+                                                                      :login login}])
+                          false)
+           :value (str "Set user to " (:login user)),
+           :type "submit"}])]]
+     [:div.heroku-step
+      [:h4
+       "Step 3: Add deployment settings to your "
+       [:a {:href "/docs/configuration#deployment"} "circle.yml file"] " (example below)."]
+      [:pre
+       [:code
+        "deployment:\n"
+        "  staging:\n"
+        "    branch: master\n"
+        "    heroku:\n"
+        "      appname: foo-bar-123"]]]]))
 
 (defn other-deployment [project settings controls-ch]
   [:div "deployment"])
 
-(defn subpage-fn [subpage]
+(defn subpage-fn [subpage user]
   (get {:parallel-builds parallel-builds
         :env-vars env-vars
         :setup dependencies
@@ -565,7 +623,7 @@
         :github github-user
         :api api-tokens
         :artifacts artifacts
-        :heroku heroku
+        :heroku (partial heroku user)
         :deployment other-deployment}
        subpage
        overview))
@@ -604,6 +662,7 @@
     (render [_]
       (let [project (:current-project data)
             settings (:settings data)
+            user (:current-user data)
             subpage (:project-settings-subpage data)
             controls-ch (get-in opts [:comms :controls])]
         (html
@@ -614,5 +673,5 @@
             [:div.project-settings-inner
              (common/flashes)
              [:div#subpage
-              ((subpage-fn subpage) project settings controls-ch)]]
+              ((subpage-fn subpage user) project settings controls-ch)]]
             (follow-sidebar project settings controls-ch)]))))))

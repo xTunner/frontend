@@ -206,3 +206,15 @@
     (update-in state [:current-project :tokens] (fn [tokens]
                                                   (remove #(= (:token %) (:token context))
                                                           tokens)))))
+
+(defmethod api-event [:set-heroku-deploy-user :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (assoc-in state [:current-project :heroku_deploy_user] (:login context))))
+
+(defmethod api-event [:remove-heroku-deploy-user :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+    state
+    (assoc-in state [:current-project :heroku_deploy_user] nil)))
