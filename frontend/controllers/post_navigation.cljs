@@ -20,7 +20,10 @@
 
 (defmethod post-navigated-to! :navigate!
   [history-imp to path previous-state current-state]
-  (.setToken history-imp path))
+  (let [path (if (= \/ (first path))
+               (subs path 1)
+               path)]
+    (.setToken history-imp path)))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp to args previous-state current-state]
