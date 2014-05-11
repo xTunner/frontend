@@ -434,7 +434,13 @@
         :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}]]]))
 
 (defn webhooks [project settings controls-ch]
-  [:div "webhooks"])
+  [:div
+   [:h2 "Webhooks for " (vcs-url/project-name (:vcs_url project))]
+   [:div.doc
+    [:p
+     "Circle also support webhooks, which run at the end of a build. They can be configured in your "
+     [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
+      "circle.yml file"] "."]]])
 
 (defn ssh-keys [project settings controls-ch]
   [:div "ssh-keys"])
