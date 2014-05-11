@@ -38,7 +38,9 @@
                                    -target
                                    (.getAncestorByTagNameAndClass dom-helper -target "A"))
                           path (when target (str (.-pathname target) (.-search target) (.-hash target)))]
-                      (when (seq path)
+                      (when (and (seq path)
+                                 (not= "_blank" (.-target target)))
+                        (utils/mlog "navigating to" path)
                         (.setToken history-imp (subs path 1))
                         (.stopPropagation %)
                         (.preventDefault %))))))
