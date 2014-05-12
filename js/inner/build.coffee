@@ -43,8 +43,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
     dismiss_first_green_build_invitations: false
     compare: null
     is_first_green_build: null
-    circle_yml: null
-    dismiss_config_diagnostics: false
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -405,12 +403,6 @@ CI.inner.Build = class Build extends CI.inner.Obj
                   email: user.email()
               VM.project().invite_team_members users
             window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
-
-    @config_diagnostics = @komp
-      deferEvaluation: true
-      read: =>
-        if @circle_yml() and not @dismiss_config_diagnostics()
-          new CI.inner.Diagnostics @circle_yml().string, @circle_yml().errors
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]

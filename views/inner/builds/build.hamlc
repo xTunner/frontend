@@ -39,8 +39,6 @@
           != HAML.build_invite()
           / /ko
 
-          != HAML.config_diagnostics()
-
       / ko if: feature_enabled("build_GH1157_container_oriented_ui") && containers().length > 1
       %div.containers.pagination.pagination-centered{data-bind: "sticky_waypoint: {offset: 0}"}
         %ul.container-list{data-bind: "foreach: containers"}
@@ -49,7 +47,7 @@
                                                         , click: $parent.select_container
                                                         , css: status_style"}
       / /ko
-
+      
       / ko if: feature_enabled("build_GH1157_container_oriented_ui")
       != HAML.container_build_steps({})
       / /ko

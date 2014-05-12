@@ -10,7 +10,7 @@
     %i.fa.fa-times-circle
   %header
     .head-left
-      != HAML.icon {type: "status", name: "pass"}
+      != HAML.first_green({})
     .head-right
       %h2 Congratulations!
       %p You just got your first green build! Invite some of your collaborators below and never test alone!
