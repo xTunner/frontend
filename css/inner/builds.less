@@ -475,7 +475,8 @@
   header {
     .displayFlex();
     .head-left {
-      width : (5 * @box_height);
+      min-width: 10em;
+      padding: 0 3em;
       height: @head_height;
     }
     .first-green-icon {
@@ -645,6 +646,206 @@
     i {
       font-size: .8em;
       transition: .2s;
+    }
+  }
+}
+
+.icon-pass {
+  .turn {
+    fill: @green;
+  }
+  .pass {
+    fill: @green;
+  }
+}
+
+.icon-fail {
+  .turn {
+    fill: @redLight;
+  }
+  .fail {
+    fill: @redLight
+  }
+}
+
+.heroic {
+  position: relative;
+  width: 57em;
+  margin: 0.5em auto 2em auto;
+  code {
+    font-size: inherit;
+  }
+  header {
+    .displayFlex();
+    height: 10em;
+    margin-bottom: 1.5em;
+    .head-left {
+      min-width: 10em;
+      padding: 0 3em;
+      .displayFlex();
+      .align-items(center);
+      .fa {
+        font-size: 10em;
+      }
+      .fa.error {
+        color: @redLight;
+      }
+      .fa.success {
+        color: @green;
+      }
+    }
+    .head-right {
+      .displayFlex();
+      .justify-content(center);
+      .flex-direction(column);
+    }
+  }
+  button.dismiss {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    opacity: 0.13;
+    outline: none;
+    background: none;
+    transition: .4s;
+    &:hover {
+      opacity: .34;
+      transition: .2s;
+    }
+  }
+  &.config-diagnostics {
+    h2, h3, h4, h5, h6 {
+      code {
+        color: @grayLight;
+        font-weight: normal;
+        font-size: 0.9em;
+      }
+    }
+    h5, h6 {
+      font-weight: normal;
+      font-family: @codeFontFamily;
+    }
+    table.code {
+      color: @grayLighter;
+      a.error-flag {
+        display: inline-block;
+        background: @redLight;
+        height: 16px;
+        width: 16px;
+        border-radius: 8px;
+        color: @white;
+        line-height: 18px;
+        font-size: 10px;
+        text-align: center;
+        margin: 0 0.5em;
+        font-weight: bold;
+        position: relative;
+      }
+      .error-flag.selected:before {
+        content: " ";
+        position: absolute;
+        top: 16px;
+        left: 0;
+        height: 0;
+        width: 0;
+        border: 8px solid transparent;
+        border-bottom-color: @redLight;
+      }
+      tr.error-message {
+        td.error-message {
+          background-color: @redLight;
+          color: @white;
+          padding: 1em;
+          border: 1em solid @whiten;
+          display: box;
+          div.next-button {
+            float: right;
+            font-size: 1.5em;
+            a {
+              color: inherit;
+            }
+          }
+          span.path {
+            font-weight: bold;
+            &:before, &:after {
+              content: "'";
+            }
+          }
+        }
+        &:not(.opened) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+table.code {
+  @error_offset: 5px;
+  @error_color: @redLighter;
+  width: 100%;
+  border: 1px solid @grayBoxBorder;
+  background: @whiten;
+  border-collapse: inherit;
+  border-radius: 4px;
+  font-size: @codeFontSize;
+  line-height: @fontSizeLarge;
+  font-family: @codeFontFamily;
+  thead {
+    th {
+      padding: 0;      //
+      &:last-child {   // Pushes line #s to be as small as possible
+                       width: 100%;   //
+                   }
+    }
+  }
+  tbody {
+    tr {
+      &:first-child {
+        td {
+          padding-top: 1em;
+        }
+      }
+      &:last-child {
+        td {
+          padding-bottom: 1em;
+        }
+      }
+      &.error {
+        .line-number {
+          color: @error_color;
+          border-color: @error_color;
+        }
+        .line {
+          @size: 1px;
+          border-left: @size solid @error_color;
+          margin-left: -@size;
+        }
+      }
+    }
+    td {
+      &.line {
+        .error {
+          color: @error_color;
+          padding: 0 @error_offset;
+          margin-left: -@error_offset;
+          ~ span {
+            margin-left: -@error_offset;
+          }
+        }
+      }
+      padding: 0 1em;
+      &.line-number {
+        .user-select(none);
+        vertical-align: top;
+        border-right: 1px solid @grayBoxBorder;
+        min-width: (@codeCharacterWidth * 3);
+        text-align: right;
+      }
+    }
+    span {
+      white-space: pre-wrap;
     }
   }
 }
