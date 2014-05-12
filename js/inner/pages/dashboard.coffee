@@ -5,8 +5,7 @@ CI.inner.DashboardPage = class DashboardPage extends CI.inner.Page
     @show_branch = true
 
     @older_page_button_style = ko.computed =>
-      if VM.builds().length < VM.builds_per_page
-        disabled: true
+      disabled: VM.builds().length < VM.builds_per_page
 
     @newer_page_button_style = ko.computed =>
       location = SammyApp.getLocation()
@@ -17,8 +16,7 @@ CI.inner.DashboardPage = class DashboardPage extends CI.inner.Page
 
       # Just accessing VM.builds() to force re-evaluation of this computed
       # observable when the build list changes
-      if VM.builds() && page <= 0
-        disabled: true
+      disabled: VM.builds() && page <= 0
 
     @can_paginate = true
 
