@@ -13,7 +13,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]])
   (:require-macros [frontend.utils :refer [inspect]]
-                   [dommy.macros :refer [node sel sel1]]))
+                   [dommy.macros :refer [node sel sel1]])
+  (:import [goog.fx.dom.Scroll]))
 
 (defmulti post-control-event!
   (fn [target message args previous-state current-state] message))
@@ -101,12 +102,22 @@
 
 (defmethod post-control-event! :container-selected
   [target message container-id previous-state current-state]
-  (when-not (= (get-in previous-state [:current-build :current-container-id])
-               container-id)
-    (let [parent (sel1 target "#container_parent")
-          container (sel1 target (str "#container_" container-id))
-          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
-      (aset parent "scrollLeft" new-scroll-left))))
+  (when-let [parent (sel1 target "#container_parent")]
+    (let [container (sel1 target (str "#container_" container-id))
+          current-scroll-top (inspect (.-scrollTop parent))
+          current-scroll-left (inspect (.-scrollLeft parent))
+          new-scroll-left (inspect (int (.-x (goog.style.getContainerOffsetToScrollInto container parent))))
+          scroller (or (.-scroll_handler parent)
+                       (set! (.-scroll_handler parent)
+                             ;; Store this on the parent so that we don't handle parent scroll while
+                             ;; the animation is playing
+                             (goog.fx.dom.Scroll. parent
+                                                  #js [0 0]
+                                                  #js [0 0]
+                                                  250)))]
+      (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
+      (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
+      (.play scroller))))
 
 (defn container-id [container]
   (int (last (re-find #"container_(\d+)" (.-id container)))))

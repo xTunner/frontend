@@ -134,7 +134,12 @@
                                               (when (not= 0 (.-deltaX e))
                                                 (.preventDefault e)
                                                 (aset js/document.body "scrollTop" (+ js/document.body.scrollTop (.-deltaY e)))))
-                                  :on-scroll #(put! controls-ch [:container-parent-scroll])
+                                  :on-scroll (fn [e]
+                                               ;; prevent handling scrolling if we're animating the
+                                               ;; transition to a new selected container
+                                               (let [scroller (.. e -target -scroll_handler)]
+                                                 (when (or (not scroller) (.isStopped scroller))
+                                                   (put! controls-ch [:container-parent-scroll]))))
                                   :scroll "handle_browser_scroll"
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"}
