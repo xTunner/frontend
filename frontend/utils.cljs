@@ -57,6 +57,16 @@
 (defn third [coll]
   (nth coll 2 nil))
 
+(defn asset-path
+  "Returns path of asset in CDN"
+  [path]
+  (-> js/window
+      (aget "renderContext")
+      (aget "assetsRoot")
+      (str (if (= \/ (first path))
+             path
+             (str "/" path)))))
+
 (defn ajax [method url message channel & {:keys [params format response-format keywords? context]
                                           :or {format :json
                                                response-format :json
