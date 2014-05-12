@@ -36,7 +36,7 @@
     (put! nav-ch [:project-settings {:project-name project-name
                                      :subpage subpage}])))
 
-(defn define-routes! [app history-imp]
+(defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
     (defroute v1-org-dashboard "/gh/:org" {:as params}
       (open-to-dashboard! nav-ch params))
