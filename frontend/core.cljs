@@ -59,7 +59,7 @@
   ws-ch
   (chan))
 
-(def app-state
+(defn app-state []
   (atom (assoc (state/initial-state)
           :current-user (-> js/window
                             (aget "renderContext")
@@ -88,7 +88,7 @@
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance)]
-    (routes/define-routes! state)
+    (routes/define-routes! state history-imp)
     (om/root
      app/app
      state
@@ -164,14 +164,12 @@
     (sec/dispatch! (str (.getPath uri) (when-not (string/blank? (.getFragment uri))
                                          (str "#" (.getFragment uri)))))))
 
-(defn setup! []
-  (main app-state (sel1 :body))
-  (dispatch-to-current-location!)
-  (when-let [user (:current-user @app-state)]
-    (subscribe-to-user-channel user (get-in @app-state [:comms :ws])))
-  (when (env/development?)
-    (setup-browser-repl)))
+(defn ^:export setup! []
+  (let [state (app-state)]
+    (main state (sel1 :body))
+    (dispatch-to-current-location!)
+    (when-let [user (:current-user @state)]
+      (subscribe-to-user-channel user (get-in @state [:comms :ws])))
+    (when (env/development?)
+      (setup-browser-repl))))
 
-;; Wait for the page to finish loading before we kick off the setup
-;; process
-(set! (.-onload js/window) setup!)

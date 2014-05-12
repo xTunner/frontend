@@ -10,10 +10,9 @@
 ;; XXX: Replace logic to handle Gravatar/GitHub fallback
 (defn gravatar-url [user]
   [:img
-   {:height "30",
-    :width "30",
-    :src
-    "https://secure.gravatar.com/avatar/c0ca7580659419b084d64cc3c3e8d83c?s=30&d=https%3A%2F%2Fidenticons.github.com%2F47e9e116b0f57e67755afde0fce6e5d3.png",}])
+   {:height "30"
+    :width "30"
+    :src (-> user :selected_email utils/email->gravatar-url)}])
 
 (defn show-environment? [user]
   (:admin user))
