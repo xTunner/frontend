@@ -164,9 +164,19 @@
     (sec/dispatch! (str (.getPath uri) (when-not (string/blank? (.getFragment uri))
                                          (str "#" (.getFragment uri)))))))
 
+(defn handle-browser-resize
+  "Handles scrolling the container on the build page to the correct position when
+  the size of the browser window chagnes. Has to add an event listener at the top level."
+  [app-state]
+  (goog.events/listen
+   js/window "resize"
+   #(when (= :build (:navigation-point @app-state))
+      (put! controls-ch [:container-selected (get-in @app-state [:current-build :current-container-id] 0)]))))
+
 (defn setup! []
   (main app-state (sel1 :body))
   (dispatch-to-current-location!)
+  (handle-browser-resize app-state)
   (when-let [user (:current-user @app-state)]
     (subscribe-to-user-channel user (get-in @app-state [:comms :ws])))
   (when (env/development?)
