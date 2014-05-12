@@ -15,6 +15,6 @@ CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.DashboardP
     @title = "#{@branch} - #{@username}/#{@project}"
 
   refresh: () ->
-    page = @current_page()
+    page = @page_number()
     if page is 0
       VM.loadProject(@username, @project, @branch, page, true)

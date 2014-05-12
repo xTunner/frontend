@@ -9,6 +9,6 @@ CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.DashboardPag
     @show_branch = true
 
   refresh: () =>
-    page = @current_page()
+    page = @page_number()
     if page is 0
       VM.loadOrg(@username, page, true)

@@ -20,7 +20,7 @@ CI.inner.DashboardPage = class DashboardPage extends CI.inner.Page
       if VM.builds() && page <= 0
         disabled: true
 
-  current_page: () ->
+  page_number: () ->
     uri = URI(SammyApp.getLocation())
     query_params = uri.search(true)
     page = parseInt(query_params?.page) or 0
@@ -41,20 +41,22 @@ CI.inner.DashboardPage = class DashboardPage extends CI.inner.Page
       SammyApp.setLocation(uri.toString())
 
   load_older_page: (object) =>
-    @change_builds_page((page_num) =>
+    update_fn = (page_num) ->
       if VM.builds().length >= VM.builds_per_page
         page_num + 1
       else
-        page_num)
+        page_num
+    @change_builds_page(update_fn)
 
   load_newer_page: (object) =>
-    @change_builds_page((page_num) =>
+    update_fn = (page_num) ->
       if page_num > 0
         page_num - 1
       else
-        0)
+        0
+    @change_builds_page(update_fn)
 
   refresh: () ->
-    page = @current_page()
+    page = @page_number()
     if page is 0
       VM.loadRecentBuilds(page, true)
