@@ -20,6 +20,8 @@ CI.inner.DashboardPage = class DashboardPage extends CI.inner.Page
       if VM.builds() && page <= 0
         disabled: true
 
+    @can_paginate = true
+
   page_number: () ->
     uri = URI(SammyApp.getLocation())
     query_params = uri.search(true)

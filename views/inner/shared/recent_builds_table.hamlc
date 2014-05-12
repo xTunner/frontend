@@ -54,6 +54,7 @@
           %a{data-bind: "click: cancel_build", role: "button"}
             Cancel
 
+<!-- ko if: VM.current_page().can_paginate -->
 .recent-builds-pager{data-bind: "with: current_page()"}
   %a{data-bind: "click: load_newer_page, css: newer_page_button_style"}
     %i.fa.fa-long-arrow-left
@@ -61,3 +62,4 @@
   %a{data-bind: "click: load_older_page, css: older_page_button_style"}
     %span Next page
     %i.fa.fa-long-arrow-right
+<!-- /ko -->
