@@ -6,7 +6,7 @@
             [frontend.components.build-head :as build-head]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
@@ -70,7 +70,7 @@
     om/IRender
     (render [_]
       (let [build (:current-build data)
-            controls-ch (get-in data [:comms :controls])
+            controls-ch (get-in opts [:comms :controls])
             containers (build-model/containers build)]
         (html
          [:div#build-log-container
@@ -104,10 +104,10 @@
                 [:ul.container-list
                  (map #(container-pill % build controls-ch)
                       containers)]])
+
              (om/build build-steps/container-build-steps
-                       {:build build
-                        :containers containers
-                        :controls-ch controls-ch}
+                       {:containers containers
+                        :build build}
                        {:opts opts})
 
              (when (< 1 (count (:steps build)))
