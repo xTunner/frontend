@@ -14,7 +14,11 @@
   Returns the value of expr."
   {:added "1.0"}
   [label expr]
-  `(let [start# (.getTime (js/Date.))
-         ret# ~expr]
-     (prn (str ~label " elapsed time: " (- (.getTime (js/Date.)) start#) " msecs"))
+  `(let [global-start# (or (aget js/window "__global_time")
+                          (aset js/window "__global_time" (.getTime (js/Date.))))
+         start# (.getTime (js/Date.))
+         ret# ~expr
+         global-time# (- (.getTime (js/Date.)) global-start#)]
+     (aset js/window "__global_time" (.getTime (js/Date.)))
+     (prn (str ~label " elapsed time: " (- (.getTime (js/Date.)) start#) " ms, " global-time# " ms since last"))
      ret#))
