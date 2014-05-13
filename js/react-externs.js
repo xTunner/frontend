@@ -1286,7 +1286,7 @@ React.DOM.ul = function(props, children) {};
  * @return {React.ReactComponent}
  * @protected
  */
-React.DOM.var = function(props, children) {};
+React.DOM['var'] = function(props, children) {};
 
 /**
  * @param {Object=} props
