@@ -12,7 +12,7 @@
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]])
-  (:require-macros [frontend.utils :refer [inspect]]
+  (:require-macros [frontend.utils :refer [inspect timing]]
                    [dommy.macros :refer [node sel sel1]])
   (:import [goog.fx.dom.Scroll]))
 
@@ -104,9 +104,9 @@
   [target message container-id previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
-          current-scroll-top (inspect (.-scrollTop parent))
-          current-scroll-left (inspect (.-scrollLeft parent))
-          new-scroll-left (inspect (int (.-x (goog.style.getContainerOffsetToScrollInto container parent))))
+          current-scroll-top (.-scrollTop parent)
+          current-scroll-left (.-scrollLeft parent)
+          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))
           scroller (or (.-scroll_handler parent)
                        (set! (.-scroll_handler parent)
                              ;; Store this on the parent so that we don't handle parent scroll while
