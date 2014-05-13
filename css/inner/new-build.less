@@ -51,18 +51,18 @@
   top: 0px;
 }
 
-/* TODO: remove the :not(.current_container) when om is fully deployed
+// TODO: remove the :not(.current_container) when om is fully deployed
 .container-view:not(.current_container) {
   position: absolute;
 }
 
-/* TODO: remove om is fully deployed
+// TODO: remove om is fully deployed
 .container-view.current_container {
   position: relative;
 }
 
-/* Creates the selectors that will keep the proper container in view
-/* Generates #container_parent.selected_2 { #container_2 { position: relative; }}
+// Creates the selectors that will keep the proper container in view
+// Generates #container_parent.selected_2 { #container_2 { position: relative; }}
 .selectedX (@index) when (@index > -1) {
   (~"#container_parent.selected_@{index}") {
     (~"#container_@{index}") {
