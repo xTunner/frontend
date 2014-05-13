@@ -58,14 +58,14 @@ CI.inner.ConfigError = class ConfigError extends CI.inner.Obj
         # If there are any non-word characters in it,
         # render it like map access e.g. "map['a']".
         if /\W/.test part
-          "['#{part.replace /'/, '\'', 'g'}']"
+          "[#{JSON.stringify part}]"
         # Otherwise render it like field access.
         else
           if index == 0 then part else ".#{part}"
       # Otherwise (if it's e.g. a number) render it like
       # array access.
       else
-        "[#{part}]"
+        "[#{JSON.stringify part}]"
     ?.join ''
     # The flag that will be inserted.
     @flag =
