@@ -15,7 +15,7 @@
     %li
       %a{href: "/privacy"} Privacy
     %li
-      %a{href: "/privacy#security"} Security
+      %a{href: "/security"} Security
     %li
       %a{href: "/enterprise"} Enterprise
     %li
