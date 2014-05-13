@@ -5,7 +5,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
             [frontend.components.common :as common]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]
             [goog.string :as gstring]
@@ -96,18 +96,15 @@
                                 (clj->js {"__html"
                                           (action-model/format-output action)})}]]])])]]]])))))
 
-(defn container-view [data owner opts]
+(defn container-view [container owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [container (:container data)
-            container-id (container-model/id container)
-            build (:build data)
+      (let [container-id (container-model/id container)
             action-groups (group-by :type (:actions container))
-            controls-ch (:controls-ch data)]
+            controls-ch (get-in opts [:comms :controls])]
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
-                               :class (when (= container-id (get build :current-container-id 0)) "current_container")
                                :id (str "container_" (:index container))}
           (map (fn [[type actions]]
                  (list*
@@ -142,12 +139,11 @@
                                                    (put! controls-ch [:container-parent-scroll]))))
                                   :scroll "handle_browser_scroll"
                                   :window-resize "realign_container_viewport"
-                                  :resize-sensor "height_changed"}
+                                  :resize-sensor "height_changed"
+                                  :class (str "selected_" (get-in build [:current-container-id] 0))}
            ;; XXX handle scrolling and resize sensor
            ;; probably have to replace resize sensor with something else
            (map (fn [container] (om/build container-view
-                                          {:container container
-                                           :build build
-                                           :controls-ch controls-ch}
+                                          container
                                           {:opts opts}))
                 containers)]])))))
