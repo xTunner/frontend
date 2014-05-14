@@ -157,3 +157,16 @@ CI.inner.Annotated = class Annotated
     # Return the index of the place to insert things, or the place at the
     # end of the list if it's not contained in the list.
     return ix || @kids.length
+
+  # Get the character at a char-wise index and its annotations.
+  #
+  # >>> (new CI.inner.Annotations "abc").at(1) == { data : 'b' }
+  # >>> (new CI.inner.Annotations "abc").span(1, 2, (x) => x.y = 12).at(1) == { y: 12, data: 'b'}
+  at: (where) =>
+    here = 0
+    for kid in @kids
+      diff = where - here
+      here += kid?.data?.length || 0
+      if diff >= 0 and diff < kid?.data?.length
+        return _.extend {}, kid, { data: kid.data[diff] }
+
