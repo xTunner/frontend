@@ -38,7 +38,7 @@
 
     <!-- /ko -->
 
-  / ko if: projects_have_been_loaded
-  %aside
-    != HAML.sidebar({})
-  / /ko
+  -# / ko if: projects_have_been_loaded
+  -# %aside
+  -#   != HAML.sidebar({})
+  -# / /ko
