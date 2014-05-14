@@ -27,6 +27,7 @@ CI.inner.User = class User extends CI.inner.Obj
     repo_filter: ""
 
     recent_history_visible: false;
+    aside_is_slim: false;
 
   constructor: (json) ->
     super json,
@@ -224,4 +225,12 @@ CI.inner.User = class User extends CI.inner.Obj
     @plan?
 
   toggle_recent_history: () =>
-    @recent_history_visible(!@recent_history_visible())
+    if @aside_is_slim(false)
+      @recent_history_visible(!@recent_history_visible())
+    else
+      @recent_history_visible(false)
+
+  width_of_aside: () =>
+    @aside_is_slim(!@aside_is_slim())
+    if @aside_is_slim() and @recent_history_visible()
+      @recent_history_visible(false)
