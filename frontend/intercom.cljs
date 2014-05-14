@@ -1,5 +1,5 @@
 (ns frontend.intercom
-  (:require [frontend.utils :as utils]))
+  (:require [frontend.utils :as utils :include-macros true]))
 
 (defn intercom-jquery []
   (aget js/window "intercomJQuery"))

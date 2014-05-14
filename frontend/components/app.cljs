@@ -10,6 +10,7 @@
             [frontend.components.placeholder :as placeholder]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.common :as common]
+            [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [ankha.core :as ankha]

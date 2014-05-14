@@ -4,7 +4,7 @@
             [frontend.models.build :as build-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format
             [om.core :as om :include-macros true]

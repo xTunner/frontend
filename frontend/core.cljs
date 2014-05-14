@@ -24,7 +24,7 @@
             [frontend.utils :as utils :refer [mlog merror third]]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect]])
+                   [frontend.utils :refer [inspect timing]])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (enable-console-print!)

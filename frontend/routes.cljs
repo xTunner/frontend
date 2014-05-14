@@ -3,7 +3,7 @@
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
             [frontend.models.project :as proj-mod]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.history Html5History]

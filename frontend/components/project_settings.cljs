@@ -6,7 +6,7 @@
             [frontend.models.project :as project-model]
             [frontend.components.common :as common]
             [frontend.routes :as routes]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]

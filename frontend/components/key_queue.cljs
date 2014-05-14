@@ -12,7 +12,7 @@
             [clojure.string :refer [join split]]
             [dommy.core :as dommy]
             [sablono.core :as html :include-macros true]
-            [frontend.utils :as utils])
+            [frontend.utils :as utils :include-macros true])
   (:require-macros [cljs.core.async.macros :as async]))
 
 (def code->key
