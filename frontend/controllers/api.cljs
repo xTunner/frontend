@@ -67,7 +67,11 @@
 (defmethod api-event [:build :success]
   [target message status args state]
   (mlog "build success")
-  (assoc-in state [:current-build] (:resp args)))
+  (let [build (:resp args)
+        containers (vec (build-model/containers build))]
+    (assoc-in state [:current-build] (-> build
+                                         (assoc :containers containers)
+                                         (dissoc :steps)))))
 
 (defmethod api-event [:retry-build :started]
   [target message status {:keys [build-id]} state]
@@ -127,7 +131,7 @@
   [target message status args state]
   (let [action-log (:resp args)
         {:keys [index step]} (:context args)]
-    (assoc-in state [:current-build :steps step :actions index :output] action-log)))
+    (assoc-in state [:current-build :containers index :actions step :output] action-log)))
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]

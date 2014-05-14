@@ -71,7 +71,7 @@
     (render [_]
       (let [build (:current-build data)
             controls-ch (get-in opts [:comms :controls])
-            containers (build-model/containers build)]
+            containers (:containers build)]
         (html
          [:div#build-log-container
           (if-not build

@@ -149,10 +149,10 @@
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
-  (when (and (get-in current-state [:current-build :steps step :actions index :show-output])
-             (not (get-in current-state [:current-build :steps step :actions index :output])))
+  (when (and (get-in current-state [:current-build :containers index :actions step :show-output])
+             (not (get-in current-state [:current-build :containers index :actions step :output])))
     (let [api-ch (get-in current-state [:comms :api])
-          action (get-in current-state [:current-build :steps step :actions index])
+          action (get-in current-state [:current-build :containers index :actions step])
           url (if (:output_url action)
                 (:output_url action)
                 (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
