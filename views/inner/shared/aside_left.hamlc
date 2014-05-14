@@ -1,6 +1,8 @@
-%nav.aside-left-nav{data-bind: "with: current_user"}
-  .aside-item.logo
-    != HAML.ico(n:'logo')
+<!-- ko with: current_user -->
+%nav.aside-left-nav{data-bind: "css: {slim: aside_is_slim}"}
+  .aside-item.logo{data-bind: "click: width_of_aside"}
+    .logomark
+      != HAML.ico(n:'logo')
   %a.aside-item{href: "/"}
     %i.fa.fa-dashboard
     %span Dashboard
@@ -21,14 +23,17 @@
     -#   - for i in [0..50]
     -#     %li.test test-branch-name
     %ul
-      <!-- ko foreach: {data: $root.followed_projects(), as: 'project'} -->
-        <!-- ko foreach: {data: project.branch_names_to_show(), as: 'branch_name'} -->
+      <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
+        <!-- ko foreach: {data: p.branch_names_to_show(), as: 'b'} -->
           %li
-            %a{data-bind: "attr: {href: project.branch_path(branch_name), title: 'View ' + project.format_branch_name(branch_name) + ' builds only'}, text: project.format_branch_name(branch_name, 23)"}
-            %span{data-bind: "foreach: {data: project.recent_branch_builds(branch_name), as: 'recent'}"}
-              -# %a{data-bind: "attr: {href: project.build_path(build_num)}, css: status"}
+            %a{data-bind: "attr: {href: p.branch_path(b)}"}
+              %span{data-bind: "text: p.format_branch_name(b, 23)"}
+            <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
+              -# %a{data-bind: "attr: {href: p.build_path(build_num)}, css: status"}
                 -# %i.fa{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
+            %a{data-bind: "attr: {href: p.build_path(build_num)}, css: status"}
               != HAML.ico(n:'fail-light')
+            <!-- /ko -->
         <!-- /ko -->
       <!-- /ko -->
   .aside-slideup
@@ -41,5 +46,6 @@
     %a.aside-item{href: "/logout"}
       %i.fa.fa-sign-out
       %span Logout
+<!-- /ko -->
 
 
