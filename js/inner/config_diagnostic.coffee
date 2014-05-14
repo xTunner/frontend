@@ -27,6 +27,10 @@ CI.inner.Diagnostics = class Diagnostics extends CI.inner.Obj
     .map (err, ix) =>
       new CI.inner.ConfigError err, ix, this
     .forEach (err, ix) =>
+      # We don't ever want to point directly after a newline.
+      if @ann.at(err.end.index - 1)?.data == '\n'
+        err.end.line -= 1
+        err.end.index -= 1
       # Insert the error flag.
       @ann.insert err.end.index, err.flag
       # Highlight the text of this error.
@@ -169,4 +173,3 @@ CI.inner.Annotated = class Annotated
       here += kid?.data?.length || 0
       if diff >= 0 and diff < kid?.data?.length
         return _.extend {}, kid, { data: kid.data[diff] }
-
