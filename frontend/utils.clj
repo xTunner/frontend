@@ -22,3 +22,14 @@
      (aset js/window "__global_time" (.getTime (js/Date.)))
      (prn (str ~label " elapsed time: " (- (.getTime (js/Date.)) start#) " ms, " global-time# " ms since last"))
      ret#))
+
+(defmacro swallow-errors
+  "wraps errors in a try/catch statement, logging issues to the console
+   and optionally rethrowing them if configured to do so."
+  [action]
+  `(try ~action
+        (catch js/Error e#
+          (merror e#)
+          (when (:rethrow-errors? initial-query-map)
+            (js* "debugger;")
+            (throw e#)))))
