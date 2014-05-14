@@ -28,7 +28,16 @@
     "db" "You specified this command on the project settings page"
     "Unknown source"))
 
-(defn build-output [action owner opts]
+(defn output [out owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:span.pre {:dangerouslySetInnerHTML
+                   (clj->js {"__html"
+                             (:converted-message out)})}]))))
+
+(defn action [action owner opts]
   (reify
     om/IRender
     (render [_]
@@ -94,9 +103,14 @@
                         {:title "The full bash comand used to run this setup"}
                         (:bash_command action)]])
                     [:pre.output.solarized {:style {:white-space "normal"}}
-                     [:span.pre {:dangerouslySetInnerHTML
-                                 (clj->js {"__html"
-                                           (action-model/format-output action)})}]]])])]]]]])))))
+                     (when (:truncated action)
+                       [:span.truncated "(this output has been truncated)"])
+                     (om/build-all output (:output action) {:opts opts
+                                                            :key :time})
+                     [:span {:dangerouslySetInnerHTML
+                             (clj->js {"__html" (action-model/trailing-output action)})}]
+                     (when (:truncated action)
+                       [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
 
 (defn container-view [container owner opts]
   (reify
@@ -107,7 +121,7 @@
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
-          (om/build-all build-output (:actions container) {:opts opts :key :step})])))))
+          (om/build-all action (:actions container) {:opts opts :key :step})])))))
 
 (defn container-build-steps [data owner opts]
   (reify

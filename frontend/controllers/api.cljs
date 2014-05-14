@@ -2,6 +2,7 @@
   (:require [cljs.reader :as reader]
             [clojure.string :as string]
             [cljs.core.async :refer [put!]]
+            [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.utils :as utils :refer [mlog mwarn merror]])
@@ -131,7 +132,9 @@
   [target message status args state]
   (let [action-log (:resp args)
         {:keys [index step]} (:context args)]
-    (assoc-in state [:current-build :containers index :actions step :output] action-log)))
+    (-> state
+        (assoc-in [:current-build :containers index :actions step :output] action-log)
+        (update-in [:current-build :containers index :actions step] action-model/format-output 0))))
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]
