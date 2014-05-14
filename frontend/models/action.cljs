@@ -21,14 +21,23 @@
                                                       (js/Date.parse start_time)))
         :else nil))
 
-(defn format-output [action]
-  (let [out-converter (js/CI.terminal.ansiToHtmlConverter "brblue")
-        err-converter (js/CI.terminal.ansiToHtmlConverter "red")]
-    (str (reduce (fn [acc output]
-                   (let [converter (if (= "err" (:type output))
-                                     err-converter
-                                     out-converter)]
-                     (str acc (.append converter (gstring/htmlEscape (:message output))))))
-                 "" (:output action))
-         (.get_trailing out-converter)
-         (.get_trailing err-converter))))
+(defn new-converter [action type]
+  (let [default-color (if (= :err :type) "red" "brblue")
+        starting-state (clj->js (get-in action [:converters-state type]))]
+    (js/CI.terminal.ansiToHtmlConverter default-color starting-state)))
+
+(defn format-output [action output-index]
+  (let [output (get-in action [:output output-index])
+        converter (new-converter action (keyword (:type output)))]
+    (-> action
+        (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
+        (assoc-in [:converters-state (keyword (:type output))] (js->clj (.currentState converter) :keywordize-keys true)))))
+
+(defn format-latest-output [action]
+  (if-let [output (seq (:output action))]
+    (format-output action (dec (count output)))
+    action))
+
+(defn trailing-output [action]
+  (str (get-in action [:converters-state :out :trailing_out])
+       (get-in action [:converters-state :err :trailing_out])))
