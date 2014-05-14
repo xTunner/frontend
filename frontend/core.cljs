@@ -88,7 +88,7 @@
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance)]
-    (routes/define-routes! state history-imp)
+    (routes/define-routes! state)
     (om/root
      app/app
      state
