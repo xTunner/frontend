@@ -43,7 +43,7 @@
         (reset! keymap {["ctrl+s"] persist-state!
                         ["ctrl+r"] restore-state!})
         (html/html
-         [:div.inner
+         [:div {:class (if (:current-user app) "inner" "outer")}
           (om/build keyq/KeyboardHandler app
                     {:opts {:keymap keymap
                             :error-ch (get-in app [:comms :errors])}})

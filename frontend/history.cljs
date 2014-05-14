@@ -37,9 +37,12 @@
                           target (if (= (.-tagName -target) "A")
                                    -target
                                    (.getAncestorByTagNameAndClass dom-helper -target "A"))
+                          _ (aset js/window "target" target)
                           path (when target (str (.-pathname target) (.-search target) (.-hash target)))]
                       (when (and (seq path)
-                                 (not= "_blank" (.-target target)))
+                                 (not= "_blank" (.-target target))
+                                 (= (.. js/window -location -hostname)
+                                    (.-hostname target)))
                         (utils/mlog "navigating to" path)
                         (.setToken history-imp (subs path 1))
                         (.stopPropagation %)

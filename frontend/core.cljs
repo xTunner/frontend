@@ -59,7 +59,7 @@
   ws-ch
   (chan))
 
-(def app-state
+(defn app-state []
   (atom (assoc (state/initial-state)
           :current-user (-> js/window
                             (aget "renderContext")
@@ -88,7 +88,7 @@
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance)]
-    (routes/define-routes! state)
+    (routes/define-routes! state history-imp)
     (om/root
      app/app
      state
@@ -164,6 +164,7 @@
     (sec/dispatch! (str (.getPath uri) (when-not (string/blank? (.getFragment uri))
                                          (str "#" (.getFragment uri)))))))
 
+
 (defn handle-browser-resize
   "Handles scrolling the container on the build page to the correct position when
   the size of the browser window chagnes. Has to add an event listener at the top level."
@@ -173,7 +174,7 @@
    #(when (= :build (:navigation-point @app-state))
       (put! controls-ch [:container-selected (get-in @app-state [:current-build :current-container-id] 0)]))))
 
-(defn setup! []
+(defn ^:export setup! []
   (main app-state (sel1 :body))
   (dispatch-to-current-location!)
   (handle-browser-resize app-state)
