@@ -12,19 +12,26 @@
 ;; see this.transformer_ at http://goo.gl/ZHLdwa
 (def ^{:doc "Custom token transformer that preserves hashes"}
   token-transformer
-  (clj->js {:retrieveToken (fn [path-prefix location]
-                             ;; XXX may break with advanced compilation
-                             (str (subs (.-pathname location) (count path-prefix))
-                                  (when-let [hash (second (string/split (.-href location) #"#"))]
-                                    (str "#" hash))))
-            :createUrl (fn [token path-prefix location]
-                         (let [[path hash] (string/split token #"#")]
-                           (str path-prefix
-                                path
-                                ;; comment out for now, need to figure out how to combine
-                                ;; location search and the search already in the token
-                                ;; (.-search location)
-                                (when hash (str "#" hash)))))}))
+  (let [transformer (js/Object.)]
+    (set! (.-retrieveToken transformer)
+          (fn [path-prefix location]
+            ;; XXX may break with advanced compilation
+            (utils/inspect location)
+            (str (subs (.-pathname location) (count path-prefix))
+                 (when-let [hash (second (string/split (.-href location) #"#"))]
+                   (str "#" hash)))))
+
+    (set! (.-createUrl transformer)
+          (fn [token path-prefix location]
+            (let [[path hash] (string/split token #"#")]
+              (str path-prefix
+                   path
+                   ;; comment out for now, need to figure out how to combine
+                   ;; location search and the search already in the token
+                   ;; (.-search location)
+                   (when hash (str "#" hash))))))
+
+    transformer))
 
 (defn setup-dispatcher! [history-imp]
   (events/listen history-imp goog.history.EventType.NAVIGATE
