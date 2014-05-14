@@ -13,6 +13,9 @@ CI.inner.Diagnostics = class Diagnostics extends CI.inner.Obj
     # Keep track of the end positions of errors, so we don't have
     # to search the list of errors more than once.
     @errors_by_end = {}
+    # Keep track of which lines have errors on them.
+    # (semantically a set; all entries will be `true`)
+    @lines_with_errors = {}
     # Iterate over the errors (sorted by end positions so that the flags
     # are displayed in order) and do the following things:
     # * Save them in @errors_by_end according to the line they end on,
@@ -35,13 +38,17 @@ CI.inner.Diagnostics = class Diagnostics extends CI.inner.Obj
       # than the one we've seen, respectively.
       @first = Math.min @first, err.start.line
       @last = Math.max @last, err.end.line
+      # Mark all the lines that make up this error to be highlighted
+      # on the edge.
+      for i in [err.start.line..err.end.line]
+        @lines_with_errors[i] = true
     # Create a list of lines with associated data for easier rendering.
     @lines = (@ann.split '\n')
     .map (pieces, ix) =>
       line: ix + 1
       errors: @errors_by_end[ix]
       pieces: pieces
-      has_errors: @errors_by_end[ix]?.length > 0
+      has_errors: !!@lines_with_errors[ix]
     # And narrow the lines to three before and three after.
     .filter (_, ix) =>
       ix >= @first - 3 and ix <= @last + 3
