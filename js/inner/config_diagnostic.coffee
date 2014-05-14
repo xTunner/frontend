@@ -147,4 +147,6 @@ CI.inner.Annotated = class Annotated
       else
         splitting.push kid
     @kids = splitting
-    return ix || @kids.length - 1
+    # Return the index of the place to insert things, or the place at the
+    # end of the list if it's not contained in the list.
+    return ix || @kids.length
