@@ -175,14 +175,11 @@
       (put! controls-ch [:container-selected (get-in @app-state [:current-build :current-container-id] 0)]))))
 
 (defn ^:export setup! []
-  (main app-state (sel1 :body))
-  (dispatch-to-current-location!)
-  (handle-browser-resize app-state)
-  (when-let [user (:current-user @app-state)]
-    (subscribe-to-user-channel user (get-in @app-state [:comms :ws])))
-  (when (env/development?)
-    (setup-browser-repl)))
-
-;; Wait for the page to finish loading before we kick off the setup
-;; process
-(set! (.-onload js/window) setup!)
+  (let [state (app-state)]
+    (main state (sel1 :body))
+    (dispatch-to-current-location!)
+    (handle-browser-resize state)
+    (when-let [user (:current-user @state)]
+      (subscribe-to-user-channel user (get-in @state [:comms :ws])))
+    (when (env/development?)
+      (setup-browser-repl))))
