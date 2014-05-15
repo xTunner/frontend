@@ -32,10 +32,19 @@
   (reify
     om/IRender
     (render [_]
-      (html
-       [:span.pre {:dangerouslySetInnerHTML
-                   (clj->js {"__html"
-                             (:converted-message out)})}]))))
+      (let [message-html (:converted-message out)]
+        (html
+         [:span.pre {:dangerouslySetInnerHTML
+                     #js {"__html" message-html}}])))))
+
+(defn trailing-output [converters-state owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [trailing-out (action-model/trailing-output converters-state)]
+        (html
+         [:span {:dangerouslySetInnerHTML
+                 #js {"__html" trailing-out}}])))))
 
 (defn action [action owner opts]
   (reify
@@ -107,8 +116,9 @@
                        [:span.truncated "(this output has been truncated)"])
                      (om/build-all output (:output action) {:opts opts
                                                             :key :time})
-                     [:span {:dangerouslySetInnerHTML
-                             (clj->js {"__html" (action-model/trailing-output action)})}]
+
+                     (om/build trailing-output (:converters-state action) {:opts opts})
+
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
 
@@ -133,9 +143,9 @@
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
-                                              (when (not= 0 (.-deltaX e))
+                                              (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (aset js/document.body "scrollTop" (+ js/document.body.scrollTop (.-deltaY e)))))
+                                                (aset js/document.body "scrollTop" (+ (aget js/document.body "scrollTop") (aget e "deltaY")))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container

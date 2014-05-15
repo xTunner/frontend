@@ -38,6 +38,6 @@
     (format-output action (dec (count output)))
     action))
 
-(defn trailing-output [action]
-  (str (get-in action [:converters-state :out :trailing_out])
-       (get-in action [:converters-state :err :trailing_out])))
+(defn trailing-output [converters-state]
+  (str (get-in converters-state [:out :trailing_out])
+       (get-in converters-state [:err :trailing_out])))
