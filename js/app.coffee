@@ -178,8 +178,9 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @builds_have_been_loaded(false)
 
     position = {offset: page * @builds_per_page, limit: @builds_per_page}
+    params = _.extend(position, {shallow: true})
 
-    $.getJSON path, position, (data) =>
+    $.getJSON path, params, (data) =>
       @builds(new CI.inner.Build d for d in data)
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
