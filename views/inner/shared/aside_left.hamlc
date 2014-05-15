@@ -17,7 +17,7 @@
     %span Chat Support
   %a.aside-item{href: "#", data-bind: "click: toggle_recent_history"}
     %i.fa.fa-clock-o
-    %span Recent History
+    %span Report Card
   .aside-recent-history{data-bind: "css: {open: recent_history_visible}"}
     -# %ul
     -#   - for i in [0..50]
@@ -30,14 +30,13 @@
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         <!-- ko foreach: {data: p.branch_names_to_show(), as: 'b'} -->
           %li
-            %a{data-bind: "attr: {href: p.branch_path(b)}"}
+            .status
+              <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
+                %a{data-bind: "attr: {href: p.build_path(build_num)}, css: status"}
+                  != HAML.ico(n:'fail-light')
+              <!-- /ko -->
+            %a.branch{data-bind: "attr: {href: p.branch_path(b)}"}
               %span{data-bind: "text: p.format_branch_name(b, 23)"}
-            <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
-              -# %a{data-bind: "attr: {href: p.build_path(build_num)}, css: status"}
-                -# %i.fa{data-bind: "css: status_icon_class, tooltip: {title: tooltip_title, animation: false}"}
-            %a{data-bind: "attr: {href: p.build_path(build_num)}, css: status"}
-              != HAML.ico(n:'fail-light')
-            <!-- /ko -->
         <!-- /ko -->
       <!-- /ko -->
   .aside-slideup

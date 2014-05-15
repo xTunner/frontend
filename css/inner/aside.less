@@ -84,36 +84,35 @@
   }
   .aside-recent-history {
     @scrollbar: 5px;
-    @history_count: 5;
     @em: @codeFontSize;
-    @width: (@aside_nav_width - @scrollbar);
-    @real_width: (@width - (@em * @history_count) - @em - (@em - @scrollbar));
     .flexy(column);
+    font-family: @codeFontFamily;
+    font-size: @em;
+    color: @blue;
     background: fade(@black, 0);
-    transition: 200ms;
+    opacity: 0;
+    padding-top: @em;
+    transition: opacity 400ms, padding 0ms 400ms, background 400ms;
     overflow: hidden;
     height: 100%;
     &.open {
       .shadow_deboss(@blueDarkest);
       background: fade(@black, 8);
+      opacity: 1;
+      padding: 0;
+      transition: opacity 400ms 100ms, padding 400ms ease-out, background 200ms;
       + .aside-slideup {
         box-shadow: 0 -8px 13px fade(@black, 21);
         transition-delay: 100ms;
       }
       ul {
         overflow-y: auto;
-        opacity: 1;
-        margin: 0;
-        transition: opacity 400ms 100ms, margin 400ms ease-out;
       }
     }
     ul {
-      font-family: @monoFontFamily;
-      font-size: @em;
+      height: 100%;
+      margin: 0;
       list-style: none;
-      opacity: 0;
-      margin: @baseFontSize 0 0;
-      transition: opacity 400ms, margin 0ms 400ms;
       &::-webkit-scrollbar {
         width: @scrollbar;
       }
@@ -129,20 +128,48 @@
     li {
       .flexy();
       .box-sizing(border-box);
-      width: @width;
-      height: @em;
-      line-height: @em;
-      padding: 0 (@em - @scrollbar) 0 @em;
-      margin: @em 0;
-      color: @blue;
-      white-space: nowrap;
-      a {
-        &:first-child {
-          max-width: (@codeCharacterWidth * round(@real_width / @codeCharacterWidth));
-          margin-right: auto;
-          overflow: hidden;
-          text-overflow: ellipsis;
+      width: (@aside_nav_width - @scrollbar);
+      &:hover {
+        .status {
+          a {
+            &:not(:first-child) {
+              transition-delay: 1000ms; // delay meant to give user time to hover over to branch name
+            }
+          }
+          &:hover {
+            a {
+              &:not(:first-child) {
+                opacity: 1;
+                margin-left: 0;
+                transition: 100ms 0ms; // open quickly to limit interation delay
+              }
+            }
+          }
         }
+      }
+    }
+    .status {
+      .flex(0, 0, auto);
+      .flexy(center);
+      a {
+        @s: (2 * @em);
+        .flex(0, 0, @s);
+        .icon_style(@white, @s);
+        height: @s;
+        &:not(:first-child) {
+          opacity: 0;
+          margin-left: -@s;
+          transition-duration: 500ms; // close slower than opening, less jarring
+        }
+      }
+    }
+    .branch {
+      .flex(1, 1, auto);
+      .flexy(center);
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   }
@@ -156,7 +183,7 @@
     a {
       &:last-child {
         margin-bottom: ((@items - @items_visible) * -@block_size);
-        transition: margin (@base_transition * 4) ease-in-out;
+        transition: margin 400ms ease-in-out;
       }
       &:hover,
       &:focus {
