@@ -24,7 +24,7 @@
             [frontend.utils :as utils :refer [mlog merror third]]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing]])
+                   [frontend.utils :refer [inspect timing swallow-errors]])
   (:use-macros [dommy.macros :only [node sel sel1]]))
 
 (enable-console-print!)
@@ -80,6 +80,43 @@
                   :mouse-up {:ch mouse-up-ch
                              :mult (async/mult mouse-up-ch)}})))
 
+(defn controls-handler
+  [value state container]
+  (when true (:log-channels? utils/initial-query-map)
+        (mlog "Controls Verbose: " value))
+  (swallow-errors
+   (let [previous-state @state]
+     (swap! state (partial controls-con/control-event container (first value) (second value)))
+     (controls-pcon/post-control-event! container (first value) (second value) previous-state @state))))
+
+(defn nav-handler
+  [value state history]
+  (when true (:log-channels? utils/initial-query-map)
+        (mlog "Navigation Verbose: " value))
+  (swallow-errors
+   (let [previous-state @state]
+     (swap! state (partial nav-con/navigated-to history (first value) (second value)))
+     (nav-pcon/post-navigated-to! history (first value) (second value) previous-state @state))))
+  
+(defn api-handler
+  [value state container]
+  (when true (:log-channels? utils/initial-query-map)
+        (mlog "API Verbose: " (first value) (second value) (utils/third value)))
+  (swallow-errors
+    (let [previous-state @state]
+      (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
+      (api-pcon/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
+
+(defn ws-handler
+  [value state pusher]
+  (when true (:log-channels? utils/initial-query-map)
+        (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
+  (swallow-errors
+    (let [previous-state @state]
+      ;; XXX: should these take the container like the rest of the controllers?
+      (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
+      (ws-pcon/post-ws-event! pusher (first value) (second value) previous-state @state))))
+
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
         target-name "app"
@@ -96,51 +133,10 @@
       :opts {:comms comms}})
     (go (while true
           (alt!
-           (:controls comms) ([v]
-                                (when true (:log-channels? utils/initial-query-map)
-                                      (mlog "Controls Verbose: " v))
-                                (try
-                                  (let [previous-state @state]
-                                    (swap! state (partial controls-con/control-event container (first v) (second v)))
-                                    (controls-pcon/post-control-event! container (first v) (second v) previous-state @state))
-                                  (catch js/Error e
-                                    (merror e)
-                                    (when (:rethrow-errors? utils/initial-query-map)
-                                      (throw e)))))
-           (:nav comms) ([v]
-                           (when true (:log-channels? utils/initial-query-map)
-                                 (mlog "Navigation Verbose: " v))
-                           (try
-                             (let [previous-state @state]
-                               (swap! state (partial nav-con/navigated-to history-imp (first v) (second v)))
-                               (nav-pcon/post-navigated-to! history-imp (first v) (second v) previous-state @state))
-                             (catch js/Error e
-                               (merror e)
-                               (when (:rethrow-errors? utils/initial-query-map)
-                                 (throw e)))))
-           (:api comms) ([v]
-                           (when true (:log-channels? utils/initial-query-map)
-                                 (mlog "API Verbose: " (first v) (second v) (drop 2 v)))
-                           (try
-                             (let [previous-state @state]
-                               (swap! state (partial api-con/api-event container (first v) (second v) (utils/third v)))
-                               (api-pcon/post-api-event! container (first v) (second v) (utils/third v) previous-state @state))
-                             (catch js/Error e
-                               (merror e)
-                               (when (:rethrow-errors? utils/initial-query-map)
-                                 (throw e)))))
-           (:ws comms) ([v]
-                           (when true (:log-channels? utils/initial-query-map)
-                                 (mlog "websocket Verbose: " (pr-str (first v)) (second v) (drop 2 v)))
-                           (try
-                             (let [previous-state @state]
-                               ;; XXX: should these take the container like the rest of the controllers?
-                               (swap! state (partial ws-con/ws-event pusher-imp (first v) (second v)))
-                               (ws-pcon/post-ws-event! pusher-imp (first v) (second v) previous-state @state))
-                             (catch js/Error e
-                               (merror e)
-                               (when (:rethrow-errors? utils/initial-query-map)
-                                 (throw e)))))
+           (:controls comms) ([v] (controls-handler v state container))
+           (:nav comms) ([v] (nav-handler v state history-imp))
+           (:api comms) ([v] (api-handler v state container))
+           (:ws comms) ([v] (ws-handler v state pusher-imp))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))
