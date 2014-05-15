@@ -1,15 +1,7 @@
 #settings-plans
   .plans-item
-    %h2 Pricing
-  .plans-item
-    .alert.alert-info
-      %p
-        Plans have moved to the Organizations settings page. You can select a plan from the organization's settings page on any organization that you're an admin on.
-      %p
-        If you previously had a plan on your account, it has moved to your "personal" org. You can edit the plan from
-        != succeed ".", ->
-          %a{data-bind: "attr: {href: CI.paths.org_settings(VM.current_user().login, 'plan')}"}<
-            its settings page
+    %h2 Org Settings
+  
   .plans-item
     %h4 Set up a plan for one of your Organizations:
     %p You can set up plans for any organization that you admin.
