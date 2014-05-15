@@ -35,7 +35,7 @@
 
 (defn setup-dispatcher! [history-imp]
   (events/listen history-imp goog.history.EventType.NAVIGATE
-                 #(sec/dispatch! (str "/" (aget % "token")))))
+                 #(sec/dispatch! (str "/" (.-token %)))))
 
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (let [dom-helper (goog.dom.DomHelper.)]
