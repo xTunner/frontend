@@ -87,7 +87,7 @@
     @history_count: 5;
     @em: @codeFontSize;
     @width: (@aside_nav_width - @scrollbar);
-    @real_width: (@width - (@em * @history_count) - (@em * 2));
+    @real_width: (@width - (@em * @history_count) - @em - (@em - @scrollbar));
     .flexy(column);
     background: fade(@black, 0);
     transition: 200ms;
@@ -132,7 +132,7 @@
       width: @width;
       height: @em;
       line-height: @em;
-      padding: 0 @em;
+      padding: 0 (@em - @scrollbar) 0 @em;
       margin: @em 0;
       color: @blue;
       white-space: nowrap;
