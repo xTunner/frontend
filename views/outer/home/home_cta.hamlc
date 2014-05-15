@@ -11,4 +11,4 @@
       %p
         %i
           CircleCI keeps your code safe.
-          %a{href: "/privacy#security", title: "Security"} Learn how.
+          %a{href: "/security", title: "Security"} Learn how.

@@ -1,4 +1,4 @@
-%div{data-bind: "if: failed() && !infrastructure_fail()"}
+%div{data-bind: "if: failed() && !infrastructure_fail() && !(circle_yml() && circle_yml().errors)"}
   .alert.alert-danger
     .alert-wrap
       Error!
