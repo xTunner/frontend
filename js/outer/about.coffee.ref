@@ -98,7 +98,7 @@ CI.outer.About = class About extends CI.outer.Page
       ]
     "worldsoup":
       name: "Nick Gottlieb"
-      img_path: ''
+      img_path: '(asset-path "img/outer/about/nick.png")'
       visible: true
       role: "Marketing Engineer"
       github: "worldsoup"
@@ -116,7 +116,7 @@ CI.outer.About = class About extends CI.outer.Page
       bio: ""
     "venantius":
       name: "Dave Jarvis"
-      img_path: ''
+      img_path: '(asset-path "img/outer/about/dave.png")'
       visible: true
       role: "Developer"
       github: "venantius"
@@ -125,7 +125,7 @@ CI.outer.About = class About extends CI.outer.Page
       bio: ""
     "startling":
       name: "Tim Dixon"
-      img_path: ''
+      img_path: '(asset-path "img/outer/about/tim.png")'
       visible: true
       role: "Developer"
       github: "startling"
@@ -143,7 +143,7 @@ CI.outer.About = class About extends CI.outer.Page
       bio: ""
     "jballanc":
       name: "Joshua Ballanco"
-      img_path: ''
+      img_path: '(asset-path "img/outer/about/josh.png")'
       visible: true
       role: "Developer"
       github: "jballanc"
