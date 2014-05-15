@@ -143,9 +143,9 @@
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
-                                              (when (not= 0 (.-deltaX e))
+                                              (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (aset js/document.body "scrollTop" (+ js/document.body.scrollTop (.-deltaY e)))))
+                                                (aset js/document.body "scrollTop" (+ (aget js/document.body "scrollTop") (aget e "deltaY")))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container
