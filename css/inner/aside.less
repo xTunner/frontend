@@ -156,6 +156,9 @@
         .flex(0, 0, @s);
         .icon_style(transparent, @s);
         height: @s;
+        &:first-child {
+          padding-left: @em;
+        }
         &:not(:first-child) {
           opacity: 0;
           margin-left: -@s;
