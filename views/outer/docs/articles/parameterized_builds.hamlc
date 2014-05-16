@@ -1,33 +1,40 @@
 - @title = 'Parameterized Builds'
-- @lastUpdate = "May 2, 2014"
+- @lastUpdated = "May 16, 2014"
 
 
 %h2#intro Intro
 
 %p
-  The Parameterized Build API is currently available as an early-access
-  preview. The API and functionality may change based on what we learn from
-  your feedback.
+  The Parameterized Build API is currently available as an early-access preview.
+  The API and functionality may change based on what we learn from your feedback.
 
 %p
   The Parameterized Build API allows you to trigger a build using the
   %a{href: "/docs/api"}
     CircleCI API
-  and inject key-value pairs which are made available within the containers that run the build.
+  and inject environment variables which are made available within the containers that run the build.
 
 %p
-  These key-value pairs can then be used to influence the steps that are run during the build.
+  These environment variables can then be used to influence the steps that are run during the build.
 
 %p
   For instance:
   %br
-    You may have a build with a deploy step to a staging environment. Once the deployment to staging is over you'd like to run integration tests against it. You even have a build configured which can run your integration tests but you want to be able to run that build against different target hosts.
+    You may have a build with a deploy step to a staging environment.
+    %ul
+      %li Once the deployment to staging is over you'd like to run functional tests against it.
+      %li You even have a build configured which can run your functional tests but you want to be able to run that build against different target hosts.
 
 %p
-  Build parameters allow you to use your integration test build against different targets on each run.
+  Build parameters allow you to use your functional test build against different targets on each run.
 
 %p
-  The current implementation is intentionally basic, the idea is to find out what you build and how you would like to build it so we can iterate quickly before stabilizing the API. As such, either the API or how parameters are exposed during a build could change during the early-access period. We'll communicate any changes before rolling them out.
+  The current implementation is intentionally basic, the idea is to find out what you build and how you would like to build it so we can iterate quickly before stabilizing the API.
+  As such, either the API or how parameters are exposed during a build could change during the early-access period.
+  We'll communicate any changes before rolling them out.
+
+%p
+  Note: all the examples use <code>bash</code> and <code>curl</code> but there is nothing to stop you using your favourite HTTP library in your language of choice.
 
 
 %h3#detail Triggering Parameterized Builds
@@ -37,7 +44,8 @@
     %a{href: "/docs/api#new-build"} the trigger new build API
 
 %p
-  A POST with an empty body will trigger a new build of the named branch. You can include build parameters by sending a JSON body (with <code>Content-type</code> <code>application/json</code>):
+  A POST with an empty body will trigger a new build of the named branch.
+  You can include build parameters by sending a JSON body with <code>Content-type: application/json</code>:
   %pre
     %code.json<>
       :preserve
@@ -49,35 +57,154 @@
         }
 
 %p
-E.g.
+  E.g. using <code>curl</code>
   %pre
     %code.bash<>
       :preserve
-        curl
-          --header "Content-Type: application/json"
-          --data '{"build_parameters": {"param1": 5}}'
-          --request POST
-          http://circleci.com/api/v1/project/circleci/mongofinil/tree/master?circle-token=$CIRCLE_TOKEN
+        curl \\
+          --header "Content-Type: application/json" \\
+          --data '{"build_parameters": {"param1": "value1", "param2": 500}}' \\
+          --request POST \\
+          https://circleci.com/api/v1/project/circleci/mongofinil/tree/master?circle-token=$CIRCLE_TOKEN
+
+  The build will see the environment variables:
+  %pre
+    %code.bash<>
+      :preserve
+        export param1="value1"
+        export param2="500"
+
+%h3#constraints Constraints
+%p
+  The order that build parameters are loaded in isn't guaranteed so you shouldn't interpolate one build parameter into another.
+  It's best to think of build parameters as an unordered list of independent environment variables. 
 
 %p
-  Keys have to meet the following constraints:
+  Since build parameters are just environment variables their names have to meet the following restrictions:
   %ol
     %li They must contain only ASCII letters, digits and the underscore character.
     %li They must not begin with a number.
     %li They must contain at least one character.
 
 %p
-  There aren't any restrictions on values.
+  There aren't any restrictions on the content of values but they are all treated as simple strings at the moment.
 
 %p
-  Key-value pairs are exported as environment variables inside the build's containers and can be used by scripts/programs and commands in <code>circle.yml</code>.
+  E.g. if you passed the parameters:
+  %pre
+    %code.json<>
+      :preserve
+        {
+          "build_parameters": {
+            "foo": "bar"
+            "baz": 5
+            "qux": {"quux\": 1}
+            "list": ["a", "list", "of", "strings"]
+          }
+        }
+  Then your build will see the environment variables:
+  %pre
+    %code.bash<>
+      :preserve
+        export foo="bar"
+        export baz="5"
+        export qux="{\\\"quux\\\": 1}"
+        export list="[\\\"a\\\", \\\"list\\\", \\\"of\\\", \\\"strings\\\"]"
 
-%h2 Nightly Builds
 %p
-  TODO: Add an example of nightly builds
+  Build parameters are exported as environment variables inside the build's containers and can be used by scripts/programs and commands in <code>circle.yml</code>.
+
+%h2 Example: Nightly Builds
 
 %p
-  We're very interested in what you create with parameterized builds and would love to get your
+  You've a straight-forward <code>circle.yml</code>, for your project <code>example-corp/project-foo</code>.
+  It just sets a Python version and deploys to your staging Heroku app.
+
+%pre
+  %code.yaml<>
+    :preserve
+      machine:
+        python:
+          version: 2.7.6
+
+      deployment:
+        staging:
+          branch: master
+          heroku:
+            appname: staging-dawn-435
+
+%p
+  But sometimes you need to run a nightly build.
+  You have a large functional test suite that takes too long to run for a quick edit/test cycle during development.
+  These tests should be run once a day at least.
+
+%p
+  Creating a conditional step is easy, <code>circle.yml</code> commands are just shell commands and build parameters are just environment variables:
+
+%pre
+  %code.yaml<>
+    :preserve
+      machine:
+        python:
+          version: 2.7.6
+
+      test:
+        post:
+          - >
+            if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
+              ./bin/run-functional-tests.sh ${FUNCTIONAL_TEST_TARGET};
+            fi
+
+      deployment:
+        staging:
+          branch: master
+          heroku:
+            appname: staging-dawn-435
+
+%p
+  <code>./bin/run-functional-tests.sh</code> is only run if <code>RUN_NIGHTLY_BUILD</code> is set (<code>-n</code> means non-zero length).
+  Rather than hard-code the target app we use another build-parameter to specify the target for the functional test script in <code>FUNCTIONAL_TEST_TARGET</code>.
+
+%p
+  Now, create a simple script to trigger a build:
+%pre
+  %code.bash<>
+    :preserve
+      #!/bin/bash
+
+      _project=$1
+      _branch=$2
+      _circle_token=$3
+
+      trigger_build_url=https://staging.circleci.com/api/v1/project/${_project}/tree/${_branch}?circle-token=${_circle_token}
+
+      post_data=$(cat &lt;&lt;EOF
+      {
+        "build_parameters": {
+          "RUN_NIGHTLY_BUILD": "true",
+          "FUNCTIONAL_TEST_TARGET": "staging-dawn-435.herokuapp.com"
+        }
+      }
+      EOF)
+
+      curl \\
+      --header "Accept: application/json" \\
+      --header "Content-Type: application/json" \\
+      --data "'${post_data}'" \\
+      --request POST ${trigger_build_url}
+
+%p
+  This triggers a new build of master, passing in the parameters <code>RUN_NIGHTLY_BUILD</code> and <code>FUNCTIONAL_TEST_TARGET</code>.
+
+%p
+  The final step to make this a nightly build is to invoke this script in a scheduled job as:
+  %pre
+    %code.bash<>
+      :preserve
+        trigger_nightly_build.sh example-corp/project-foo master ${CIRCLE_TOKEN}
+
+%p
+  Obviously this is just one example of what you could do. We're very interested in what you create with parameterized builds and would love to get your
   != succeed '.', ->
     %a{href: "mailto:sayhi@circleci.com"}
       feedback
