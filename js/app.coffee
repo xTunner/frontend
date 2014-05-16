@@ -177,8 +177,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @builds.removeAll()
       @builds_have_been_loaded(false)
 
-    position = {offset: page * @builds_per_page, limit: @builds_per_page}
-    params = _.extend(position, {shallow: true})
+    params =
+      offset: page * @builds_per_page
+      limit: @builds_per_page
+      shallow: true # uses the optimized API
 
     $.getJSON path, params, (data) =>
       @builds(new CI.inner.Build d for d in data)
