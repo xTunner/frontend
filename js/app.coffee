@@ -177,9 +177,12 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @builds.removeAll()
       @builds_have_been_loaded(false)
 
-    position = {offset: page * @builds_per_page, limit: @builds_per_page}
+    params =
+      offset: page * @builds_per_page
+      limit: @builds_per_page
+      shallow: true # uses the optimized API
 
-    $.getJSON path, position, (data) =>
+    $.getJSON path, params, (data) =>
       @builds(new CI.inner.Build d for d in data)
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
