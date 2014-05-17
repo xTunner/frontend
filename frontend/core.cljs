@@ -97,7 +97,7 @@
    (let [previous-state @state]
      (swap! state (partial nav-con/navigated-to history (first value) (second value)))
      (nav-pcon/post-navigated-to! history (first value) (second value) previous-state @state))))
-  
+
 (defn api-handler
   [value state container]
   (when true (:log-channels? utils/initial-query-map)
@@ -145,15 +145,11 @@
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
                            :messages [:refresh]}]))
 
-(defn setup-browser-repl []
-  (when-let [repl-url (aget js/window "browser_connected_repl_url")]
-    (try
-      (repl/connect repl-url)
-      ;; the repl tries to take over *out*, workaround for
-      ;; https://github.com/cemerick/austin/issues/49
-      (js/setInterval #(enable-console-print!) 1000)
-      (catch js/Error e
-        (merror e)))))
+(defn setup-browser-repl [repl-url]
+  (repl/connect repl-url)
+  ;; the repl tries to take over *out*, workaround for
+  ;; https://github.com/cemerick/austin/issues/49
+  (js/setInterval #(enable-console-print!) 1000))
 
 (defn dispatch-to-current-location! []
   (let [uri (goog.Uri. js/document.location.href)]
@@ -178,4 +174,8 @@
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws])))
     (when (env/development?)
-      (setup-browser-repl))))
+      (when-let [repl-url (get-in @state [:render-context :browser_connected_repl_url])]
+        (try
+          (setup-browser-repl repl-url)
+          (catch js/error e
+            (merror e)))))))
