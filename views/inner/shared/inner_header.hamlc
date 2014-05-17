@@ -34,7 +34,14 @@
         %a.menu-item{href: "/admin/users"} Users
         %a.menu-item{href: "/admin/recent-builds"} Recent builds
         %a.menu-item{href: "/admin/projects"} Projects
-        %a.menu-item{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+        - if window.renderContext.user_session_settings? and window.renderContext.user_session_settings.use_local_assets
+          %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=false'}"}
+            Stop using local assets
+        - else
+          %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=true'}"}
+            Use local assets
+        %a.menu-item{data-bind: "click: function() { window.location.search = '?use-om=true'}"}
+          Use om
       <!-- /ko -->
 <!-- ko if: current_user().admin() && CI.instrumentation.display() -->
 %nav.instrumentation{data-bind: "with: CI.instrumentation"}
