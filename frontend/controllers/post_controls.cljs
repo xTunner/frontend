@@ -323,3 +323,7 @@
                 :remove-heroku-deploy-user
                 api-ch
                 :context {:project-id project-id})))
+
+(defmethod post-control-event! :set-user-session-setting
+  [target message {:keys [setting value]} previous-state current-state]
+  (set! (.. js/window -location -search) (str "?" (name setting) "=" value)))

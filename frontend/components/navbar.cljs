@@ -61,7 +61,7 @@
         "Sign up "
         [:i.fa.fa-github-alt]]]]]]])
 
-(defn logged-in-header [{:keys [user settings crumbs controls-ch]}]
+(defn logged-in-header [{:keys [user settings crumbs controls-ch user-session-settings]}]
   [:nav.header-nav
    [:div.header-nav-logo [:a {:href "/"}]]
    [:div.header-nav-breadcrumb
@@ -104,7 +104,22 @@
         [:a.menu-item {:href "/admin/projects"} "Projects"]
         [:a.menu-item
          {:on-click #(put! controls-ch [:intercom-user-inspected])}
-         "Find project on Intercom"]))]]]  )
+         "Find project on Intercom"]
+        [:a.menu-item
+         {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
+                                                                    :value false}])}
+         "Stop using om"]
+        (let [use-local-assets (get user-session-settings :use_local_assets)]
+          [:a.menu-item
+           {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
+                                                                     :value (not use-local-assets)}])}
+           (if use-local-assets "Stop using local assets" "Use local assets")])
+        (let [current-build-id (get user-session-settings :om_build_id "dev")]
+          (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
+            [:a.menu-item
+             {:on-click #(put! controls-ch [:set-user-session-setting {:setting :om-build-id
+                                                                       :value build-id}])}
+             (str "Use " build-id " om compiler")]))))]]])
 
 (defn navbar [app owner opts]
   (reify
@@ -116,6 +131,7 @@
          (if user
            (logged-in-header {:user user
                               :settings (:settings app)
+                              :user-session-settings (get-in app [:render-context :user_session_settings])
                               :crumbs (:crumbs app)
                               :controls-ch controls-ch})
            (logged-out-header {:flash (get-in app [:render-context :flash])})))))))
