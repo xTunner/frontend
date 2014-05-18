@@ -1,18 +1,23 @@
-#container_scroll_parent {
-  // hides scrollbar on container_parent
-  overflow: hidden;
-}
-
 #container_parent {
   position: relative;
-  overflow-y: hidden;
-  overflow-x: scroll;
+  overflow: hidden;
   height: 100%;
   margin-left: 8.5%;
   margin-right: 8.5%;
+}
+
+// Used by om frontend to hide scrollers it needs for find in firefox
+#container_scroll_parent {
   // hides scrollbar on container_parent
-  margin-bottom: -25px;
-  padding-bottom: 25px;
+  overflow: hidden;
+  // TODO: move this into the main #container_parent when om is fully shipped
+  #container_parent {
+    overflow-y: hidden;
+    overflow-x: scroll;
+    // hides scrollbar
+    margin-bottom: -25px;
+    padding-bottom: 25px;
+  }
 }
 
 .containers {
