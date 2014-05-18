@@ -3,7 +3,7 @@
 (def ^:dynamic env-var nil)
 
 (defn env []
-  (or env-var (let [render-context (aget "renderContext" js/window)]
+  (or env-var (let [render-context (aget js/window "renderContext")]
                 (if render-context
                   (-> render-context (aget "env") keyword)
                   :development))))
