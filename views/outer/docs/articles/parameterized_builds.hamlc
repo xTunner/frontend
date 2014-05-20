@@ -87,7 +87,7 @@
     %li They must contain at least one character.
 
 %p
-  There aren't any restrictions on the content of values but they are all treated as simple strings at the moment.
+  Aside from the usual constraints for environment variables there aren't any restrictions on the values themselves, they're all just treated as simple strings at the moment.
 
 %p
   E.g. if you passed the parameters:
