@@ -61,9 +61,9 @@
           %td.error-message
             / ko if: path
             %span.path{data-bind: "text: path"}
+            / /ko
             != succeed '.', ->
               %span{data-bind: "text: message"}
-            / /ko
             .next-button
               %a{data-bind: "click: select_next"}
                 %i.fa.fa-angle-right
