@@ -44,7 +44,7 @@
           %span Projects
         - if window.renderContext.user_session_settings? and window.renderContext.user_session_settings.use_local_assets
           %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=false'}"}
-            %i.fa.fa-map-marker
+            %i.fa.fa-home
             %span Stop using local assets
         - else
           %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=true'}"}
