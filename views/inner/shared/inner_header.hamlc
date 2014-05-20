@@ -30,18 +30,29 @@
         %i.fa.fa-comments
         %span Chat support
       <!-- ko if: admin -->
-        %a.menu-item{href: "/admin"} Admin
-        %a.menu-item{href: "/admin/users"} Users
-        %a.menu-item{href: "/admin/recent-builds"} Recent builds
-        %a.menu-item{href: "/admin/projects"} Projects
+        %a.menu-item{href: "/admin"}
+          %i.fa.fa-wrench
+          %span Admin
+        %a.menu-item{href: "/admin/users"}
+          %i.fa.fa-group
+          %span Users
+        %a.menu-item{href: "/admin/recent-builds"}
+          %i.fa.fa-clock-o
+          %span Recent builds
+        %a.menu-item{href: "/admin/projects"}
+          %i.fa.fa-code
+          %span Projects
         - if window.renderContext.user_session_settings? and window.renderContext.user_session_settings.use_local_assets
           %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=false'}"}
-            Stop using local assets
+            %i.fa.fa-map-marker
+            %span Stop using local assets
         - else
           %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=true'}"}
-            Use local assets
+            %i.fa.fa-home
+            %span Use local assets
         %a.menu-item{data-bind: "click: function() { window.location.search = '?use-om=true'}"}
-          Use om
+          %i.fa λ
+          %span Use om
       <!-- /ko -->
 <!-- ko if: current_user().admin() && CI.instrumentation.display() -->
 %nav.instrumentation{data-bind: "with: CI.instrumentation"}
