@@ -31,12 +31,16 @@
             %i.fa.fa-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
               != succeed ",", ->
-                %span.street-address 325 9th Street
+                %span CircleCI
+              != succeed ",", ->
+                %span.street-address 555 Market Street
+              != succeed ",", ->
+                %span.extended-address 15th Floor
               != succeed ",", ->
                 %span.locality San Francisco
               != succeed ",", ->
                 %span.region CA
-              %span.postal-code 94103
+              %span.postal-code 94105
         %h3 Press Inquiries
         %p
           Drop a line to
