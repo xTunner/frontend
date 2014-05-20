@@ -123,7 +123,7 @@
         [:a.menu-item
          {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
                                                                     :value false}])}
-         [:i.fa "λ"]
+         [:i.fa.fa-coffee]
          "Stop using om"]
         (let [current-build-id (get user-session-settings :om_build_id "dev")]
           (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
