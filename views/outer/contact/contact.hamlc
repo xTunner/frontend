@@ -31,7 +31,11 @@
             %i.fa.fa-globe
             %a{ href: 'http://goo.gl/maps/FTpe3', target: '_blank' }
               != succeed ",", ->
-                %span.street-address 555 Market Street, 15th Floor
+                %span CircleCI
+              != succeed ",", ->
+                %span.street-address 555 Market Street
+              != succeed ",", ->
+                %span.extended-address 15th Floor
               != succeed ",", ->
                 %span.locality San Francisco
               != succeed ",", ->
