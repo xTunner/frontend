@@ -108,7 +108,7 @@
          [:i.fa.fa-clock-o]
          "Recent builds"]
         [:a.menu-item {:href "/admin/projects"}
-         [:i.fa.fa-code]
+         [:i.fa.fa-file-text]
          "Projects"]
         [:a.menu-item
          {:on-click #(put! controls-ch [:intercom-user-inspected])}
