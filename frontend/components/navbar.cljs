@@ -98,28 +98,39 @@
       [:span "Chat support"]]
      (if (:admin user)
        (list
-        [:a.menu-item {:href "/admin"} "Admin"]
-        [:a.menu-item {:href "/admin/users"} "Users"]
-        [:a.menu-item {:href "/admin/recent-builds"} "Recent builds"]
-        [:a.menu-item {:href "/admin/projects"} "Projects"]
+        [:a.menu-item {:href "/admin"}
+         [:i.fa.fa-wrench]
+         "Admin"]
+        [:a.menu-item {:href "/admin/users"}
+         [:i.fa.fa-group]
+         "Users"]
+        [:a.menu-item {:href "/admin/recent-builds"}
+         [:i.fa.fa-clock-o]
+         "Recent builds"]
+        [:a.menu-item {:href "/admin/projects"}
+         [:i.fa.fa-code]
+         "Projects"]
         [:a.menu-item
          {:on-click #(put! controls-ch [:intercom-user-inspected])}
+         [:i.fa.fa-search]
          "Find project on Intercom"]
-        [:a.menu-item
-         {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
-                                                                    :value false}])}
-         "Stop using om"]
         (let [use-local-assets (get user-session-settings :use_local_assets)]
           [:a.menu-item
            {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
                                                                      :value (not use-local-assets)}])}
+           [:i.fa.fa-home]
            (if use-local-assets "Stop using local assets" "Use local assets")])
+        [:a.menu-item
+         {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
+                                                                    :value false}])}
+         [:i.fa "λ"]
+         "Stop using om"]
         (let [current-build-id (get user-session-settings :om_build_id "dev")]
           (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
             [:a.menu-item
              {:on-click #(put! controls-ch [:set-user-session-setting {:setting :om-build-id
                                                                        :value build-id}])}
-             (str "Use " build-id " om compiler")]))))]]])
+             [:span (str "Use " build-id " om compiler")]]))))]]])
 
 (defn navbar [app owner opts]
   (reify
