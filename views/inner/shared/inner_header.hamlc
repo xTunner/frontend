@@ -40,7 +40,7 @@
           %i.fa.fa-clock-o
           %span Recent builds
         %a.menu-item{href: "/admin/projects"}
-          %i.fa.fa-code
+          %i.fa.fa-file-text
           %span Projects
         - if window.renderContext.user_session_settings? and window.renderContext.user_session_settings.use_local_assets
           %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=false'}"}
