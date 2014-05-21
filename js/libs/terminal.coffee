@@ -1,11 +1,21 @@
 CI.terminal =
-  ansiToHtmlConverter: (defaultColor) ->
-    trailing_raw = ""
-    trailing_out = ""
-    style =
+  ansiToHtmlConverter: (defaultColor, state={}) ->
+    default_state =
+      trailing_raw: ""
+      trailing_out: ""
       color: defaultColor
       italic: false
       bold: false
+
+    initial_state = _.extend(default_state, state)
+
+    trailing_raw = initial_state.trailing_raw
+    trailing_out = initial_state.trailing_out
+
+    style =
+      color: initial_state.color
+      italic: initial_state.italic
+      bold: initial_state.bold
 
       reset: () ->
         @color = defaultColor
@@ -50,6 +60,18 @@ CI.terminal =
             content
         else
           ""
+      currentState: () ->
+        color: @color
+        italic: @italic
+        bold: @bold
+
+
+    currentState: () ->
+      _.extend
+        trailing_raw: trailing_raw
+        trailing_out: trailing_out
+      , style.currentState()
+
 
     wrapDefaultColor: (content) ->
       if (not content?) or (content is "")

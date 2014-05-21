@@ -66,6 +66,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
     @security = new CI.outer.Page("security", "Security", "View Security", {addLinkTargets: true})
     @securityHOF = new CI.outer.Page("security_hall_of_fame", "Security Hall of Fame", "View Security Hall of Fame")
+    @builds_per_page = 30
 
     @sticky_help_is_open = ko.observable(false)
 
@@ -156,7 +157,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   loadDashboard: (cx) =>
     @loadProjects()
-    @loadRecentBuilds()
+    page = parseInt(cx.params.page) or 0
+    @loadRecentBuilds(page)
     if window._gaq? # we dont use ga in test mode
       _gaq.push(['_trackPageview', '/dashboard'])
     mixpanel.track("Dashboard")
@@ -169,38 +171,44 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     if @current_user().repos().length == 0
       track_signup_conversion()
 
-  loadBuilds: (path, refresh) =>
+  loadBuilds: (path, page, refresh) =>
     @cleanObjs(@builds())
 
     if not refresh
       @builds.removeAll()
       @builds_have_been_loaded(false)
 
-    $.getJSON path, (data) =>
-      @builds((new CI.inner.Build d for d in data))
+    params =
+      offset: page * @builds_per_page
+      limit: @builds_per_page
+      shallow: true # uses the optimized API
+
+    $.getJSON path, params, (data) =>
+      @builds(new CI.inner.Build d for d in data)
       @builds_have_been_loaded(true)
     .fail (request) => VM.error.display()
 
-  loadRecentBuilds: (refresh) =>
-    @loadBuilds('/api/v1/recent-builds', refresh)
+  loadRecentBuilds: (page, refresh) =>
+    page = 0 if not page
+    @loadBuilds('/api/v1/recent-builds', page, refresh)
 
-  loadOrg: (username, refresh) =>
+  loadOrg: (username, page, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
 
-    @loadBuilds("/api/v1/organization/#{username}", refresh)
+    @loadBuilds("/api/v1/organization/#{username}", page, refresh)
 
     if not refresh
       display "dashboard",
         builds_table: 'org'
 
-  loadProject: (username, project, branch, refresh) =>
+  loadProject: (username, project, branch, page, refresh) =>
     if !@projects_have_been_loaded() then @loadProjects()
 
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
 
-    @loadBuilds(path, refresh)
+    @loadBuilds(path, page, refresh)
 
     @maybeLoadProjectDetails(project_name)
 
@@ -379,7 +387,9 @@ window.SammyApp = Sammy 'body', (n) ->
     VM.current_page new CI.inner.OrgDashboardPage
       username: cx.params.username
 
-    VM.loadOrg cx.params.username
+      page = parseInt(cx.params.page) or 0
+
+    VM.loadOrg cx.params.username, page
 
   # before any project pages so that it gets routed first
   @get '^/gh/organizations/:username', route_org_dashboard
@@ -410,7 +420,9 @@ window.SammyApp = Sammy 'body', (n) ->
         project: cx.params.project
         branch: branch
 
-      VM.loadProject cx.params.username, cx.params.project, branch
+      page = parseInt(cx.params.page) or 0
+
+      VM.loadProject cx.params.username, cx.params.project, branch, page
 
   @get '^/gh/:username/:project/:build_num',
     (cx) ->
@@ -427,7 +439,9 @@ window.SammyApp = Sammy 'body', (n) ->
         username: cx.params.username
         project: cx.params.project
 
-      VM.loadProject cx.params.username, cx.params.project
+      page = parseInt(cx.params.page) or 0
+
+      VM.loadProject cx.params.username, cx.params.project, null, page
 
   @get '^/logout', (cx) -> VM.logout cx
 

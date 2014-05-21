@@ -624,14 +624,7 @@
   .github-page {
     .btn {
       .circleButton();
-      font-size: @baseFontSize;
       position: relative;
-      i {
-        position: absolute;
-        top: 0;
-        right: 0;
-        color: @redLight;
-      }
     }
   }
   .github-page-inner {
@@ -644,6 +637,17 @@
       position: relative;
       width: @standardBlockSize;
       margin: 2em auto 0;
+    }
+    .request-user-no-auth {
+      .btn {
+          .circleButton(@red);
+      }  
+    }
+    .ghu-authorize {
+      .circleButton(@green);
+      text-shadow: none;
+      font-weight: bold;
+      font-family: "ProximaNova",sans-serif;
     }
     div[class^="request-"] {
       text-align: center;
