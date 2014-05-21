@@ -6,6 +6,7 @@
   "../../components/jquery-placeholder/jquery.placeholder.js" ;; TODO: necessary?
   "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
   "../../components/knockout/build/output/knockout-latest.js" ;; TODO: used by ab-tests
+  "../../components/underscore/underscore.js" ;; TODO: used by CI.terminal
 
   "bootstrap.js.stefon" ;; TODO: replace with the om version
 
