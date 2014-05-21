@@ -23,11 +23,6 @@
   [target message project-id state]
   (update-in state [:settings :projects project-id :show-all-branches] not))
 
-(defmethod control-event :build-inspected
-  [target message [project-id build-num] state]
-  (assoc-in state [:inspected-project] {:project project-id
-                                        :build-num build-num}))
-
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/localStorage "circle-state")]
