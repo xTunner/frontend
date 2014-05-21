@@ -176,6 +176,26 @@
     padding: 0 10px;
   }
 }
+
+.zerothdivider(@type) {
+  (~".container-view > .type-@{type}") {
+    .type-divider { display: block; }
+  }
+  (~".container-view > .type-@{type} ~ .type-@{type}") {
+    .type-divider { display: none; }
+  }
+}
+
+.zerothdivider("infrastructure");
+.zerothdivider("checkout");
+.zerothdivider("machine");
+.zerothdivider("dependencies");
+.zerothdivider("database");
+.zerothdivider("test");
+.zerothdivider("deploy");
+.zerothdivider("");
+
+
 .build-output-active {
   background: #d7dce3;
   .action_header {

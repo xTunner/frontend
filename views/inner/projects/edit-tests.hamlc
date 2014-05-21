@@ -1,6 +1,11 @@
 .tests-page
   %h2 Set up tests for
     %span{data-bind: "text: project_name"}
+
+  %p
+    %i
+      You can also set your test commands from your <a href="/docs/configuration#tests">circle.yml</a>.
+
   .tests-inner
     %fieldset.spec_form
       %textarea{data-bind: "value: test, valueUpdate: 'keyup'", required: "", name: "test"}

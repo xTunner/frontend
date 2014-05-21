@@ -110,7 +110,7 @@
     margin-bottom: 20vh;
     // padding: 1vw; (for later use with tabbing visual)
     .loading-spinner {
-      margin: 20vh auto;
+      margin: 1.5em auto;
     }
   }
   .proj-list {
@@ -146,6 +146,15 @@
     .tooltip {
       white-space: normal;
     }
+    .side-item.active {
+      a {
+        color: @blueDark;
+        &:hover {
+          color: @blueLight;
+          }
+        }
+    }
+
  }
   .add-orgs,
   .add-collabs,
