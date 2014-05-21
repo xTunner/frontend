@@ -2,10 +2,10 @@
   .stories-head
     != HAML.shopify_logo()
     %blockquote{cite: "http://www.shopify.com"}
-      %p One of my favorite things about CircleCI is that their team really cares about making sure their customers get maximum value our of their product.
+      %p We were able to rapidly grow our team and code base without fear of outgrowing CircleCI.
       %cite
-        %p Arthur Neves
-        %p Developer, Shopify
+        %p John Duff
+        %p Director of Engineering, Shopify
   .stories-body
     %section
       .stories-stats
@@ -30,6 +30,11 @@
       %h2 Shopify Looked for Specific Criteria
       %p Several of the developers at Shopify had used CircleCI before and recommended it as potentially meeting all of these needs. In order to try out CircleCI several developers signed up for a 14-day free trial using their GitHub accounts and followed a couple of their Shopify repositories from within the CircleCI app. CircleCI then inferred their test environment based on existing code and their tests began to run automatically. The developers were able to get quick clarification on a few setup details via CircleCI's live chat support room, and within a few minutes they were convinced that CircleCI would meet and surpass their needs. 
       %p After using the product for a few days there were several features that set CircleCI apart from the others; easy scalability of both build containers and parallelism, a well documented REST API, and extensive customization and configurability options including SSH access to the build machines. This, combined with the easy setup and helpful support, convinced the team that CircleCI was the perfect solution.
+      %blockquote{cite: "http://www.shopify.com"}
+        %p One of my favorite things about CircleCI is that their team really cares about making sure their customers get maximum value our of their product.
+        %cite
+          %p Arthur Neves
+          %p Developer, Shopify
       %p In looking for a CI solution, Shopify needed something that was dependable, affordable, and would meet three core product criteria.
       .stories-buckets
         %article
