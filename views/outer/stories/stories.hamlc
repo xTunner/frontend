@@ -67,4 +67,10 @@
           %p John Duff
           %p Director of Engineering, Shopify
       %p The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably.
+    / ko if: VM.ab().split_form()
+    != HAML.stories_cta_split()
+    / /ko
+
+    / ko ifnot: VM.ab().split_form()
     != HAML.stories_cta_simple()
+    / /ko
