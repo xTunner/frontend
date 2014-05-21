@@ -60,7 +60,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI", "View jobs")
     @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
-    @stories = new CI.outer.Page("stories", "CircleCI for the enterprise")
+    @stories = new CI.outer.Page("stories", "Shopify + CircleCI Success Story")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
     @changelog = new CI.outer.Changelog("changelog", "ChangeLog", "View ChangeLog")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
