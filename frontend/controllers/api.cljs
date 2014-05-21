@@ -5,7 +5,8 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.utils :as utils :refer [mlog mwarn merror]])
+            [frontend.utils :as utils :refer [mlog mwarn merror]]
+            [frontend.utils.vcs-url :as vcs-url])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
@@ -69,10 +70,14 @@
   [target message status args state]
   (mlog "build success")
   (let [build (:resp args)
+        {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))]
-    (assoc-in state [:current-build] (-> build
-                                         (assoc :containers containers)
-                                         (dissoc :steps)))))
+    (if-not (and (inspect (= (inspect build-num) (inspect (:build_num build))))
+                 (inspect (= project-name (vcs-url/project-name (:vcs_url build)))))
+      state
+      (assoc-in state [:current-build] (-> build
+                                           (assoc :containers containers)
+                                           (dissoc :steps))))))
 
 (defmethod api-event [:retry-build :started]
   [target message status {:keys [build-id]} state]

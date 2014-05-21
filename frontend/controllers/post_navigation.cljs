@@ -48,7 +48,8 @@
     (utils/ajax :get
                 (gstring/format "/api/v1/project/%s/%s" project-name build-num)
                 :build
-                api-ch)
+                api-ch
+                :context {:project-name project-name :build-num build-num})
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel {:vcs_url (str "https://github.com/" project-name)
                                                                   :build_num build-num})
                              :messages pusher/build-messages}]))
