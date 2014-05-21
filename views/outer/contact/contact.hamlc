@@ -29,7 +29,7 @@
               800 585-7075 / +1 415 944-3995
           %li.adr
             %i.fa.fa-globe
-            %a{ href: 'https://goo.gl/maps/SYysL', target: '_blank' }
+            %a{ href: 'https://goo.gl/maps/uhkLn', target: '_blank' }
               != succeed ",", ->
                 %span CircleCI
               != succeed ",", ->
