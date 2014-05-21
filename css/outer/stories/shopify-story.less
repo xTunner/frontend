@@ -233,16 +233,18 @@
 // AB TEST FOR STORIES_AB_SPLIT
 .stories {
   .cta-contianer {
+    margin: 30px 0 80px 0;
     .flexy(center, center, row);
     > div {
       width: 250px;
     }
-    .btn {
-      .center;
-      width: 200px;
-      height: 50px;
-      line-height: 50px;
+    .submit {
+    .flexy(center, flex-end);
+    [type="submit"] {
+      .circleButton(@grayLightest, @green);
+      margin-top: 1em;
     }
+  }
     .seperator {
       .flexy(center, center, column);
       .line {
