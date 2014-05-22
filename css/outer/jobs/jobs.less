@@ -1,91 +1,91 @@
-@jobs_font_size: 16px;
-@jobs_trans1: 200ms;
-@jobs_trans2: 400ms;
-@jobs_section_padding: 5em;
-.jobs {
-  font-size: @jobs_font_size;
-  line-height: 24px;
-  h1,
-  h2 {
-    line-height: 1em;
-    margin: 0 0 @jobs_font_size;
-  }
-  h1 {
+.jobs.page {
+  @em: 18px;
+  @pagesize: 940px;
+  font-size: @em;
+  line-height: ((4 / 3) * @em);
+  color: @gray;
+  h1, h2, h3, h4, h5, h6 {
+    color: @grayDark;
     font-weight: normal;
-    font-size: 60px;
+    margin: 1em 0 @em;
+    line-height: 1em;
   }
-  h4 {
-    margin: round((@jobs_font_size / 3)) 0;
+  h2 {
+    font-size: 36px;
+  }
+  h3 {
+    font-size: 24px;
+  }
+  h5 {
+    font-size: @em;
+  }
+  p {
+    margin: 0 0 @em;
   }
   a {
-    transition: @jobs_trans2 ease-in-out;
+    transition: 400ms ease-in-out;
     &:hover {
-      transition: @jobs_trans1 ease-in-out;
+      transition: 200ms ease-in-out;
     }
-    &:not(:hover) {
+  }
+  li {
+    line-height: inherit; // BS RESET
+  }
+  .jobs-head {
+    .flexy(center, center, column);
+    color: @white;
+    height: 75vh;
+    background: linear-gradient(to bottom, @blueDarker 66%, @blueDarkest 100%), @blueDarker;
+    h1 {
+      font-size: 60px;
+      margin-top: 0;
       color: inherit;
     }
   }
-}
-.jobs-head {
-  .flexy(center, center, column);
-  background-color: @blueDarker;
-  background-image: linear-gradient(to bottom, @blueDarker 66%, @blueDarkest 100%);
-  height: 75vh;
-  color: @white;
-}
-.jobs-body {
-  max-width: @minimumContentWidth;
-  margin: 0 auto;
-  > [class^="jobs-"] {
-    &:not(:first-child) {
-      margin: @jobs_section_padding 0;
+  .jobs-body {
+    max-width: @pagesize;
+    margin: 0 auto (@pagesize / 4);
+  }
+  .jobs-types {
+    .flexy(stretch);
+    .outlineFlat();
+    border-radius: 4px;
+    height: (@pagesize / 4);
+    margin: 5vh 0;
+    a {
+      .flexy(center, center, column);
+      width: (100% / 3); // three different job types
+      &:not(:first-child) {
+        box-shadow: -1px 0 @grayBoxBorder;
+      }
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
+    i {
+      font-size: 2em;
+    }
+    h3 {
+      color: inherit;
+      margin-top: @em;
     }
   }
-  p {
-    color: @gray;
-    margin: 0 0 @jobs_font_size;
-  }
-}
-.jobs-types {
-  @columns: 3;
-  .flexy(stretch);
-  .outlineFlat();
-  border-radius: 4px;
-  height: (@minimumContentWidth / 4);
-  margin: (@jobs_section_padding / 2) 0;
-  a {
-    .flexy(center, center, column);
-    width: 100% / @columns;
-    &:not(:first-child) {
-      box-shadow: -1px 0 @grayBoxBorder;
+  .jobs-listings {
+    article {
+      .flexy(column);
     }
-  }
-  i {
-    font-size: 2em;
-    margin: 0 0 @jobs_font_size;
-  }
-}
-.jobs-listings {
-  article {
-    .flexy(column);
-    padding-bottom: 2em;
-  }
-  h2 {
-    margin-bottom: (@jobs_font_size * 2);
-    padding-bottom: @jobs_font_size;
-    box-shadow: 0 1px @grayBoxBorder;
-  }
-  ul {
-    margin: 0 0 @jobs_font_size @jobs_font_size;
-  }
-  li {
-    line-height: 24px;
-    color: @gray;
-  }
-  [role="button"] {
-    .circleButton();
-    min-width: 10em;
-    margin: 1em auto;
+    h3 {
+      margin: 1em 0 0;
+      padding-bottom: .5em;
+      box-shadow: 0 1px @grayBoxBorder;
+    }
+    ul {
+      margin: 0 0 0 @em;
+    }
+    [role="button"] {
+      .circleButton(@grayLightest, @green);
+      min-width: 10em;
+      margin: 2em auto 1em;
+    }
   }
 }
