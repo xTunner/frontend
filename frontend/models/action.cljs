@@ -4,6 +4,7 @@
             [goog.string :as gstring]
             goog.string.format))
 
+;; XXX: write an id function
 (defn id [action]
   )
 
