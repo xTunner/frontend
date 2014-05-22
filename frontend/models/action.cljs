@@ -1,6 +1,7 @@
 (ns frontend.models.action
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
+            [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -32,12 +33,18 @@
         converter (new-converter action (keyword (:type output)))]
     (-> action
         (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
+        (assoc-in [:output output-index :react-key] (utils/uuid))
         (assoc-in [:converters-state (keyword (:type output))] (js->clj (.currentState converter) :keywordize-keys true)))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
     (format-output action (dec (count output)))
     action))
+
+(defn format-all-output [action]
+  (if-let [output (seq (:output action))]
+    (reduce format-output (range (count output)))
+    output))
 
 (defn trailing-output [converters-state]
   (str (get-in converters-state [:out :trailing_out])

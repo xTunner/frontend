@@ -115,7 +115,7 @@
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])
                      (om/build-all output (:output action) {:opts opts
-                                                            :key :time})
+                                                            :key :react-key})
 
                      (om/build trailing-output (:converters-state action) {:opts opts})
 
