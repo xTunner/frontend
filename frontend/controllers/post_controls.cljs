@@ -73,10 +73,12 @@
                   :context build-id))))
 
 (defmethod post-control-event! :retry-build-clicked
-  [target message {:keys [username reponame build_num build-id] :as args} previous-state current-state]
-  (let [api-ch (-> current-state :comms :api)]
+  [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
+  (let [api-ch (-> current-state :comms :api)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/%s/%s/retry" username reponame build_num)
+                (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
                 :retry-build
                 api-ch)))
 

@@ -76,6 +76,12 @@
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
     (put! nav-ch [:navigate! build-url])))
 
+(defmethod post-api-event! [:retry-build :success]
+  [target message status args previous-state current-state]
+  (let [nav-ch (get-in current-state [:comms :nav])
+        build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
+    (put! nav-ch [:navigate! build-url])))
+
 (defmethod post-api-event! [:save-dependencies-commands :success]
   [target message status {:keys [context resp]} previous-state current-state]
   (when (and (= (project-model/id (:current-project current-state))
