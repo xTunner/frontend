@@ -34,14 +34,14 @@
       %p Obviously, this is a very developer-focused company, so the most important thing is to understand how developers work and think. In addition, we've noticed that the following correlate with the type of people that we want to work with. Below is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory), but more of a rough guideline.
     .jobs-listings
       %article#engineering
-        %h2
+        %h3
           %span Engineering
         != HAML.jobs_backend({})
       %article#design
-        %h2
+        %h3
           %span Design
         != HAML.jobs_designers({})
       %article#business
-        %h2
+        %h3
           %span Business
         != HAML.jobs_business({})
