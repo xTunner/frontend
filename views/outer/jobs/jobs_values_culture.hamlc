@@ -1,6 +1,3 @@
-.jobs-value
-  %h4 Culture
-  %p Our culture is product-driven.
     Our customers and our founders are engineers, and most of our employees will be too. We are inspired by companies like
     != succeed ",", ->
       %a{:href => "http://blog.alexmaccaw.com/stripes-culture"} Stripe
@@ -16,4 +13,6 @@
   %p We have a very strong focus on productivity, and on shipping code.
     This means you'll have a lot of days where you finish the day with the happy glow of having achieved something. We ship often, and shape our work lives around enabling that.
   %p We spend a lot of time talking to customers.
-    We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too. This means you'll probably spend at least one day per week listening to and fixing their problems. We refer to that day as "support", but really think of it as "customer development".
+    We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too. This means you'll probably spend at least one day per week listening to and fixing their problems. We refer to that day as "support", but really think of it as "customer development".%p
+  %strong Culture
+  %span &#8212; Our culture is product-driven. Our customers and our founders are engineers, and most of our employees will be too. We are inspired by companies like
