@@ -14,3 +14,14 @@
 (defn max-selectable-parallelism [plan]
   (min (max-parallelism plan)
        (usable-containers plan)))
+
+(defn piggieback? [plan]
+  (and (contains? (keys plan) :current_org_name)
+       (contains? (keys plan) :org_name)
+       (not= (:current_org_name plan) (:org_name plan))))
+
+(defn paid? [plan]
+  (not= (get-in plan [:template_properties :type] "trial") "trial"))
+
+(defn can-edit-plan? [plan]
+  (and (paid? plan) (not (piggieback? plan))))
