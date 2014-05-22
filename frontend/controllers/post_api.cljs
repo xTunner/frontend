@@ -47,7 +47,8 @@
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (doseq [action (mapcat :actions (get-in current-state [:current-build :containers]))
-              :when (action-model/failed? action)]
+              :when (or (= "running" (:status action))
+                        (action-model/failed? action))]
         ;; XXX: should this fetch the action logs itself creating controls events?
         (put! (get-in current-state [:comms :controls])
               [:action-log-output-toggled (select-keys action [:step :index])])))))
