@@ -23,11 +23,19 @@
 (def parsed-uri
   (goog.Uri. (-> (.-location js/window) (.-href))))
 
+(defn parse-uri-bool
+  "Parses a boolean from a url into true, false, or nil"
+  [string]
+  (condp = string
+    "true" true
+    "false" false
+    nil))
+
 (def initial-query-map
-  {:log-channels?    (or (.getParameterValue parsed-uri "log-channels") false)
-   :logging-enabled? (= (.getParameterValue parsed-uri "logging-enabled") "true")
-   :restore-state?   (= (.getParameterValue parsed-uri "restore-state") "true")
-   :rethrow-errors? (= (.getParameterValue parsed-uri "rethrow-errors") "true")})
+  {:log-channels? (parse-uri-bool (.getParameterValue parsed-uri "log-channels"))
+   :logging-enabled? (parse-uri-bool (.getParameterValue parsed-uri "logging-enabled"))
+   :restore-state? (parse-uri-bool (.getParameterValue parsed-uri "restore-state"))
+   :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))})
 
 (defn uuid
   "returns a type 4 random UUID: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
