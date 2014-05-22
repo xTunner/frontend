@@ -9,6 +9,7 @@
             [frontend.components.navbar :as navbar]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.project-settings :as project-settings]
+            [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
@@ -30,7 +31,8 @@
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
     :loading loading
-    :project-settings project-settings/project-settings))
+    :project-settings project-settings/project-settings
+    :org-settings org-settings/org-settings))
 
 (defn app [app owner opts]
   (reify

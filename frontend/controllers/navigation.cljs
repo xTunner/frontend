@@ -44,3 +44,11 @@
                  (not= project-name (vcs-url/project-name (get-in state [:current-project :vcs_url]))))
           (dissoc % :current-project)
           %))))
+
+(defmethod navigated-to :org-settings
+  [history-imp to {:keys [subpage org-name]} state]
+  (js/console.log (str "Navigated to subpage: " subpage))
+  (-> state
+      (assoc :navigation-point :org-settings)
+      (assoc :org-settings-subpage (name subpage))
+      (assoc :org-settings-org-name org-name)))

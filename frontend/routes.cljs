@@ -36,6 +36,13 @@
     (put! nav-ch [:project-settings {:project-name project-name
                                      :subpage subpage}])))
 
+(defn open-to-org-settings!
+  ([nav-ch org-id]
+   (open-to-org-settings! nav-ch org-id :projects))
+  ([nav-ch org-id subpage]
+   (put! nav-ch [:org-settings {:subpage subpage
+                                :org-name org-id}])))
+
 (defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
     (defroute v1-org-dashboard "/gh/:org" {:as params}
@@ -53,9 +60,12 @@
     (defroute v1-project-settings-subpage "/gh/:org-id/:repo-id/edit#:subpage"
       [org-id repo-id subpage]
       (open-to-project-settings! nav-ch org-id repo-id (keyword subpage)))
+    (defroute v1-org-settings "/gh/organizations/:org-id/settings"
+      [org-id]
+      (open-to-org-settings! nav-ch org-id))
     (defroute v1-org-settings-subpage "/gh/organizations/:org-id/settings#:subpage"
       [org-id subpage]
-      (utils/mlog "org settings route hasn't been hooked up yet"))
+      (open-to-org-settings! nav-ch org-id (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
     (defroute v1-root "/"
