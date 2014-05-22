@@ -1,4 +1,4 @@
-%h4 We're looking for
+%h5 We're looking for
 %ul
   %li Senior and experienced developers, ones who've worked on a decent number of products.
   %li Someone who has a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops.
@@ -7,12 +7,12 @@
   %li People who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
   %li People who love trying new, cutting-edge things.
 
-%h4 We'd love to see
+%h5 We'd love to see
 %ul
   %li If you've worked on significant projects that weren't in Java, JavaScript, Ruby or PHP.
   %li If you've built or scaled large distributed systems.
 
-%h4 With these skills
+%h5 With these skills
 %ul
   %li Good knowledge of algorithmic design and CS theory (informally, CS degree not required).
   %li Experience with writing Clojure or other functional languages.
