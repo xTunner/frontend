@@ -15,9 +15,9 @@
           %span{data-bind: "ifnot: run_queued"} has
           %span spent
           %span{data-bind: "duration: run_queued_time"}
-          %span acquiring containers for this build.
-        <!-- ko if: run_queued_time() >= 10 -->
-          %p
+          %span acquiring containers for this build. 
+        <!-- ko if: (run_queued_time() > 10000) -->
+          %p{:id => "circle_queued_explanation"}
             %span We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent.
         <!-- /ko -->
       <!-- /ko -->
@@ -32,12 +32,14 @@
         != HAML.recent_builds_table({builds: "usage_queue_why", mention_project: true, actions: true})
       <!-- /ko -->
 
-      <!--  ko with: $root.project -->
-        <!-- ko if: billing.existing_plan_loaded() && (run_queued_time < 10) -->
-          %p
-            %span Too much waiting? You can
-            %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
-            %span and finish even faster.
+      <!-- ko if: (run_queued_time() < 10000) -->
+        <!--  ko with: $root.project -->
+          <!-- ko if: billing.existing_plan_loaded -->
+            %p{:id => "additional_containers_offer"}
+              %span Too much waiting? You can
+              %a{data-bind: "attr: {href: CI.paths.org_settings(billing.org_name(), 'plan')}"} add more containers
+              %span and finish even faster.
+          <!-- /ko -->
         <!-- /ko -->
       <!-- /ko -->
 
