@@ -96,6 +96,60 @@ CI.outer.About = class About extends CI.outer.Page
         "Danny (not to be confused with Daniel) has batted a .500 baseball season with zero strikeouts and once took 2nd place at a poker tournament at the Mirage in Vegas. When he was 15 he, along with two of his paintball teammates, won a pickup paintball game against the three top-rated players from the number one team in the world, though he reckons this is only arguably impressive. In the world of virtual sports, Danny has scored over a million points in Tony Hawk's Pro Skater, and has racked up massive karma points by designing a website--pro bono--for a non-profit organization that helps provide activity bags to hospitalized children. He was selected for a reality TV show on Fox but he turned it down (they're evil).",
         "Danny finished high school at the young age of 16. Two years after that, he cashed his first design freelance check. His past clients include Verizon, Lego, The Tribune, and Tyson Foods, and he has four individual 5-star rated projects in the Age of Empires design community. Not only does he design, but he's learned a bit of code, too, so he can build the things he designs, and his past projects include writing a tool that auto-hides Google Map's UI with simple CSS. He comes to Circle bursting with fresh ideas (like the new logo!) and can be found manipulating pixels with his hood securely in the Up position."
       ]
+    "worldsoup":
+      name: "Nick Gottlieb"
+      img_path: '(asset-path "img/outer/about/nick.png")'
+      visible: true
+      role: "Marketing Engineer"
+      github: "worldsoup"
+      twitter: "worldsoup"
+      email: "nick@circleci.com"
+      bio: ""
+    "esnyder":
+      name: "Emile Snyder"
+      img_path: ''
+      visible: true
+      role: "Backend Developer"
+      github: "esnyder"
+      twitter: "emilesnyder"
+      email: "emile@circleci.com"
+      bio: ""
+    "venantius":
+      name: "Dave Jarvis"
+      img_path: '(asset-path "img/outer/about/dave.png")'
+      visible: true
+      role: "Developer"
+      github: "venantius"
+      twitter: "venantius"
+      email: "dave@circleci.com"
+      bio: ""
+    "startling":
+      name: "Tim Dixon"
+      img_path: '(asset-path "img/outer/about/tim.png")'
+      visible: true
+      role: "Developer"
+      github: "startling"
+      twitter: ""
+      email: "tim@circleci.com"
+      bio: ""
+    "iand675":
+      name: "Ian Duncan"
+      img_path: ''
+      visible: true
+      role: "Developer"
+      github: "iand675"
+      twitter: "iand675"
+      email: "ian@circleci.com"
+      bio: ""
+    "jballanc":
+      name: "Joshua Ballanco"
+      img_path: '(asset-path "img/outer/about/josh.png")'
+      visible: true
+      role: "Developer"
+      github: "jballanc"
+      twitter: "manhattanmetric"
+      email: "jballanc@circleci.com"
+      bio: ""
 
   viewContext: =>
     team: @team

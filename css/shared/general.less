@@ -9,6 +9,19 @@ body {
   main {
     .flex(1, 1);
   }
+  > footer {
+    padding: @footerItemSize 0;
+    box-shadow: 0 1px @grayLightest inset;
+    .logo {
+      display: block;
+      height: @footerItemSize;
+      width: @footerItemSize;
+      background-image: url("@{imgPath}/logomark.svg");
+      background-size: @footerItemSize;
+      background-position: center left;
+      background-repeat: no-repeat;
+    }
+  }
 }
 .btn-primary {
   @btnPrimaryBackground: #1f4d80;
@@ -37,6 +50,9 @@ textarea {
     margin: auto;
     width: 1em;
     height: 1em;
+    [fill] {
+      fill: @grayLighter;
+    }
   }
   &:not(span) {
     svg {
@@ -44,6 +60,11 @@ textarea {
       height: @spinnerSize;
     }
   }
+}
+button [spinner] {
+  width:  @baseLineHeight;
+  height: @baseLineHeight;
+  vertical-align: top;
 }
 .fa.fa-spin {
   -moz-animation: spin 1s infinite linear;

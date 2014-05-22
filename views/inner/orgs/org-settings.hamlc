@@ -22,9 +22,11 @@
             Users
         %li.nav-header
           Plan
+        / ko ifnot: can_edit_plan
         %li{data-bind: "css: {active: subpage() == 'plan'}"}
           %a{href: "#plan"}
             Choose plan
+        / /ko
         / ko if: can_edit_plan
         %li{data-bind: "css: {active: subpage() == 'containers'}"}
           %a{href: "#containers"}
@@ -35,6 +37,11 @@
         %li{data-bind: "css: {active: subpage() == 'billing'}"}
           %a{href: "#billing"}
             Billing info
+
+        %li{data-bind: "css: {active: subpage() == 'cancel'}"}
+          %a{href: "#cancel"}
+            Cancel
+
         / /ko
         / /ko
 

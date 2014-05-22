@@ -1,4 +1,4 @@
-CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.Page
+CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.DashboardPage
   constructor: (properties) ->
     @username = null
     super(properties)
@@ -9,4 +9,6 @@ CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.Page
     @show_branch = true
 
   refresh: () =>
-    VM.loadOrg(@username, true)
+    page = @page_number()
+    if page is 0
+      VM.loadOrg(@username, page, true)

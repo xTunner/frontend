@@ -38,8 +38,12 @@
             %th Queued
             %td
               %span{data-bind: "text: queued_time_summary"}
+<<<<<<< HEAD
               / ko if: usage_queue_why.length
               %a{data-bind: "click: toggle_queue"} view
+=======
+              %a{:id => "queued_explanation", data-bind: "click: toggle_queue"} view
+>>>>>>> master
               %i.fa.fa-caret-down{data-bind: "css: {'fa-rotate-180': usage_queue_visible }"}
               / /ko
             / /ko

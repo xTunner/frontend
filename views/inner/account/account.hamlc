@@ -16,10 +16,6 @@
       %li#plans{ data-bind:"ifnot: from_heroku" }
         %a{href: '/account/plans'}
           Plan Pricing
-
-      %li#close
-        %a{href: '/account/close'}
-          Close Account
   .row
     != HAML['flashes']({})
   .settings-item{data-bind: "with: current_user"}

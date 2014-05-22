@@ -12,12 +12,7 @@
       %span Documentation
   .header-nav-menu
     %a{data-toggle: "dropdown"}
-      <!-- ko ifnot: gravatar_url() -->
-        %span{data-bind: "text: login"}
-      <!-- /ko -->
-      <!-- ko if: gravatar_url() -->
-        %img{data-bind: "attr: {src: gravatar_url(30), width: 30, height: 30}"}
-      <!-- /ko -->
+      %img{data-bind: "attr: {src: gravatar_url(30, true), width: 30, height: 30}"}
       %i.fa.fa-caret-down
     %aside
       %a.menu-item{href: '/account'}
@@ -35,11 +30,29 @@
         %i.fa.fa-comments
         %span Chat support
       <!-- ko if: admin -->
-        %a.menu-item{href: "/admin"} Admin
-        %a.menu-item{href: "/admin/users"} Users
-        %a.menu-item{href: "/admin/recent-builds"} Recent builds
-        %a.menu-item{href: "/admin/projects"} Projects
-        %a.menu-item{data-bind: "attr: {href: $root.intercomUserLink}"} Find project on Intercom
+        %a.menu-item{href: "/admin"}
+          %i.fa.fa-wrench
+          %span Admin
+        %a.menu-item{href: "/admin/users"}
+          %i.fa.fa-group
+          %span Users
+        %a.menu-item{href: "/admin/recent-builds"}
+          %i.fa.fa-clock-o
+          %span Recent builds
+        %a.menu-item{href: "/admin/projects"}
+          %i.fa.fa-file-text
+          %span Projects
+        - if window.renderContext.user_session_settings? and window.renderContext.user_session_settings.use_local_assets
+          %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=false'}"}
+            %i.fa.fa-home
+            %span Stop using local assets
+        - else
+          %a.menu-item{data-bind: "click: function() { window.location.search = '?use-local-assets=true'}"}
+            %i.fa.fa-home
+            %span Use local assets
+        %a.menu-item{data-bind: "click: function() { window.location.search = '?use-om=true'}"}
+          %i.fa λ
+          %span Use om
       <!-- /ko -->
 <!-- ko if: current_user().admin() && CI.instrumentation.display() -->
 %nav.instrumentation{data-bind: "with: CI.instrumentation"}

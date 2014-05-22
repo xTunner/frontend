@@ -51,11 +51,13 @@ CI.Versions =
     "2.0.0-p353",
     "2.0.0-p353-railsexpress",
     "2.0.0-p451",
+    "2.0.0-p481",
     "2.1.0-preview1",
     "2.1.0-preview2",
     "2.1.0",
     "2.1.0-p0",
     "2.1.1",
+    "2.1.2",
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4",
@@ -65,17 +67,19 @@ CI.Versions =
     "jruby-1.7.8",
     "jruby-1.7.9",
     "jruby-1.7.10",
-    "jruby-1.7.11"
+    "jruby-1.7.11",
+    "jruby-1.7.12",
+    "rbx-2.2.6"
     ]
-  bundler: "1.3.5"
+  bundler: "1.6.2"
   cucumber: "1.2.0"
   rspec: "2.14.4"
   rake: "10.1.0"
 
   default_node: "0.8.12"
   node_versions: [
-     "0.10.22"
      "0.11.8",
+     "0.10.28",
      "0.10.26",
      "0.10.24",
      "0.10.22",
@@ -177,7 +181,8 @@ CI.Versions =
     "5.5.2",
     "5.5.3",
     "5.5.7",
-    "5.5.8"
+    "5.5.8",
+    "5.5.11"
   ]
 
   golang: '1.2.1'
@@ -233,3 +238,4 @@ CI.Versions =
   gcc: "4.6.3-1ubuntu5"
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.9"
+  phantomjs: "1.9.7"
