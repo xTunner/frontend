@@ -4,6 +4,7 @@
     %blockquote{cite: "http://www.shopify.com"}
       %p We were able to rapidly grow our team and code base without fear of outgrowing CircleCI.
       %cite
+        %img{src: assetPath("assets/img/outer/stories/john.jpg")}
         %p John Duff
         %p Director of Engineering, Shopify
   .stories-body
@@ -50,12 +51,13 @@
       %blockquote{cite: "http://www.shopify.com"}
         %p One of my favorite things about CircleCI is that their team really cares about making sure their customers get maximum value our of their product.
         %cite
+          %img{src: assetPath("assets/img/outer/stories/arthur.jpg")}
           %p Arthur Neves
           %p Developer, Shopify
     %section
       %h2 Implementation
-      %p CircleCI integrates natively with GitHub, which Shopify was already using, so set up time was minimal; it only took a few minutes to follow the rest of their repos on CircleCI and to invite the rest of their team members. Once their tests were running, they started optimizing their containers and parallelization from within the CircleCI app so that their test suite would run as quickly as possible. Once they had the tests running for all their projects, the next step was setting up Continuous Deployment. 
-      %p CD has always been a core part of the engineering culture at Shopify, so getting deployment set up with CircleCI was essential. To streamline their CD process, Shopify used the CircleCI API to build a custom 'Ship It' tool that allows any developer to deploy with the press of a button, as long as they have a green build on CircleCI. All they had to do to build this was verify that the pull request in question returned "outcome" : “success” from the CircleCI API after merging with master, and then allow the developer to deploy. 
+      %p CircleCI integrates natively with GitHub, which Shopify was already using, so set up time was minimal; it only took a few minutes to follow the rest of their repos on CircleCI and to invite the rest of their team members. Once their tests were running, they started optimizing their containers and parallelization from within the CircleCI app so that their test suite would run as quickly as possible. Once they had the tests running for all their projects, the next step was setting up Continuous Deployment.
+      %p CD has always been a core part of the engineering culture at Shopify, so getting deployment set up with CircleCI was essential. To streamline their CD process, Shopify used the CircleCI API to build a custom 'Ship It' tool that allows any developer to deploy with the press of a button, as long as they have a green build on CircleCI. All they had to do to build this was verify that the pull request in question returned "outcome" : “success” from the CircleCI API after merging with master, and then allow the developer to deploy.
       %p This same functionality can also be accomplished without using the API by putting the deployment script directly into the circle.yml file.
       != HAML.stories_procedure()
     %section
@@ -64,6 +66,7 @@
       %blockquote{cite: "http://www.shopify.com"}
         %p CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure.
         %cite
+          %img{src: assetPath("assets/img/outer/stories/john.jpg")}
           %p John Duff
           %p Director of Engineering, Shopify
       %p The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably.

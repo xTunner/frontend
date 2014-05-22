@@ -43,13 +43,26 @@
       border-left: 1px solid @white;
     }
     cite {
+      @line: @fontSizeSmall;
+      @margin: (@line / 3);
       display: block;
       float: right;
+      position: relative;
+      img {
+        @img: (@line * 3);
+        .outlineFlat(fade(@black, 13));
+        position: absolute;
+        width: @img;
+        height: @img;
+        top: ((((@line * 2) + @margin) - @img) / 2);
+        left: (-@img - @line);
+        border-radius: (@img / 2);
+      }
       p {
-        line-height: 1em;
-        font-size: 12px;
+        line-height: @line;
+        font-size: @line;
         font-weight: bold;
-        margin-bottom: 4px;
+        margin-bottom: @margin;
       }
     }
   }
