@@ -101,3 +101,22 @@
 
   ;; XXX: check for XSS
   (set-page-title! (str "Edit settings - " project-name)))
+
+(defmethod post-navigated-to! :org-settings
+  [history-imp to {:keys [org-name subpage]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (if (get-in current-state [:settings :organizations (keyword org-name) :plan])
+      (mlog "plan details already loaded for" org-name)
+      (utils/ajax :get
+                  (gstring/format "/api/v1/organization/%s/plan" org-name)
+                  :org-plan
+                  api-ch
+                  :context {:org-name org-name}))
+    (if (= (get-in current-state [:current-organization :name]) org-name)
+      (mlog "organization details already loaded for" org-name)
+      (utils/ajax :get
+                  (gstring/format "/api/v1/organization/%s/settings" org-name)
+                  :org-settings
+                  api-ch
+                  :context {:org-name org-name})))
+  (set-page-title! (str "Org settings - " org-name)))

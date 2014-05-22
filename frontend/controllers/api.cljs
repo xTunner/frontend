@@ -225,3 +225,28 @@
   (if-not (= (:project-id context) (project-model/id (:current-project state)))
     state
     (assoc-in state [:current-project :heroku_deploy_user] nil)))
+
+(defmethod api-event [:org-plan :success]
+  [target message status {:keys [resp context]} state]
+  (let [org-name (:org-name context)
+        plan (assoc resp :current_org_name org-name)]
+    (if-not (= org-name (:org-settings-org-name state))
+      state
+      (assoc-in state [:settings :organizations (keyword org-name) :plan] plan))))
+
+(defmethod api-event [:org-settings :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+      state
+      (-> state
+          (assoc :current-organization resp)
+          (assoc-in [:current-organization :loaded] true)
+          (assoc-in [:current-organization :authorized] true))))
+
+(defmethod api-event [:org-settings :failed]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (-> state
+        (assoc-in [:current-organization :loaded] true)
+        (assoc-in [:current-organization :authorized] false))))
