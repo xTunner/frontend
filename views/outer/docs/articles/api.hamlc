@@ -293,7 +293,7 @@
         }
         """
     'project/:username/:project/tree/:branch':
-      description: "Triggers a new build, returns a summary of the build."
+      description: "Triggers a new build, returns a summary of the build. <a href='/docs/parameterized-builds'>Optional build parameters can be set using an experimental API</a>."
       method: "POST"
       response: """
         {
