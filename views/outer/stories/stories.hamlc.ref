@@ -4,7 +4,7 @@
     %blockquote{cite: "http://www.shopify.com"}
       %p We were able to rapidly grow our team and code base without fear of outgrowing CircleCI.
       %cite
-        %img{src: assetPath("assets/img/outer/stories/john.jpg")}
+        %img{src: assetPath('(asset-path "img/outer/stories/john.jpg")')}
         %p John Duff
         %p Director of Engineering, Shopify
   .stories-body
@@ -51,7 +51,7 @@
       %blockquote{cite: "http://www.shopify.com"}
         %p One of my favorite things about CircleCI is that their team really cares about making sure their customers get maximum value our of their product.
         %cite
-          %img{src: assetPath("assets/img/outer/stories/arthur.jpg")}
+          %img{src: assetPath('(asset-path "img/outer/stories/arthur.jpg")')}
           %p Arthur Neves
           %p Developer, Shopify
     %section
@@ -66,7 +66,7 @@
       %blockquote{cite: "http://www.shopify.com"}
         %p CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure.
         %cite
-          %img{src: assetPath("assets/img/outer/stories/john.jpg")}
+          %img{src: assetPath('(asset-path "img/outer/stories/john.jpg")')}
           %p John Duff
           %p Director of Engineering, Shopify
       %p The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably.
