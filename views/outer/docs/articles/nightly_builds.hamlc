@@ -49,7 +49,7 @@
   These tests should be run once a day at least.
 
 %p
-  Creating a conditional step is easy, <code>circle.yml</code> commands are just shell commands and build parameters are just environment variables:
+  Creating a conditional step is easy; <code>circle.yml</code> commands are just shell commands and build parameters are just environment variables:
 
 %pre
   %code.yaml<>
