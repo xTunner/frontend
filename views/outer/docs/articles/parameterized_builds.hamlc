@@ -1,8 +1,5 @@
 - @title = 'Parameterized Builds'
-- @lastUpdated = "May 16, 2014"
-
-
-%h2#intro Intro
+- @lastUpdated = "May 22, 2014"
 
 %p
   The Parameterized Build API is currently available as an early-access preview.
@@ -117,7 +114,7 @@
 %h3 Example
 %p
   We've put together a
-    %a{href: "/docs/how-to-nightly-build"}
+    %a{href: "/docs/nightly-builds"}
       how to
   showing how to use build parameters in <code>circle.yml</code> so you can trigger nightly builds.
 
