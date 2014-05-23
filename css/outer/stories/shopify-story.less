@@ -127,12 +127,6 @@
 }
 .stories-procedure {
   @color: @gray;
-  .arrow(...) {
-    .process(@arguments) when (iscolor(@arguments))  {.track, .direction {stroke: @arguments;}}
-    .process(@arguments) when (isnumber(@arguments)) {.track, .direction {stroke-width: @arguments;}}
-    .process(@arguments);
-  }
-  .arrow(@color);
   .slot {
     fill: @color;
   }
@@ -145,7 +139,6 @@
         transition: stroke-width 200ms;
         transition-timing-function: cubic-bezier(0.5, -1, 0.5, 2);
       }
-      .arrow(10);
       p {
         color: @color;
         padding: 0 (@stories_font_size * 2) 0 0;
@@ -157,16 +150,21 @@
     }
   }
   .touch {
+    fill: none;
     stroke: transparent;
     stroke-width: 50; // increases hover area
     cursor: pointer;
   }
   .track {
+    fill: none;
+    stroke: @color;
     stroke-width: 2;
     transition: stroke-width 400ms;
     stroke-linecap: round;
   }
   .direction {
+    fill: @color;
+    stroke: @color;
     stroke-width: 0;
     transition: stroke-width 400ms;
   }
@@ -175,17 +173,25 @@
     transition: stroke-width 400ms;
   }
   .passing {
-    .arrow(@green);
+    .track,
+    .direction {
+      stroke: @green;
+    }
     .direction,
     .pin {
       fill: @green;
+      stroke: @green;
     }
   }
   .failing {
-    .arrow(@redLight);
+    .track,
+    .direction {
+      stroke: @redLight;
+    }
     .direction,
     .pin {
       fill: @redLight;
+      stroke: @redLight;
     }
   }
   .mask {
