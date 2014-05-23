@@ -66,6 +66,12 @@
       }
     }
   }
+  .tooltip {
+    .tooltip-inner {
+      font-size: @baseFontSize; // BS RESET
+      padding: .5em 1em; // BS RESET
+    }
+  }
 }
 .stories-head {
   .flexy(center, center, column);
@@ -215,15 +221,6 @@
   }
   a {
     font-size: @baseFontSize;
-  }
-  .tooltip {
-    &.in {
-      opacity: 1;
-    }
-    .tooltip-inner {
-      font-size: @baseFontSize;
-      padding: .5em 1em;
-    }
   }
   form {
     margin-top: 1em;
