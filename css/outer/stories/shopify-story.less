@@ -133,21 +133,26 @@
     .process(@arguments);
   }
   .arrow(@color);
-  * {
-    transition: 400ms;
-  }
   .slot {
     fill: @color;
   }
   .step {
     &:hover {
-      * {
-        transition: 200ms;
+      .track,
+      .direction,
+      .pin {
+        stroke-width: 10;
+        transition: stroke-width 200ms;
         transition-timing-function: cubic-bezier(0.5, -1, 0.5, 2);
       }
       .arrow(10);
-      .status {
-        .scale(1, 1);
+      p {
+        color: @color;
+        padding: 0 (@stories_font_size * 2) 0 0;
+        transition: padding 200ms, color 200ms;
+        &.right {
+          padding: 0 0 0 (@stories_font_size * 2);
+        }
       }
     }
   }
@@ -158,14 +163,16 @@
   }
   .track {
     stroke-width: 2;
+    transition: stroke-width 400ms;
     stroke-linecap: round;
   }
   .direction {
     stroke-width: 0;
+    transition: stroke-width 400ms;
   }
-  .status {
-    .scale((2 / 3), (2 / 3));
-    .transform-origin(center);
+  .pin {
+    stroke-width: 0;
+    transition: stroke-width 400ms;
   }
   .passing {
     .arrow(@green);
@@ -184,31 +191,14 @@
   .mask {
     fill: @white;
   }
-  .dev-to-github:hover ~ .dev-to-github p {
-    color: @color;
-    .translate3d(-15px, 0);
-  }
-  .github-to-circle:hover ~ .github-to-circle p {
-    color: @color;
-    .translate3d(-15px, 0);
-  }
-  .failing:hover ~ .failing p {
-    color: @color;
-    .translate3d(-15px, 0);
-  }
-  .passing:hover ~ .passing p {
-    color: @color;
-    .translate3d(5px, 0);
-  }
-  .servers-to-users:hover ~ .servers-to-users p {
-    color: @color;
-    .translate3d(5px, 0);
-  }
   p {
     .flexy(center);
     margin: 0;
+    padding: 0 @stories_font_size 0 @stories_font_size;
     color: fade(@color, 0);
     text-align: center;
+    pointer-events: none;
+    transition: padding 300ms, color 300ms;
   }
 }
 .stories-cta {
