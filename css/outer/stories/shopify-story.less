@@ -1,69 +1,73 @@
 @stories_font_size: 18px;
 .stories {
   font-size: @stories_font_size;
-  line-height: 30px;
+  line-height: 24px;
   color: @gray;
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3 {
     color: @grayDark;
     font-weight: normal;
-    margin: 1em 0 @stories_font_size;
-  }
-  h1,
-  h2 {
     line-height: 1em;
     margin: 1em 0 @stories_font_size;
   }
   h3 {
     font-size: 24px;
   }
-  h4 {
-    margin: round((@stories_font_size / 3)) 0;
-  }
-  a {
-    transition: 400ms ease-in-out;
-    &:hover {
-      transition: 200ms ease-in-out;
-    }
+  h6 {
+    font-size: @baseFontSize;
   }
   p {
-    margin-bottom: 1em;
+    margin-bottom: @stories_font_size;
   }
   blockquote {
-    .clearfix();
-    font-style: italic;
-    max-width: (70px * 10);
-    border: none;
-    margin: 20px auto;
-    > p {
-      font-size: 20px;
-      line-height: 30px;
-      font-family: @serifFontFamily;
-      padding-left: 20px;
-      margin-bottom: 0;
-      border-left: 1px solid @white;
+    @em: (@stories_font_size * 2);
+    @small: round((3 / 4) * @stories_font_size);
+    border: none; // BS RESET
+    margin: @em auto;
+    padding: 0; // BS RESET
+    p {
+      font-size: @em;
+      line-height: 48px;
+      padding-left: @em;
+      border-left: 2px solid @grayLighter;
+      margin: 0;
+      position: relative;
+      &:before {
+        content: '\201C';
+        position: absolute;
+        left: (@em / 2);
+      }
+      &:after {
+        content: '\201D';
+      }
     }
     cite {
-      @line: @fontSizeSmall;
-      @margin: (@line / 3);
-      display: block;
-      float: right;
-      position: relative;
-      img {
-        @img: (@line * 3);
-        .outlineFlat(fade(@black, 13));
-        position: absolute;
-        width: @img;
-        height: @img;
-        top: ((((@line * 2) + @margin) - @img) / 2);
-        left: (-@img - @line);
-        border-radius: (@img / 2);
-      }
-      p {
-        line-height: @line;
-        font-size: @line;
-        font-weight: bold;
-        margin-bottom: @margin;
-      }
+      .flexy(center, flex-end);
+      margin-top: @small;
+    }
+    img {
+      @img: (@small * 3);
+      .outlineFlat(fade(@black, 13));
+      width: @img;
+      height: @img;
+      border-radius: (@img / 2);
+    }
+    ul {
+      font-size: @small;
+      line-height: round(((1 / 4) * @small) + @small);
+      list-style: none;
+      margin: 0 0 0 @small;
+    }
+    li {
+      font-size: inherit;
+      line-height: inherit;
+    }
+  }
+  .tooltip {
+    .tooltip-inner {
+      font-size: @baseFontSize; // BS RESET
+      padding: .5em 1em; // BS RESET
     }
   }
 }
@@ -73,6 +77,9 @@
   background-image: linear-gradient(to bottom, @blueDarker 66%, @blueDarkest 100%);
   height: 75vh;
   color: @white;
+  blockquote {
+    max-width: 940px;
+  }
 }
 .shopify-logo {
   max-width: (70px * 3);
@@ -81,12 +88,6 @@
 .stories-body {
   max-width: 940px;
   margin: 0 auto;
-  blockquote {
-    margin: 3em auto;
-    > p {
-      border-left: 1px solid @grayLighter;
-    }
-  }
 }
 .stories-stats {
   width: 100%;
@@ -121,94 +122,87 @@
   i {
     font-size: 2em;
   }
-  h3 {
-    margin-top: (@stories_font_size / 2);
-  }
 }
 .stories-procedure {
   @color: @gray;
-  .arrow(...) {
-    .process(@arguments) when (iscolor(@arguments))  {.track, .direction {stroke: @arguments;}}
-    .process(@arguments) when (isnumber(@arguments)) {.track, .direction {stroke-width: @arguments;}}
-    .process(@arguments);
-  }
-  .arrow(@color);
-  * {
-    transition: 400ms;
-  }
   .slot {
     fill: @color;
   }
   .step {
     &:hover {
-      * {
-        transition: 200ms;
+      .track,
+      .direction,
+      .pin {
+        stroke-width: 10;
+        transition: stroke-width 200ms;
         transition-timing-function: cubic-bezier(0.5, -1, 0.5, 2);
       }
-      .arrow(10);
-      .status {
-        .scale(1, 1);
+      p {
+        color: @color;
+        padding: 0 (@stories_font_size * 2) 0 0;
+        transition: padding 200ms, color 200ms;
+        &.right {
+          padding: 0 0 0 (@stories_font_size * 2);
+        }
       }
     }
   }
   .touch {
+    fill: none;
     stroke: transparent;
     stroke-width: 50; // increases hover area
     cursor: pointer;
   }
   .track {
+    fill: none;
+    stroke: @color;
     stroke-width: 2;
+    transition: stroke-width 400ms;
     stroke-linecap: round;
   }
   .direction {
+    fill: @color;
+    stroke: @color;
     stroke-width: 0;
+    transition: stroke-width 400ms;
   }
-  .status {
-    .scale((2 / 3), (2 / 3));
-    .transform-origin(center);
+  .pin {
+    stroke-width: 0;
+    transition: stroke-width 400ms;
   }
   .passing {
-    .arrow(@green);
+    .track,
+    .direction {
+      stroke: @green;
+    }
     .direction,
     .pin {
       fill: @green;
+      stroke: @green;
     }
   }
   .failing {
-    .arrow(@redLight);
+    .track,
+    .direction {
+      stroke: @redLight;
+    }
     .direction,
     .pin {
       fill: @redLight;
+      stroke: @redLight;
     }
   }
   .mask {
     fill: @white;
   }
-  .dev-to-github:hover ~ .dev-to-github p {
-    color: @color;
-    .translate3d(-15px, 0);
-  }
-  .github-to-circle:hover ~ .github-to-circle p {
-    color: @color;
-    .translate3d(-15px, 0);
-  }
-  .failing:hover ~ .failing p {
-    color: @color;
-    .translate3d(-15px, 0);
-  }
-  .passing:hover ~ .passing p {
-    color: @color;
-    .translate3d(5px, 0);
-  }
-  .servers-to-users:hover ~ .servers-to-users p {
-    color: @color;
-    .translate3d(5px, 0);
-  }
   p {
     .flexy(center);
     margin: 0;
+    padding: 0 @stories_font_size 0 @stories_font_size;
     color: fade(@color, 0);
     text-align: center;
+    pointer-events: none;
+    transition: padding 300ms, color 300ms;
   }
 }
 .stories-cta {
@@ -219,15 +213,6 @@
   }
   a {
     font-size: @baseFontSize;
-  }
-  .tooltip {
-    &.in {
-      opacity: 1;
-    }
-    .tooltip-inner {
-      font-size: @baseFontSize;
-      padding: .5em 1em;
-    }
   }
   form {
     margin-top: 1em;
@@ -240,6 +225,7 @@
     [type="submit"] {
       .circleButton(@grayLightest, @green);
       margin-top: 1em;
+      box-shadow: none;
     }
   }
 }
