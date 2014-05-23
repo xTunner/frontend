@@ -112,3 +112,17 @@
     %code.bash<>
       :preserve
         trigger_nightly_build.sh example-corp/project-foo master ${CIRCLE_TOKEN}
+
+%p
+  E.g. if you use <code>cron</code> you can set a new job to run every night as your user by running <code>crontab -e</code> and adding:
+  %pre
+    %code.bash<>
+      :preserve
+        30 0 * * * /bin/bash /home/ubuntu/bin/trigger_nightly_build.sh example-corp/project-foo master $(cat /home/ubuntu/.circle_token) 2>&1 | /usr/bin/logger
+
+%p
+  This runs the trigger_nightly_build.sh script at 30 minutes past midnight (check your server time!).
+  It reads the CircleCI API token from <code>/home/ubuntu/.circle_token</code> and sends any output from the script to syslog via <code>logger</code>.
+
+%p
+  Note the use of full paths for all binaries, cronjobs aren't run with your normal environment so it's a good idea to always specify full paths.
