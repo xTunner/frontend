@@ -10,7 +10,9 @@
 (defn status-classes [container]
   (let [action-statuses (->> container :actions (map :status) (remove nil?) set)]
     (concat []
-            (when (empty? action-statuses) ["running"])
+            (when (or (contains? action-statuses "running")
+                      (empty? action-statuses))
+              ["running"])
             (when (seq (intersection #{"failed" "timedout" "cancelled" "infrastructure_fail"}
                                      action-statuses))
               ["failed"])
