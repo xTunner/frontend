@@ -1,6 +1,7 @@
 (ns frontend.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [ajax.core :as ajax]
+            [frontend.env :as env]
             [goog.crypt :as crypt]
             [goog.crypt.Md5 :as md5]
             [goog.Uri]
@@ -10,15 +11,6 @@
 
 (defn csrf-token []
   (aget js/window "CSRFToken"))
-
-(defn mlog [& messages]
-  (.apply (.-log js/console) js/console (clj->js messages)))
-
-(defn mwarn [& messages]
-  (.apply (.-warn js/console) js/console (clj->js messages)))
-
-(defn merror [& messages]
-  (.apply (.-error js/console) js/console (clj->js messages)))
 
 (def parsed-uri
   (goog.Uri. (-> (.-location js/window) (.-href))))
@@ -36,6 +28,23 @@
    :logging-enabled? (parse-uri-bool (.getParameterValue parsed-uri "logging-enabled"))
    :restore-state? (parse-uri-bool (.getParameterValue parsed-uri "restore-state"))
    :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))})
+
+(def logging-enabled?
+  (if (nil? (:logging-enabled? initial-query-map))
+    (env/development?)
+    (:logging-enabled? initial-query-map)))
+
+(defn mlog [& messages]
+  (when logging-enabled?
+    (.apply (.-log js/console) js/console (clj->js messages))))
+
+(defn mwarn [& messages]
+  (when logging-enabled?
+    (.apply (.-warn js/console) js/console (clj->js messages))))
+
+(defn merror [& messages]
+  (when logging-enabled?
+    (.apply (.-error js/console) js/console (clj->js messages))))
 
 (defn uuid
   "returns a type 4 random UUID: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
