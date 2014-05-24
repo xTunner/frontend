@@ -16,7 +16,6 @@
     (set! (.-retrieveToken transformer)
           (fn [path-prefix location]
             ;; XXX may break with advanced compilation
-            (utils/inspect location)
             (str (subs (.-pathname location) (count path-prefix))
                  (when-let [hash (second (string/split (.-href location) #"#"))]
                    (str "#" hash)))))

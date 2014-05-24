@@ -72,8 +72,8 @@
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))]
-    (if-not (and (inspect (= (inspect build-num) (inspect (:build_num build))))
-                 (inspect (= project-name (vcs-url/project-name (:vcs_url build)))))
+    (if-not (and (= build-num (:build_num build))
+                 (= project-name (vcs-url/project-name (:vcs_url build))))
       state
       (assoc-in state [:current-build] (-> build
                                            (assoc :containers containers)

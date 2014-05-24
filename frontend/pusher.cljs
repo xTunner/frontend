@@ -55,7 +55,7 @@
   Will put data from the pusher events onto the websocket
   channel with the message. Returns the channel."
   [pusher-instance channel-name ws-ch & {:keys [messages context]}]
-  (let [channel (.subscribe pusher-instance (utils/inspect channel-name))]
+  (let [channel (.subscribe pusher-instance channel-name)]
     (doseq [message messages
             :let [pusher-event (get event-translations message)]]
       (.bind channel pusher-event #(put! ws-ch [message {:data %
