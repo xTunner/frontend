@@ -95,7 +95,9 @@
              [:div.detail-wrapper
               (when (and visible? (action-model/has-content? action))
                 [:div.detail {:class header-classes}
-                 (if (:retrieving-output action)
+                 ;; XXX: better way to indicate loading
+                 (if (and (:has_output action)
+                          (nil? (:output action)))
                    [:div.loading-spinner common/spinner]
 
                    [:div#action-log-messages

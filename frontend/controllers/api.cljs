@@ -117,7 +117,7 @@
         {:keys [index step]} (:context args)]
     (-> state
         (assoc-in [:current-build :containers index :actions step :output] action-log)
-        (update-in [:current-build :containers index :actions step] format-all-output))))
+        (update-in [:current-build :containers index :actions step] action-model/format-all-output))))
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]

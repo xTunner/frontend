@@ -43,8 +43,8 @@
 
 (defn format-all-output [action]
   (if-let [output (seq (:output action))]
-    (reduce format-output (range (count output)))
-    output))
+    (reduce format-output action (range (count output)))
+    action))
 
 (defn trailing-output [converters-state]
   (str (get-in converters-state [:out :trailing_out])
