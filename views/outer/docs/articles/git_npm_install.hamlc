@@ -3,7 +3,7 @@
 
 %p
   When your tests run, during the
-  %code pip install
+  %code npm install
   step, you might see something like this:
 
 %pre

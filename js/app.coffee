@@ -60,6 +60,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI", "View jobs")
     @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
+    @stories = new CI.outer.Page("stories", "Shopify + CircleCI Success Story")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
     @changelog = new CI.outer.Changelog("changelog", "ChangeLog", "View ChangeLog")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
@@ -460,6 +461,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/jobs.*", (cx) => VM.jobs.display(cx)
   @get "^/changelog.*", (cx) => VM.changelog.display(cx)
   @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
+  @get "^/stories.*", (cx) => VM.stories.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
   @get "^/security(#.*)?", (cx) => VM.security.display(cx)
   @get "^/security/hall-of-fame", (cx) => VM.securityHOF.display(cx)
