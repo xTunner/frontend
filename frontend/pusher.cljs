@@ -13,9 +13,10 @@
 
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+;; TODO: these should come from render-context
 (def pusher-key (if (env/production?)
-                  "961a1a02aa390c0a446d"
-                  "3f8cb51e8a23a178f974"))
+                  "7b71d1fda6ea5563b574"
+                  "5254dcaa34c3f603aca4"))
 
 (defn new-pusher-instance [& {:keys [key]
                               :or {key pusher-key}}]
