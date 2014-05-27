@@ -12,8 +12,8 @@
       <!-- ko if: VM.current_page().show_queued -->
         %th Queued
       <!-- /ko -->
-      %th Started at
-      %th Length
+      %th.condense Started at
+      %th.condense Length
       %th.condense Status
       - if @actions
         %th.condense Actions
