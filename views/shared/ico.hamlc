@@ -31,9 +31,9 @@
     paths: [a.turn, a.clock]
   ]
 
-%svg{class: "icon", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100"}
+%svg{class: "ico", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100"}
   - color = "none"
   - for icon in icons
     - if icon.name is @n
       - for path in icon.paths
-        %path{class: "icon-#{icon.name}", fill: "#{color}", d: "#{path}"}
+        %path{class: "ico-#{icon.name}", fill: "#{color}", d: "#{path}"}
