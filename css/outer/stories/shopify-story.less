@@ -75,7 +75,8 @@
   .flexy(center, center, column);
   background-color: @blueDarker;
   background-image: linear-gradient(to bottom, @blueDarker 66%, @blueDarkest 100%);
-  height: 75vh;
+  min-height: 640px;
+  min-height: 75vh;
   color: @white;
   blockquote {
     max-width: 940px;
@@ -94,6 +95,7 @@
   ul {
     .flexy();
     list-style: none;
+    margin: 3em 0;
     margin: 5vh 0;
   }
   li {
