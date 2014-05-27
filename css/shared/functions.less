@@ -177,6 +177,7 @@
 }
 
 .tableLight {
+  @padding: 5px;
   border-collapse: separate;
   color: lighten(@grayLight,13%);
   background: @whiten;
@@ -185,7 +186,8 @@
   border-radius: 4px;
   width: 100%;
   th {
-    padding: 0 0 0 .5em;
+    .box-sizing(border-box);
+    padding: 0 @padding;
     font-weight: normal;
     line-height: 2em;
     font-size: 12px;
@@ -233,7 +235,7 @@
     display: block;
     line-height: 1em;
     min-height: 1em;
-    padding: .5em 2px;
+    padding: @padding;
   }
 }
 
