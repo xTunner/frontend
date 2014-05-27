@@ -1,8 +1,8 @@
 CI.Pusher = class Pusher
   constructor: (@login) ->
     key = switch window.renderContext.env
-      when "production" then "961a1a02aa390c0a446d"
-      else "3f8cb51e8a23a178f974"
+      when "production" then "7b71d1fda6ea5563b574"
+      else "5254dcaa34c3f603aca4"
 
     @pusher = new window.Pusher(key,
       encrypted: true

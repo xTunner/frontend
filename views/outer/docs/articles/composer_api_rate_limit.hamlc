@@ -25,3 +25,17 @@
   %code.bash<>
     :preserve
       composer install --prefer-source --no-interaction
+
+%h3 API rate limits and custom repositories
+%p
+  Composer tries to discover every available version of every package in a repository.
+  For GitHub repositories it uses the GitHub API to do this, even when you have <code>--prefer-source</code> set.
+
+%p
+  You can avoid this version discovery if you commit your <code>composer.lock</code> into your repo.
+  That tells Composer exactly which package versions to fetch from the custom repository.
+
+%p
+  Committing your <code>composer.lock</code> is also a best practise, even if you don't have this problem.
+  It means your local environment, CircleCI, and your production environment all use the exact same versions of your dependencies.
+  This adds extra confidence to your tests; you're testing exactly the same code that you deploy to production.
