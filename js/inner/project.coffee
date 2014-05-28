@@ -53,6 +53,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     show_test_new_settings: false
     loaded_settings: false
     github_permissions: null
+    feature_flags: {}
 
   constructor: (json) ->
 
@@ -616,3 +617,16 @@ CI.inner.Project = class Project extends CI.inner.Obj
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
       @updateObservables(data)
       @loaded_settings(true)
+
+  feature_flag_set: (name) => @komp
+    read: =>
+      switch @feature_flags()[name]
+        when true then "true"
+        when false then "false"
+    write: (value) =>
+      actual = if value == "true" then true else false
+      console.log "!!!", "setting to", value
+      old = @feature_flags()
+      old[name] = actual
+      @feature_flags(old)
+

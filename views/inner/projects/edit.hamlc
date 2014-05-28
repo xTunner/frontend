@@ -4,6 +4,8 @@
       %li.side-title Project Settings
       %li
         %a{href: "edit"} Overview
+      %li
+        %a{href: "#experimental"} Experimental Settings
       %li.side-title Tweaks
       %li
         %a{ href: "#parallel-builds"} Parallelism
