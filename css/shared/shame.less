@@ -1,12 +1,15 @@
+//
+// see: http://csswizardry.com/2013/04/shame-css/
+//
 @media only screen and (max-device-width: 480px) {
   #app {
     &.outer {
       .stories-head {
-        height: 600px;
+        height: 600px; // vh bug with ios 6-7 (see: https://bugs.webkit.org/show_bug.cgi?id=127771)
       }
       .stories-stats {
         ul {
-          margin: 3em 0;
+          margin: 3em 0; // vh bug with ios 6-7 (see: https://bugs.webkit.org/show_bug.cgi?id=127771)
         }
       }
     }
