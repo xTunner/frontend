@@ -5,7 +5,9 @@
     %h3{data-bind: "attr: {alt: cancelFormErrorText}"} Please tell us why you're canceling. This helps us make Circle better!
     %form
       <!-- ko foreach: CI.inner.Billing.cancelReasons -->
-        %input{type: "checkbox", data-bind: "attr: {value: value, for: text}, checked: $parent.cancel_reasons"}
+        %label.cancel-reason
+          %input{type: "checkbox", data-bind: "value: value, checked: $parent.cancel_reasons"}
+          %span{data-bind: "text: text"}
       <!-- /ko -->
       %textarea{data-bind: "value: cancel_notes", required: ""}
       %label{title: "Would you mind elaborating some?", alt: "Have any other thoughts?", placeholder: "Thanks for the feedback!"}
