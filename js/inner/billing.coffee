@@ -186,6 +186,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         return "Please specify above."
       null
 
+    @cancelTextareaAltText = @komp =>
+      if _.contains(@cancel_reasons(), "other")
+        "Would you mind elaborating some?"
+      else
+        "Have any other thoughts?"
+
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
@@ -285,6 +291,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     if @cancelFormErrorText()
       @show_cancel_errors(true)
+      @cancelFormErrorText.subscribe (value) =>
+        if not value?
+          @show_cancel_errors(false)
       return
 
     $.ajax
