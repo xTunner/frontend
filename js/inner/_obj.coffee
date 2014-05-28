@@ -46,7 +46,8 @@ CI.inner.VcsUrlMixin = (obj) ->
   obj.observables.vcs_url = obj.vcs_url
 
   obj.project_name = obj.komp ->
-    obj.vcs_url().match("^https?://[^/]+/(.*)")[1]
+    m = obj.vcs_url().match("^https?://[^/]+/(.*)")
+    if (m == null) then "" else m[1]
 
   # slashes aren't allowed in github org/user names or project names
   obj.org_name = obj.komp ->
