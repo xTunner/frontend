@@ -624,4 +624,12 @@ CI.inner.Project = class Project extends CI.inner.Obj
       old = @feature_flags()
       old[name] = if value then not inverted else inverted
       @feature_flags(old)
-
+      # Notify the backend.
+      $.ajax
+        type: "PUT"
+        event: event
+        url: "/api/v1/project/#{@project_name()}/settings"
+        data: JSON.stringify
+          feature_flags: _.pick(old, name)
+        error: (data) =>
+          @refresh()
