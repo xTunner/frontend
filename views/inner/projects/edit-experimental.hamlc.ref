@@ -26,9 +26,9 @@
       We're looking at optimizing our build page for builds with large
       numbers of containers. With this option set, the build actions
       are separated into tabbed subpages corresponding to each container.
-      We've got a
-      %a{href: assetPath('(asset-path "img/container-oriented.png")')}
-        screenshot, if you're interested.
+
+      %div
+        %img{width: 600, src: assetPath('(asset-path "img/container-oriented.png")')}
     != @describe_flag "junit", "JUnit Support", ->
       We've been experimenting with better ways to display and manage
       test result data, especially for large test suites. This adds flags
