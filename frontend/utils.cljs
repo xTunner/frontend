@@ -29,7 +29,10 @@
    :restore-state? (parse-uri-bool (.getParameterValue parsed-uri "restore-state"))
    :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))})
 
-(def logging-enabled? (get initial-query-map :logging-enabled? (env/development?)))
+(def logging-enabled?
+  (if (nil? (:logging-enabled? initial-query-map))
+    (env/development?)
+    (:logging-enabled? initial-query-map)))
 
 (defn mlog [& messages]
   (when logging-enabled?

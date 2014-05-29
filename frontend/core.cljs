@@ -81,9 +81,11 @@
                              :mult (async/mult mouse-up-ch)}})))
 
 (defn log-channels?
-  "Logs channels in development, can be overridden by the log-channels query param"
+  "Log channels in development, can be overridden by the log-channels query param"
   []
-  (get utils/initial-query-map :log-channels? (env/development?)))
+  (if (nil? (:log-channels? utils/initial-query-map))
+    (env/development?)
+    (:log-channels? utils/initial-query-map)))
 
 (defn controls-handler
   [value state container]
