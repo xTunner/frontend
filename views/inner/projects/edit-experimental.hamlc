@@ -12,7 +12,7 @@
       %form
         %ul
           %li
-            %input{type: "checkbox", data-bind: "checked: $parent.feature_flag(name)"} On
+            %input.radio{type: "checkbox", data-bind: "checked: $parent.feature_flag(name)"} On
           %li
-            %input{type: "checkbox", data-bind: "checked: $parent.feature_flag(name, true)"} Off
+            %input.radio{type: "checkbox", data-bind: "checked: $parent.feature_flag(name, true)"} Off
           
