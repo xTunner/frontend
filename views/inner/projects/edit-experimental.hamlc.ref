@@ -1,0 +1,50 @@
+.project-settings-block
+  %h2
+    Experimental Settings
+  %p
+    We've got a few settings you can play with, to enable things we're working
+    on. We <em>are</em> working on these, though, and there may be some
+    sharp edges. Be careful!
+
+  %ul{data-bind: "foreach: {data: _.keys(feature_flags()), as: 'name'}"}
+    %li
+      / ko if: name == "build_GH1157_container_oriented_ui"
+      %h4 Container-Oriented Build Page
+
+      %p
+        We're looking at optimizing our build page for builds with large
+        numbers of containers. With this set, the build actions are separated
+        into tabbed subpages corresponding to each container.
+        We've got a
+        %a{href: assetPath('(asset-path "img/container-oriented.png")')}
+          screenshot, if you're interested.
+      / /ko
+      / ko if: name == "junit"
+      %h4 JUnit Support
+      
+      %p
+        We've been experimenting with better ways to display and manage
+        test result data, especially for large test suites.
+      / /ko
+      / ko if: name == "artifacts-service"
+      %h4 Artifacts Service
+
+      %p
+        Point artifact links to a different domain, to reduce the risk and
+        scope of cross-site scripting attacks.
+      / /ko
+      / ko if: name == "set-github-status"
+      %h4 GitHub Status Updates
+
+      %p
+        By default, we update the status of every pushed commit through
+        GitHub's status API. If you'd like to turn this off (if, for example,
+        this is conflicting with another service), you can do so below.
+      / /ko
+      %form
+        %ul
+          %li
+            %input.radio{type: "checkbox", data-bind: "checked: $parent.feature_flag(name)"} On
+          %li
+            %input.radio{type: "checkbox", data-bind: "checked: $parent.feature_flag(name, true)"} Off
+          
