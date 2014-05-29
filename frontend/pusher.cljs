@@ -13,9 +13,10 @@
 
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+;; TODO: these should come from render-context
 (def pusher-key (if (env/production?)
-                  "961a1a02aa390c0a446d"
-                  "3f8cb51e8a23a178f974"))
+                  "7b71d1fda6ea5563b574"
+                  "5254dcaa34c3f603aca4"))
 
 (defn new-pusher-instance [& {:keys [key]
                               :or {key pusher-key}}]
@@ -55,7 +56,7 @@
   Will put data from the pusher events onto the websocket
   channel with the message. Returns the channel."
   [pusher-instance channel-name ws-ch & {:keys [messages context]}]
-  (let [channel (.subscribe pusher-instance (utils/inspect channel-name))]
+  (let [channel (.subscribe pusher-instance channel-name)]
     (doseq [message messages
             :let [pusher-event (get event-translations message)]]
       (.bind channel pusher-event #(put! ws-ch [message {:data %

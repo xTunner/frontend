@@ -1,9 +1,11 @@
 (ns frontend.models.action
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
+            [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format))
 
+;; XXX: write an id function
 (defn id [action]
   )
 
@@ -31,11 +33,17 @@
         converter (new-converter action (keyword (:type output)))]
     (-> action
         (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
+        (assoc-in [:output output-index :react-key] (utils/uuid))
         (assoc-in [:converters-state (keyword (:type output))] (js->clj (.currentState converter) :keywordize-keys true)))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
     (format-output action (dec (count output)))
+    action))
+
+(defn format-all-output [action]
+  (if-let [output (seq (:output action))]
+    (reduce format-output action (range (count output)))
     action))
 
 (defn trailing-output [converters-state]

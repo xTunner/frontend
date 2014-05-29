@@ -62,7 +62,7 @@
     [:li {:class (when (= container-id (get build :current-container-id 0)) "active")}
      [:a.container-selector
       {:on-click #(put! controls-ch [:container-selected container-id])
-       :class (container-model/status-style container)}
+       :class (container-model/status-classes container)}
       (str "C" (:index container))]]))
 
 (defn build [data owner opts]

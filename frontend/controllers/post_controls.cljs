@@ -73,10 +73,12 @@
                   :context build-id))))
 
 (defmethod post-control-event! :retry-build-clicked
-  [target message {:keys [username reponame build_num build-id] :as args} previous-state current-state]
-  (let [api-ch (-> current-state :comms :api)]
+  [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
+  (let [api-ch (-> current-state :comms :api)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/%s/%s/retry" username reponame build_num)
+                (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
                 :retry-build
                 api-ch)))
 
@@ -149,22 +151,24 @@
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
-  (when (and (get-in current-state [:current-build :containers index :actions step :show-output])
-             (not (get-in current-state [:current-build :containers index :actions step :output])))
-    (let [api-ch (get-in current-state [:comms :api])
-          action (get-in current-state [:current-build :containers index :actions step])
-          url (if (:output_url action)
-                (:output_url action)
-                (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
-                                (vcs-url/project-name (get-in current-state [:current-build :vcs_url]))
-                                (get-in current-state [:current-build :build_num])
-                                step
-                                index))]
-      (utils/ajax :get
-                  url
-                  :action-log
-                  api-ch
-                  :context args))))
+  (let [action (get-in current-state [:current-build :containers index :actions step])]
+    (when (and (:show-output action)
+               (:has_output action)
+               (not (:output action)))
+      (let [api-ch (get-in current-state [:comms :api])
+
+            url (if (:output_url action)
+                  (:output_url action)
+                  (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
+                                  (vcs-url/project-name (get-in current-state [:current-build :vcs_url]))
+                                  (get-in current-state [:current-build :build_num])
+                                  step
+                                  index))]
+        (utils/ajax :get
+                    url
+                    :action-log
+                    api-ch
+                    :context args)))))
 
 (defmethod post-control-event! :selected-project-parallelism
   [target message {:keys [project-id parallelism]} previous-state current-state]

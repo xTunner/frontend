@@ -80,10 +80,17 @@
                   :mouse-up {:ch mouse-up-ch
                              :mult (async/mult mouse-up-ch)}})))
 
+(defn log-channels?
+  "Log channels in development, can be overridden by the log-channels query param"
+  []
+  (if (nil? (:log-channels? utils/initial-query-map))
+    (env/development?)
+    (:log-channels? utils/initial-query-map)))
+
 (defn controls-handler
   [value state container]
-  (when true (:log-channels? utils/initial-query-map)
-        (mlog "Controls Verbose: " value))
+  (when (log-channels?)
+    (mlog "Controls Verbose: " value))
   (swallow-errors
    (let [previous-state @state]
      (swap! state (partial controls-con/control-event container (first value) (second value)))
@@ -91,8 +98,8 @@
 
 (defn nav-handler
   [value state history]
-  (when true (:log-channels? utils/initial-query-map)
-        (mlog "Navigation Verbose: " value))
+  (when (log-channels?)
+    (mlog "Navigation Verbose: " value))
   (swallow-errors
    (let [previous-state @state]
      (swap! state (partial nav-con/navigated-to history (first value) (second value)))
@@ -100,8 +107,8 @@
 
 (defn api-handler
   [value state container]
-  (when true (:log-channels? utils/initial-query-map)
-        (mlog "API Verbose: " (first value) (second value) (utils/third value)))
+  (when (log-channels?)
+    (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
     (let [previous-state @state]
       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
@@ -109,8 +116,8 @@
 
 (defn ws-handler
   [value state pusher]
-  (when true (:log-channels? utils/initial-query-map)
-        (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
+  (when (log-channels?)
+    (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
   (swallow-errors
     (let [previous-state @state]
       ;; XXX: should these take the container like the rest of the controllers?

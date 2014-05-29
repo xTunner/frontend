@@ -45,17 +45,7 @@
         state)
       (let [{action-index :step container-index :index action-log :log} (js->clj data :keywordize-keys true)]
         (-> state
-            (update-in [:current-build :containers]
-                       (fnil identity (vec (map (fn [i] {:index i})
-                                                (range (:parallel build))))))
-            (update-in [:current-build :containers container-index :actions]
-                       (fn [actions]
-                         (vec (concat actions
-                                      (map (fn [i]
-                                             (-> action-log
-                                                 (select-keys [:index])
-                                                 (assoc :step i :status "running")))
-                                           (range (count actions) action-index))))))
+            (update-in [:current-build] build-model/fill-containers container-index action-index)
             (assoc-in [:current-build :containers container-index :actions action-index] action-log)
             (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))
 
@@ -68,40 +58,28 @@
         state)
       (let [{action-index :step container-index :index action-log :log} (js->clj data :keywordize-keys true)]
         (-> state
-            (update-in [:current-build :containers]
-                       (fnil identity (vec (map (fn [i] {:index i})
-                                                (range (:parallel build))))))
-            (update-in [:current-build :containers container-index :actions]
-                       (fn [actions]
-                         (vec (concat actions
-                                      (map (fn [i]
-                                             (-> action-log
-                                                 (select-keys [:index])
-                                                 (assoc :step i :status "running")))
-                                           (range (count actions) action-index))))))
+            (update-in [:current-build] build-model/fill-containers container-index action-index)
             (update-in [:current-build :containers container-index :actions action-index] merge action-log)
             ;; XXX is this necessary here?
             (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))
 
 (defmethod ws-event :build/append-action
   [pusher-imp message {:keys [data channel-name]} state]
-  (let [build (:current-build state)]
-    (if-not (= (pusher/build-channel build) channel-name)
-      (do
-        (mlog "Ignoring event for old build channel: " channel-name)
-        state)
-      (let [{action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
-        (-> state
-            (update-in [:current-build :containers]
-                       (fnil identity (vec (map (fn [i] {:index i})
-                                                (range (:parallel build))))))
-            (update-in [:current-build :containers container-index :actions]
-                       (fn [actions]
-                         (vec (concat actions
-                                      (map (fn [i]
-                                             {:index container-index :step i :status "running"})
-                                           (range (count actions) action-index))))))
-            (update-in [:current-build :containers container-index :actions action-index :output] vec)
-            (update-in [:current-build :containers container-index :actions action-index :output]
-                       conj output)
-            (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))
+  (let [build (:current-build state)
+        {action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
+    (cond
+     (not= (pusher/build-channel build) channel-name)
+     (do (mlog "Ignoring event for old build channel: " channel-name)
+         state)
+
+     (not= container-index (get-in build [:current-container-id] 0))
+     (do (mlog "Ignoring output for inactive container: " container-index)
+         state)
+
+     :else
+     (let [{action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
+       (-> state
+           (update-in [:current-build] build-model/fill-containers container-index action-index)
+           (update-in [:current-build :containers container-index :actions action-index :output] vec)
+           (update-in [:current-build :containers container-index :actions action-index :output] conj output)
+           (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))

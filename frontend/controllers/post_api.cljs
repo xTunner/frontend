@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [clojure.string :as string]
             [frontend.intercom :as intercom]
+            [frontend.models.action :as action-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.routes :as routes]
@@ -38,6 +39,20 @@
   [target message status args previous-state current-state]
   (mlog "No post-api for: " [message status]))
 
+(defmethod post-api-event! [:build :success]
+  [target message status args previous-state current-state]
+  (let [{:keys [build-num project-name]} (:context args)]
+    ;; This is slightly different than the api-event because we don't want to have to
+    ;; convert the build from steps to containers again.
+    (when (and (= build-num (get-in args [:resp :build_num]))
+               (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
+      (doseq [action (mapcat :actions (get-in current-state [:current-build :containers]))
+              :when (or (= "running" (:status action))
+                        (action-model/failed? action))]
+        ;; XXX: should this fetch the action logs itself creating controls events?
+        (put! (get-in current-state [:comms :controls])
+              [:action-log-output-toggled (select-keys action [:step :index])])))))
+
 (defmethod post-api-event! [:followed-repo :success]
   [target message status args previous-state current-state]
   (js/_gaq.push ["_trackEvent" "Repos" "Add"])
@@ -56,6 +71,12 @@
                   (get-in current-state [:comms :api])))))
 
 (defmethod post-api-event! [:start-build :success]
+  [target message status args previous-state current-state]
+  (let [nav-ch (get-in current-state [:comms :nav])
+        build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
+    (put! nav-ch [:navigate! build-url])))
+
+(defmethod post-api-event! [:retry-build :success]
   [target message status args previous-state current-state]
   (let [nav-ch (get-in current-state [:comms :nav])
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]

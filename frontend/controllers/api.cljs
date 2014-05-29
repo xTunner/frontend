@@ -5,7 +5,8 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.utils :as utils :refer [mlog mwarn merror]])
+            [frontend.utils :as utils :refer [mlog mwarn merror]]
+            [frontend.utils.vcs-url :as vcs-url])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
@@ -69,32 +70,14 @@
   [target message status args state]
   (mlog "build success")
   (let [build (:resp args)
+        {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))]
-    (assoc-in state [:current-build] (-> build
-                                         (assoc :containers containers)
-                                         (dissoc :steps)))))
-
-(defmethod api-event [:retry-build :started]
-  [target message status {:keys [build-id]} state]
-  (update-in state [:current-build] (fn [b] (if-not (= build-id (build-model/id b))
-                                              b
-                                              (assoc b :retry-state :started)))))
-
-(defmethod api-event [:retry-build :success]
-  [target message status data state]
-  (assoc-in state [:current-build] data))
-
-(defmethod api-event [:retry-build :finished]
-  [target message status {:keys [build-id]} state]
-  (update-in state [:current-build] (fn [b] (if-not (= build-id (build-model/id b))
-                                              b
-                                              (dissoc b :retry-state)))))
-
-(defmethod api-event [:retry-build :finished]
-  [target message status {:keys [build-id]} state]
-  (update-in state [:current-build] (fn [b] (if-not (= build-id (build-model/id b))
-                                              b
-                                              (dissoc b :retry-state)))))
+    (if-not (and (= build-num (:build_num build))
+                 (= project-name (vcs-url/project-name (:vcs_url build))))
+      state
+      (assoc-in state [:current-build] (-> build
+                                           (assoc :containers containers)
+                                           (dissoc :steps))))))
 
 (defmethod api-event [:repos :success]
   [target message status args state]
@@ -134,7 +117,7 @@
         {:keys [index step]} (:context args)]
     (-> state
         (assoc-in [:current-build :containers index :actions step :output] action-log)
-        (update-in [:current-build :containers index :actions step] action-model/format-output 0))))
+        (update-in [:current-build :containers index :actions step] action-model/format-all-output))))
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]

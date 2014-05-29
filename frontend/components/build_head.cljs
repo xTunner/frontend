@@ -140,7 +140,9 @@
       (let [build (:build data)
             controls-ch (:controls-ch data)
             settings (:settings data)
-            build-id (build-model/id build)]
+            build-id (build-model/id build)
+            build-num (:build_num build)
+            vcs-url (:vcs_url build)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -201,12 +203,16 @@
               {:data-loading-text "Rebuilding",
                :title "Retry the same tests",
                :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
                                                                    :clear-cache? false}])}
               "Rebuild"]
              [:button.clear_cache_retry
               {:data-loading-text "Rebuilding",
                :title "Clear cache and retry",
                :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
                                                                    :clear-cache? true}])}
               "w/ cleared cache"]
              [:button.ssh_build
