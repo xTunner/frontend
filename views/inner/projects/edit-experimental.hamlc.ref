@@ -24,7 +24,10 @@
       
       %p
         We've been experimenting with better ways to display and manage
-        test result data, especially for large test suites.
+        test result data, especially for large test suites. This adds flags
+        to some of our inferred commands, collects data supplied by JUnit and
+        JUnit-compatabile test runners. It only works for a handful of test
+        runners for now, and the data is only available through our API, though!
       / /ko
       / ko if: name == "artifacts-service"
       %h4 Artifacts Service
