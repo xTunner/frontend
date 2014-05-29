@@ -32,7 +32,7 @@
     != @describe_flag "junit", "JUnit Support", ->
       We've been experimenting with better ways to display and manage
       test result data, especially for large test suites. This adds flags
-      to some of our inferred commands, collects data supplied by JUnit and
+      to some of our inferred commands, and collects data supplied by JUnit and
       JUnit-compatabile test runners. It only works for a handful of test
       runners for now, and the data is only available through our API, though!
     != @describe_flag "artifacts-service", "Artifacts Service", ->
