@@ -619,7 +619,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
       @loaded_settings(true)
 
   feature_flag: (name, inverted=false) => @komp
-    read: => @feature_flags()[name] == not inverted
+    read: => if inverted then !@feature_flags()[name] else !!@feature_flags()[name]
     write: (value) =>
       old = @feature_flags()
       old[name] = if value then not inverted else inverted
