@@ -6,13 +6,13 @@
     on. We <em>are</em> working on these, though, and there may be some
     sharp edges. Be careful!
 
-  %ol{data-bind: "foreach: {data: Object.keys(feature_flags()), as: 'name'}"}
+  %ol{data-bind: "foreach: {data: _.keys(feature_flags()), as: 'name'}"}
     %li
       %code{data-bind: "text: name"}
       %form
         %ul
           %li
-            %input{type: "radio", value: "true", data-bind: "attr: {name: name}, checked: $parent.feature_flag_set(name)"} On
+            %input{type: "checkbox", data-bind: "checked: $parent.feature_flag(name)"} On
           %li
-            %input{type: "radio", value: "false", data-bind: "attr: {name: name}, checked: $parent.feature_flag_set(name)"} Off
+            %input{type: "checkbox", data-bind: "checked: $parent.feature_flag(name, true)"} Off
           

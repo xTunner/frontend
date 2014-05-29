@@ -618,15 +618,10 @@ CI.inner.Project = class Project extends CI.inner.Obj
       @updateObservables(data)
       @loaded_settings(true)
 
-  feature_flag_set: (name) => @komp
-    read: =>
-      switch @feature_flags()[name]
-        when true then "true"
-        when false then "false"
+  feature_flag: (name, inverted=false) => @komp
+    read: => @feature_flags()[name] == not inverted
     write: (value) =>
-      actual = if value == "true" then true else false
-      console.log "!!!", "setting to", value
       old = @feature_flags()
-      old[name] = actual
+      old[name] = if value then not inverted else inverted
       @feature_flags(old)
 
