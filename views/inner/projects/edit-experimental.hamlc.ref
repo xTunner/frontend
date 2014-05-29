@@ -8,9 +8,9 @@
     %form
       %ul
         %li
-          %input.radio{type: "checkbox", data-bind: "checked: feature_flag(name)"} On
+          %input.radio{type: "checkbox", data-bind: "checked: feature_flag(#{JSON.stringify name})"} On
         %li
-          %input.radio{type: "checkbox", data-bind: "checked: feature_flag(name, true)"} Off
+          %input.radio{type: "checkbox", data-bind: "checked: feature_flag(#{JSON.stringify name}, true)"} Off
   / /ko
 
 .project-settings-block
