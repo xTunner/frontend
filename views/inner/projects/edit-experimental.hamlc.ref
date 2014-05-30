@@ -46,5 +46,3 @@
       By default, we update the status of every pushed commit with
       GitHub's status API. If you'd like to turn this off (if, for example,
       this is conflicting with another service), you can do so below.
-    != @describe_flag "oss", "Open Source", ->
-      TODO
