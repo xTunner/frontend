@@ -274,10 +274,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       container_cost: 50
       id: "p18"
       containers: containers
+      max_containers: 1000
+
+    cost = @calculateCost(plan, containers)
+    description = "$#{cost}/month, includes #{containers} container" + if (containers > 1) then "s." else "."
     vals =
       panelLabel: 'Pay' # TODO: better label (?)
-      price: 100 * @calculateCost(plan, containers)
-      description: "#{plan.name} plan"
+      price: 100 * cost
+      description: description
       token: (token) =>
         @cardInfo(token.card)
         @ajaxNewPlan(plan, token, event)
