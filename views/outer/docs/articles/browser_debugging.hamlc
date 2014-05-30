@@ -75,7 +75,7 @@
   Enter the password <code>password</code> when it prompts you for a password. Your connection is secured with SSH, so there is no need for a strong password. You do need to enter a password to start the VNC server.
 
 %p
-  Start your VNC viewer and connect to <code>localhost:5902</code>, enter the password you entered when it prompts you for a password. You should see a display containing a terminal window.
+  Start your VNC viewer and connect to <code>localhost:5902</code>, enter the password you entered when it prompts you for a password. You should see a display containing a terminal window. You can ignore any warnings about an insecure or unencrypted connection. Your connection is secured through the SSH tunnel.
 
 %p
   Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!
