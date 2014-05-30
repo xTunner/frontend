@@ -11,3 +11,7 @@
         %span.hi-daniel{data-bind: "text: $parent.ssh_connection_string($data)"}
         %span.loading-spinner{data-bind: "ifnot: $data.ssh_enabled"}
           != HAML.spinner({})
+  .build-ssh-doc
+    Debugging Selenium browser tests?
+    != succeed ".", ->
+      %a{href: "/docs/browser-debugging#interact-with-the-browser-over-vnc"} Read our doc on interacting with the browser over VNC
