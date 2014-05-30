@@ -3,7 +3,7 @@
 
 .landing.page
   .banner
-  %div{ data-bind: "ifnot: from_heroku" } 
+  %div{ data-bind: "ifnot: from_heroku" }
     != HAML.home_hero_unit()
 
     != HAML.home_customers()
