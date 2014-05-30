@@ -40,9 +40,5 @@
     %a.customer-story-link.center-text{href: "stories/shopify"} Read how Shopify grew with Circle
 
 
-  %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    != HAML.home_cta({text: "Start your 14-day free trial now", source: "customers_cta"})
-
-
 
   
