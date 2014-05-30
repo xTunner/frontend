@@ -31,6 +31,9 @@
       numbers of containers. With this option set, the build actions
       are separated into tabbed subpages corresponding to each container.
 
+      Note that this will only apply to builds run while this setting is
+      enabled -- it won't change old build pages.
+
       %div
         %img{width: 600, src: assetPath('(asset-path "img/container-oriented.png")')}
     != @describe_flag "junit", "JUnit Support", ->
