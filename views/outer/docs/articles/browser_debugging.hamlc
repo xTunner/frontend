@@ -1,6 +1,6 @@
 - @tags = ["browser", "capybara", "webkit", "chrome", "firefox", "selenium", "X11", "xorg"]
 - @title = "Interacting with the browser on CircleCI's VM"
-- @lastUpdated = "Feb 18, 2013"
+- @lastUpdated = "May 30, 2014"
 
 %p
   Integration tests can be hard to debug, especially when they're running on a remote machine.
