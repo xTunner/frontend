@@ -37,7 +37,7 @@
         %h4 Aaron Suggs
         %p
           Operations Engineer at Kickstarter
-    %a.customer-story-link.center-text{href: "stories/shopify"} Read how Shopify grew with Circle
+  %a.customer-story-link.center-text{href: "stories/shopify"} Read how Shopify grew with Circle
 
 
 
