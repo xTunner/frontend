@@ -2,8 +2,10 @@
   %h3
     %span Business roles
 
-  %h5
+  %p
     We're looking for developer-focused individuals to help us achieve business objectives.
+
+  %h5
     You should have a few of:
   %ul
     %li Deep and authentic knowledge of the developer space.

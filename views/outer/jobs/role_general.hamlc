@@ -1,9 +1,11 @@
 #general
   %h3
     %span All roles
-  %h5
+
+  %p
     Regardless of the role you're interested in, its important that CircleCI be the right fit for you.
 
+  %h5
     The type of folks who fit well into our culture are
   %ul
     %li People who truly care about making developers more productive.
