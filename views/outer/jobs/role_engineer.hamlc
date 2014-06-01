@@ -6,20 +6,22 @@
   %h5 We'd love to see
   %ul
     %li If you've worked on significant projects that weren't in Java, JavaScript, Ruby or PHP.
+    %li Experience with writing Clojure or other functional languages.
     %li If you've built or scaled large distributed systems.
-    %li Experienced Clojure experts.
     %li People who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
     %li People who love trying new, cutting-edge things.
 
   %h5 With some of these skills
   %ul
     %li Good (possibly informal) knowledge of algorithmic design and CS theory (CS degree not required).
-    %li Experience with writing Clojure or other functional languages.
+    %li Experienced Clojure experts.
     %li Experience designing elegant APIs.
     %li Broad knowledge of important languages; Python, Node, JS, Ruby, Java, and PHP.
     %li Understanding of scalable cloud and web services.
     %li Dev-ops experience, including machine configuration and deployment on AWS.
     %li Low-level Linux hacking knowledge (including file-systems, kernels, databases, LXC/Docker, etc).
+    %li Experience building fat JS apps, stateful HTML5 apps, or experience with data visualization, such as D3 or Processing.
+    %li Good product and user experience sensibilities.
 
   %a{href: "/jobs?role=engineering#apply", role: "button"}
     %span Apply for Engineering roles
