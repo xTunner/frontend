@@ -4,7 +4,9 @@
       Build amazing products
     %h1
       with a great team
+
   .jobs-body
+
     .jobs-types
       %a{href: "#engineer"}
         %i.fa.fa-code
@@ -15,9 +17,14 @@
       %a{href: "#business"}
         %i.fa.fa-bar-chart-o
         %h3 Business
+
     .jobs-intro
       %h2 Who We Are
-      %p CircleCI is a rapidly growing company with a great mission, a deeply technical team, a focus on productivity for our customers and ourselves, and a flat organization with a great culture. We've a great product that's loved by thousands of developers, and significant revenue and funding to take developer tools to the next level. We're a startup as well as a real business &#8212; and we're just getting started.
+      %p
+        CircleCI is a rapidly growing company with a great mission, a deeply technical team, a focus on productivity for our customers and ourselves, and a flat organization with a great culture.
+      We've a great product that's loved by thousands of developers, and significant revenue and funding to take developer tools to the next level.
+      We're a startup as well as a real business &#8212; and we're just getting started.
+
     .jobs-values
       %h2 Why You'll Love Us
       %p
@@ -29,9 +36,9 @@
         %a{href: "http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html"} Fog Creek,
         %span and
         %a{href: "http://www.valvesoftware.com/company/Valve_Handbook_LowRes.pdf"} Valve.
+
       %p
-        %strong
-          We have a flat organization.
+        %strong We have a flat organization.
         There are no managers, no org-chart and no hierarchy, and we plan to keep it that way for as long as possible.
         Everyone gets access to all company information and can be involved in decision-making.
         By keeping communication open and transparent, we believe everybody is able to make good decisions about the best thing to work on.
@@ -56,8 +63,7 @@
         So much so, that we're in the process of switching to ClojureScript for our frontend!
 
       %p
-        <strong>At a small growing company,</strong>
-        <strong>your work has a disproportionate effect</strong>.
+        %strong At a small growing company, your work has a disproportionate effect.
         As well as making the lives of our customers better, it also sets a precedent for everyone who works for us in the future.
         You get to affect both the product and the company culture.
         Your opinions matter and are listened to, and that's why we hire you.
@@ -65,7 +71,6 @@
       %p
         %strong There's lots to learn.
         We try to hire really, really high caliber people, which means there's lot to learn, and we hope to learn lots from you too.
-
         We look for the very experienced, or the very talented.
         (But don't worry, we all have imposter syndrome too!)
         If you work at CircleCI, you know that you won't be on the team with slouches or slackers, or folks who will hold you back.
@@ -94,8 +99,30 @@
       != HAML.role_designer({})
       != HAML.role_business({})
 
+    .jobs-how
+      %h2 How to apply
+      %p
+        Send an email to
+        != succeed ",", ->
+          %a{:href => "mailto:jobs@circleci.com"} jobs@circleci.com
+        including a resume. We're mostly interested in seeing proof that you're brilliant. This might include great projects you've worked on, a portfolio, open source you've contributed to, your grades at MIT, that you got hired by Google, or anything that hints that you might be particularly brilliant. We're also interested in reading about technologies you've worked with in the past, and what you did with them.
 
-    %br
+      %p
+        The best applicants pitch us as to why they should work at CircleCI.
+        This is both why you're interested, and why you think you'd be a good part of the team.
+        (We know this is a great market, but we like folks who know why they want to work here).
+        If all goes well we're going to spend a lot of time together, so it's worth it for both of us to discuss this in advance.
+
+      %p
+        Naturally, this goes both ways.
+        We're happy to answer any questions you have about CircleCI, where we're going, why it's a great place to work, and what we're doing to keep it that way.
+
+      %p
+        Interested?
+        %a{:href => "mailto:jobs@circleci.com"} Email us now!
+
+
+
     %hr
     %center
       %strong
