@@ -92,8 +92,11 @@
         We'll bring you on-site every 10 weeks or so, and can do this according to your schedule.
 
     .jobs-what
-      %h2 What We Look For
-      %p Obviously, this is a very developer-focused company, so the most important thing is to understand how developers work and think. In addition, we've noticed that the following correlate with the type of people that we want to work with. Below is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory), but more of a rough guideline.
+      %h2 What we're looking for
+      %p
+        Obviously, this is a very developer-focused company, so the most important thing is to understand how developers work and think.
+        Here's how we think about the roles we're looking for.
+
     .jobs-listings
       != HAML.role_engineer({})
       != HAML.role_designer({})
