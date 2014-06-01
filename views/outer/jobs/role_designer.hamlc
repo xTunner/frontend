@@ -33,5 +33,5 @@
     %li Uphold and improve upon existing brand standards and guidelines.
     %li Most importantly, relate to our customers; primarily developers.
 
-  %a{href: "/jobs?role==design#apply", role: "button"}
+  %a{href: "/jobs?role=design#apply", role: "button"}
     %span Apply for Design roles
