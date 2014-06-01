@@ -75,10 +75,17 @@
       %h2 Where We Work
       %p
         %strong Local
-        %span &#8212; Our home office is located in San Francisco's beautiful Financial District. We have an entire highrise floor to ourselves, featuring some amazing views of the city and plenty of room for growth. Our team is dedicated to creating the most productive environment possible. That means we ensure everyone is able to enjoy their own personal level of comfort and privacy.
+        %span &#8212;
+        Our team is dedicated to creating the most productive environment possible.
+        That means we ensure everyone is able to enjoy their own personal level of comfort and privacy.
+        We work in San Francisco's beautiful Financial District, where you'll have a private office, catered lunch and lovely colleagues.
+
       %p
         %strong Remote
-        %span &#8212; We have an asynchronous culture that is well suited to remote-working. We use HipChat, Skype and email heavily, and currently four of our six engineers are working remotely. We'll bring you on-site every 8 weeks or so, and can do this according to your schedule.
+        %span &#8212; We have an asynchronous culture that is well suited to remote-working.
+        We use HipChat, Hangouts and email heavily, and currently six of our eleven engineers are working remotely.
+        We'll bring you on-site every 10 weeks or so, and can do this according to your schedule.
+
     .jobs-what
       %h2 What We Look For
       %p Obviously, this is a very developer-focused company, so the most important thing is to understand how developers work and think. In addition, we've noticed that the following correlate with the type of people that we want to work with. Below is not an exhaustive list, nor a list of requirements (in fact, some of them are contradictory), but more of a rough guideline.
