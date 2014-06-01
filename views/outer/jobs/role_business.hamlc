@@ -1,21 +1,32 @@
 #business
   %h3
     %span Business
-  %h5 We're looking for
-  %ul
-    %li A genuine desire to ensure customers are happy and successful.
+
+  %h5 We're looking for developer-focused individuals to help us achieve business objectives. You should have a few of:
     %li An obsession with data-driven decision making and measuring results.
     %li A technical background with the desire to learn more about the customer-facing parts of building a company.
-    %li An understanding of modern, low-touch, software-driven marketing techniques.
-  %h5 We'd love to see
-  %ul
+    %li Good analytical skills, ability to analyze data and come to conclusions.
+    %li Great communication skills, writing ability and presentation skills.
     %li Proven results from previous projects.
-    %li Anything you may have written about conversion rate optimization, AB testing, SaaS metrics or anything else interesting.
-  %h5 We're looking for
+
+  %h5 Are you looking to tell tell customers about CircleCI? (what we call dev-awareness)
+  %h5 We'd like to see
   %ul
-    %li With these skills
-    %li Good analytical skills, ability to analyze data and come to conclusions
-    %li Good communication and writing ability
-    %li Technical enough to understand and explain Continuos Integration and Deployment at a deep level
+    %li Anything you may have written about conversion rate optimization, AB testing, SaaS metrics or anything else interesting.
+    %li An understanding of modern, low-touch, software-driven marketing techniques.
+    %li Deep knowledge of the developer space.
+    %li An ability to build industry relationships.
+    %li An ability to craft stories and communicate them to our customers and the industry at large.
+
+  %h5 Do you love to help developers be successful? (we're calling this dev-success)
+  %h5 We're looking to see
+  %ul
+    %li A combination of engineering and empathy.
+    %li A genuine desire to help developers be happy and successful.
+    %li Significant technical ability, with an understanding of the developer mindset, toos and culture.
+    %li Reasonable coding ability.
+
+
+
   %a{href: "", role: "button"}
     %span Apply to Business
