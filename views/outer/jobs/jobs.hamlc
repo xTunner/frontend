@@ -98,9 +98,10 @@
         Here's how we think about the roles we're looking for.
 
     .jobs-listings
-      != HAML.role_engineer({})
-      != HAML.role_designer({})
-      != HAML.role_business({})
+      != HAML.role_general()
+      != HAML.role_engineer()
+      != HAML.role_designer()
+      != HAML.role_business()
 
     .jobs-how
       %h2#apply How to apply
@@ -131,8 +132,6 @@
         %a{:href => "mailto:jobs@circleci.com"} Email us now!
 
 
-
-    %hr
     %center
       %strong
         No recruiters, thank you.
