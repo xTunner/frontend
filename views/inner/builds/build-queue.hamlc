@@ -1,21 +1,10 @@
-.build-queue{data-bind: "css: {active: usage_queue_visible}"}
+<!-- ko if: usage_queue_visible -->
 
-  <!-- ko ifnot: usage_queue_why -->
-    .loading-spinner
-      != HAML.spinner({})
-  <!-- /ko -->
+  .build-queue{data-bind: "css: {active: usage_queue_visible}"}
 
-  <!-- ko if: usage_queue_why -->
-
-    <!-- ko ifnot: usage_queued -->
-      %p
-        %span Circle
-        / ko: ifnot: run_queued
-        %span has
-        / /ko
-        %span spent
-        %span{data-bind: "duration: run_queued_time"}
-        %span acquiring containers for this build
+    <!-- ko ifnot: usage_queue_why -->
+      .loading-spinner
+        != HAML.spinner({})
     <!-- /ko -->
 
     <!-- ko if: usage_queue_why -->
@@ -33,8 +22,7 @@
         <!-- /ko -->
       <!-- /ko -->
 
-    <!--  ko with: $root.project -->
-      <!-- ko if: billing.existing_plan_loaded -->
+      <!--  ko if: usage_queue_why().length -->
         %p
           %span This build
           %span{data-bind: "if: usage_queued"} has been
@@ -54,6 +42,7 @@
           <!-- /ko -->
         <!-- /ko -->
       <!-- /ko -->
+
     <!-- /ko -->
 
-  <!-- /ko -->
+<!-- /ko -->
