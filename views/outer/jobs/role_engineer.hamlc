@@ -1,26 +1,24 @@
 #engineer
   %h3
     %span Engineering
-  %h5 We're looking for
-  %ul
-    %li Senior and experienced developers, ones who've worked on a decent number of products.
-    %li Someone who has a propensity for shipping often, probably with 8-10 years of experience and amazing coding chops.
-    %li Young, raw, talented devs who can crank out code.
-    %li Experienced Clojure experts.
-    %li People who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
-    %li People who love trying new, cutting-edge things.
+  %h5 We're looking for great engineers: whether you've 10 years of experience shipping products, or are new to the industry with talent to burn and a fire in your belly, we need you to have amazing coding chops.
+
   %h5 We'd love to see
   %ul
     %li If you've worked on significant projects that weren't in Java, JavaScript, Ruby or PHP.
     %li If you've built or scaled large distributed systems.
-  %h5 With these skills
+    %li Experienced Clojure experts.
+    %li People who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
+    %li People who love trying new, cutting-edge things.
+
+  %h5 With some of these skills
   %ul
     %li Good knowledge of algorithmic design and CS theory (informally, CS degree not required).
     %li Experience with writing Clojure or other functional languages.
     %li Experience designing elegant APIs.
-    %li Broad knowledge of important languages; Python, Node, JS, Ruby (especially Rails), Java, and PHP.
+    %li Broad knowledge of important languages; Python, Node, JS, Ruby, Java, and PHP.
     %li Understanding of scalable cloud and web services.
     %li Dev-ops experience, including machine configuration and deployment on AWS.
-    %li Low-level Linux hacking knowledge (including file-systems, kernels, databases, etc).
+    %li Low-level Linux hacking knowledge (including file-systems, kernels, databases, LXC/Docker, etc).
   %a{href: "", role: "button"}
     %span Apply to Engineering
