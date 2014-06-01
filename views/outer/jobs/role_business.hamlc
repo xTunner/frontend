@@ -28,6 +28,5 @@
     %li Reasonable coding ability.
 
 
-
-  %a{href: "", role: "button"}
-    %span Apply to Business
+  %a{href: "/jobs?role=business#apply", role: "button"}
+    %span Apply for Business roles

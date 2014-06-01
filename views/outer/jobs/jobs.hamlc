@@ -103,7 +103,7 @@
       != HAML.role_business({})
 
     .jobs-how
-      %h2 How to apply
+      %h2#apply How to apply
       %p
         Send an email to
         != succeed ",", ->

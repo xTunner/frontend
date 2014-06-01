@@ -20,5 +20,6 @@
     %li Understanding of scalable cloud and web services.
     %li Dev-ops experience, including machine configuration and deployment on AWS.
     %li Low-level Linux hacking knowledge (including file-systems, kernels, databases, LXC/Docker, etc).
-  %a{href: "", role: "button"}
-    %span Apply to Engineering
+
+  %a{href: "/jobs?role=engineering#apply", role: "button"}
+    %span Apply for Engineering roles
