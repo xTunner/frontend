@@ -1,8 +1,10 @@
 #designer
   %h3
     %span Design
-  %p
-    Our customers love great experiences, and so do we. We're looking for amazing designers who can provide the,
+
+  %h5
+    Our customers love great experiences, and so do we. We're looking for amazing designers who can provide them.
+
   %h5
     We're looking for
   %ul
