@@ -22,12 +22,15 @@ We call this dev-awareness, and we'd love to see:
     %li An ability to build industry relationships.
     %li An ability to craft stories and communicate them to our customers and the industry at large.
 
-  %h5 Do you love to help developers be successful? We're referring to this as dev-success, and would love to talk to you if you have:
+  %h5 Do you love to help developers be successful? We're referring to this as dev-success, and would love to talk to you if you:
   %ul
-    %li A combination of engineering and empathy.
-    %li A genuine desire to help developers be happy and successful.
-    %li Significant technical ability, with an understanding of the developer mindset, toos and culture.
-    %li Reasonable coding ability.
+    %li Have a combination of engineering and empathy.
+    %li Love talking to people, helping them solve problems, and building relationships.
+    %li Really want to help developers be happy and successful.
+    %li Have significant technical ability, with an understanding of the developer mindset, tools and culture.
+    %li Love to solve problems fully so that they never happen to any customer again.
+    %li Are supremely organized and resourceful.
+    %li Have reasonable to strong coding ability.
 
 
   %a{href: "/jobs?role=business#apply", role: "button"}
