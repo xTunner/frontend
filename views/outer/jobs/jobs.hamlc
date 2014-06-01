@@ -1,6 +1,9 @@
 .page.jobs
   .jobs-head
-    %h1 Join us &amp; do what you love.
+    %h1
+      Build amazing products
+    %h1
+      with a great team
   .jobs-body
     .jobs-types
       %a{href: "#engineer"}
