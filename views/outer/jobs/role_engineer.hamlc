@@ -13,7 +13,7 @@
 
   %h5 With some of these skills
   %ul
-    %li Good knowledge of algorithmic design and CS theory (informally, CS degree not required).
+    %li Good (possibly informal) knowledge of algorithmic design and CS theory (CS degree not required).
     %li Experience with writing Clojure or other functional languages.
     %li Experience designing elegant APIs.
     %li Broad knowledge of important languages; Python, Node, JS, Ruby, Java, and PHP.
