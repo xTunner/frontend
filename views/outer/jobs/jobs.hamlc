@@ -21,16 +21,17 @@
     .jobs-intro
       %h2 Who We Are
       %p
-        CircleCI is a rapidly growing company with a great mission, a deeply technical team, a focus on productivity for our customers and ourselves, and a flat organization with a great culture.
-      We've a great product that's loved by thousands of developers, and significant revenue and funding to take developer tools to the next level.
-      We're a startup as well as a real business &#8212; and we're just getting started.
+        CircleCI is a rapidly growing company with a great mission, a deeply technical team, a focus on productivity for our customers and ourselves.
+        We've a flat organization, a great culture, and a delightful product that's loved by thousands of developers.
+        With significant revenue and funding, we're just getting started with taking developer tools to the next level.
 
     .jobs-values
-      %h2 Why You'll Love Us
+      %h2 Why you'll love working at CircleCI
       %p
         %strong
           Our culture is customer-driven.
-        Our customers and our founders are engineers, and most of our employees will be too. We are inspired by companies like
+        Our customers and our founders are engineers, and most of our employees are too.
+        We are inspired by companies like
         %a{href: "http://blog.alexmaccaw.com/stripes-culture"} Stripe,
         %a{href: "http://gigaom.com/2012/03/26/tales-from-the-trenches-github/"} GitHub,
         %a{href: "http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html"} Fog Creek,
@@ -44,27 +45,27 @@
         By keeping communication open and transparent, we believe everybody is able to make good decisions about the best thing to work on.
 
       %p
-        %strong We have a very strong focus on productivity, and on shipping code.
+        %strong We have a very strong focus on productivity, and on shipping product.
         This means you'll have a lot of days where you finish the day with the happy glow of having achieved something.
         We ship often, and shape our work lives around enabling that.
 
       %p
         %strong We spend a lot of time talking to customers.
-        We make itreally easy for customers to reach out to us, and we reach out to them to ask for their feedback too.
-        This means you'll probably spend at least one day per week listening to and fixing their problems.
-        We refer to that day as "support", but really think of it as "customer development".
+        We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too.
+        This means you'll probably spend significant time listening to and fixing their problems.
+        We refer to that as "support", but really think of it as "customer development".
 
       %p
         %strong We use cool technology.
         Our backend is written in Clojure.
-        Everything from managing Docker containers to package management to serving our REST API is all done in Clojure.
-        This allows us to be really productive, handle concurrency without difficulty, and leads to beautiful manageable code.
+        Everything from managing LXC containers to package management to serving our REST API is all done in Clojure.
+        This allows us to be really productive, handle concurrency with ease, and leads to beautiful manageable code.
         Clojure isn't just a fancy new language, it's the most productive, powerful and elegant language we've ever used.
-        So much so, that we're in the process of switching to ClojureScript for our frontend!
+        So much so, that we're in the process of switching our frontend over to ClojureScript.
 
       %p
         %strong At a small growing company, your work has a disproportionate effect.
-        As well as making the lives of our customers better, it also sets a precedent for everyone who works for us in the future.
+        As well as improving our customers' lives, your also set a precedent for everyone who works for us in the future.
         You get to affect both the product and the company culture.
         Your opinions matter and are listened to, and that's why we hire you.
 
@@ -72,8 +73,8 @@
         %strong There's lots to learn.
         We try to hire really, really high caliber people, which means there's lot to learn, and we hope to learn lots from you too.
         We look for the very experienced, or the very talented.
-        (But don't worry, we all have imposter syndrome too!)
         If you work at CircleCI, you know that you won't be on the team with slouches or slackers, or folks who will hold you back.
+        (Curiously, we disproportionately hire folks with find it hard to believe they're as amazing as they are, and suffer from significant imposter syndrome. Go figure. If this matches you, we encourage you to apply anyway).
 
 
     .jobs-where
@@ -89,7 +90,7 @@
         %strong Remote
         %span &#8212; We have an asynchronous culture that is well suited to remote-working.
         We use HipChat, Hangouts and email heavily, and currently six of our eleven engineers are working remotely.
-        We'll bring you on-site every 10 weeks or so, and can do this according to your schedule.
+        We'll bring you on-site every 10 weeks or so to work closely with your colleagues, and can do this to fit your remote life.
 
     .jobs-what
       %h2 What we're looking for
