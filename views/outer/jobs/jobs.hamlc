@@ -17,7 +17,7 @@
         %h3 Business
     .jobs-intro
       %h2 Who We Are
-      %p Circle is the market leader in continuous integration and deployment, and we're loved by thousands of developers all over the world. Our team is a rapidly growing group of highly talented, technical individuals. We value productivity and distributed decision making, which ultimately creates better solutions for our company and our customers. Circle has already generated significant revenue and raised millions in funding &#8212; and we're just getting started.
+      %p CircleCI is a rapidly growing company with a great mission, a deeply technical team, a focus on productivity for our customers and ourselves, and a flat organization with a great culture. We've a great product that's loved by thousands of developers, and significant revenue and funding to take developer tools to the next level. We're a startup as well as a real business &#8212; and we're just getting started.
     .jobs-values
       %h2 Why You'll Love Us
       %p
