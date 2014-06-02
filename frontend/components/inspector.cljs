@@ -10,7 +10,4 @@
   (reify
     om/IRender
     (render [_]
-      (println opts)
-      (om/build dnd/draggable
-                (assoc app :sub-com ankha/inspector :sub-com-data app)
-                {:opts {:dragger-fn (fn [owner] (dnd/free-drag owner))}}))))
+      (om/build ankha/inspector app))))

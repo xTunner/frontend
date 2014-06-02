@@ -47,8 +47,10 @@
           (om/build keyq/KeyboardHandler app
                     {:opts {:keymap keymap
                             :error-ch (get-in app [:comms :errors])}})
-          ;; for some reason this makes things render 10x slower
-          ;; (om/build inspector/inspector app {:opts opts})
+          (when (:inspector? utils/initial-query-map)
+            ;; XXX inspector still needs lots of work. It's slow and it defaults to
+            ;;     expanding all datastructures.
+            (om/build inspector/inspector app {:opts opts}))
           [:header
            (om/build navbar/navbar app {:opts opts})]
           [:main
