@@ -1,5 +1,5 @@
 <!-- ko with: current_user -->
-%nav.aside-left-nav{data-bind: "css: {slim: aside_is_slim}"}
+%nav.aside-left-nav{data-bind: "css: {slim: VM.browser_settings.settings().aside_is_slim}"}
   .aside-item.logo{data-bind: "click: width_of_aside"}
     .logomark
       != HAML.ico(n:'logo')
@@ -18,7 +18,7 @@
   %a.aside-item{href: "#", data-bind: "click: toggle_recent_history"}
     %i.fa.fa-clock-o
     %span Report Card
-  .aside-recent-history{data-bind: "css: {open: recent_history_visible}"}
+  .aside-recent-history{data-bind: "css: {open: VM.browser_settings.settings().recent_history_visible}"}
     -# %ul
     -#   - for i in [0..50]
     -#     %li

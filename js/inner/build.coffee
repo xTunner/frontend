@@ -159,6 +159,17 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @finished = @komp =>
       @stop_time()? or @canceled()
 
+    @status_icon_aside = @komp =>
+      switch @status()
+        when "failed", "canceled", "timedout"
+          "fail-light"
+        when "success", "fixed"
+          "pass-light"
+        when "running"
+          "busy-light"
+        else
+          @status()
+
     @status_icon_class =
       "fa-check": @success_style
       "fa-times": @komp => @important_style() || @warning_style() || @canceled()

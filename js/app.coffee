@@ -114,6 +114,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
         !@project().followed() &&
          @project().project_name() is @current_page().project_name
 
+    @browser_settings = new CI.BrowserSettings
+
     if window.renderContext.current_user
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
