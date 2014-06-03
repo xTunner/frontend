@@ -250,6 +250,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         'containers' : plan.containers
       success: (data) =>
         mixpanel.track('Paid')
+        window._pq = window._pq or []
+        _pq.push ["track" "payer"]
         @loadPlanData(data)
         @loadInvoices()
         VM.org().subpage('containers')
