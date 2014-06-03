@@ -252,6 +252,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         mixpanel.track('Paid')
         window._pq = window._pq or []
         _pq.push ["track" "payer"]
+        __adroll.record_user({"adroll_segments": "payer"})    
         @loadPlanData(data)
         @loadInvoices()
         VM.org().subpage('containers')
