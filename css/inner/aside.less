@@ -1,6 +1,9 @@
 &#app {
   @aside_items: 7;
   @aside_slim_speed: 200ms;
+  @slideup_items: 3;
+  @slideup_visible: 1;
+  @cascade_delay: 30ms;
   .flexy(row);
   .aside-left-nav {
     .flexy(column);
@@ -18,11 +21,11 @@
       }
     }
     &.slim {
-      width: @block_size;
+      width: @tile;
       .aside-item {
         i,
         img {
-          margin-right: ((@block_size - @baseFontSize) / 2);
+          margin-right: ((@tile - @baseFontSize) / 2);
           transition-duration: (@aside_slim_speed * 1.5);
         }
         &.logo {
@@ -32,7 +35,7 @@
     }
   }
   .aside-item {
-    .flex(0, 0, @block_size);
+    .flex(0, 0, @tile);
     .flexy(center);
     white-space: nowrap;
     &.logo {
@@ -42,21 +45,20 @@
       .logomark {
         .flexy(center, center);
         .icon_style(@white, 2em);
-        width: @block_size;
-        height: @block_size;
+        width: @tile;
+        height: @tile;
       }
     }
-    @delay: 30ms;
-    &:nth-child(2) > i { transition-delay: @delay * 1;}
-    &:nth-child(3) > i { transition-delay: @delay * 2;}
-    &:nth-child(4) > i { transition-delay: @delay * 3;}
-    &:nth-child(5) > i { transition-delay: @delay * 4;}
-    &:nth-child(6) > i { transition-delay: @delay * 5;}
+    &:nth-child(2) > i {transition-delay: @cascade_delay * 1;}
+    &:nth-child(3) > i {transition-delay: @cascade_delay * 2;}
+    &:nth-child(4) > i {transition-delay: @cascade_delay * 3;}
+    &:nth-child(5) > i {transition-delay: @cascade_delay * 4;}
+    &:nth-child(6) > i {transition-delay: @cascade_delay * 5;}
   }
   a.aside-item {
     .shadow_noboss();
     background: transparent;
-    transition: @base_transition ease-in-out;
+    transition: (@aside_slim_speed / 2) ease-in-out;
     &:hover,
     &:focus {
       .shadow_emboss(@blueDarker);
@@ -72,14 +74,14 @@
     }
     i {
       min-width: @baseFontSize;
-      margin: 0 @baseFontSize 0 ((@block_size - @baseFontSize) / 2);
+      margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
       transition: margin @aside_slim_speed;
     }
     img {
-      @s: (@block_size / 2);
+      @s: (@tile / 2);
       min-width:  @s;
       height: @s;
-      margin: 0 @baseFontSize 0 ((@block_size - @s) / 2);
+      margin: 0 @baseFontSize 0 ((@tile - @s) / 2);
       border-radius: (@s / 2);
       transition: margin (@aside_slim_speed * 2);
       pointer-events: none;
@@ -89,6 +91,8 @@
     @scrollbar: 5px;
     @em: @baseFontSize;
     @color: fade(@white, 21);
+    @ico: (@em - 2);
+    @line: (@em * 1.5);
     .flexy(column);
     font-size: @em;
     color: @color;
@@ -169,15 +173,13 @@
         }
       }
     }
-    @ico: (@em - 2);
-    @clear: (@em * 1.5);
     .project {
       width: 100%;
       a {
         display: block;
         width: 100%;
-        height: @clear;
-        line-height: @clear;
+        height: @line;
+        line-height: @line;
         padding: (@em / 2) 0 0 (@em / 2);
         overflow: hidden;
         text-overflow: ellipsis;
@@ -187,16 +189,15 @@
     .branch,
     .status {
       a {
-        height: @clear;
-        line-height: @clear;
+        height: @line;
+        line-height: @line;
       }
     }
     .branch {
-      @pseudo_width: @clear;
       .flexy(center);
       a {
         width: 100%;
-        padding-left: (@pseudo_width + (@em / 2));
+        padding-left: (@line + (@em / 2));
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -204,10 +205,10 @@
         &:before,
         &:after {
           content: "";
-          width: (@pseudo_width / 2);
-          height: (@clear / 2);
+          width: (@line / 2);
+          height: (@line / 2);
           position: absolute;
-          left: (@pseudo_width / 2);
+          left: (@line / 2);
           border-left: 1px solid @blueDarker;
         }
         &:before {
@@ -215,7 +216,7 @@
           border-bottom: 1px solid @blueDarker;
         }
         &:after {
-          top: (@clear / 2);
+          top: (@line / 2);
           border-top: 1px solid @blueDarker;
         }
       }
@@ -227,22 +228,22 @@
       a {
         .flexy(center, center);
         .icon_style(transparent, @ico);
-        width: @clear;
+        width: @line;
         &:first-child {
           .flex(1, 0, auto);
           .justify-content(flex-end);
-          padding-left: round(@em - ((@clear - @ico) / 2));
+          padding-left: round(@em - ((@line - @ico) / 2));
           svg {
-            padding-right: round((@clear - @ico) / 2);
+            padding-right: round((@line - @ico) / 2);
           }
         }
         &:not(:first-child) {
           opacity: 0;
-          margin-right: -@clear;
+          margin-right: -@line;
           transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
         }
         &:last-child {
-          padding-right: round(@em - ((@clear - @ico) / 2) - @scrollbar);
+          padding-right: round(@em - ((@line - @ico) / 2) - @scrollbar);
         }
         &:hover {
           path {
@@ -256,9 +257,11 @@
           }
         }
       }
+      path {
+        stroke-width: 10;
+      }
       .ico-busy-light {
         stroke: @blueLight;
-        stroke-width: 10;
         &:last-child {
           stroke-linecap: round;
           stroke-width: 20;
@@ -266,24 +269,20 @@
       }
       .ico-pass-light {
         stroke: @green;
-        stroke-width: 10;
       }
       .ico-fail-light {
         stroke: @redLight;
-        stroke-width: 10;
       }
     }
   }
   .aside-slideup {
-    @items: 3;
-    @items_visible: 1;
     .flex(0, 0, auto);
     .flexy(column);
     margin-top: auto;
     transition: box-shadow 300ms ease-in-out;
     a {
       &:last-child {
-        margin-bottom: ((@items - @items_visible) * -@block_size);
+        margin-bottom: ((@slideup_items - @slideup_visible) * -@tile);
         transition: margin 400ms ease-in-out;
       }
       &:hover,
