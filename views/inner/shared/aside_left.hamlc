@@ -16,8 +16,8 @@
     %i.fa.fa-comments
     %span Chat Support
   %a.aside-item{href: "#", data-bind: "click: toggle_recent_history"}
-    %i.fa.fa-clock-o
-    %span Report Card
+    %i.fa.fa-code
+    %span Build Summary
   .aside-recent-history{data-bind: "css: {open: VM.browser_settings.settings().recent_history_visible}"}
     -# %ul
     -#   - for i in [0..50]
