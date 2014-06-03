@@ -106,8 +106,7 @@
                       containers)]])
 
              (om/build build-steps/container-build-steps
-                       {:containers containers
-                        :build build}
+                       build
                        {:opts opts})
 
              (when (< 1 (count (:steps build)))

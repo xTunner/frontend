@@ -167,12 +167,15 @@
                                           (range (:parallel build))))))
       (update-in [:containers container-index :actions]
                  (fn [actions]
-                   (vec (concat actions
-                                (map (fn [i]
-                                       {:index action-index
-                                        :step i
-                                        :status "running"})
-                                     (range (count actions) action-index))))))))
+                   (if-not (> action-index (count actions))
+                     actions
+                     (vec (concat actions
+                                  (map (fn [i]
+                                         {:index action-index
+                                          :step i
+                                          :status "running"
+                                          :filler-action true})
+                                       (range (count actions) action-index)))))))))
 
 (defn id [build]
   (:build_url build))
