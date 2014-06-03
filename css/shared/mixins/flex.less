@@ -33,25 +33,25 @@
   -webkit-align-items: @arg;
           align-items: @arg;
 }
-.flexy() {
+.flexy(...) {
   .displayFlex();
+  .infer (@arguments) when (@arguments = row), (@arguments = row-reverse), (@arguments = column), (@arguments = column-reverse) {
+    .flex-direction(@arguments);
+  }
+  .infer(@arguments);
 }
 .flexy(@align) {
   .displayFlex();
   .align-items(@align);
 }
-.flexy(@align, @just) {
+.flexy(@align, @justify) {
   .displayFlex();
   .align-items(@align);
-  .justify-content(@just);
+  .justify-content(@justify);
 }
-.flexy(@align, @just, @dir) {
+.flexy(@align, @justify, @direction) {
   .displayFlex();
   .align-items(@align);
-  .justify-content(@just);
-  .flex-direction(@dir);
-}
-.flexy(@dir) when (@dir = column) {
-  .displayFlex();
-  .flex-direction(@dir);
+  .justify-content(@justify);
+  .flex-direction(@direction);
 }

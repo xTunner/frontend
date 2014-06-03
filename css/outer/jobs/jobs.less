@@ -1,95 +1,93 @@
-.jobs {
-
-  .content p {
-    margin-bottom: 20px;
+.jobs.page {
+  @em: 18px;
+  @pagesize: 940px;
+  font-size: @em;
+  line-height: ((4 / 3) * @em);
+  color: @gray;
+  h1, h2, h3, h4, h5, h6 {
+    color: @grayDark;
+    font-weight: normal;
+    margin: 1em 0 @em;
+    line-height: 1em;
   }
-
-  .content h2 {
-    &.aside {
-      font-size: 18px;
-      line-height: 24px;
-      text-align: center;
-      margin-bottom: 50px;
-    }
-  }
-
-
-
-  .reason {
-    position: relative;
-  }
-
-  .reason i {
-    height: 48px;
-    width: 70px;
-    padding-top: 22px;
+  h2 {
+    font-size: 36px;
     text-align: center;
-    display: table-cell;
-    position: absolute;
-    top: 50%;
-    left: 50px;
-    margin-top: -35px;
-    color: white;
-    font-size: 28px;
-    .border-radius(50px);
-
-    &.fa.fa-heart {
-      background: #ef535e;
-    }
-
-    &.fa.fa-flask {
-      background: #0065d7;
-    }
-
-    &.fa.fa-group {
-      background: #a100c4;
-    }
-
-    &.fa.fa-lightbulb-o {
-      background: #ffae00;
-    }
+    padding-top: 30px;
   }
-
-  .content section {
-    padding-bottom: 30px;
-    margin-top: 20px;
-    border-bottom: 1px solid #eee;
-
-    .span6 {
-      margin: 0;
-      padding: 30px 40px 0 40px;
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      text-align: left;
-    }
+  h3 {
+    font-size: 24px;
+    padding-top: 20px;
   }
-
-  .accordion-group {
-    border-bottom: 1px solid #eee;
-    border-left: 0;
-    border-right: 0;
-    border-top: 0;
-
-    &:last-of-type {
-      border: none;
-    }
+  h5 {
+    font-size: @em;
   }
-
-  .accordion-toggle {
-    text-decoration: none;
-
+  p {
+    margin: 0 0 @em;
+  }
+  a {
+    transition: 400ms ease-in-out;
     &:hover {
-      background: lighten(@circleBlueLight, 25%);
+      transition: 200ms ease-in-out;
     }
   }
-
-  .accordion-body {
-    ul {
-      margin: 20px 0 20px 20px;
+  li {
+    line-height: inherit; // BS RESET
+  }
+  .jobs-head {
+    .flexy(center, center, column);
+    color: @white;
+    height: 75vh;
+    background: linear-gradient(to bottom, @blueDarker 66%, @blueDarkest 100%), @blueDarker;
+    h1 {
+      font-size: 60px;
+      margin-top: 0;
+      color: inherit;
     }
-
-    li {
-      margin: 5px 0;
+  }
+  .jobs-body {
+    max-width: @pagesize;
+    margin: 0 auto (@pagesize / 4);
+  }
+  .jobs-types {
+    .flexy(stretch);
+    .outlineFlat();
+    border-radius: 4px;
+    height: (@pagesize / 4);
+    margin: 5vh 0;
+    a {
+      .flexy(center, center, column);
+      width: (100% / 3); // three different job types
+      &:not(:first-child) {
+        box-shadow: -1px 0 @grayBoxBorder;
+      }
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
+    i {
+      font-size: 2em;
+    }
+    h3 {
+      color: inherit;
+      margin-top: @em;
+    }
+  }
+  .jobs-listings {
+    h3 {
+      margin: 1em 0 0;
+      padding-bottom: .3em;
+      margin-bottom: .5em;
+      box-shadow: 0 1px @grayBoxBorder;
+    }
+    ul {
+      margin: 0 0 0 @em;
+    }
+    [role="button"] {
+      .circleButton(@grayLightest, @green);
+      display: inline-block;
+      min-width: 10em;
+      margin: 2em auto 1em;
     }
   }
 }

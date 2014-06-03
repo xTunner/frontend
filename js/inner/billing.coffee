@@ -186,6 +186,12 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         return "Please specify above."
       null
 
+    @cancelTextareaAltText = @komp =>
+      if _.contains(@cancel_reasons(), "other")
+        "Would you mind elaborating some?"
+      else
+        "Have any other thoughts?"
+
   containers_option_text: (c) =>
     container_price = @chosenPlan().container_cost
     cost = @containerCost(@chosenPlan(), c)
@@ -268,10 +274,14 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
       container_cost: 50
       id: "p18"
       containers: containers
+      max_containers: 1000
+
+    cost = @calculateCost(plan, containers)
+    description = "$#{cost}/month, includes #{containers} container" + if (containers > 1) then "s." else "."
     vals =
       panelLabel: 'Pay' # TODO: better label (?)
-      price: 100 * @calculateCost(plan, containers)
-      description: "#{plan.name} plan"
+      price: 100 * cost
+      description: description
       token: (token) =>
         @cardInfo(token.card)
         @ajaxNewPlan(plan, token, event)
@@ -285,6 +295,9 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
 
     if @cancelFormErrorText()
       @show_cancel_errors(true)
+      @cancelFormErrorText.subscribe (value) =>
+        if not value?
+          @show_cancel_errors(false)
       return
 
     $.ajax
