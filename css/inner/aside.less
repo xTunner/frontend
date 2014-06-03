@@ -160,22 +160,26 @@
         }
       }
     }
-    .status {
-      .flex(0, 0, auto);
-      .flexy(center);
+    @ico: (@em - 2);
+    @clear: (@em * 1.5);
+    .project {
+      width: 100%;
       a {
-        @s: (2 * @em);
-        .flex(0, 0, @s);
-        .icon_style(transparent, @s);
-        height: @s;
-        &:first-child {
-          padding-left: @em;
-        }
-        &:not(:first-child) {
-          opacity: 0;
-          margin-left: -@s;
-          transition-duration: 400ms; // close slower than opening, less jarring
-        }
+        display: block;
+        width: 100%;
+        height: @clear;
+        line-height: @clear;
+        padding: (@em / 2) 0 0 (@em / 2);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    .branch,
+    .status {
+      a {
+        height: @clear;
+        line-height: @clear;
       }
     }
     .branch {
@@ -207,6 +211,57 @@
         }
       }
     }
+    .status {
+      .flex(1, 0, auto);
+      .flexy(center, flex-end);
+      cursor: pointer; // to fix chaotic/jumping cursor
+      a {
+        .flexy(center, center);
+        .icon_style(transparent, @ico);
+        width: @clear;
+        &:first-child {
+          .flex(1, 0, auto);
+          .justify-content(flex-end);
+          padding-left: round(@em - ((@clear - @ico) / 2));
+          svg {
+            padding-right: round((@clear - @ico) / 2);
+          }
+        }
+        &:not(:first-child) {
+          opacity: 0;
+          margin-right: -@clear;
+          transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
+        }
+        &:last-child {
+          padding-right: round(@em - ((@clear - @ico) / 2) - @scrollbar);
+        }
+        &:hover {
+          path {
+            transition-duration: 200ms;
+          }
+        }
+        &:not(:hover) {
+          path {
+            stroke: @color;
+            transition: 500ms;
+          }
+        }
+      }
+      .ico-busy-light {
+        stroke: @blueLight;
+        stroke-width: 10;
+        &:last-child {
+          stroke-linecap: round;
+          stroke-width: 20;
+        }
+      }
+      .ico-pass-light {
+        stroke: @green;
+        stroke-width: 10;
+      }
+      .ico-fail-light {
+        stroke: @redLight;
+        stroke-width: 10;
       }
     }
   }
