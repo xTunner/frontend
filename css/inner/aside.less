@@ -105,14 +105,13 @@
         box-shadow: 0 -8px 13px fade(@black, 21);
         transition-delay: 100ms;
       }
-      ul {
+      .wrapper {
         overflow-y: auto;
       }
     }
-    ul {
+    .wrapper {
       height: 100%;
-      margin: 0;
-      list-style: none;
+      overflow: hidden;
       &::-webkit-scrollbar {
         width: @scrollbar;
       }
@@ -124,6 +123,10 @@
           background: @blueDark;
         }
       }
+    }
+    ul {
+      margin: 0;
+      list-style: none;
     }
     li {
       .flexy();
