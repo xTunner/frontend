@@ -4,6 +4,7 @@
   .flexy(row);
   .aside-left-nav {
     .flexy(column);
+    color: fade(@white, 66);
     width: @aside_nav_width;
     height: 100vh;
     background: @blueDarkest;
@@ -12,6 +13,9 @@
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
     a {
       outline: none;
+      &:not(:hover) {
+        color: inherit;
+      }
     }
     &.slim {
       width: @block_size;
@@ -51,7 +55,6 @@
   }
   a.aside-item {
     .shadow_noboss();
-    color: fade(@white, 66);
     background: transparent;
     transition: @base_transition ease-in-out;
     &:hover,
@@ -84,23 +87,25 @@
   }
   .aside-recent-history {
     @scrollbar: 5px;
-    @em: @codeFontSize;
+    @em: @baseFontSize;
+    @color: fade(@white, 21);
     .flexy(column);
-    font-family: @codeFontFamily;
     font-size: @em;
-    color: @blue;
+    color: @color;
     background: fade(@black, 0);
     opacity: 0;
+    visibility: hidden;
     padding-top: @em;
-    transition: opacity 400ms, padding 0ms 400ms, background 400ms;
+    transition: opacity 400ms, padding 0ms 400ms, background 400ms, visibility 0ms 1000ms;
     overflow: hidden;
     height: 100%;
     &.open {
       .shadow_deboss(@blueDarkest);
       background: fade(@black, 8);
       opacity: 1;
+      visibility: visible;
       padding: 0;
-      transition: opacity 400ms 100ms, padding 400ms ease-out, background 200ms;
+      transition: opacity 400ms 100ms, padding 400ms ease-out, background 200ms, visibility 0ms 0ms;
       + .aside-slideup {
         box-shadow: 0 -8px 13px fade(@black, 21);
         transition-delay: 100ms;
@@ -132,6 +137,7 @@
       .flexy();
       .box-sizing(border-box);
       width: (@aside_nav_width - @scrollbar);
+      line-height: 1em; // BS RESET
       &:hover {
         .status {
           a {
@@ -143,8 +149,8 @@
             a {
               &:not(:first-child) {
                 opacity: 1;
-                margin-left: 0;
-                transition: 100ms 0ms; // open quickly to limit interation delay
+                margin-right: 0;
+                transition: margin 100ms 100ms, opacity 100ms 100ms;
               }
             }
           }
