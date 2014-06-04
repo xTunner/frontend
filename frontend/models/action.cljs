@@ -15,7 +15,7 @@
 (defn has-content? [action]
   (or (:has_output action)
       (:bash_command action)
-      (seq (:final-out action))))
+      (:output action)))
 
 (defn duration [{:keys [start_time stop_time] :as action}]
   (cond (:run_time_millis action) (datetime/as-duration (:run_time_millis action))
