@@ -132,7 +132,7 @@
             controls-ch (get-in opts [:comms :controls])
             actions (map (fn [action]
                            (get non-parallel-actions (:step action) action))
-                         (:actions container))]
+                         (remove :filler-action (:actions container)))]
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
