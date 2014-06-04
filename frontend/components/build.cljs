@@ -13,6 +13,7 @@
 
 (defn report-error [build controls-ch]
   (let [build-id (build-model/id build)]
+    ;; XXX add circle.yml errors
     (when (:failed build)
       [:div.alert.alert-danger
        (if-not (:infrastructure_fail build)
@@ -37,11 +38,19 @@
           (common/contact-us-inner controls-ch)
           " if you're interested in the cause of the problem."])])))
 
-(defn build-invite [build] "")
-(defn container-build-steps [build] "")
+(defn build-invite [build]
+  build-invite-isnt-finished
+  "")
+(defn config-diagnostics [build]
+  config-diagnostics-isnt-finished
+  "")
 
-(defn project-trial-notice [] "") ;; should go elsewhere
-(defn project-enable-notice [] "") ;; should go elsewhere
+(defn project-trial-notice [] ;; should go elsewhere
+  project-trial-notice-isnt-finished
+  "")
+(defn project-enable-notice [] ;; should go elsewhere
+  project-enable-notice-inst-finished
+  "")
 (defn project-follow-button []
   [:div.offset1.span10
    [:div.alert.alert-success

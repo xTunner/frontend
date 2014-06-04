@@ -100,7 +100,12 @@
                      [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:ip_addr node))]
                      (when-not (:ssh_enabled node)
                        [:span.loading-spinner common/spinner])]))
-                 nodes)]]])))))
+                 nodes)]]
+          [:div.build-ssh-doc
+           "Debugging Selenium browser tests? "
+           [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+            "Read our doc on interacting with the browser over VNC"]
+           "."]])))))
 
 (defn build-artifacts-list [data owner opts]
   (reify
@@ -178,11 +183,12 @@
                (when (:usage_queued_at build)
                  (list [:th "Queued"]
                        [:td (build-model/queued-time-summary build)
-                        [:a {:on-click #(put! controls-ch [:usage-queue-why-toggled
-                                                           {:build-id build-id
-                                                            :username (:username @build)
-                                                            :reponame (:reponame @build)
-                                                            :build_num (:build_num @build)}])}
+                        [:a#queued_explanation
+                         {:on-click #(put! controls-ch [:usage-queue-why-toggled
+                                                        {:build-id build-id
+                                                         :username (:username @build)
+                                                         :reponame (:reponame @build)
+                                                         :build_num (:build_num @build)}])}
                          " view "]
                         [:i.fa.fa-caret-down {:class (when (:show-usage-queue build) "fa-rotate-180")}]]))
                (when (build-model/author-isnt-committer build)
