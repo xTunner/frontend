@@ -9,6 +9,8 @@
         %a{ href: "#parallel-builds"} Parallelism
       %li
         %a{ href: "#env-vars"} Environment variables
+      %li
+        %a{href: "#experimental"} Experimental Settings
       %li.side-title Test Commands
       %li
         %a{ href: "#setup"} Dependencies

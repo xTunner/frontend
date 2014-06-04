@@ -53,6 +53,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     show_test_new_settings: false
     loaded_settings: false
     github_permissions: null
+    feature_flags: {}
 
   constructor: (json) ->
 
@@ -616,3 +617,18 @@ CI.inner.Project = class Project extends CI.inner.Obj
     $.getJSON "/api/v1/project/#{@project_name()}/settings", (data) =>
       @updateObservables(data)
       @loaded_settings(true)
+
+  feature_flag: (name, inverted=false) => @komp
+    read: => if inverted then !@feature_flags()[name] else !!@feature_flags()[name]
+    write: (value) =>
+      old = @feature_flags()
+      old[name] = if value then not inverted else inverted
+      @feature_flags(old)
+      # Notify the backend.
+      $.ajax
+        type: "PUT"
+        url: "/api/v1/project/#{@project_name()}/settings"
+        data: JSON.stringify
+          feature_flags: _.pick(old, name)
+        error: (data) =>
+          @refresh()
