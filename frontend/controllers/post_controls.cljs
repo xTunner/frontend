@@ -133,7 +133,6 @@
         parent-scroll-left (.-scrollLeft parent)
         current-container (sel1 target (str "#container_" current-container-id))
         current-container-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent)))
-        parent-scroll-left (.-scrollLeft parent)
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
                             (sel parent ".container-view"))
