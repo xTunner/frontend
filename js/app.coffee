@@ -281,6 +281,9 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
   loadEditPage: (cx, username, project, [_, subpage]) =>
     subpage or= "settings"
 
+    if subpage is "github"
+      return cx.redirect "/gh/#{username}/#{project}/edit#checkout"
+
     project_name = "#{username}/#{project}"
 
     # if we're already on this page, dont reload
