@@ -6,7 +6,8 @@
             [frontend.utils :as utils :refer [mlog]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
-            [frontend.pusher :as pusher])
+            [frontend.pusher :as pusher]
+            [frontend.state :as state])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 ;; To subscribe to a channel, put a subscribe message in the websocket channel
@@ -28,44 +29,44 @@
 
 (defmethod ws-event :build/update
   [pusher-imp message {:keys [data channel-name]} state]
-  (let [build (:current-build state)]
+  (let [build (get-in state state/build-path)]
     (if-not (= (pusher/build-channel build) channel-name)
       (do
         (mlog "Ignoring event for old build channel: " channel-name)
         state)
-      (update-in state [:current-build] merge (js->clj data :keywordize-keys true)))))
+      (update-in state state/build-path merge (js->clj data :keywordize-keys true)))))
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]
   ;; XXX non-parallel actions need to be repeated across containers
-  (let [build (:current-build state)]
+  (let [build (get-in state state/build-path)]
     (if-not (= (pusher/build-channel build) channel-name)
       (do
         (mlog "Ignoring event for old build channel: " channel-name)
         state)
       (let [{action-index :step container-index :index action-log :log} (js->clj data :keywordize-keys true)]
         (-> state
-            (update-in [:current-build] build-model/fill-containers container-index action-index)
-            (assoc-in [:current-build :containers container-index :actions action-index] action-log)
-            (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))
+            (build-model/fill-containers container-index action-index)
+            (assoc-in (state/action-path container-index action-index) action-log)
+            (update-in (state/action-path container-index action-index) action-model/format-latest-output))))))
 
 (defmethod ws-event :build/update-action
   [pusher-imp message {:keys [data channel-name]} state]
-  (let [build (:current-build state)]
+  (let [build (get-in state state/build-path)]
     (if-not (= (pusher/build-channel build) channel-name)
       (do
         (mlog "Ignoring event for old build channel: " channel-name)
         state)
       (let [{action-index :step container-index :index action-log :log} (js->clj data :keywordize-keys true)]
         (-> state
-            (update-in [:current-build] build-model/fill-containers container-index action-index)
-            (update-in [:current-build :containers container-index :actions action-index] merge action-log)
+            (build-model/fill-containers container-index action-index)
+            (update-in (state/action-path container-index action-index) merge action-log)
             ;; XXX is this necessary here?
-            (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))
+            (update-in (state/action-path container-index action-index) action-model/format-latest-output))))))
 
 (defmethod ws-event :build/append-action
   [pusher-imp message {:keys [data channel-name]} state]
-  (let [build (:current-build state)
+  (let [build (get-in state state/build-path)
         {action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
     (cond
      (not= (pusher/build-channel build) channel-name)
@@ -79,7 +80,7 @@
      :else
      (let [{action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
        (-> state
-           (update-in [:current-build] build-model/fill-containers container-index action-index)
-           (update-in [:current-build :containers container-index :actions action-index :output] vec)
-           (update-in [:current-build :containers container-index :actions action-index :output] conj output)
-           (update-in [:current-build :containers container-index :actions action-index] action-model/format-latest-output))))))
+           (build-model/fill-containers container-index action-index)
+           (update-in (state/action-output-path container-index action-index) vec)
+           (update-in (state/action-output-path container-index action-index) conj output)
+           (update-in (state/action-path container-index action-index) action-model/format-latest-output))))))

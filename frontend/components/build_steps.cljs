@@ -138,12 +138,11 @@
                                :id (str "container_" (:index container))}
           (om/build-all action actions {:opts opts :key :step})])))))
 
-(defn container-build-steps [build owner opts]
+(defn container-build-steps [{:keys [containers current-container-id]} owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [containers (:containers build)
-            non-parallel-actions (->> containers
+      (let [non-parallel-actions (->> containers
                                       first
                                       :actions
                                       (remove :parallel)
@@ -166,7 +165,7 @@
                                   :scroll "handle_browser_scroll"
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"
-                                  :class (str "selected_" (get-in build [:current-container-id] 0))}
+                                  :class (str "selected_" current-container-id)}
            ;; XXX handle scrolling and resize sensor
            ;; probably have to replace resize sensor with something else
            (for [container containers]

@@ -6,6 +6,7 @@
             [frontend.components.build-head :as build-head]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -65,22 +66,32 @@
   ;; XXX Displays nothing for now
   "")
 
-(defn container-pill [container build controls-ch]
-  (let [container-id (container-model/id container)
-        build-id (build-model/id build)]
-    [:li {:class (when (= container-id (get build :current-container-id 0)) "active")}
-     [:a.container-selector
-      {:on-click #(put! controls-ch [:container-selected container-id])
-       :class (container-model/status-classes container)}
-      (str "C" (:index container))]]))
+(defn container-pills [container-data owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [containers current-container-id]} container-data
+            controls-ch (get-in opts [:comms :controls])]
+        (html
+         [:div.containers.pagination.pagination-centered
+          {:data-bind "sticky_waypoint: {offset: 0}"}
+          [:ul.container-list
+           (for [container containers
+                 :let [container-id (container-model/id container)]]
+             [:li {:class (when (= container-id current-container-id) "active")}
+              [:a.container-selector
+               {:on-click #(put! controls-ch [:container-selected container-id])
+                :class (container-model/status-classes container)}
+               (str "C" (:index container))]])]])))))
 
 (defn build [data owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:current-build data)
-            controls-ch (get-in opts [:comms :controls])
-            containers (:containers build)]
+      (let [build (get-in data state/build-path)
+            build-data (get-in data state/build-data-path)
+            container-data (get-in data state/container-data-path)
+            controls-ch (get-in opts [:comms :controls])]
         (html
          [:div#build-log-container
           (if-not build
@@ -89,9 +100,7 @@
              [:div.loading-spinner common/spinner]]
 
             [:div
-             (om/build build-head/build-head {:build build
-                                              :controls-ch controls-ch
-                                              :settings (:settings data)} {:opts opts})
+             (om/build build-head/build-head (dissoc build-data :container-data) {:opts opts})
              (common/flashes)
              [:div.row-fluid
               [:div.offset1.span10
@@ -107,25 +116,9 @@
                (when (build-model/display-build-invite build)
                  (build-invite build))]]
 
-             (when (< 1 (count containers))
-               [:div.containers.pagination.pagination-centered
-                {:data-bind "sticky_waypoint: {offset: 0}"}
-                [:ul.container-list
-                 (map #(container-pill % build controls-ch)
-                      containers)]])
-
-             (om/build build-steps/container-build-steps
-                       build
-                       {:opts opts})
+             (when (< 1 (count (:containers container-data)))
+               (om/build container-pills container-data {:opts opts}))
+             (om/build build-steps/container-build-steps container-data {:opts opts})
 
              (when (< 1 (count (:steps build)))
-               [:div (common/messages (:messages build))])
-
-             (comment
-               [:div.autoscroll-trigger
-                {:enable_autoscroll "enable_autoscroll",
-                 :waypoint_callback:_ "waypoint_callback:_",
-                 :_ "_",
-                 :bottom-in-view "bottom-in-view",
-                 :offset:_ "offset:_",
-                 :data-bind "\\waypoint:"}])])])))))
+               [:div (common/messages (:messages build))])])])))))

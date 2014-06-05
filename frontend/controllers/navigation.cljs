@@ -2,6 +2,7 @@
   (:require [cljs.reader :as reader]
             [clojure.string :as string]
             [frontend.controllers.api :as api]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer [mlog]]
             [frontend.utils.vcs-url :as vcs-url]))
 
@@ -19,15 +20,17 @@
 (defmethod navigated-to :dashboard
   [history-imp to args state]
   (mlog "Navigated from " (from state) " to " to)
-  (assoc state :navigation-point :dashboard :current-builds nil))
+  (-> state
+      (assoc :navigation-point :dashboard)
+      state/reset-current-build))
 
 (defmethod navigated-to :build-inspector
   [history-imp to [project-name build-num] state]
-  (assoc state
-    :inspected-project {:project project-name
-                        :build-num build-num}
-    :navigation-point :build
-    :current-build nil))
+  (-> state
+      (assoc :inspected-project {:project project-name
+                                 :build-num build-num}
+             :navigation-point :build)
+      state/reset-current-build))
 
 (defmethod navigated-to :add-projects
   [history-imp to [project-id build-num] state]

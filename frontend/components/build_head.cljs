@@ -103,26 +103,22 @@
           "Read our doc on interacting with the browser over VNC"]
          "."]]))))
 
-(defn build-artifacts-list [build owner opts]
+(defn build-artifacts-list [artifacts-data owner opts]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (get-in opts [:comms :controls])
-            build-id (build-model/id build)
-            artifacts (:artifacts build)]
+            artifacts (:artifacts artifacts-data)
+            show-artifacts (:show-artifacts artifacts-data)]
         (html
-         [:section.build-artifacts {:class (when (:show-artifacts build) "active")}
+         [:section.build-artifacts {:class (when show-artifacts "active")}
           [:div.build-artifacts-title
            [:strong "Build Artifacts"]
            [:a {:role "button"
-                :on-click #(put! controls-ch [:show-artifacts-toggled
-                                              {:build-id build-id
-                                               :username (:username @build)
-                                               :reponame (:reponame @build)
-                                               :build_num (:build_num @build)}])}
+                :on-click #(put! controls-ch [:show-artifacts-toggled])}
             [:span " view "]
-            [:i.fa.fa-caret-down {:class (when (:show-artifacts build) "fa-rotate-180")}]]]
-          (when (:show-artifacts build)
+            [:i.fa.fa-caret-down {:class (when show-artifacts "fa-rotate-180")}]]]
+          (when show-artifacts
             (if-not artifacts
               [:div.loading-spinner common/spinner]
 
@@ -133,11 +129,12 @@
                         (:pretty_path artifact)]])
                     artifacts)]))])))))
 
-(defn build-head [build owner opts]
+(defn build-head [build-data owner opts]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (get-in opts [:comms :controls])
+            build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)]
@@ -183,7 +180,7 @@
                                                          :reponame (:reponame @build)
                                                          :build_num (:build_num @build)}])}
                          " view "]
-                        [:i.fa.fa-caret-down {:class (when (:show-usage-queue build) "fa-rotate-180")}]]))
+                        [:i.fa.fa-caret-down {:class (when (get-in build-data [:usage-queue-data :show-usage-queue]) "fa-rotate-180")}]]))
                (when (build-model/author-isnt-committer build)
                  [:th "Committer"]
                  [:td
@@ -230,13 +227,11 @@
                  :on-click #(put! controls-ch [:cancel-build-clicked build-id])}
                 "Cancel"])]]
            (when (:show-usage-queue build)
-             (om/build build-queue
-                       {:builds (:usage-queue-builds build)
-                        :build build}
-                       {:opts opts}))
+             (om/build build-queue {:build build
+                                    :builds (get-in build-data [:usage-queue-data :builds])} {:opts opts}))
            (when (:subject build)
              (om/build build-commits build {:opts opts}))
            (when (build-model/ssh-enabled-now? build)
              (om/build build-ssh (:node build) {:opts opts}))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list build {:opts opts}))]])))))
+             (om/build build-artifacts-list (get build-data :artifacts-data) {:opts opts}))]])))))

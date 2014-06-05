@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.reader :as reader]
             [clojure.string :as string]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer [mlog]]))
 
 (defmulti control-event
@@ -34,7 +35,7 @@
 
 (defmethod control-event :usage-queue-why-toggled
   [target message {:keys [build-id]} state]
-  (update-in state [:current-build :show-usage-queue] not))
+  (update-in state state/show-usage-queue-path not))
 
 (defmethod control-event :selected-add-projects-org
   [target message args state]
@@ -44,15 +45,15 @@
 
 (defmethod control-event :show-artifacts-toggled
   [target message build-id state]
-  (update-in state [:current-build :show-artifacts] not))
+  (update-in state state/show-artifacts-path not))
 
 (defmethod control-event :container-selected
   [target message container-id state]
-  (assoc-in state [:current-build :current-container-id] container-id))
+  (assoc-in state state/current-container-path container-id))
 
 (defmethod control-event :action-log-output-toggled
   [target message {:keys [index step]} state]
-  (update-in state [:current-build :containers index :actions step :show-output] not))
+  (update-in state (state/show-action-output-path index step) not))
 
 (defmethod control-event :selected-project-parallelism
   [target message {:keys [project-id parallelism]} state]

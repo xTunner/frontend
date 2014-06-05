@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [clojure.string :as string]
             [dommy.core :as dommy]
+            [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.controllers.api :as api]
             goog.dom
@@ -10,6 +11,7 @@
             goog.string.format
             goog.style
             [frontend.intercom :as intercom]
+            [frontend.state :as state]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]])
   (:require-macros [frontend.utils :refer [inspect timing]]
@@ -51,7 +53,7 @@
 (defmethod post-control-event! :usage-queue-why-toggled
   [target message {:keys [username reponame
                           build_num build-id]} previous-state current-state]
-  (when (get-in current-state [:current-build :show-usage-queue])
+  (when (get-in current-state state/show-usage-queue-path)
     (let [api-ch (get-in current-state [:comms :api])]
       (utils/ajax :get
                   (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
@@ -61,16 +63,17 @@
                   :context build-id))))
 
 (defmethod post-control-event! :show-artifacts-toggled
-  [target message {:keys [username reponame
-                          build_num build-id]} previous-state current-state]
-  (when (get-in current-state [:current-build :show-artifacts])
-    (let [api-ch (get-in current-state [:comms :api])]
+  [target message _ previous-state current-state]
+  (when (get-in current-state state/show-artifacts-path)
+    (let [api-ch (get-in current-state [:comms :api])
+          build (get-in current-state state/build-path)]
       (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/%s/%s/artifacts"
-                                  username reponame build_num)
+                  (gstring/format "/api/v1/project/%s/%s/artifacts"
+                                  (vcs-url/project-name (:vcs_url build))
+                                  (:build_num build))
                   :build-artifacts
                   api-ch
-                  :context build-id))))
+                  :context (build-model/id build)))))
 
 (defmethod post-control-event! :retry-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
@@ -128,7 +131,7 @@
 (defmethod post-control-event! :container-parent-scroll
   [target message _ previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])
-        current-container-id (get-in current-state [:current-build :current-container-id] 0)
+        current-container-id (get-in current-state state/current-container-path 0)
         parent (sel1 target "#container_parent")
         parent-scroll-left (.-scrollLeft parent)
         current-container (sel1 target (str "#container_" current-container-id))
@@ -150,17 +153,17 @@
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
-  (let [action (get-in current-state [:current-build :containers index :actions step])]
+  (let [action (get-in current-state (state/action-path index step))]
     (when (and (:show-output action)
                (:has_output action)
                (not (:output action)))
       (let [api-ch (get-in current-state [:comms :api])
-
+            build (get-in current-state state/build-path)
             url (if (:output_url action)
                   (:output_url action)
                   (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
-                                  (vcs-url/project-name (get-in current-state [:current-build :vcs_url]))
-                                  (get-in current-state [:current-build :build_num])
+                                  (vcs-url/project-name (:vcs_url build))
+                                  (get-in current-state (:build_num build))
                                   step
                                   index))]
         (utils/ajax :get

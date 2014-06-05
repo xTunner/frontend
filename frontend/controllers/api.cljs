@@ -5,6 +5,7 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer [mlog mwarn merror]]
             [frontend.utils.vcs-url :as vcs-url])
   (:require-macros [frontend.utils :refer [inspect]]))
@@ -75,9 +76,9 @@
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
-      (assoc-in state [:current-build] (-> build
-                                           (assoc :containers containers)
-                                           (dissoc :steps))))))
+      (-> state
+          (assoc-in state/build-path build)
+          (assoc-in state/containers-path containers)))))
 
 (defmethod api-event [:repos :success]
   [target message status args state]
@@ -101,23 +102,23 @@
         build-id (:context args)]
     (if-not (= build-id (-> state :current-build build-model/id))
       state
-      (assoc-in state [:current-build :usage-queue-builds] usage-queue-builds))))
+      (assoc-in state state/usage-queue-path usage-queue-builds))))
 
 (defmethod api-event [:build-artifacts :success]
   [target message status args state]
   (let [artifacts (:resp args)
         build-id (:context args)]
-    (if-not (= build-id (-> state :current-build build-model/id))
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
-      (assoc-in state [:current-build :artifacts] artifacts))))
+      (assoc-in state state/artifacts-path artifacts))))
 
 (defmethod api-event [:action-log :success]
   [target message status args state]
   (let [action-log (:resp args)
-        {:keys [index step]} (:context args)]
+        {action-index :step container-index :index} (:context args)]
     (-> state
-        (assoc-in [:current-build :containers index :actions step :output] action-log)
-        (update-in [:current-build :containers index :actions step] action-model/format-all-output))))
+        (assoc-in (state/action-output-path container-index action-index) action-log)
+        (update-in (state/action-path container-index action-index) action-model/format-all-output))))
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]

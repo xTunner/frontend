@@ -1,6 +1,7 @@
 (ns frontend.models.build
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
+            [frontend.state :as state]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -160,12 +161,12 @@
   "Actions can arrive out of order, but we need to maintain the indices in the
   containers array and actions array for the given container so that we can
   find the action on updates."
-  [build container-index action-index]
-  (-> build
-      (update-in [:containers]
+  [state container-index action-index]
+  (-> state
+      (update-in state/containers-path
                  (fnil identity (vec (map (fn [i] {:index i})
-                                          (range (:parallel build))))))
-      (update-in [:containers container-index :actions]
+                                          (range (:parallel (get-in state state/build-path)))))))
+      (update-in (state/actions-path container-index)
                  (fn [actions]
                    (if-not (> action-index (count actions))
                      actions
