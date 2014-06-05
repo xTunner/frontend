@@ -54,6 +54,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     loaded_settings: false
     github_permissions: null
     feature_flags: {}
+    checkout_keys: []
 
   constructor: (json) ->
 
@@ -557,6 +558,45 @@ CI.inner.Project = class Project extends CI.inner.Obj
     @focusTimeout = window.setTimeout =>
       @focused_parallel(@parallel())
     , 200
+
+  load_checkout_keys: () =>
+    $.getJSON "/api/v1/project/#{@project_name()}/checkout-key", (data) =>
+      @checkout_keys(data)
+
+  create_checkout_key: (data, event, type) =>
+    $.ajax
+      event: event
+      type: "POST"
+      url: "/api/v1/project/#{@project_name()}/checkout-key",
+      data: JSON.stringify
+        type: type
+      success: (result) =>
+        @load_checkout_keys()
+    false
+
+  delete_checkout_key: (data, event) =>
+    $.ajax
+      type: "DELETE"
+      url: "/api/v1/project/#{@project_name()}/checkout-key/#{data.fingerprint}",
+      success: (result) =>
+        @load_checkout_keys()
+      false
+
+  checkout_key_link: (checkout_key) =>
+    if checkout_key.type == "deploy-key"
+      "https://github.com/#{@project_name()}/settings/keys"
+    else if checkout_key.type == "github-user-key" and checkout_key.login == VM.current_user().login
+      "https://github.com/settings/ssh"
+    else
+      null
+
+  checkout_key_description: (checkout_key) =>
+    if checkout_key.type == "deploy-key"
+      "#{@project_name()} deploy key"
+    else if checkout_key.type == "github-user-key"
+      "#{checkout_key.login} user key"
+    else
+      null
 
   load_tokens: () =>
     $.getJSON "/api/v1/project/#{@project_name()}/token", (data) =>

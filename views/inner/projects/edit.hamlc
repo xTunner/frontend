@@ -23,9 +23,9 @@
         %a{ href: "#webhooks"} Webhooks
       %li.side-title Permissions
       %li
-        %a{ href: "#ssh"} SSH keys
+        %a{ href: "#checkout"} Checkout SSH keys
       %li
-        %a{ href: "#github"} GitHub user
+        %a{ href: "#ssh"} SSH keys
       %li
         %a{ href: "#api"} API tokens
       %li.side-title Build Artifacts

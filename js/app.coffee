@@ -275,6 +275,8 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       @project().load_tokens()
     else if subpage is "env_vars"
       @project().load_env_vars()
+    else if subpage is "checkout"
+      @project().load_checkout_keys()
 
   loadEditPage: (cx, username, project, [_, subpage]) =>
     subpage or= "settings"
