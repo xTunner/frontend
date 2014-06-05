@@ -15,7 +15,8 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [build builds controls-ch]} data]
+      (let [{:keys [build builds]} data
+            controls-ch (get-in opts [:comms :controls])]
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
@@ -33,9 +34,7 @@
                        " queued behind the following builds for "
                        (build-model/usage-queued-time build))])
 
-            (om/build builds-table/builds-table {:builds builds
-                                                 :controls-ch controls-ch
-                                                 :show-actions? true})]))))))
+            (om/build builds-table/builds-table builds {:opts (assoc opts :show-actions? true)})]))))))
 
 (defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
   [:div
@@ -47,12 +46,11 @@
     (subs commit 0 7)
     [:i.fa.fa-github]]])
 
-(defn build-commits [data owner opts]
+(defn build-commits [build owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            controls-ch (:controls-ch data)
+      (let [controls-ch (get-in opts [:comms :controls])
             build-id (build-model/id build)]
         (html
          [:section.build-commits {:class (when (:show-all-commits build) "active")}
@@ -78,41 +76,38 @@
               (when (:show-all-commits build)
                 (map commit-line (drop 3 (:all_commit_details build))))))]])))))
 
-(defn build-ssh [data owner opts]
+(defn build-ssh [nodes owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            nodes (:node build)]
-        (html
-         [:section.build-ssh
-          [:div.build-ssh-title
-           [:strong "SSH Info "]
-           [:i.fa.fa-question-circle
-            ;; XXX popovers
-            {:title "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."}]]
-          [:div.build-ssh-list
-           [:dl.dl-horizontal
-            (map (fn [node]
-                   (list
-                    [:dt (when (> 1 (count nodes)) [:span (:index node)])]
-                    [:dd {:class (when (:ssh_enabled node) "connected")}
-                     [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:ip_addr node))]
-                     (when-not (:ssh_enabled node)
-                       [:span.loading-spinner common/spinner])]))
-                 nodes)]]
-          [:div.build-ssh-doc
-           "Debugging Selenium browser tests? "
-           [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-            "Read our doc on interacting with the browser over VNC"]
-           "."]])))))
+      (html
+       [:section.build-ssh
+        [:div.build-ssh-title
+         [:strong "SSH Info "]
+         [:i.fa.fa-question-circle
+          ;; XXX popovers
+          {:title "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."}]]
+        [:div.build-ssh-list
+         [:dl.dl-horizontal
+          (map (fn [node]
+                 (list
+                  [:dt (when (> 1 (count nodes)) [:span (:index node)])]
+                  [:dd {:class (when (:ssh_enabled node) "connected")}
+                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:ip_addr node))]
+                   (when-not (:ssh_enabled node)
+                     [:span.loading-spinner common/spinner])]))
+               nodes)]]
+        [:div.build-ssh-doc
+         "Debugging Selenium browser tests? "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+          "Read our doc on interacting with the browser over VNC"]
+         "."]]))))
 
-(defn build-artifacts-list [data owner opts]
+(defn build-artifacts-list [build owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            controls-ch (:controls-ch data)
+      (let [controls-ch (get-in opts [:comms :controls])
             build-id (build-model/id build)
             artifacts (:artifacts build)]
         (html
@@ -138,13 +133,11 @@
                         (:pretty_path artifact)]])
                     artifacts)]))])))))
 
-(defn build-head [data owner opts]
+(defn build-head [build owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            controls-ch (:controls-ch data)
-            settings (:settings data)
+      (let [controls-ch (get-in opts [:comms :controls])
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)]
@@ -239,18 +232,11 @@
            (when (:show-usage-queue build)
              (om/build build-queue
                        {:builds (:usage-queue-builds build)
-                        :build build
-                        :controls-ch controls-ch}
+                        :build build}
                        {:opts opts}))
            (when (:subject build)
-             (om/build build-commits
-                       {:build build
-                        :controls-ch controls-ch}
-                       {:opts opts}))
+             (om/build build-commits build {:opts opts}))
            (when (build-model/ssh-enabled-now? build)
-             (om/build build-ssh {:build build} {:opts opts}))
+             (om/build build-ssh (:node build) {:opts opts}))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list
-                       {:build build
-                        :controls-ch controls-ch}
-                       {:opts opts}))]])))))
+             (om/build build-artifacts-list build {:opts opts}))]])))))

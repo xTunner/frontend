@@ -24,8 +24,4 @@
                      :settings (:settings data)}
                     {:opts opts})
           [:section
-           (om/build builds-table/builds-table
-                     {:builds builds
-                      :controls-ch controls-ch
-                      :show-actions? false}
-                     {:opts opts})]])))))
+           (om/build builds-table/builds-table builds {:opts opts})]])))))
