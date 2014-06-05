@@ -38,10 +38,9 @@
           %a{href: "#billing"}
             Billing info
 
-        -# Uncomment once the backend is fully deployed
-        -# %li{data-bind: "css: {active: subpage() == 'cancel'}"}
-        -#   %a{href: "#cancel"}
-        -#     Cancel
+        %li{data-bind: "css: {active: subpage() == 'cancel'}"}
+          %a{href: "#cancel"}
+            Cancel
 
         / /ko
         / /ko

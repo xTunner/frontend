@@ -42,6 +42,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     feature_flags: {}
     dismiss_first_green_build_invitations: false
     compare: null
+    is_first_green_build: null
+    circle_yml: null
+    dismiss_config_diagnostics: false
 
   clean: () =>
     # pusher fills the console with errors if you unsubscribe
@@ -383,8 +386,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         @current_container(@containers()[0])
 
     @display_first_green_build_invitations = @komp =>
-      not @dismiss_first_green_build_invitations() and not
-      @previous_successful_build() and @outcome() == "success"
+      not @dismiss_first_green_build_invitations() and @is_first_green_build()
 
     saw_invitations_prompt = false
     @first_green_build_invitations = @komp
@@ -414,6 +416,12 @@ CI.inner.Build = class Build extends CI.inner.Obj
                   email: user.email()
               VM.project().invite_team_members users
             window.setTimeout (=> @dismiss_first_green_build_invitations true), 2000
+
+    @config_diagnostics = @komp
+      deferEvaluation: true
+      read: =>
+        if @circle_yml() and not @dismiss_config_diagnostics()
+          new CI.inner.Diagnostics @circle_yml().string, @circle_yml().errors
 
   feature_enabled: (feature_name) =>
     @feature_flags()[feature_name]
@@ -459,7 +467,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       estimated_millis = @previous_successful_build().build_time_millis
 
       if valid estimated_millis
-        return " / ~" + CI.time.as_estimated_duration(estimated_millis)
+        return "/~" + CI.time.as_estimated_duration(estimated_millis)
     ""
 
   urlForBuildNum: (num) =>

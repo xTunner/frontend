@@ -1,6 +1,11 @@
 .dependencies-page
   %h2 Install dependencies for
     %span{data-bind: "text: project_name"}
+
+  %p
+    %i
+      You can also set your dependency commands from your <a href="/docs/configuration#dependencies">circle.yml</a>.
+
   .dependencies-inner
     %form.spec_form
       %fieldset

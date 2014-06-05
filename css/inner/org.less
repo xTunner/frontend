@@ -167,42 +167,32 @@
   }
 }
 .org-cancel {
-  .show_hint(@size: true) {
-    height: ~`"@{size}em".replace("true", "1").replace("false", "0")`;
-    opacity:  ~`"@{size}".replace("true", "1").replace("false", "0")`;
-  }
   .hint {
-    .show_hint(false);
     margin: 0;
     line-height: 1em;
     color: @redLight;
     transition: all 200ms ease-in-out, opacity 400ms ease-in-out;
     overflow: hidden;
-    &.error {
-      .show_hint();
+    height: 0;
+    opacity: 0;
+    &.show {
+      height: 1em;
+      opacity: 1;
     }
   }
   form > *:not(label) {
     margin: 1em 0;
     max-width: ((2 / 3) * @minimumContentWidth);
   }
-  [type="checkbox"] {
+  label.cancel-reason {
     display: block;
-    &:after {
-      content: attr(for);
-      padding-left: @baseLineHeight;
-      white-space: nowrap;
+    span, input {
+      height: 1em;
+      margin: 0 0;
+      line-height: 1em;
     }
-    &:checked ~ .error {
-      .show_hint(false);
-    }
-  }
-  [value="other"]:checked ~ textarea:invalid {
-    &:not(:focus) ~ .error {
-      .show_hint();
-    }
-    + label:before {
-      content: attr(title);
+    span {
+      padding-left: 4px;
     }
   }
   button {

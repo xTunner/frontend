@@ -6,7 +6,11 @@
         %h2
           CircleCI is the #1 hosted continuous deployment provider.
           But don't take our word for it, read what our awesome customers have to say.
+    / ko if: VM.ab().new_logos()
+    != HAML.customers_trust()
+    / /ko
 
+    / ko ifnot: VM.ab().new_logos()
     .row.span12.logos
       %a.span2{href: "http://www.storenvy.com/"}
         %img{height: "27", width: "140",
@@ -32,6 +36,7 @@
         %img{height: "57", width: "140",
              src: '(data-uri "img/outer/home/logos/stripe.png" 140 57)',
              title: "Stripe"}
+    / /ko
 
   .container
     .row
@@ -42,18 +47,16 @@
         != HAML.john_collison_image()
         %h4 John Collison
         %p
-          Founder at
-          %a{alt-there: "Stripe", href: "https://stripe.com/", title: "Stripe"} Stripe
+          Founder at Stripe
       .well.customer.span4
         %p
-          It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push.
-          %strong The first time it happened, my team cheered.
-          The fact that we don't have to admin the server ourselves is a big timesaver.
-        != HAML.jon_crawford_image()
-        %h4 Jon Crawford
+          CircleCI lets us be more agile and ship product faster. 
+          %strong We can focus on delivering value to our customers, 
+          not maintaining Continuous Integration and Delivery infrastructure.
+        %img{src: assetPath('(asset-path "img/outer/stories/john.jpg")')}
+        %h4 John Duff
         %p
-          CEO of
-          %a{alt: "Storenvy", href: "http://www.storenvy.com/", title: "Storenvy"} Storenvy
+          Director of Engineering at Shopify
       .well.customer.span4
         %p
           CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently.
@@ -62,7 +65,9 @@
         != HAML.aaron_suggs_image()
         %h4 Aaron Suggs
         %p
-          Operations Engineer at
-          %a{alt: "Kickstarter", href: "http://www.kickstarter.com/", title: "Kickstarter"} Kickstarter
-  %div{ data-bind: "if: VM.ab().home_extra_ctas" }
-    != HAML.home_cta({text: "Start your 14-day free trial now", source: "customers_cta"})
+          Operations Engineer at Kickstarter
+  %a.customer-story-link.center-text{href: "stories/shopify"} Read how Shopify grew with Circle
+
+
+
+  

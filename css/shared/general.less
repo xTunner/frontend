@@ -4,7 +4,7 @@ html {
 body {
   -webkit-font-smoothing: antialiased;
 }
-#app {
+#app, #om-app{
   .displayFlex();
   .flex-direction(column);
   min-width: @minimumContentWidth;
@@ -12,6 +12,19 @@ body {
   main {
     .flex(1, 1);
     outline: none; // Appears when auto-focused
+  }
+  > footer {
+    padding: @footerItemSize 0;
+    box-shadow: 0 1px @grayLightest inset;
+    .logo {
+      display: block;
+      height: @footerItemSize;
+      width: @footerItemSize;
+      background-image: url("@{imgPath}/logomark.svg");
+      background-size: @footerItemSize;
+      background-position: center left;
+      background-repeat: no-repeat;
+    }
   }
 }
 .btn-primary {

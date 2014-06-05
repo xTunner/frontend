@@ -1,9 +1,10 @@
 [class^="recent-time-"] {
   white-space: nowrap;
-  min-width: 8ex;
-}
-.recent-time-duration {
-  min-width: 13ex;
+  font-family: @codeFontFamily;
+  font-size: @codeFontSize;
+  a {
+    text-align: center;
+  }
 }
 .recent-log {
   word-break: break-all;
@@ -244,30 +245,30 @@
     }
   }
 }
+.recent-builds-pager {
+  .displayFlex();
+  .justify-content(space-between);
+  margin-top: 1ex;
+
+  a.disabled {
+    color: @gray;
+    cursor: default;
+  }
+}
 .recent-status-badge {
   vertical-align: middle;
-  &:last-child {
-    span {
-      margin: 0 1em;
-    }
-  }
-  a {
-    padding-top: 2px;
-    box-sizing: border-box;
-    .box-sizing(border-box);
-  }
   span {
     display: block;
     color: @white;
     font-weight: bold;
     text-transform: capitalize;
     text-shadow: none;
-    padding: 2px 1ex;
     text-align: center;
     white-space: nowrap;
     border-radius: 25px;
     box-sizing: border-box;
     line-height: 1.75em;
+    width: 100%;
   }
   + .build_actions {
     vertical-align: middle;

@@ -1,4 +1,4 @@
-CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.Page
+CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.DashboardPage
   constructor: (properties) ->
     @username = null
     @project = null
@@ -15,4 +15,6 @@ CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.Page
     @title = "#{@branch} - #{@username}/#{@project}"
 
   refresh: () ->
-    VM.loadProject(@username, @project, @branch, true)
+    page = @page_number()
+    if page is 0
+      VM.loadProject(@username, @project, @branch, page, true)

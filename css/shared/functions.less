@@ -103,6 +103,7 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+<<<<<<< HEAD
 .icon_style(@color) {
   svg {
     path {
@@ -117,6 +118,13 @@
       fill: @color;
     }
   }
+=======
+.user-select(@arg) {
+  -webkit-user-select: @arg;
+     -moz-user-select: @arg;
+      -ms-user-select: @arg;
+          user-select: @arg;
+>>>>>>> master
 }
 
 // Outline
@@ -198,6 +206,7 @@
 }
 
 .tableLight {
+  @padding: 5px;
   border-collapse: separate;
   color: lighten(@grayLight,13%);
   background: @whiten;
@@ -206,7 +215,8 @@
   border-radius: 4px;
   width: 100%;
   th {
-    padding: 0 0 0 .5em;
+    .box-sizing(border-box);
+    padding: 0 @padding;
     font-weight: normal;
     line-height: 2em;
     font-size: 12px;
@@ -237,7 +247,7 @@
     }
   }
   td {
-    vertical-align: top;
+    vertical-align: middle;
     border-top: 1px solid lighten(@grayBorder,5%);
     box-shadow: 0 1px @white inset;
     text-align: left;
@@ -246,14 +256,15 @@
     transition-property: background-color, box-shadow;
     position: relative;
     .box-sizing(border-box);
-    a {
-      display: block;
-      line-height: 2em;
-      min-height: 2em;
-    }
     &:first-child a {
       padding-left: 1em;
     }
+  }
+  a {
+    display: block;
+    line-height: 1em;
+    min-height: 1em;
+    padding: @padding;
   }
 }
 

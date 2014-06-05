@@ -1,27 +1,9 @@
 #settings-heroku {
   form {
     margin-top: 2em;
+    width: 50%;
   }
-  input {
-    &[type="text"] {
-      &[required] {
-        background: transparent;
-        width: 50%;
-        &:invalid {
-          &:not(:focus) {
-            + label {
-              &[placeholder^="Current"] {
-                &:before {
-                  content: "none";
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    &[type="submit"] {
-      .circleButton();
-    }
+  input[type="submit"] {
+    .circleButton();
   }
 }

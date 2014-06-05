@@ -12,6 +12,13 @@
   resize: none;
   box-shadow: none !important; // BS RESET = "!important"
   &[required] {
+    &.disabled {
+      pointer-events: none;
+      background: @grayLightest;
+      + label[placeholder]:before {
+        background-image: linear-gradient(to bottom, @whiten, @grayLightest);
+      }
+    }
     &:focus {
       border-color: @blueLighter !important; // BS RESET = "!important"
       + label {

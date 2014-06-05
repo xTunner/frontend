@@ -8,7 +8,7 @@
 
 %p
   Before each build, we create an empty directory and export its path in the
-  <code>$CIRCLE_ARTIFACTS</code>
+  read-only <code>$CIRCLE_ARTIFACTS</code>
   != succeed ".", ->
     %a{ href: "/docs/environment-variables" } environment variable
   After the build finishes, everything in this directory is saved and linked to the build.
