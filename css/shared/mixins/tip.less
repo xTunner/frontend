@@ -1,11 +1,9 @@
 @tip_index: 200;
 .tip(...) {
-  @color: @grayDark;
-  @size: 7px;
+  @color: fade(@black, 80);
   .process_right (@arguments) when (@arguments = right) {
     &[tooltip] {
       position: relative;
-      &:before,
       &:after {
         .translate(0, -50%);
         position: absolute;
@@ -15,33 +13,17 @@
         visibility: hidden;
         transition: 200ms 0;
         pointer-events: none;
-      }
-      &:before {
-        content: "";
-        border: @size solid transparent;
-        border-right-color: fade(@color, 0);
-        height: 0;
-        width: 0;
-        margin-left: -@size;
-      }
-      &:after {
         content: attr(tooltip);
         padding: .5em 1em;
-        margin-left: round((2 / 3) * @size);
         border-radius: 2em;
         background: fade(@color, 0);
       }
       &:hover {
-        &:before,
-        &:after {
-          visibility: visible;
-          transition: 200ms 1000ms;
-        }
-        &:before {
-          border-right-color: @color;
-        }
         &:after {
           background: @color;
+          visibility: visible;
+          margin-left: .5em;
+          transition: 200ms 1000ms;
         }
       }
     }
