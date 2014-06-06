@@ -15,9 +15,9 @@
   %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", tooltip: "Chat Support", target: "_blank"}
     %i.fa.fa-comments
     %span Chat Support
-  %a.aside-item{href: "#", tooltip: "Build Summary", data-bind: "click: toggle_recent_history"}
+  %a.aside-item{href: "#", tooltip: "Recent Activity", data-bind: "click: toggle_recent_history"}
     %i.fa.fa-code
-    %span Build Summary
+    %span Recent Activity
   .aside-recent-history{data-bind: "css: {open: VM.browser_settings.settings().recent_history_visible}"}
     .wrapper
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
