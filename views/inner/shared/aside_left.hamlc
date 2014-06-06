@@ -19,13 +19,6 @@
     %i.fa.fa-code
     %span Build Summary
   .aside-recent-history{data-bind: "css: {open: VM.browser_settings.settings().recent_history_visible}"}
-    -# %ul
-    -#   - for i in [0..50]
-    -#     %li
-    -#       %a
-    -#         %span test-testing-branches-names
-    -#       %a
-    -#         != HAML.ico(n:'fail-light')
     .wrapper
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         %ul
