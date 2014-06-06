@@ -51,7 +51,6 @@
 
 %svg{class: "ico", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100"}
   - color = "none"
-  - console.log("n is", @n)
   - for icon in icons
     - if icon.name is @n
       - for path in icon.paths
