@@ -20,6 +20,9 @@
     %span Recent Activity
   .aside-recent-history{data-bind: "css: {open: VM.browser_settings.settings().recent_history_visible}"}
     .wrapper
+      .toggle-all-branches
+        %button{data-bind: "css: {active: !VM.browser_settings.settings().show_all_branches}, click: toggle_show_all_branches"} You
+        %button{data-bind: "css: {active:  VM.browser_settings.settings().show_all_branches}, click: toggle_show_all_branches"} All
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         %ul
           %li

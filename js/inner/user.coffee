@@ -229,3 +229,6 @@ CI.inner.User = class User extends CI.inner.Obj
     VM.browser_settings.toggle_setting("aside_is_slim")
     if VM.browser_settings.settings().aside_is_slim and VM.browser_settings.settings().recent_history_visible
       VM.browser_settings.set_setting("recent_history_visible", false)
+
+  toggle_show_all_branches: () =>
+    VM.browser_settings.toggle_setting("show_all_branches")
