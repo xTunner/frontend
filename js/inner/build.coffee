@@ -579,9 +579,14 @@ CI.inner.Build = class Build extends CI.inner.Obj
       # adds output to the action
       @fillActions(json.step, json.index)
 
-      # Only append the output if it's for the current container
+      action = @containers()[json.index].actions()[json.step]
+
+      # Only append the output if it's for the current container, otherwise
+      # just mark the action has having output
       if @current_container().container_index == json.index
-        @containers()[json.index].actions()[json.step].append_output([json.out])
+        action.append_output([json.out])
+      else
+        action.has_output(true)
     else
       # adds output to the action
       @fillActions(json.step, json.index)
