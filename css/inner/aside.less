@@ -135,6 +135,44 @@
         }
       }
     }
+    .toggle-all-branches {
+      .flexy(center, center);
+      padding: @em @em (@em / 2);
+      button {
+        .flex(1, 1, auto);
+        color: fadeout(@color, 21);
+        background-color: fade(@color, 0);
+        border: 1px solid @color;
+        border-left-color: transparent;
+        margin-left: -1px;
+        outline: none;
+        line-height: @em;
+        padding: round(@em / 4) 0;
+        transition: 200ms;
+        max-width: (@tile - 2); // 2 represents borders on sides
+        &:first-child {
+          border-left-color: @color;
+          border-radius: 1em 0 0 1em;
+          margin-left: 0;
+        }
+        &:last-child {
+          border-right-width: 2px; // anti-alias looks weird w/o this, because opacity is low
+          border-radius: 0 1em 1em 0;
+        }
+        &:hover {
+          color: @grayLightest;
+        }
+        &.active {
+          color: @color;
+          border-color: @color;
+          border-left-color: transparent;
+          transition: 100ms;
+          &:first-child {
+            border-left-color: @color;
+          }
+        }
+      }
+    }
     ul {
       margin: 0;
       list-style: none;
