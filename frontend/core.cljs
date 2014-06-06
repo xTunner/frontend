@@ -171,7 +171,7 @@
   (goog.events/listen
    js/window "resize"
    #(when (= :build (:navigation-point @app-state))
-      (put! controls-ch [:container-selected (get-in @app-state [:current-build :current-container-id] 0)]))))
+      (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
 
 (defn ^:export setup! []
   (let [state (app-state)]
