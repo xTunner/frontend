@@ -3,9 +3,9 @@
   .aside-item.logo{data-bind: "click: width_of_aside"}
     .logomark
       != HAML.ico(n:'logo')
-  %a.aside-item{href: "/", tooltip: "Dashboard"}
-    %i.fa.fa-dashboard
-    %span Dashboard
+  %a.aside-item{href: "/", tooltip: "Home"}
+    %i.fa.fa-home
+    %span Home
   %a.aside-item{href: "/docs", tooltip: "Documentation", target: "_blank"}
     %i.fa.fa-files-o
     %span Documentation
