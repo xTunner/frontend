@@ -214,16 +214,22 @@
       }
     }
     .project {
+      .flexy();
       width: 100%;
       a {
         .flexy(center);
-        width: 100%;
         height: @line;
         line-height: @line;
         padding: (@em / 2) 0 0 (@em / 2);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        &:first-child {
+          .flex(0, 0, auto);
+        }
+        &:last-child {
+          .flex(1, 0, auto);
+        }
       }
       .ico {
         width: @line;
