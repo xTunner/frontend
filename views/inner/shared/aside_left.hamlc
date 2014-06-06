@@ -26,16 +26,16 @@
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         %ul{data-bind: "css: {open: !branches_collapsed()}"}
           %li
-            .project
+            .project{role: "button"}
               %a{data-bind: "click: toggle_branches_collapsed"}
                 != HAML.ico(n:'repo')
               %a{data-bind: "attr: {href: project_path}"}
                 %span{data-bind: "text: project_display_name"}
           <!-- ko foreach: {data: p.branch_names_to_show(), as: 'b'} -->
             %li
-              .branch
+              .branch{role: "button"}
                 %a{data-bind: "attr: {href: p.branch_path(b)}, text: p.format_branch_name(b, 23)"}
-              .status
+              .status{role: "button"}
                 <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
                   %a{data-bind: "haml: {template: 'ico', args: {n: status_icon_aside}}"}
                 <!-- /ko -->

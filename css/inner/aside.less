@@ -35,6 +35,9 @@
         .tip(right);
       }
     }
+    [role="button"] {
+      cursor: pointer;
+    }
   }
   .aside-item {
     .flex(0, 0, @tile);
@@ -279,7 +282,6 @@
     .status {
       .flex(1, 0, auto);
       .flexy(center, flex-end);
-      cursor: pointer; // to fix chaotic/jumping cursor
       a {
         .flexy(center, center);
         .icon_style(transparent, @ico);
