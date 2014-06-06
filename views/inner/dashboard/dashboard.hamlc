@@ -7,11 +7,6 @@
 
 #dashboard
 
-  :javascript
-    $(document).ready(function() {
-      $(".app-main").focus();
-    });
-
   %section
 
     / ko ifnot: dashboard_ready

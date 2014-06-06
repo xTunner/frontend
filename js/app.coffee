@@ -53,6 +53,8 @@ display = (template, args, subpage, hash) ->
 
   ko.applyBindings(VM)
 
+  main.focus()
+
 splitSplat = (cx) ->
   p = cx.params.splat[0]
   p = p.replace(/-/g, '_').replace(/\//g, '')
