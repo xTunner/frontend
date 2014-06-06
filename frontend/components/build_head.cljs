@@ -28,13 +28,14 @@
 
             (when (seq builds)
               ;; XXX this could still use some work
-              [:p (str "This build " (if (build-model/in-usage-queue? build)
-                                       "has been"
-                                       "was")
-                       " queued behind the following builds for "
-                       (build-model/usage-queued-time build))])
+              (list
+               [:p (str "This build " (if (build-model/in-usage-queue? build)
+                                        "has been"
+                                        "was")
+                        " queued behind the following builds for "
+                        (build-model/usage-queued-time build))]
 
-            (om/build builds-table/builds-table builds {:opts (assoc opts :show-actions? true)})]))))))
+               (om/build builds-table/builds-table builds {:opts (assoc opts :show-actions? true)})))]))))))
 
 (defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
   [:div
@@ -137,7 +138,8 @@
             build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
-            vcs-url (:vcs_url build)]
+            vcs-url (:vcs_url build)
+            usage-queue-data (:usage-queue-data build-data)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -180,7 +182,7 @@
                                                          :reponame (:reponame @build)
                                                          :build_num (:build_num @build)}])}
                          " view "]
-                        [:i.fa.fa-caret-down {:class (when (get-in build-data [:usage-queue-data :show-usage-queue]) "fa-rotate-180")}]]))
+                        [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]]))
                (when (build-model/author-isnt-committer build)
                  [:th "Committer"]
                  [:td
@@ -226,9 +228,9 @@
                  :title "Cancel this build",
                  :on-click #(put! controls-ch [:cancel-build-clicked build-id])}
                 "Cancel"])]]
-           (when (:show-usage-queue build)
+           (when (:show-usage-queue usage-queue-data)
              (om/build build-queue {:build build
-                                    :builds (get-in build-data [:usage-queue-data :builds])} {:opts opts}))
+                                    :builds (:builds usage-queue-data)} {:opts opts}))
            (when (:subject build)
              (om/build build-commits build {:opts opts}))
            (when (build-model/ssh-enabled-now? build)

@@ -39,8 +39,8 @@
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])
 
-(def usage-queue [:current-build-data :usage-queue :builds])
-(def show-usage-queue-path [:current-build-data :usage-queue :show-usage-queue])
+(def usage-queue-path [:current-build-data :usage-queue-data :builds])
+(def show-usage-queue-path [:current-build-data :usage-queue-data :show-usage-queue])
 
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])
 (def show-artifacts-path [:current-build-data :artifacts-data :show-artifacts])

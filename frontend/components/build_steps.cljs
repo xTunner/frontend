@@ -172,4 +172,4 @@
              (om/build container-view
                        {:container container
                         :non-parallel-actions non-parallel-actions}
-                       {:opts opts :react-key (:index container)}))]])))))
+                       {:opts opts}))]])))))

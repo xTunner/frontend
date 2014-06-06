@@ -100,7 +100,7 @@
   [target message status args state]
   (let [usage-queue-builds (:resp args)
         build-id (:context args)]
-    (if-not (= build-id (-> state :current-build build-model/id))
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
       (assoc-in state state/usage-queue-path usage-queue-builds))))
 

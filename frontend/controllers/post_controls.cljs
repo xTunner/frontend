@@ -163,7 +163,7 @@
                   (:output_url action)
                   (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
                                   (vcs-url/project-name (:vcs_url build))
-                                  (get-in current-state (:build_num build))
+                                  (:build_num build)
                                   step
                                   index))]
         (utils/ajax :get
