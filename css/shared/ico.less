@@ -11,12 +11,14 @@ svg {
     .ico-fail {
       fill: @redLight;
     }
-    // .ico-fail-light {
-    //   stroke: @redLight;
-    //   stroke-width: 4;
-    // }
     .ico-queued {
       fill: @grayLight;
+    }
+    .ico-busy-light {
+      &:last-child {
+        stroke-linecap: round;
+        stroke-width: 20;
+      }
     }
   }
 }

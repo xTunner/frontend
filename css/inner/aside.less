@@ -98,6 +98,9 @@
     @color: fade(@white, 34);
     @ico: (@em - 2);
     @line: (@em * 1.5);
+    @pass: @green;
+    @fail: @redLight;
+    @busy: @blueLight;
     .flexy(column);
     font-size: @em;
     color: @color;
@@ -199,7 +202,15 @@
                 margin-right: 0;
                 transition: margin 100ms 100ms, opacity 100ms 100ms;
               }
+              &:hover {
+                .ico-busy-light {stroke: @busy;}
+                .ico-pass-light {stroke: @pass;}
+                .ico-fail-light {stroke: @fail;}
+              }
             }
+            .ico-busy-light {stroke: fade(@busy, 50);}
+            .ico-pass-light {stroke: fade(@pass, 50);}
+            .ico-fail-light {stroke: fade(@fail, 50);}
           }
         }
       }
@@ -315,20 +326,9 @@
         }
       }
       path {
-        stroke-width: 10;
-      }
-      .ico-busy-light {
-        stroke: @blueLight;
-        &:last-child {
-          stroke-linecap: round;
-          stroke-width: 20;
+        &:first-child {
+          stroke-width: 10;
         }
-      }
-      .ico-pass-light {
-        stroke: @green;
-      }
-      .ico-fail-light {
-        stroke: @redLight;
       }
     }
   }
