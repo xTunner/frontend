@@ -32,12 +32,23 @@
                                         :show-artifacts false}
                         :current-container-id 0
                         :container-data {:current-container-id 0
-                                         :containers nil}}
+                                         :containers nil}
+                        :invite-data {:dismiss-invite-form nil
+                                      ;; XXX should github-users go in project?
+                                      ;; map of login to github user
+                                      :github-users nil
+                                      ;; map of logins to checked status
+                                      :invite-logins {}}}
    :current-organization nil})
 
 
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])
+(def build-github-users-path (conj build-data-path :invite-data :github-users))
+(defn build-github-user-path [index] (conj build-github-users-path index))
+(def dismiss-invite-form-path (conj build-data-path :invite-data :dismiss-invite-form))
+(def invite-logins-path (conj build-data-path :invite-data :invite-logins))
+(defn invite-login-path [login] (conj invite-logins-path login))
 
 (def usage-queue-path [:current-build-data :usage-queue-data :builds])
 (def show-usage-queue-path [:current-build-data :usage-queue-data :show-usage-queue])

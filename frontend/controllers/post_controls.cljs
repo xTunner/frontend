@@ -333,3 +333,11 @@
 (defmethod post-control-event! :set-user-session-setting
   [target message {:keys [setting value]} previous-state current-state]
   (set! (.. js/window -location -search) (str "?" (name setting) "=" value)))
+
+(defmethod post-control-event! :load-build-github-users
+  [target message {:keys [project-name]} previous-state current-state]
+  (utils/ajax :get
+              (gstring/format "/api/v1/project/%s/users" project-name)
+              :build-github-users
+              (get-in current-state [:comms :api])
+              :context {:project-name project-name}))

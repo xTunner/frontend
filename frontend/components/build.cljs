@@ -4,10 +4,13 @@
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
             [frontend.components.build-head :as build-head]
+            [frontend.components.build-invites :as build-invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
+            [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
@@ -39,9 +42,6 @@
           (common/contact-us-inner controls-ch)
           " if you're interested in the cause of the problem."])])))
 
-(defn build-invite [build]
-  build-invite-isnt-finished
-  "")
 (defn config-diagnostics [build]
   config-diagnostics-isnt-finished
   "")
@@ -115,7 +115,9 @@
             {:data-bind "if: $root.show_follow_project_button"}
             (project-follow-button)]
            (when (build-model/display-build-invite build)
-             (build-invite build))]])))))
+             (om/build build-invites/build-invites
+                       (:invite-data build-data)
+                       {:opts (assoc opts :project-name (vcs-url/project-name (:vcs_url build)))}))]])))))
 
 (defn build [data owner opts]
   (reify
@@ -135,7 +137,7 @@
             [:div
              (om/build build-head/build-head (dissoc build-data :container-data) {:opts opts})
              (common/flashes)
-             (om/build notices (dissoc build-data :container-data {:opts opts}))
+             (om/build notices (dissoc build-data :container-data) {:opts opts})
              (om/build container-pills container-data {:opts opts})
              (om/build build-steps/container-build-steps container-data {:opts opts})
 

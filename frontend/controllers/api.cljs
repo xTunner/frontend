@@ -209,3 +209,9 @@
   (if-not (= (:project-id context) (project-model/id (:current-project state)))
     state
     (assoc-in state [:current-project :heroku_deploy_user] nil)))
+
+(defmethod api-event [:build-github-users :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+    state
+    (assoc-in state state/build-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp)))))

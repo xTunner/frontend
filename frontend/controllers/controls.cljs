@@ -59,6 +59,20 @@
   [target message {:keys [project-id parallelism]} state]
   (assoc-in state [:current-project :parallel] parallelism))
 
+(defmethod control-event :dismiss-invite-form
+  [target message _ state]
+  (assoc-in state state/dismiss-invite-form-path true))
+
+(defmethod control-event :invite-selected-all
+  [target message _ state]
+  (update-in state state/build-github-users-path (fn [users]
+                                                   (vec (map #(assoc % :checked true) users)))))
+
+(defmethod control-event :invite-selected-none
+  [target message _ state]
+  (update-in state state/build-github-users-path (fn [users]
+                                                   (vec (map #(assoc % :checked false) users)))))
+
 (defmethod control-event :edited-input
   [target message {:keys [value path]} state]
   (assoc-in state path value))
