@@ -130,9 +130,10 @@
     (render [_]
       (let [container-id (container-model/id container)
             controls-ch (get-in opts [:comms :controls])
-            actions (map (fn [action]
-                           (get non-parallel-actions (:step action) action))
-                         (remove :filler-action (:actions container)))]
+            actions (remove :filler-action
+                            (map (fn [action]
+                                   (get non-parallel-actions (:step action) action))
+                                 (:actions container)))]
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
