@@ -178,7 +178,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         new CI.inner.Build(build)
 
     @recent_branch_builds = (branch_name) =>
-      builds = @sorted_builds(branch_name)[0..4].reverse()
+      builds = @sorted_builds(branch_name)[0..4]
       new CI.inner.Build(b) for b in builds
 
     @build_path = (build_num) =>
