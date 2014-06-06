@@ -151,7 +151,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
       VM.browser_settings.settings()["#{@project_name()}_branches_collapsed"]
 
     @branch_names_to_show = @komp =>
-      if @show_all_branches()
+      if @branches_collapsed()
+        []
+      else if @show_all_branches()
         @branch_names()
       else
         @personal_branches()
