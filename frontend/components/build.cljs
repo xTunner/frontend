@@ -66,6 +66,19 @@
   ;; XXX Displays nothing for now
   "")
 
+(defn container-pill [{:keys [container current-container-id]} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (let [container-id (container-model/id container)
+             controls-ch (get-in opts [:comms :controls])]
+         [:li {:class (when (= container-id current-container-id) "active")}
+          [:a.container-selector
+           {:on-click #(put! controls-ch [:container-selected container-id])
+            :class (container-model/status-classes container)}
+           (str "C" (:index container))]])))))
+
 (defn container-pills [container-data owner opts]
   (reify
     om/IRender
@@ -73,16 +86,36 @@
       (let [{:keys [containers current-container-id]} container-data
             controls-ch (get-in opts [:comms :controls])]
         (html
-         [:div.containers.pagination.pagination-centered
-          {:data-bind "sticky_waypoint: {offset: 0}"}
+         [:div.containers.pagination.pagination-centered (when-not (< 1 (count containers))
+                                                           {:style {:display "none"}})
           [:ul.container-list
-           (for [container containers
-                 :let [container-id (container-model/id container)]]
-             [:li {:class (when (= container-id current-container-id) "active")}
-              [:a.container-selector
-               {:on-click #(put! controls-ch [:container-selected container-id])
-                :class (container-model/status-classes container)}
-               (str "C" (:index container))]])]])))))
+           (for [container containers]
+             (om/build container-pill
+                       {:container container
+                        :current-container-id current-container-id}
+                       {:opts opts
+                        :react-key (:index container)}))]])))))
+
+(defn notices [build-data owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (let [build (:build build-data)
+             controls-ch (get-in opts [:comms :controls])]
+         [:div.row-fluid
+          [:div.offset1.span10
+           [:div (common/messages (:messages build))]
+           [:div (report-error build controls-ch)]
+           [:div {:data-bind "if: $root.project() && $root.project().show_build_page_trial_notice"}
+            (project-trial-notice)]
+           [:div {:data-bind "if: $root.project() && $root.project().show_enable_project_notice"}
+            (project-enable-notice)]
+           [:div.row-fluid
+            {:data-bind "if: $root.show_follow_project_button"}
+            (project-follow-button)]
+           (when (build-model/display-build-invite build)
+             (build-invite build))]])))))
 
 (defn build [data owner opts]
   (reify
@@ -95,29 +128,15 @@
         (html
          [:div#build-log-container
           (if-not build
-            [:div
+           [:div
              (common/flashes)
              [:div.loading-spinner common/spinner]]
 
             [:div
              (om/build build-head/build-head (dissoc build-data :container-data) {:opts opts})
              (common/flashes)
-             [:div.row-fluid
-              [:div.offset1.span10
-               [:div (common/messages (:messages build))]
-               [:div (report-error build controls-ch)]
-               [:div {:data-bind "if: $root.project() && $root.project().show_build_page_trial_notice"}
-                (project-trial-notice)]
-               [:div {:data-bind "if: $root.project() && $root.project().show_enable_project_notice"}
-                (project-enable-notice)]
-               [:div.row-fluid
-                {:data-bind "if: $root.show_follow_project_button"}
-                (project-follow-button)]
-               (when (build-model/display-build-invite build)
-                 (build-invite build))]]
-
-             (when (< 1 (count (:containers container-data)))
-               (om/build container-pills container-data {:opts opts}))
+             (om/build notices (dissoc build-data :container-data {:opts opts}))
+             (om/build container-pills container-data {:opts opts})
              (om/build build-steps/container-build-steps container-data {:opts opts})
 
              (when (< 1 (count (:steps build)))
