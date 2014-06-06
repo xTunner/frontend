@@ -32,7 +32,7 @@
           %li
             .project
               %a{data-bind: "attr: {href: project_path}"}
-                %i.fa.fa-folder-o
+                != HAML.ico(n:'repo')
                 %span{data-bind: "text: project_display_name"}
           <!-- ko foreach: {data: p.branch_names_to_show(), as: 'b'} -->
             %li

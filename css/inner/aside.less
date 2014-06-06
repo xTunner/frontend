@@ -179,7 +179,7 @@
     .project {
       width: 100%;
       a {
-        display: block;
+        .flexy(center);
         width: 100%;
         height: @line;
         line-height: @line;
@@ -187,6 +187,15 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      .ico {
+        width: @line;
+        height: @line;
+      }
+      .ico-repo {
+        fill: @color;
+        width: 21px;
+        height: 21px;
       }
     }
     .branch,
