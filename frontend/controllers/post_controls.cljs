@@ -334,10 +334,19 @@
   [target message {:keys [setting value]} previous-state current-state]
   (set! (.. js/window -location -search) (str "?" (name setting) "=" value)))
 
-(defmethod post-control-event! :load-build-github-users
+(defmethod post-control-event! :load-first-green-build-github-users
   [target message {:keys [project-name]} previous-state current-state]
   (utils/ajax :get
               (gstring/format "/api/v1/project/%s/users" project-name)
-              :build-github-users
+              :first-green-build-github-users
               (get-in current-state [:comms :api])
               :context {:project-name project-name}))
+
+(defmethod post-control-event! :invited-github-users
+  [target message {:keys [project-name invitees]} previous-state current-state]
+  (utils/ajax :post
+              (gstring/format "/api/v1/project/%s/users/invite" project-name)
+              :invite-github-users
+              (get-in current-state [:comms :api])
+              :context {:project-name project-name}
+              :params invitees))

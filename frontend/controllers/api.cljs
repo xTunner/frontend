@@ -210,7 +210,7 @@
     state
     (assoc-in state [:current-project :heroku_deploy_user] nil)))
 
-(defmethod api-event [:build-github-users :success]
+(defmethod api-event [:first-green-build-github-users :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state

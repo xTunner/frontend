@@ -8,6 +8,16 @@
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
+(defn invitees
+  "Filters users to invite and returns only fields needed by invitation API"
+  [users]
+  (->> users
+       (filter (fn [u] (and (:email u)
+                            (:checked u))))
+       (map (fn [u] {:id (:id u)
+                     :email (:email u)}))
+       vec))
+
 (defn invite-tile [user owner opts]
   (reify
     om/IRender
@@ -42,14 +52,15 @@
     (will-mount [_]
       (let [controls-ch (get-in opts [:comms :controls])
             project-name (:project-name opts)]
-        (put! controls-ch [:load-build-github-users {:project-name project-name}])))
+        (put! controls-ch [:load-first-green-build-github-users {:project-name project-name}])))
     om/IRender
     (render [_]
       (let [controls-ch (get-in opts [:comms :controls])
-            github-users (:github-users invite-data)
+            project-name (:project-name opts)
+            users (remove :following (:github-users invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
         (html
-         [:div.first-green.invite-form {:class (when (or (not github-users) dismiss-form)
+         [:div.first-green.invite-form {:class (when (or (empty? users) dismiss-form)
                                                  "animation-fadeout-collapse")}
           [:button {:on-click #(put! controls-ch [:dismiss-invite-form])}
            [:span "Dismiss "] [:i.fa.fa-times-circle]]
@@ -68,9 +79,10 @@
                 :on-click #(put! controls-ch [:invite-selected-none])}
             "none"]
            [:ul
-            (om/build-all invite-tile github-users {:opts opts :key :login})]]
+            (om/build-all invite-tile users {:opts opts :key :login})]]
           [:footer
-           [:button
-            {:on-click #(put! controls-ch [:invite-first-green])}
+           [:button (let [users-to-invite (utils/inspect (invitees users))]
+                      {:on-click #(put! controls-ch [:invited-github-users {:invitees users-to-invite
+                                                                            :project-name project-name}])})
             "Send Invites "
             [:i.fa.fa-envelope-o]]]])))))
