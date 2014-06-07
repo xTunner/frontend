@@ -1,6 +1,7 @@
 (ns frontend.controllers.ws
   "Websocket controllers"
   (:require [cljs.reader :as reader]
+            [clojure.set]
             [clojure.string :as string]
             [frontend.controllers.api :as api]
             [frontend.utils :as utils :refer [mlog]]
@@ -84,3 +85,14 @@
            (update-in (state/action-output-path container-index action-index) vec)
            (update-in (state/action-output-path container-index action-index) conj output)
            (update-in (state/action-path container-index action-index) action-model/format-latest-output))))))
+
+(defmethod ws-event :build/add-messages
+  [pusher-imp message {:keys [data channel-name]} state]
+  (let [build (get-in state state/build-path)
+        new-messages (set (js->clj data :keywordize-keys true))]
+    (if-not (= (pusher/build-channel build) channel-name)
+      (mlog "Ignoring event for old build channel: " channel-name)
+      (update-in state (conj state/build-path :messages)
+                 (fn [messages] (-> messages
+                                    set ;; careful not to add the same message twice
+                                    (clojure.set/union new-messages)))))))
