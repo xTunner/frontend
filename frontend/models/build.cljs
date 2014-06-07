@@ -138,9 +138,9 @@
        (:node build)
        (every? :ssh_enabled (:node build))))
 
-;; XXX display-build-invite logic
+
 (defn display-build-invite [build]
-  false)
+  (:first_green_build build))
 
 (defn containers [build]
   (let [steps (:steps build)
