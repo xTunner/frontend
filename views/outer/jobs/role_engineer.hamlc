@@ -6,8 +6,7 @@
 
   %h5 We'd love to see
   %ul
-    %li People who have used functional languages in anger (Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
-    %li Experience with writing Clojure or other functional languages.
+    %li People who have used functional languages in anger (Clojure, Haskell, Scheme, Lisp, Clojure, Scala, OCaml, etc).
     %li If you've built or scaled large distributed systems.
     %li People who love trying new, cutting-edge things.
     %li If you've worked on significant projects that weren't in Java, JavaScript, Ruby or PHP.
