@@ -220,7 +220,7 @@
               "w/ ssh enabled"]
              [:button.report_build
               {:title "Report error with build",
-               :on-click #(put! controls-ch [:report-build-clicked build-id])}
+               :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
               "Report"]
              (when (build-model/can-cancel? build)
                [:button.cancel_build

@@ -16,7 +16,8 @@
             [sablono.core :as html :refer-macros [html]]))
 
 (defn report-error [build controls-ch]
-  (let [build-id (build-model/id build)]
+  (let [build-id (build-model/id build)
+        build-url (:build_url build)]
     ;; XXX add circle.yml errors
     (when (:failed build)
       [:div.alert.alert-danger
@@ -28,7 +29,7 @@
            "Check out common problems "]
           "or "
           [:a {:title "Report an error in how Circle ran this build"
-               :on-click #(put! controls-ch [:report-build-clicked build-id])}
+               :on-click #(put! controls-ch [:report-build-clicked {:build-url build-url}])}
            "report this issue "]
           "and we'll investigate."]
 
@@ -52,6 +53,7 @@
 (defn project-enable-notice [] ;; should go elsewhere
   project-enable-notice-inst-finished
   "")
+
 (defn project-follow-button []
   [:div.offset1.span10
    [:div.alert.alert-success

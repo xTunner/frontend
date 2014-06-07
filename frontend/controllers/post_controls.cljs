@@ -5,11 +5,11 @@
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.controllers.api :as api]
-            goog.dom
-            goog.dom.classes
+            [goog.dom]
+            [goog.dom.classes]
             [goog.string :as gstring]
-            goog.string.format
-            goog.style
+            [goog.string.format]
+            [goog.style]
             [frontend.intercom :as intercom]
             [frontend.state :as state]
             [frontend.utils.mixpanel :as mixpanel]
@@ -360,3 +360,8 @@
                                        :login (:login u)
                                        :id (:id u)
                                        :email (:email u)})))
+
+(defmethod post-control-event! :report-build-clicked
+  [target message {:keys [build-url]} previous-state current-state]
+  (intercom/raise-dialog (get-in current-state [:comms :errors])
+                         (gstring/format "I think I found a bug in Circle at %s" build-url)))

@@ -12,7 +12,7 @@
         (.click (jq ".new_message")))
       (.focus (jq "#newMessageBody"))
       (when message
-        (.text (jq "#newMessageBody") message)))
+        (.text (jq "#newMessageBody") (str message "\n\n"))))
     (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")))
 
 (defn user-link []
