@@ -1,32 +1,51 @@
 @tip_index: 200;
-.tip(...) {
-  @color: fade(@black, 80);
-  .process_right (@arguments) when (@arguments = right) {
+.tip(@position: top, @tip_color: fade(@black, 80)) {
+  .process (@t1: 0, @t2: 0, @t: auto, @l: auto, @b: auto, @r: auto, @mt: 0, @ml: 0, @mb: 0, @mr: 0) {
     &[tooltip] {
       position: relative;
-      &:after {
-        .translate(0, -50%);
+      &:before {
+        .translate(@t1, @t2);
         position: absolute;
-        left: 100%;
-        top: 50%;
+        top: @t;
+        left: @l;
+        bottom: @b;
+        right: @r;
         z-index: @tip_index;
         visibility: hidden;
-        transition: 200ms 0;
+        transition: visibility 0ms 200ms, background 200ms 0ms, margin 200ms 0ms, color 200ms 0ms;
         pointer-events: none;
         content: attr(tooltip);
         padding: .5em 1em;
         border-radius: 2em;
-        background: fade(@color, 0);
+        background: fade(@tip_color, 0);
+        white-space: nowrap;
+        color: fade(@whiten, 0);
       }
       &:hover {
-        &:after {
-          background: @color;
+        &:before {
+          color: @whiten;
+          background: @tip_color;
           visibility: visible;
-          margin-left: .5em;
-          transition: 200ms 1000ms;
+          margin: @mt @mr @mb @ml;
+          transition: visibility 0ms 0ms, background 100ms 1000ms, margin 100ms 1000ms, color 100ms 1000ms;
         }
       }
     }
   }
+  .process_top (@arguments) when (@position = top) {
+    .process(@t1: -50%, @l: 50%, @b: 100%, @mb: .5em);
+  }
+  .process_left (@arguments) when (@position = left) {
+    .process(@t2: -50%, @t: 50%, @r: 100%, @mr: .5em);
+  }
+  .process_bottom (@arguments) when (@position = bottom) {
+    .process(@t1: -50%, @t: 100%, @l: 50%, @mt: .5em);
+  }
+  .process_right (@arguments) when (@position = right) {
+    .process(@t2: -50%, @t: 50%, @l: 100%, @ml: .5em);
+  }
+  .process_top(@arguments);
+  .process_left(@arguments);
+  .process_bottom(@arguments);
   .process_right(@arguments);
 }
