@@ -39,8 +39,7 @@
 (defn icon [{icon-type :type icon-name :name}]
   [:svg {:class (str "icon-" (name icon-name))
          :xmlns "http://www.w3.org/2000/svg"
-         :viewBox "0 0 100 100"
-         :height 100}
+         :viewBox "0 0 100 100"}
    (when (= :status icon-type)
      [:path {:class icon-name :fill "none" :d (get-in icon-shapes [:turn :path])}])
    [:path {:class icon-name :fill "none" :d (get-in icon-shapes [icon-name :path])}]])
