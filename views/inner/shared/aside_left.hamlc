@@ -27,17 +27,16 @@
         %ul{data-bind: "css: {open: !branches_collapsed()}"}
           %li
             .project{role: "button"}
-              %a{data-bind: "click: toggle_branches_collapsed"}
+              %a{data-bind: "attr: {title: 'show/hide'}, click: toggle_branches_collapsed"}
                 != HAML.ico(n:'repo')
-              %a{data-bind: "attr: {href: project_path}"}
-                %span{data-bind: "text: project_display_name"}
+              %a{data-bind: "attr: {href: project_path, title: project_display_name}, text: project_display_name"}
           <!-- ko foreach: {data: p.branch_names_to_show(), as: 'b'} -->
             %li
               .branch{role: "button"}
-                %a{data-bind: "attr: {href: p.branch_path(b)}, text: p.format_branch_name(b, 23)"}
+                %a{data-bind: "attr: {href: p.branch_path(b), title: b}, text: p.format_branch_name(b, 23)"}
               .status{role: "button"}
                 <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
-                  %a{data-bind: "haml: {template: 'ico', args: {n: status_icon_aside}}"}
+                  %a{data-bind: "attr: {href: p.build_path(build_num), title: tooltip_title}, haml: {template: 'ico', args: {n: status_icon_aside}}"}
                 <!-- /ko -->
           <!-- /ko -->
       <!-- /ko -->
