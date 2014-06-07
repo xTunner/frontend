@@ -214,4 +214,11 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state
-    (assoc-in state state/build-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp)))))
+    (-> state
+        (assoc-in state/build-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
+
+(defmethod api-event [:invite-github-users :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+    state
+    (assoc-in state state/dismiss-invite-form-path true)))
