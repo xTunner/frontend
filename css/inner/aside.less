@@ -220,10 +220,12 @@
         }
       }
       &:not(:hover) {
-        a {
-          &:not(:hover) {
-            path {
-              stroke: @color;
+        &:not(.running) {
+          a {
+            &:not(:hover) {
+              path {
+                stroke: @color;
+              }
             }
           }
         }
