@@ -96,7 +96,7 @@
       %h2 What we're looking for
       %p
         Obviously, this is a very developer-focused company, so the most important thing is to understand how developers work and think.
-        Here's how we think about the roles we're looking for.
+        Here's how we think about the type of people we like to work with:
 
     .jobs-listings
       != HAML.role_general()
