@@ -21,7 +21,7 @@
     .jobs-intro
       %h2 Who We Are
       %p
-        CircleCI is a rapidly growing company with a great mission, a deeply technical team, a focus on productivity for our customers and ourselves.
+        CircleCI is a rapidly growing company with a great mission, a deeply technical team, and a focus on productivity for our customers and ourselves.
         We've a flat organization, a great culture, and a delightful product that's loved by thousands of developers.
         With significant revenue and funding, we're just getting started with taking developer tools to the next level.
 
@@ -65,13 +65,13 @@
 
       %p
         %strong At a small growing company, your work has a disproportionate effect.
-        As well as improving our customers' lives, your also set a precedent for everyone who works for us in the future.
+        As well as improving our customers' lives, you'll also set a precedent for everyone who works for us in the future.
         You get to affect both the product and the company culture.
         Your opinions matter and are listened to, and that's why we hire you.
 
       %p
         %strong There's lots to learn.
-        We try to hire really, really high caliber people, which means there's lot to learn, and we hope to learn lots from you too.
+        We try to hire really, really high caliber people, which means you'll be able to learn a lot, and we hope to learn a lot from you too.
         We look for the very experienced, or the very talented.
         If you work at CircleCI, you know that you won't be on the team with slouches or slackers, or folks who will hold you back.
         (Curiously, we disproportionately hire folks with find it hard to believe they're as amazing as they are, and suffer from significant imposter syndrome. Go figure. If this matches you, we encourage you to apply anyway).
