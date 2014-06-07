@@ -34,11 +34,12 @@
                         :container-data {:current-container-id 0
                                          :containers nil}
                         :invite-data {:dismiss-invite-form nil
-                                      ;; XXX should github-users go in project?
-                                      ;; map of login to github user
-                                      :github-users nil
-                                      ;; map of logins to checked status
-                                      :invite-logins {}}}
+                                      ;; map of login to github user. These could go
+                                      ;; in current-project-data, but it would make the
+                                      ;; invites implementation more complex. Much easier
+                                      ;; for each build to have its own copy of github-users, especially
+                                      ;; since it's used so infrequently and goes stale fast.
+                                      :github-users nil}}
    :current-organization nil})
 
 
