@@ -30,8 +30,8 @@
           "or "
           [:a {:title "Report an error in how Circle ran this build"
                :on-click #(put! controls-ch [:report-build-clicked {:build-url build-url}])}
-           "report this issue "]
-          "and we'll investigate."]
+           "report this issue"]
+          " and we'll investigate."]
 
          [:div
           "Looks like we had a bug in our infrastructure, or that of our providers (generally "
