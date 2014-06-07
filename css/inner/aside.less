@@ -98,9 +98,6 @@
     @color: fade(@white, 34);
     @ico: (@em - 2);
     @line: (@em * 1.5);
-    @pass: @green;
-    @fail: @redLight;
-    @busy: @blueLight;
     .flexy(column);
     font-size: @em;
     color: @color;
@@ -181,6 +178,15 @@
     ul {
       margin: 0;
       list-style: none;
+      &:not(.open) {
+        li {
+          a {
+            &.latest {
+              .flexy(center, center);
+            }
+          }
+        }
+      }
     }
     li {
       .flexy();
@@ -202,14 +208,23 @@
                 transition: margin 100ms 100ms, opacity 100ms 100ms;
               }
               &:hover {
-                .ico-busy-light {stroke: @busy;}
-                .ico-pass-light {stroke: @pass;}
-                .ico-fail-light {stroke: @fail;}
+                path {
+                  opacity: 1;
+                }
               }
             }
-            .ico-busy-light {stroke: fade(@busy, 50);}
-            .ico-pass-light {stroke: fade(@pass, 50);}
-            .ico-fail-light {stroke: fade(@fail, 50);}
+            path {
+              opacity: .5;
+            }
+          }
+        }
+      }
+      &:not(:hover) {
+        a {
+          &:not(:hover) {
+            path {
+              stroke: @color;
+            }
           }
         }
       }
@@ -235,23 +250,32 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        &:first-child {
+        &.toggle {
           .box-sizing(border-box);
           .flex(0, 0, auto);
           width: @em * 2;
           height: @em *2;
           padding: 5px; // got this from trial and error
+          .ico {
+            width: 100%;
+            height: 100%;
+          }
+          .ico-repo {
+            fill: @color;
+          }
         }
-        &:last-child {
+        &.title {
           .flex(1, 1, auto);
         }
-      }
-      .ico {
-        width: 100%;
-        height: 100%;
-      }
-      .ico-repo {
-        fill: @color;
+        &.latest {
+          .flex(0, 0, auto);
+          .icon_style(transparent, @ico);
+          display: none;
+          width: @line;
+          height: @line;
+          line-height: @line;
+          padding-right: round(@em - ((@line - @ico) / 2) - @scrollbar);
+        }
       }
     }
     .branch,
@@ -312,23 +336,17 @@
         &:last-child {
           padding-right: round(@em - ((@line - @ico) / 2) - @scrollbar);
         }
-        &:hover {
-          path {
-            transition-duration: 200ms;
-          }
-        }
-        &:not(:hover) {
-          path {
-            stroke: @color;
-            transition: 500ms;
-          }
-        }
       }
-      path {
+    }
+    path {
+      &[class$="-light"] {
         &:first-child {
           stroke-width: 10;
         }
       }
+      &.ico-busy-light {stroke: @blueLight;}
+      &.ico-pass-light {stroke: @green;}
+      &.ico-fail-light {stroke: @redLight;}
     }
   }
   .aside-slideup {
