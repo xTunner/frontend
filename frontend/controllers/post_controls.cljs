@@ -12,6 +12,7 @@
             goog.style
             [frontend.intercom :as intercom]
             [frontend.state :as state]
+            [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]])
   (:require-macros [frontend.utils :refer [inspect timing]]
@@ -349,4 +350,13 @@
               :invite-github-users
               (get-in current-state [:comms :api])
               :context {:project-name project-name}
-              :params invitees))
+              :params invitees)
+  (mixpanel/track "Sent invitations" {:first_green_build true
+                                      :project project-name
+                                      :users (map :login invitees)})
+  (doseq [u invitees]
+    (mixpanel/track "Sent invitation" {:first_green_build true
+                                       :project project-name
+                                       :login (:login u)
+                                       :id (:id u)
+                                       :email (:email u)})))

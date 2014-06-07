@@ -7,6 +7,7 @@
             [frontend.models.repo :as repo-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring]
@@ -111,3 +112,10 @@
                   :project-settings
                   api-ch
                   :context {:project-name project-name}))))
+
+(defmethod post-api-event! [:first-green-build-github-users :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  ;; This is not ideal, but don't see a better place to put this
+  (when (first (remove :following resp))
+    (mixpanel/track "Saw invitations prompt" {:first_green_build true
+                                              :project (:project-name context)})))

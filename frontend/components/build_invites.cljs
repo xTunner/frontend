@@ -14,8 +14,7 @@
   (->> users
        (filter (fn [u] (and (:email u)
                             (:checked u))))
-       (map (fn [u] {:id (:id u)
-                     :email (:email u)}))
+       (map (fn [u] (select-keys u [:email :login :id])))
        vec))
 
 (defn invite-tile [user owner opts]
