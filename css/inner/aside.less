@@ -1,9 +1,15 @@
 &#app {
+  @em: @baseFontSize;
+  @cascade_delay: 30ms;
   @aside_items: 7;
   @aside_slim_speed: 200ms;
   @slideup_items: 3;
   @slideup_visible: 1;
-  @cascade_delay: 30ms;
+  @activity_scroll: 5px;
+  @activity_color: fade(@white, 34);
+  @activity_ico: (@em - 2);
+  @activity_line: (@em * 1.5);
+  @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
   .flexy(row);
   .aside-left-nav {
     .flexy(column);
@@ -64,6 +70,16 @@
     .shadow_noboss();
     background: transparent;
     transition: (@aside_slim_speed / 2) ease-in-out;
+    &:not(:hover) {
+      + .aside-activity {
+        .toggle-all-branches {
+          &:not(:hover) {
+            margin-top: @activity_toggle;
+            opacity: 0;
+          }
+        }
+      }
+    }
     &:hover,
     &:focus {
       .shadow_emboss(@blueDarker);
@@ -93,14 +109,9 @@
     }
   }
   .aside-activity {
-    @scrollbar: 5px;
-    @em: @baseFontSize;
-    @color: fade(@white, 34);
-    @ico: (@em - 2);
-    @line: (@em * 1.5);
     .flexy(column);
     font-size: @em;
-    color: @color;
+    color: @activity_color;
     background: fade(@black, 0);
     opacity: 0;
     visibility: hidden;
@@ -126,7 +137,7 @@
       height: 100%;
       overflow: hidden;
       &::-webkit-scrollbar {
-        width: @scrollbar;
+        width: @activity_scroll;
       }
       &::-webkit-scrollbar-thumb {
         background: transparent;
@@ -140,11 +151,12 @@
     .toggle-all-branches {
       .flexy(center, center);
       padding: @em @em (@em / 2);
+      transition: margin 200ms, opacity 200ms;
       button {
         .flex(1, 1, auto);
-        color: fadeout(@color, 21);
-        background-color: fade(@color, 0);
-        border: 1px solid @color;
+        color: fadeout(@activity_color, 21);
+        background-color: fade(@activity_color, 0);
+        border: 1px solid @activity_color;
         border-left-color: transparent;
         margin-left: -1px;
         outline: none;
@@ -153,7 +165,7 @@
         transition: 200ms;
         max-width: (@tile - 2); // 2 represents borders on sides
         &:first-child {
-          border-left-color: @color;
+          border-left-color: @activity_color;
           border-radius: 1em 0 0 1em;
           margin-left: 0;
         }
@@ -165,12 +177,12 @@
           color: @grayLightest;
         }
         &.active {
-          color: @color;
-          border-color: @color;
+          color: @activity_color;
+          border-color: @activity_color;
           border-left-color: transparent;
           transition: 100ms;
           &:first-child {
-            border-left-color: @color;
+            border-left-color: @activity_color;
           }
         }
       }
@@ -191,7 +203,7 @@
     li {
       .flexy();
       .box-sizing(border-box);
-      width: (@aside_nav_width - @scrollbar);
+      width: (@aside_nav_width - @activity_scroll);
       line-height: 1em; // BS RESET
       &:hover {
         .status {
@@ -224,7 +236,7 @@
           a {
             &:not(:hover) {
               path {
-                stroke: @color;
+                stroke: @activity_color;
               }
             }
           }
@@ -247,8 +259,8 @@
       .flexy(center);
       width: 100%;
       a {
-        height: @line;
-        line-height: @line;
+        height: @activity_line;
+        line-height: @activity_line;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -263,7 +275,7 @@
             height: 100%;
           }
           .ico-repo {
-            fill: @color;
+            fill: @activity_color;
           }
         }
         &.title {
@@ -271,27 +283,27 @@
         }
         &.latest {
           .flex(0, 0, auto);
-          .icon_style(transparent, @ico);
+          .icon_style(transparent, @activity_ico);
           display: none;
-          width: @line;
-          height: @line;
-          line-height: @line;
-          padding-right: round(@em - ((@line - @ico) / 2) - @scrollbar);
+          width: @activity_line;
+          height: @activity_line;
+          line-height: @activity_line;
+          padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
         }
       }
     }
     .branch,
     .status {
       a {
-        height: @line;
-        line-height: @line;
+        height: @activity_line;
+        line-height: @activity_line;
       }
     }
     .branch {
       .flexy(center);
       a {
         width: 100%;
-        padding-left: (@line + (@em / 2));
+        padding-left: (@activity_line + (@em / 2));
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -299,10 +311,10 @@
         &:before,
         &:after {
           content: "";
-          width: (@line / 2);
-          height: (@line / 2);
+          width: (@activity_line / 2);
+          height: (@activity_line / 2);
           position: absolute;
-          left: (@line / 2);
+          left: (@activity_line / 2);
           border-left: 1px solid @blueDarker;
         }
         &:before {
@@ -310,7 +322,7 @@
           border-bottom: 1px solid @blueDarker;
         }
         &:after {
-          top: (@line / 2);
+          top: (@activity_line / 2);
           border-top: 1px solid @blueDarker;
         }
       }
@@ -320,23 +332,23 @@
       .flexy(center, flex-end);
       a {
         .flexy(center, center);
-        .icon_style(transparent, @ico);
-        width: @line;
+        .icon_style(transparent, @activity_ico);
+        width: @activity_line;
         &:first-child {
           .flex(1, 0, auto);
           .justify-content(flex-end);
-          padding-left: round(@em - ((@line - @ico) / 2));
+          padding-left: round(@em - ((@activity_line - @activity_ico) / 2));
           svg {
-            padding-right: round((@line - @ico) / 2);
+            padding-right: round((@activity_line - @activity_ico) / 2);
           }
         }
         &:not(:first-child) {
           opacity: 0;
-          margin-left: -@line;
+          margin-left: -@activity_line;
           transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
         }
         &:last-child {
-          padding-right: round(@em - ((@line - @ico) / 2) - @scrollbar);
+          padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
         }
       }
     }
