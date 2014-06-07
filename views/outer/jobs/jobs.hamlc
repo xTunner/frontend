@@ -89,7 +89,7 @@
       %p
         %strong Remote
         %span &#8212; We have an asynchronous culture that is well suited to remote-working.
-        We use HipChat, Hangouts and email heavily, and currently six of our eleven engineers are working remotely.
+        We use HipChat, Hangouts and email heavily, and over half of our engineers work remotely.
         We'll bring you on-site every 10 weeks or so to work closely with your colleagues, and can do this to fit your remote life.
 
     .jobs-what
@@ -113,9 +113,9 @@
         including a resume.
 
       %p
-        We're mostly interested in seeing evidence that you're amazing to work with.
+        We're mostly interested in seeing evidence that you're great at what you do.
         (Don't worry if you're not convinced about your abilities, just work to convince us.)
-        This might include great projects you've worked on, a portfolio, wonderful references, open source you've contributed to, your grades at MIT, that you got hired by Google, or anything that hints that you might be particularly amazing to work with.
+        This might include great projects you've worked on, a portfolio, wonderful references, open source you've contributed to, products you've built or scaled, your grades at MIT, that you got hired by Google, or anything that hints that you might be a particularly amazing individual.
         We're also interested in reading about technologies you've worked with in the past, and what you did with them.
 
       %p
