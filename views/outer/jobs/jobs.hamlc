@@ -84,7 +84,7 @@
         %span &#8212;
         Our team is dedicated to creating the most productive environment possible.
         That means we ensure everyone is able to enjoy their own personal level of comfort and privacy.
-        We work in San Francisco's beautiful Financial District, where you'll have a private office, catered lunch and lovely colleagues.
+        We work in San Francisco's beautiful Financial District, where you'll have a <a href="http://blog.circleci.com/silence-is-for-the-weak">private office</a>, catered lunch and lovely colleagues.
 
       %p
         %strong Remote
