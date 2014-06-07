@@ -227,30 +227,31 @@
       }
     }
     .project {
-      .flexy();
+      .flexy(center);
       width: 100%;
       a {
         height: @line;
         line-height: @line;
-        padding: (@em / 2) 0 0 (@em / 2);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         &:first-child {
+          .box-sizing(border-box);
           .flex(0, 0, auto);
+          width: @em * 2;
+          height: @em *2;
+          padding: 5px; // got this from trial and error
         }
         &:last-child {
           .flex(1, 1, auto);
         }
       }
       .ico {
-        width: @line;
-        height: @line;
+        width: 100%;
+        height: 100%;
       }
       .ico-repo {
         fill: @color;
-        width: @line;
-        height: @line;
       }
     }
     .branch,
