@@ -198,7 +198,7 @@
             a {
               &:not(:first-child) {
                 opacity: 1;
-                margin-right: 0;
+                margin: 0;
                 transition: margin 100ms 100ms, opacity 100ms 100ms;
               }
               &:hover {
@@ -305,7 +305,7 @@
         }
         &:not(:first-child) {
           opacity: 0;
-          margin-right: -@line;
+          margin-left: -@line;
           transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
         }
         &:last-child {
