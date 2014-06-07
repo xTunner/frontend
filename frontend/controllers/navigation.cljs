@@ -44,6 +44,6 @@
       (assoc :project-settings-project-name project-name)
       (#(if (and (:current-project state)
                  ;; XXX: check for url-escaped characters (e.g. /)
-                 (not= project-name (vcs-url/project-name (get-in state [:current-project :vcs_url]))))
-          (dissoc % :current-project)
+                 (not= project-name (vcs-url/project-name (get-in state (conj state/project-path :vcs_url)))))
+          (state/reset-current-project %)
           %))))

@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [frontend.utils :as utils :refer [mlog merror]]
             [frontend.pusher :as pusher]
+            [frontend.state :as state]
             [goog.string :as gstring]
             [goog.string.format]))
 
@@ -67,7 +68,7 @@
 (defmethod post-navigated-to! :project-settings
   [history-imp to {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (if (:current-project current-state)
+    (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
       (utils/ajax :get
                   (gstring/format "/api/v1/project/%s/settings" project-name)
@@ -76,7 +77,7 @@
                   :context {:project-name project-name}))
 
     (cond (and (= subpage :parallel-builds)
-               (not (get-in current-state [:current-project :plan])))
+               (not (get-in current-state state/project-plan-path)))
           (utils/ajax :get
                       (gstring/format "/api/v1/project/%s/plan" project-name)
                       :project-plan
@@ -84,7 +85,7 @@
                       :context {:project-name project-name})
 
           (and (= subpage :api)
-               (not (get-in current-state [:current-project :tokens])))
+               (not (get-in current-state state/project-tokens-path)))
           (utils/ajax :get
                       (gstring/format "/api/v1/project/%s/token" project-name)
                       :project-token
@@ -92,7 +93,7 @@
                       :context {:project-name project-name})
 
           (and (= subpage :env-vars)
-               (not (get-in current-state [:current-project :env-vars])))
+               (not (get-in current-state state/project-envvars-path)))
           (utils/ajax :get
                       (gstring/format "/api/v1/project/%s/envvar" project-name)
                       :project-envvar

@@ -124,91 +124,92 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge resp)))
+    (update-in state state/project-path merge resp)))
 
 (defmethod api-event [:project-plan :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge {:plan resp})))
+    (assoc-in state (inspect state/project-plan-path) resp)))
 
 (defmethod api-event [:project-token :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge {:tokens resp})))
+    (assoc-in state state/project-tokens-path resp)))
 
 (defmethod api-event [:project-envvar :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge {:env-vars resp})))
+    (assoc-in state state/project-envvars-path resp)))
 
 (defmethod api-event [:update-project-parallelism :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :parallelism-edited] true)))
+    (assoc-in state (conj state/project-data-path :parallelism-edited) true)))
 
 (defmethod api-event [:create-env-var :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in [:current-project :env-vars] (fnil conj []) resp)
-        (assoc-in [:current-project :new-env-var-name] "")
-        (assoc-in [:current-project :new-env-var-value] ""))))
+        (update-in state/project-envvars-path (fnil conj []) resp)
+        (assoc-in (conj state/project-data-path :new-env-var-name) "")
+        (assoc-in (conj state/project-data-path :new-env-var-value) ""))))
 
 (defmethod api-event [:delete-env-var :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (-> state
-        (update-in [:current-project :env-vars] (fn [vars]
+    (update-in state state/project-envvars-path (fn [vars]
                                                   (remove #(= (:env-var-name context) (:name %))
-                                                          vars))))))
+                                                          vars)))))
 
 (defmethod api-event [:save-ssh-key :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (inspect (= (:project-id context) (project-model/id (get-in state state/project-path))))
     state
-    (assoc-in state [:current-project :new-ssh-key] {})))
+    (assoc-in state (conj state/project-data-path :new-ssh-key) {})))
 
 (defmethod api-event [:delete-ssh-key :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state [:current-project :ssh_keys] (fn [keys]
-                                                    (remove #(= (:fingerprint context) (:fingerprint %))
-                                                            keys)))))
+    (update-in state (conj state/project-path :ssh_keys)
+               (fn [keys]
+                 (remove #(= (:fingerprint context) (:fingerprint %))
+                         keys)))))
 
 (defmethod api-event [:save-project-api-token :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (assoc-in [:current-project :new-api-token] {})
-        (update-in [:current-project :tokens] (fnil conj []) resp))))
+        (assoc-in (conj state/project-data-path :new-api-token) {})
+        (update-in state/project-tokens-path (fnil conj []) resp))))
 
 (defmethod api-event [:delete-project-api-token :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state [:current-project :tokens] (fn [tokens]
-                                                  (remove #(= (:token %) (:token context))
-                                                          tokens)))))
+    (update-in state state/project-tokens-path
+               (fn [tokens]
+                 (remove #(= (:token %) (:token context))
+                         tokens)))))
 
 (defmethod api-event [:set-heroku-deploy-user :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :heroku_deploy_user] (:login context))))
+    (assoc-in state (conj state/project-path :heroku_deploy_user) (:login context))))
 
 (defmethod api-event [:remove-heroku-deploy-user :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :heroku_deploy_user] nil)))
+    (assoc-in state (conj state/project-path :heroku_deploy_user) nil)))
 
 (defmethod api-event [:first-green-build-github-users :success]
   [target message status {:keys [resp context]} state]

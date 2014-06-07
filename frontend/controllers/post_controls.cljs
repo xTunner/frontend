@@ -175,8 +175,8 @@
 
 (defmethod post-control-event! :selected-project-parallelism
   [target message {:keys [project-id parallelism]} previous-state current-state]
-  (when (not= (get-in previous-state [:current-project :parallel])
-              (get-in current-state [:current-project :parallel]))
+  (when (not= (get-in previous-state (conj state/project-path :parallel))
+              (get-in current-state (conj state/project-path :parallel)))
     (let [project-name (vcs-url/project-name project-id)
           api-ch (get-in current-state [:comms :api])]
       ;; TODO: edit project settings api call should respond with updated project settings
@@ -257,7 +257,7 @@
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
-        settings (project-model/notification-settings (:current-project current-state))]
+        settings (project-model/notification-settings (get-in current-state state/project-path))]
     (utils/ajax :put
                 (gstring/format "/api/v1/project/%s/settings" project-name)
                 :save-notification-hooks

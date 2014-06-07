@@ -24,7 +24,11 @@
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
-   :current-project nil
+   :current-project-data {:project nil
+                          :plan nil
+                          :settings {}
+                          :tokens nil
+                          :envvars nil}
    :current-build-data {:build nil
                         :usage-queue-data {:builds nil
                                            :show-usage-queue false}
@@ -75,3 +79,20 @@
                                     :current-container-id 0
                                     :container-data {:current-container-id 0
                                                      :containers nil}}))
+
+(def project-data-path [:current-project-data])
+(def project-plan-path (conj project-data-path :plan))
+(def project-tokens-path (conj project-data-path :tokens))
+(def project-envvars-path (conj project-data-path :envvars))
+(def project-settings-branch-path (conj project-data-path :settings-branch))
+(def project-path (conj project-data-path :project))
+
+(def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
+(def project-new-api-token-path (conj project-data-path :new-api-token))
+
+(defn reset-current-project [state]
+  (assoc state :current-project-data {:project nil
+                                      :plan nil
+                                      :settings {}
+                                      :tokens nil
+                                      :envvars nil}))

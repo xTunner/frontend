@@ -57,7 +57,7 @@
 
 (defmethod control-event :selected-project-parallelism
   [target message {:keys [project-id parallelism]} state]
-  (assoc-in state [:current-project :parallel] parallelism))
+  (assoc-in state (conj state/project-path :parallel) parallelism))
 
 (defmethod control-event :dismiss-invite-form
   [target message _ state]

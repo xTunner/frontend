@@ -86,7 +86,7 @@
 
 (defmethod post-api-event! [:save-dependencies-commands :success]
   [target message status {:keys [context resp]} previous-state current-state]
-  (when (and (= (project-model/id (:current-project current-state))
+  (when (and (= (project-model/id (get-in current-state state/project-path))
                 (:project-id context))
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
@@ -104,7 +104,7 @@
 
 (defmethod post-api-event! [:save-ssh-key :success]
   [target message status {:keys [context resp]} previous-state current-state]
-  (when (= (:project-id context) (project-model/id (:current-project current-state)))
+  (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])]
       (utils/ajax :get
