@@ -3,7 +3,7 @@
   .process (@t1: 0, @t2: 0, @t: auto, @l: auto, @b: auto, @r: auto, @mt: 0, @ml: 0, @mb: 0, @mr: 0) {
     &[tooltip] {
       position: relative;
-      &:before {
+      &:after {
         .translate(@t1, @t2);
         position: absolute;
         top: @t;
@@ -22,7 +22,7 @@
         color: fade(@whiten, 0);
       }
       &:hover {
-        &:before {
+        &:after {
           color: @whiten;
           background: @tip_color;
           visibility: visible;
