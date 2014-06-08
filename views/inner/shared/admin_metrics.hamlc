@@ -1,0 +1,41 @@
+<!-- ko if: CI.instrumentation.display() -->
+  .admin-metrics{data-bind: "with: CI.instrumentation"}
+    .metric
+      %span{data-bind: "text: response_data().length"}
+      %span.metric-label requests
+    .metric
+      %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0)"}<>
+      %span ms
+      %span.metric-label client
+    .metric
+      %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0)"}<>
+      %span ms
+      %span.metric-label server
+    .metric
+      %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0)"}<>
+      %span ms
+      %span &amp;
+      %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0)"}
+      %span queries
+      %span.metric-label mongo
+    %a.metric{data-bind: "click: toggleExpanded"}
+      expand
+    %a.metric{data-bind: "click: clearResponses"}
+      clear all
+    .admin-metrics-table
+      %table{data-bind: "visible: expanded"}
+        %thead
+          %tr
+            %th url
+            %th client latency
+            %th server latency
+            %th mongo queries
+            %th total query latency
+        %tbody{data-bind: "foreach: response_data"}
+          %tr
+            %td{data-bind: "text: url"}
+            %td{data-bind: "text: client_latency"}
+            %td{data-bind: "text: circle_latency"}
+            %td{data-bind: "text: query_count"}
+            %td{data-bind: "text: query_latency"}
+<!-- /ko -->

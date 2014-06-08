@@ -28,17 +28,23 @@
     &.slim {
       width: @tile;
       .aside-item {
+        &.logo {
+          cursor: e-resize;
+        }
         i,
         img {
           margin-right: ((@tile - @baseFontSize) / 2);
           transition-duration: (@aside_slim_speed * 1.5);
         }
-        &.logo {
-          cursor: e-resize;
-        }
       }
       a.aside-item {
         .tip(right);
+        span {
+          opacity: 0;
+          visibility: hidden;
+          transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
+          pointer-events: none;
+        }
       }
     }
     [role="button"] {
@@ -106,6 +112,11 @@
       border-radius: (@s / 2);
       transition: margin (@aside_slim_speed * 2);
       pointer-events: none;
+    }
+    span {
+      opacity: 1;
+      visibility: visible;
+      transition: visibility 0ms (@aside_slim_speed / 2), opacity (@aside_slim_speed * 2) 0ms;
     }
   }
   .aside-activity {
