@@ -70,16 +70,6 @@
 (defn action-output-path [container-index action-index] (conj (action-path container-index action-index) :output))
 (defn show-action-output-path [container-index action-index] (conj (action-path container-index action-index) :show-output))
 
-(defn reset-current-build [state]
-  (assoc state :current-build-data {:build nil
-                                    :usage-queue-data {:builds nil
-                                                       :show-usage-queue false}
-                                    :artifact-data {:artifacts nil
-                                                    :show-artifacts false}
-                                    :current-container-id 0
-                                    :container-data {:current-container-id 0
-                                                     :containers nil}}))
-
 (def project-data-path [:current-project-data])
 (def project-plan-path (conj project-data-path :plan))
 (def project-tokens-path (conj project-data-path :tokens))
@@ -89,10 +79,3 @@
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
-
-(defn reset-current-project [state]
-  (assoc state :current-project-data {:project nil
-                                      :plan nil
-                                      :settings {}
-                                      :tokens nil
-                                      :envvars nil}))
