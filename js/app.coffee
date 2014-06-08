@@ -6,7 +6,8 @@ display = (template, args, subpage, hash) ->
 
   header =
     $("<header></header>")
-      .append(HAML.header(args))
+      .addClass('middle-head')
+      .append(HAML.inner_header(args))
 
   footer =
     $("<footer></footer>")
