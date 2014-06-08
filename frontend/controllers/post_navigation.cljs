@@ -51,6 +51,18 @@
                 :build
                 api-ch
                 :context {:project-name project-name :build-num build-num})
+    (when (not (get-in current-state state/project-path))
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/settings" project-name)
+                  :project-settings
+                  api-ch
+                  :context {:project-name project-name}))
+    (when (not (get-in current-state state/project-plan-path))
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/plan" project-name)
+                  :project-plan
+                  api-ch
+                  :context {:project-name project-name}))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel {:vcs_url (str "https://github.com/" project-name)
                                                                   :build_num build-num})
                              :messages pusher/build-messages}]))

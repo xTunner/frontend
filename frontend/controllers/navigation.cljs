@@ -30,7 +30,8 @@
   (-> state
       (assoc :inspected-project {:project project-name
                                  :build-num build-num}
-             :navigation-point :build)
+             :navigation-point :build
+             :project-settings-project-name project-name)
       state-utils/reset-current-build
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
