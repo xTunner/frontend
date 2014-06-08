@@ -35,7 +35,7 @@ CI.inner.ProjectSettingsCrumb = class ProjectCrumb extends Crumb
     super(options)
 
   name: () =>
-    "Edit settings"
+    "settings"
 
   styles: () =>
     @komp =>
