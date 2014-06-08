@@ -17,8 +17,11 @@ CI.inner.BuildPage = class BuildPage extends CI.inner.Page
                new CI.inner.ProjectBranchCrumb(@username, @project, ko.computed =>
                  if VM.build()?
                    VM.build().branch())
-               new CI.inner.BuildCrumb(@username, @project, @build_num, {active: true}),
-               new CI.inner.ProjectSettingsCrumb(@username, @project)]
+               new CI.inner.BuildCrumb(@username, @project, @build_num, {active: true})]
+
+    @settings_link = CI.paths.project_settings_path(@username, @project)
+
+    @settings_text = 'Project Settings'
 
     @favicon_color = @komp =>
       if VM.build()?
