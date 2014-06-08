@@ -664,7 +664,7 @@
           [:a {:href "/account"} "account settings"]
           "."]
          ;; XXX make unfollow work!
-         [:button {:on-click #(put! controls-ch [:unfollowed-repo project-id])}
+         [:button {:on-click #(put! controls-ch [:unfollowed-repo {:vcs_url vcs-url}])}
           "Unfollow"]))]
      [:div.not-followed
       (when-not (:followed project)
@@ -673,7 +673,7 @@
          [:p
           "We can't update you with personalized build emails unless you follow this project. "
           "Projects are only tested if they have a follower."]
-         [:button {:on-click #(put! controls-ch [:follow-repo {:vcs_url vcs-url}])}
+         [:button {:on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
           "Follow"]))]]))
 
 (defn project-settings [data owner opts]

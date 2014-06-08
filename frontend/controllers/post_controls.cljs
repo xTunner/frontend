@@ -106,6 +106,15 @@
                 api-ch
                 :context repo)))
 
+(defmethod post-control-event! :unfollowed-repo
+  [target message repo previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
+                :unfollowed-repo
+                api-ch
+                :context repo)))
+
 (defmethod post-control-event! :container-selected
   [target message container-id previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]

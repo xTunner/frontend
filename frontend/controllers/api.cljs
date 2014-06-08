@@ -223,3 +223,15 @@
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state
     (assoc-in state state/dismiss-invite-form-path true)))
+
+(defmethod api-event [:followed-repo :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
+    state
+    (assoc-in state (conj state/project-path :followed) true)))
+
+(defmethod api-event [:unfollowed-repo :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
+    state
+    (assoc-in state (conj state/project-path :followed) false)))

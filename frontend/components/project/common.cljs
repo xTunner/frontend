@@ -98,6 +98,6 @@
            [:div.alert.alert-success
             [:button.btn.btn-primary
              {:data-loading-text "Following...",
-              :on-click #(put! controls-ch [:follow-repo {:vcs_url vcs-url}])}
+              :on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
              "Follow"]
             " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))
