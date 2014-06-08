@@ -3,10 +3,13 @@
             [frontend.datetime :as datetime]
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
+            [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
             [frontend.components.build-head :as build-head]
             [frontend.components.build-invites :as build-invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
+            [frontend.components.project.common :as project-common]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -22,7 +25,6 @@
     (when (:failed build)
       [:div.alert.alert-danger
        (if-not (:infrastructure_fail build)
-
          [:div.alert-wrap
           "Error! "
           [:a {:href "/docs/troubleshooting"}
@@ -45,27 +47,6 @@
 
 (defn config-diagnostics [build]
   config-diagnostics-isnt-finished
-  "")
-
-(defn project-trial-notice [] ;; should go elsewhere
-  project-trial-notice-isnt-finished
-  "")
-(defn project-enable-notice [] ;; should go elsewhere
-  project-enable-notice-inst-finished
-  "")
-
-(defn project-follow-button []
-  [:div.offset1.span10
-   [:div.alert.alert-success
-    [:button.btn.btn-primary
-     {:data-loading-text "Following...",
-      :data-bind "click: VM.project().follow"}
-     "Follow"
-     [:span {:data-bind "text: VM.project().project_name()"}]]
-    "to add"
-    [:span {:data-bind "text: VM.project().project_name()"}]
-    "to your sidebar and get build notifications."]]
-  ;; XXX Displays nothing for now
   "")
 
 (defn container-pill [{:keys [container current-container-id]} owner opts]
@@ -98,24 +79,32 @@
                        {:opts opts
                         :react-key (:index container)}))]])))))
 
-(defn notices [build-data owner opts]
+(defn show-trial-notice? [plan]
+  (and (plan-model/trial? plan)
+       (plan-model/trial-over? plan)
+       (> 4 (plan-model/days-left-in-trial plan))))
+
+(defn notices [data owner opts]
   (reify
     om/IRender
     (render [_]
       (html
-       (let [build (:build build-data)
+       (let [build-data (:build-data data)
+             project-data (:project-data data)
+             build (:build build-data)
              controls-ch (get-in opts [:comms :controls])]
          [:div.row-fluid
           [:div.offset1.span10
            [:div (common/messages (:messages build))]
            [:div (report-error build controls-ch)]
-           [:div {:data-bind "if: $root.project() && $root.project().show_build_page_trial_notice"}
-            (project-trial-notice)]
-           [:div {:data-bind "if: $root.project() && $root.project().show_enable_project_notice"}
-            (project-enable-notice)]
-           [:div.row-fluid
-            {:data-bind "if: $root.show_follow_project_button"}
-            (project-follow-button)]
+           (when (and (:plan project-data) (show-trial-notice? (:plan project-data)))
+             (om/build project-common/trial-notice (:plan project-data) {:opts opts}))
+           (when (and (:project project-data)
+                      (project-common/show-enable-notice (:project project-data)))
+             (om/build project-common/enable-notice (:project project-data) {:opts opts}))
+           (when (and (:project project-data)
+                      (project-common/show-follow-notice (:project project-data)))
+             (om/build project-common/follow-notice (:project project-data) {:opts opts}))
            (when (build-model/display-build-invite build)
              (om/build build-invites/build-invites
                        (:invite-data build-data)
@@ -128,6 +117,7 @@
       (let [build (get-in data state/build-path)
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
+            project-data (get-in data state/project-data-path)
             controls-ch (get-in opts [:comms :controls])]
         (html
          [:div#build-log-container
@@ -139,7 +129,10 @@
             [:div
              (om/build build-head/build-head (dissoc build-data :container-data) {:opts opts})
              (common/flashes)
-             (om/build notices (dissoc build-data :container-data) {:opts opts})
+             (om/build notices
+                       {:build-data (dissoc build-data :container-data)
+                        :project-data project-data}
+                       {:opts opts})
              (om/build container-pills container-data {:opts opts})
              (om/build build-steps/container-build-steps container-data {:opts opts})
 
