@@ -232,3 +232,6 @@ CI.inner.User = class User extends CI.inner.Obj
 
   toggle_show_all_branches: () =>
     VM.browser_settings.toggle_setting("show_all_branches")
+
+  toggle_show_admin_panel: () =>
+    VM.browser_settings.toggle_setting("show_admin_panel")
