@@ -1,22 +1,13 @@
 (ns frontend.controllers.controls
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
-            [clojure.string :as string]
-            [dommy.core :as dommy]
+  (:require [cljs.core.async :as async :refer [put!]]
             [frontend.models.project :as project-model]
-            [frontend.controllers.api :as api]
-            goog.dom
-            goog.dom.classes
             [goog.string :as gstring]
-            goog.string.format
             goog.style
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]]
-            [cljs.reader :as reader]
-            [clojure.string :as string]
-            [frontend.utils :as utils :refer [mlog]])
-  (:require-macros [frontend.utils :refer [inspect timing]]
-                   [dommy.macros :refer [node sel sel1]])
+            [cljs.reader :as reader])
+  (:require-macros [dommy.macros :refer [sel sel1]])
   (:import [goog.fx.dom.Scroll]))
 
 ;; --- Helper Methods ---
