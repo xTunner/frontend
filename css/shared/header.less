@@ -35,17 +35,16 @@
 }
 .head-admin {
   @color: fade(@white, 50);
-  background: @blueLight;
+  background: @grayDarker;
   color: @color;
   &:not(.open) {
     margin-top: -@tile;
-    .environment {
-      margin-bottom: -@tile * 2;
-    }
   }
   &.expanded {
-    .metrics {
-      cursor: n-resize;
+    .admin-tools {
+      .metrics {
+        cursor: n-resize;
+      }
     }
   }
   a {
@@ -68,7 +67,6 @@
       padding: 0 1em;
       cursor: s-resize;
       strong {
-        text-transform: uppercase;
         &:not(:first-child) {
           margin-left: 1em;
         }
@@ -76,18 +74,22 @@
     }
   }
   .environment {
+    .flexy(center, center);
+    position: absolute;
     color: @white;
-    line-height: 1em;
-    margin: 0 auto;
-    padding: .5em 1em;
-    border-radius: 2em;
+    bottom: 0;
+    right: 20px;
+    width: @tile * 1.5;
+    height: 3em;
+    border-radius: 4px 4px 0 0;
+    z-index: 9001; // see intercom hack in shame.less
     &.env-production  { background: @redLight;  }
     &.env-staging     { background: @orange;    }
     &.env-development { background: @blueLight; }
     &.env-test        { background: @green;     }
   }
   .options {
-    margin: 0 1em;
+    margin: 0 1em 0 auto;
     a {
       &:not(:first-child) {
         &:before {
@@ -99,7 +101,7 @@
     }
   }
   .admin-stats {
-    margin: 0 1em;
+    margin: 0 1em 1em;
     table {
       width: 100%;
     }
