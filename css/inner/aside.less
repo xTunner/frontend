@@ -82,6 +82,7 @@
           &:not(:hover) {
             margin-top: @activity_toggle;
             opacity: 0;
+            transition: margin 200ms 0ms, opacity 200ms 0ms;
           }
         }
       }
@@ -162,7 +163,7 @@
     .toggle-all-branches {
       .flexy(center, center);
       padding: @em @em (@em / 2);
-      transition: margin 200ms, opacity 200ms;
+      transition: margin 100ms 500ms, opacity 100ms 500ms; // creates slight delay to avoid bouncing effect
       button {
         .flex(1, 1, auto);
         color: fadeout(@activity_color, 21);
