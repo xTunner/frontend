@@ -5,7 +5,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]))
 
-;; --- Convenience methods ---
+;; --- Helper Methods ---
 
 (def from
   :navigation-point)
