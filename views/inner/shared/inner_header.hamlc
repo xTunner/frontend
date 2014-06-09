@@ -1,17 +1,12 @@
 <!-- ko with: current_user() -->
   <!-- ko if: admin() -->
-    .head-admin
-      != HAML.admin_metrics()
-      .admin-environment{data-bind: "if: showEnvironment, click: function() { CI.instrumentation.toggleDisplay() }, css: environmentColor"}
-        %span{data-bind: "text: environment"}
-      != HAML.admin_tools()
+    <!-- ko with: CI.instrumentation -->
+      <!-- ko if: display() -->
+        != HAML.head_admin()
+      <!-- /ko -->
+    <!-- /ko -->
   <!-- /ko -->
   <!-- ko if: VM.current_page().crumbs.length -->
-    .head-user
-      != HAML.crumbs()
-      <!-- ko if: VM.current_page().settings_link -->
-        %a.settings{data-bind: "attr: {href: VM.current_page().settings_link, tooltip: VM.current_page().settings_text}"}
-          %i.fa.fa-cog
-      <!-- /ko -->
+    != HAML.head_user()
   <!-- /ko -->
 <!-- /ko -->
