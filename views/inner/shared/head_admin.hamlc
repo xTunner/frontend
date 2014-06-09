@@ -13,7 +13,7 @@
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0) + 'ms'"}
       %strong mongo:
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0) + 'ms /'"}
-      %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0) + ' queries'"}
+      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0) + ' queries'"}
     .options
       %a{href: "/admin"} admin
       %a{href: "/admin/users"} users
