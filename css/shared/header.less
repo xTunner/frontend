@@ -35,45 +35,50 @@
 }
 .head-admin {
   @color: fade(@white, 50);
-  .flexy(center, space-between);
-  min-height: @tile;
-  color: @color;
   background: @blueLight;
-  line-height: 200%;
+  color: @color;
+  &:not(.open) {
+    margin-top: -@tile;
+    .environment {
+      margin-bottom: -@tile * 2;
+    }
+  }
+  &.expanded {
+    .metrics {
+      cursor: n-resize;
+    }
+  }
   a {
     color: @color;
     &:hover {
       color: @white;
     }
   }
-  th, td {
-    padding-right: 1em;
+  [role="button"] {
+    cursor: pointer;
   }
-  .admin-metrics {
+  .admin-tools {
     .flexy(center);
-    margin: 0 1em;
-  }
-  .metric {
-    padding-right: 5px;
-    &:not(:first-child) {
-      &:before {
-        content: '/';
-        color: @color;
-        margin-right: 5px;
+    height: @tile;
+    line-height: 200%;
+    .metrics {
+      .flexy(center);
+      .user-select(none);
+      height: @tile;
+      padding: 0 1em;
+      cursor: s-resize;
+      strong {
+        text-transform: uppercase;
+        &:not(:first-child) {
+          margin-left: 1em;
+        }
       }
     }
   }
-  .metric-label {
-    &:before {
-      content: '(';
-    }
-    &:after {
-      content: ')';
-    }
-  }
-  .admin-environment {
+  .environment {
     color: @white;
     line-height: 1em;
+    margin: 0 auto;
     padding: .5em 1em;
     border-radius: 2em;
     &.env-production  { background: @redLight;  }
@@ -81,7 +86,7 @@
     &.env-development { background: @blueLight; }
     &.env-test        { background: @green;     }
   }
-  .admin-tools {
+  .options {
     margin: 0 1em;
     a {
       &:not(:first-child) {
@@ -89,6 +94,22 @@
           content: '/';
           color: @color;
           margin-right: 3px;
+        }
+      }
+    }
+  }
+  .admin-stats {
+    margin: 0 1em;
+    table {
+      width: 100%;
+    }
+    th {
+      text-align: left;
+    }
+    tbody {
+      tr {
+        &:hover {
+          background: fadeout(@color, 34);
         }
       }
     }
