@@ -164,12 +164,16 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     @status_icon_aside = @komp =>
       switch @status()
-        when "failed", "canceled", "timedout"
-          "fail-light"
-        when "success", "fixed"
-          "pass-light"
         when "running"
           "busy-light"
+        when "success", "fixed"
+          "pass-light"
+        when "failed", "canceled", "timedout"
+          "fail-light"
+        when "queued", "not_running", "retried", "scheduled"
+          "hold-light"
+        when "no_tests", "not_run", "infrastructure_fail", "killed"
+          "stop-light"
         else
           @status()
 

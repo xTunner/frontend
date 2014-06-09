@@ -16,6 +16,10 @@
       "M35,80 L5,50 M95,20L35,80"
     slim_times:
       "M82.5,82.5l-65-65 M82.5,17.5l-65,65"
+    slim_clock:
+      "M7.5,35C13.7,17.5,30.3,5,49.9,5c24.9,0,45,20.1,45,45c0,24.9-20.1,45-45,45C30.3,95,13.7,82.5,7.5,65 M50,20v30 M50,50h20"
+    slim_ban:
+      "M95,50 c0,24.9-20.1,45-45,45S5,74.9,5,50S25.1,5,50,5S95,25.1,95,50z M18.2,81.8l63.6-63.6"
     clock:
       "M59.524,47.619h-7.143V30.952c0-1.315-1.066-2.381-2.381-2.381c-1.315,0-2.381,1.065-2.381,2.381V50c0,1.315,1.066,2.38,2.381,2.38h9.524c1.314,0,2.381-1.065,2.381-2.38S60.839,47.619,59.524,47.619z"
     repo:
@@ -30,6 +34,9 @@
     name: "fail"
     paths: [a.turn, a.times]
   ,
+    name: "queued"
+    paths: [a.turn, a.clock]
+  ,
     name: "busy-light"
     paths: [a.slim_turn, a.slim_circle]
     d: "600ms"
@@ -42,8 +49,11 @@
     name: "fail-light"
     paths: [a.slim_times]
   ,
-    name: "queued"
-    paths: [a.turn, a.clock]
+    name: "hold-light"
+    paths: [a.slim_clock]
+  ,
+    name: "stop-light"
+    paths: [a.slim_ban]
   ,
     name: "repo"
     paths: [a.repo]
@@ -51,6 +61,7 @@
 
 %svg{class: "ico", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 100 100"}
   - color = "none"
+  - console.log("n is", @n)
   - for icon in icons
     - if icon.name is @n
       - for path in icon.paths
