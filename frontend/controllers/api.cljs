@@ -235,3 +235,9 @@
   (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
     state
     (assoc-in state (conj state/project-path :followed) false)))
+
+(defmethod api-event [:enable-project :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
+    state
+    (update-in state state/project-path merge (select-keys resp [:has_usable_key]))))

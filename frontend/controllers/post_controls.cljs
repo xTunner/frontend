@@ -374,3 +374,12 @@
   [target message {:keys [build-url]} previous-state current-state]
   (intercom/raise-dialog (get-in current-state [:comms :errors])
                          (gstring/format "I think I found a bug in Circle at %s" build-url)))
+
+(defmethod post-control-event! :enabled-project
+  [target message {:keys [project-name project-id]} previous-state current-state]
+  (utils/ajax :post
+              (gstring/format "/api/v1/project/%s/enable" project-name)
+              :enable-project
+              (get-in current-state [:comms :api])
+              :context {:project-name project-name
+                        :project-id project-id}))

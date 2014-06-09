@@ -77,7 +77,8 @@
             " isn't configured with a deploy key or a github user, so we may not be able to test all pushes."
             [:button.btn.btn-primary
              {:data-loading-text "Adding...",
-              :on-click #(put! controls-ch [:enabled-project {:project-id project-id}])}
+              :on-click #(put! controls-ch [:enabled-project {:project-id project-id
+                                                              :project-name project-name}])}
              "Add SSH key"]]]])))))
 
 (defn show-follow-notice [project]
