@@ -91,20 +91,24 @@
       (html
        (let [build-data (:build-data data)
              project-data (:project-data data)
+             plan (:plan project-data)
+             project (:project project-data)
              build (:build build-data)
              controls-ch (get-in opts [:comms :controls])]
          [:div.row-fluid
           [:div.offset1.span10
            [:div (common/messages (:messages build))]
            [:div (report-error build controls-ch)]
-           (when (and (:plan project-data) (show-trial-notice? (:plan project-data)))
-             (om/build project-common/trial-notice (:plan project-data) {:opts opts}))
-           (when (and (:project project-data)
-                      (project-common/show-enable-notice (:project project-data)))
-             (om/build project-common/enable-notice (:project project-data) {:opts opts}))
-           (when (and (:project project-data)
-                      (project-common/show-follow-notice (:project project-data)))
-             (om/build project-common/follow-notice (:project project-data) {:opts opts}))
+
+           (when (and plan (show-trial-notice? plan))
+             (om/build project-common/trial-notice plan {:opts opts}))
+
+           (when (and project (project-common/show-enable-notice project))
+             (om/build project-common/enable-notice project {:opts opts}))
+
+           (when (and project (project-common/show-follow-notice project))
+             (om/build project-common/follow-notice project {:opts opts}))
+
            (when (build-model/display-build-invite build)
              (om/build build-invites/build-invites
                        (:invite-data build-data)
