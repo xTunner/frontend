@@ -44,7 +44,7 @@
 
         .request-user
           %input.btn{type: "submit",
-            data-bind: "click: function (data, event) { return create_checkout_key(data, event, \"deploy-key\"); },
+            data-bind: "click: _.partial(create_checkout_key, 'deploy-key'),
                         tooltip: { title: 'Create a new deploy key, with access only to this project.', animation: false},
                         value: 'Create and add ' + project_name() + ' deploy key'",
             data-loading-text: "Saving...",
@@ -70,9 +70,9 @@
 
         .request-user{data-bind: "if: $root.current_user().has_public_key_scope"}
           %input.btn{type: "submit",
-            data-bind: "click: function (data, event) { return create_checkout_key(data, event, \"github-user-key\"); },
-              tooltip: { title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false },
-                  value: 'Create and add ' + $root.current_user().login + ' user key'",
+            data-bind: "click: _.partial(create_checkout_key, 'github-user-key'),
+                        tooltip: { title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false },
+                        value: 'Create and add ' + $root.current_user().login + ' user key'",
             data-loading-text: "Saving...",
             data-success-text: "Saved"}
     <!-- /ko -->

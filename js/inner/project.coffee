@@ -563,7 +563,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
     $.getJSON "/api/v1/project/#{@project_name()}/checkout-key", (data) =>
       @checkout_keys(data)
 
-  create_checkout_key: (data, event, type) =>
+  create_checkout_key: (type, data, event) =>
     $.ajax
       event: event
       type: "POST"
