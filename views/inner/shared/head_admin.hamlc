@@ -5,15 +5,15 @@
       %strong{data-bind: "text: environment"}
     / /ko
     .metrics{data-bind: "click: toggleExpanded"}
-      %strong requests:
       %span{data-bind: "text: '&nbsp;' + response_data().length"}
-      %strong client:
+      %strong requests
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0) + 'ms'"}
-      %strong server:
+      %strong client
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0) + 'ms'"}
-      %strong mongo:
+      %strong server
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0) + 'ms /'"}
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0) + ' queries'"}
+      %strong mongo
     .options
       %a{href: "/admin"} admin
       %a{href: "/admin/users"} users
