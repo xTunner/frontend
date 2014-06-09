@@ -10,9 +10,6 @@
       %strong mongo:
       %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0) + 'ms /'"}
       %span{data-bind: "text: _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0) + ' queries'"}
-    .clear-metrics
-      %a{data-bind: "click: clearResponses"}
-        %strong CLEAR ALL
     / ko with: $parent
     .environment{data-bind: "if: showEnvironment, click: toggle_show_admin_panel, css: environmentColor", role: "button"}
       %span{data-bind: "text: environment"}
@@ -27,6 +24,7 @@
       - else
         %a{data-bind: "click: function() { window.location.search = '?use-local-assets=true'}"} local assets on
       %a{data-bind: "click: function() { window.location.search = '?use-om=true'}"} use om
+      %a{data-bind: "click: clearResponses"} clear stats
   <!-- ko if: expanded -->
     <!-- ko if: VM.browser_settings.settings().show_admin_panel -->
       .admin-stats
