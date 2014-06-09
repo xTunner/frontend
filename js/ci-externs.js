@@ -8,3 +8,6 @@ CI.terminal.currentState;
 
 CI.github;
 CI.github.authUrl;
+
+CI.inner;
+CI.inner.Diagnostics;
