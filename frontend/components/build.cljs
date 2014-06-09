@@ -5,6 +5,7 @@
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
+            [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.build-invites :as build-invites]
             [frontend.components.build-steps :as build-steps]
@@ -112,7 +113,11 @@
            (when (build-model/display-build-invite build)
              (om/build build-invites/build-invites
                        (:invite-data build-data)
-                       {:opts (assoc opts :project-name (vcs-url/project-name (:vcs_url build)))}))]])))))
+                       {:opts (assoc opts :project-name (vcs-url/project-name (:vcs_url build)))}))
+
+           (when (and (build-model/config-errors? build)
+                      (not (:dismiss-config-errors build-data)))
+             (om/build build-config/config-errors build {:opts opts}))]])))))
 
 (defn build [data owner opts]
   (reify

@@ -52,6 +52,7 @@
 (def build-github-users-path (conj build-data-path :invite-data :github-users))
 (defn build-github-user-path [index] (conj build-github-users-path index))
 (def dismiss-invite-form-path (conj build-data-path :invite-data :dismiss-invite-form))
+(def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
 (def invite-logins-path (conj build-data-path :invite-data :invite-logins))
 (defn invite-login-path [login] (conj invite-logins-path login))
 

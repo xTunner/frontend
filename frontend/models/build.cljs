@@ -142,6 +142,9 @@
 (defn display-build-invite [build]
   (:first_green_build build))
 
+(defn config-errors? [build]
+  (:circle_yml build))
+
 (defn containers [build]
   (let [steps (:steps build)
         parallel (:parallel build)

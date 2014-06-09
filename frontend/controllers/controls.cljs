@@ -73,6 +73,10 @@
   (update-in state state/build-github-users-path (fn [users]
                                                    (vec (map #(assoc % :checked false) users)))))
 
+(defmethod control-event :dismiss-config-errors
+  [target message _ state]
+  (assoc-in state state/dismiss-config-errors-path true))
+
 (defmethod control-event :edited-input
   [target message {:keys [value path]} state]
   (assoc-in state path value))
