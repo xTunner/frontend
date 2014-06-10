@@ -127,16 +127,15 @@
     background: fade(@black, 0);
     opacity: 0;
     visibility: hidden;
-    padding-top: @em;
-    transition: opacity 400ms, padding 0ms 400ms, background 400ms, visibility 0ms 1000ms;
-    height: 100%;
+    transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 500ms ease-in-out;
+    height: 0%;
     &.open {
       .shadow_deboss(@blueDarkest);
       background: fade(@black, 8);
       opacity: 1;
       visibility: visible;
-      padding: 0;
-      transition: opacity 400ms 100ms, padding 400ms ease-out, background 200ms, visibility 0ms 0ms;
+      transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 500ms ease-in-out;
+      height: 100%;
       + .aside-slideup {
         box-shadow: 0 -8px 13px fade(@black, 21);
         transition-delay: 100ms;
