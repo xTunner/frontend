@@ -15,9 +15,9 @@
   %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", tooltip: "Chat Support", target: "_blank"}
     %i.fa.fa-comments
     %span Chat Support
-  %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
-    %i.fa.fa-code
-    %span Activity
+  -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
+  -#   %i.fa.fa-code
+  -#   %span Activity
   .aside-activity{data-bind: "css: {open: VM.browser_settings.settings().recent_activity_visible}"}
     .wrapper
       .toggle-all-branches
