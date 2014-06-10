@@ -74,6 +74,11 @@
                   :errors    error-ch
                   :nav       navigation-ch
                   :ws        ws-ch
+                  :controls-mult (async/mult controls-ch)
+                  :api-mult (async/mult api-ch)
+                  :errors-mult (async/mult error-ch)
+                  :nav-mult (async/mult navigation-ch)
+                  :ws-mult (async/mult ws-ch)
                   :mouse-move {:ch mouse-move-ch
                                :mult (async/mult mouse-move-ch)}
                   :mouse-down {:ch mouse-down-ch
@@ -136,19 +141,29 @@
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
-        pusher-imp (pusher/new-pusher-instance)]
+        pusher-imp (pusher/new-pusher-instance)
+        controls-tap (chan)
+        nav-tap (chan)
+        api-tap (chan)
+        ws-tap (chan)]
     (routes/define-routes! state)
     (om/root
      app/app
      state
      {:target container
       :opts {:comms comms}})
+
+    (async/tap (:controls-mult comms) controls-tap)
+    (async/tap (:nav-mult comms) nav-tap)
+    (async/tap (:api-mult comms) api-tap)
+    (async/tap (:ws-mult comms) ws-tap)
+
     (go (while true
           (alt!
-           (:controls comms) ([v] (controls-handler v state container))
-           (:nav comms) ([v] (nav-handler v state history-imp))
-           (:api comms) ([v] (api-handler v state container))
-           (:ws comms) ([v] (ws-handler v state pusher-imp))
+           controls-tap ([v] (controls-handler v state container))
+           nav-tap ([v] (nav-handler v state history-imp))
+           api-tap ([v] (api-handler v state container))
+           ws-tap ([v] (ws-handler v state pusher-imp))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))
