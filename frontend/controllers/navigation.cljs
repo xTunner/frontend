@@ -1,8 +1,10 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :refer [put!]]
             [frontend.pusher :as pusher]
-            [frontend.utils :as utils :refer [mlog merror]]
+            [frontend.state :as state]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]))
 
@@ -46,7 +48,9 @@
 (defmethod navigated-to :dashboard
   [history-imp to args state]
   (mlog "Navigated from " (from state) " to " to)
-  (assoc state :navigation-point :dashboard :current-builds nil))
+  (-> state
+      (assoc :navigation-point :dashboard)
+      state-utils/reset-current-build))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp to args previous-state current-state]
@@ -66,11 +70,15 @@
 
 (defmethod navigated-to :build-inspector
   [history-imp to [project-name build-num] state]
-  (assoc state
-    :inspected-project {:project project-name
-                        :build-num build-num}
-    :navigation-point :build
-    :current-build nil))
+  (-> state
+      (assoc :inspected-project {:project project-name
+                                 :build-num build-num}
+             :navigation-point :build
+             :project-settings-project-name project-name)
+      state-utils/reset-current-build
+      (#(if (state-utils/stale-current-project? % project-name)
+          (state-utils/reset-current-project %)
+          %))))
 
 ;; XXX: add unsubscribe when you leave the build page
 (defmethod post-navigated-to! :build-inspector
@@ -82,6 +90,18 @@
                 :build
                 api-ch
                 :context {:project-name project-name :build-num build-num})
+    (when (not (get-in current-state state/project-path))
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/settings" project-name)
+                  :project-settings
+                  api-ch
+                  :context {:project-name project-name}))
+    (when (not (get-in current-state state/project-plan-path))
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/plan" project-name)
+                  :project-plan
+                  api-ch
+                  :context {:project-name project-name}))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel {:vcs_url (str "https://github.com/" project-name)
                                                                   :build_num build-num})
                              :messages pusher/build-messages}]))
@@ -106,10 +126,8 @@
       (assoc :navigation-point :project-settings)
       (assoc :project-settings-subpage subpage)
       (assoc :project-settings-project-name project-name)
-      (#(if (and (:current-project state)
-                 ;; XXX: check for url-escaped characters (e.g. /)
-                 (not= project-name (vcs-url/project-name (get-in state [:current-project :vcs_url]))))
-          (dissoc % :current-project)
+      (#(if (state-utils/stale-current-project? % project-name)
+          (state-utils/reset-current-project %)
           %))))
 
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
@@ -117,7 +135,7 @@
 (defmethod post-navigated-to! :project-settings
   [history-imp to {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (if (:current-project current-state)
+    (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
       (utils/ajax :get
                   (gstring/format "/api/v1/project/%s/settings" project-name)
@@ -126,7 +144,7 @@
                   :context {:project-name project-name}))
 
     (cond (and (= subpage :parallel-builds)
-               (not (get-in current-state [:current-project :plan])))
+               (not (get-in current-state state/project-plan-path)))
           (utils/ajax :get
                       (gstring/format "/api/v1/project/%s/plan" project-name)
                       :project-plan
@@ -134,7 +152,7 @@
                       :context {:project-name project-name})
 
           (and (= subpage :api)
-               (not (get-in current-state [:current-project :tokens])))
+               (not (get-in current-state state/project-tokens-path)))
           (utils/ajax :get
                       (gstring/format "/api/v1/project/%s/token" project-name)
                       :project-token
@@ -142,7 +160,7 @@
                       :context {:project-name project-name})
 
           (and (= subpage :env-vars)
-               (not (get-in current-state [:current-project :env-vars])))
+               (not (get-in current-state state/project-envvars-path)))
           (utils/ajax :get
                       (gstring/format "/api/v1/project/%s/envvar" project-name)
                       :project-envvar

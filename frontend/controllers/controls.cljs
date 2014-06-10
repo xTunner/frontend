@@ -1,12 +1,15 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [put!]]
+            [cljs.reader :as reader]
             [frontend.models.project :as project-model]
-            [goog.string :as gstring]
-            goog.style
+            [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
+            [frontend.state :as state]
+            [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]]
-            [cljs.reader :as reader])
+            [goog.string :as gstring]
+            goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
                    [frontend.utils :refer [inspect]])
   (:import [goog.fx.dom.Scroll]))
@@ -72,12 +75,12 @@
 
 (defmethod control-event :usage-queue-why-toggled
   [target message {:keys [build-id]} state]
-  (update-in state [:current-build :show-usage-queue] not))
+  (update-in state state/show-usage-queue-path not))
 
 (defmethod post-control-event! :usage-queue-why-toggled
   [target message {:keys [username reponame
                           build_num build-id]} previous-state current-state]
-  (when (get-in current-state [:current-build :show-usage-queue])
+  (when (get-in current-state state/show-usage-queue-path)
     (let [api-ch (get-in current-state [:comms :api])]
       (utils/ajax :get
                   (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
@@ -107,24 +110,25 @@
 
 (defmethod control-event :show-artifacts-toggled
   [target message build-id state]
-  (update-in state [:current-build :show-artifacts] not))
+  (update-in state state/show-artifacts-path not))
 
 (defmethod post-control-event! :show-artifacts-toggled
-  [target message {:keys [username reponame
-                          build_num build-id]} previous-state current-state]
-  (when (get-in current-state [:current-build :show-artifacts])
-    (let [api-ch (get-in current-state [:comms :api])]
+  [target message _ previous-state current-state]
+  (when (get-in current-state state/show-artifacts-path)
+    (let [api-ch (get-in current-state [:comms :api])
+          build (get-in current-state state/build-path)]
       (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/%s/%s/artifacts"
-                                  username reponame build_num)
+                  (gstring/format "/api/v1/project/%s/%s/artifacts"
+                                  (vcs-url/project-name (:vcs_url build))
+                                  (:build_num build))
                   :build-artifacts
                   api-ch
-                  :context build-id))))
+                  :context (build-model/id build)))))
 
 
 (defmethod control-event :container-selected
   [target message container-id state]
-  (assoc-in state [:current-build :current-container-id] container-id))
+  (assoc-in state state/current-container-path container-id))
 
 (defmethod post-control-event! :container-selected
   [target message container-id previous-state current-state]
@@ -148,21 +152,21 @@
 
 (defmethod control-event :action-log-output-toggled
   [target message {:keys [index step]} state]
-  (update-in state [:current-build :containers index :actions step :show-output] not))
+  (update-in state (state/show-action-output-path index step) not))
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
-  (let [action (get-in current-state [:current-build :containers index :actions step])]
+  (let [action (get-in current-state (state/action-path index step))]
     (when (and (:show-output action)
                (:has_output action)
                (not (:output action)))
       (let [api-ch (get-in current-state [:comms :api])
-
+            build (get-in current-state state/build-path)
             url (if (:output_url action)
                   (:output_url action)
                   (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
-                                  (vcs-url/project-name (get-in current-state [:current-build :vcs_url]))
-                                  (get-in current-state [:current-build :build_num])
+                                  (vcs-url/project-name (:vcs_url build))
+                                  (:build_num build)
                                   step
                                   index))]
         (utils/ajax :get
@@ -174,12 +178,12 @@
 
 (defmethod control-event :selected-project-parallelism
   [target message {:keys [project-id parallelism]} state]
-  (assoc-in state [:current-project :parallel] parallelism))
+  (assoc-in state (conj state/project-path :parallel) parallelism))
 
 (defmethod post-control-event! :selected-project-parallelism
   [target message {:keys [project-id parallelism]} previous-state current-state]
-  (when (not= (get-in previous-state [:current-project :parallel])
-              (get-in current-state [:current-project :parallel]))
+  (when (not= (get-in previous-state state/project-path)
+              (get-in current-state state/project-path))
     (let [project-name (vcs-url/project-name project-id)
           api-ch (get-in current-state [:comms :api])]
       ;; TODO: edit project settings api call should respond with updated project settings
@@ -189,6 +193,28 @@
                   api-ch
                   :params {:parallel parallelism}
                   :context {:project-id project-id}))))
+
+
+(defmethod control-event :dismiss-invite-form
+  [target message _ state]
+  (assoc-in state state/dismiss-invite-form-path true))
+
+
+(defmethod control-event :invite-selected-all
+  [target message _ state]
+  (update-in state state/build-github-users-path (fn [users]
+                                                   (vec (map #(assoc % :checked true) users)))))
+
+
+(defmethod control-event :invite-selected-none
+  [target message _ state]
+  (update-in state state/build-github-users-path (fn [users]
+                                                   (vec (map #(assoc % :checked false) users)))))
+
+
+(defmethod control-event :dismiss-config-errors
+  [target message _ state]
+  (assoc-in state state/dismiss-config-errors-path true))
 
 
 (defmethod control-event :edited-input
@@ -240,16 +266,25 @@
                 :context repo)))
 
 
+(defmethod post-control-event! :unfollowed-repo
+  [target message repo previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
+                :unfollowed-repo
+                api-ch
+                :context repo)))
+
+
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
   [target message _ previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])
-        current-container-id (get-in current-state [:current-build :current-container-id] 0)
+        current-container-id (get-in current-state state/current-container-path 0)
         parent (sel1 target "#container_parent")
         parent-scroll-left (.-scrollLeft parent)
         current-container (sel1 target (str "#container_" current-container-id))
         current-container-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent)))
-        parent-scroll-left (.-scrollLeft parent)
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
                             (sel parent ".container-view"))
@@ -342,7 +377,7 @@
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
-        settings (project-model/notification-settings (:current-project current-state))]
+        settings (project-model/notification-settings (get-in current-state state/project-path))]
     (utils/ajax :put
                 (gstring/format "/api/v1/project/%s/settings" project-name)
                 :save-notification-hooks
@@ -426,3 +461,47 @@
 (defmethod post-control-event! :set-user-session-setting
   [target message {:keys [setting value]} previous-state current-state]
   (set! (.. js/window -location -search) (str "?" (name setting) "=" value)))
+
+
+(defmethod post-control-event! :load-first-green-build-github-users
+  [target message {:keys [project-name]} previous-state current-state]
+  (utils/ajax :get
+              (gstring/format "/api/v1/project/%s/users" project-name)
+              :first-green-build-github-users
+              (get-in current-state [:comms :api])
+              :context {:project-name project-name}))
+
+
+(defmethod post-control-event! :invited-github-users
+  [target message {:keys [project-name invitees]} previous-state current-state]
+  (utils/ajax :post
+              (gstring/format "/api/v1/project/%s/users/invite" project-name)
+              :invite-github-users
+              (get-in current-state [:comms :api])
+              :context {:project-name project-name}
+              :params invitees)
+  (mixpanel/track "Sent invitations" {:first_green_build true
+                                      :project project-name
+                                      :users (map :login invitees)})
+  (doseq [u invitees]
+    (mixpanel/track "Sent invitation" {:first_green_build true
+                                       :project project-name
+                                       :login (:login u)
+                                       :id (:id u)
+                                       :email (:email u)})))
+
+
+(defmethod post-control-event! :report-build-clicked
+  [target message {:keys [build-url]} previous-state current-state]
+  (intercom/raise-dialog (get-in current-state [:comms :errors])
+                         (gstring/format "I think I found a bug in Circle at %s" build-url)))
+
+
+(defmethod post-control-event! :enabled-project
+  [target message {:keys [project-name project-id]} previous-state current-state]
+  (utils/ajax :post
+              (gstring/format "/api/v1/project/%s/enable" project-name)
+              :enable-project
+              (get-in current-state [:comms :api])
+              :context {:project-name project-name
+                        :project-id project-id}))

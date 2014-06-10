@@ -5,6 +5,8 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.routes :as routes]
+            [frontend.state :as state]
+            [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
@@ -110,9 +112,9 @@
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
-      (assoc-in state [:current-build] (-> build
-                                           (assoc :containers containers)
-                                           (dissoc :steps))))))
+      (-> state
+          (assoc-in state/build-path build)
+          (assoc-in state/containers-path containers)))))
 
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
@@ -121,7 +123,7 @@
     ;; convert the build from steps to containers again.
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
-      (doseq [action (mapcat :actions (get-in current-state [:current-build :containers]))
+      (doseq [action (mapcat :actions (get-in current-state state/containers-path))
               :when (or (= "running" (:status action))
                         (action-model/failed? action))]
         ;; XXX: should this fetch the action logs itself creating controls events?
@@ -152,93 +154,92 @@
   [target message status args state]
   (let [usage-queue-builds (:resp args)
         build-id (:context args)]
-    (if-not (= build-id (-> state :current-build build-model/id))
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
-      (assoc-in state [:current-build :usage-queue-builds] usage-queue-builds))))
+      (assoc-in state state/usage-queue-path usage-queue-builds))))
 
 
 (defmethod api-event [:build-artifacts :success]
   [target message status args state]
   (let [artifacts (:resp args)
         build-id (:context args)]
-    (if-not (= build-id (-> state :current-build build-model/id))
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
-      (assoc-in state [:current-build :artifacts] artifacts))))
+      (assoc-in state state/artifacts-path artifacts))))
 
 
 (defmethod api-event [:action-log :success]
   [target message status args state]
   (let [action-log (:resp args)
-        {:keys [index step]} (:context args)]
+        {action-index :step container-index :index} (:context args)]
     (-> state
-        (assoc-in [:current-build :containers index :actions step :output] action-log)
-        (update-in [:current-build :containers index :actions step] action-model/format-all-output))))
+        (assoc-in (state/action-output-path container-index action-index) action-log)
+        (update-in (state/action-path container-index action-index) action-model/format-all-output))))
 
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge resp)))
+    (update-in state state/project-path merge resp)))
 
 
 (defmethod api-event [:project-plan :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge {:plan resp})))
+    (assoc-in state (inspect state/project-plan-path) resp)))
 
 
 (defmethod api-event [:project-token :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge {:tokens resp})))
+    (assoc-in state state/project-tokens-path resp)))
 
 
 (defmethod api-event [:project-envvar :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state [:current-project] merge {:env-vars resp})))
+    (assoc-in state state/project-envvars-path resp)))
 
 
 (defmethod api-event [:update-project-parallelism :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :parallelism-edited] true)))
+    (assoc-in state (conj state/project-data-path :parallelism-edited) true)))
 
 
 (defmethod api-event [:create-env-var :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in [:current-project :env-vars] (fnil conj []) resp)
-        (assoc-in [:current-project :new-env-var-name] "")
-        (assoc-in [:current-project :new-env-var-value] ""))))
+        (update-in state/project-envvars-path (fnil conj []) resp)
+        (assoc-in (conj state/project-data-path :new-env-var-name) "")
+        (assoc-in (conj state/project-data-path :new-env-var-value) ""))))
 
 
 (defmethod api-event [:delete-env-var :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (-> state
-        (update-in [:current-project :env-vars] (fn [vars]
+    (update-in state state/project-envvars-path (fn [vars]
                                                   (remove #(= (:env-var-name context) (:name %))
-                                                          vars))))))
+                                                          vars)))))
 
 
 (defmethod api-event [:save-ssh-key :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :new-ssh-key] {})))
+    (assoc-in state (conj state/project-data-path :new-ssh-key) {})))
 
 (defmethod post-api-event! [:save-ssh-key :success]
   [target message status {:keys [context resp]} previous-state current-state]
-  (when (= (:project-id context) (project-model/id (:current-project current-state)))
+  (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])]
       (utils/ajax :get
@@ -250,43 +251,88 @@
 
 (defmethod api-event [:delete-ssh-key :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state [:current-project :ssh_keys] (fn [keys]
-                                                    (remove #(= (:fingerprint context) (:fingerprint %))
-                                                            keys)))))
+    (update-in state (conj state/project-path :ssh_keys)
+               (fn [keys]
+                 (remove #(= (:fingerprint context) (:fingerprint %))
+                         keys)))))
 
 
 (defmethod api-event [:save-project-api-token :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (assoc-in [:current-project :new-api-token] {})
-        (update-in [:current-project :tokens] (fnil conj []) resp))))
+        (assoc-in (conj state/project-data-path :new-api-token) {})
+        (update-in state/project-tokens-path (fnil conj []) resp))))
 
 
 (defmethod api-event [:delete-project-api-token :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state [:current-project :tokens] (fn [tokens]
-                                                  (remove #(= (:token %) (:token context))
-                                                          tokens)))))
+    (update-in state state/project-tokens-path
+               (fn [tokens]
+                 (remove #(= (:token %) (:token context))
+                         tokens)))))
 
 
 (defmethod api-event [:set-heroku-deploy-user :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :heroku_deploy_user] (:login context))))
+    (assoc-in state (conj state/project-path :heroku_deploy_user) (:login context))))
 
 
 (defmethod api-event [:remove-heroku-deploy-user :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-id context) (project-model/id (:current-project state)))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state [:current-project :heroku_deploy_user] nil)))
+    (assoc-in state (conj state/project-path :heroku_deploy_user) nil)))
+
+
+(defmethod api-event [:first-green-build-github-users :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+    state
+    (-> state
+        (assoc-in state/build-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
+
+(defmethod post-api-event! [:first-green-build-github-users :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  ;; This is not ideal, but don't see a better place to put this
+  (when (first (remove :following resp))
+    (mixpanel/track "Saw invitations prompt" {:first_green_build true
+                                              :project (:project-name context)})))
+
+
+(defmethod api-event [:invite-github-users :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+    state
+    (assoc-in state state/dismiss-invite-form-path true)))
+
+
+(defmethod api-event [:followed-repo :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
+    state
+    (assoc-in state (conj state/project-path :followed) true)))
+
+
+(defmethod api-event [:unfollowed-repo :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
+    state
+    (assoc-in state (conj state/project-path :followed) false)))
+
+
+(defmethod api-event [:enable-project :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
+    state
+    (update-in state state/project-path merge (select-keys resp [:has_usable_key]))))
 
 
 (defmethod post-api-event! [:followed-repo :success]
@@ -323,7 +369,7 @@
 
 (defmethod post-api-event! [:save-dependencies-commands :success]
   [target message status {:keys [context resp]} previous-state current-state]
-  (when (and (= (project-model/id (:current-project current-state))
+  (when (and (= (project-model/id (get-in current-state state/project-path))
                 (:project-id context))
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])

@@ -124,23 +124,32 @@
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
 
-(defn container-view [container owner opts]
+(defn container-view [{:keys [container non-parallel-actions]} owner opts]
   (reify
     om/IRender
     (render [_]
       (let [container-id (container-model/id container)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (get-in opts [:comms :controls])
+            actions (remove :filler-action
+                            (map (fn [action]
+                                   (get non-parallel-actions (:step action) action))
+                                 (:actions container)))]
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
-          (om/build-all action (:actions container) {:opts opts :key :step})])))))
+          (om/build-all action actions {:opts opts :key :step})])))))
 
-(defn container-build-steps [data owner opts]
+(defn container-build-steps [{:keys [containers current-container-id]} owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            containers (:containers data)
+      (let [non-parallel-actions (->> containers
+                                      first
+                                      :actions
+                                      (remove :parallel)
+                                      (map (fn [action]
+                                             [(:step action) action]))
+                                      (into {}))
             controls-ch (get-in opts [:comms :controls])]
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
@@ -157,7 +166,11 @@
                                   :scroll "handle_browser_scroll"
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"
-                                  :class (str "selected_" (get-in build [:current-container-id] 0))}
+                                  :class (str "selected_" current-container-id)}
            ;; XXX handle scrolling and resize sensor
            ;; probably have to replace resize sensor with something else
-           (om/build-all container-view containers {:opts opts :key :index})]])))))
+           (for [container containers]
+             (om/build container-view
+                       {:container container
+                        :non-parallel-actions non-parallel-actions}
+                       {:opts opts}))]])))))

@@ -1,6 +1,7 @@
 (ns frontend.models.build
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
+            [frontend.state :as state]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -137,9 +138,12 @@
        (:node build)
        (every? :ssh_enabled (:node build))))
 
-;; XXX display-build-invite logic
+
 (defn display-build-invite [build]
-  false)
+  (:first_green_build build))
+
+(defn config-errors? [build]
+  (:circle_yml build))
 
 (defn containers [build]
   (let [steps (:steps build)
@@ -160,19 +164,22 @@
   "Actions can arrive out of order, but we need to maintain the indices in the
   containers array and actions array for the given container so that we can
   find the action on updates."
-  [build container-index action-index]
-  (-> build
-      (update-in [:containers]
+  [state container-index action-index]
+  (-> state
+      (update-in state/containers-path
                  (fnil identity (vec (map (fn [i] {:index i})
-                                          (range (:parallel build))))))
-      (update-in [:containers container-index :actions]
+                                          (range (:parallel (get-in state state/build-path)))))))
+      (update-in (state/actions-path container-index)
                  (fn [actions]
-                   (vec (concat actions
-                                (map (fn [i]
-                                       {:index action-index
-                                        :step i
-                                        :status "running"})
-                                     (range (count actions) action-index))))))))
+                   (if-not (> action-index (count actions))
+                     actions
+                     (vec (concat actions
+                                  (map (fn [i]
+                                         {:index action-index
+                                          :step i
+                                          :status "running"
+                                          :filler-action true})
+                                       (range (count actions) action-index)))))))))
 
 (defn id [build]
   (:build_url build))

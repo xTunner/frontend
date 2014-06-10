@@ -15,7 +15,8 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [build builds controls-ch]} data]
+      (let [{:keys [build builds]} data
+            controls-ch (get-in opts [:comms :controls])]
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
@@ -27,15 +28,14 @@
 
             (when (seq builds)
               ;; XXX this could still use some work
-              [:p (str "This build " (if (build-model/in-usage-queue? build)
-                                       "has been"
-                                       "was")
-                       " queued behind the following builds for "
-                       (build-model/usage-queued-time build))])
+              (list
+               [:p (str "This build " (if (build-model/in-usage-queue? build)
+                                        "has been"
+                                        "was")
+                        " queued behind the following builds for "
+                        (build-model/usage-queued-time build))]
 
-            (om/build builds-table/builds-table {:builds builds
-                                                 :controls-ch controls-ch
-                                                 :show-actions? true})]))))))
+               (om/build builds-table/builds-table builds {:opts (assoc opts :show-actions? true)})))]))))))
 
 (defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
   [:div
@@ -47,12 +47,11 @@
     (subs commit 0 7)
     [:i.fa.fa-github]]])
 
-(defn build-commits [data owner opts]
+(defn build-commits [build owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            controls-ch (:controls-ch data)
+      (let [controls-ch (get-in opts [:comms :controls])
             build-id (build-model/id build)]
         (html
          [:section.build-commits {:class (when (:show-all-commits build) "active")}
@@ -78,51 +77,49 @@
               (when (:show-all-commits build)
                 (map commit-line (drop 3 (:all_commit_details build))))))]])))))
 
-(defn build-ssh [data owner opts]
+(defn build-ssh [nodes owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            nodes (:node build)]
-        (html
-         [:section.build-ssh
-          [:div.build-ssh-title
-           [:strong "SSH Info "]
-           [:i.fa.fa-question-circle
-            ;; XXX popovers
-            {:title "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."}]]
-          [:div.build-ssh-list
-           [:dl.dl-horizontal
-            (map (fn [node]
-                   (list
-                    [:dt (when (> 1 (count nodes)) [:span (:index node)])]
-                    [:dd {:class (when (:ssh_enabled node) "connected")}
-                     [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:ip_addr node))]
-                     (when-not (:ssh_enabled node)
-                       [:span.loading-spinner common/spinner])]))
-                 nodes)]]])))))
+      (html
+       [:section.build-ssh
+        [:div.build-ssh-title
+         [:strong "SSH Info "]
+         [:i.fa.fa-question-circle
+          ;; XXX popovers
+          {:title "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."}]]
+        [:div.build-ssh-list
+         [:dl.dl-horizontal
+          (map (fn [node]
+                 (list
+                  [:dt (when (> 1 (count nodes)) [:span (:index node)])]
+                  [:dd {:class (when (:ssh_enabled node) "connected")}
+                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:ip_addr node))]
+                   (when-not (:ssh_enabled node)
+                     [:span.loading-spinner common/spinner])]))
+               nodes)]]
+        [:div.build-ssh-doc
+         "Debugging Selenium browser tests? "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+          "Read our doc on interacting with the browser over VNC"]
+         "."]]))))
 
-(defn build-artifacts-list [data owner opts]
+(defn build-artifacts-list [artifacts-data owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            controls-ch (:controls-ch data)
-            build-id (build-model/id build)
-            artifacts (:artifacts build)]
+      (let [controls-ch (get-in opts [:comms :controls])
+            artifacts (:artifacts artifacts-data)
+            show-artifacts (:show-artifacts artifacts-data)]
         (html
-         [:section.build-artifacts {:class (when (:show-artifacts build) "active")}
+         [:section.build-artifacts {:class (when show-artifacts "active")}
           [:div.build-artifacts-title
            [:strong "Build Artifacts"]
            [:a {:role "button"
-                :on-click #(put! controls-ch [:show-artifacts-toggled
-                                              {:build-id build-id
-                                               :username (:username @build)
-                                               :reponame (:reponame @build)
-                                               :build_num (:build_num @build)}])}
+                :on-click #(put! controls-ch [:show-artifacts-toggled])}
             [:span " view "]
-            [:i.fa.fa-caret-down {:class (when (:show-artifacts build) "fa-rotate-180")}]]]
-          (when (:show-artifacts build)
+            [:i.fa.fa-caret-down {:class (when show-artifacts "fa-rotate-180")}]]]
+          (when show-artifacts
             (if-not artifacts
               [:div.loading-spinner common/spinner]
 
@@ -133,16 +130,16 @@
                         (:pretty_path artifact)]])
                     artifacts)]))])))))
 
-(defn build-head [data owner opts]
+(defn build-head [build-data owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            controls-ch (:controls-ch data)
-            settings (:settings data)
+      (let [controls-ch (get-in opts [:comms :controls])
+            build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
-            vcs-url (:vcs_url build)]
+            vcs-url (:vcs_url build)
+            usage-queue-data (:usage-queue-data build-data)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -178,13 +175,14 @@
                (when (:usage_queued_at build)
                  (list [:th "Queued"]
                        [:td (build-model/queued-time-summary build)
-                        [:a {:on-click #(put! controls-ch [:usage-queue-why-toggled
-                                                           {:build-id build-id
-                                                            :username (:username @build)
-                                                            :reponame (:reponame @build)
-                                                            :build_num (:build_num @build)}])}
+                        [:a#queued_explanation
+                         {:on-click #(put! controls-ch [:usage-queue-why-toggled
+                                                        {:build-id build-id
+                                                         :username (:username @build)
+                                                         :reponame (:reponame @build)
+                                                         :build_num (:build_num @build)}])}
                          " view "]
-                        [:i.fa.fa-caret-down {:class (when (:show-usage-queue build) "fa-rotate-180")}]]))
+                        [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]]))
                (when (build-model/author-isnt-committer build)
                  [:th "Committer"]
                  [:td
@@ -222,7 +220,7 @@
               "w/ ssh enabled"]
              [:button.report_build
               {:title "Report error with build",
-               :on-click #(put! controls-ch [:report-build-clicked build-id])}
+               :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
               "Report"]
              (when (build-model/can-cancel? build)
                [:button.cancel_build
@@ -230,21 +228,12 @@
                  :title "Cancel this build",
                  :on-click #(put! controls-ch [:cancel-build-clicked build-id])}
                 "Cancel"])]]
-           (when (:show-usage-queue build)
-             (om/build build-queue
-                       {:builds (:usage-queue-builds build)
-                        :build build
-                        :controls-ch controls-ch}
-                       {:opts opts}))
+           (when (:show-usage-queue usage-queue-data)
+             (om/build build-queue {:build build
+                                    :builds (:builds usage-queue-data)} {:opts opts}))
            (when (:subject build)
-             (om/build build-commits
-                       {:build build
-                        :controls-ch controls-ch}
-                       {:opts opts}))
+             (om/build build-commits build {:opts opts}))
            (when (build-model/ssh-enabled-now? build)
-             (om/build build-ssh {:build build} {:opts opts}))
+             (om/build build-ssh (:node build) {:opts opts}))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list
-                       {:build build
-                        :controls-ch controls-ch}
-                       {:opts opts}))]])))))
+             (om/build build-artifacts-list (get build-data :artifacts-data) {:opts opts}))]])))))

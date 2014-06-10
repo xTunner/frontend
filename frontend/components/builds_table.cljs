@@ -62,13 +62,12 @@
           [:a {:on-click #(put! controls-ch [:cancel-build ])}
            "Cancel"])])]))
 
-(defn builds-table [data owner opts]
+(defn builds-table [builds owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [builds (:builds data)
-            controls-ch (:controls-ch data)
-            show-actions? (:show-actions? data)]
+      (let [controls-ch (get-in opts [:comms :controls])
+            show-actions? (:show-actions? opts)]
         (html
          [:table.recent-builds-table
           [:thead

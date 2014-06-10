@@ -2,12 +2,12 @@
 
 (defn initial-state []
   {:environment "development"
-   :settings {:projects {} ; hash of project-id to settings
+   :settings {:projects {}            ; hash of project-id to settings
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
    :navigation-point :loading
-   :current-user {}
+   :current-user nil
    :crumbs [{:type :org
              :name "circleci"
              :path "/gh/circleci"}
@@ -19,10 +19,64 @@
              :name "Edit settings"
              :path "/gh/circleci/circle/edit"}]
    :current-repos []
-   :render-context {}
+   :render-context nil
    :projects []
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
-   :current-project nil
-   :current-organization {:projects [{:followers [], :vcs_url "https://github.com/circleci/circleinc"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"} {:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"} {:github_id 146075, :gravatar_id "86c97090d6a07381fd8cf959ff2b4bfc", :login "dlowe"} {:github_id 4368163, :gravatar_id "c38915d37b11cb94ddeb6a48a2c7fe4c", :login "notnoopci"} {:github_id 1714741, :gravatar_id "fde59fd6627fd9d90d2af9810ddd936d", :login "gordonsyme"} {:github_id 2594189, :gravatar_id "d539fcd378dff0a9100711a90bb22665", :login "dannykingme"} {:github_id 1475986, :gravatar_id "041fa3b3a71a3a513c5fc53921f42ec9", :login "worldsoup"} {:github_id 134378, :gravatar_id "4c5975c1b36099150d9cc34ac271d3ea", :login "esnyder"} {:github_id 1824859, :gravatar_id "84b4d65e51c2c9e133cce81e3fc3e173", :login "venantius"} {:github_id 490421, :gravatar_id "822e1e689d1655a4d0a98b195c0fb296", :login "startling"} {:github_id 5226, :gravatar_id "e8a419959139f3f505b49bb95f7e7afe", :login "jballanc"} {:github_id 69209, :gravatar_id "ad8255d210af159175715be0e61bb872", :login "iand675"} {:github_id 33404, :gravatar_id "7551fcedf3d31369ce8467dee6703208", :login "swenson"}], :vcs_url "https://github.com/circleci/circle"} {:followers [{:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"} {:github_id 1714741, :gravatar_id "fde59fd6627fd9d90d2af9810ddd936d", :login "gordonsyme"}], :vcs_url "https://github.com/circleci/circle-secret-submodule"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"} {:github_id 2594189, :gravatar_id "d539fcd378dff0a9100711a90bb22665", :login "dannykingme"}], :vcs_url "https://github.com/circleci/test-yml"} {:followers [{:github_id 1475986, :gravatar_id "041fa3b3a71a3a513c5fc53921f42ec9", :login "worldsoup"} {:github_id 490421, :gravatar_id "822e1e689d1655a4d0a98b195c0fb296", :login "startling"} {:github_id 69209, :gravatar_id "ad8255d210af159175715be0e61bb872", :login "iand675"}], :vcs_url "https://github.com/circleci/circle-dummy-project"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/circle-empty-repo"} {:followers [{:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"} {:github_id 2594189, :gravatar_id "d539fcd378dff0a9100711a90bb22665", :login "dannykingme"}], :vcs_url "https://github.com/circleci/blog"} {:followers [{:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/clj-v8"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/circle-dummy-heroku"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/file-orderer"} {:followers [{:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"} {:github_id 4368163, :gravatar_id "c38915d37b11cb94ddeb6a48a2c7fe4c", :login "notnoopci"} {:github_id 1714741, :gravatar_id "fde59fd6627fd9d90d2af9810ddd936d", :login "gordonsyme"}], :vcs_url "https://github.com/circleci/hubot"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/circleci-status"} {:followers [{:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/dummy-ssh-repo"} {:followers [], :vcs_url "https://github.com/circleci/dummy-disk-filler"} {:followers [], :vcs_url "https://github.com/circleci/eric-assets"} {:followers [], :vcs_url "https://github.com/circleci/dummy-cache-smasher"} {:followers [], :vcs_url "https://github.com/circleci/dummy-submodule-repo"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/circle-image-tester"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"}], :vcs_url "https://github.com/circleci/arohner-test"} {:followers [], :vcs_url "https://github.com/circleci/circleci-outer"} {:followers [{:github_id 4368163, :gravatar_id "c38915d37b11cb94ddeb6a48a2c7fe4c", :login "notnoopci"}], :vcs_url "https://github.com/circleci/stripe-pay-server"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/frontend"} {:followers [], :vcs_url "https://github.com/circleci/clj-v8-bug"} {:followers [], :vcs_url "https://github.com/circleci/dummy-memory-muncher"} {:followers [], :vcs_url "https://github.com/circleci/circle-vm"} {:followers [{:github_id 4368163, :gravatar_id "c38915d37b11cb94ddeb6a48a2c7fe4c", :login "notnoopci"}], :vcs_url "https://github.com/circleci/circle-vm-tester"} {:followers [], :vcs_url "https://github.com/circleci/dummy-cpu-hostile"} {:followers [], :vcs_url "https://github.com/circleci/dummy-disk-hostile"} {:followers [], :vcs_url "https://github.com/circleci/dummy-cache-test"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"}], :vcs_url "https://github.com/circleci/circlebot"} {:followers [], :vcs_url "https://github.com/circleci/datomic"} {:followers [], :vcs_url "https://github.com/circleci/dummy-network-test"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/circle-dummy-pull-request"} {:followers [], :vcs_url "https://github.com/circleci/version-specs"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"}], :vcs_url "https://github.com/circleci/artifacts"} {:followers [], :vcs_url "https://github.com/circleci/support-cal"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/hook-handler"} {:followers [], :vcs_url "https://github.com/circleci/design"} {:followers [], :vcs_url "https://github.com/circleci/circle-apt-repo"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"}], :vcs_url "https://github.com/circleci/support-bot"} {:followers [], :vcs_url "https://github.com/circleci/dummy-0-commits"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/splunk-alerts"} {:followers [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"}], :vcs_url "https://github.com/circleci/deployer"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/splunk-backups"} {:followers [{:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"}], :vcs_url "https://github.com/circleci/vm"} {:followers [], :vcs_url "https://github.com/circleci/circle-dummy-branch-repo"} {:followers [], :vcs_url "https://github.com/circleci/sudo-hacks"} {:followers [{:github_id 146075, :gravatar_id "86c97090d6a07381fd8cf959ff2b4bfc", :login "dlowe"}], :vcs_url "https://github.com/circleci/nothu-bot"} {:followers [], :vcs_url "https://github.com/circleci/om"} {:followers [{:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"}], :vcs_url "https://github.com/circleci/circle-dummy-artifacts"} {:followers [{:github_id 146075, :gravatar_id "86c97090d6a07381fd8cf959ff2b4bfc", :login "dlowe"}], :vcs_url "https://github.com/circleci/clj-keyczar"} {:followers [{:github_id 4368163, :gravatar_id "c38915d37b11cb94ddeb6a48a2c7fe4c", :login "notnoopci"}], :vcs_url "https://github.com/circleci/image-maker"}], :users [{:github_id 15422, :gravatar_id "db2da6ca131161997c19add60d351cab", :login "arohner"} {:github_id 181762, :gravatar_id "eee6ec3be3e3176ff1e1119301630812", :login "pbiggar"} {:github_id 405820, :gravatar_id "c707df0f9ffeb8fbc3053c228e693ff2", :login "reillyse"} {:github_id 358882, :gravatar_id "4698d387cdde58a95c8dc7f8d198cb48", :login "nuclearsandwich"} {:github_id 1307465, :gravatar_id "b6bdd8c809d8328c1d7a9ecf6e4641b9", :login "circle-test"} {:github_id 476818, :gravatar_id "c0ca7580659419b084d64cc3c3e8d83c", :login "dwwoelfel"} {:github_id 1775922, :gravatar_id "2cb746e21e94e3253a18849273d7c864", :login "circle-deploy-bot"} {:github_id 100893, :gravatar_id "76785f570346bea0867a02ae25c7bd7a", :login "justinsb"} {:github_id 35296, :gravatar_id "556043dbd5327fe67068f42fba8a6802", :login "sgrove"} {:github_id 237978, :gravatar_id "d69a1a0b677a55b25bdf3b423b8174fe", :login "jeandenis"} {:github_id 146075, :gravatar_id "86c97090d6a07381fd8cf959ff2b4bfc", :login "dlowe"} {:github_id 2515593, :gravatar_id "a203db90e61e37cf6d9ec6dd9c10c073", :login "jenneviere"} {:github_id 13161, :gravatar_id "fd1dab0af492d22ae0dc51d120a7c236", :login "ek"} {:github_id 1435689, :gravatar_id "1d3032579b768ea73c34f30a314375d9", :login "clojurecasts"} {:github_id 2608646, :gravatar_id "f78aedc4f8f4962bffd1dcdbe8abadb8", :login "ryanatkn"} {:github_id 4109894, :gravatar_id "90466796530c13ecdf408d37daf6f191", :login "katiemarycalvert"} {:github_id 375731, :gravatar_id "fdccb3fd850af6a687668d5aa57fd0fe", :login "karolinaszczur"} {:github_id 2376697, :gravatar_id "587af0843346078187c6b90b71209138", :login "timtdnguyen"} {:github_id 4368163, :gravatar_id "c38915d37b11cb94ddeb6a48a2c7fe4c", :login "notnoopci"} {:github_id 1714741, :gravatar_id "fde59fd6627fd9d90d2af9810ddd936d", :login "gordonsyme"} {:github_id 2594189, :gravatar_id "d539fcd378dff0a9100711a90bb22665", :login "dannykingme"} {:github_id 136429, :gravatar_id "8716def45299b7028b85f3f95a15f15a", :login "notnoop"} {:github_id 1475986, :gravatar_id "041fa3b3a71a3a513c5fc53921f42ec9", :login "worldsoup"} {:github_id 431677, :gravatar_id "2b7594bf636d7a2531d69bd919ae8989", :login "drewinglis"} {:github_id 134378, :gravatar_id "4c5975c1b36099150d9cc34ac271d3ea", :login "esnyder"} {:github_id 1824859, :gravatar_id "84b4d65e51c2c9e133cce81e3fc3e173", :login "venantius"} {:github_id 490421, :gravatar_id "822e1e689d1655a4d0a98b195c0fb296", :login "startling"} {:github_id 1170751, :gravatar_id "cb578d4829d1d1a7fa6d2652ee63b0f9", :login "mdnahas"} {:github_id 5226, :gravatar_id "e8a419959139f3f505b49bb95f7e7afe", :login "jballanc"} {:github_id 6629607, :gravatar_id "4e3149f2761a26dc37362347581c26d1", :login "hook-bot"} {:github_id 165906, :gravatar_id "d6ecc4a0247c2bbb2728329e9fefd8dc", :login "theJohnnyBrown"} {:github_id 69209, :gravatar_id "ad8255d210af159175715be0e61bb872", :login "iand675"} {:github_id 33404, :gravatar_id "7551fcedf3d31369ce8467dee6703208", :login "swenson"}], :paid "pbiggar", :name "circleci"}})
+   :current-project-data {:project nil
+                          :plan nil
+                          :settings {}
+                          :tokens nil
+                          :envvars nil}
+   :current-build-data {:build nil
+                        :usage-queue-data {:builds nil
+                                           :show-usage-queue false}
+                        :artifact-data {:artifacts nil
+                                        :show-artifacts false}
+                        :current-container-id 0
+                        :container-data {:current-container-id 0
+                                         :containers nil}
+                        :invite-data {:dismiss-invite-form nil
+                                      ;; map of login to github user. These could go
+                                      ;; in current-project-data, but it would make the
+                                      ;; invites implementation more complex. Much easier
+                                      ;; for each build to have its own copy of github-users, especially
+                                      ;; since it's used so infrequently and goes stale fast.
+                                      :github-users nil}}
+   :current-organization nil})
+
+
+(def build-data-path [:current-build-data])
+(def build-path [:current-build-data :build])
+(def build-github-users-path (conj build-data-path :invite-data :github-users))
+(defn build-github-user-path [index] (conj build-github-users-path index))
+(def dismiss-invite-form-path (conj build-data-path :invite-data :dismiss-invite-form))
+(def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
+(def invite-logins-path (conj build-data-path :invite-data :invite-logins))
+(defn invite-login-path [login] (conj invite-logins-path login))
+
+(def usage-queue-path [:current-build-data :usage-queue-data :builds])
+(def show-usage-queue-path [:current-build-data :usage-queue-data :show-usage-queue])
+
+(def artifacts-path [:current-build-data :artifacts-data :artifacts])
+(def show-artifacts-path [:current-build-data :artifacts-data :show-artifacts])
+
+(def container-data-path [:current-build-data :container-data])
+(def containers-path [:current-build-data :container-data :containers])
+(def current-container-path [:current-build-data :container-data :current-container-id])
+(defn container-path [container-index] (conj containers-path container-index))
+(defn actions-path [container-index] (conj (container-path container-index) :actions))
+(defn action-path [container-index action-index] (conj (actions-path container-index) action-index))
+(defn action-output-path [container-index action-index] (conj (action-path container-index action-index) :output))
+(defn show-action-output-path [container-index action-index] (conj (action-path container-index action-index) :show-output))
+
+(def project-data-path [:current-project-data])
+(def project-plan-path (conj project-data-path :plan))
+(def project-tokens-path (conj project-data-path :tokens))
+(def project-envvars-path (conj project-data-path :envvars))
+(def project-settings-branch-path (conj project-data-path :settings-branch))
+(def project-path (conj project-data-path :project))
+
+(def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
+(def project-new-api-token-path (conj project-data-path :new-api-token))
