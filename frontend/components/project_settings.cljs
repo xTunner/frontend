@@ -6,6 +6,7 @@
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -501,7 +502,7 @@
     "#2259"]
    " to merge."])
 
-(defn api-tokens [project-data controls-ch]
+(defn api-tokens [project-data controls-ch opts]
   (let [project (:project project-data)
         project-id (project-model/id project)
         {:keys [scope label]
@@ -524,16 +525,18 @@
         {:required true, :type "text" :value label
          :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
        [:label {:placeholder "Token label"}]
-       [:input
-        {:data-failed-text "Failed",
-         :data-success-text "Created",
-         :data-loading-text "Creating...",
-         :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
-                                                                     :api-token {:scope scope
-                                                                                 :label label}}])
-                        false)
-         :value "Create token",
-         :type "submit"}]]
+       (om/build forms/stateful-submit
+                 [:input
+                  {:data-failed-text "Failed",
+                   :data-success-text "Created",
+                   :data-loading-text "Creating...",
+                   :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
+                                                                               :api-token {:scope scope
+                                                                                           :label label}}])
+                                  false)
+                   :value "Create token",
+                   :type "submit"}]
+                 {:opts opts})]
       (when-let [tokens (seq (:tokens project-data))]
         [:table
          [:thead
@@ -693,5 +696,5 @@
             [:div.project-settings-inner
              (common/flashes)
              [:div#subpage
-              ((subpage-fn subpage user) project-data controls-ch)]]
+              ((subpage-fn subpage user) project-data controls-ch opts)]]
             (follow-sidebar (:project project-data) controls-ch)]))))))
