@@ -46,10 +46,6 @@
           (common/contact-us-inner controls-ch)
           " if you're interested in the cause of the problem."])])))
 
-(defn config-diagnostics [build]
-  config-diagnostics-isnt-finished
-  "")
-
 (defn container-pill [{:keys [container current-container-id]} owner opts]
   (reify
     om/IRender
