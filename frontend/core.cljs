@@ -10,7 +10,6 @@
             [frontend.controllers.navigation :as nav-con]
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
-            [frontend.controllers.post-api :as api-pcon]
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.post-ws :as ws-pcon]
             [frontend.env :as env]
@@ -110,7 +109,7 @@
   (swallow-errors
     (let [previous-state @state]
       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
-      (api-pcon/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
+      (api-con/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
 
 (defn ws-handler
   [value state pusher]
