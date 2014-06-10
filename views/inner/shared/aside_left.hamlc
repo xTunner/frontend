@@ -3,12 +3,6 @@
   .aside-item.logo{data-bind: "click: width_of_aside"}
     .logomark
       != HAML.ico(n:'logo')
-  %a.aside-item{href: "/", tooltip: "Home"}
-    %i.fa.fa-home
-    %span Home
-  %a.aside-item{href: "/docs", tooltip: "Documentation", target: "_blank"}
-    %i.fa.fa-files-o
-    %span Documentation
   -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
   -#   %i.fa.fa-code
   -#   %span Activity
@@ -37,13 +31,19 @@
                 <!-- /ko -->
           <!-- /ko -->
       <!-- /ko -->
+  %a.aside-item{href: "/add-projects", tooltip: "Add Projects"}
+    %i.fa.fa-plus-circle
+    %span Add Projects
+  %a.aside-item{href: "#", tooltip: "Invite Teammate", data-toggle: "modal", data-target: "#inviteForm"}
+    %i.fa.fa-envelope-o
+    %span Invite Teammate
+  %a.aside-item{href: "/docs", tooltip: "Documentation", target: "_blank"}
+    %i.fa.fa-files-o
+    %span Documentation
   .aside-slideup
     %a.aside-item{href: "/account", tooltip: "User Account"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
       %span dannykingme
-    %a.aside-item{href: "#", tooltip: "Invite Teammate", data-toggle: "modal", data-target: "#inviteForm"}
-      %i.fa.fa-envelope-o
-      %span Invite Teammate
     %a.aside-item{href: "/logout", tooltip: "Logout"}
       %i.fa.fa-sign-out
       %span Logout
