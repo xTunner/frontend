@@ -1,9 +1,10 @@
 CI.terminal =
-  ansiToHtmlConverter: (defaultColor, state={}) ->
+  ansiToHtmlConverter: (defaultColor, defaultBackgroundColor, state={}) ->
     default_state =
       trailing_raw: ""
       trailing_out: ""
       color: defaultColor
+      bgcolor: defaultBackgroundColor
       italic: false
       bold: false
 
@@ -16,9 +17,11 @@ CI.terminal =
       color: initial_state.color
       italic: initial_state.italic
       bold: initial_state.bold
+      bgcolor: initial_state.bgcolor
 
       reset: () ->
         @color = defaultColor
+        @bgcolor = defaultBackgroundColor
         @italic = false
         @bold = false
 
@@ -38,6 +41,23 @@ CI.terminal =
           when 36 then @color = "cyan"
           when 37 then @color = "white"
           when 39 then @color = defaultColor
+          when 40 then @bgcolor = "white"
+          when 41 then @bgcolor = "red"
+          when 42 then @bgcolor = "green"
+          when 43 then @bgcolor = "yellow"
+          when 44 then @bgcolor = "blue"
+          when 45 then @bgcolor = "magenta"
+          when 46 then @bgcolor = "cyan"
+          when 47 then @bgcolor = "white"
+          when 49 then @bgcolor = defaultBackgroundColor
+          when 90 then @color = "brwhite"
+          when 91 then @color = "brred"
+          when 92 then @color = "brgreen"
+          when 93 then @color = "bryellow"
+          when 94 then @color = "brblue"
+          when 95 then @color = "brmagenta"
+          when 96 then @color = "brcyan"
+          when 99 then @color = defaultColor
 
       classes: () ->
         classes = []
@@ -47,6 +67,8 @@ CI.terminal =
           classes.push("#{@color}")
         if @italic
           classes.push("italic")
+        if @bgcolor != defaultBackgroundColor
+          classes.push("bg-#{@bgcolor}")
 
         classes
 
@@ -141,5 +163,5 @@ CI.terminal =
 
   ansiToHtml: (str) ->
     # convenience function for testing
-    converter = @ansiToHtmlConverter("brblue")
+    converter = @ansiToHtmlConverter("brblue", "brblack")
     converter.append(str) + converter.get_trailing()

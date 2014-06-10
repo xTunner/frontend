@@ -108,8 +108,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
         when "db"
           "You specified this command on the project settings page"
 
-    @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
-    @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+    @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue", "brblack")
+    @stderrConverter = CI.terminal.ansiToHtmlConverter("red", "brblack")
 
   toggle_minimize: =>
     if not @user_minimized?
