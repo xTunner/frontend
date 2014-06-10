@@ -160,8 +160,10 @@
       }
     }
     .toggle-all-branches {
+      .box-sizing(border-box);
       .flexy(center, center);
       padding: @em @em (@em / 2);
+      width: @aside_nav_width - @activity_scroll; // this and border-box prevents toggle from being pushed by scrollbar
       transition: margin 100ms 500ms, opacity 100ms 500ms; // creates slight delay to avoid bouncing effect
       button {
         .flex(1, 1, auto);
