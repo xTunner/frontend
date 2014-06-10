@@ -8,7 +8,6 @@
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
-            [frontend.controllers.post-controls :as controls-pcon]
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
             [frontend.controllers.post-api :as api-pcon]
@@ -93,7 +92,7 @@
   (swallow-errors
    (let [previous-state @state]
      (swap! state (partial controls-con/control-event container (first value) (second value)))
-     (controls-pcon/post-control-event! container (first value) (second value) previous-state @state))))
+     (controls-con/post-control-event! container (first value) (second value) previous-state @state))))
 
 (defn nav-handler
   [value state history]
