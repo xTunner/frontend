@@ -1,5 +1,6 @@
 (ns frontend.utils
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [ajax.core :as ajax]
             [frontend.env :as env]
             [goog.crypt :as crypt]
@@ -89,21 +90,25 @@
                                           :or {format :json
                                                response-format :json
                                                keywords? true}}]
-  (put! channel [message :started context])
-  (ajax/ajax-request url method
-                     (ajax/transform-opts
-                      {:format format
-                       :response-format response-format
-                       :keywords? keywords?
-                       :params params
-                       :headers (merge {:Accept "application/json"}
-                                       (when (re-find #"^/" url)
-                                         {:X-CSRFToken (csrf-token)}))
-                       :handler #(put! channel [message :success {:resp %
-                                                                  :context context}])
-                       :error-handler #(put! channel [message :failed {:resp %
-                                                                       :context context}])
-                       :finally #(put! channel [message :finished context])})))
+  (let [uuid frontend.async/*uuid*]
+    (put! channel [message :started context])
+    (ajax/ajax-request url method
+                       (ajax/transform-opts
+                        {:format format
+                         :response-format response-format
+                         :keywords? keywords?
+                         :params params
+                         :headers (merge {:Accept "application/json"}
+                                         (when (re-find #"^/" url)
+                                           {:X-CSRFToken (csrf-token)}))
+                         :handler #(binding [frontend.async/*uuid* uuid]
+                                     (put! channel [message :success {:resp %
+                                                                      :context context}]))
+                         :error-handler #(binding [frontend.async/*uuid* uuid]
+                                           (put! channel [message :failed {:resp %
+                                                                           :context context}]))
+                         :finally #(binding [frontend.async/*uuid* uuid]
+                                     (put! channel [message :finished context]))}))))
 
 (defn edit-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.

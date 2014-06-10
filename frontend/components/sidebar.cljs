@@ -1,5 +1,6 @@
 (ns frontend.components.sidebar
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.utils :as utils :include-macros true]

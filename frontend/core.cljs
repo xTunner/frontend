@@ -1,5 +1,6 @@
 (ns frontend.core
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             ;; XXX remove browser repl in prod
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
@@ -92,37 +93,41 @@
   (when (log-channels?)
     (mlog "Controls Verbose: " value))
   (swallow-errors
-   (let [previous-state @state]
-     (swap! state (partial controls-con/control-event container (first value) (second value)))
-     (controls-pcon/post-control-event! container (first value) (second value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial controls-con/control-event container (first value) (second value)))
+       (controls-pcon/post-control-event! container (first value) (second value) previous-state @state)))))
 
 (defn nav-handler
   [value state history]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
-   (let [previous-state @state]
-     (swap! state (partial nav-con/navigated-to history (first value) (second value)))
-     (nav-pcon/post-navigated-to! history (first value) (second value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial nav-con/navigated-to history (first value) (second value)))
+       (nav-pcon/post-navigated-to! history (first value) (second value) previous-state @state)))))
 
 (defn api-handler
   [value state container]
   (when (log-channels?)
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
-    (let [previous-state @state]
-      (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
-      (api-pcon/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
+       (api-pcon/post-api-event! container (first value) (second value) (utils/third value) previous-state @state)))))
 
 (defn ws-handler
   [value state pusher]
   (when (log-channels?)
     (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
   (swallow-errors
-    (let [previous-state @state]
-      ;; XXX: should these take the container like the rest of the controllers?
-      (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-      (ws-pcon/post-ws-event! pusher (first value) (second value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       ;; XXX: should these take the container like the rest of the controllers?
+       (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
+       (ws-pcon/post-ws-event! pusher (first value) (second value) previous-state @state)))))
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)

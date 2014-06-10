@@ -7,7 +7,8 @@
   strings, with consecutive key events separated by a space.  Keys in
   key combinations need to be pressed within one second, or the loop
   forgets about them."
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [om.core :as om :include-macros true]
             [clojure.string :refer [join split]]
             [dommy.core :as dommy]

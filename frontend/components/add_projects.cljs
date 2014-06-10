@@ -1,5 +1,6 @@
 (ns frontend.components.add-projects
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.models.user :as user-model]
             [frontend.models.repo :as repo-model]

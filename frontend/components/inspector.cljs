@@ -1,6 +1,7 @@
 (ns frontend.components.inspector
   (:require [ankha.core :as ankha]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [draggable.core :as dnd]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]

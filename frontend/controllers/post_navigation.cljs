@@ -1,5 +1,6 @@
 (ns frontend.controllers.post-navigation
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [clojure.string :as string]
             [frontend.utils :as utils :refer [mlog merror]]
             [frontend.pusher :as pusher]

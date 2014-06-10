@@ -1,5 +1,6 @@
 (ns frontend.components.project-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]

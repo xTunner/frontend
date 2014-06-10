@@ -1,5 +1,6 @@
 (ns frontend.components.build-config
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put]]
             [frontend.components.common :as common]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]

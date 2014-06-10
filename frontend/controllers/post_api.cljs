@@ -1,5 +1,6 @@
 (ns frontend.controllers.post-api
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [clojure.string :as string]
             [frontend.intercom :as intercom]
             [frontend.models.action :as action-model]

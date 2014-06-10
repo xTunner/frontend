@@ -1,5 +1,6 @@
 (ns frontend.components.navbar
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.env :as env]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]

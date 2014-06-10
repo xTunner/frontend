@@ -1,5 +1,6 @@
 (ns frontend.components.build-head
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.components.builds-table :as builds-table]

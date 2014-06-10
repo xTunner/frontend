@@ -1,5 +1,6 @@
 (ns frontend.controllers.post-controls
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [clojure.string :as string]
             [dommy.core :as dommy]
             [frontend.models.build :as build-model]

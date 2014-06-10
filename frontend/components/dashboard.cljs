@@ -1,5 +1,6 @@
 (ns frontend.components.dashboard
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.components.sidebar :as sidebar]
             [frontend.components.builds-table :as builds-table]
             [om.core :as om :include-macros true]

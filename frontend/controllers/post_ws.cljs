@@ -1,6 +1,7 @@
 (ns frontend.controllers.post-ws
   "Websocket post-controllers, handles subscribing to channels"
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [clojure.string :as string]
             [frontend.pusher :as pusher]
             [frontend.utils :as utils :refer [mlog merror]]
