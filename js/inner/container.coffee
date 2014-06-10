@@ -9,6 +9,7 @@ CI.inner.Container = class Container extends CI.inner.Obj
 
     @build = build
     @actions(actions)
+
     @container_index = index
     @container_id = _.uniqueId("container_")
 
@@ -50,6 +51,10 @@ CI.inner.Container = class Container extends CI.inner.Obj
 
     @position_style =
       left: (@container_index * 100) + "%"
+
+    # watch for changes in @actions so the build can trigger responses such as
+    # autoscrolling
+    @build.watch_observable(@actions)
 
   jquery_element: () =>
     $("#" + @container_id)

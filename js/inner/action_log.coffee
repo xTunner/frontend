@@ -111,6 +111,11 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue", "brblack")
     @stderrConverter = CI.terminal.ansiToHtmlConverter("red", "brblack")
 
+    # watch for changes in @minimize and @trailing_out so the build can trigger
+    # responses such as autoscrolling
+    @build.watch_observable(@minimize)
+    @build.watch_observable(@trailing_out)
+
   toggle_minimize: =>
     if not @user_minimized?
       @user_minimized(!@user_minimized())

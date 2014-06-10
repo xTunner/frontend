@@ -790,8 +790,9 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @autoscroll = direction is "down" and not @finished()
 
   height_changed: () =>
-    @maybe_scroll()
-    @refresh_waypoints()
+    requestAnimationFrame (timestamp) =>
+      @maybe_scroll()
+      @refresh_waypoints()
 
   maybe_scroll: () =>
     if @autoscroll
@@ -806,3 +807,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
     $.waypoints("refresh")
 
     $autoscroll_trigger.waypoint("enable")
+
+  watch_observable: (observable) =>
+    # Watch observable for changes. Any observable that can affect the height
+    # of the page must be watched in order for auto-scrolling to work
+    # successfully.
+    observable.subscribe (new_value) =>
+      @height_changed()
