@@ -16,24 +16,25 @@
           %th Description
           %th Fingerprint
           %th
-        <!-- ko foreach: checkout_keys -->
-          %tbody{data-bind: "css: { preferred: preferred }"}
-            %td
-              <!-- ko if: $parent.checkout_key_link($data) -->
-                %a.slideBtn{data-bind: "attr: {href: $parent.checkout_key_link($data)}"}
+        %tbody
+          <!-- ko foreach: checkout_keys -->
+            %tr{data-bind: "css: { preferred: preferred }"}
+              %td
+                <!-- ko if: $parent.checkout_key_link($data) -->
+                  %a.slideBtn{data-bind: "attr: {href: $parent.checkout_key_link($data)}"}
+                    %span{data-bind: "text: $parent.checkout_key_description($data)"}
+                    %i.fa.fa-github
+                <!-- /ko -->
+                <!-- ko ifnot: $parent.checkout_key_link($data) -->
                   %span{data-bind: "text: $parent.checkout_key_description($data)"}
-                  %i.fa.fa-github
-              <!-- /ko -->
-              <!-- ko ifnot: $parent.checkout_key_link($data) -->
-                %span{data-bind: "text: $parent.checkout_key_description($data)"}
-              <!-- /ko -->
-            %td
-              %span{data-bind: "text: fingerprint"}
-            %td
-              %a.slideBtn{data-bind: "click: $parent.delete_checkout_key", title: "Remove this key?"}
-                %i.fa.fa-times-circle
-                %span Remove
-        <!-- /ko -->
+                <!-- /ko -->
+              %td
+                %span{data-bind: "text: fingerprint"}
+              %td
+                %a.slideBtn{data-bind: "click: $parent.delete_checkout_key", title: "Remove this key?"}
+                  %i.fa.fa-times-circle
+                  %span Remove
+          <!-- /ko -->
 
     <!-- ko ifnot: _.some(checkout_keys(), function(ck) { return ck.type == "deploy-key"; }) -->
       .add-key
