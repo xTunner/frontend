@@ -113,13 +113,21 @@ CI.terminal =
       trailing_raw = ""
       trailing_out = ""
 
-      # loop over lines
-      while current.length and ((line_end = current.search(/\r|\n|$/)) != -1)
-        next_line_start = current.slice(line_end).search(/[^\r\n]/)
-        if next_line_start == -1
-          terminator = current.slice(line_end)
-        else
-          terminator = current.slice(line_end, line_end + next_line_start)
+      # loop over lines. ^[0G is treated as equivalent to \r, and acts as a line separator.
+      while current.length and ((line_end = current.search(/\u001B\[0G|\r|\n|$/)) != -1)
+        # find end of the line terminator
+        terminator_end = line_end
+        while true
+          if current.lastIndexOf("\u001B\[0G", terminator_end) == terminator_end
+            terminator_end += 4
+          else if current.lastIndexOf("\r", terminator_end) == terminator_end
+            terminator_end += 1
+          else if current.lastIndexOf("\n", terminator_end) == terminator_end
+            terminator_end += 1
+          else
+            break
+
+        terminator = current.slice(line_end, terminator_end)
         input_line = current.slice(0, line_end + terminator.length)
         original_input_line = input_line
         output_line = ""
@@ -154,9 +162,9 @@ CI.terminal =
           trailing_raw = original_input_line
           trailing_out = output_line
         else
-          # don't write the output line if it ends with a carriage return, for primitive
-          # terminal animations...
-          if terminator.search(/^\r+$/) == -1
+          # don't write the output line if it ends with a carriage return or ^[0G, for
+          # primitive terminal animations...
+          if terminator.search(/^(\u001B\[0G|\r)+$/) == -1
             output += output_line
 
       @wrapDefaultColor(output)
