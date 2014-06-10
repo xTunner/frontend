@@ -26,7 +26,7 @@
 (defn new-converter [action type]
   (let [default-color (if (= :err type) "red" "brblue")
         starting-state (clj->js (get-in action [:converters-state type]))]
-    (js/CI.terminal.ansiToHtmlConverter default-color starting-state)))
+    (js/CI.terminal.ansiToHtmlConverter default-color "brblack" starting-state)))
 
 (defn format-output [action output-index]
   (let [output (get-in action [:output output-index])
