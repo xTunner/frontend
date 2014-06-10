@@ -11,7 +11,6 @@
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
-            [frontend.controllers.post-ws :as ws-pcon]
             [frontend.env :as env]
             [frontend.state :as state]
             [goog.events]
@@ -119,7 +118,7 @@
     (let [previous-state @state]
       ;; XXX: should these take the container like the rest of the controllers?
       (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-      (ws-pcon/post-ws-event! pusher (first value) (second value) previous-state @state))))
+      (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state))))
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
