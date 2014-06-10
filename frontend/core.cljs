@@ -8,13 +8,9 @@
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
-            [frontend.controllers.post-controls :as controls-pcon]
-            [frontend.controllers.post-navigation :as nav-pcon]
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
-            [frontend.controllers.post-api :as api-pcon]
             [frontend.controllers.ws :as ws-con]
-            [frontend.controllers.post-ws :as ws-pcon]
             [frontend.env :as env]
             [frontend.state :as state]
             [goog.events]
@@ -94,7 +90,7 @@
   (swallow-errors
    (let [previous-state @state]
      (swap! state (partial controls-con/control-event container (first value) (second value)))
-     (controls-pcon/post-control-event! container (first value) (second value) previous-state @state))))
+     (controls-con/post-control-event! container (first value) (second value) previous-state @state))))
 
 (defn nav-handler
   [value state history]
@@ -103,7 +99,7 @@
   (swallow-errors
    (let [previous-state @state]
      (swap! state (partial nav-con/navigated-to history (first value) (second value)))
-     (nav-pcon/post-navigated-to! history (first value) (second value) previous-state @state))))
+     (nav-con/post-navigated-to! history (first value) (second value) previous-state @state))))
 
 (defn api-handler
   [value state container]
@@ -112,7 +108,7 @@
   (swallow-errors
     (let [previous-state @state]
       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
-      (api-pcon/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
+      (api-con/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
 
 (defn ws-handler
   [value state pusher]
@@ -122,7 +118,7 @@
     (let [previous-state @state]
       ;; XXX: should these take the container like the rest of the controllers?
       (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-      (ws-pcon/post-ws-event! pusher (first value) (second value) previous-state @state))))
+      (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state))))
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
