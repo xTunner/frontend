@@ -2,7 +2,7 @@ CI.BrowserSettings = class BrowserSettings
 
   constructor: () ->
     default_settings =
-      recent_history_visible: false
+      recent_activity_visible: false
       aside_is_slim: false
     saved_settings = @settings_from_localstorage()
     @settings = ko.observable(_.extend(default_settings, saved_settings))
