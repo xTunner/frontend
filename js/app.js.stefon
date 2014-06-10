@@ -14,7 +14,6 @@
 ;  "../../components/retina.js/src/retina_image.coffee"
 ;  "../../components/retina.js/src/retina.coffee"
   "../../components/underscore/underscore.js"
-  "../../components/css-element-queries/src/ResizeSensor.js"
 
   "bootstrap.js.stefon"
 
