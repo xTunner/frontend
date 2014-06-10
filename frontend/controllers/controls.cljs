@@ -13,7 +13,7 @@
 ;; --- Helper Methods ---
 
 (defn container-id [container]
-  (int (last (re-find #"container_(\d+)" (.-id container)))) 
+  (int (last (re-find #"container_(\d+)" (.-id container)))))
 
 ;; --- Navigation Multimethod Declarations ---
 
