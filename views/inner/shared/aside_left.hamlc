@@ -9,12 +9,6 @@
   %a.aside-item{href: "/docs", tooltip: "Documentation", target: "_blank"}
     %i.fa.fa-files-o
     %span Documentation
-  %a.aside-item{href: "#", tooltip: "Report a Bug", data-bind: "click: $root.raiseIntercomDialog"}
-    %i.fa.fa-bullhorn
-    %span Report a Bug
-  %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", tooltip: "Chat Support", target: "_blank"}
-    %i.fa.fa-comments
-    %span Chat Support
   -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
   -#   %i.fa.fa-code
   -#   %span Activity
