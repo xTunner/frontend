@@ -3,7 +3,8 @@
             [frontend.pusher :as pusher]
             [frontend.utils :as utils :refer [mlog merror]]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.string :as gstring]))
+            [goog.string :as gstring])
+  (:require-macros [frontend.utils :refer [inspect]]))
 
 ;; --- Helper Methods ---
 

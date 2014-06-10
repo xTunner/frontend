@@ -7,7 +7,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]]
             [cljs.reader :as reader])
-  (:require-macros [dommy.macros :refer [sel sel1]])
+  (:require-macros [dommy.macros :refer [sel sel1]]
+                   [frontend.utils :refer [inspect]])
   (:import [goog.fx.dom.Scroll]))
 
 ;; --- Helper Methods ---
