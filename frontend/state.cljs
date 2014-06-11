@@ -8,16 +8,7 @@
                                             :type :org}}}
    :navigation-point :loading
    :current-user nil
-   :crumbs [{:type :org
-             :name "circleci"
-             :path "/gh/circleci"}
-            {:type :project
-             :name "circle"
-             :active true
-             :path "/gh/circleci/circle"}
-            {:type :settings
-             :name "Edit settings"
-             :path "/gh/circleci/circle/edit"}]
+   :crumbs []
    :current-repos []
    :render-context nil
    :projects []
@@ -80,3 +71,5 @@
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
+
+(def crumbs-path [:crumbs])
