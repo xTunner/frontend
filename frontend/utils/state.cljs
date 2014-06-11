@@ -3,29 +3,24 @@
             [frontend.utils.vcs-url :as vcs-url]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch]}]
-  (let [crumbs [(when org {:type :org
-                           :username org})
-                (when repo {:type :project
-                            :username org
-                            :project repo})
-                (when branch {:type :project-branch
-                              :username org
-                              :project repo
-                              :branch branch})]]
-    (if-let [path-crumbs (->> crumbs
-                              (filter identity)
-                              not-empty)]
-      (let [path-crumbs (assoc-in (vec path-crumbs)
-                                  [(-> path-crumbs count dec) :active]
-                                  true)
-            setting-crumb (cond repo {:type :project-settings
-                                      :username org
-                                      :project repo}
-                                org {:type :org-settings
-                                     :username org})
-            all-crumbs (conj path-crumbs setting-crumb)]
-        (assoc-in state state/crumbs-path all-crumbs))
-      state)))
+  (if-let [path-crumbs (seq (concat
+                              (when org {:type :org
+                                         :username org})
+                              (when repo {:type :project
+                                          :username org :project repo})
+                              (when branch {:type :project-branch
+                                            :username org :project repo :branch branch})))]
+    (let [path-crumbs (assoc-in (vec path-crumbs)
+                                [(-> path-crumbs count dec) :active]
+                                true)
+          setting-crumb (cond repo {:type :project-settings
+                                    :username org
+                                    :project repo}
+                              org {:type :org-settings
+                                   :username org})
+          all-crumbs (conj path-crumbs setting-crumb)]
+      (assoc-in state state/crumbs-path all-crumbs))
+      state))
 
 (defn reset-current-build [state]
   (assoc state :current-build-data {:build nil
