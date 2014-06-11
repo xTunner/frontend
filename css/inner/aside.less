@@ -132,13 +132,14 @@
       opacity: 1;
       visibility: visible;
       transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 200ms ease-in-out;
-      height: 100%;
+      height: 100vh;
       + .aside-slideup {
         box-shadow: 0 -8px 13px fade(@black, 21);
         transition-delay: 100ms;
       }
       .wrapper {
         overflow-y: auto;
+        height: 100vh; // needed to fix safari bug preventing accordion from opening up
       }
     }
     .wrapper {
