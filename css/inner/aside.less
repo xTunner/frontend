@@ -271,6 +271,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        &:not(:hover) {
+          color: fadein(@activity_color, 21);
+        }
         &.toggle {
           .box-sizing(border-box);
           .flex(0, 0, auto);
