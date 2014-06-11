@@ -37,9 +37,6 @@
   %a.aside-item{href: "#", tooltip: "Invite Teammate", data-toggle: "modal", data-target: "#inviteForm"}
     %i.fa.fa-envelope-o
     %span Invite Teammate
-  %a.aside-item{href: "/docs", tooltip: "Documentation", target: "_blank"}
-    %i.fa.fa-files-o
-    %span Documentation
   <!-- ko if: VM.browser_settings.settings().aside_is_slim -->
     %a.aside-item{href: "#", tooltip: "Expand", data-bind: "click: width_of_aside"}
       %i.fa.fa-chevron-circle-right
