@@ -87,7 +87,7 @@
      (do (mlog "Ignoring event for old build channel: " channel-name)
          state)
 
-     (not= container-index (get-in build [:current-container-id] 0))
+     (not= container-index (get-in build state/current-container-path 0))
      (do (mlog "Ignoring output for inactive container: " container-index)
          state)
 
