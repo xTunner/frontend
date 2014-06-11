@@ -373,6 +373,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
       if @containers()[0]?
         @current_container(@containers()[0])
+        @current_container().select()
 
     @display_first_green_build_invitations = @komp =>
       not @dismiss_first_green_build_invitations() and @is_first_green_build()
@@ -517,7 +518,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
       # It's possible no containers existed when the build was first loaded, if
       # so, select the first
       if not @current_container()?
-        @current_container(@containers()[0])
+        @select_container(@containers()[0])
 
       # actions can arrive out of order when doing parallel. Fill up the other indices so knockout doesn't bitch
       for i in [0..step]
@@ -536,33 +537,36 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
   newAction: (json) =>
     if @feature_enabled("build_GH1157_container_oriented_ui")
+      action_log = new CI.inner.ActionLog(json.log, @)
+
       if json.log.parallel
-        @newParallelAction(json)
+        @newParallelAction(json.step, json.index, action_log)
       else
-        @newNonParallelAction(json)
+        @newNonParallelAction(json.step, json.index, action_log)
+
+      if @current_container().container_id == @containers()[json.index].container_id
+        action_log.subscribe_watcher(@)
     else
       @fillActions(json.step, json.index)
       if old = @steps()[json.step].actions()[json.index]
         old.clean()
       @steps()[json.step].actions.setIndex(json.index, new CI.inner.ActionLog(json.log, @))
 
-  newParallelAction: (json) =>
-    @fillActions(json.step, json.index)
-    if old = @containers()[json.index].actions()[json.step]
+  newParallelAction: (step, index, action_log) =>
+    @fillActions(step, index)
+    if old = @containers()[index].actions()[step]
       old.clean()
-    action_log = new CI.inner.ActionLog(json.log, @)
-    @containers()[json.index].actions.setIndex(json.step, action_log)
+    @containers()[index].actions.setIndex(step, action_log)
 
-  newNonParallelAction: (json) =>
+  newNonParallelAction: (step, index, action_log) =>
     # Create a single action log and add it to *all* containers
     max_index = @containers().length - 1
-    @fillActions(json.step, max_index)
+    @fillActions(step, max_index)
 
-    action_log = new CI.inner.ActionLog(json.log, @)
     for container in @containers()
-      if old = container.actions()[json.step]
+      if old = container.actions()[step]
         old.clean()
-      container.actions.setIndex(json.step, action_log)
+      container.actions.setIndex(step, action_log)
 
   updateAction: (json) =>
     if @feature_enabled("build_GH1157_container_oriented_ui")
@@ -734,8 +738,8 @@ CI.inner.Build = class Build extends CI.inner.Obj
     if event?.originalEvent instanceof MouseEvent and event?.originalEvent?.detail != 1
       return
 
-    @current_container().deselect()
     container.select()
+    @current_container()?.deselect()
 
     @current_container(container)
     @switch_container_viewport(@current_container())
@@ -808,9 +812,5 @@ CI.inner.Build = class Build extends CI.inner.Obj
 
     $autoscroll_trigger.waypoint("enable")
 
-  watch_observable: (observable) =>
-    # Watch observable for changes. Any observable that can affect the height
-    # of the page must be watched in order for auto-scrolling to work
-    # successfully.
-    observable.subscribe (new_value) =>
-      @height_changed()
+  subscription_callback: () =>
+    @height_changed()
