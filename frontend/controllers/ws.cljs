@@ -1,7 +1,7 @@
 (ns frontend.controllers.ws
   "Websocket controllers"
   (:require [clojure.set]
-            [frontend.controllers.api :as api]
+            [frontend.api :as api]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
@@ -123,3 +123,14 @@
 (defmethod post-ws-event! :unsubscribe
   [pusher-imp message channel-name previous-state current-state]
   (pusher/unsubscribe pusher-imp channel-name))
+
+(defmethod post-ws-event! :refresh
+  [pusher-imp message _ previous-state current-state]
+  (let [navigation-point (:navigation-point current-state)
+        api-ch (get-in current-state [:comms :api])]
+    (api/get-projects api-ch)
+    (condp = navigation-point
+      :build (when (get-in current-state state/show-usage-queue-path)
+               (api/get-usage-queue (get-in current-state state/build-path) api-ch))
+      :dashboard (api/get-dashboard-builds (:dashboard-data current-state) api-ch)
+      nil)))
