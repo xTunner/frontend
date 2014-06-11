@@ -73,3 +73,11 @@
 (def project-new-api-token-path (conj project-data-path :new-api-token))
 
 (def crumbs-path [:crumbs])
+(defn project-branch-crumb-path [state]
+  (let [crumbs (get-in state crumbs-path)
+        project-branch-crumb-index (->> crumbs
+                                        (keep-indexed
+                                          #(when (= (:type %2) :project-branch)
+                                             %1))
+                                        first)]
+    (conj crumbs-path project-branch-crumb-index)))

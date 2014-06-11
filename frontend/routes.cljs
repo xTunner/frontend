@@ -23,7 +23,7 @@
 (defn open-build-inspector!
   [app nav-ch org-id repo-id build-num]
   (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:build-inspector [project-name build-num]])))
+    (put! nav-ch [:build-inspector [project-name build-num org-id repo-id]])))
 
 (defn open-to-dashboard! [nav-ch & [args]]
   (put! nav-ch [:dashboard args]))

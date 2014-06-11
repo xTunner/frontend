@@ -70,12 +70,18 @@
 
 
 (defmethod navigated-to :build-inspector
-  [history-imp to [project-name build-num] state]
+  [history-imp to [project-name build-num org repo] state]
   (-> state
       (assoc :inspected-project {:project project-name
                                  :build-num build-num}
              :navigation-point :build
              :project-settings-project-name project-name)
+      (assoc-in state/crumbs-path [{:type :org :username org}
+                                   {:type :project :username org :project repo}
+                                   {:type :project-branch :username org :project repo}
+                                   {:type :build :username org :project repo
+                                    :build-num build-num :active true}
+                                   {:type :project-settings :username org :project repo}])
       state-utils/reset-current-build
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
