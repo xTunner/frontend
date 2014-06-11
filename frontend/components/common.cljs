@@ -1,9 +1,5 @@
 (ns frontend.components.common
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
-            [frontend.components.crumbs :refer [render-crumb]]
-            [frontend.utils :as utils :refer [mlog merror]]
-            [om.core :as om]
-            [sablono.core :as html :refer-macros [html]]))
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]))
 
 ;; XXX flashes
 (defn flashes []
@@ -22,13 +18,6 @@
 (defn contact-us-inner [controls-ch]
   [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
    " contact us "])
-
-(defn crumbs [data owner opts]
-  (mlog "Rendering crumbs...")
-  (reify
-    om/IRender
-    (render [_]
-      (html [:nav (map render-crumb data)]))))
 
 (defn messages [messages]
   [:div.row-fluid

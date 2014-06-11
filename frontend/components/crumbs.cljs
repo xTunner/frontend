@@ -1,6 +1,8 @@
 (ns frontend.components.crumbs
   (:require [frontend.routes :as routes]
-            [frontend.utils :as utils]))
+            [frontend.utils :as utils]
+            [om.core :as om]
+            [sablono.core :as html :refer-macros [html]]))
 
 (defn crumb-node [{:keys [active name path]}]
   (if active
@@ -54,4 +56,9 @@
                :path (routes/v1-org-settings {:org-id username})
                :active active}))
 
+(defn crumbs [data owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:nav (map render-crumb data)]))))
 

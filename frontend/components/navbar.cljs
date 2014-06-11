@@ -1,6 +1,7 @@
 (ns frontend.components.navbar
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [frontend.components.common :as common]
+            [frontend.components.crumbs :as crumbs]
             [frontend.env :as env]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -60,7 +61,7 @@
   [:nav.header-nav
    [:div.header-nav-logo [:a {:href "/"}]]
    [:div.header-nav-breadcrumb
-    (om/build common/crumbs crumbs)]
+    (om/build crumbs/crumbs crumbs)]
    (when (show-environment? user)
      [:div.header-nav-environment
       [:span {:class (str "env-" (name (env/env)))}
