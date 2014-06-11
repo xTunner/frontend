@@ -22,7 +22,9 @@
   (fn [history-imp to args state] to))
 
 (defmulti post-navigated-to!
-  (fn [history-imp to args previous-state current-state] to))
+  (fn [history-imp to args previous-state current-state]
+    (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
+    to))
 
 ;; --- Navigation Mutlimethod Implementations ---
 

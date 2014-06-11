@@ -49,6 +49,7 @@
                                       :github-users nil}}
    :current-organization nil})
 
+(def user-path [:current-user])
 
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])

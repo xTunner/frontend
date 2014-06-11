@@ -49,7 +49,7 @@
    :build/append-action "appendAction"
    :build/update "updateObservables"
    :build/add-messages "maybeAddMessages"
-   ;; this is kind of special, it can call any function on the old VM
+   ;; this is kind of special, it can call any function on the old window.VM
    ;; luckily, it only calls refreshBuildState
    :refresh "call"})
 
@@ -72,3 +72,6 @@
 
 (defn unsubscribe [pusher-instance channel-name]
   (.unsubscribe pusher-instance channel-name))
+
+(defn subscribed-channels [pusher-instance]
+  (-> pusher-instance (aget "channels") (aget "channels") js-keys set))

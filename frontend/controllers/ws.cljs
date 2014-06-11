@@ -19,6 +19,21 @@
 ;; Exampel: (put! ws-ch [:unsubscribe "my-channel"])
 ;; the api-post-controller can do any other actions
 
+(defn fresh-channels
+  "Returns all of the channels that a user should not be unsubscribed from"
+  [state]
+  (let [build (get-in state state/build-path)
+        user (get-in state state/user-path)
+        navigation-point (:navigation-point state)
+        navigation-data (:navigation-data state)]
+    (set (concat []
+                 (when user [(pusher/user-channel user)])
+                 (when build [(pusher/build-channel build)])
+                 ;; Don't unsubscribe if the build takes a second to load
+                 (when (= navigation-point :build)
+                   [(pusher/build-channel-from-parts {:project-name (:project navigation-data)
+                                                      :build-num (:build-num navigation-data)})])))))
+
 (defn ignore-build-channel?
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
   true if the channel is stale or if the build hasn't finished loading."
@@ -111,6 +126,13 @@
 (defmethod post-ws-event! :unsubscribe
   [pusher-imp message channel-name previous-state current-state]
   (pusher/unsubscribe pusher-imp channel-name))
+
+(defmethod post-ws-event! :unsubscribe-stale-channels
+  [pusher-imp message _ previous-state current-state]
+  (doseq [channel-name (clojure.set/difference (inspect (fresh-channels current-state))
+                                               (inspect (pusher/subscribed-channels pusher-imp)))]
+    (mlog "unsubscribing from " channel-name)
+    (pusher/unsubscribe pusher-imp channel-name)))
 
 (defmethod post-ws-event! :refresh
   [pusher-imp message _ previous-state current-state]
