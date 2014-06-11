@@ -123,6 +123,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
 
+  cleanBuild: () =>
+    if @build() then @build().clean()
+    @build(null)
+
   refreshBuildState: () =>
     VM.loadProjects()
     VM.current_page().refresh()
@@ -248,8 +252,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
     @maybeLoadProjectDetails(project_name)
-    @build().clean() if @build()
-    @build(null)
+    @cleanBuild()
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
@@ -361,6 +364,7 @@ window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
   @bind 'run-route', (e, data) ->
     VM.clearErrorMessage()
+    VM.cleanBuild()
     mixpanel.track_pageview(data.path)
     if window._gaq? # we dont use ga in test mode
       window._gaq.push data.path
