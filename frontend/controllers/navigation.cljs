@@ -11,9 +11,6 @@
 
 ;; --- Helper Methods ---
 
-(def from
-  :navigation-point)
-
 (defn set-page-title! [& [title]]
   (set! (.-title js/document) (if title
                                 (str title  " - CircleCI")
@@ -48,7 +45,6 @@
 
 (defmethod navigated-to :dashboard
   [history-imp to args state]
-  (mlog "Navigated from " (from state) " to " to)
   (-> state
       (assoc :navigation-point :dashboard
              :dashboard-data (select-keys args [:branch :repo :org]))
