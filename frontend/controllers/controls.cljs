@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [put!]]
             [cljs.reader :as reader]
+            [frontend.api.build :as build-api]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
@@ -82,12 +83,7 @@
                           build_num build-id]} previous-state current-state]
   (when (get-in current-state state/show-usage-queue-path)
     (let [api-ch (get-in current-state [:comms :api])]
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
-                                  username reponame build_num)
-                  :usage-queue
-                  api-ch
-                  :context build-id))))
+      (build-api/get-usage-queue (get-in current-state state/build-path) api-ch))))
 
 
 (defmethod control-event :selected-add-projects-org
