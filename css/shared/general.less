@@ -5,17 +5,43 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 #app, #om-app{
-  .displayFlex();
-  .flex-direction(column);
+  .flexy();
   min-width: @minimumContentWidth;
   min-height: 100vh;
-  main {
+  .app-main {
     .flex(1, 1);
     outline: none; // Appears when auto-focused
+    width: ~"calc(100% - @{aside_nav_width})";
+    height: 100vh;
+    padding: 0;
+    overflow-y: auto;
   }
-  > footer {
+  .main-head {
+    .flexy(column);
+    .head-user {
+      .flexy(center, space-between);
+      height: @tile;
+      box-shadow: 0 -1px @grayBoxBorder inset;
+      .settings {
+        .flexy(center, center);
+        .tip(left);
+        width: @tile;
+        height: @tile;
+        &:not(:hover) {
+          color: @grayDark;
+        }
+      }
+    }
+  }
+  .main-body {
+    .box-sizing(border-box);
+    min-height: ~"calc(100% - @{tile})";
+    padding: @innerContentPadding 0;
+  }
+  .main-foot {
     padding: @footerItemSize 0;
     box-shadow: 0 1px @grayLightest inset;
+    margin-top: auto;
     .logo {
       display: block;
       height: @footerItemSize;

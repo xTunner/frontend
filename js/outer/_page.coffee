@@ -31,32 +31,42 @@ CI.outer.Page = class Page
     klass = "outer"
 
     args = $.extend renderContext, @viewContext(cx)
+
     header =
       $("<header></header>")
+        .addClass('main-head')
         .append(HAML.outer_header(args))
 
     content =
-      $("<main></main>")
-        .attr("id", "#{@name}-page")
+      $("<div></div>")
+        .addClass("main-body")
         .append(HAML[template](args))
 
     footer =
       $("<footer></footer>")
+        .addClass('main-foot')
         .append(HAML["footer"](args))
 
+    main =
+      $("<main></main>")
+        .addClass('app-main')
+        .attr('tabindex', '1') # Auto-focus content to enable scrolling immediately
+        .append(header)
+        .append(content)
+        .append(footer)
 
     $('#app')
       .html("")
       .removeClass('outer')
       .removeClass('inner')
       .addClass(klass)
-      .append(header)
-      .append(content)
-      .append(footer)
+      .append(main)
 
     if @opts.addLinkTargets == true
       console.log("Page:", @name, "adding link targets")
       @addLinkTargets()
+
+    main.focus()
 
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"

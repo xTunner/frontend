@@ -6,17 +6,18 @@ display = (template, args, subpage, hash) ->
 
   header =
     $("<header></header>")
-      .addClass('middle-head')
+      .addClass('main-head')
       .append(HAML.inner_header(args))
-
-  footer =
-    $("<footer></footer>")
-      .append(HAML["footer"](args))
 
   content =
     $("<div></div>")
-      .addClass("page")
+      .addClass("main-body")
       .append(HAML[template](args))
+
+  footer =
+    $("<footer></footer>")
+      .addClass('main-foot')
+      .append(HAML["footer"](args))
 
   asideL =
     $("<aside></aside>")

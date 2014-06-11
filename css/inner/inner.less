@@ -1,32 +1,5 @@
 .inner {
   background-color: @appBackgroundColor;
-  &#app {
-    > main {
-      width: ~"calc(100% - @{aside_nav_width})";
-      height: 100vh;
-      padding: 0;
-      overflow-y: auto;
-      .page {
-        .box-sizing(border-box);
-        min-height: ~"calc(100% - @{tile})";
-        padding: @innerContentPadding 0;
-      }
-      > footer {
-        padding: @footerItemSize 0;
-        box-shadow: 0 1px @grayLightest inset;
-        margin-top: auto;
-        .logo {
-          display: block;
-          height: @footerItemSize;
-          width: @footerItemSize;
-          background-image: url("@{imgPath}/logomark.svg");
-          background-size: @footerItemSize;
-          background-position: center left;
-          background-repeat: no-repeat;
-        }
-      }
-    }
-  }
   p {
     > a {
       color: @blueDark;
