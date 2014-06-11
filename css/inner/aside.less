@@ -51,26 +51,9 @@
   .aside-item {
     .flex(0, 0, @tile);
     .flexy(center);
-    white-space: nowrap;
-    &.logo {
-      .justify-content(center);
-      .underline_deboss();
-      .logomark {
-        .flexy(center, center);
-        .icon_style(@white, 2em);
-        width: @tile;
-        height: @tile;
-      }
-    }
-    &:nth-child(2) > i {transition-delay: @cascade_delay * 1;}
-    &:nth-child(3) > i {transition-delay: @cascade_delay * 2;}
-    &:nth-child(4) > i {transition-delay: @cascade_delay * 3;}
-    &:nth-child(5) > i {transition-delay: @cascade_delay * 4;}
-    &:nth-child(6) > i {transition-delay: @cascade_delay * 5;}
-  }
-  a.aside-item {
     .shadow_noboss();
     background: transparent;
+    white-space: nowrap;
     transition: (@aside_slim_speed / 2) ease-in-out;
     &:not(:hover) {
       + .aside-activity {
@@ -96,6 +79,21 @@
       background: fade(@black, 8);
       transition-duration: 0;
     }
+    &.logo {
+      .justify-content(center);
+      .underline_deboss();
+      .logomark {
+        .flexy(center, center);
+        .icon_style(@white, 2em);
+        width: @tile;
+        height: @tile;
+      }
+    }
+    // &:nth-child(2) > i {transition-delay: @cascade_delay * 1;} //
+    // &:nth-child(3) > i {transition-delay: @cascade_delay * 2;} //
+    // &:nth-child(4) > i {transition-delay: @cascade_delay * 3;} // hold off on this animation until there's multi accordions
+    // &:nth-child(5) > i {transition-delay: @cascade_delay * 4;} //
+    // &:nth-child(6) > i {transition-delay: @cascade_delay * 5;} //
     i {
       min-width: @baseFontSize;
       margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
