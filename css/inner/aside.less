@@ -28,9 +28,6 @@
     &.slim {
       width: @tile;
       .aside-item {
-        &.logo {
-          cursor: e-resize;
-        }
         i,
         img {
           margin-right: ((@tile - @baseFontSize) / 2);
@@ -58,7 +55,6 @@
     &.logo {
       .justify-content(center);
       .underline_deboss();
-      cursor: w-resize;
       .logomark {
         .flexy(center, center);
         .icon_style(@white, 2em);

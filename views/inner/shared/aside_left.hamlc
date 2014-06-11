@@ -1,6 +1,6 @@
 <!-- ko with: current_user -->
 %nav.aside-left-nav{data-bind: "css: {slim: VM.browser_settings.settings().aside_is_slim}"}
-  .aside-item.logo{data-bind: "click: width_of_aside"}
+  %a.aside-item.logo{href: "/"}
     .logomark
       != HAML.ico(n:'logo')
   -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
@@ -40,6 +40,16 @@
   %a.aside-item{href: "/docs", tooltip: "Documentation", target: "_blank"}
     %i.fa.fa-files-o
     %span Documentation
+  <!-- ko if: VM.browser_settings.settings().aside_is_slim -->
+    %a.aside-item{href: "#", tooltip: "Expand", data-bind: "click: width_of_aside"}
+      %i.fa.fa-chevron-circle-right
+      %span Expand
+  <!-- /ko -->
+  <!-- ko ifnot: VM.browser_settings.settings().aside_is_slim -->
+    %a.aside-item{href: "#", tooltip: "Collapse", data-bind: "click: width_of_aside"}
+      %i.fa.fa-chevron-circle-left
+      %span Collapse
+  <!-- /ko -->
   .aside-slideup
     %a.aside-item{href: "/account", tooltip: "User Account"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
