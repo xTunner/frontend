@@ -50,7 +50,8 @@
   [history-imp to args state]
   (mlog "Navigated from " (from state) " to " to)
   (-> state
-      (assoc :navigation-point :dashboard)
+      (assoc :navigation-point :dashboard
+             :dashboard-data (select-keys args [:branch :repo :org]))
       state-utils/reset-current-build))
 
 (defmethod post-navigated-to! :dashboard

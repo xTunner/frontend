@@ -24,6 +24,9 @@
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
+   :dashboard-data {:branch nil
+                    :repo nil
+                    :org nil}
    :current-project-data {:project nil
                           :plan nil
                           :settings {}
