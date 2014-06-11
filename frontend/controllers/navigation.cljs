@@ -50,6 +50,7 @@
   (mlog "Navigated from " (from state) " to " to)
   (-> state
       (assoc :navigation-point :dashboard)
+      (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
 (defmethod post-navigated-to! :dashboard
