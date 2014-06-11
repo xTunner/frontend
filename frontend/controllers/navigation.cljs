@@ -47,13 +47,13 @@
   [history-imp to args state]
   (-> state
       (assoc :navigation-point :dashboard
-             :dashboard-data (select-keys args [:branch :repo :org]))
+             :navigation-data (select-keys args [:branch :repo :org]))
       state-utils/reset-current-build))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp to args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        dashboard-data (:dashboard-data current-state)]
+        dashboard-data (:navigation-data current-state)]
     (api/get-projects api-ch)
     (api/get-dashboard-builds dashboard-data api-ch))
   (set-page-title!))
@@ -62,8 +62,8 @@
 (defmethod navigated-to :build-inspector
   [history-imp to [project-name build-num] state]
   (-> state
-      (assoc :inspected-project {:project project-name
-                                 :build-num build-num}
+      (assoc :navigation-data {:project project-name
+                               :build-num build-num}
              :navigation-point :build
              :project-settings-project-name project-name)
       state-utils/reset-current-build
@@ -101,7 +101,7 @@
 
 (defmethod navigated-to :add-projects
   [history-imp to [project-id build-num] state]
-  (assoc state :navigation-point :add-projects))
+  (assoc state :navigation-point :add-projects :navigation-data {}))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp to args previous-state current-state]
@@ -115,6 +115,7 @@
   [history-imp to {:keys [project-name subpage]} state]
   (-> state
       (assoc :navigation-point :project-settings)
+      (assoc :navigation-data {}) ;; XXX: maybe put subpage info here?
       (assoc :project-settings-subpage subpage)
       (assoc :project-settings-project-name project-name)
       (#(if (state-utils/stale-current-project? % project-name)
