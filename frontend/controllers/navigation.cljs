@@ -128,11 +128,20 @@
 
 
 (defmethod navigated-to :project-settings
-  [history-imp to {:keys [project-name subpage]} state]
+  [history-imp to {:keys [project-name subpage org repo]} state]
   (-> state
       (assoc :navigation-point :project-settings)
       (assoc :project-settings-subpage subpage)
       (assoc :project-settings-project-name project-name)
+      (assoc-in state/crumbs-path [{:type :org
+                                    :username org}
+                                   {:type :project
+                                    :username org
+                                    :project repo}
+                                   {:type :project-settings
+                                    :username org
+                                    :project repo
+                                    :active true}])
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
           %))))

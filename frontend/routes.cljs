@@ -34,7 +34,9 @@
 (defn open-to-project-settings! [nav-ch org-id repo-id subpage]
   (let [project-name (str org-id "/" repo-id)]
     (put! nav-ch [:project-settings {:project-name project-name
-                                     :subpage subpage}])))
+                                     :subpage subpage
+                                     :org org-id
+                                     :repo repo-id}])))
 
 (defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
