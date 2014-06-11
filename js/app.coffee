@@ -127,6 +127,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
       _rollbarParams.person = {id: @current_user().login}
+      @loadProjects() # needed on every page for aside-nav
 
     @logged_in = @komp =>
       @current_user?()
@@ -174,7 +175,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       "/img/arrow_refresh.png"
 
   loadDashboard: (cx) =>
-    @loadProjects()
     page = parseInt(cx.params.page) or 0
     @loadRecentBuilds(page)
     if window._gaq? # we dont use ga in test mode
@@ -211,8 +211,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @loadBuilds('/api/v1/recent-builds', page, refresh)
 
   loadOrg: (username, page, refresh) =>
-    if !@projects_have_been_loaded() then @loadProjects()
-
     @loadBuilds("/api/v1/organization/#{username}", page, refresh)
 
     if not refresh
@@ -220,8 +218,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
         builds_table: 'org'
 
   loadProject: (username, project, branch, page, refresh) =>
-    if !@projects_have_been_loaded() then @loadProjects()
-
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?
