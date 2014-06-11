@@ -56,17 +56,10 @@
 
 (defmethod post-navigated-to! :dashboard
   [history-imp to args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        dashboard-data (:dashboard-data current-state)]
     (api/get-projects api-ch)
-    (when-let [builds-url (cond (empty? args) "/api/v1/recent-builds"
-                                (:branch args) (gstring/format "/api/v1/project/%s/%s/tree/%s"
-                                                               (:org args) (:repo args) (:branch args))
-                                (:repo args) (gstring/format "/api/v1/project/%s/%s"
-                                                             (:org args) (:repo args))
-                                (:org args) (gstring/format "/api/v1/organization/%s"
-                                                            (:org args))
-                                :else (merror "unknown path for %s" args))]
-      (utils/ajax :get builds-url :recent-builds api-ch)))
+    (api/get-dashboard-builds dashboard-data api-ch))
   (set-page-title!))
 
 

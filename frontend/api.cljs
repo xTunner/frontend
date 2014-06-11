@@ -18,3 +18,10 @@
               :usage-queue
               api-ch
               :context (build-model/id build)))
+
+(defn get-dashboard-builds [{:keys [branch repo org]} api-ch]
+  (let [url (cond branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
+                  repo (gstring/format "/api/v1/project/%s/%s" org repo)
+                  org (gstring/format "/api/v1/organization/%s" org)
+                  :else "/api/v1/recent-builds")]
+    (utils/ajax :get url :recent-builds api-ch)))
