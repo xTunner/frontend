@@ -1,5 +1,6 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :refer [put!]]
+            [frontend.api.user :as user-api]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.utils.state :as state-utils]
@@ -55,7 +56,7 @@
 (defmethod post-navigated-to! :dashboard
   [history-imp to args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :get "/api/v1/projects" :projects api-ch)
+    (user-api/get-projects api-ch)
     (when-let [builds-url (cond (empty? args) "/api/v1/recent-builds"
                                 (:branch args) (gstring/format "/api/v1/project/%s/%s/tree/%s"
                                                                (:org args) (:repo args) (:branch args))
