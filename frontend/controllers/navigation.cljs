@@ -48,7 +48,7 @@
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
   (-> state
-      (assoc :navigation-point :dashboard
+      (assoc :navigation-point navigation-point
              :navigation-data (select-keys args [:branch :repo :org]))
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
@@ -62,12 +62,12 @@
   (set-page-title!))
 
 
-(defmethod navigated-to :build-inspector
+(defmethod navigated-to :build
   [history-imp navigation-point [project-name build-num org repo] state]
   (-> state
-      (assoc :navigation-data {:project project-name
+      (assoc :navigation-point navigation-point
+             :navigation-data {:project project-name
                                :build-num build-num}
-             :navigation-point :build
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org :username org}
                                    {:type :project :username org :project repo}
@@ -81,7 +81,7 @@
           %))))
 
 ;; XXX: add unsubscribe when you leave the build page
-(defmethod post-navigated-to! :build-inspector
+(defmethod post-navigated-to! :build
   [history-imp navigation-point [project-name build-num] previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])]
@@ -110,7 +110,7 @@
 
 (defmethod navigated-to :add-projects
   [history-imp navigation-point [project-id build-num] state]
-  (assoc state :navigation-point :add-projects :navigation-data {}))
+  (assoc state :navigation-point navigation-point :navigation-data {}))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point args previous-state current-state]
@@ -123,7 +123,7 @@
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo]} state]
   (-> state
-      (assoc :navigation-point :project-settings)
+      (assoc :navigation-point navigation-point)
       (assoc :navigation-data {}) ;; XXX: maybe put subpage info here?
       (assoc :project-settings-subpage subpage)
       (assoc :project-settings-project-name project-name)
