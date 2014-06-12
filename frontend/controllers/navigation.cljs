@@ -19,26 +19,26 @@
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti navigated-to
-  (fn [history-imp to args state] to))
+  (fn [history-imp navigation-point args state] navigation-point))
 
 (defmulti post-navigated-to!
-  (fn [history-imp to args previous-state current-state]
+  (fn [history-imp navigation-point args previous-state current-state]
     (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
-    to))
+    navigation-point))
 
 ;; --- Navigation Mutlimethod Implementations ---
 
 (defmethod navigated-to :default
-  [history-imp to args state]
-  (mlog "Unknown nav event: " (pr-str to))
+  [history-imp navigation-point args state]
+  (mlog "Unknown nav event: " (pr-str navigation-point))
   state)
 
 (defmethod post-navigated-to! :default
-  [history-imp to args previous-state current-state]
-  (mlog "No post-nav for: " to))
+  [history-imp navigation-point args previous-state current-state]
+  (mlog "No post-nav for: " navigation-point))
 
 (defmethod post-navigated-to! :navigate!
-  [history-imp to path previous-state current-state]
+  [history-imp navigation-point path previous-state current-state]
   (let [path (if (= \/ (first path))
                (subs path 1)
                path)]
@@ -46,7 +46,7 @@
 
 
 (defmethod navigated-to :dashboard
-  [history-imp to args state]
+  [history-imp navigation-point args state]
   (-> state
       (assoc :navigation-point :dashboard
              :navigation-data (select-keys args [:branch :repo :org]))
@@ -54,7 +54,7 @@
       state-utils/reset-current-build))
 
 (defmethod post-navigated-to! :dashboard
-  [history-imp to args previous-state current-state]
+  [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         dashboard-data (:navigation-data current-state)]
     (api/get-projects api-ch)
@@ -63,7 +63,7 @@
 
 
 (defmethod navigated-to :build-inspector
-  [history-imp to [project-name build-num org repo] state]
+  [history-imp navigation-point [project-name build-num org repo] state]
   (-> state
       (assoc :navigation-data {:project project-name
                                :build-num build-num}
@@ -82,7 +82,7 @@
 
 ;; XXX: add unsubscribe when you leave the build page
 (defmethod post-navigated-to! :build-inspector
-  [history-imp to [project-name build-num] previous-state current-state]
+  [history-imp navigation-point [project-name build-num] previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])]
     (utils/ajax :get
@@ -109,11 +109,11 @@
 
 
 (defmethod navigated-to :add-projects
-  [history-imp to [project-id build-num] state]
+  [history-imp navigation-point [project-id build-num] state]
   (assoc state :navigation-point :add-projects :navigation-data {}))
 
 (defmethod post-navigated-to! :add-projects
-  [history-imp to args previous-state current-state]
+  [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (utils/ajax :get "/api/v1/user/organizations" :organizations api-ch)
     (utils/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
@@ -121,7 +121,7 @@
 
 
 (defmethod navigated-to :project-settings
-  [history-imp to {:keys [project-name subpage org repo]} state]
+  [history-imp navigation-point {:keys [project-name subpage org repo]} state]
   (-> state
       (assoc :navigation-point :project-settings)
       (assoc :navigation-data {}) ;; XXX: maybe put subpage info here?
@@ -143,7 +143,7 @@
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?
 (defmethod post-navigated-to! :project-settings
-  [history-imp to {:keys [project-name subpage]} previous-state current-state]
+  [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
