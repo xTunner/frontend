@@ -50,6 +50,7 @@
   (-> state
       (assoc :navigation-point :dashboard
              :navigation-data (select-keys args [:branch :repo :org]))
+      (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
 (defmethod post-navigated-to! :dashboard
@@ -62,12 +63,18 @@
 
 
 (defmethod navigated-to :build-inspector
-  [history-imp to [project-name build-num] state]
+  [history-imp to [project-name build-num org repo] state]
   (-> state
       (assoc :navigation-data {:project project-name
                                :build-num build-num}
              :navigation-point :build
              :project-settings-project-name project-name)
+      (assoc-in state/crumbs-path [{:type :org :username org}
+                                   {:type :project :username org :project repo}
+                                   {:type :project-branch :username org :project repo}
+                                   {:type :build :username org :project repo
+                                    :build-num build-num :active true}
+                                   {:type :project-settings :username org :project repo}])
       state-utils/reset-current-build
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
@@ -114,12 +121,21 @@
 
 
 (defmethod navigated-to :project-settings
-  [history-imp to {:keys [project-name subpage]} state]
+  [history-imp to {:keys [project-name subpage org repo]} state]
   (-> state
       (assoc :navigation-point :project-settings)
       (assoc :navigation-data {}) ;; XXX: maybe put subpage info here?
       (assoc :project-settings-subpage subpage)
       (assoc :project-settings-project-name project-name)
+      (assoc-in state/crumbs-path [{:type :org
+                                    :username org}
+                                   {:type :project
+                                    :username org
+                                    :project repo}
+                                   {:type :project-settings
+                                    :username org
+                                    :project repo
+                                    :active true}])
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
           %))))

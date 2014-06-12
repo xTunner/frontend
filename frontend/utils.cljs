@@ -69,8 +69,14 @@
   (put! ch [:error-triggered message]))
 
 (defn trim-middle [s length]
-  ;; XXX Implement proper middle-trim
-  (subs s 0 (min length (count s))))
+  (let [str-len (count s)]
+    (if (<= str-len (+ length 3))
+      s
+      (let [over (+ (- str-len length) 3)
+            slice-pos (.ceil js/Math (/ (- length 3) 3))]
+        (str (subs s 0 slice-pos)
+             "..."
+             (subs s (+ slice-pos over)))))))
 
 (defn third [coll]
   (nth coll 2 nil))

@@ -115,6 +115,9 @@
       state
       (-> state
           (assoc-in state/build-path build)
+          (assoc-in (conj (state/project-branch-crumb-path state)
+                          :branch)
+                    (:branch build))
           (assoc-in state/containers-path containers)))))
 
 (defmethod post-api-event! [:build :success]
