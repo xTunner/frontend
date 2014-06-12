@@ -95,7 +95,7 @@
                   :project-plan
                   api-ch
                   :context {:project-name project-name}))
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project
+    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
                                                                              :build-num build-num})
                              :messages pusher/build-messages}]))
   (set-page-title! (str project-name " #" build-num)))
