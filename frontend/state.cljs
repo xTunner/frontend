@@ -61,6 +61,7 @@
 (defn invite-login-path [login] (conj invite-logins-path login))
 
 (def usage-queue-path [:current-build-data :usage-queue-data :builds])
+(defn usage-queue-build-path [build-index] (conj usage-queue-path build-index))
 (def show-usage-queue-path [:current-build-data :usage-queue-data :show-usage-queue])
 
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])

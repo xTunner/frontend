@@ -5,6 +5,7 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
+            [frontend.utils.seq :refer [find-index]]
             [frontend.state :as state]
             [frontend.utils :as utils :refer [mlog]])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -41,6 +42,11 @@
   (and (get-in state state/build-path)
        (not= channel-name (pusher/build-channel (get-in state state/build-path)))))
 
+(defn usage-queue-build-index-from-channel-name [state channel-name]
+  "Returns index if there is a usage-queued build showing with the given channel name"
+  (when-let [builds (seq (get-in state state/usage-queue-path))]
+    (find-index #(= channel-name (pusher/build-channel %)) builds)))
+
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti ws-event
@@ -62,8 +68,11 @@
 
 (defmethod ws-event :build/update
   [pusher-imp message {:keys [data channel-name]} state]
-  (with-swallow-ignored-build-channels state channel-name
-    (update-in state state/build-path merge (js->clj data :keywordize-keys true))))
+  (if-not (ignore-build-channel? state channel-name)
+    (update-in state state/build-path merge (js->clj data :keywordize-keys true))
+    (if-let [index (usage-queue-build-index-from-channel-name state channel-name)]
+      (update-in state (state/usage-queue-build-path index) merge (js->clj data :keywordize-keys true))
+      state)))
 
 
 (defmethod ws-event :build/new-action
