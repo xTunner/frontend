@@ -153,8 +153,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       success: (data) =>
         @retrieved_output(true)
         ## reset the converters
-        @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
-        @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+        @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue", "brblack")
+        @stderrConverter = CI.terminal.ansiToHtmlConverter("red", "brblack")
 
         # Reset the output so far
         @final_out.removeAll()
