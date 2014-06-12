@@ -34,7 +34,7 @@
     (-> action
         (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
         (assoc-in [:output output-index :react-key] (utils/uuid))
-        (assoc-in [:converters-state (keyword (:type output))] (js->clj (.currentState converter) :keywordize-keys true)))))
+        (assoc-in [:converters-state (keyword (:type output))] (utils/js->clj-kw (.currentState converter))))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]

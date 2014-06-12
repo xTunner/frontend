@@ -69,9 +69,9 @@
 (defmethod ws-event :build/update
   [pusher-imp message {:keys [data channel-name]} state]
   (if-not (ignore-build-channel? state channel-name)
-    (update-in state state/build-path merge (js->clj data :keywordize-keys true))
+    (update-in state state/build-path merge (utils/js->clj-kw data))
     (if-let [index (usage-queue-build-index-from-channel-name state channel-name)]
-      (update-in state (state/usage-queue-build-path index) merge (js->clj data :keywordize-keys true))
+      (update-in state (state/usage-queue-build-path index) merge (utils/js->clj-kw data))
       state)))
 
 
@@ -79,7 +79,7 @@
   [pusher-imp message {:keys [data channel-name]} state]
   ;; XXX non-parallel actions need to be repeated across containers
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index action-log :log} (js->clj data :keywordize-keys true)]
+    (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
       (-> state
           (build-model/fill-containers container-index action-index)
           (assoc-in (state/action-path container-index action-index) action-log)
@@ -89,7 +89,7 @@
 (defmethod ws-event :build/update-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index action-log :log} (js->clj data :keywordize-keys true)]
+    (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
       (-> state
           (build-model/fill-containers container-index action-index)
           (update-in (state/action-path container-index action-index) merge action-log)
@@ -100,12 +100,12 @@
 (defmethod ws-event :build/append-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
+    (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
       (if (not= container-index (get-in state state/current-container-path 0))
         (do (mlog "Ignoring output for inactive container: " container-index)
             state)
 
-        (let [{action-index :step container-index :index output :out} (js->clj data :keywordize-keys true)]
+        (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
           (-> state
               (build-model/fill-containers container-index action-index)
               (update-in (state/action-output-path container-index action-index) vec)
@@ -116,7 +116,7 @@
 (defmethod ws-event :build/add-messages
   [pusher-imp message {:keys [data channel-name]} state]
   (let [build (get-in state state/build-path)
-        new-messages (set (js->clj data :keywordize-keys true))]
+        new-messages (set (utils/js->clj-kw data))]
     (with-swallow-ignored-build-channels state channel-name
       (update-in state (conj state/build-path :messages)
                  (fn [messages] (-> messages
