@@ -6,6 +6,7 @@ CI.outer.MarketoForms = class MarketoForms
     @Email = ko.observable()
     @Company = ko.observable()
     @repo_solution__c = ko.observable()
+    @DockerUse = ko.observable()
     @munchkinId = "894-NPA-635"
     @_mkto_trk = $.cookie('_mkto_trk')
     @notice = ko.observable()
@@ -50,5 +51,37 @@ CI.outer.MarketoForms = class MarketoForms
           @notice
             type: 'error'
             message: 'Network error! Please reach out at sayhi@circleci.com. Thanks!'
-          
-          
+
+  submitDockerForm: (data, event) =>
+      if not (@Email())
+        @notice
+          type: 'error'
+          message: 'Email is required.'
+
+      else
+        $.ajax
+          url: "http://app-abm.marketo.com/index.php/leadCapture/save2"
+          type: "POST"
+          event: event
+          data:
+            Email: @Email()
+            docker_use__c: @DockerUse()
+            munchkinId: @munchkinId
+            formid: @formid
+            _mkt_trk: @_mkt_trk
+            formVid: @formid
+          contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+
+          success: () =>
+            @Email(null)
+            @DockerUse(null)
+            @notice
+              type: 'success'
+              message: 'Thanks! We will be in touch soon.'
+          error: (error) =>
+            @notice
+              type: 'error'
+              message: 'Network error! Please reach out at sayhi@circleci.com. Thanks!'
+            
+            
+            
