@@ -122,7 +122,8 @@ CI.outer.About = class About extends CI.outer.Page
       github: "venantius"
       twitter: "venantius"
       email: "dave@circleci.com"
-      bio: ""
+      bio: ["Dave's worst nightmare is to be boring. His childhood was split between New York City, Tokyo, and Bristol (U.K.), and he's never really felt at home anywhere since. In his spare time he plays an unreasonable amount of pool at the diviest bars he can find, and gardens aggressively in the hours before they open. One of the lucky few to live somewhere in San Francisco with a decent back yard, he's also a (discreet) amateur archer. In his prior life as a theater nerd, he designed theater sets (a production of Richard III being his favorite) and acted in independent theater productions in Chicago. Along with a few friends, he founded, edited and wrote a blog consisting of critical essays on video games, right up until the day he forgot to renew the domain name. Womp-womp.",
+      "CircleCI is his first job as a software developer, though his prior job involved hacking together the tools and libraries needed to help analyze petabyte-scale datasets as a data scientist. Before that, he worked as an honest-to-god economist for a small consulting outfit in Chicago, where he conducted economic impact analysis work for such clients as Argonne National Laboratory and the U.S. Department of Energy. He's now in the midst of launching a small hedge fund...because there actually *are* enough hours in the day. He joins Circle with the daydream of getting the time between each push and the next commit just that tiny bit shorter."]
     "startling":
       name: "Tim Dixon"
       img_path: '(asset-path "img/outer/about/tim.png")'

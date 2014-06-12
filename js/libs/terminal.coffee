@@ -1,9 +1,10 @@
 CI.terminal =
-  ansiToHtmlConverter: (defaultColor, state={}) ->
+  ansiToHtmlConverter: (defaultColor, defaultBackgroundColor, state={}) ->
     default_state =
       trailing_raw: ""
       trailing_out: ""
       color: defaultColor
+      bgcolor: defaultBackgroundColor
       italic: false
       bold: false
 
@@ -16,9 +17,11 @@ CI.terminal =
       color: initial_state.color
       italic: initial_state.italic
       bold: initial_state.bold
+      bgcolor: initial_state.bgcolor
 
       reset: () ->
         @color = defaultColor
+        @bgcolor = defaultBackgroundColor
         @italic = false
         @bold = false
 
@@ -38,6 +41,23 @@ CI.terminal =
           when 36 then @color = "cyan"
           when 37 then @color = "white"
           when 39 then @color = defaultColor
+          when 40 then @bgcolor = "white"
+          when 41 then @bgcolor = "red"
+          when 42 then @bgcolor = "green"
+          when 43 then @bgcolor = "yellow"
+          when 44 then @bgcolor = "blue"
+          when 45 then @bgcolor = "magenta"
+          when 46 then @bgcolor = "cyan"
+          when 47 then @bgcolor = "white"
+          when 49 then @bgcolor = defaultBackgroundColor
+          when 90 then @color = "brwhite"
+          when 91 then @color = "brred"
+          when 92 then @color = "brgreen"
+          when 93 then @color = "bryellow"
+          when 94 then @color = "brblue"
+          when 95 then @color = "brmagenta"
+          when 96 then @color = "brcyan"
+          when 99 then @color = defaultColor
 
       classes: () ->
         classes = []
@@ -47,6 +67,8 @@ CI.terminal =
           classes.push("#{@color}")
         if @italic
           classes.push("italic")
+        if @bgcolor != defaultBackgroundColor
+          classes.push("bg-#{@bgcolor}")
 
         classes
 
@@ -91,13 +113,21 @@ CI.terminal =
       trailing_raw = ""
       trailing_out = ""
 
-      # loop over lines
-      while current.length and ((line_end = current.search(/\r|\n|$/)) != -1)
-        next_line_start = current.slice(line_end).search(/[^\r\n]/)
-        if next_line_start == -1
-          terminator = current.slice(line_end)
-        else
-          terminator = current.slice(line_end, line_end + next_line_start)
+      # loop over lines. ^[0G is treated as equivalent to \r, and acts as a line separator.
+      while current.length and ((line_end = current.search(/\u001B\[0G|\r|\n|$/)) != -1)
+        # find end of the line terminator
+        terminator_end = line_end
+        while true
+          if current.lastIndexOf("\u001B\[0G", terminator_end) == terminator_end
+            terminator_end += 4
+          else if current.lastIndexOf("\r", terminator_end) == terminator_end
+            terminator_end += 1
+          else if current.lastIndexOf("\n", terminator_end) == terminator_end
+            terminator_end += 1
+          else
+            break
+
+        terminator = current.slice(line_end, terminator_end)
         input_line = current.slice(0, line_end + terminator.length)
         original_input_line = input_line
         output_line = ""
@@ -132,14 +162,14 @@ CI.terminal =
           trailing_raw = original_input_line
           trailing_out = output_line
         else
-          # don't write the output line if it ends with a carriage return, for primitive
-          # terminal animations...
-          if terminator.search(/^\r+$/) == -1
+          # don't write the output line if it ends with a carriage return or ^[0G, for
+          # primitive terminal animations...
+          if terminator.search(/^(\u001B\[0G|\r)+$/) == -1
             output += output_line
 
       @wrapDefaultColor(output)
 
   ansiToHtml: (str) ->
     # convenience function for testing
-    converter = @ansiToHtmlConverter("brblue")
+    converter = @ansiToHtmlConverter("brblue", "brblack")
     converter.append(str) + converter.get_trailing()
