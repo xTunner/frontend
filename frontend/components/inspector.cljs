@@ -6,7 +6,7 @@
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn inspector [app owner opts]
+(defn inspector [app owner]
   (reify
     om/IRender
     (render [_]

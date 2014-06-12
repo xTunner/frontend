@@ -24,7 +24,7 @@
           :else
           (str (time/in-minutes trial-interval) " minutes"))))
 
-(defn trial-notice [plan owner opts]
+(defn trial-notice [plan owner]
   (reify
     om/IRender
     (render [_]
@@ -61,13 +61,13 @@
 (defn show-enable-notice [project]
   (not (:has_usable_key project)))
 
-(defn enable-notice [project owner opts]
+(defn enable-notice [project owner]
   (reify
     om/IRender
     (render [_]
       (let [project-name (vcs-url/project-name (:vcs_url project))
             project-id (project-model/id project)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.row-fluid
           [:div.offset1.span10
@@ -86,13 +86,13 @@
   ;; project has followers
   (not (:followed project)))
 
-(defn follow-notice [project owner opts]
+(defn follow-notice [project owner]
   (reify
     om/IRender
     (render [_]
       (let [project-name (vcs-url/project-name (:vcs_url project))
             vcs-url (:vcs_url project)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.row-fluid
           [:div.offset1.span10

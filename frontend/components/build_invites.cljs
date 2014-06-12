@@ -17,12 +17,12 @@
        (map (fn [u] (select-keys u [:email :login :id])))
        vec))
 
-(defn invite-tile [user owner opts]
+(defn invite-tile [user owner]
   (reify
     om/IRender
     (render [_]
       (let [{:keys [gravatar_id email login index]} user
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:li
           [:div.invite-gravatar
@@ -49,12 +49,12 @@
   (reify
     om/IWillMount
     (will-mount [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             project-name (:project-name opts)]
         (put! controls-ch [:load-first-green-build-github-users {:project-name project-name}])))
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             project-name (:project-name opts)
             users (remove :following (:github-users invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
@@ -78,7 +78,7 @@
                 :on-click #(put! controls-ch [:invite-selected-none])}
             "none"]
            [:ul
-            (om/build-all invite-tile users {:opts opts :key :login})]]
+            (om/build-all invite-tile users {:key :login})]]
           [:footer
            [:button (let [users-to-invite (utils/inspect (invitees users))]
                       {:on-click #(put! controls-ch [:invited-github-users {:invitees users-to-invite

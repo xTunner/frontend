@@ -127,11 +127,11 @@
                                                                        :value build-id}])}
              [:span (str "Use " build-id " om compiler")]]))))]]])
 
-(defn navbar [app owner opts]
+(defn navbar [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             user (:current-user app)]
         (html/html
          (if user

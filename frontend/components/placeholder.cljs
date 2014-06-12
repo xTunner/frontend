@@ -5,7 +5,7 @@
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn placeholder [app owner opts]
+(defn placeholder [app owner]
   (reify
     om/IRender
     (render [_]

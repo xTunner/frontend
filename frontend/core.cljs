@@ -133,7 +133,7 @@
      app/app
      state
      {:target container
-      :opts {:comms comms}})
+      :shared {:comms comms}})
     (go (while true
           (alt!
            (:controls comms) ([v] (controls-handler v state container))

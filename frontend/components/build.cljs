@@ -46,25 +46,25 @@
           (common/contact-us-inner controls-ch)
           " if you're interested in the cause of the problem."])])))
 
-(defn container-pill [{:keys [container current-container-id]} owner opts]
+(defn container-pill [{:keys [container current-container-id]} owner]
   (reify
     om/IRender
     (render [_]
       (html
        (let [container-id (container-model/id container)
-             controls-ch (get-in opts [:comms :controls])]
+             controls-ch (om/get-shared owner [:comms :controls])]
          [:li {:class (when (= container-id current-container-id) "active")}
           [:a.container-selector
            {:on-click #(put! controls-ch [:container-selected container-id])
             :class (container-model/status-classes container)}
            (str "C" (:index container))]])))))
 
-(defn container-pills [container-data owner opts]
+(defn container-pills [container-data owner]
   (reify
     om/IRender
     (render [_]
       (let [{:keys [containers current-container-id]} container-data
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.containers.pagination.pagination-centered (when-not (< 1 (count containers))
                                                            {:style {:display "none"}})
@@ -73,15 +73,14 @@
              (om/build container-pill
                        {:container container
                         :current-container-id current-container-id}
-                       {:opts opts
-                        :react-key (:index container)}))]])))))
+                       {:react-key (:index container)}))]])))))
 
 (defn show-trial-notice? [plan]
   (and (plan-model/trial? plan)
        (plan-model/trial-over? plan)
        (> 4 (plan-model/days-left-in-trial plan))))
 
-(defn notices [data owner opts]
+(defn notices [data owner]
   (reify
     om/IRender
     (render [_]
@@ -91,7 +90,7 @@
              plan (:plan project-data)
              project (:project project-data)
              build (:build build-data)
-             controls-ch (get-in opts [:comms :controls])]
+             controls-ch (om/get-shared owner [:comms :controls])]
          [:div.row-fluid
           [:div.offset1.span10
            [:div (common/messages (:messages build))]
@@ -109,13 +108,13 @@
            (when (build-model/display-build-invite build)
              (om/build build-invites/build-invites
                        (:invite-data build-data)
-                       {:opts (assoc opts :project-name (vcs-url/project-name (:vcs_url build)))}))
+                       {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
 
            (when (and (build-model/config-errors? build)
                       (not (:dismiss-config-errors build-data)))
-             (om/build build-config/config-errors build {:opts opts}))]])))))
+             (om/build build-config/config-errors build))]])))))
 
-(defn build [data owner opts]
+(defn build [data owner]
   (reify
     om/IRender
     (render [_]
@@ -123,7 +122,7 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             project-data (get-in data state/project-data-path)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div#build-log-container
           (if-not build
@@ -132,14 +131,12 @@
              [:div.loading-spinner common/spinner]]
 
             [:div
-             (om/build build-head/build-head (dissoc build-data :container-data) {:opts opts})
+             (om/build build-head/build-head (dissoc build-data :container-data))
              (common/flashes)
-             (om/build notices
-                       {:build-data (dissoc build-data :container-data)
-                        :project-data project-data}
-                       {:opts opts})
-             (om/build container-pills container-data {:opts opts})
-             (om/build build-steps/container-build-steps container-data {:opts opts})
+             (om/build notices {:build-data (dissoc build-data :container-data)
+                                :project-data project-data})
+             (om/build container-pills container-data)
+             (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))

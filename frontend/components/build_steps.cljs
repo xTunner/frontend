@@ -28,7 +28,7 @@
     "db" "You specified this command on the project settings page"
     "Unknown source"))
 
-(defn output [out owner opts]
+(defn output [out owner]
   (reify
     om/IRender
     (render [_]
@@ -37,7 +37,7 @@
          [:span.pre {:dangerouslySetInnerHTML
                      #js {"__html" message-html}}])))))
 
-(defn trailing-output [converters-state owner opts]
+(defn trailing-output [converters-state owner]
   (reify
     om/IRender
     (render [_]
@@ -46,11 +46,11 @@
          [:span {:dangerouslySetInnerHTML
                  #js {"__html" trailing-out}}])))))
 
-(defn action [action owner opts]
+(defn action [action owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             visible? (get action :show-output (or (not= "success" (:status action))
                                                   (seq (:messages action))))
             header-classes  (concat [(:status action)]
@@ -116,20 +116,19 @@
                     [:pre.output.solarized {:style {:white-space "normal"}}
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])
-                     (om/build-all output (:output action) {:opts opts
-                                                            :key :react-key})
+                     (om/build-all output (:output action) {:key :react-key})
 
-                     (om/build trailing-output (:converters-state action) {:opts opts})
+                     (om/build trailing-output (:converters-state action))
 
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
 
-(defn container-view [{:keys [container non-parallel-actions]} owner opts]
+(defn container-view [{:keys [container non-parallel-actions]} owner]
   (reify
     om/IRender
     (render [_]
       (let [container-id (container-model/id container)
-            controls-ch (get-in opts [:comms :controls])
+            controls-ch (om/get-shared owner [:comms :controls])
             actions (remove :filler-action
                             (map (fn [action]
                                    (get non-parallel-actions (:step action) action))
@@ -137,9 +136,9 @@
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
-          (om/build-all action actions {:opts opts :key :step})])))))
+          (om/build-all action actions {:key :step})])))))
 
-(defn container-build-steps [{:keys [containers current-container-id]} owner opts]
+(defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
     om/IRender
     (render [_]
@@ -150,7 +149,7 @@
                                       (map (fn [action]
                                              [(:step action) action]))
                                       (into {}))
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
@@ -172,5 +171,4 @@
            (for [container containers]
              (om/build container-view
                        {:container container
-                        :non-parallel-actions non-parallel-actions}
-                       {:opts opts}))]])))))
+                        :non-parallel-actions non-parallel-actions}))]])))))

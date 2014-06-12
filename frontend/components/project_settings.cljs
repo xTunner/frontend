@@ -676,14 +676,14 @@
          [:button {:on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
           "Follow"]))]]))
 
-(defn project-settings [data owner opts]
+(defn project-settings [data owner]
   (reify
     om/IRender
     (render [_]
       (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
             subpage (:project-settings-subpage data)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner common/spinner]

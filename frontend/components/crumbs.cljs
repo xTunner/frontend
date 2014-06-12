@@ -56,9 +56,8 @@
                :path (routes/v1-org-settings {:org-id username})
                :active active}))
 
-(defn crumbs [data owner opts]
+(defn crumbs [data owner]
   (reify
     om/IRender
     (render [_]
       (html [:nav (map render-crumb data)]))))
-
