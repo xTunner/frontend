@@ -26,7 +26,7 @@
     (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
     navigation-point))
 
-;; --- Navigation Mutlimethod Implementations ---
+;; --- Navigation Multimethod Implementations ---
 
 (defmethod navigated-to :default
   [history-imp navigation-point args state]
