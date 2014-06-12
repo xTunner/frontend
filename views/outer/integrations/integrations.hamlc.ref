@@ -6,7 +6,7 @@
 
       %article.integrations-hero-title
 
-        %h1 Circle is Supporting Docker!
+        %h1 CircleCI is Supporting Docker!
         /%h3  better control on test environment... bringing your production environment into test env (i.e. circle)
 
       %article.integrations-hero-units
@@ -16,7 +16,7 @@
           != HAML.circle_logo({})
 
           /%h3 
-          %p Circle makes modern continous integration and deployment easy.
+          %p CircleCI makes modern continous integration and deployment easy.
 
         .integrations-hero-unit
 
