@@ -7,17 +7,22 @@
       %article.integrations-hero-title
 
         %h1 Circle is Supporting Docker!
+        /%h3  better control on test environment... bringing your production environment into test env (i.e. circle)
 
       %article.integrations-hero-units
 
         .integrations-hero-unit
 
           != HAML.circle_logo({})
+
+          /%h3 
           %p Circle makes modern continous integration and deployment easy.
 
         .integrations-hero-unit
 
-          %img{src: "../img/docker-logo.png"}
+          != HAML.enterprise_cloud({})
+
+          /%h3 
           %p Docker makes it easy to build, run, and ship applications anywhere.  
 
       %h3.message Together they make it easy to test and ship your entire cloud in one place. 
