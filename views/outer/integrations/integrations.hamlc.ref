@@ -20,7 +20,7 @@
 
         .integrations-hero-unit
 
-          != HAML.enterprise_cloud({})
+          != HAML.docker_logo({})
 
           /%h3 
           %p Docker makes it easy to build, run, and ship applications anywhere.  
