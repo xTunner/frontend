@@ -45,14 +45,14 @@
       %p.center-text Let us know how you would like to use CircleCI with Docker to move to top of the beta queue!
       .docker-cta
         %h3 Sign Up For Beta
-        %form{data-bind: "with: new CI.outer.MarketoForms($element, 1022)"}
+        %form{data-bind: "with: new CI.outer.MarketoForms($element, 1036)"}
           %input{type: "text", data-bind: "value: Email", required: "false", name: "Email"}
           %label{placeholder: "Email", alt: "Email (required)"}
-          %textarea{type: "text", data-bind: "value: Email", required: "false", name: "Email"}
+          %textarea{data-bind: "value: DockerUse", required: "false", name: "docker_use__c"}
           %label{placeholder: "How do you want to use it?", alt: "How do you want to use it?"}
           .notice{data-bind: "with: notice"}
             %span{data-bind: "text: message, attr: {class: type}"}
           .submit
-            %input{type: "submit", data-bind: "click: submitShopifyStoryForm", value: "Submit"}
+            %input{type: "submit", data-bind: "click: submitDockerForm", value: "Submit"}
 
   
