@@ -58,7 +58,7 @@ CI.outer.MarketoForms = class MarketoForms
           type: 'error'
           message: 'Email is required.'
 
-      else
+      else if mktoMunchkin?
         $.ajax
           url: "http://app-abm.marketo.com/index.php/leadCapture/save2"
           type: "POST"
@@ -82,6 +82,24 @@ CI.outer.MarketoForms = class MarketoForms
             @notice
               type: 'error'
               message: 'Network error! Please reach out at sayhi@circleci.com. Thanks!'
-            
+      else
+        $.ajax
+          url: "/about/contact"
+          type: "POST"
+          event: event
+          data:
+            name: 'interested in Docker'
+            email: @Email()
+            message: @DockerUse()
+
+          contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+          success: (data) =>
+            # clear inputs
+            @Email(null)
+            @DockerUse(null)
+            @notice
+              type: 'success'
+              message: 'Thanks! We will be in touch soon.'
+                
             
             
