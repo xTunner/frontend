@@ -11,7 +11,7 @@
     (render [_]
       (let [builds (:recent-builds data)
             nav-ch (get-in data [:comms :nav])
-            controls-ch (get-in data [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          ;; XXX logic for dashboard not ready
          ;; XXX logic for show add projects

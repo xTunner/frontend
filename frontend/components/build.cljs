@@ -97,13 +97,13 @@
            [:div (report-error build controls-ch)]
 
            (when (and plan (show-trial-notice? plan))
-             (om/build project-common/trial-notice plan {:opts opts}))
+             (om/build project-common/trial-notice plan))
 
            (when (and project (project-common/show-enable-notice project))
-             (om/build project-common/enable-notice project {:opts opts}))
+             (om/build project-common/enable-notice project))
 
            (when (and project (project-common/show-follow-notice project))
-             (om/build project-common/follow-notice project {:opts opts}))
+             (om/build project-common/follow-notice project))
 
            (when (build-model/display-build-invite build)
              (om/build build-invites/build-invites

@@ -19,7 +19,7 @@
 (def keymap
   (atom nil))
 
-(defn loading [app owner opts]
+(defn loading [app owner]
   (reify
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
