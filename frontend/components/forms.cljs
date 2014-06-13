@@ -40,7 +40,7 @@
                                           cycles)))
                    1000)))
 
-(defn stateful-submit [hiccup-form owner opts]
+(defn stateful-submit [hiccup-form owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -50,7 +50,7 @@
       (utils/inspect lifecycle)
       (when (#{:success :failed} (last lifecycle))
         (schedule-idle owner lifecycle))
-      (let [api-mult (get-in opts [:comms :api-mult])
+      (let [api-mult (om/get-shared owner [:comms :api-mult])
             button-state (last lifecycle)
             [tag attrs & rest] hiccup-form
             new-value (get attrs (keyword (str "data-" (name button-state) "-text")))

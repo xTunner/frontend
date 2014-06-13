@@ -535,8 +535,7 @@
                                                                                            :label label}}])
                                   false)
                    :value "Create token",
-                   :type "submit"}]
-                 {:opts opts})]
+                   :type "submit"}])]
       (when-let [tokens (seq (:tokens project-data))]
         [:table
          [:thead
