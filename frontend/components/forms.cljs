@@ -1,6 +1,7 @@
 (ns frontend.components.forms
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]])
@@ -87,7 +88,10 @@
       (let [api-mult (om/get-shared owner [:comms :api-mult])
             button-state (last lifecycle)
             [tag attrs & rest] hiccup-form
-            new-value (get attrs (keyword (str "data-" (name button-state) "-text")))
+            new-value (get attrs (keyword (str "data-" (name button-state) "-text")) (:value attrs))
+            new-body (cond (= :idle button-state) rest
+                           (:data-spinner attrs) common/spinner
+                           :else new-value)
             new-attrs (-> attrs
                           ;; disable the button when it's not idl
                           (assoc :disabled (not= :idle button-state))
@@ -111,4 +115,4 @@
                                                 (or new-value v))))]
         (html
          (vec (concat [tag new-attrs]
-                      (if new-value [new-value] rest))))))))
+                      [new-body])))))))
