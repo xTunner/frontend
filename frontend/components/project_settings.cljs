@@ -525,7 +525,7 @@
         {:required true, :type "text" :value label
          :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
        [:label {:placeholder "Token label"}]
-       (om/build forms/stateful-submit
+       (om/build forms/stateful-button
                  [:input
                   {:data-failed-text "Failed",
                    :data-success-text "Created",
@@ -695,5 +695,5 @@
             [:div.project-settings-inner
              (common/flashes)
              [:div#subpage
-              ((subpage-fn subpage user) project-data controls-ch opts)]]
+              ((subpage-fn subpage user) project-data controls-ch)]]
             (follow-sidebar (:project project-data) controls-ch)]))))))

@@ -6,64 +6,106 @@
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-(defn tap-api [api-mult uuid success-fn failure-fn]
-  (let [api-tap (chan)
-        timeout (async/timeout (* 1000 30))]
-    (async/tap api-mult api-tap)
-    (go-loop []
-             (alt! api-tap ([v]
-                              (cond
-                               (and (= uuid (:uuid (meta v)))
-                                    (#{:success :failed} (second v)))
-                               (do (if (= :success (second v))
-                                     (success-fn)
-                                     (failure-fn))
-                                   (close! api-tap))
+(defn tap-api
+  "Sets up a tap of the api channel and watches for the API request associated with
+  the form submission to complete.
+  Runs success-fn if the API call was succesful and failure-fn if it failed."
+  [api-mult api-tap uuid {:keys [success-fn failure-fn]}]
+  (async/tap api-mult api-tap)
+  (go-loop []
+           (alt! api-tap
+                 ([v]
+                    (let [message-uuid (:uuid (meta v))
+                          status (second v)]
+                      (cond
+                       (and (= uuid message-uuid)
+                            (#{:success :failed} status))
+                       (do (if (= :success status)
+                             (success-fn)
+                             (failure-fn))
+                           ;; There's a chance of a race if the button gets clicked twice.
+                           ;; No good ideas on how to fix it, and it shouldn't happen,
+                           ;; so punting for now
+                           (async/untap api-mult api-tap))
 
-                               (nil? v) nil ;; don't recur on closed channel
+                       (nil? v) nil ;; don't recur on closed channel
 
-                               :else (recur)))
+                       :else (recur)))))))
 
-                   timeout (do (close! api-tap)
-                               (failure-fn)
-                               (utils/mlog "Gave up on api-ch"))))))
+(defn append-cycle
+  "Adds the button-state to the end of the lifecycle"
+  [owner button-state]
+  (om/update-state! owner [:lifecycle] #(conj % button-state)))
 
-(defn append-cycle [owner lifecycle-value]
-  (om/update-state! owner [:lifecycle] (fn [l] (conj l lifecycle-value))))
+(defn schedule-idle
+  "Transistions the state from success/failed to idle."
+  [owner lifecycle]
+  ;; Clear timer, just in case. No harm in clearing nil or finished timers
+  (js/clearInterval (om/get-state owner [:idle-timer]))
+  (let [cycle-count (count lifecycle)
+        t (js/setTimeout
+           ;; Careful not to transition to idle if the spinner somehow got
+           ;; back to a loading state. This shouldn't happen, but we'll be
+           ;; extra careful.
+           #(om/update-state! owner [:lifecycle]
+                              (fn [cycles]
+                                (if (= (count cycles) cycle-count)
+                                  (conj cycles :idle)
+                                  cycles)))
+           1000)]
+    (om/set-state! owner [:idle-timer] t)))
 
-(defn schedule-idle [owner lifecycle]
-  (let [cycle-count (count lifecycle)]
-    (js/setTimeout #(om/update-state! owner [:lifecycle]
-                                      (fn [cycles]
-                                        (if (= (count cycles) cycle-count)
-                                          (conj cycles :idle)
-                                          cycles)))
-                   1000)))
+(defn cleanup
+  "Cleans up api-tap channel and stops the idle timer from firing"
+  [owner]
+  (close! (om/get-state owner [:api-tap]))
+  (js/clearTimeout (om/get-state owner [:idle-timer])))
 
-(defn stateful-submit [hiccup-form owner]
+(defn stateful-button
+  "Takes an ordinary input or button hiccup form.
+  Disables the button while it waits for the API response to come back.
+  When the button is clicked, it replaces the button value with data-loading-text,
+  when the response comes back, it replaces the button with the data-:status-text for a second."
+  [hiccup-form owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:lifecycle [:idle]})
-    om/IRenderState
-    (render-state [_ {:keys [lifecycle]}]
-      (utils/inspect lifecycle)
+      {:lifecycle [:idle]
+       ;; use a sliding-buffer so that we don't block
+       :api-tap (chan (sliding-buffer 10))
+       :idle-timer nil})
+
+    om/IWillUnmount (will-unmount [_] (cleanup owner))
+
+    om/IWillUpdate
+    (will-update [_ _ {:keys [lifecycle]}]
       (when (#{:success :failed} (last lifecycle))
-        (schedule-idle owner lifecycle))
+        (schedule-idle owner lifecycle)))
+
+    om/IRenderState
+    (render-state [_ {:keys [lifecycle api-tap]}]
       (let [api-mult (om/get-shared owner [:comms :api-mult])
             button-state (last lifecycle)
             [tag attrs & rest] hiccup-form
             new-value (get attrs (keyword (str "data-" (name button-state) "-text")))
             new-attrs (-> attrs
-                          (assoc :disabled (= :loading button-state))
+                          ;; disable the button when it's not idl
+                          (assoc :disabled (not= :idle button-state))
+                          (update-in [:class] (fn [c] (cond (= :idle button-state) c
+                                                            (string? c) (str c  " disabled")
+                                                            (coll? c) (conj c "disabled")
+                                                            :else "disabled")))
+                          ;; Update the on-click handler to watch the api channel for success
                           (update-in [:on-click] (fn [f]
                                                    (fn [& args]
                                                      (append-cycle owner :loading)
                                                      (let [uuid (utils/uuid)]
                                                        (binding [frontend.async/*uuid* uuid]
-                                                         (tap-api api-mult uuid
-                                                                  #(append-cycle owner :success)
-                                                                  #(append-cycle owner :failed))
+                                                         (tap-api api-mult api-tap uuid
+                                                                  {:success-fn
+                                                                   #(append-cycle owner :success)
+                                                                   :error-fn
+                                                                   #(append-cycle owner :failed)})
                                                          (apply f args))))))
                           (update-in [:value] (fn [v]
                                                 (or new-value v))))]
