@@ -9,6 +9,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils.mixpanel :as mixpanel]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
@@ -140,9 +141,8 @@
   [target message status args state]
   ;; prevent delayed api responses if the user has moved on
   (let [login (get-in args [:context :login])
-        type (get-in args [:context :type])
-        repo-key (str login "." type)]
-    (assoc-in state [:current-user :repos repo-key] (:resp args))))
+        type (get-in args [:context :type])]
+    (assoc-in state (state/repos-path login type) (:resp args))))
 
 
 (defmethod api-event [:organizations :success]
@@ -327,20 +327,6 @@
     (assoc-in state state/dismiss-invite-form-path true)))
 
 
-(defmethod api-event [:followed-repo :success]
-  [target message status {:keys [resp context]} state]
-  (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
-    state
-    (assoc-in state (conj state/project-path :followed) true)))
-
-
-(defmethod api-event [:unfollowed-repo :success]
-  [target message status {:keys [resp context]} state]
-  (if-not (= (:vcs_url context) (:vcs_url (get-in state state/project-path)))
-    state
-    (assoc-in state (conj state/project-path :followed) false)))
-
-
 (defmethod api-event [:enable-project :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
@@ -348,7 +334,28 @@
     (update-in state state/project-path merge (select-keys resp [:has_usable_key]))))
 
 
-(defmethod post-api-event! [:followed-repo :success]
+(defmethod api-event [:follow-project :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
+    state
+    (assoc-in state (conj state/project-path :followed) true)))
+
+
+(defmethod api-event [:unfollow-project :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (inspect (= (:project-id context) (project-model/id (get-in state state/project-path))))
+    state
+    (assoc-in state (conj state/project-path :followed) false)))
+
+
+(defmethod api-event [:follow-repo :success]
+  [target message status {:keys [resp context]} state]
+  (let [{:keys [login type]} context] ; don't pull out :name, to avoid overshadowing
+    (if-let [repo-index (state-utils/find-repo-index state login type (:name context))]
+      (assoc-in state (conj (state/repo-path login type repo-index) :following) true)
+      state)))
+
+(defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
   (js/_gaq.push ["_trackEvent" "Repos" "Add"])
   (if-let [first-build (get-in args [:resp :first_build])]
@@ -361,9 +368,17 @@
       (put! nav-ch [:navigate! build-path]))
     (when (repo-model/should-do-first-follower-build? (:context args))
       (utils/ajax :post
-                  (gstring/format "/api/v1/project/" (vcs-url/project-name (:vcs_url (:context args))))
+                  (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
                   :start-build
                   (get-in current-state [:comms :api])))))
+
+
+(defmethod api-event [:unfollow-repo :success]
+  [target message status {:keys [resp context]} state]
+  (let [{:keys [login type]} context] ; don't pull out :name, to avoid overshadowing
+    (if-let [repo-index (state-utils/find-repo-index state login type (:name context))]
+      (assoc-in state (conj (state/repo-path login type repo-index) :following) false)
+      state)))
 
 
 (defmethod post-api-event! [:start-build :success]

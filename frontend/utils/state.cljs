@@ -1,6 +1,7 @@
 (ns frontend.utils.state
   (:require [frontend.state :as state]
-            [frontend.utils.vcs-url :as vcs-url]))
+            [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.seq :refer [find-index]]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch]}]
   (if-let [path-crumbs (seq (concat
@@ -43,3 +44,9 @@
   (and (get-in state state/project-path)
        ;; XXX: check for url-escaped characters (e.g. /)
        (not= project-name (vcs-url/project-name (get-in state (conj state/project-path :vcs_url))))))
+
+(defn find-repo-index
+  "Path for a given repo. Login is the username, type is user or org, name is the repo name."
+   [state login type repo-name]
+   (when-let [repos (get-in state (state/repos-path login type))]
+     (find-index #(= repo-name (:name %)) repos)))

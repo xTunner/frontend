@@ -257,9 +257,19 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (utils/ajax :post
                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
-                :followed-repo
+                :follow-repo
                 api-ch
                 :context repo)))
+
+
+(defmethod post-control-event! :followed-project
+  [target message {:keys [vcs-url project-id]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
+                :follow-project
+                api-ch
+                :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -267,9 +277,19 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (utils/ajax :post
                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
-                :unfollowed-repo
+                :unfollow-repo
                 api-ch
                 :context repo)))
+
+
+(defmethod post-control-event! :unfollowed-project
+  [target message {:keys [vcs-url project-id]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (utils/ajax :post
+                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
+                :unfollow-project
+                api-ch
+                :context {:project-id project-id})))
 
 
 ;; XXX: clean this up

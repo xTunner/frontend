@@ -86,3 +86,12 @@
                                              %1))
                                         first)]
     (conj crumbs-path project-branch-crumb-index)))
+
+;; XXX we probably shouldn't be storing repos in the user...
+(defn repos-path
+  "Path for a given set of repos (e.g. all heavybit repos). Login is the username,
+   type is :user or :org"
+  [login type] (conj user-path :repos (str login "." type)))
+
+(defn repo-path [login type repo-index]
+  (conj (repos-path login type) repo-index))

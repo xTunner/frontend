@@ -5,6 +5,7 @@
             [frontend.models.user :as user-model]
             [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
+            [frontend.components.forms :refer [stateful-button]]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
@@ -71,6 +72,9 @@
     om/IRender
     (render [_]
       (let [repo (:repo data)
+            settings (:settings data)
+            login (get-in settings [:add-projects :selected-org :login])
+            type (get-in settings [:add-projects :selected-org :type])
             repo-id (repo-model/id repo)
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
@@ -84,10 +88,13 @@
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:on-click #(put! controls-ch [:followed-repo @repo])
-                          ;; XXX implement data-spinner
-                          :data-spinner "true"}
-                 [:span "Follow"]]]
+
+                (om/build stateful-button
+                          [:button {:on-click #(put! controls-ch [:followed-repo (assoc @repo
+                                                                                   :login login
+                                                                                   :type type)])
+                                    :data-spinner true}
+                           [:span "Follow"]])]
 
                (:following repo)
                [:li.repo-unfollow
@@ -102,8 +109,12 @@
                   [:i.fa.fa-external-link]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:on-click #(put! controls-ch [:unfollowed-repo @repo])}
-                 [:span "Unfollow"]]]
+                (om/build stateful-button
+                          [:button {:on-click #(put! controls-ch [:unfollowed-repo (assoc @repo
+                                                                                     :login login
+                                                                                     :type type)])
+                                    :data-spinner true}
+                           [:span "Unfollow"]])]
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
