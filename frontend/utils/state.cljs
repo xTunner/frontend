@@ -4,12 +4,12 @@
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch]}]
   (if-let [path-crumbs (seq (concat
-                              (when org {:type :org
-                                         :username org})
-                              (when repo {:type :project
-                                          :username org :project repo})
-                              (when branch {:type :project-branch
-                                            :username org :project repo :branch branch})))]
+                             (when org [{:type :org
+                                         :username org}])
+                             (when repo [{:type :project
+                                          :username org :project repo}])
+                             (when branch [{:type :project-branch
+                                            :username org :project repo :branch branch}])))]
     (let [path-crumbs (assoc-in (vec path-crumbs)
                                 [(-> path-crumbs count dec) :active]
                                 true)
@@ -20,7 +20,7 @@
                                    :username org})
           all-crumbs (conj path-crumbs setting-crumb)]
       (assoc-in state state/crumbs-path all-crumbs))
-      state))
+    state))
 
 (defn reset-current-build [state]
   (assoc state :current-build-data {:build nil
