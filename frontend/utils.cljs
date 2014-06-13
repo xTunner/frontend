@@ -81,6 +81,11 @@
 (defn third [coll]
   (nth coll 2 nil))
 
+(defn js->clj-kw
+  "Same as js->clj, but keywordizes-keys by default"
+  [ds]
+  (js->clj ds :keywordize-keys true))
+
 (defn asset-path
   "Returns path of asset in CDN"
   [path]

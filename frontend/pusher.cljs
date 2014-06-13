@@ -29,9 +29,12 @@
 (defn user-channel [user]
   (str "private-" (:login user)))
 
+(defn build-channel-from-parts [{:keys [project-name build-num]}]
+  (string/replace (str "private-" project-name "@" build-num) "/" "@"))
+
 (defn build-channel [build]
-  (string/replace (str "private-" (vcs-url/project-name (:vcs_url build)) "@" (:build_num build))
-                  "/" "@"))
+  (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
+                             :build-num (:build_num build)}))
 
 (def build-messages [:build/new-action
                      :build/update-action
@@ -46,7 +49,7 @@
    :build/append-action "appendAction"
    :build/update "updateObservables"
    :build/add-messages "maybeAddMessages"
-   ;; this is kind of special, it can call any function on the old VM
+   ;; this is kind of special, it can call any function on the old window.VM
    ;; luckily, it only calls refreshBuildState
    :refresh "call"})
 
@@ -69,3 +72,6 @@
 
 (defn unsubscribe [pusher-instance channel-name]
   (.unsubscribe pusher-instance channel-name))
+
+(defn subscribed-channels [pusher-instance]
+  (-> pusher-instance (aget "channels") (aget "channels") js-keys set))

@@ -15,6 +15,9 @@
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
+   :dashboard-data {:branch nil
+                    :repo nil
+                    :org nil}
    :current-project-data {:project nil
                           :plan nil
                           :settings {}
@@ -37,6 +40,7 @@
                                       :github-users nil}}
    :current-organization nil})
 
+(def user-path [:current-user])
 
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])
@@ -48,6 +52,7 @@
 (defn invite-login-path [login] (conj invite-logins-path login))
 
 (def usage-queue-path [:current-build-data :usage-queue-data :builds])
+(defn usage-queue-build-path [build-index] (conj usage-queue-path build-index))
 (def show-usage-queue-path [:current-build-data :usage-queue-data :show-usage-queue])
 
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])

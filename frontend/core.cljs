@@ -60,10 +60,10 @@
           :current-user (-> js/window
                             (aget "renderContext")
                             (aget "current_user")
-                            (js->clj :keywordize-keys true))
+                            utils/js->clj-kw)
           :render-context (-> js/window
                               (aget "renderContext")
-                              (js->clj :keywordize-keys true))
+                              utils/js->clj-kw)
           :comms {:controls  controls-ch
                   :api       api-ch
                   :errors    error-ch

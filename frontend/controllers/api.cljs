@@ -4,6 +4,7 @@
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
+            [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils.mixpanel :as mixpanel]
@@ -160,6 +161,14 @@
     (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
       (assoc-in state state/usage-queue-path usage-queue-builds))))
+
+(defmethod post-api-event! [:usage-queue :success]
+  [target message status args previous-state current-state]
+  (let [usage-queue-builds (get-in current-state state/usage-queue-path)
+        ws-ch (get-in current-state [:comms :ws])]
+    (doseq [build usage-queue-builds]
+      (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build)
+                               :messages [:build/update]}]))))
 
 
 (defmethod api-event [:build-artifacts :success]
