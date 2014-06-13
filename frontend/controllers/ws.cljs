@@ -138,8 +138,8 @@
 
 (defmethod post-ws-event! :unsubscribe-stale-channels
   [pusher-imp message _ previous-state current-state]
-  (doseq [channel-name (clojure.set/difference (inspect (fresh-channels current-state))
-                                               (inspect (pusher/subscribed-channels pusher-imp)))]
+  (doseq [channel-name (clojure.set/difference (pusher/subscribed-channels pusher-imp)
+                                               (fresh-channels current-state))]
     (mlog "unsubscribing from " channel-name)
     (pusher/unsubscribe pusher-imp channel-name)))
 
