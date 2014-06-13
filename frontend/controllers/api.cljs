@@ -1,5 +1,6 @@
 (ns frontend.controllers.api
-  (:require [cljs.core.async :refer [put! close!]]
+  (:require [cljs.core.async :refer [close!]]
+            [frontend.async :refer [put!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]

@@ -1,5 +1,5 @@
 (ns frontend.controllers.navigation
-  (:require [cljs.core.async :refer [put!]]
+  (:require [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.pusher :as pusher]
             [frontend.state :as state]

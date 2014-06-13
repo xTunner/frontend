@@ -1,7 +1,7 @@
 (ns frontend.controllers.controls
-  (:require [cljs.core.async :as async :refer [put!]]
-            [cljs.reader :as reader]
+  (:require [cljs.reader :as reader]
             [frontend.api :as api]
+            [frontend.async :refer [put!]]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
