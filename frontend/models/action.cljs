@@ -26,7 +26,7 @@
 (defn new-converter [action type]
   (let [default-color (if (= :err type) "red" "brblue")
         starting-state (clj->js (get-in action [:converters-state type]))]
-    (js/CI.terminal.ansiToHtmlConverter default-color starting-state)))
+    (js/CI.terminal.ansiToHtmlConverter default-color "brblack" starting-state)))
 
 (defn format-output [action output-index]
   (let [output (get-in action [:output output-index])
@@ -34,7 +34,7 @@
     (-> action
         (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
         (assoc-in [:output output-index :react-key] (utils/uuid))
-        (assoc-in [:converters-state (keyword (:type output))] (js->clj (.currentState converter) :keywordize-keys true)))))
+        (assoc-in [:converters-state (keyword (:type output))] (utils/js->clj-kw (.currentState converter))))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]

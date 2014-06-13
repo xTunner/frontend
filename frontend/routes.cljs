@@ -24,7 +24,7 @@
 (defn open-build-inspector!
   [app nav-ch org-id repo-id build-num]
   (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:build-inspector [project-name build-num]])))
+    (put! nav-ch [:build [project-name build-num org-id repo-id]])))
 
 (defn open-to-dashboard! [nav-ch & [args]]
   (put! nav-ch [:dashboard args]))
@@ -35,7 +35,9 @@
 (defn open-to-project-settings! [nav-ch org-id repo-id subpage]
   (let [project-name (str org-id "/" repo-id)]
     (put! nav-ch [:project-settings {:project-name project-name
-                                     :subpage subpage}])))
+                                     :subpage subpage
+                                     :org org-id
+                                     :repo repo-id}])))
 
 (defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
@@ -54,6 +56,9 @@
     (defroute v1-project-settings-subpage "/gh/:org-id/:repo-id/edit#:subpage"
       [org-id repo-id subpage]
       (open-to-project-settings! nav-ch org-id repo-id (keyword subpage)))
+    (defroute v1-org-settings "/gh/organizations/:org-id/settings"
+      [org-id]
+      (utils/mlog "org settings route hasn't been hooked up yet"))
     (defroute v1-org-settings-subpage "/gh/organizations/:org-id/settings#:subpage"
       [org-id subpage]
       (utils/mlog "org settings route hasn't been hooked up yet"))

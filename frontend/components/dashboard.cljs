@@ -6,13 +6,13 @@
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn dashboard [data owner opts]
+(defn dashboard [data owner]
   (reify
     om/IRender
     (render [_]
       (let [builds (:recent-builds data)
             nav-ch (get-in data [:comms :nav])
-            controls-ch (get-in data [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          ;; XXX logic for dashboard not ready
          ;; XXX logic for show add projects
@@ -22,7 +22,6 @@
           (om/build sidebar/sidebar
                     {:current-user (:current-user data)
                      :projects (:projects data)
-                     :settings (:settings data)}
-                    {:opts opts})
+                     :settings (:settings data)})
           [:section
-           (om/build builds-table/builds-table builds {:opts opts})]])))))
+           (om/build builds-table/builds-table builds {:opts {:show-actions? false}})]])))))

@@ -8,22 +8,16 @@
                                             :type :org}}}
    :navigation-point :loading
    :current-user nil
-   :crumbs [{:type :org
-             :name "circleci"
-             :path "/gh/circleci"}
-            {:type :project
-             :name "circle"
-             :active true
-             :path "/gh/circleci/circle"}
-            {:type :settings
-             :name "Edit settings"
-             :path "/gh/circleci/circle/edit"}]
+   :crumbs []
    :current-repos []
    :render-context nil
    :projects []
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
+   :dashboard-data {:branch nil
+                    :repo nil
+                    :org nil}
    :current-project-data {:project nil
                           :plan nil
                           :settings {}
@@ -46,6 +40,7 @@
                                       :github-users nil}}
    :current-organization nil})
 
+(def user-path [:current-user])
 
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])
@@ -57,6 +52,7 @@
 (defn invite-login-path [login] (conj invite-logins-path login))
 
 (def usage-queue-path [:current-build-data :usage-queue-data :builds])
+(defn usage-queue-build-path [build-index] (conj usage-queue-path build-index))
 (def show-usage-queue-path [:current-build-data :usage-queue-data :show-usage-queue])
 
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])
@@ -80,3 +76,13 @@
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
+
+(def crumbs-path [:crumbs])
+(defn project-branch-crumb-path [state]
+  (let [crumbs (get-in state crumbs-path)
+        project-branch-crumb-index (->> crumbs
+                                        (keep-indexed
+                                          #(when (= (:type %2) :project-branch)
+                                             %1))
+                                        first)]
+    (conj crumbs-path project-branch-crumb-index)))

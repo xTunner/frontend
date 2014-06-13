@@ -67,7 +67,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             show-actions? (:show-actions? opts)]
         (html
          [:table.recent-builds-table

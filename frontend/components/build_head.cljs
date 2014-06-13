@@ -12,12 +12,12 @@
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn build-queue [data owner opts]
+(defn build-queue [data owner]
   (reify
     om/IRender
     (render [_]
       (let [{:keys [build builds]} data
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
@@ -36,7 +36,7 @@
                         " queued behind the following builds for "
                         (build-model/usage-queued-time build))]
 
-               (om/build builds-table/builds-table builds {:opts (assoc opts :show-actions? true)})))]))))))
+               (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))]))))))
 
 (defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
   [:div
@@ -48,11 +48,11 @@
     (subs commit 0 7)
     [:i.fa.fa-github]]])
 
-(defn build-commits [build owner opts]
+(defn build-commits [build owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             build-id (build-model/id build)]
         (html
          [:section.build-commits {:class (when (:show-all-commits build) "active")}
@@ -78,7 +78,7 @@
               (when (:show-all-commits build)
                 (map commit-line (drop 3 (:all_commit_details build))))))]])))))
 
-(defn build-ssh [nodes owner opts]
+(defn build-ssh [nodes owner]
   (reify
     om/IRender
     (render [_]
@@ -105,11 +105,11 @@
           "Read our doc on interacting with the browser over VNC"]
          "."]]))))
 
-(defn build-artifacts-list [artifacts-data owner opts]
+(defn build-artifacts-list [artifacts-data owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             artifacts (:artifacts artifacts-data)
             show-artifacts (:show-artifacts artifacts-data)]
         (html
@@ -131,11 +131,11 @@
                         (:pretty_path artifact)]])
                     artifacts)]))])))))
 
-(defn build-head [build-data owner opts]
+(defn build-head [build-data owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
@@ -231,10 +231,10 @@
                 "Cancel"])]]
            (when (:show-usage-queue usage-queue-data)
              (om/build build-queue {:build build
-                                    :builds (:builds usage-queue-data)} {:opts opts}))
+                                    :builds (:builds usage-queue-data)}))
            (when (:subject build)
-             (om/build build-commits build {:opts opts}))
+             (om/build build-commits build))
            (when (build-model/ssh-enabled-now? build)
-             (om/build build-ssh (:node build) {:opts opts}))
+             (om/build build-ssh (:node build)))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list (get build-data :artifacts-data) {:opts opts}))]])))))
+             (om/build build-artifacts-list (get build-data :artifacts-data)))]])))))

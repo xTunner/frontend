@@ -1,7 +1,10 @@
 (ns frontend.components.navbar
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.common :as common]
+            [frontend.components.crumbs :as crumbs]
             [frontend.env :as env]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true]
@@ -17,13 +20,6 @@
 
 (defn show-environment? [user]
   (:admin user))
-
-(defn crumb [data]
-  (let [attrs {:href (:path data)
-             :title (:name data)}]
-    (if (:active data)
-      [:span attrs (:name data)]
-      [:a attrs (:name data)])))
 
 (defn logged-out-header [{:keys [flash]}]
   [:div
@@ -66,8 +62,7 @@
   [:nav.header-nav
    [:div.header-nav-logo [:a {:href "/"}]]
    [:div.header-nav-breadcrumb
-    [:nav
-     (map crumb crumbs)]]
+    (om/build crumbs/crumbs crumbs)]
    (when (show-environment? user)
      [:div.header-nav-environment
       [:span {:class (str "env-" (name (env/env)))}
@@ -133,17 +128,17 @@
                                                                        :value build-id}])}
              [:span (str "Use " build-id " om compiler")]]))))]]])
 
-(defn navbar [app owner opts]
+(defn navbar [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             user (:current-user app)]
         (html/html
          (if user
            (logged-in-header {:user user
                               :settings (:settings app)
                               :user-session-settings (get-in app [:render-context :user_session_settings])
-                              :crumbs (:crumbs app)
+                              :crumbs (get-in app state/crumbs-path)
                               :controls-ch controls-ch})
            (logged-out-header {:flash (get-in app [:render-context :flash])})))))))

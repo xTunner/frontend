@@ -9,7 +9,7 @@
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn diagnostics [config owner opts]
+(defn diagnostics [config owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -48,11 +48,11 @@
                                            (om/refresh! owner))}
                         [:i.fa.fa-angle-right]]]]])))]]]))))
 
-(defn config-errors [build owner opts]
+(defn config-errors [build owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             config (:circle_yml build)]
         (html
          [:div.config-diagnostics.heroic
@@ -78,4 +78,4 @@
              "You may want to look at "
              [:a {:href "/docs/configuration"} "our docs"]
              " or " (common/contact-us-inner controls-ch) " if you're having trouble."]]]
-          (om/build diagnostics config {:opts opts})])))))
+          (om/build diagnostics config)])))))

@@ -18,7 +18,7 @@
      :data-bind
      "tooltip: {title: tooltip_title, animation: false}"}]])
 
-(defn branch [data owner opts]
+(defn branch [data owner]
   (reify
     om/IRender
     (render [_]
@@ -34,14 +34,14 @@
                [:div.aside-status-icons
                 (map (partial build project) display-builds)]])))))
 
-(defn project [data owner opts]
+(defn project [data owner]
   (reify
     om/IRender
     (render [_]
       (html
-       (let [user     (:user data)
-             project  (:project data)
-             ch       (:ch data)
+       (let [user (:user data)
+             project (:project data)
+             controls-ch (om/get-shared owner [:comms :controls])
              settings (:settings data)
              project-id (project-model/id project)
              personal-branches (project-model/personal-branches user project)]
@@ -62,7 +62,7 @@
              [:a.toggle-all
               {:role "button",
                :class (when (get-in settings [:projects project-id :show-all-branches]) "active")
-               :on-click #(put! ch [:show-all-branches-toggled project-id])}
+               :on-click #(put! controls-ch [:show-all-branches-toggled project-id])}
               [:i.fa.fa-caret-down
                {:data-original-title "",
                 ;; XXX Make tooltip component
@@ -77,11 +77,11 @@
                           (:branches project)
                           personal-branches)))])))))
 
-(defn sidebar [app owner opts]
+(defn sidebar [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             user (:current-user app)]
         (html/html
          [:aside
@@ -102,6 +102,5 @@
            (map #(om/build project
                            {:project %
                             :user user
-                            :ch controls-ch
                             :settings (:settings app)})
                 (:projects app))]]])))))

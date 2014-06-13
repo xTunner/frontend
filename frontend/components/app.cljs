@@ -20,7 +20,7 @@
 (def keymap
   (atom nil))
 
-(defn loading [app owner opts]
+(defn loading [app owner]
   (reify
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
@@ -33,11 +33,11 @@
     :loading loading
     :project-settings project-settings/project-settings))
 
-(defn app [app owner opts]
+(defn app [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             persist-state! #(put! controls-ch [:state-persisted])
             restore-state! #(put! controls-ch [:state-restored])
             dom-com (dominant-component app)]
@@ -51,10 +51,10 @@
           (when (:inspector? utils/initial-query-map)
             ;; XXX inspector still needs lots of work. It's slow and it defaults to
             ;;     expanding all datastructures.
-            (om/build inspector/inspector app {:opts opts}))
+            (om/build inspector/inspector app))
           [:header
-           (om/build navbar/navbar app {:opts opts})]
+           (om/build navbar/navbar app)]
           [:main
-           (om/build dom-com app {:opts opts})]
+           (om/build dom-com app)]
           [:footer
            (footer/footer)]])))))
