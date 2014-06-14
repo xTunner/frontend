@@ -133,3 +133,28 @@
     border-bottom-right-radius: @radius;
   }
 }
+
+.button_outline(@base_color, @base_size: (@baseFontSize * 3)) {
+  @line_height: @baseFontSize;
+  @border: 1px;
+  .text_color (@base_color) when (lightness(@base_color) <  50%) {color: @white;}
+  .text_color (@base_color) when (lightness(@base_color) >= 50%) {color: @grayDark;}
+  .text_color(@base_color);
+  background: transparent;
+  color: @base_color;
+  border: @border solid @base_color;
+  border-radius: @base_size / 2;
+  margin: 0;
+  padding: (((@base_size - @line_height) / 2) - @border) @line_height;
+  line-height: @line_height;
+  transition: color 200ms, background 200ms;
+  &:hover,
+  &:focus {
+    .text_color(@base_color);
+    background: @base_color;
+    transition: color 100ms, background 100ms;
+  }
+  &:active {
+    background: darken(@base_color, 5);
+  }
+}
