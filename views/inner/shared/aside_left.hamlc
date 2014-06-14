@@ -34,7 +34,7 @@
   %a.aside-item{href: "/", tooltip: "Home"}
     %i.fa.fa-home
     %span Home
-  %a.aside-item{href: "/add-projects", tooltip: "Add Projects"}
+  %a.aside-item#add-projects{href: "/add-projects", tooltip: "Add Projects"}
     %i.fa.fa-plus-circle
     %span Add Projects
   %a.aside-item{href: "#", tooltip: "Invite Teammate", data-toggle: "modal", data-target: "#inviteForm"}
