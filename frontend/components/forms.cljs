@@ -14,24 +14,23 @@
   [api-mult api-tap uuid {:keys [success-fn failure-fn]}]
   (async/tap api-mult api-tap)
   (go-loop []
-           (alt! api-tap
-                 ([v]
-                    (let [message-uuid (:uuid (meta v))
-                          status (second v)]
-                      (cond
-                       (and (= uuid message-uuid)
-                            (#{:success :failed} status))
-                       (do (if (= :success status)
-                             (success-fn)
-                             (failure-fn))
-                           ;; There's a chance of a race if the button gets clicked twice.
-                           ;; No good ideas on how to fix it, and it shouldn't happen,
-                           ;; so punting for now
-                           (async/untap api-mult api-tap))
+           (let [v (<! api-tap)]
+             (let [message-uuid (:uuid (meta v))
+                   status (second v)]
+               (cond
+                (and (= uuid message-uuid)
+                     (#{:success :failed} status))
+                (do (if (= :success status)
+                      (success-fn)
+                      (failure-fn))
+                    ;; There's a chance of a race if the button gets clicked twice.
+                    ;; No good ideas on how to fix it, and it shouldn't happen,
+                    ;; so punting for now
+                    (async/untap api-mult api-tap))
 
-                       (nil? v) nil ;; don't recur on closed channel
+                (nil? v) nil ;; don't recur on closed channel
 
-                       :else (recur)))))))
+                :else (recur))))))
 
 (defn append-cycle
   "Adds the button-state to the end of the lifecycle"
