@@ -41,7 +41,7 @@
   "Transistions the state from success/failed to idle."
   [owner lifecycle]
   ;; Clear timer, just in case. No harm in clearing nil or finished timers
-  (js/clearInterval (om/get-state owner [:idle-timer]))
+  (js/clearTimeout (om/get-state owner [:idle-timer]))
   (let [cycle-count (count lifecycle)
         t (js/setTimeout
            ;; Careful not to transition to idle if the spinner somehow got
