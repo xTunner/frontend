@@ -68,6 +68,7 @@
   when the response comes back, it replaces the button with the data-:status-text for a second."
   [hiccup-form owner]
   (reify
+    om/IDisplayName (display-name [_] "Stateful button")
     om/IInitState
     (init-state [_]
       {:lifecycle [:idle]
