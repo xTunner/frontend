@@ -43,7 +43,7 @@
   .aside-slideup
     %a.aside-item{href: "/account", tooltip: "User Account"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
-      %span dannykingme
+      %span{data-bind: "text: login"}
     %a.aside-item{href: "/logout", tooltip: "Logout"}
       %i.fa.fa-sign-out
       %span Logout
