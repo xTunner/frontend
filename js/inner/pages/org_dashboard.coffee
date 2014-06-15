@@ -4,7 +4,7 @@ CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.DashboardPag
     super(properties)
     @crumbs = [new CI.inner.OrgCrumb(@username, {active: true})]
 
-    @settings_link = CI.paths.org_dashboard_path(@username)
+    @settings_link = CI.paths.org_settings_path(@username)
 
     @settings_text = 'Organization Settings'
 
