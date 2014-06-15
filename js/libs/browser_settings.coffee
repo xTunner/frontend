@@ -13,6 +13,7 @@ CI.BrowserSettings = class BrowserSettings
       if json? then JSON.parse(json) else {}
     catch e
       console.error e
+    finally
       {}
 
   save_settings_to_localstorage: () =>
