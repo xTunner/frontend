@@ -676,3 +676,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
 
   toggle_branches_collapsed: () =>
     VM.browser_settings.toggle_setting("#{@project_name()}_branches_collapsed")
+
+  branch_status: (branch) =>
+      @recent_branch_builds(branch)[0]?.status()
