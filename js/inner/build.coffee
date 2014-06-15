@@ -175,7 +175,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
         when "no_tests", "not_run", "infrastructure_fail", "killed"
           "stop-light"
         else
-          @status()
+          "none-light"
 
     @status_icon_class =
       "fa-check": @success_style

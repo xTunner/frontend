@@ -60,6 +60,9 @@
     name: "settings-light"
     paths: [a.slim_settings, a.slim_circle]
   ,
+    name: "none-light"
+    paths: [a.slim_circle]
+  ,
     name: "repo"
     paths: [a.repo]
   ]
