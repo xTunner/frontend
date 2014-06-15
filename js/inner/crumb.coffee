@@ -35,7 +35,7 @@ CI.inner.ProjectSettingsCrumb = class ProjectCrumb extends Crumb
     super(options)
 
   name: () =>
-    "settings"
+    "project settings"
 
   styles: () =>
     @komp =>
@@ -89,7 +89,7 @@ CI.inner.OrgSettingsCrumb = class OrgSettingsCrumb extends Crumb
     super(options)
 
   name: () =>
-    "Organization settings"
+    "organization settings"
 
   path: () =>
     CI.paths.org_settings_path(@username)
