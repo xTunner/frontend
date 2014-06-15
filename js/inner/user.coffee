@@ -225,7 +225,7 @@ CI.inner.User = class User extends CI.inner.Obj
     VM.browser_settings.set_setting("aside_is_slim", false)
     VM.browser_settings.toggle_setting("recent_activity_visible")
 
-  width_of_aside: () =>
+  toggle_aside_expanded: () =>
     VM.browser_settings.toggle_setting("aside_is_slim")
     if VM.browser_settings.settings().aside_is_slim and VM.browser_settings.settings().recent_activity_visible
       VM.browser_settings.set_setting("recent_activity_visible", false)

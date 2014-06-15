@@ -1,6 +1,6 @@
 <!-- ko with: current_user -->
 %nav.aside-left-nav{data-bind: "css: {slim: VM.browser_settings.settings().aside_is_slim}"}
-  %a.aside-item.logo{href: "#", data-bind: "click: width_of_aside"}
+  %a.aside-item.logo{href: "#", data-bind: "click: toggle_aside_expanded"}
     .logomark
       != HAML.ico(n:'logo')
   -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
