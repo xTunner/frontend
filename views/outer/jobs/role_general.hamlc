@@ -1,19 +1,15 @@
 #general
-  %h3
-    %span All roles
 
-  %p
-    Regardless of the role you're interested in, its important that CircleCI be the right fit for you.
-
-  %h5
-    The type of folks who fit well into our culture are
   %ul
     %li People who truly care about making developers more productive.
-    %li Pleasant people, and good conversationalists - we'll be spending the next few years together after all.
-    %li Folks who are easy to work with: we're not interested in solo artists, divas, know-it-alls, or arseholes.
-    %li We tend to get on well with folks that do not identify with the words "ninja", "pirate", "rock star", or (especially) "brogrammer".
-    %li Great communicators.
     %li
-      Folks with an interest in the business side of things.
+      Folks who are easy to work with: we're not interested in solo artists, divas, know-it-alls, or assholes.
+      We also tend to get on well with folks that do not identify with the words "ninja", "pirate", "rock star", or (especially) "brogrammer".
+    %li Great communicators.
+    %li People who feel strongly about tools and the software development process.
+    %li
+      <a href="http://blog.circleci.com/kindness-is-underrated">Pleasant people</a>, and good conversationalists - we'll be spending the next few years together after all.
+    %li
+      Folks with an interest in the whole company, not just their job.
       Our transparent culture allows everyone to take a holistic view of the company.
-      As a result, we really like people who enjoy getting familiar with the whole business.
+      As a result, we really like people who enjoy getting familiar with the whole business, customers, product, culture, selling, etc.
