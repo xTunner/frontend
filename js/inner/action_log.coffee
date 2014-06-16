@@ -111,6 +111,15 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
     @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue", "brblack")
     @stderrConverter = CI.terminal.ansiToHtmlConverter("red", "brblack")
 
+    # Track which watchers have subscribed to action-log observables
+    @subscriptions = {}
+
+  clean: () =>
+    for watcher, subscriptions of @subscriptions
+      for subscription in subscriptions
+        subscription.dispose()
+    @subscriptions = {}
+
   toggle_minimize: =>
     if not @user_minimized?
       @user_minimized(!@user_minimized())
@@ -153,8 +162,8 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
       success: (data) =>
         @retrieved_output(true)
         ## reset the converters
-        @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue")
-        @stderrConverter = CI.terminal.ansiToHtmlConverter("red")
+        @stdoutConverter = CI.terminal.ansiToHtmlConverter("brblue", "brblack")
+        @stderrConverter = CI.terminal.ansiToHtmlConverter("red", "brblack")
 
         # Reset the output so far
         @final_out.removeAll()
@@ -192,6 +201,23 @@ CI.inner.ActionLog = class ActionLog extends CI.inner.Obj
   maybe_drop_output: () =>
     if @minimize()
       @drop_output()
+
+  subscribe_watcher: (watcher) =>
+    # watch for changes in @minimize and @trailing_out so the build can trigger
+    # responses such as autoscrolling
+    subscriptions = @subscriptions[watcher]
+    subscriptions ?= []
+
+    @subscriptions[watcher] = subscriptions.concat [
+        @minimize.subscribe (new_value) => watcher.subscription_callback()
+        @trailing_out.subscribe (new_value) => watcher.subscription_callback()
+      ]
+
+  unsubscribe_watcher: (watcher) =>
+    if @subscriptions[watcher]?
+      for subscription in @subscriptions[watcher]
+        subscription.dispose()
+      delete @subscriptions[watcher]
 
 class Step extends CI.inner.Obj
 

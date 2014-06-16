@@ -78,6 +78,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @jobs = new CI.outer.Page("jobs", "Work at CircleCI", "View jobs")
     @enterprise = new CI.outer.Page("enterprise", "CircleCI for the enterprise")
     @stories = new CI.outer.Page("stories", "Shopify + CircleCI Success Story")
+    @integrations = new CI.outer.Page("integrations", "CircleCI and Docker")
     @privacy = new CI.outer.Page("privacy", "Privacy", "View Privacy")
     @changelog = new CI.outer.Changelog("changelog", "ChangeLog", "View ChangeLog")
     # @contact = new CI.outer.Page("contact", "Contact us", "View Contact")
@@ -142,6 +143,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
           "&filters%5B0%5D%5Battr%5D=custom_data.pr-followed" +
           "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D=" +
           path[1]
+
+  cleanBuild: () =>
+    if @build() then @build().clean()
+    @build(null)
 
   refreshBuildState: () =>
     VM.loadProjects()
@@ -263,8 +268,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @build_has_been_loaded(false)
     project_name = "#{username}/#{project}"
     @maybeLoadProjectDetails(project_name)
-    @build().clean() if @build()
-    @build(null)
+    @cleanBuild()
     $.getJSON "/api/v1/project/#{project_name}/#{build_num}", (data) =>
       @build(new CI.inner.Build data)
       @build_has_been_loaded(true)
@@ -376,6 +380,7 @@ window.VM = new CI.inner.CircleViewModel()
 window.SammyApp = Sammy 'body', (n) ->
   @bind 'run-route', (e, data) ->
     VM.clearErrorMessage()
+    VM.cleanBuild()
     mixpanel.track_pageview(data.path)
     if window._gaq? # we dont use ga in test mode
       window._gaq.push data.path
@@ -482,6 +487,7 @@ window.SammyApp = Sammy 'body', (n) ->
   @get "^/changelog.*", (cx) => VM.changelog.display(cx)
   @get "^/enterprise.*", (cx) => VM.enterprise.display(cx)
   @get "^/stories.*", (cx) => VM.stories.display(cx)
+  @get "^/integrations.*", (cx) => VM.integrations.display(cx)
   # @get "^/contact.*", (cx) => VM.contact.display(cx)
   @get "^/security(#.*)?", (cx) => VM.security.display(cx)
   @get "^/security/hall-of-fame", (cx) => VM.securityHOF.display(cx)
