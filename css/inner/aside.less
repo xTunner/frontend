@@ -3,7 +3,7 @@
   @cascade_delay: 30ms;
   @aside_items: 7;
   @aside_slim_speed: 200ms;
-  @slideup_items: 2;
+  @slideup_items: 3;
   @slideup_visible: 1;
   @activity_scroll: 5px;
   @activity_color: fade(@white, 34);
@@ -27,9 +27,6 @@
     &.slim {
       width: @tile;
       .aside-item {
-        &.logo {
-          cursor: e-resize;
-        }
         i,
         img {
           margin-right: ((@tile - @baseFontSize) / 2);
@@ -43,6 +40,11 @@
           visibility: hidden;
           transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
           pointer-events: none;
+        }
+        &.toggle {
+          i {
+            margin: 0;
+          }
         }
       }
     }
@@ -84,12 +86,17 @@
     &.logo {
       .justify-content(center);
       .underline_deboss();
-      cursor: w-resize;
       .logomark {
         .flexy(center, center);
         .icon_style(@white, 2em);
         width: @tile;
         height: @tile;
+      }
+    }
+    &.toggle {
+      .justify-content(center);
+      i {
+        margin: 0;
       }
     }
     // &:nth-child(2) > i {transition-delay: @cascade_delay * 1;} //
