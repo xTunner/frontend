@@ -44,13 +44,14 @@
     %a.aside-item{href: "/logout", tooltip: "Logout"}
       %i.fa.fa-sign-out
       %span Logout
-    %a.aside-item.toggle{href: "#", data-bind: "click: toggle_aside_expanded"}
+    %a.aside-item{href: "#", tooltip: "Expand", data-bind: "click: toggle_aside_expanded"}
       / ko if: VM.browser_settings.settings().aside_is_slim
       %i.fa.fa-long-arrow-right
       / /ko
       / ko ifnot: VM.browser_settings.settings().aside_is_slim
       %i.fa.fa-long-arrow-left
       / /ko
+      %span Collapse
 <!-- /ko -->
 
 
