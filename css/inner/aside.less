@@ -27,14 +27,12 @@
     &.slim {
       width: @tile;
       .aside-item {
+        .tip(right);
         i,
         img {
           margin-right: ((@tile - @baseFontSize) / 2);
           transition-duration: (@aside_slim_speed * 1.5);
         }
-      }
-      a.aside-item {
-        .tip(right);
         span {
           opacity: 0;
           visibility: hidden;
