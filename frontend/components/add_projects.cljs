@@ -1,9 +1,11 @@
 (ns frontend.components.add-projects
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.models.user :as user-model]
             [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
+            [frontend.components.forms :refer [stateful-button]]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
@@ -34,13 +36,13 @@
       [:div.orgname {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
        login]]]))
 
-(defn org-sidebar [data owner opts]
+(defn org-sidebar [data owner]
   (reify
     om/IRender
     (render [_]
       (let [user (:user data)
             settings (:settings data)
-            controls-ch (:controls-ch data)]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html [:ul.side-list
                [:li.add-orgs "Your Organizations"]
                (map (fn [org] (side-item org settings controls-ch))
@@ -65,14 +67,16 @@
      "Get started by selecting your GitHub username or organization on the left."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
-(defn repo-item [data owner opts]
+(defn repo-item [data owner]
   (reify
     om/IRender
     (render [_]
       (let [repo (:repo data)
+            settings (:settings data)
+            login (get-in settings [:add-projects :selected-org :login])
+            type (get-in settings [:add-projects :selected-org :type])
             repo-id (repo-model/id repo)
-            controls-ch (:controls-ch data)
-            api-ch (:api-ch data)
+            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
@@ -84,10 +88,14 @@
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:on-click #(put! controls-ch [:followed-repo @repo])
-                          ;; XXX implement data-spinner
-                          :data-spinner "true"}
-                 [:span "Follow"]]]
+
+                (stateful-button
+                 [:button {:on-click #(put! controls-ch [:followed-repo (assoc @repo
+                                                                          :login login
+                                                                          :type type)])
+                           :data-api-count (if should-build? 2 1)
+                           :data-spinner true}
+                  [:span "Follow"]])]
 
                (:following repo)
                [:li.repo-unfollow
@@ -102,8 +110,12 @@
                   [:i.fa.fa-external-link]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:on-click #(put! controls-ch [:unfollowed-repo @repo])}
-                 [:span "Unfollow"]]]
+                (stateful-button
+                 [:button {:on-click #(put! controls-ch [:unfollowed-repo (assoc @repo
+                                                                            :login login
+                                                                            :type type)])
+                           :data-spinner true}
+                  [:span "Unfollow"]])]
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
@@ -141,12 +153,12 @@
      {:data-dismiss "modal", :aria-hidden "true"}
      "Got it"]]])
 
-(defn repo-filter [data owner opts]
+(defn repo-filter [settings owner]
   (reify
     om/IRender
     (render [_]
-      (let [repo-filter-string (get-in data [:settings :add-projects :repo-filter-string])
-            controls-ch (:controls-ch data)]
+      (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.repo-filter
           [:i.fa.fa-search]
@@ -156,13 +168,12 @@
             :value repo-filter-string
             :on-change #(utils/edit-input controls-ch [:settings :add-projects :repo-filter-string] %)}]])))))
 
-(defn main [data owner opts]
+(defn main [data owner]
   (reify
     om/IRender
     (render [_]
       (let [user (:current-user data)
-            controls-ch (:controls-ch data)
-            api-ch (:api-ch data)
+            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             repos (:repos data)
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
@@ -181,19 +192,16 @@
                                                   (not= -1)))
                                             repos)]
                  (map (fn [repo] (om/build repo-item {:repo repo
-                                                      :controls-ch controls-ch
-                                                      :api-ch api-ch
                                                       :settings settings}))
                       filtered-repos))]))
           invite-modal])))))
 
-(defn add-projects [data owner opts]
+(defn add-projects [data owner]
   (reify
     om/IRender
     (render [_]
       (let [user (:current-user data)
-            controls-ch (get-in data [:comms :controls])
-            api-ch (get-in data [:comms :api])
+            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             repo-key (gstring/format "%s.%s"
                                      (get-in settings [:add-projects :selected-org :login])
@@ -206,8 +214,7 @@
             (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
           [:div.sidebar
            (om/build org-sidebar {:user user
-                                  :settings settings
-                                  :controls-ch controls-ch})]
+                                  :settings settings})]
           [:div.project-listing
            [:div.overview
             [:h3 "Start following your projects"]
@@ -215,12 +222,9 @@
              "Choose a repo in GitHub from one of your organizations, your own repos, or repos you share with others, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits; come back here to follow more projects."]]
 
 
-           (om/build repo-filter {:settings settings
-                                  :controls-ch controls-ch})
+           (om/build repo-filter settings)
 
            (om/build main {:user user
                            :repos repos
-                           :controls-ch controls-ch
-                           :api-ch api-ch
                            :settings settings})]
           [:div.sidebar]])))))

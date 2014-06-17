@@ -1,5 +1,6 @@
 (ns frontend.components.build-steps
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.models.action :as action-model]
             [frontend.models.container :as container-model]
@@ -28,7 +29,7 @@
     "db" "You specified this command on the project settings page"
     "Unknown source"))
 
-(defn output [out owner opts]
+(defn output [out owner]
   (reify
     om/IRender
     (render [_]
@@ -37,7 +38,7 @@
          [:span.pre {:dangerouslySetInnerHTML
                      #js {"__html" message-html}}])))))
 
-(defn trailing-output [converters-state owner opts]
+(defn trailing-output [converters-state owner]
   (reify
     om/IRender
     (render [_]
@@ -46,11 +47,11 @@
          [:span {:dangerouslySetInnerHTML
                  #js {"__html" trailing-out}}])))))
 
-(defn action [action owner opts]
+(defn action [action owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             visible? (get action :show-output (or (not= "success" (:status action))
                                                   (seq (:messages action))))
             header-classes  (concat [(:status action)]
@@ -116,32 +117,40 @@
                     [:pre.output.solarized {:style {:white-space "normal"}}
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])
-                     (om/build-all output (:output action) {:opts opts
-                                                            :key :react-key})
+                     (om/build-all output (:output action) {:key :react-key})
 
-                     (om/build trailing-output (:converters-state action) {:opts opts})
+                     (om/build trailing-output (:converters-state action))
 
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
 
-(defn container-view [container owner opts]
+(defn container-view [{:keys [container non-parallel-actions]} owner]
   (reify
     om/IRender
     (render [_]
       (let [container-id (container-model/id container)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])
+            actions (remove :filler-action
+                            (map (fn [action]
+                                   (get non-parallel-actions (:step action) action))
+                                 (:actions container)))]
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
-          (om/build-all action (:actions container) {:opts opts :key :step})])))))
+          (om/build-all action actions {:key :step})])))))
 
-(defn container-build-steps [data owner opts]
+(defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build data)
-            containers (:containers data)
-            controls-ch (get-in opts [:comms :controls])]
+      (let [non-parallel-actions (->> containers
+                                      first
+                                      :actions
+                                      (remove :parallel)
+                                      (map (fn [action]
+                                             [(:step action) action]))
+                                      (into {}))
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
@@ -157,7 +166,10 @@
                                   :scroll "handle_browser_scroll"
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"
-                                  :class (str "selected_" (get-in build [:current-container-id] 0))}
+                                  :class (str "selected_" current-container-id)}
            ;; XXX handle scrolling and resize sensor
            ;; probably have to replace resize sensor with something else
-           (om/build-all container-view containers {:opts opts :key :index})]])))))
+           (for [container containers]
+             (om/build container-view
+                       {:container container
+                        :non-parallel-actions non-parallel-actions}))]])))))

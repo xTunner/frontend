@@ -1,11 +1,14 @@
 (ns frontend.components.project-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.routes :as routes]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
@@ -35,32 +38,36 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
-(defn branch-picker [project settings controls-ch & {:keys [button-text channel-message channel-args]
-                                                     :or {button-text "Start a build"
-                                                          channel-message :started-edit-settings-build}}]
-  (let [project-id (project-model/id project)
+(defn branch-picker [project-data controls-ch & {:keys [button-text channel-message channel-args]
+                                                 :or {button-text "Start a build"
+                                                      channel-message :started-edit-settings-build}}]
+  (let [project (:project project-data)
+        project-id (project-model/id project)
         default-branch (:default_branch project)
-        settings-branch (get-in settings [:projects project-id :settings-branch] default-branch)]
-    [:form {:on-submit #(do (put! controls-ch [channel-message (merge {:project-id project-id
-                                                                       :branch settings-branch}
-                                                                      channel-args)])
-                            false)}
+        settings-branch (get project-data :settings-branch default-branch)]
+    [:form
      [:input {:name "branch"
               :required true
               :type "text"
               :value settings-branch
               ;; XXX typeahead
-              :on-change #(utils/edit-input controls-ch [:projects project-id :settings-branch] %)}]
+              :on-change #(utils/edit-input controls-ch state/project-settings-branch-path %)}]
      [:label {:placeholder "Test settings on..."}]
-     [:input
-      {:value button-text
-       ;; XXX handle data-loading-text
-       :data-loading-text "Starting..."
-       :type "submit"}]]))
+     (forms/stateful-button
+      [:input
+       {:value button-text
+        :on-click #(do (put! controls-ch [channel-message (merge {:project-id project-id
+                                                                  :branch settings-branch}
+                                                                 channel-args)])
+                       false)
+        :data-api-count 2
+        :data-loading-text "Starting..."
+        :data-success-text "Started..."
+        :type "submit"}])]))
 
-(defn overview [project settings controls-ch]
+(defn overview [project-data controls-ch]
   [:div.project-settings-block
-   [:h2 "How to configure " [:span (vcs-url/project-name (:vcs_url project))]]
+   [:h2 "How to configure " [:span (vcs-url/project-name (get-in project-data [:project :vcs_url]))]]
    [:ul.overview-options
     [:li.overview-item
      [:h4 "Option 1"]
@@ -79,15 +86,15 @@
       [:a {:href "/docs/configuration"} "circle.yml file"]
       " in your repo. Very powerful."]]]])
 
-(defn mini-parallelism-faq [project settings controls-ch]
+(defn mini-parallelism-faq [project-data controls-ch]
   [:div.mini-faq
    [:div.mini-faq-item
     [:h3 "What are containers?"]
     [:p
      "Containers are what we call the virtual machines that your tests run in. Your current plan has "
-     (get-in project [:plan :containers])
+     (get-in project-data [:plan :containers])
      " containers and supports up to "
-     (plan-model/max-parallelism (:plan project))
+     (plan-model/max-parallelism (:plan project-data))
      "x paralellism."]
 
     [:p "With 16 containers you could run:"]
@@ -123,21 +130,22 @@
      [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
      [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]]])
 
-(defn parallel-label-classes [project parallelism]
+(defn parallel-label-classes [project-data parallelism]
   (concat
    []
-   (when (> parallelism (plan-model/max-selectable-parallelism (:plan project))) ["disabled"])
-   (when (= parallelism (:parallel project)) ["selected"])
-   (when (not= 0 (mod (plan-model/usable-containers (:plan project)) parallelism)) ["bad_choice"])))
+   (when (> parallelism (plan-model/max-selectable-parallelism (:plan project-data))) ["disabled"])
+   (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
+   (when (not= 0 (mod (plan-model/usable-containers (:plan project-data)) parallelism)) ["bad_choice"])))
 
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
-  [project parallelism]
-  (let [plan (:plan project)
+  [project-data parallelism]
+  (let [plan (:plan project-data)
+        project (:project project-data)
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
-      (if-not (= "trial" (get-in project [:plan :type]))
+      (if-not (= "trial" (:type plan))
         (cond (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
                "Your plan only allows up to "
@@ -173,24 +181,25 @@
                                                     :subpage "containers"})}
          "Upgrade"]]))))
 
-(defn parallelism-picker [project settings controls-ch]
+(defn parallelism-picker [project-data controls-ch]
   [:div.parallelism-picker
-   (if-not (:plan project)
+   (if-not (:plan project-data)
      [:div.loading-spinner common/spinner]
-     (let [plan (:plan project)
+     (let [plan (:plan project-data)
+           project (:project project-data)
            project-id (project-model/id project)]
        (list
-        (when (:parallelism-edited project)
+        (when (:parallelism-edited project-data)
           [:div.try-out-build
-           (branch-picker project settings controls-ch :button-text (str "Try a build!"))])
+           (branch-picker project-data controls-ch :button-text (str "Try a build!"))])
         [:form.parallelism-items
          (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
                                          (inc 24)))]
            ;; XXX do we need parallel focus in
-           [:label {:class (parallel-label-classes project parallelism)
+           [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
-            (parallelism-tile project parallelism)
+            (parallelism-tile project-data parallelism)
             [:input {:id (str "parallel_input_" parallelism)
                      :type "radio"
                      :name "parallel"
@@ -201,17 +210,18 @@
                      :disabled (> parallelism (plan-model/max-selectable-parallelism plan))
                      :checked (= parallelism (:parallel project))}]])])))])
 
-(defn parallel-builds [project settings controls-ch]
+(defn parallel-builds [project-data controls-ch]
   [:div
-   [:h2 (str "Change parallelism for " (vcs-url/project-name (:vcs_url project)))]
-   (if-not (:plan project)
+   [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
+   (if-not (:plan project-data)
      [:div.loading-spinner common/spinner]
-     (list (parallelism-picker project settings controls-ch)
-           (mini-parallelism-faq project settings controls-ch)))])
+     (list (parallelism-picker project-data controls-ch)
+           (mini-parallelism-faq project-data controls-ch)))])
 
-(defn env-vars [project settings controls-ch]
-  (let [new-env-var-name (:new-env-var-name project)
-        new-env-var-value (:new-env-var-value project)
+(defn env-vars [project-data controls-ch]
+  (let [project (:project project-data)
+        new-env-var-name (:new-env-var-name project-data)
+        new-env-var-value (:new-env-var-value project-data)
         project-id (project-model/id project)]
     [:div.environment-variables
      [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
@@ -224,24 +234,27 @@
        " characters by prefixing them with " [:code "\\"] "."
        "For example a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
        " you would enter " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
-      [:form {:on-submit #(do (put! controls-ch [:created-env-var {:project-id project-id
-                                                                   :env-var {:name new-env-var-name
-                                                                             :value new-env-var-value}}])
-                              false)}
+      [:form
        [:input#env-var-name
         {:required true, :type "text", :value new-env-var-name
-         :on-change #(utils/edit-input controls-ch [:current-project :new-env-var-name] %)}]
+         :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-env-var-name) %)}]
        [:label {:placeholder "Name"}]
        [:input#env-var-value
         {:required true, :type "text", :value new-env-var-value
-         :on-change #(utils/edit-input controls-ch [:current-project :new-env-var-value] %)}]
+         :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-env-var-value) %)}]
        [:label {:placeholder "Value"}]
-       [:input {:data-failed-text "Failed",
-                :data-success-text "Added",
-                :data-loading-text "Adding...",
-                :value "Save variables",
-                :type "submit"}]]
-      (when-let [env-vars (seq (:env-vars project))]
+       (forms/stateful-button
+        [:input {:data-failed-text "Failed",
+                 :data-success-text "Added",
+                 :data-loading-text "Adding...",
+                 :value "Save variables",
+                 :type "submit"
+                 :on-click #(do
+                              (put! controls-ch [:created-env-var {:project-id project-id
+                                                                   :env-var {:name new-env-var-name
+                                                                             :value new-env-var-value}}])
+                              false)}])]
+      (when-let [env-vars (seq (:envvars project-data))]
         [:table
          [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
          [:tbody
@@ -255,10 +268,11 @@
                 :on-click #(put! controls-ch [:deleted-env-var {:project-id project-id
                                                                 :env-var-name name}])}
                [:i.fa.fa-times-circle]
-               [:span "Remove"]]]])]])]]))
+               [:span " Remove"]]]])]])]]))
 
-(defn dependencies [project settings controls-ch]
-  (let [project-id (project-model/id project)
+(defn dependencies [project-data controls-ch]
+  (let [project (:project project-data)
+        project-id (project-model/id project)
         {:keys [setup dependencies post_dependencies]} project]
     [:div.dependencies-page
      [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
@@ -268,33 +282,36 @@
         [:textarea {:name "setup",
                     :required true
                     :value setup
-                    :on-change #(utils/edit-input controls-ch [:current-project :setup] %)}]
+                    :on-change #(utils/edit-input controls-ch (conj state/project-path :setup) %)}]
         [:label {:placeholder "Pre-dependency commands"}]
         [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
         [:textarea {:name "dependencies",
                     :required true
                     :value dependencies
-                    :on-change #(utils/edit-input controls-ch [:current-project :dependencies] %)}]
+                    :on-change #(utils/edit-input controls-ch (conj state/project-path :dependencies) %)}]
         [:label {:placeholder "Dependency overrides"}]
         [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
          [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
          [:code "configure"] ", " [:code "make"] ", etc."]
         [:textarea {:required true
                     :value post_dependencies
-                    :on-change #(utils/edit-input controls-ch [:current-project :post_dependencies] %)}]
+                    :on-change #(utils/edit-input controls-ch (conj state/projet-path :post_dependencies) %)}]
         [:label {:placeholder "Post-dependency commands"}]
         [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
-        [:input {:value "Next, setup your tests",
-                 :type "submit"
-                 :on-click #(do (put! controls-ch [:saved-dependencies-commands
-                                                   {:project-id project-id
-                                                    :settings {:setup setup
-                                                               :dependencies dependencies
-                                                               :post_dependencies post_dependencies}}])
-                                false)}]]]]]))
+        (forms/stateful-button
+         [:input {:value "Next, setup your tests",
+                  :type "submit"
+                  :data-loading-text "Saving..."
+                  :on-click #(do (put! controls-ch [:saved-dependencies-commands
+                                                    {:project-id project-id
+                                                     :settings {:setup setup
+                                                                :dependencies dependencies
+                                                                :post_dependencies post_dependencies}}])
+                                 false)}])]]]]))
 
-(defn tests [project settings controls-ch]
-  (let [project-id (project-model/id project)
+(defn tests [project-data controls-ch]
+  (let [project (:project project-data)
+        project-id (project-model/id project)
         {:keys [test extra]} project]
     [:div.tests-page
      [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
@@ -303,26 +320,27 @@
        [:textarea {:name "test",
                    :required true
                    :value test
-                   :on-change #(utils/edit-input controls-ch [:current-project :test] %)}]
+                   :on-change #(utils/edit-input controls-ch (conj state/project-path :test) %)}]
        [:label {:placeholder "Test commands"}]
        [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
        [:textarea {:name "extra",
                    :required true
                    :value extra
-                   :on-change #(utils/edit-input controls-ch [:current-project :extra] %)}]
+                   :on-change #(utils/edit-input controls-ch (conj state/project-path :extra) %)}]
        [:label {:placeholder "Post-test commands"}]
        [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
-       [:input {:name "save",
-                :data-loading-text "Saving...",
-                :value "Save commands",
-                :type "submit"
-                :on-click #(do (put! controls-ch [:saved-test-commands
-                                                  {:project-id project-id
-                                                   :settings {:test test
-                                                              :extra extra}}])
-                               false)}]
+       (forms/stateful-button
+        [:input {:name "save",
+                 :data-loading-text "Saving...",
+                 :value "Save commands",
+                 :type "submit"
+                 :on-click #(do (put! controls-ch [:saved-test-commands
+                                                   {:project-id project-id
+                                                    :settings {:test test
+                                                               :extra extra}}])
+                                false)}])
        [:div.try-out-build
-        (branch-picker project settings controls-ch
+        (branch-picker project-data controls-ch
                        :button-text "Save & Go!"
                        :channel-message :saved-test-commands-and-build
                        :channel-args {:project-id project-id
@@ -335,7 +353,7 @@
     [:label {:for id}
      [:input {:id id
               :checked (= "smart" notify_pref)
-              :on-change #(utils/edit-input controls-ch [:current-project field] %
+              :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
                                             :value (if (= "smart" notify_pref) nil "smart"))
               :value "smart"
               :type "checkbox"}]
@@ -358,14 +376,15 @@
        (list
         [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
                  :value (get project field)
-                 :on-change #(utils/edit-input controls-ch [:current-project field] %)}]
+                 :on-change #(utils/edit-input controls-ch (conj state/project-path field) %)}]
         [:label {:placeholder placeholder}]))]]
    [:div.chat-room-foot
     (when show-fixed-failed?
       (fixed-failed-input project controls-ch :hipchat_notify_prefs))]])
 
-(defn chatrooms [project settings controls-ch]
-  (let [project-id (project-model/id project)]
+(defn chatrooms [project-data controls-ch]
+  (let [project (:project project-data)
+        project-id (project-model/id project)]
     [:div
      [:h2 "Chatroom setup for" (vcs-url/project-name (:vcs_url project))]
      [:div.chat-rooms
@@ -378,7 +397,7 @@
                                     [:input#hipchat-notify
                                      {:type "checkbox"
                                       :checked (:hipchat_notify project)
-                                      :on-change #(utils/toggle-input controls-ch [:current-project :hipchat_notify] %)}]
+                                      :on-change #(utils/toggle-input controls-ch (conj state/project-path :hipchat_notify) %)}]
                                     [:span "Show popups"]])
                         :inputs [{:field :hipchat_room :placeholder "Room"}
                                  {:field :hipchat_api_token :placeholder "API"}]
@@ -426,50 +445,54 @@
                         :show-fixed-failed? true}]]
         (chatroom-item project controls-ch chat-spec))]
      [:div.chat-room-save
-      [:input
-       {:data-success-text "Saved",
-        :data-loading-text "Saving",
-        :value "Save notification hooks",
-        :type "submit",
-        :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}]]]))
+      (forms/stateful-button
+       [:input
+        {:data-success-text "Saved",
+         :data-loading-text "Saving",
+         :value "Save notification hooks",
+         :type "submit",
+         :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}])]]))
 
-(defn webhooks [project settings controls-ch]
+(defn webhooks [project-data controls-ch]
   [:div
-   [:h2 "Webhooks for " (vcs-url/project-name (:vcs_url project))]
+   [:h2 "Webhooks for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
    [:div.doc
     [:p
      "Circle also support webhooks, which run at the end of a build. They can be configured in your "
      [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
       "circle.yml file"] "."]]])
 
-(defn ssh-keys [project settings controls-ch]
-  (let [project-id (project-model/id project)
-        {:keys [hostname public-key private-key]} (:new-ssh-key project)]
+(defn ssh-keys [project-data controls-ch]
+  (let [project (:project project-data)
+        project-id (project-model/id project)
+        {:keys [hostname public-key private-key]
+         :or {hostname "" public-key "" private-key ""}} (:new-ssh-key project-data)]
     [:div.sshkeys-page
      [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
      [:div.sshkeys-inner
       [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
       [:form
        [:input#hostname {:required true, :type "text" :value hostname
-                         :on-change #(utils/edit-input controls-ch [:current-project :new-ssh-key :hostname] %)}]
+                         :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
        [:label {:placeholder "Hostname"}]
        [:input#publicKey {:required true, :type "text" :value public-key
-                          :on-change #(utils/edit-input controls-ch [:current-project :new-ssh-key :public-key] %)}]
+                          :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :public-key) %)}]
        [:label {:placeholder "Public Key"}]
        [:textarea#privateKey {:required true :value private-key
-                              :on-change #(utils/edit-input controls-ch [:current-project :new-ssh-key :private-key] %)}]
+                              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
        [:label {:placeholder "Private Key"}]
-       [:input#submit.btn
-        {:data-failed-text "Failed",
-         :data-success-text "Saved",
-         :data-loading-text "Saving..",
-         :value "Submit",
-         :type "submit"
-         :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
-                                                           :ssh-key {:hostname hostname
-                                                                     :public_key public-key
-                                                                     :private_key private-key}}])
-                        false)}]]
+       (forms/stateful-button
+        [:input#submit.btn
+         {:data-failed-text "Failed",
+          :data-success-text "Saved",
+          :data-loading-text "Saving..",
+          :value "Submit",
+          :type "submit"
+          :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
+                                                            :ssh-key {:hostname hostname
+                                                                      :public_key public-key
+                                                                      :private_key private-key}}])
+                         false)}])]
       (when-let [ssh-keys (seq (:ssh_keys project))]
         [:table
          [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
@@ -484,16 +507,17 @@
                    [:i.fa.fa-times-circle]
                    [:span " Remove"]]]])]])]]))
 
-(defn github-user [project settings controls-ch]
+(defn github-user [project-data controls-ch]
   [:div "Wait for "
    [:a {:href "https://github.com/circleci/circle/pull/2259"}
     "#2259"]
    " to merge."])
 
-(defn api-tokens [project settings controls-ch]
-  (let [project-id (project-model/id project)
+(defn api-tokens [project-data controls-ch opts]
+  (let [project (:project project-data)
+        project-id (project-model/id project)
         {:keys [scope label]
-         :or {scope "status"}} (:new-api-token project)]
+         :or {scope "status" label ""}} (:new-api-token project-data)]
     [:div.circle-api-page
      [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
      [:div.circle-api-page-inner
@@ -504,25 +528,26 @@
       [:form
        [:div.styled-select
         [:select {:name "scope" :value scope
-                  :on-change #(utils/edit-input controls-ch [:current-project :new-api-token :scope] %)}
+                  :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :scope) %)}
          [:option {:value "status"} "Status"]
          [:option {:value "all"} "All"]]
         [:i.fa.fa-chevron-down]]
        [:input
         {:required true, :type "text" :value label
-         :on-change #(utils/edit-input controls-ch [:current-project :new-api-token :label] %)}]
+         :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
        [:label {:placeholder "Token label"}]
-       [:input
-        {:data-failed-text "Failed",
-         :data-success-text "Created",
-         :data-loading-text "Creating...",
-         :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
-                                                                     :api-token {:scope scope
-                                                                                 :label label}}])
-                        false)
-         :value "Create token",
-         :type "submit"}]]
-      (when-let [tokens (seq (:tokens project))]
+       (forms/stateful-button
+        [:input
+         {:data-failed-text "Failed",
+          :data-success-text "Created",
+          :data-loading-text "Creating...",
+          :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
+                                                                      :api-token {:scope scope
+                                                                                  :label label}}])
+                         false)
+          :value "Create token",
+          :type "submit"}])]
+      (when-let [tokens (seq (:tokens project-data))]
         [:table
          [:thead
           [:th "Scope"]
@@ -545,9 +570,9 @@
                [:i.fa.fa-times-circle]
                [:span " Remove"]]]])]])]]))
 
-(defn artifacts [project settings controls-ch]
+(defn artifacts [project-data controls-ch]
  [:div
-  [:h2 "Build artifacts for " (vcs-url/project-name (:vcs_url project))]
+  [:h2 "Build artifacts for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
   [:div.doc
    [:p
     "Circle supports saving files from any build. See "
@@ -555,8 +580,9 @@
      "our build artifact documentation‘"]
     " to set it up."]]])
 
-(defn heroku [user project settings controls-ch]
-  (let [project-id (project-model/id project)
+(defn heroku [user project-data controls-ch]
+  (let [project (:project project-data)
+        project-id (project-model/id project)
         login (:login user)]
     [:div.heroku-api
      [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
@@ -581,22 +607,24 @@
          :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
       [:form.api
        (if (= (:heroku_deploy_user project) (:login user))
-         [:input.remove-user
-          {:data-success-text "Saved",
-           :data-loading-text "Saving...",
-           :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
-                          false)
-           :value "Remove Heroku Deploy User",
-           :type "submit"}]
+         (forms/stateful-button
+          [:input.remove-user
+           {:data-success-text "Saved",
+            :data-loading-text "Saving...",
+            :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
+                           false)
+            :value "Remove Heroku Deploy User",
+            :type "submit"}])
 
-         [:input.set-user
-          {:data-success-text "Saved",
-           :data-loading-text "Saving...",
-           :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
-                                                                      :login login}])
-                          false)
-           :value (str "Set user to " (:login user)),
-           :type "submit"}])]]
+         (forms/stateful-button
+          [:input.set-user
+           {:data-success-text "Saved",
+            :data-loading-text "Saving...",
+            :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
+                                                                       :login login}])
+                           false)
+            :value (str "Set user to " (:login user)),
+            :type "submit"}]))]]
      [:div.heroku-step
       [:h4
        "Step 3: Add deployment settings to your "
@@ -609,10 +637,10 @@
         "    heroku:\n"
         "      appname: foo-bar-123"]]]]))
 
-(defn other-deployment [project settings controls-ch]
+(defn other-deployment [project-data controls-ch]
   [:div
    [:h2
-    "Other deployments for " (vcs-url/project-name (:vcs_url project))]
+    "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
    [:div.doc
     [:p "Circle supports deploying to any server, using custom commands. See "
      [:a {:target "_blank",
@@ -636,7 +664,7 @@
        subpage
        overview))
 
-(defn follow-sidebar [project settings controls-ch]
+(defn follow-sidebar [project controls-ch]
   (let [project-id (project-model/id project)
         vcs-url (:vcs_url project)]
     [:div.follow-status
@@ -651,9 +679,11 @@
           "You can stop these any time from your "
           [:a {:href "/account"} "account settings"]
           "."]
-         ;; XXX make unfollow work!
-         [:button {:on-click #(put! controls-ch [:unfollowed-repo project-id])}
-          "Unfollow"]))]
+         (forms/stateful-button
+          [:button {:on-click #(put! controls-ch [:unfollowed-project {:vcs-url vcs-url
+                                                                       :project-id project-id}])
+                    :data-loading-text "Unfollowing..."}
+           "Unfollow"])))]
      [:div.not-followed
       (when-not (:followed project)
         (list
@@ -661,25 +691,27 @@
          [:p
           "We can't update you with personalized build emails unless you follow this project. "
           "Projects are only tested if they have a follower."]
-         [:button {:on-click #(put! controls-ch [:follow-repo {:vcs_url vcs-url}])}
-          "Follow"]))]]))
+         (forms/stateful-button
+          [:button {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url
+                                                                     :project-id project-id}])
+                    :data-loading-text "Following..."}
+           "Follow"])))]]))
 
-(defn project-settings [data owner opts]
+(defn project-settings [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [project (:current-project data)
-            settings (:settings data)
+      (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
             subpage (:project-settings-subpage data)
-            controls-ch (get-in opts [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         (if-not (:vcs_url project) ; wait for project-settings to load
+         (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner common/spinner]
            [:div#project-settings
             [:aside sidebar]
             [:div.project-settings-inner
              (common/flashes)
              [:div#subpage
-              ((subpage-fn subpage user) project settings controls-ch)]]
-            (follow-sidebar project settings controls-ch)]))))))
+              ((subpage-fn subpage user) project-data controls-ch)]]
+            (follow-sidebar (:project project-data) controls-ch)]))))))

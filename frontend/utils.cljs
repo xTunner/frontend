@@ -1,5 +1,6 @@
 (ns frontend.utils
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [ajax.core :as ajax]
             [frontend.env :as env]
             [goog.crypt :as crypt]
@@ -27,7 +28,8 @@
   {:log-channels? (parse-uri-bool (.getParameterValue parsed-uri "log-channels"))
    :logging-enabled? (parse-uri-bool (.getParameterValue parsed-uri "logging-enabled"))
    :restore-state? (parse-uri-bool (.getParameterValue parsed-uri "restore-state"))
-   :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))})
+   :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))
+   :inspector? (parse-uri-bool (.getParameterValue parsed-uri "inspector"))})
 
 (def logging-enabled?
   (if (nil? (:logging-enabled? initial-query-map))
@@ -68,11 +70,22 @@
   (put! ch [:error-triggered message]))
 
 (defn trim-middle [s length]
-  ;; XXX Implement proper middle-trim
-  (subs s 0 (min length (count s))))
+  (let [str-len (count s)]
+    (if (<= str-len (+ length 3))
+      s
+      (let [over (+ (- str-len length) 3)
+            slice-pos (.ceil js/Math (/ (- length 3) 3))]
+        (str (subs s 0 slice-pos)
+             "..."
+             (subs s (+ slice-pos over)))))))
 
 (defn third [coll]
   (nth coll 2 nil))
+
+(defn js->clj-kw
+  "Same as js->clj, but keywordizes-keys by default"
+  [ds]
+  (js->clj ds :keywordize-keys true))
 
 (defn asset-path
   "Returns path of asset in CDN"
@@ -88,21 +101,25 @@
                                           :or {format :json
                                                response-format :json
                                                keywords? true}}]
-  (put! channel [message :started context])
-  (ajax/ajax-request url method
-                     (ajax/transform-opts
-                      {:format format
-                       :response-format response-format
-                       :keywords? keywords?
-                       :params params
-                       :headers (merge {:Accept "application/json"}
-                                       (when (re-find #"^/" url)
-                                         {:X-CSRFToken (csrf-token)}))
-                       :handler #(put! channel [message :success {:resp %
-                                                                  :context context}])
-                       :error-handler #(put! channel [message :failed {:resp %
-                                                                       :context context}])
-                       :finally #(put! channel [message :finished context])})))
+  (let [uuid frontend.async/*uuid*]
+    (put! channel [message :started context])
+    (ajax/ajax-request url method
+                       (ajax/transform-opts
+                        {:format format
+                         :response-format response-format
+                         :keywords? keywords?
+                         :params params
+                         :headers (merge {:Accept "application/json"}
+                                         (when (re-find #"^/" url)
+                                           {:X-CSRFToken (csrf-token)}))
+                         :handler #(binding [frontend.async/*uuid* uuid]
+                                     (put! channel [message :success {:resp %
+                                                                      :context context}]))
+                         :error-handler #(binding [frontend.async/*uuid* uuid]
+                                           (put! channel [message :failed {:resp %
+                                                                           :context context}]))
+                         :finally #(binding [frontend.async/*uuid* uuid]
+                                     (put! channel [message :finished context]))}))))
 
 (defn edit-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.

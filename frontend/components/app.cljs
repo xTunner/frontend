@@ -1,5 +1,6 @@
 (ns frontend.components.app
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.add-projects :as add-projects]
@@ -20,7 +21,7 @@
 (def keymap
   (atom nil))
 
-(defn loading [app owner opts]
+(defn loading [app owner]
   (reify
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
@@ -34,11 +35,11 @@
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings))
 
-(defn app [app owner opts]
+(defn app [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (get-in opts [:comms :controls])
+      (let [controls-ch (om/get-shared owner [:comms :controls])
             persist-state! #(put! controls-ch [:state-persisted])
             restore-state! #(put! controls-ch [:state-restored])
             dom-com (dominant-component app)]
@@ -49,11 +50,13 @@
           (om/build keyq/KeyboardHandler app
                     {:opts {:keymap keymap
                             :error-ch (get-in app [:comms :errors])}})
-          ;; for some reason this makes things render 10x slower
-          ;; (om/build inspector/inspector app {:opts opts})
+          (when (:inspector? utils/initial-query-map)
+            ;; XXX inspector still needs lots of work. It's slow and it defaults to
+            ;;     expanding all datastructures.
+            (om/build inspector/inspector app))
           [:header
-           (om/build navbar/navbar app {:opts opts})]
+           (om/build navbar/navbar app)]
           [:main
-           (om/build dom-com app {:opts opts})]
+           (om/build dom-com app)]
           [:footer
            (footer/footer)]])))))

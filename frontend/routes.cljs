@@ -1,5 +1,6 @@
 (ns frontend.routes
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
             [frontend.models.project :as proj-mod]
@@ -23,7 +24,7 @@
 (defn open-build-inspector!
   [app nav-ch org-id repo-id build-num]
   (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:build-inspector [project-name build-num]])))
+    (put! nav-ch [:build [project-name build-num org-id repo-id]])))
 
 (defn open-to-dashboard! [nav-ch & [args]]
   (put! nav-ch [:dashboard args]))
@@ -34,7 +35,9 @@
 (defn open-to-project-settings! [nav-ch org-id repo-id subpage]
   (let [project-name (str org-id "/" repo-id)]
     (put! nav-ch [:project-settings {:project-name project-name
-                                     :subpage subpage}])))
+                                     :subpage subpage
+                                     :org org-id
+                                     :repo repo-id}])))
 
 (defn open-to-org-settings!
   ([nav-ch org-id]

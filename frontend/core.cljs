@@ -1,5 +1,6 @@
 (ns frontend.core
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             ;; XXX remove browser repl in prod
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
@@ -8,13 +9,9 @@
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
-            [frontend.controllers.post-controls :as controls-pcon]
-            [frontend.controllers.post-navigation :as nav-pcon]
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
-            [frontend.controllers.post-api :as api-pcon]
             [frontend.controllers.ws :as ws-con]
-            [frontend.controllers.post-ws :as ws-pcon]
             [frontend.env :as env]
             [frontend.state :as state]
             [goog.events]
@@ -64,15 +61,20 @@
           :current-user (-> js/window
                             (aget "renderContext")
                             (aget "current_user")
-                            (js->clj :keywordize-keys true))
+                            utils/js->clj-kw)
           :render-context (-> js/window
                               (aget "renderContext")
-                              (js->clj :keywordize-keys true))
+                              utils/js->clj-kw)
           :comms {:controls  controls-ch
                   :api       api-ch
                   :errors    error-ch
                   :nav       navigation-ch
                   :ws        ws-ch
+                  :controls-mult (async/mult controls-ch)
+                  :api-mult (async/mult api-ch)
+                  :errors-mult (async/mult error-ch)
+                  :nav-mult (async/mult navigation-ch)
+                  :ws-mult (async/mult ws-ch)
                   :mouse-move {:ch mouse-move-ch
                                :mult (async/mult mouse-move-ch)}
                   :mouse-down {:ch mouse-down-ch
@@ -92,37 +94,42 @@
   (when (log-channels?)
     (mlog "Controls Verbose: " value))
   (swallow-errors
-   (let [previous-state @state]
-     (swap! state (partial controls-con/control-event container (first value) (second value)))
-     (controls-pcon/post-control-event! container (first value) (second value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial controls-con/control-event container (first value) (second value)))
+       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))))
 
 (defn nav-handler
   [value state history]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
-   (let [previous-state @state]
-     (swap! state (partial nav-con/navigated-to history (first value) (second value)))
-     (nav-pcon/post-navigated-to! history (first value) (second value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial nav-con/navigated-to history (first value) (second value)))
+       (nav-con/post-navigated-to! history (first value) (second value) previous-state @state)))))
 
 (defn api-handler
   [value state container]
   (when (log-channels?)
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
-    (let [previous-state @state]
-      (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
-      (api-pcon/post-api-event! container (first value) (second value) (utils/third value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
+       (api-con/post-api-event! container (first value) (second value) (utils/third value) previous-state @state)))))
 
 (defn ws-handler
   [value state pusher]
   (when (log-channels?)
     (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
   (swallow-errors
-    (let [previous-state @state]
-      ;; XXX: should these take the container like the rest of the controllers?
-      (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-      (ws-pcon/post-ws-event! pusher (first value) (second value) previous-state @state))))
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       ;; XXX: should these take the container like the rest of the controllers?
+       (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
+       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
+
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
@@ -131,19 +138,29 @@
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
-        pusher-imp (pusher/new-pusher-instance)]
+        pusher-imp (pusher/new-pusher-instance)
+        controls-tap (chan)
+        nav-tap (chan)
+        api-tap (chan)
+        ws-tap (chan)]
     (routes/define-routes! state)
     (om/root
      app/app
      state
      {:target container
-      :opts {:comms comms}})
+      :shared {:comms comms}})
+
+    (async/tap (:controls-mult comms) controls-tap)
+    (async/tap (:nav-mult comms) nav-tap)
+    (async/tap (:api-mult comms) api-tap)
+    (async/tap (:ws-mult comms) ws-tap)
+
     (go (while true
           (alt!
-           (:controls comms) ([v] (controls-handler v state container))
-           (:nav comms) ([v] (nav-handler v state history-imp))
-           (:api comms) ([v] (api-handler v state container))
-           (:ws comms) ([v] (ws-handler v state pusher-imp))
+           controls-tap ([v] (controls-handler v state container))
+           nav-tap ([v] (nav-handler v state history-imp))
+           api-tap ([v] (api-handler v state container))
+           ws-tap ([v] (ws-handler v state pusher-imp))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))
@@ -171,10 +188,12 @@
   (goog.events/listen
    js/window "resize"
    #(when (= :build (:navigation-point @app-state))
-      (put! controls-ch [:container-selected (get-in @app-state [:current-build :current-container-id] 0)]))))
+      (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
 
 (defn ^:export setup! []
   (let [state (app-state)]
+    ;; globally define the state so that we can get to it for debugging
+    (def debug-state state)
     (main state (sel1 :body))
     (dispatch-to-current-location!)
     (handle-browser-resize state)

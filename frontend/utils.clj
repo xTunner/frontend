@@ -28,7 +28,7 @@
    and optionally rethrowing them if configured to do so."
   [action]
   `(try ~action
-        (catch js/Error e#
+        (catch :default e#
           (merror e#)
           (when (:rethrow-errors? initial-query-map)
             (js* "debugger;")

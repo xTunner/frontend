@@ -1,6 +1,8 @@
 (ns frontend.components.builds-table
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
+            [frontend.components.forms :as forms]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
@@ -59,16 +61,18 @@
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)
-          [:a {:on-click #(put! controls-ch [:cancel-build ])}
-           "Cancel"])])]))
+          (let [build-id (build-model/id build)]
+            ;; XXX: how are we going to get back to the correct build in the app-state?
+            (forms/stateful-button
+             [:a {:on-click #(put! controls-ch [:cancel-build-clicked build-id])}
+              "Cancel"])))])]))
 
-(defn builds-table [data owner opts]
+(defn builds-table [builds owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [builds (:builds data)
-            controls-ch (:controls-ch data)
-            show-actions? (:show-actions? data)]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            show-actions? (:show-actions? opts)]
         (html
          [:table.recent-builds-table
           [:thead
