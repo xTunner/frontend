@@ -62,6 +62,7 @@
   (js/clearTimeout (om/get-state owner [:idle-timer])))
 
 (defn stateful-button
+(defn stateful-button*
   "Takes an ordinary input or button hiccup form.
   Disables the button while it waits for the API response to come back.
   When the button is clicked, it replaces the button value with data-loading-text,
@@ -116,3 +117,11 @@
         (html
          (vec (concat [tag new-attrs]
                       [new-body])))))))
+
+(defn stateful-button
+  "Takes an ordinary input or button hiccup form.
+   Disables the button while it waits for the API response to come back.
+   When the button is clicked, it replaces the button value with data-loading-text,
+   when the response comes back, it replaces the button with the data-:status-text for a second."
+  [hiccup-form]
+  (om/build stateful-button* hiccup-form))
