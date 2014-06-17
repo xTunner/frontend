@@ -20,5 +20,5 @@
   <!-- /ko -->
   <!-- ko if: VM.current_page().settings_link -->
     %a.settings{data-bind: "attr: {href: VM.current_page().settings_link, tooltip: VM.current_page().settings_text}"}
-      %i.fa.fa-cog
+      != HAML.ico(n:'settings-light')
   <!-- /ko -->
