@@ -2,7 +2,7 @@
 
 (defn initial-state []
   {:environment "development"
-   :settings {:projects {} ; hash of project-id to settings
+   :settings {:projects {}            ; hash of project-id to settings
               :organizations  {:circleci  {:plan {}}}
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
@@ -41,7 +41,10 @@
                                       ;; for each build to have its own copy of github-users, especially
                                       ;; since it's used so infrequently and goes stale fast.
                                       :github-users nil}}
-   :current-organization nil})
+   :current-org-data {:plan nil
+                      :projects nil
+                      :users nil
+                      :name nil}})
 
 (def user-path [:current-user])
 
@@ -98,3 +101,11 @@
 
 (defn repo-path [login type repo-index]
   (conj (repos-path login type) repo-index))
+
+(def org-data-path [:current-org-data])
+(def org-name-path (conj org-data-path :name))
+(def org-plan-path (conj org-data-path :plan))
+(def org-users-path (conj org-data-path :users))
+(def org-projects-path (conj org-data-path :projects))
+(def org-loaded-path (conj org-data-path :loaded))
+(def org-authorized?-path (conj org-data-path :authorized?))

@@ -350,22 +350,22 @@
 
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
-  (let [org-name (:org-name context)
-        plan (assoc resp :current_org_name org-name)]
+  (let [org-name (:org-name context)]
     (if-not (= org-name (:org-settings-org-name state))
       state
-      (assoc-in state [:settings :organizations (keyword org-name) :plan] plan))))
+      (assoc-in state state/org-plan-path resp))))
+
 
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
       state
       (-> state
-          (assoc :current-organization resp)
-          (assoc-in [:current-organization :loaded] true)
-          (assoc-in [:current-organization :authorized] true))))
+          (update-in state/org-data-path merge resp)
+          (assoc-in state/org-authorized?-path true))))
 
 
+;; XXX: only show org-failure on 401s
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))

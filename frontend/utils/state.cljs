@@ -40,10 +40,20 @@
                                       :tokens nil
                                       :envvars nil}))
 
+(defn reset-current-org [state]
+  (assoc state :current-org-data {:current-org-data {:plan nil
+                                                     :projects nil
+                                                     :users nil
+                                                     :name nil}}))
+
 (defn stale-current-project? [state project-name]
   (and (get-in state state/project-path)
        ;; XXX: check for url-escaped characters (e.g. /)
        (not= project-name (vcs-url/project-name (get-in state (conj state/project-path :vcs_url))))))
+
+(defn stale-current-org? [state org-name]
+  (and (get-in state state/org-name-path)
+       (not= org-name (get-in state state/org-name-path))))
 
 (defn find-repo-index
   "Path for a given repo. Login is the username, type is user or org, name is the repo name."
