@@ -32,6 +32,7 @@
 (defn open-to-add-projects! [nav-ch]
   (put! nav-ch [:add-projects]))
 
+;; XXX validate subpage, send to 404
 (defn open-to-project-settings! [nav-ch org-id repo-id subpage]
   (let [project-name (str org-id "/" repo-id)]
     (put! nav-ch [:project-settings {:project-name project-name
@@ -39,6 +40,7 @@
                                      :org org-id
                                      :repo repo-id}])))
 
+;; XXX validate subpage, send to 404
 (defn open-to-org-settings!
   ([nav-ch org-id]
    (open-to-org-settings! nav-ch org-id :projects))
