@@ -719,7 +719,7 @@
 %p
   If deploying to your servers requires SSH access, you'll need to
   upload the keys to CircleCI.
-  CircleCI's UI enables you to do this on your project's <b>Edit settings > SSH keys</b> page.
+  CircleCI's UI enables you to do this on your project's <b>Project Settings > SSH keys</b> page.
   Add and then submit the one or more SSH keys needed
   for deploying to your machines. If you leave the <b>Hostname</b> field blank,
   the public key will be used for all hosts.
@@ -748,7 +748,7 @@
   Setting up our deployment to Heroku requires one extra step.
   Due to Heroku's architecture and security model, we need to deploy as a particular user.
   A member of your project, possibly you, will need to register as that user.
-  CircleCI's UI enables you to do this on your project's <b>Edit settings > Heroku settings</b> page.
+  CircleCI's UI enables you to do this on your project's <b>Project Settings > Heroku settings</b> page.
 
 %h3#heroku-extra
   Heroku with pre or post-deployment steps
@@ -776,7 +776,7 @@
   In addition to these per-user emails, CircleCI sends notifications on a per-project basis.
   CircleCI supports sending webhooks when your build completes.
   CircleCI also supports HipChat, Campfire, Flowdock and IRC notifications; you configure these notifications from your project's
-  <b>Edit settings > Notifications </b> page.
+  <b>Project Settings > Notifications </b> page.
 
 
 %p

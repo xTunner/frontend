@@ -8,7 +8,7 @@
 
 %p
   To begin with, you'll need to turn on parallelism from your project's settings page.
-  Go to <strong>Edit settings > Parallelism</strong> to adjust the settings.
+  Go to <strong>Project Settings > Parallelism</strong> to adjust the settings.
 
 %h2 Splitting your test suite
 %p

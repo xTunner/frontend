@@ -19,7 +19,7 @@
 %img{src: assetPath('(asset-path "img/docs/heroku-step1.png")')}
 
 %p
-  If this key has already been added to your <b>Edit settings > Heroku settings</b> page,
+  If this key has already been added to your <b>Project Settings > Heroku settings</b> page,
   CircleCI maintains security by displaying a shorten version of the existing API key
   and masking the key when autofilling the <b>Set key</b> field.
 

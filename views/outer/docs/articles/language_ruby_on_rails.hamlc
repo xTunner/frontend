@@ -93,7 +93,7 @@
 %p
   Should you need faster testing, Circle can automatically split your
   tests and run them in parallel across multiple machines.
-  You can enable parallelism on your project's <b>Edit settings > Parallelism</b>
+  You can enable parallelism on your project's <b>Project Settings > Parallelism</b>
   page in the Circle UI.
 
 %p
