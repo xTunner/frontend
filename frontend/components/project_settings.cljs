@@ -60,6 +60,7 @@
                                                                   :branch settings-branch}
                                                                  channel-args)])
                        false)
+        :data-api-count 2
         :data-loading-text "Starting..."
         :data-success-text "Started..."
         :type "submit"}])]))

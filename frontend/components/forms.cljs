@@ -10,27 +10,34 @@
 (defn tap-api
   "Sets up a tap of the api channel and watches for the API request associated with
   the form submission to complete.
-  Runs success-fn if the API call was succesful and failure-fn if it failed."
-  [api-mult api-tap uuid {:keys [success-fn failure-fn]}]
+  Runs success-fn if the API call was succesful and failure-fn if it failed.
+  Will "
+  [api-mult api-tap uuid {:keys [success-fn failure-fn api-count]
+                          :or {api-count 1}}]
   (async/tap api-mult api-tap)
-  (go-loop []
+  (go-loop [api-calls 0 ; keep track of how many api-calls we handled
+            results #{}]
            (let [v (<! api-tap)]
              (let [message-uuid (:uuid (meta v))
+                   message (first v)
                    status (second v)]
                (cond
                 (and (= uuid message-uuid)
                      (#{:success :failed} status))
-                (do (if (= :success status)
-                      (success-fn)
-                      (failure-fn))
-                    ;; There's a chance of a race if the button gets clicked twice.
-                    ;; No good ideas on how to fix it, and it shouldn't happen,
-                    ;; so punting for now
-                    (async/untap api-mult api-tap))
+                (if (< (inc api-calls) api-count)
+                  (do (utils/mlog "completed" (inc api-calls) "of" api-count "api calls")
+                      (recur (inc api-calls) (conj results status)))
+                  (do (if (= #{:success} (conj results status))
+                        (success-fn)
+                        (failure-fn))
+                      ;; There's a chance of a race if the button gets clicked twice.
+                      ;; No good ideas on how to fix it, and it shouldn't happen,
+                      ;; so punting for now
+                      (async/untap api-mult api-tap)))
 
                 (nil? v) nil ;; don't recur on closed channel
 
-                :else (recur))))))
+                :else (recur api-calls results))))))
 
 (defn append-cycle
   "Adds the button-state to the end of the lifecycle"
@@ -64,7 +71,7 @@
 (defn wrap-handler
   "Wraps the on-click handler with a uuid binding to trace the channel passing, and taps
   the api channel so that we can wait for the api call to finish successfully."
-  [handler owner]
+  [handler owner api-count]
   (let [api-tap (om/get-state owner [:api-tap])
         api-mult (om/get-shared owner [:comms :api-mult])]
     (fn [& args]
@@ -72,7 +79,8 @@
       (let [uuid (utils/uuid)]
         (binding [frontend.async/*uuid* uuid]
           (tap-api api-mult api-tap uuid
-                   {:success-fn
+                   {:api-count api-count
+                    :success-fn
                     #(append-cycle owner :success)
                     :error-fn
                     #(append-cycle owner :failed)})
@@ -113,6 +121,7 @@
             new-body (cond (= :idle button-state) rest
                            (:data-spinner attrs) common/spinner
                            :else new-value)
+            api-count (get attrs :data-api-count 1) ; number of api calls to wait for
             new-attrs (-> attrs
                           ;; Disable the button when it's not idle
                           ;; We're changing the value of the button, so its safer not to let
@@ -123,7 +132,7 @@
                                                             (coll? c) (conj c "disabled")
                                                             :else "disabled")))
                           ;; Update the on-click handler to watch the api channel for success
-                          (update-in [:on-click] wrap-handler owner)
+                          (update-in [:on-click] wrap-handler owner api-count)
                           (update-in [:value] (fn [v]
                                                 (or new-value v))))]
         (html
@@ -134,6 +143,7 @@
   "Takes an ordinary input or button hiccup form.
    Disables the button while it waits for the API response to come back.
    When the button is clicked, it replaces the button value with data-loading-text,
-   when the response comes back, it replaces the button with the data-:status-text for a second."
+   when the response comes back, it replaces the button with the data-:status-text for a second.
+   If the button needs to wait for multiple api calls to complete, add data-api-count"
   [hiccup-form]
   (om/build stateful-button* hiccup-form))

@@ -93,6 +93,7 @@
                  [:button {:on-click #(put! controls-ch [:followed-repo (assoc @repo
                                                                           :login login
                                                                           :type type)])
+                           :data-api-count (if should-build? 2 1)
                            :data-spinner true}
                   [:span "Follow"]])]
 
