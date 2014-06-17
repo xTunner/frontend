@@ -8,6 +8,9 @@ body {
   .flexy();
   min-width: @minimumContentWidth;
   min-height: 100vh;
+  &:empty {
+    display: none;
+  }
   .app-main {
     .flex(1, 1);
     outline: none; // Appears when auto-focused
