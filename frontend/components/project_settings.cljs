@@ -45,10 +45,7 @@
         project-id (project-model/id project)
         default-branch (:default_branch project)
         settings-branch (get project-data :settings-branch default-branch)]
-    [:form {:on-submit #(do (put! controls-ch [channel-message (merge {:project-id project-id
-                                                                       :branch settings-branch}
-                                                                      channel-args)])
-                            false)}
+    [:form
      [:input {:name "branch"
               :required true
               :type "text"
@@ -56,11 +53,16 @@
               ;; XXX typeahead
               :on-change #(utils/edit-input controls-ch state/project-settings-branch-path %)}]
      [:label {:placeholder "Test settings on..."}]
-     [:input
-      {:value button-text
-       ;; XXX handle data-loading-text
-       :data-loading-text "Starting..."
-       :type "submit"}]]))
+     (forms/stateful-button
+      [:input
+       {:value button-text
+        :on-click #(do (put! controls-ch [channel-message (merge {:project-id project-id
+                                                                  :branch settings-branch}
+                                                                 channel-args)])
+                       false)
+        :data-loading-text "Starting..."
+        :data-success-text "Started..."
+        :type "submit"}])]))
 
 (defn overview [project-data controls-ch]
   [:div.project-settings-block
@@ -231,10 +233,7 @@
        " characters by prefixing them with " [:code "\\"] "."
        "For example a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
        " you would enter " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
-      [:form {:on-submit #(do (put! controls-ch [:created-env-var {:project-id project-id
-                                                                   :env-var {:name new-env-var-name
-                                                                             :value new-env-var-value}}])
-                              false)}
+      [:form
        [:input#env-var-name
         {:required true, :type "text", :value new-env-var-name
          :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-env-var-name) %)}]
@@ -243,11 +242,17 @@
         {:required true, :type "text", :value new-env-var-value
          :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-env-var-value) %)}]
        [:label {:placeholder "Value"}]
-       [:input {:data-failed-text "Failed",
-                :data-success-text "Added",
-                :data-loading-text "Adding...",
-                :value "Save variables",
-                :type "submit"}]]
+       (forms/stateful-button
+        [:input {:data-failed-text "Failed",
+                 :data-success-text "Added",
+                 :data-loading-text "Adding...",
+                 :value "Save variables",
+                 :type "submit"
+                 :on-click #(do
+                              (put! controls-ch [:created-env-var {:project-id project-id
+                                                                   :env-var {:name new-env-var-name
+                                                                             :value new-env-var-value}}])
+                              false)}])]
       (when-let [env-vars (seq (:envvars project-data))]
         [:table
          [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
@@ -292,14 +297,16 @@
                     :on-change #(utils/edit-input controls-ch (conj state/projet-path :post_dependencies) %)}]
         [:label {:placeholder "Post-dependency commands"}]
         [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
-        [:input {:value "Next, setup your tests",
-                 :type "submit"
-                 :on-click #(do (put! controls-ch [:saved-dependencies-commands
-                                                   {:project-id project-id
-                                                    :settings {:setup setup
-                                                               :dependencies dependencies
-                                                               :post_dependencies post_dependencies}}])
-                                false)}]]]]]))
+        (forms/stateful-button
+         [:input {:value "Next, setup your tests",
+                  :type "submit"
+                  :data-loading-text "Saving..."
+                  :on-click #(do (put! controls-ch [:saved-dependencies-commands
+                                                    {:project-id project-id
+                                                     :settings {:setup setup
+                                                                :dependencies dependencies
+                                                                :post_dependencies post_dependencies}}])
+                                 false)}])]]]]))
 
 (defn tests [project-data controls-ch]
   (let [project (:project project-data)
@@ -321,15 +328,16 @@
                    :on-change #(utils/edit-input controls-ch (conj state/project-path :extra) %)}]
        [:label {:placeholder "Post-test commands"}]
        [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
-       [:input {:name "save",
-                :data-loading-text "Saving...",
-                :value "Save commands",
-                :type "submit"
-                :on-click #(do (put! controls-ch [:saved-test-commands
-                                                  {:project-id project-id
-                                                   :settings {:test test
-                                                              :extra extra}}])
-                               false)}]
+       (forms/stateful-button
+        [:input {:name "save",
+                 :data-loading-text "Saving...",
+                 :value "Save commands",
+                 :type "submit"
+                 :on-click #(do (put! controls-ch [:saved-test-commands
+                                                   {:project-id project-id
+                                                    :settings {:test test
+                                                               :extra extra}}])
+                                false)}])
        [:div.try-out-build
         (branch-picker project-data controls-ch
                        :button-text "Save & Go!"
@@ -436,12 +444,13 @@
                         :show-fixed-failed? true}]]
         (chatroom-item project controls-ch chat-spec))]
      [:div.chat-room-save
-      [:input
-       {:data-success-text "Saved",
-        :data-loading-text "Saving",
-        :value "Save notification hooks",
-        :type "submit",
-        :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}]]]))
+      (forms/stateful-button
+       [:input
+        {:data-success-text "Saved",
+         :data-loading-text "Saving",
+         :value "Save notification hooks",
+         :type "submit",
+         :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}])]]))
 
 (defn webhooks [project-data controls-ch]
   [:div
@@ -471,17 +480,18 @@
        [:textarea#privateKey {:required true :value private-key
                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
        [:label {:placeholder "Private Key"}]
-       [:input#submit.btn
-        {:data-failed-text "Failed",
-         :data-success-text "Saved",
-         :data-loading-text "Saving..",
-         :value "Submit",
-         :type "submit"
-         :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
-                                                           :ssh-key {:hostname hostname
-                                                                     :public_key public-key
-                                                                     :private_key private-key}}])
-                        false)}]]
+       (forms/stateful-button
+        [:input#submit.btn
+         {:data-failed-text "Failed",
+          :data-success-text "Saved",
+          :data-loading-text "Saving..",
+          :value "Submit",
+          :type "submit"
+          :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
+                                                            :ssh-key {:hostname hostname
+                                                                      :public_key public-key
+                                                                      :private_key private-key}}])
+                         false)}])]
       (when-let [ssh-keys (seq (:ssh_keys project))]
         [:table
          [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
@@ -525,17 +535,17 @@
         {:required true, :type "text" :value label
          :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
        [:label {:placeholder "Token label"}]
-       (om/build forms/stateful-button
-                 [:input
-                  {:data-failed-text "Failed",
-                   :data-success-text "Created",
-                   :data-loading-text "Creating...",
-                   :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
-                                                                               :api-token {:scope scope
-                                                                                           :label label}}])
-                                  false)
-                   :value "Create token",
-                   :type "submit"}])]
+       (forms/stateful-button
+        [:input
+         {:data-failed-text "Failed",
+          :data-success-text "Created",
+          :data-loading-text "Creating...",
+          :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
+                                                                      :api-token {:scope scope
+                                                                                  :label label}}])
+                         false)
+          :value "Create token",
+          :type "submit"}])]
       (when-let [tokens (seq (:tokens project-data))]
         [:table
          [:thead
@@ -596,22 +606,24 @@
          :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
       [:form.api
        (if (= (:heroku_deploy_user project) (:login user))
-         [:input.remove-user
-          {:data-success-text "Saved",
-           :data-loading-text "Saving...",
-           :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
-                          false)
-           :value "Remove Heroku Deploy User",
-           :type "submit"}]
+         (forms/stateful-button
+          [:input.remove-user
+           {:data-success-text "Saved",
+            :data-loading-text "Saving...",
+            :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
+                           false)
+            :value "Remove Heroku Deploy User",
+            :type "submit"}])
 
-         [:input.set-user
-          {:data-success-text "Saved",
-           :data-loading-text "Saving...",
-           :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
-                                                                      :login login}])
-                          false)
-           :value (str "Set user to " (:login user)),
-           :type "submit"}])]]
+         (forms/stateful-button
+          [:input.set-user
+           {:data-success-text "Saved",
+            :data-loading-text "Saving...",
+            :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
+                                                                       :login login}])
+                           false)
+            :value (str "Set user to " (:login user)),
+            :type "submit"}]))]]
      [:div.heroku-step
       [:h4
        "Step 3: Add deployment settings to your "
@@ -666,9 +678,11 @@
           "You can stop these any time from your "
           [:a {:href "/account"} "account settings"]
           "."]
-         [:button {:on-click #(put! controls-ch [:unfollowed-project {:vcs-url vcs-url
-                                                                      :project-id project-id}])}
-          "Unfollow"]))]
+         (forms/stateful-button
+          [:button {:on-click #(put! controls-ch [:unfollowed-project {:vcs-url vcs-url
+                                                                       :project-id project-id}])
+                    :data-loading-text "Unfollowing..."}
+           "Unfollow"])))]
      [:div.not-followed
       (when-not (:followed project)
         (list
@@ -676,9 +690,11 @@
          [:p
           "We can't update you with personalized build emails unless you follow this project. "
           "Projects are only tested if they have a follower."]
-         [:button {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url
-                                                                    :project-id project-id}])}
-          "Follow"]))]]))
+         (forms/stateful-button
+          [:button {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url
+                                                                     :project-id project-id}])
+                    :data-loading-text "Following..."}
+           "Follow"])))]]))
 
 (defn project-settings [data owner]
   (reify

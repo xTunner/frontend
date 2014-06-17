@@ -1,6 +1,7 @@
 (ns frontend.components.project.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
@@ -76,11 +77,12 @@
             "Project "
             project-name
             " isn't configured with a deploy key or a github user, so we may not be able to test all pushes."
-            [:button.btn.btn-primary
-             {:data-loading-text "Adding...",
-              :on-click #(put! controls-ch [:enabled-project {:project-id project-id
-                                                              :project-name project-name}])}
-             "Add SSH key"]]]])))))
+            (forms/stateful-button
+             [:button.btn.btn-primary
+              {:data-loading-text "Adding...",
+               :on-click #(put! controls-ch [:enabled-project {:project-id project-id
+                                                               :project-name project-name}])}
+              "Add SSH key"])]]])))))
 
 (defn show-follow-notice [project]
   ;; followed here indicates that the user is following this project, not that the
@@ -98,8 +100,9 @@
          [:div.row-fluid
           [:div.offset1.span10
            [:div.alert.alert-success
-            [:button.btn.btn-primary
-             {:data-loading-text "Following...",
-              :on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
-             "Follow"]
+            (forms/stateful-button
+             [:button.btn.btn-primary
+              {:data-loading-text "Following...",
+               :on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
+              "Follow"])
             " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))

@@ -89,12 +89,12 @@
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
 
-                (om/build stateful-button
-                          [:button {:on-click #(put! controls-ch [:followed-repo (assoc @repo
-                                                                                   :login login
-                                                                                   :type type)])
-                                    :data-spinner true}
-                           [:span "Follow"]])]
+                (stateful-button
+                 [:button {:on-click #(put! controls-ch [:followed-repo (assoc @repo
+                                                                          :login login
+                                                                          :type type)])
+                           :data-spinner true}
+                  [:span "Follow"]])]
 
                (:following repo)
                [:li.repo-unfollow
@@ -109,12 +109,12 @@
                   [:i.fa.fa-external-link]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                (om/build stateful-button
-                          [:button {:on-click #(put! controls-ch [:unfollowed-repo (assoc @repo
-                                                                                     :login login
-                                                                                     :type type)])
-                                    :data-spinner true}
-                           [:span "Unfollow"]])]
+                (stateful-button
+                 [:button {:on-click #(put! controls-ch [:unfollowed-repo (assoc @repo
+                                                                            :login login
+                                                                            :type type)])
+                           :data-spinner true}
+                  [:span "Unfollow"]])]
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow

@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -81,8 +82,10 @@
            [:ul
             (om/build-all invite-tile users {:key :login})]]
           [:footer
-           [:button (let [users-to-invite (utils/inspect (invitees users))]
-                      {:on-click #(put! controls-ch [:invited-github-users {:invitees users-to-invite
-                                                                            :project-name project-name}])})
-            "Send Invites "
-            [:i.fa.fa-envelope-o]]]])))))
+           (forms/stateful-button
+            [:button (let [users-to-invite (utils/inspect (invitees users))]
+                       {:data-success-text "Sent"
+                        :on-click #(put! controls-ch [:invited-github-users {:invitees users-to-invite
+                                                                             :project-name project-name}])})
+             "Send Invites "
+             [:i.fa.fa-envelope-o]])]])))))
