@@ -61,7 +61,23 @@
   (close! (om/get-state owner [:api-tap]))
   (js/clearTimeout (om/get-state owner [:idle-timer])))
 
-(defn stateful-button
+(defn wrap-handler
+  "Wraps the on-click handler with a uuid binding to trace the channel passing, and taps
+  the api channel so that we can wait for the api call to finish successfully."
+  [handler owner]
+  (let [api-tap (om/get-state owner [:api-tap])
+        api-mult (om/get-shared owner [:comms :api-mult])]
+    (fn [& args]
+      (append-cycle owner :loading)
+      (let [uuid (utils/uuid)]
+        (binding [frontend.async/*uuid* uuid]
+          (tap-api api-mult api-tap uuid
+                   {:success-fn
+                    #(append-cycle owner :success)
+                    :error-fn
+                    #(append-cycle owner :failed)})
+          (apply handler args))))))
+
 (defn stateful-button*
   "Takes an ordinary input or button hiccup form.
   Disables the button while it waits for the API response to come back.
@@ -85,33 +101,29 @@
         (schedule-idle owner lifecycle)))
 
     om/IRenderState
-    (render-state [_ {:keys [lifecycle api-tap]}]
-      (let [api-mult (om/get-shared owner [:comms :api-mult])
-            button-state (last lifecycle)
+    (render-state [_ {:keys [lifecycle]}]
+      (let [button-state (last lifecycle)
             [tag attrs & rest] hiccup-form
-            new-value (get attrs (keyword (str "data-" (name button-state) "-text")) (:value attrs))
+            data-field (keyword (str "data-" (name button-state) "-text"))
+            new-value (-> (merge {:data-loading-text "..."
+                                  :data-success-text "Saved"
+                                  :data-failed-text "Failed"}
+                                 attrs)
+                          (get data-field (:value attrs)))
             new-body (cond (= :idle button-state) rest
                            (:data-spinner attrs) common/spinner
                            :else new-value)
             new-attrs (-> attrs
-                          ;; disable the button when it's not idl
+                          ;; Disable the button when it's not idle
+                          ;; We're changing the value of the button, so its safer not to let
+                          ;; people click on it.
                           (assoc :disabled (not= :idle button-state))
                           (update-in [:class] (fn [c] (cond (= :idle button-state) c
                                                             (string? c) (str c  " disabled")
                                                             (coll? c) (conj c "disabled")
                                                             :else "disabled")))
                           ;; Update the on-click handler to watch the api channel for success
-                          (update-in [:on-click] (fn [f]
-                                                   (fn [& args]
-                                                     (append-cycle owner :loading)
-                                                     (let [uuid (utils/uuid)]
-                                                       (binding [frontend.async/*uuid* uuid]
-                                                         (tap-api api-mult api-tap uuid
-                                                                  {:success-fn
-                                                                   #(append-cycle owner :success)
-                                                                   :error-fn
-                                                                   #(append-cycle owner :failed)})
-                                                         (apply f args))))))
+                          (update-in [:on-click] wrap-handler owner)
                           (update-in [:value] (fn [v]
                                                 (or new-value v))))]
         (html
