@@ -19,25 +19,25 @@
   (reify
     om/IRender
     (render [_]
-      (letfn [(nav-links [sects msgs selected]
-                (map (fn [sect msg]
-                       [:li {:class (when (= sect selected) :active)}
-                        [:a {:href (str "#" sect)} msg]])
-                     sects msgs))]
+      (letfn [(nav-links [templates]
+                (map (fn [{:keys [page text]} msg]
+                       [:li {:class (when (= page subpage) :active)}
+                        [:a {:href (str "#" page)} text]])
+                     templates))]
         (html [:div.span3
                [:ul.nav.nav-list.well
                 [:li.nav-header "Organization settings"]
                 [:li.divider]
                 [:li.nav-header "Overview"]
-                (nav-links ["projects" "users"]
-                           ["Projects" "Users"]
-                           subpage)
+                (nav-links [{:page "projects" :text "Projects"}
+                            {:page "users" :text "Users"}])
                 [:li.nav-header "Plan"]
                 (if (frontend.models.plan/can-edit-plan? plan)
-                  (nav-links ["containers" "organizations" "billing" "cancel"]
-                             ["Add containers" "Organizations" "Billing info" "Cancel"]
-                             subpage)
-                  (nav-links ["plan"] ["Choose plan"] subpage))]])))))
+                  (nav-links [{:page "containers" :text "Add containers"}
+                              {:page "organizations" :text "Organization"}
+                              {:page "billing" :text "Billing info"}
+                              {:page "cancel" :text "Cancel"}])
+                  (nav-links [{:page "plan" :text "Choose plan"}]))]])))))
 
 (defn non-admin-plan [{:keys [login org-id subpage]} owner opts]
   (reify
