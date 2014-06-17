@@ -24,7 +24,7 @@
                (cond
                 (and (= uuid message-uuid)
                      (#{:success :failed} status))
-                (if (< (inc api-calls) api-count)
+                (if (and (= status :success) (< (inc api-calls) api-count))
                   (do (utils/mlog "completed" (inc api-calls) "of" api-count "api calls")
                       (recur (inc api-calls) (conj results status)))
                   (do (if (= #{:success} (conj results status))
