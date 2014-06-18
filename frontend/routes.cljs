@@ -22,9 +22,9 @@
       (add-watch app listener-id sentinel))))
 
 (defn open-build-inspector!
-  [app nav-ch org-id repo-id build-num]
-  (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:build [project-name build-num org-id repo-id]])))
+  [app nav-ch org repo build-num]
+  (let [project-name (str org "/" repo)]
+    (put! nav-ch [:build [project-name build-num org repo]])))
 
 (defn open-to-dashboard! [nav-ch & [args]]
   (put! nav-ch [:dashboard args]))
@@ -33,20 +33,20 @@
   (put! nav-ch [:add-projects]))
 
 ;; XXX validate subpage, send to 404
-(defn open-to-project-settings! [nav-ch org-id repo-id subpage]
-  (let [project-name (str org-id "/" repo-id)]
+(defn open-to-project-settings! [nav-ch org repo subpage]
+  (let [project-name (str org "/" repo)]
     (put! nav-ch [:project-settings {:project-name project-name
                                      :subpage subpage
-                                     :org org-id
-                                     :repo repo-id}])))
+                                     :org org
+                                     :repo repo}])))
 
 ;; XXX validate subpage, send to 404
 (defn open-to-org-settings!
-  ([nav-ch org-id]
-   (open-to-org-settings! nav-ch org-id :projects))
-  ([nav-ch org-id subpage]
+  ([nav-ch org]
+   (open-to-org-settings! nav-ch org :projects))
+  ([nav-ch org subpage]
    (put! nav-ch [:org-settings {:subpage subpage
-                                :org-name org-id}])))
+                                :org-name org}])))
 
 (defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
@@ -57,22 +57,21 @@
     (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
       (open-to-dashboard! nav-ch params))
     (defroute v1-inspect-build #"/gh/([^/]+)/([^/]+)/(\d+)"
-      [org-id repo-id build-num]
-      (open-build-inspector! app nav-ch org-id repo-id (js/parseInt build-num)))
-    (defroute v1-project-settings "/gh/:org-id/:repo-id/edit"
-      [org-id repo-id]
-      (open-to-project-settings! nav-ch org-id repo-id nil))
-    (defroute v1-project-settings-subpage "/gh/:org-id/:repo-id/edit#:subpage"
-      [org-id repo-id subpage]
-      (open-to-project-settings! nav-ch org-id repo-id (keyword subpage)))
-    (defroute v1-org-settings "/gh/organizations/:org-id/settings"
-      [org-id]
-      (open-to-org-settings! nav-ch org-id))
-    (defroute v1-org-settings-subpage "/gh/organizations/:org-id/settings#:subpage"
-      [org-id subpage]
-      (open-to-org-settings! nav-ch org-id (keyword subpage)))
+      [org repo build-num]
+      (open-build-inspector! app nav-ch org repo (js/parseInt build-num)))
+    (defroute v1-project-settings "/gh/:org/:repo/edit"
+      [org repo]
+      (open-to-project-settings! nav-ch org repo nil))
+    (defroute v1-project-settings-subpage "/gh/:org/:repo/edit#:subpage"
+      [org repo subpage]
+      (open-to-project-settings! nav-ch org repo (keyword subpage)))
+    (defroute v1-org-settings "/gh/organizations/:org/settings"
+      [org]
+      (open-to-org-settings! nav-ch org))
+    (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
+      [org subpage]
+      (open-to-org-settings! nav-ch org (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
-    (defroute v1-root "/"
-      [org-id repo-id build-num]
+    (defroute v1-root "/" []
       (open-to-dashboard! nav-ch))))
