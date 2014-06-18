@@ -55,7 +55,7 @@
                       Exit code:
                       %span{data-bind: "text: exit_code"}
 
-                    %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+                    %pre.bash-command{data-bind: "text: bash_command", title: "The full bash command used to run this setup"}
                   Output:
 
                   %pre.output.solarized{style: "white-space: normal;"}
