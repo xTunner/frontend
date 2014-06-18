@@ -3,9 +3,11 @@
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
+            [frontend.models.plan :as plan-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -20,7 +22,7 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [node sel sel1]]))
 
-(defn sidebar [{:keys [subpage plan]} owner]
+(defn sidebar [{:keys [subpage plan org-name]} owner]
   (reify
     om/IRender
     (render [_]
@@ -38,7 +40,7 @@
                             {:page :users :text "Users"}])
                 [:li.nav-header "Plan"]
                 (when plan
-                  (if (frontend.models.plan/can-edit-plan? plan)
+                  (if (plan-model/can-edit-plan? plan org-name)
                     (nav-links [{:page :containers :text "Add containers"}
                                 {:page :organizations :text "Organization"}
                                 {:page :billing :text "Billing info"}
@@ -201,14 +203,71 @@
                    [:a.github-icon-link {:href vcs-url}
                     [:i.fa.fa-github]]]]])])]])))))
 
+(defn plans-trial-notification [plan org-name controls-ch]
+  [:div.row-fluid
+   [:div.alert.alert-success {:class (when (plan-model/trial-over? plan) "alert-error")}
+    [:p
+     (if (plan-model/trial-over? plan)
+       "Your 2-week trial is over!"
+
+       [:span "The " [:strong org-name] " organization has "
+        (plan-model/pretty-trial-time plan) " left in its trial."])]
+    [:p
+     "The trial plan is equivalent to the Solo plan with 6 containers."]
+    (when (and (not (:too_many_extensions plan))
+               (> 3 (plan-model/days-left-in-trial plan)))
+      [:p
+       "Need more time to decide? "
+       (forms/stateful-button
+        [:button.btn.btn-mini.btn-success
+         {:data-success-text "Extended!",
+          :data-loading-text "Extending...",
+          :on-click #(put! controls-ch [:extend-trial {:org-name org-name}])}
+         "Extend your trial"])])]])
+
+(defn plans-piggieback-plan-notification [plan current-org-name]
+  [:div.row-fluid
+   [:div.offset1.span10
+    [:div.alert.alert-success
+     [:p
+      "This organization is covered under " (:org_name plan) "'s plan which has "
+      (:containers plan) " containers."]
+     [:p
+      "If you're an admin in the " (:org_name plan)
+      " organization, then you can change plan settings from the "
+      [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                  :subpage "plan"})}
+       (:org_name plan) " plan page"] "."]
+     [:p
+      "You can create a separate plan for " current-org-name " by selecting from the plans below."]]]])
+
+(defn plan [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan (get-in data state/org-plan-path)
+            org-name (get-in data state/org-name-path)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+         (if-not plan
+           [:div.loading-spinner common/spinner]
+
+           [:div#billing.plans.pricing.row-fluid
+            (when (plan-model/trial? plan)
+              (plans-trial-notification plan org-name controls-ch))
+            (when (plan-model/piggieback? plan org-name)
+              (plans-piggieback-plan-notification plan org-name))
+            " + $c(HAML.org_plan_summary()) + $c(HAML.pricing_plans()) + $c(HAML.customers_trust()) + $c(HAML.pricing_features()) + $c(HAML.pricing_faq()) + $c(HAML.confirm_plan_modal())"]))))))
+
 (def main-component
   {:users users
    :projects projects
    :plan plan
-   :containers containers
-   :organizations organizations
-   :billing billing
-   :cancel cancel})
+   ;; :containers containers
+   ;; :organizations organizations
+   ;; :billing billing
+   ;; :cancel cancel
+   })
 
 (defn org-settings [data owner]
   (reify
@@ -221,7 +280,7 @@
                (if-not (:name org-data)
                  [:div.loading-spinner common/spinner]
                  [:div.row-fluid
-                  (om/build sidebar {:subpage subpage :plan plan})
+                  (om/build sidebar {:subpage subpage :plan plan :org-name (:name org-data)})
                   [:div.span9
                    (common/flashes)
                    [:div#subpage
