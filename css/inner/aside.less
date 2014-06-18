@@ -345,18 +345,18 @@
         &:first-child {
           .flex(1, 0, auto);
           .justify-content(flex-end);
-          padding-left: round(@em - ((@activity_line - @activity_ico) / 2));
+          padding-left: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
           svg {
             padding-right: round((@activity_line - @activity_ico) / 2);
           }
         }
-        &:not(:first-child) {
+        &:not(:last-child) {
           opacity: 0;
           margin-left: -@activity_line;
           transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
         }
         &:last-child {
-          padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
+          padding-right: round(@em - ((@activity_line - @activity_ico) / 2));
         }
       }
     }
