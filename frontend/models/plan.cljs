@@ -1,5 +1,6 @@
 (ns frontend.models.plan
-  (:require [goog.string :as gstring]
+  (:require [frontend.utils :as utils :include-macros true]
+            [goog.string :as gstring]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]))
 
@@ -18,19 +19,17 @@
        (usable-containers plan)))
 
 
-(defn piggieback? [plan]
-  (and (contains? (keys plan) :current_org_name)
-       (contains? (keys plan) :org_name)
-       (not= (:current_org_name plan) (:org_name plan))))
+(defn piggieback? [plan org-name]
+  (not= (:org_name plan) org-name))
 
 (defn paid? [plan]
   (not= (get-in plan [:template_properties :type] "trial") "trial"))
 
-(defn can-edit-plan? [plan]
-  (and (paid? plan) (not (piggieback? plan))))
+(defn can-edit-plan? [plan org-name]
+  (and (utils/inspect (paid? plan)) (not (piggieback? plan org-name))))
 
 (defn trial? [plan]
-  (some-> plan :template-properties :type name (= "trial")))
+  (some-> plan :template_properties :type name (= "trial")))
 
 (defn trial-over? [plan]
   (time/after? (time/now) (time-format/parse (:trial_end plan))))
@@ -44,3 +43,15 @@
       ;; count partial days as a full day
       (inc (time/in-days (time/interval now trial-end)))
       (- (time/in-days (time/interval trial-end now))))))
+
+(defn pretty-trial-time [plan]
+  (let [trial-interval (time/interval (time/now) (time-format/parse (:trial_end plan)))
+        hours-left (time/in-hours trial-interval)]
+    (cond (< 24 hours-left)
+          (str (days-left-in-trial plan) " days")
+
+          (< 1 hours-left)
+          (str hours-left " hours")
+
+          :else
+          (str (time/in-minutes trial-interval) " minutes"))))
