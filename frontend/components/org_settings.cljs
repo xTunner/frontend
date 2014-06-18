@@ -15,8 +15,10 @@
             [sablono.core :as html :refer-macros [html]]
             [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+            [goog.string.format]
+            [goog.style])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+                   [dommy.macros :refer [node sel sel1]]))
 
 (defn sidebar [{:keys [subpage plan]} owner]
   (reify
@@ -73,7 +75,7 @@
       (let [users (get-in data state/org-users-path)
             projects (get-in data state/org-projects-path)
             org-name (get-in data state/org-name-path)
-            projects-by-follower (utils/inspect (org-model/projects-by-follower projects))
+            projects-by-follower (org-model/projects-by-follower projects)
             sorted-users (sort-by (fn [u]
                                     (- (count (get projects-by-follower (:login u)))))
                                   users)]
@@ -108,6 +110,96 @@
                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
                                                              :repo (vcs-url/repo-name vcs-url)})}
                      (vcs-url/project-name vcs-url)]])]]])]]])))))
+
+(defn equalize-size
+  "Given a node, will find all elements under node that satisfy selector and change
+   the size of every element so that it is the same size as the largest element."
+  [node selector]
+  (let [items (sel node selector)
+        sizes (map goog.style/getSize items)
+        max-width (apply max (map #(.-width %) sizes))
+        max-height (apply max (map #(.-height %) sizes))]
+    (doseq [item items]
+      (goog.style/setSize item max-width max-height))))
+
+(defn followers-container [followers owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (equalize-size (om/get-node owner) ".follower-container"))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (equalize-size (om/get-node owner) ".follower-container"))
+    om/IRender
+    (render [_]
+      (html
+       [:div.followers-container.row-fluid
+        [:div.row-fluid
+         (for [follower followers]
+           [:span.follower-container
+            {:style {:display "inline-block"}}
+            [:img.gravatar
+             {:src (gh-utils/gravatar-url {:size 30 :login (:login follower)
+                                           :gravatar_id (:gravatar_id follower)})}]
+            " "
+            [:span (:login follower)]])]]))))
+
+(defn projects [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [users (get-in data state/org-users-path)
+            projects (get-in data state/org-projects-path)
+            {followed-projects true unfollowed-projects false} (group-by #(pos? (count (:followers %)))
+                                                                         projects)
+            org-name (get-in data state/org-name-path)]
+        (html
+         [:div
+          [:div.followed-projects.row-fluid
+           [:h2 "Followed projects"]
+           (if-not (seq followed-projects)
+             [:h4 "No followed projects found."]
+
+             [:div.span8
+              (for [project followed-projects
+                    :let [vcs-url (:vcs_url project)]]
+                [:div.row-fluid
+                 [:div.span12.success.well
+                  [:div.row-fluid
+                   [:div.span12
+                    [:h4
+                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
+                                                              :repo (vcs-url/repo-name vcs-url)})}
+                      (vcs-url/project-name vcs-url)]
+                     " "
+                     [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
+                                                                       :repo (vcs-url/repo-name vcs-url)})}
+                      [:i.fa.fa-gear]]
+                     " "
+                     [:a.github-icon-link {:href vcs-url}
+                      [:i.fa.fa-github]]]]]
+                  (om/build followers-container (:followers project))]])])]
+          [:div.row-fluid
+           [:h2 "Untested repos"]
+           (if-not (seq unfollowed-projects)
+             [:h4 "No untested repos found."]
+
+             [:div.span8
+              (for [project unfollowed-projects
+                    :let [vcs-url (:vcs_url project)]]
+                [:div.row-fluid
+                 [:div.fail.span12.well
+                  [:h4
+                   [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
+                                                            :repo (vcs-url/repo-name vcs-url)})}
+                    (vcs-url/project-name vcs-url)]
+                   " "
+                   [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
+                                                                     :repo (vcs-url/repo-name vcs-url)})}
+                    [:i.fa.fa-gear]]
+                   " "
+                   [:a.github-icon-link {:href vcs-url}
+                    [:i.fa.fa-github]]]]])])]])))))
 
 (def main-component
   {:users users
