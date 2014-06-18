@@ -6,7 +6,7 @@
   @slideup_items: 3;
   @slideup_visible: 1;
   @activity_scroll: 5px;
-  @activity_color: fade(@white, 34);
+  @activity_color: fade(@white, 55);
   @activity_ico: (@em - 2);
   @activity_line: (@em * 1.5);
   @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
@@ -270,7 +270,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         &:not(:hover) {
-          color: fadein(@activity_color, 21);
+          color: fadein(@activity_color, 34);
         }
         &.toggle {
           .box-sizing(border-box);
