@@ -78,33 +78,33 @@
                                     (- (count (get projects-by-follower (:login u)))))
                                   users)]
         (html
-         [:div.row-fluid.users
+         [:div.users
           [:h2
            "CircleCI users in the " org-name " organization"]
-          [:div.span10
+          [:div
            (if-not (seq users)
              [:h4 "No users found."])
-           [:div.row-fluid
+           [:div
             (for [user sorted-users
                   :let [login (:login user)
                         followed-projects (get projects-by-follower login)]]
-              [:div.span6.well
+              [:div.well.om-org-user
                {:class (if (zero? (count followed-projects))
                          "fail"
                          "success")}
-               [:div.row-fluid
-                [:div.span2
-                 [:img.gravatar {:src (gh-utils/gravatar-url {:size 45 :login login
-                                                              :github-id (:github_id user)
-                                                              :gravatar_id (:gravatar_id user)})}]]
-                [:div.span10
-                 [:h4
-                  (if (seq followed-projects)
-                    (str login " is following:")
-                    (str login " is not following any " org-name  " projects"))]
+
+               [:img.gravatar {:src (gh-utils/gravatar-url {:size 45 :login login
+                                                            :github-id (:github_id user)
+                                                            :gravatar_id (:gravatar_id user)})}]
+               [:div.om-org-user-projects-container
+                [:h4
+                 (if (seq followed-projects)
+                   (str login " is following:")
+                   (str login " is not following any " org-name  " projects"))]
+                [:div.om-org-user-projects
                  (for [project (sort-by (fn [p] (- (count (:followers p)))) followed-projects)
                        :let [vcs-url (:vcs_url project)]]
-                   [:div.row-fluid
+                   [:div.om-org-user-project
                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
                                                              :repo (vcs-url/repo-name vcs-url)})}
                      (vcs-url/project-name vcs-url)]])]]])]]])))))
