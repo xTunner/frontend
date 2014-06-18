@@ -26,7 +26,7 @@
               .branch{role: "button"}
                 %a{data-bind: "attr: {href: p.branch_path(b), title: b}, text: p.format_branch_name(b, 23)"}
               .status{role: "button"}
-                <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
+                <!-- ko foreach: {data: p.recent_branch_builds(b).reverse(), as: 'recent'} -->
                   %a{data-bind: "attr: {href: p.build_path(build_num), title: tooltip_title}, haml: {template: 'ico', args: {n: status_icon_aside}}"}
                 <!-- /ko -->
           <!-- /ko -->
