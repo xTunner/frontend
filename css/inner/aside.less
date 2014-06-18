@@ -219,7 +219,7 @@
           }
           &:hover {
             a {
-              &:not(:first-child) {
+              &:not(:last-child) {
                 opacity: 1;
                 margin: 0;
                 transition: margin 100ms 100ms, opacity 100ms 100ms;
@@ -346,6 +346,7 @@
           .flex(1, 0, auto);
           .justify-content(flex-end);
           padding-left: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
+          // padding-left: round(@em - ((@activity_line - @activity_ico) / 2)); // testing with smaller padding above
           svg {
             padding-right: round((@activity_line - @activity_ico) / 2);
           }
@@ -356,7 +357,7 @@
           transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
         }
         &:last-child {
-          padding-right: round(@em - ((@activity_line - @activity_ico) / 2));
+          padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
         }
       }
     }
