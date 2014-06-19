@@ -1,6 +1,6 @@
 <!-- ko with: current_user -->
 %nav.aside-left-nav{data-bind: "css: {slim: VM.browser_settings.settings().aside_is_slim}"}
-  %a.aside-item.logo{href: "/", tooltip: "Home"}
+  %a.aside-item.logo{href: "/", data-bind: "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"}
     .logomark
       != HAML.ico(n:'logo')
   -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
@@ -26,25 +26,25 @@
               .branch{role: "button"}
                 %a{data-bind: "attr: {href: p.branch_path(b), title: b}, text: p.format_branch_name(b, 23)"}
               .status{role: "button"}
-                <!-- ko foreach: {data: p.recent_branch_builds(b), as: 'recent'} -->
+                <!-- ko foreach: {data: p.recent_branch_builds(b).reverse(), as: 'recent'} -->
                   %a{data-bind: "attr: {href: p.build_path(build_num), title: tooltip_title}, haml: {template: 'ico', args: {n: status_icon_aside}}"}
                 <!-- /ko -->
           <!-- /ko -->
       <!-- /ko -->
-  %a.aside-item#add-projects{href: "/add-projects", tooltip: "Add Projects"}
+  %a.aside-item#add-projects{href: "/add-projects", data-bind: "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
     %i.fa.fa-plus-circle
     %span Add Projects
-  %a.aside-item{href: "#", tooltip: "Invite Teammate", data-toggle: "modal", data-target: "#inviteForm"}
+  %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}", data-toggle: "modal", data-target: "#inviteForm"}
     %i.fa.fa-envelope-o
     %span Invite Teammate
   .aside-slideup
-    %a.aside-item{href: "/account", tooltip: "User Account"}
+    %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
       %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
       %span{data-bind: "text: login"}
-    %a.aside-item{href: "/logout", tooltip: "Logout"}
+    %a.aside-item{href: "/logout", data-bind: "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
       %i.fa.fa-sign-out
       %span Logout
-    %a.aside-item{href: "#", tooltip: "Expand", data-bind: "click: toggle_aside_expanded"}
+    %a.aside-item{href: "#", data-bind: "click: toggle_aside_expanded, tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"}
       / ko if: VM.browser_settings.settings().aside_is_slim
       %i.fa.fa-long-arrow-right
       / /ko
