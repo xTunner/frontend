@@ -21,7 +21,7 @@
       (on-loaded @app)
       (add-watch app listener-id sentinel))))
 
-(defn open-build-inspector!
+(defn open-to-build!
   [app nav-ch org-id repo-id build-num]
   (let [project-name (str org-id "/" repo-id)]
     (put! nav-ch [:build [project-name build-num org-id repo-id]])))
@@ -39,6 +39,12 @@
                                      :org org-id
                                      :repo repo-id}])))
 
+(defn v1-build-path
+  "Temporary helper method for v1-build until we figure out how to make
+   secretary's render-route work for regexes"
+  [org repo build-num]
+  (str "/gh/" org "/" repo "/" build-num))
+
 (defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
     (defroute v1-org-dashboard "/gh/:org" {:as params}
@@ -47,9 +53,9 @@
       (open-to-dashboard! nav-ch params))
     (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
       (open-to-dashboard! nav-ch params))
-    (defroute v1-inspect-build #"/gh/([^/]+)/([^/]+)/(\d+)"
+    (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
       [org-id repo-id build-num]
-      (open-build-inspector! app nav-ch org-id repo-id (js/parseInt build-num)))
+      (open-to-build! app nav-ch org-id repo-id (js/parseInt build-num)))
     (defroute v1-project-settings "/gh/:org-id/:repo-id/edit"
       [org-id repo-id]
       (open-to-project-settings! nav-ch org-id repo-id nil))

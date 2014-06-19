@@ -41,7 +41,7 @@
 (defmethod render-crumb :build
   [{:keys [username project build-num active]}]
   (crumb-node {:name (str "build " build-num)
-               :path (routes/v1-inspect-build username project build-num)
+               :path (routes/v1-build-path username project build-num)
                :active active}))
 
 (defmethod render-crumb :org
