@@ -67,17 +67,15 @@
   (let [template (get ico-templates ico-name)]
     [:svg {:class "ico" :xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
            :dangerouslySetInnerHTML
-           #js {"__html" (apply str (concat
-                                     (for [path (:paths template)]
-                                       (do
-                                         (when (clojure.string/blank? path)
-                                           (utils/inspect ico-name))
-                                         (str "<path class='ico-" (name ico-name) "' fill='none'"
-                                              " d='" path "'></path>")))
-                                     (when (:d template)
-                                       [(str "<animateTransform attributeName='transform' type='rotate'"
-                                             " repeatDur='indefinite' values='" (:v template) "'"
-                                             " keyTimes='" (:k template) "'></animateTransform>")])))}}]))
+           #js {"__html" (apply str
+                                (for [path (:paths template)]
+                                  (str "<path class='ico-" (name ico-name) "' fill='none'"
+                                       " d='" path "'>"
+                                       (when (:d template)
+                                         (str "<animateTransform attributeName='transform' type='rotate'"
+                                              " repeatDur='indefinite' dur='" (:d template) "' values='" (:v template) "'"
+                                              " keyTimes='" (:k template) "'></animateTransform>"))
+                                       "</path>")))}}]))
 
 ;; TODO: why do we have ico and icon?
 (def icon-shapes
