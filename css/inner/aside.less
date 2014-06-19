@@ -3,14 +3,19 @@
   @cascade_delay: 30ms;
   @aside_items: 7;
   @aside_slim_speed: 200ms;
-  @slideup_items: 3;
+  @slideup_items: 2;
   @slideup_visible: 1;
   @activity_scroll: 5px;
   @activity_color: fade(@white, 55);
   @activity_ico: (@em - 2);
   @activity_line: (@em * 1.5);
   @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
+  .app-aside-left {
+    .flex(0, 0);
+    .flexy();
+  }
   .aside-left-nav {
+    .flex(0, 0);
     .flexy(column);
     color: fade(@white, 66);
     width: @aside_nav_width;
@@ -39,6 +44,90 @@
           visibility: hidden;
           transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
           pointer-events: none;
+        }
+      }
+    }
+    &.context {
+      @activity_color: @grayLight;
+      background: none;
+      box-shadow: 1px 0 @grayBoxBorder;
+      .aside-activity {
+        background: none;
+        box-shadow: none;
+        color: @activity_color;
+        position: relative;
+        .wrapper {
+          &:hover {
+            &::-webkit-scrollbar-thumb {
+              background: @grayLighter;
+            }
+          }
+        }
+        .toggle-all-branches {
+          // .box-sizing(border-box);
+          .flexy(center, center);
+          // padding: @em @em (@em / 2);
+          // width: @aside_nav_width - @activity_scroll; // this and border-box prevents toggle from being pushed by scrollbar
+          // transition: margin 100ms 500ms, opacity 100ms 500ms; // creates slight delay to avoid bouncing effect
+
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 210px;
+          height: 70px;
+          padding: 0;
+          // background: fade(@black, 13);
+          background-image: linear-gradient(fade(@white,55),fade(@white,55)), linear-gradient(fade(@white,0),@white);
+          opacity: .55;
+          transition: opacity 200ms;
+          z-index: 200;
+
+          &:hover {
+            // background: fade(@black, 55);
+            opacity: 1;
+            transition: opacity 100ms;
+          }
+
+          button {
+            color: fadeout(@activity_color, 21);
+            background-color: fade(@activity_color, 0);
+            border: 1px solid @activity_color;
+            border-left-color: transparent;
+            &:first-child {
+              border-left-color: @activity_color;
+            }
+            &:hover {
+              color: @grayDark;
+            }
+            &.active {
+              color: @activity_color;
+              border-color: @activity_color;
+              border-left-color: transparent;
+              &:first-child {
+                border-left-color: @activity_color;
+              }
+            }
+          }
+        }
+        .project {
+          a {
+            &:not(:hover) {
+              color: @grayDark;
+            }
+            &.toggle {
+              .ico-repo {
+                fill: @grayDark;
+              }
+            }
+          }
+        }
+        .branch {
+          a {
+            &:before,
+            &:after {
+              border-color: @grayLighter;
+            }
+          }
         }
       }
     }
