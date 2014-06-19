@@ -57,7 +57,8 @@
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         dashboard-data (:navigation-data current-state)]
-    (api/get-projects api-ch)
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
     (api/get-dashboard-builds dashboard-data api-ch))
   (set-page-title!))
 
@@ -85,6 +86,8 @@
   [history-imp navigation-point [project-name build-num] previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
     (utils/ajax :get
                 (gstring/format "/api/v1/project/%s/%s" project-name build-num)
                 :build
@@ -115,6 +118,8 @@
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
     (utils/ajax :get "/api/v1/user/organizations" :organizations api-ch)
     (utils/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
   (set-page-title! "Add projects"))
@@ -145,6 +150,8 @@
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
     (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
       (utils/ajax :get
