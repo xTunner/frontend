@@ -1,13 +1,14 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.footer :as footer]
+            [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
             [frontend.components.key-queue :as keyq]
-            [frontend.components.navbar :as navbar]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.common :as common]
@@ -44,17 +45,24 @@
         (reset! keymap {["ctrl+s"] persist-state!
                         ["ctrl+r"] restore-state!})
         (html/html
-         [:div#om-app {:class (if (:current-user app) "inner" "outer")}
-          (om/build keyq/KeyboardHandler app
-                    {:opts {:keymap keymap
-                            :error-ch (get-in app [:comms :errors])}})
-          (when (:inspector? utils/initial-query-map)
-            ;; XXX inspector still needs lots of work. It's slow and it defaults to
-            ;;     expanding all datastructures.
-            (om/build inspector/inspector app))
-          [:header
-           (om/build navbar/navbar app)]
-          [:main
-           (om/build dom-com app)]
-          [:footer
-           (footer/footer)]])))))
+         ;; XXX: determine inner or outer in the routing layer
+         (let [inner? (:current-user app)]
+           [:div#om-app {:class (if inner? "inner" "outer")}
+            (om/build keyq/KeyboardHandler app
+                      {:opts {:keymap keymap
+                              :error-ch (get-in app [:comms :errors])}})
+            (when (:inspector? utils/initial-query-map)
+              ;; XXX inspector still needs lots of work. It's slow and it defaults to
+              ;;     expanding all datastructures.
+              (om/build inspector/inspector app))
+            (when inner?
+              [:aside.app-aside-left
+               (om/build aside/aside app)])
+            [:main.app-main {:tab-index 1}
+             [:header.main-head ""
+              ;(om/build header/header app)
+              ]
+             [:div.main-body
+              (om/build dom-com app)]
+             [:footer.main-foot
+              (footer/footer)]]]))))))

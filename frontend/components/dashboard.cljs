@@ -1,7 +1,6 @@
 (ns frontend.components.dashboard
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
-            [frontend.components.sidebar :as sidebar]
             [frontend.components.builds-table :as builds-table]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
@@ -19,9 +18,5 @@
          ;; XXX logic for trial notices
          ;; XXX logic for show_build_table
          [:div#dashboard
-          (om/build sidebar/sidebar
-                    {:current-user (:current-user data)
-                     :projects (:projects data)
-                     :settings (:settings data)})
           [:section
            (om/build builds-table/builds-table builds {:opts {:show-actions? false}})]])))))

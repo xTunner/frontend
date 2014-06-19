@@ -49,20 +49,20 @@
   (update-in state [:settings :menus :user :open] not))
 
 
+;; XXX: persist these to localstorage
 (defmethod control-event :show-all-branches-toggled
-  [target message project-id state]
-  (update-in state [:settings :projects project-id :show-all-branches] not))
+  [target message value state]
+  (assoc-in state state/show-all-branches-path value))
 
-(defmethod post-control-event! :show-all-branches-toggled
-  [target message project-id previous-state current-state]
-  ;;; XXX This should happen on routing, obviously
-  ;; (print project-id
-  ;;        " show-all-branches-toggled "
-  ;;        (get-in previous-state [:settings :projects project-id :show-all-branches])
-  ;;        " => "
-  ;;        (get-in current-state [:settings :projects project-id :show-all-branches]))
-  )
+;; XXX: persist these to localstorage
+(defmethod control-event :collapse-branches-toggled
+  [target message {:keys [project-id]} state]
+  (update-in state (state/project-branches-collapsed-path project-id) not))
 
+;; XXX: persist these to localstorage
+(defmethod control-event :slim-aside-toggled
+  [target message {:keys [project-id]} state]
+  (update-in state state/slim-aside-path not))
 
 (defmethod control-event :state-restored
   [target message path state]
