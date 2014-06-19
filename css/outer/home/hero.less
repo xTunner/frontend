@@ -29,82 +29,82 @@
       text-align: center;
     }
     @animation_duration : 800ms;
-@animation_delay : 800ms;
-@cascade_delay : 50ms;
-.stories-procedure {
-  .step:nth-of-type(1) {
-    .direction,
-    .pin {
-      animation: flash @animation_duration @animation_delay + (@cascade_delay * 1); 
-      -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 1); 
+    @animation_delay : 800ms;
+    @cascade_delay : 50ms;
+    .stories-procedure {
+      .step:nth-of-type(1) {
+        .direction,
+        .pin {
+          animation: flash @animation_duration @animation_delay + (@cascade_delay * 1); 
+          -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 1); 
+        }
+      }
+      .step:nth-of-type(2) {
+        .direction,
+        .pin {
+          animation: flash @animation_duration @animation_delay + (@cascade_delay * 2); 
+          -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 2); 
+        }
+      }
+      .step:nth-of-type(4) {
+        .direction,
+        .pin {
+          animation: flash @animation_duration @animation_delay + (@cascade_delay * 3); 
+          -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 3); 
+        }
+      }
+      .step:nth-of-type(5) {
+        .direction,
+        .pin {
+          animation: flash @animation_duration @animation_delay + (@cascade_delay * 4);
+          -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 4);
+        }
+      }
+      .step:nth-of-type(1) {
+        .track {
+          animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 1); 
+          -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 1); 
+        }
+      }
+      .step:nth-of-type(2) {
+        .track {
+          animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 2); 
+          -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 2); 
+        }
+      }
+      .step:nth-of-type(4) {
+        .track {
+          animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 3); 
+          -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 3); 
+        }
+      }
+      .step:nth-of-type(5) {
+        .track {
+          animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 4); 
+          -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 4);
+        }
+      }
     }
-  }
-  .step:nth-of-type(2) {
-    .direction,
-    .pin {
-      animation: flash @animation_duration @animation_delay + (@cascade_delay * 2); 
-      -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 2); 
+    @keyframes flash {
+      0% { stroke-width: 0; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 0; }
     }
-  }
-  .step:nth-of-type(4) {
-    .direction,
-    .pin {
-      animation: flash @animation_duration @animation_delay + (@cascade_delay * 3); 
-      -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 3); 
+    @-webkit-keyframes flash {
+      0% { stroke-width: 0; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 0; }
     }
-  }
-  .step:nth-of-type(5) {
-    .direction,
-    .pin {
-      animation: flash @animation_duration @animation_delay + (@cascade_delay * 4);
-      -webkit-animation: flash @animation_duration @animation_delay + (@cascade_delay * 4);
+    @keyframes flash-track {
+      0% { stroke-width: 2; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 2; }
     }
-  }
-  .step:nth-of-type(1) {
-    .track {
-      animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 1); 
-      -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 1); 
+    @-webkit-keyframes flash-track {
+      0% { stroke-width: 2; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 2; }
     }
-  }
-  .step:nth-of-type(2) {
-    .track {
-      animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 2); 
-      -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 2); 
-    }
-  }
-  .step:nth-of-type(4) {
-    .track {
-      animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 3); 
-      -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 3); 
-    }
-  }
-  .step:nth-of-type(5) {
-    .track {
-      animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 4); 
-      -webkit-animation: flash-track @animation_duration @animation_delay + (@cascade_delay * 4);
-    }
-  }
-}
-@keyframes flash {
-  0% { stroke-width: 0; }
- 50% { stroke-width: 10; }
- 100% { stroke-width: 0; }
-}
-@-webkit-keyframes flash {
-  0% { stroke-width: 0; }
- 50% { stroke-width: 10; }
- 100% { stroke-width: 0; }
-}
-@keyframes flash-track {
-  0% { stroke-width: 2; }
- 50% { stroke-width: 10; }
- 100% { stroke-width: 2; }
-}
-@-webkit-keyframes flash-track {
-  0% { stroke-width: 2; }
- 50% { stroke-width: 10; }
- 100% { stroke-width: 2; }
-}
 
   }
 
