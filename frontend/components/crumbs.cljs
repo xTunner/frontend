@@ -6,8 +6,8 @@
 
 (defn crumb-node [{:keys [active name path]}]
   (if active
-    [:span {:title name} name]
-    [:a {:href path :title name} name]))
+    [:a {:disabled true :title name} name " "]
+    [:a {:href path :title name} name " "]))
 
 (defmulti render-crumb
   (fn [{:keys [type]}] type))
@@ -56,8 +56,5 @@
                :path (routes/v1-org-settings {:org-id username})
                :active active}))
 
-(defn crumbs [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html [:nav (map render-crumb data)]))))
+(defn crumbs [crumbs-data]
+  (map render-crumb crumbs-data))

@@ -49,7 +49,8 @@
   [history-imp navigation-point args state]
   (-> state
       (assoc :navigation-point navigation-point
-             :navigation-data (select-keys args [:branch :repo :org]))
+             :navigation-data (select-keys args [:branch :repo :org])
+             :project-settings-project-name (when (:repo args) (str (:org args) "/" (:repo args))))
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
@@ -59,23 +60,27 @@
         dashboard-data (:navigation-data current-state)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (api/get-dashboard-builds dashboard-data api-ch))
+    (api/get-dashboard-builds dashboard-data api-ch)
+    (when (:repo args)
+      (utils/ajax :get
+                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
+                  :project-settings
+                  api-ch
+                  :context {:project-name (str (:org args) "/" (:repo args))})))
   (set-page-title!))
 
 
 (defmethod navigated-to :build
-  [history-imp navigation-point [project-name build-num org repo] state]
+  [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
   (-> state
       (assoc :navigation-point navigation-point
-             :navigation-data {:project project-name
-                               :build-num build-num}
+             :navigation-data args
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org :username org}
                                    {:type :project :username org :project repo}
                                    {:type :project-branch :username org :project repo}
                                    {:type :build :username org :project repo
-                                    :build-num build-num :active true}
-                                   {:type :project-settings :username org :project repo}])
+                                    :build-num build-num :active true}])
       state-utils/reset-current-build
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
@@ -83,7 +88,7 @@
 
 ;; XXX: add unsubscribe when you leave the build page
 (defmethod post-navigated-to! :build
-  [history-imp navigation-point [project-name build-num] previous-state current-state]
+  [history-imp navigation-point {:keys [project-name build-num]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])]
     (when-not (seq (get-in current-state state/projects-path))

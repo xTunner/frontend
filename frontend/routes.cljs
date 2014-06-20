@@ -24,7 +24,7 @@
 (defn open-to-build!
   [app nav-ch org-id repo-id build-num]
   (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:build [project-name build-num org-id repo-id]])))
+    (put! nav-ch [:build {:project-name project-name :build-num build-num :org org-id :repo repo-id}])))
 
 (defn open-to-dashboard! [nav-ch & [args]]
   (put! nav-ch [:dashboard args]))

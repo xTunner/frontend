@@ -13,14 +13,8 @@
                                             :username org :project repo :branch branch}])))]
     (let [path-crumbs (assoc-in (vec path-crumbs)
                                 [(-> path-crumbs count dec) :active]
-                                true)
-          setting-crumb (cond repo {:type :project-settings
-                                    :username org
-                                    :project repo}
-                              org {:type :org-settings
-                                   :username org})
-          all-crumbs (conj path-crumbs setting-crumb)]
-      (assoc-in state state/crumbs-path all-crumbs))
+                                true)]
+      (assoc-in state state/crumbs-path path-crumbs))
     state))
 
 (defn reset-current-build [state]

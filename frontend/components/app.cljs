@@ -12,6 +12,7 @@
             [frontend.components.placeholder :as placeholder]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.common :as common]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -46,7 +47,7 @@
                         ["ctrl+r"] restore-state!})
         (html/html
          ;; XXX: determine inner or outer in the routing layer
-         (let [inner? (:current-user app)]
+         (let [inner? (get-in app state/inner?-path)]
            [:div#om-app {:class (if inner? "inner" "outer")}
             (om/build keyq/KeyboardHandler app
                       {:opts {:keymap keymap
@@ -59,9 +60,8 @@
               [:aside.app-aside-left
                (om/build aside/aside app)])
             [:main.app-main {:tab-index 1}
-             [:header.main-head ""
-              ;(om/build header/header app)
-              ]
+             [:header.main-head
+              (om/build header/header app)]
              [:div.main-body
               (om/build dom-com app)]
              [:footer.main-foot

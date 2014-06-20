@@ -102,3 +102,5 @@
 (def slim-aside-path (conj settings-path :slim-aside?))
 
 (def projects-path [:projects])
+
+(def inner?-path [:current-user])
