@@ -14,7 +14,7 @@
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
             [frontend.env :as env]
-            [frontend.instrumentation :refer [wrap-instrumentation]]
+            [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -120,9 +120,10 @@
      (let [previous-state @state
            message (first value)
            status (second value)
-           args (utils/third value)]
-       (swap! state (wrap-instrumentation (partial api-con/api-event container message status args) (:resp args)))
-       (api-con/post-api-event! container message status args previous-state @state)))))
+           api-data (utils/third value)]
+       (swap! state (wrap-api-instrumentation (partial api-con/api-event container message status api-data)
+                                              api-data))
+       (api-con/post-api-event! container message status api-data previous-state @state)))))
 
 (defn ws-handler
   [value state pusher]
