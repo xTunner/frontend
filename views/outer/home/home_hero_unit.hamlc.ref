@@ -2,10 +2,10 @@
   .container
     %h1
       Ship better code, faster
-    / ko if: VM.ab().top_copy()
+    / ko if: VM.ab().top_copy_2()
     %h3 CircleCI is Continuous Integration and Delivery for modern web development.
     / /ko
-    / ko ifnot: VM.ab().top_copy()
+    / ko ifnot: VM.ab().top_copy_2()
     %h3 CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
     / /ko
     .row-fluid.how

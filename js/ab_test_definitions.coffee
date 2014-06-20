@@ -9,4 +9,4 @@ exports = this
 exports.ab_test_definitions =
   a_is_a: [true, false]
   split_form: [true, false]
-  top_copy: [true, false]
+  top_copy_2: [true, false]
