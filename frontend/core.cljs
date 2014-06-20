@@ -5,6 +5,7 @@
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
             [dommy.core :as dommy]
+            [goog.dom]
             [goog.dom.DomHelper]
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
@@ -133,7 +134,7 @@
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
-        target-name "app"
+        target-name "om-app"
         container   (sel1 top-level-node (str "#" target-name))
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
@@ -190,7 +191,14 @@
    #(when (= :build (:navigation-point @app-state))
       (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
 
+(defn apply-app-id-hack
+  "Hack to make the top-level id of the app the same as the
+   current knockout app. Lets us use the same stylesheet."
+  []
+  (goog.dom.setProperties (sel1 "#app") #js {:id "om-app"}))
+
 (defn ^:export setup! []
+  (apply-app-id-hack)
   (let [state (app-state)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
