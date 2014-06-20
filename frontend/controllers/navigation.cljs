@@ -60,11 +60,10 @@
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        dashboard-data (:navigation-data current-state)]
+  (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (api/get-dashboard-builds dashboard-data api-ch)
+    (api/get-dashboard-builds (:navigation-data current-state) api-ch)
     (when (:repo args)
       (utils/ajax :get
                   (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
