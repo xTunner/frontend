@@ -7,6 +7,8 @@
                              :selected-org {:login nil
                                             :type :org}}}
    :navigation-point :loading
+   :navigation-data nil
+   :navigation-settings {}
    :current-user nil
    :crumbs []
    :current-repos []
@@ -103,4 +105,7 @@
 
 (def projects-path [:projects])
 
+;; XXX make inner/outer something defined in navigation
 (def inner?-path [:current-user])
+
+(def show-nav-settings-link-path [:navigation-settings :show-settings-link])

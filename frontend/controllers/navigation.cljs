@@ -11,6 +11,7 @@
 
 ;; XXX we could really use some middleware here, so that we don't forget to
 ;;     assoc things in state on every handler
+;;     We could also use a declarative way to specify each page.
 
 ;; --- Helper Methods ---
 
@@ -52,8 +53,8 @@
   [history-imp navigation-point args state]
   (-> state
       (assoc :navigation-point navigation-point
-             :navigation-data (select-keys args [:branch :repo :org])
-             :project-settings-project-name (when (:repo args) (str (:org args) "/" (:repo args))))
+             :navigation-data args
+             :navigation-settings {:show-settings-link (boolean (:repo args))})
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
@@ -78,6 +79,7 @@
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data args
+             :navigation-settings {:show-settings-link true}
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org :username org}
                                    {:type :project :username org :project repo}
@@ -120,11 +122,11 @@
 
 
 (defmethod navigated-to :add-projects
-  [history-imp navigation-point [project-id build-num] state]
-  (assoc state :navigation-point navigation-point :navigation-data {}))
+  [history-imp navigation-point _ state]
+  (assoc state :navigation-point navigation-point :navigation-data {} :navigation-settings {}))
 
 (defmethod post-navigated-to! :add-projects
-  [history-imp navigation-point args previous-state current-state]
+  [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
@@ -136,10 +138,12 @@
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
   (-> state
-      (assoc :navigation-point navigation-point)
-      (assoc :navigation-data args) ;; XXX: maybe put subpage info here?
-      (assoc :project-settings-subpage subpage)
-      (assoc :project-settings-project-name project-name)
+      (assoc :navigation-point navigation-point
+             :navigation-data args
+             :navigation-settings {}
+             ;; XXX can we get rid of project-settings-subpage in favor of navigation-data?
+             :project-settings-subpage subpage
+             :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org
                                     :username org}
                                    {:type :project

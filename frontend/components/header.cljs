@@ -24,15 +24,16 @@
             (get-in app [:navigation-data :repo])))))
 
 (defn settings-link [app]
-  (let [navigation-data (:navigation-data app)]
-    (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
-                                                ;; XXX implement tooltips
-                                                :tooltip "Project Settings"}
-                                   (common/ico :settings-light)]
-          (:org navigation-data) [:a.settings {:href (routes/v1-org-settings navigation-data)
-                                               :tooltip "Org Settings"}
-                                  (common/ico :settings-light)]
-          :else nil)))
+  (when (get-in app state/show-nav-settings-link-path)
+    (let [navigation-data (:navigation-data app)]
+      (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
+                                                  ;; XXX implement tooltips
+                                                  :tooltip "Project Settings"}
+                                     (common/ico :settings-light)]
+            (:org navigation-data) [:a.settings {:href (routes/v1-org-settings navigation-data)
+                                                 :tooltip "Org Settings"}
+                                    (common/ico :settings-light)]
+            :else nil))))
 
 (defn head-user [app owner]
   (reify
