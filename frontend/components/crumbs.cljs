@@ -24,7 +24,7 @@
 
 (defmethod render-crumb :project-settings
   [{:keys [username project active]}]
-  (crumb-node {:name "Edit settings"
+  (crumb-node {:name "project settings"
                :path (routes/v1-project-settings {:org-id username :repo-id project})
                :active active}))
 
@@ -52,7 +52,7 @@
 
 (defmethod render-crumb :org-settings
   [{:keys [username active]}]
-  (crumb-node {:name "Organization settings"
+  (crumb-node {:name "organization settings"
                :path (routes/v1-org-settings {:org-id username})
                :active active}))
 
