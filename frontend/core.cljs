@@ -14,6 +14,7 @@
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
             [frontend.env :as env]
+            [frontend.instrumentation :refer [wrap-instrumentation]]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -116,9 +117,12 @@
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
-     (let [previous-state @state]
-       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
-       (api-con/post-api-event! container (first value) (second value) (utils/third value) previous-state @state)))))
+     (let [previous-state @state
+           message (first value)
+           status (second value)
+           args (utils/third value)]
+       (swap! state (wrap-instrumentation (partial api-con/api-event container message status args) (:resp args)))
+       (api-con/post-api-event! container message status args previous-state @state)))))
 
 (defn ws-handler
   [value state pusher]
