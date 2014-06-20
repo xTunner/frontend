@@ -3,7 +3,7 @@
     %h1
       Ship better code, faster
     / ko if: VM.ab().top_copy()
-    %h3 Continuous Integration and Deployment that just works. Signup and get running in under 60 seconds. 
+    %h3 CircleCI is Continuous Integration and Delivery for modern web development.
     / /ko
     / ko ifnot: VM.ab().top_copy()
     %h3 CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
