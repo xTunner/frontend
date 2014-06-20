@@ -80,7 +80,7 @@
                                    {:type :project :username org :project repo}
                                    {:type :project-branch :username org :project repo}
                                    {:type :build :username org :project repo
-                                    :build-num build-num :active true}])
+                                    :build-num build-num}])
       state-utils/reset-current-build
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
@@ -144,8 +144,7 @@
                                     :project repo}
                                    {:type :project-settings
                                     :username org
-                                    :project repo
-                                    :active true}])
+                                    :project repo}])
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
           %))))
