@@ -9,6 +9,9 @@
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]))
 
+;; XXX we could really use some middleware here, so that we don't forget to
+;;     assoc things in state on every handler
+
 ;; --- Helper Methods ---
 
 (defn set-page-title! [& [title]]
@@ -131,10 +134,10 @@
 
 
 (defmethod navigated-to :project-settings
-  [history-imp navigation-point {:keys [project-name subpage org repo]} state]
+  [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
   (-> state
       (assoc :navigation-point navigation-point)
-      (assoc :navigation-data {}) ;; XXX: maybe put subpage info here?
+      (assoc :navigation-data args) ;; XXX: maybe put subpage info here?
       (assoc :project-settings-subpage subpage)
       (assoc :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org
