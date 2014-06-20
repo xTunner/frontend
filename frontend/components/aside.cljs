@@ -107,9 +107,9 @@
         (html/html
          ;; XXX: browser settings
          [:nav.aside-left-nav {:class (when (:slim-aside? settings) "slim")}
-          [:a.aside-item.logo
-           ;; XXX: tooltips
-           {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"}
+          [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
+                                ;; XXX: tooltips
+                                :href "/"}
            [:div.logomark
             (common/ico :logo)]]
           [:div.aside-activity {:class (when-not (:slim-aside? settings) "open")}
