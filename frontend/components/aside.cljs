@@ -149,8 +149,7 @@
                            :data-bind "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
             [:i.fa.fa-sign-out]
             [:span "Logout"]]
-           [:a.aside-item {:href "#"
-                           :data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
+           [:a.aside-item {:data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
                            :on-click #(put! controls-ch [:slim-aside-toggled])}
             (if (:slim-aside? settings)
               [:i.fa.fa-long-arrow-right]
