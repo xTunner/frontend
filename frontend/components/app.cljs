@@ -48,7 +48,7 @@
         (html/html
          ;; XXX: determine inner or outer in the routing layer
          (let [inner? (get-in app state/inner?-path)]
-           [:div#om-app {:class (if inner? "inner" "outer")}
+           [:div#app {:class (if inner? "inner" "outer")}
             (om/build keyq/KeyboardHandler app
                       {:opts {:keymap keymap
                               :error-ch (get-in app [:comms :errors])}})
