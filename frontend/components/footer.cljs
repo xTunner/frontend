@@ -10,7 +10,7 @@
     [:li [:a {:href "/jobs"} "Jobs"]]
     [:li [:a {:href "http://blog.circleci.com"} "Blog"]]
     [:li [:a {:href "/privacy"} "Privacy"]]
-    [:li [:a {:href "/privacy#security"} "Security"]]
+    [:li [:a {:href "/security"} "Security"]]
     [:li [:a {:href "/enterprise"} "Enterprise"]]
     [:li [:a {:href "/about#contact"} "Contact"]]
     [:li
