@@ -4,6 +4,7 @@
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
+            [frontend.components.instrumentation :as instrumentation]
             [frontend.env :as env]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
@@ -58,15 +59,58 @@
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app)])))))
 
+(defn head-admin [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [open? (get-in app state/show-admin-panel-path)
+            expanded? (get-in app state/show-instrumentation-line-items-path)
+            controls-ch (om/get-shared owner [:comms :controls])
+            user-session-settings (get-in app [:render-context :user_session_settings])]
+        (html
+         [:div.head-admin {:class (utils/inspect (concat (when open? ["open"])
+                                                         (when expanded? ["expanded"])))}
+          [:div.admin-tools
+           [:div.environment {:class (str "env-" (name (env/env)))
+                              :role "button"
+                              :on-click #(put! controls-ch [:show-admin-panel-toggled])}
+            (name (env/env))]
+
+           (om/build instrumentation/summary (:instrumentation app))
+
+           [:div.options
+            [:a {:href "/admin"} "admin"]
+            [:a {:href "/admin/users"} "users"]
+            [:a {:href "/admin/recent-builds"} "recent"]
+            [:a {:href "/admin/projects"} "projects"]
+            (let [use-local-assets (get user-session-settings :use_local_assets)]
+              [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
+                                                                            :value (not use-local-assets)}])}
+               "local assets " (if use-local-assets "off" "on")])
+            [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
+                                                                          :value false}])}
+             "use ko"]
+            (let [current-build-id (get user-session-settings :om_build_id "dev")]
+              (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
+                [:a.menu-item
+                 {:on-click #(put! controls-ch [:set-user-session-setting {:setting :om-build-id
+                                                                           :value build-id}])}
+                 [:span (str build-id " compiler")]]))
+            [:a {:on-click #(put! controls-ch [:clear-instrumentation-data-clicked])} "clear stats"]]]
+          (when (and open? expanded?)
+            (om/build instrumentation/line-items (:instrumentation app)))])))))
+
 (defn inner-header [app owner]
   (reify
     om/IRender
     (render [_]
-      (html
-       [:header.main-head
-        ;; XXX add head-admin
-        (when (seq (get-in app state/crumbs-path))
-          (om/build head-user app))]))))
+      (let [admin? (get-in app [:current-user :admin])]
+        (html
+         [:header.main-head
+          (when admin?
+            (om/build head-admin app))
+          (when (seq (get-in app state/crumbs-path))
+            (om/build head-user app))])))))
 
 (defn outer-header [app owner]
   (reify

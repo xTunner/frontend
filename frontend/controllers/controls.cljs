@@ -64,6 +64,20 @@
   [target message {:keys [project-id]} state]
   (update-in state state/slim-aside-path not))
 
+;; XXX: persist these to localstorage
+(defmethod control-event :show-admin-panel-toggled
+  [target message _ state]
+  (update-in state state/show-admin-panel-path not))
+
+;; XXX: persist these to localstorage
+(defmethod control-event :instrumentation-line-items-toggled
+  [target message _ state]
+  (update-in state state/show-instrumentation-line-items-path not))
+
+(defmethod control-event :clear-instrumentation-data-clicked
+  [target message _ state]
+  (assoc-in state state/instrumentation-path []))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/localStorage "circle-state")]

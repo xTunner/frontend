@@ -40,7 +40,8 @@
                                       ;; for each build to have its own copy of github-users, especially
                                       ;; since it's used so infrequently and goes stale fast.
                                       :github-users nil}}
-   :current-organization nil})
+   :current-organization nil
+   :instrumentation []})
 
 (def user-path [:current-user])
 
@@ -109,3 +110,7 @@
 (def inner?-path [:current-user])
 
 (def show-nav-settings-link-path [:navigation-settings :show-settings-link])
+
+(def instrumentation-path [:instrumentation])
+(def show-instrumentation-line-items-path [:settings :show-instrumentatin-line-items])
+(def show-admin-panel-path [:settings :show-admin-panel])
