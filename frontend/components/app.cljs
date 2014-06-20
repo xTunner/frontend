@@ -60,8 +60,7 @@
               [:aside.app-aside-left
                (om/build aside/aside app)])
             [:main.app-main {:tab-index 1}
-             [:header.main-head
-              (om/build header/header app)]
+             (om/build header/header app)
              [:div.main-body
               (om/build dom-com app)]
              [:footer.main-foot

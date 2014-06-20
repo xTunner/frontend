@@ -60,8 +60,10 @@
     om/IRender
     (render [_]
       (html
+       [:header.main-head
         ;; XXX add head-admin
-        (om/build head-user app)))))
+        (when (seq (get-in app state/crumbs-path))
+          (om/build head-user app))]))))
 
 (defn outer-header [app owner]
   (reify
