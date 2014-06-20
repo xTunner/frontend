@@ -343,7 +343,7 @@
 
 (defmethod api-event [:unfollow-project :success]
   [target message status {:keys [resp context]} state]
-  (if-not (inspect (= (:project-id context) (project-model/id (get-in state state/project-path))))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (assoc-in state (conj state/project-path :followed) false)))
 

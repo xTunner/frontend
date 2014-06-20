@@ -22,7 +22,7 @@
             (get-in app [:project-settings-project-name])))))
 
 (defn settings-link [app]
-  (let [navigation-data (utils/inspect (:navigation-data app))]
+  (let [navigation-data (:navigation-data app)]
     (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
                                                 ;; XXX implement tooltips
                                                 :tooltip "Project Settings"}

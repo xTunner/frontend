@@ -115,7 +115,7 @@
           [:div.aside-activity {:class (when-not (:slim-aside? settings) "open")}
            [:div.wrapper
             [:div.toggle-all-branches
-             [:button {:class (when-not (:show-all-branches (utils/inspect settings)) "active")
+             [:button {:class (when-not (:show-all-branches settings) "active")
                        :on-click #(put! controls-ch [:show-all-branches-toggled false])}
               "You"]
              [:button {:class (when (:show-all-branches settings) "active")
