@@ -18,8 +18,10 @@
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]
     (and (not (:followed project))
-         (= (vcs-url/project-name (:vcs_url project))
-            (get-in app [:project-settings-project-name])))))
+         (= (vcs-url/org-name (:vcs_url project))
+            (get-in app [:navigation-data :org]))
+         (= (vcs-url/repo-name (:vcs_url project))
+            (get-in app [:navigation-data :repo])))))
 
 (defn settings-link [app]
   (let [navigation-data (:navigation-data app)]
