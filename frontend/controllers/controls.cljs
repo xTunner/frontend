@@ -73,6 +73,10 @@
   [target message _ state]
   (assoc-in state state/instrumentation-path []))
 
+(defmethod control-event :show-inspector-toggled
+  [target message _ state]
+  (update-in state state/show-inspector-path not))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/localStorage "circle-state")]

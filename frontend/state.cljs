@@ -116,5 +116,6 @@
 (def slim-aside-path (conj browser-settings-path :slim-aside?))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
+(def show-inspector-path (conj browser-settings-path :show-inspector))
 
 (def flash-path [:render-context :flash])

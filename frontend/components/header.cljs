@@ -65,6 +65,7 @@
     (render [_]
       (let [open? (get-in app state/show-admin-panel-path)
             expanded? (get-in app state/show-instrumentation-line-items-path)
+            inspector? (get-in app state/show-inspector-path)
             controls-ch (om/get-shared owner [:comms :controls])
             user-session-settings (get-in app [:render-context :user_session_settings])]
         (html
@@ -94,6 +95,8 @@
                  {:on-click #(put! controls-ch [:set-user-session-setting {:setting :om-build-id
                                                                            :value build-id}])}
                  [:span (str "om " build-id " ")]]))
+            [:a {:on-click #(put! controls-ch [:show-inspector-toggled])}
+             (if inspector? "inspector off " "inspector on ")]
             [:a {:on-click #(put! controls-ch [:clear-instrumentation-data-clicked])} "clear stats"]]
            (om/build instrumentation/summary (:instrumentation app))]
           (when (and open? expanded?)

@@ -42,7 +42,8 @@
       (let [controls-ch (om/get-shared owner [:comms :controls])
             persist-state! #(put! controls-ch [:state-persisted])
             restore-state! #(put! controls-ch [:state-restored])
-            dom-com (dominant-component app)]
+            dom-com (dominant-component app)
+            show-inspector? (get-in app state/show-inspector-path)]
         (reset! keymap {["ctrl+s"] persist-state!
                         ["ctrl+r"] restore-state!})
         (html/html
@@ -52,7 +53,7 @@
             (om/build keyq/KeyboardHandler app
                       {:opts {:keymap keymap
                               :error-ch (get-in app [:comms :errors])}})
-            (when (:inspector? utils/initial-query-map)
+            (when show-inspector?
               ;; XXX inspector still needs lots of work. It's slow and it defaults to
               ;;     expanding all datastructures.
               (om/build inspector/inspector app))
