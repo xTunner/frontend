@@ -76,27 +76,26 @@
                               :on-click #(put! controls-ch [:show-admin-panel-toggled])}
             (name (env/env))]
 
-           (om/build instrumentation/summary (:instrumentation app))
-
            [:div.options
-            [:a {:href "/admin"} "admin"]
-            [:a {:href "/admin/users"} "users"]
-            [:a {:href "/admin/recent-builds"} "recent"]
-            [:a {:href "/admin/projects"} "projects"]
+            [:a {:href "/admin"} "admin "]
+            [:a {:href "/admin/users"} "users "]
+            [:a {:href "/admin/recent-builds"} "builds "]
+            [:a {:href "/admin/projects"} "projects "]
             (let [use-local-assets (get user-session-settings :use_local_assets)]
               [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
                                                                             :value (not use-local-assets)}])}
-               "local assets " (if use-local-assets "off" "on")])
+               "local assets " (if use-local-assets "off " "on ")])
             [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
                                                                           :value false}])}
-             "use ko"]
+             "om off "]
             (let [current-build-id (get user-session-settings :om_build_id "dev")]
               (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
                 [:a.menu-item
                  {:on-click #(put! controls-ch [:set-user-session-setting {:setting :om-build-id
                                                                            :value build-id}])}
-                 [:span (str build-id " compiler")]]))
-            [:a {:on-click #(put! controls-ch [:clear-instrumentation-data-clicked])} "clear stats"]]]
+                 [:span (str "om " build-id " ")]]))
+            [:a {:on-click #(put! controls-ch [:clear-instrumentation-data-clicked])} "clear stats"]]
+           (om/build instrumentation/summary (:instrumentation app))]
           (when (and open? expanded?)
             (om/build instrumentation/line-items (:instrumentation app)))])))))
 
