@@ -20,6 +20,12 @@
                 %a{href: "/jobs"} Jobs
               %li
                 %a{href: "http://blog.circleci.com"} Blog
+      / ko if: VM.logged_in
+      .span4.controls
+        %a#login.login-link{href: "/"} Return to App
+      / /ko
+      / ko ifnot: VM.logged_in
       .span4.controls
         != HAML.header_button()
+      / /ko
 

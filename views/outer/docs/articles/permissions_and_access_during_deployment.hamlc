@@ -7,5 +7,5 @@
 
 %p
   You enter the security information (public key and private key) for deployment
-  on your project's <b>Edit settings > SSH keys</b> page.
+  on your project's <b>Project Settings > SSH keys</b> page.
   If you leave the <b>Hostname</b> field blank, the key will be used for all hosts.

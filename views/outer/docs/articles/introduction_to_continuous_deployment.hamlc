@@ -49,7 +49,7 @@
 
 %p
   First you need to upload your SSH keys from your project's
-  <b>Edit settings > SSH keys</b> page in the Circle UI.
+  <b>Project Settings > SSH keys</b> page in the Circle UI.
   Circle will automatically add them to the <code>ssh-agent</code>,
   so they are available for forwarding.
 

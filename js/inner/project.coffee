@@ -41,7 +41,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
     retried_build: null
     branches: null
     default_branch: null
-    show_all_branches: false
     tokens: []
     tokenLabel: ""
     tokenScope: "status"
@@ -146,17 +145,19 @@ CI.inner.Project = class Project extends CI.inner.Obj
       @branch_names().filter (name) =>
         @personal_branch_p(name)
 
+    @show_all_branches = @komp =>
+      VM.browser_settings.settings().show_all_branches
+
+    @branches_collapsed = @komp =>
+      VM.browser_settings.settings()["#{@project_name()}_branches_collapsed"]
+
     @branch_names_to_show = @komp =>
-      if @show_all_branches()
+      if @branches_collapsed()
+        []
+      else if @show_all_branches()
         @branch_names()
       else
         @personal_branches()
-
-    @show_toggle_branches = @komp =>
-      not (@branch_names().toString() is @personal_branches().toString())
-
-    @toggle_show_all_branches = () =>
-      @show_all_branches(!@show_all_branches())
 
     @show_all_tooltip = () =>
       if @show_all_branches()
@@ -178,7 +179,7 @@ CI.inner.Project = class Project extends CI.inner.Obj
         new CI.inner.Build(build)
 
     @recent_branch_builds = (branch_name) =>
-      builds = @sorted_builds(branch_name)[0..4].reverse()
+      builds = @sorted_builds(branch_name)[0..4]
       new CI.inner.Build(b) for b in builds
 
     @build_path = (build_num) =>
@@ -672,3 +673,9 @@ CI.inner.Project = class Project extends CI.inner.Obj
           feature_flags: _.pick(old, name)
         error: (data) =>
           @refresh()
+
+  toggle_branches_collapsed: () =>
+    VM.browser_settings.toggle_setting("#{@project_name()}_branches_collapsed")
+
+  branch_status: (branch) =>
+      @recent_branch_builds(branch)[0]?.status()

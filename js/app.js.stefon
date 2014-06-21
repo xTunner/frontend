@@ -6,6 +6,7 @@
   "../../components/jquery-placeholder/jquery.placeholder.js"
   "../../components/jquery-waypoints/waypoints.js"
   "../../components/jquery-waypoints/shortcuts/sticky-elements/waypoints-sticky.js"
+  "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js"
   "../../components/uri.js/src/URI.min.js"
   "../../components/knockout/build/output/knockout-latest.js"
   "../../components/sammy/lib/sammy.js"
@@ -14,7 +15,6 @@
 ;  "../../components/retina.js/src/retina_image.coffee"
 ;  "../../components/retina.js/src/retina.coffee"
   "../../components/underscore/underscore.js"
-  "../../components/css-element-queries/src/ResizeSensor.js"
 
   "bootstrap.js.stefon"
 

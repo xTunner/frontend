@@ -103,6 +103,21 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+.icon_style(@color) {
+  svg {
+    path {
+      fill: @color;
+    }
+  }
+}
+.icon_style(@color, @size) {
+  svg {
+    font-size: @size;
+    path {
+      fill: @color;
+    }
+  }
+}
 .user-select(@arg) {
   -webkit-user-select: @arg;
      -moz-user-select: @arg;
@@ -145,6 +160,18 @@
                1px  0   @color,
               -1px  0   @color,
                0    2px @topShadowColor inset;
+}
+.shadow_noboss () {
+  box-shadow: 0 1px transparent inset, 0 2px 1px transparent;
+}
+.shadow_emboss (@color) {
+  box-shadow: 0 1px lighten(@color, 5) inset, 0 2px 1px fade(@black, 21);
+}
+.shadow_deboss (@color) {
+  box-shadow: 0 -1px lighten(@color, 3) inset, 0 2px 1px fade(@black, 21) inset;
+}
+.underline_deboss () {
+  box-shadow: 0 1px fade(@white, 8), 0 -1px fade(@black, 55) inset;
 }
 
 // Gradients
@@ -245,3 +272,4 @@
 @import "mixins/animations.less";
 @import "mixins/flex.less";
 @import "mixins/forms.less";
+@import "mixins/tip.less";

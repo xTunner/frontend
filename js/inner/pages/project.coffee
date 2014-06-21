@@ -6,8 +6,11 @@ CI.inner.ProjectPage = class ProjectPage extends CI.inner.DashboardPage
     super(properties)
 
     @crumbs = [new CI.inner.OrgCrumb(@username),
-               new CI.inner.ProjectCrumb(@username, @project, {active: true}),
-               new CI.inner.ProjectSettingsCrumb(@username, @project)]
+               new CI.inner.ProjectCrumb(@username, @project, {active: true})]
+
+    @settings_link = CI.paths.project_settings_path(@username, @project)
+
+    @settings_text = 'Project Settings'
 
     @project_name = "#{@username}/#{@project}"
     @title = "#{@username}/#{@project}"

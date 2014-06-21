@@ -7,11 +7,6 @@
 
 #dashboard
 
-  / ko if: projects_have_been_loaded
-  %aside
-    != HAML.sidebar({})
-  / /ko
-
   %section
 
     / ko ifnot: dashboard_ready

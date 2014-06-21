@@ -53,6 +53,6 @@
           .notice{data-bind: "with: notice"}
             %span{data-bind: "text: message, attr: {class: type}"}
           .submit
-            %input{type: "submit", data-bind: "click: submitDockerForm", value: "Submit", data-loading-text: "Submit"}
+            %input{type: "submit", data-bind: "click: submitDockerForm", value: "Submit"}
 
   

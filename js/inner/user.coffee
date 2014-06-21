@@ -220,3 +220,20 @@ CI.inner.User = class User extends CI.inner.Obj
 
   isPaying: () =>
     @plan?
+
+  toggle_recent_activity: () =>
+    VM.browser_settings.set_setting("aside_is_slim", false)
+    VM.browser_settings.toggle_setting("recent_activity_visible")
+
+  toggle_aside_expanded: () =>
+    VM.browser_settings.toggle_setting("aside_is_slim")
+    if VM.browser_settings.settings().aside_is_slim and VM.browser_settings.settings().recent_activity_visible
+      VM.browser_settings.set_setting("recent_activity_visible", false)
+    if !VM.browser_settings.settings().aside_is_slim                   #
+      VM.browser_settings.set_setting("recent_activity_visible", true) # meant to disable hiding until there's another accordion
+
+  toggle_show_all_branches: () =>
+    VM.browser_settings.toggle_setting("show_all_branches")
+
+  toggle_show_admin_panel: () =>
+    VM.browser_settings.toggle_setting("show_admin_panel")

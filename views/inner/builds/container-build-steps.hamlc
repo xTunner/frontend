@@ -2,8 +2,7 @@
   -# The sliding is handled by scrolling #container_parent left and right
   %div#container_parent{data-bind: "foreach: containers
                                     , on_window_event: {event: 'resize', callback: realign_container_viewport}
-                                    , event: {scroll: handle_browser_scroll}
-                                    , resize_sensor: {callback: height_changed}"}
+                                    , event: {scroll: handle_browser_scroll}"}
     -# The style: binding sets the "left" property of the container to index * 100%
     -# The attr: binding sets a known id attribute for each container
     -# The css: binding sets the current_container class on the selected
@@ -56,7 +55,7 @@
                       Exit code:
                       %span{data-bind: "text: exit_code"}
 
-                    %pre.bash-command{data-bind: "text: bash_command", title: "The full bash comand used to run this setup"}
+                    %pre.bash-command{data-bind: "text: bash_command", title: "The full bash command used to run this setup"}
                   Output:
 
                   %pre.output.solarized{style: "white-space: normal;"}

@@ -22,7 +22,7 @@
 %p
   You can provide CircleCI with a GitHub user key on your project's
   %strong
-    Edit settings > Checkout SSH keys
+    Project Settings > Checkout SSH keys
   page.
 
   CircleCI creates and associates this new SSH key with your GitHub user account

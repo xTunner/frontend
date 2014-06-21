@@ -1,0 +1,403 @@
+&#app {
+  @em: @baseFontSize;
+  @cascade_delay: 30ms;
+  @aside_items: 7;
+  @aside_slim_speed: 200ms;
+  @slideup_items: 3;
+  @slideup_visible: 1;
+  @activity_scroll: 5px;
+  @activity_color: fade(@white, 55);
+  @activity_ico: (@em - 2);
+  @activity_line: (@em * 1.5);
+  @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
+  .app-aside-left {
+    .flex(0, 0, auto);
+  }
+  .aside-left-nav {
+    .flexy(column);
+    color: fade(@white, 66);
+    width: @aside_nav_width;
+    height: 100vh;
+    background: @blueDarkest;
+    transition: width @aside_slim_speed;
+    transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    overflow: hidden;
+    a {
+      outline: none;
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
+    &.slim {
+      width: @tile;
+      .aside-item {
+        .tip(right);
+        i,
+        img {
+          margin-right: ((@tile - @baseFontSize) / 2);
+          transition-duration: (@aside_slim_speed * 1.5);
+        }
+        span {
+          opacity: 0;
+          visibility: hidden;
+          transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
+          pointer-events: none;
+        }
+      }
+    }
+    [role="button"] {
+      cursor: pointer;
+    }
+  }
+  .aside-item {
+    .flex(0, 0, @tile);
+    .flexy(center);
+    .shadow_noboss();
+    background: transparent;
+    white-space: nowrap;
+    transition: (@aside_slim_speed / 2) ease-in-out;
+    &:not(:hover) {
+      + .aside-activity {
+        .toggle-all-branches {
+          &:not(:hover) {
+            // margin-top: @activity_toggle;                    //
+            // opacity: 0;                                      // hold off on hiding toggle until multiple accordions in nav
+            // transition: margin 200ms 0ms, opacity 200ms 0ms; //
+          }
+        }
+      }
+    }
+    &:hover,
+    &:focus {
+      .shadow_emboss(@blueDarker);
+      color: @white;
+      background: @blueDarker;
+      transition-duration: 0;
+    }
+    &:active {
+      .shadow_deboss(@blueDarkest);
+      color: @white;
+      background: fade(@black, 8);
+      transition-duration: 0;
+    }
+    &.logo {
+      .justify-content(center);
+      .underline_deboss();
+      .logomark {
+        .flexy(center, center);
+        .icon_style(@white, 2em);
+        width: @tile;
+        height: @tile;
+      }
+    }
+    // &:nth-child(2) > i {transition-delay: @cascade_delay * 1;} //
+    // &:nth-child(3) > i {transition-delay: @cascade_delay * 2;} //
+    // &:nth-child(4) > i {transition-delay: @cascade_delay * 3;} // hold off on this animation until there's multi accordions
+    // &:nth-child(5) > i {transition-delay: @cascade_delay * 4;} //
+    // &:nth-child(6) > i {transition-delay: @cascade_delay * 5;} //
+    i {
+      min-width: @baseFontSize;
+      margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
+      transition: margin @aside_slim_speed;
+    }
+    img {
+      @s: (@tile / 2);
+      min-width:  @s;
+      height: @s;
+      margin: 0 @baseFontSize 0 ((@tile - @s) / 2);
+      border-radius: (@s / 2);
+      transition: margin (@aside_slim_speed * 2);
+      pointer-events: none;
+    }
+    span {
+      opacity: 1;
+      visibility: visible;
+      transition: visibility 0ms (@aside_slim_speed / 2), opacity (@aside_slim_speed * 2) 0ms;
+    }
+  }
+  .aside-activity {
+    .flexy(column);
+    font-size: @em;
+    color: @activity_color;
+    background: fade(@black, 0);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 200ms ease-in-out;
+    height: 0%;
+    &.open {
+      .shadow_deboss(@blueDarkest);
+      background: fade(@black, 8);
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 200ms ease-in-out;
+      height: 100vh;
+      + .aside-slideup {
+        box-shadow: 0 -8px 13px fade(@black, 21);
+        transition-delay: 100ms;
+      }
+      .wrapper {
+        overflow-y: auto;
+        height: 100vh; // needed to fix safari bug preventing accordion from opening up
+      }
+    }
+    .wrapper {
+      height: 100%;
+      overflow: hidden;
+      &::-webkit-scrollbar {
+        width: @activity_scroll;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: transparent;
+      }
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background: @blueDark;
+        }
+      }
+    }
+    .toggle-all-branches {
+      .box-sizing(border-box);
+      .flexy(center, center);
+      padding: @em @em (@em / 2);
+      width: @aside_nav_width - @activity_scroll; // this and border-box prevents toggle from being pushed by scrollbar
+      transition: margin 100ms 500ms, opacity 100ms 500ms; // creates slight delay to avoid bouncing effect
+      button {
+        .flex(1, 1, auto);
+        color: fadeout(@activity_color, 21);
+        background-color: fade(@activity_color, 0);
+        border: 1px solid @activity_color;
+        border-left-color: transparent;
+        margin-left: -1px;
+        outline: none;
+        line-height: @em;
+        padding: round(@em / 4) 0;
+        transition: 200ms;
+        max-width: (@tile - 2); // 2 represents borders on sides
+        &:first-child {
+          border-left-color: @activity_color;
+          border-radius: 1em 0 0 1em;
+          margin-left: 0;
+        }
+        &:last-child {
+          border-right-width: 2px; // anti-alias looks weird w/o this, because opacity is low
+          border-radius: 0 1em 1em 0;
+        }
+        &:hover {
+          color: @grayLightest;
+        }
+        &.active {
+          color: @activity_color;
+          border-color: @activity_color;
+          border-left-color: transparent;
+          transition: 100ms;
+          &:first-child {
+            border-left-color: @activity_color;
+          }
+        }
+      }
+    }
+    ul {
+      margin: 0;
+      list-style: none;
+      &:not(.open) {
+        li {
+          a {
+            &.latest {
+              .flexy(center, center);
+            }
+          }
+        }
+      }
+    }
+    li {
+      .flexy();
+      .box-sizing(border-box);
+      width: (@aside_nav_width - @activity_scroll);
+      line-height: 1em; // BS RESET
+      &:hover {
+        .status {
+          a {
+            &:not(:last-child) {
+              transition-delay: 1000ms; // delay meant to give user time to hover over to branch name
+            }
+          }
+          &:hover {
+            a {
+              &:not(:last-child) {
+                opacity: 1;
+                margin: 0;
+                transition: margin 100ms 100ms, opacity 100ms 100ms;
+              }
+              &:hover {
+                path {
+                  opacity: 1;
+                }
+              }
+            }
+            path {
+              opacity: .5;
+            }
+          }
+        }
+      }
+      &:not(:hover) {
+        &:not(.running) {
+          a {
+            &:not(:hover) {
+              path {
+                // opacity: .66;
+                // opacity isn't working above, will try something else, just commenting out for now to keep the selectors in place
+              }
+            }
+          }
+        }
+      }
+      &:last-child {
+        .branch {
+          a {
+            &:before {
+              border-radius: 0 0 0 3px;
+            }
+            &:after {
+              border: none;
+            }
+          }
+        }
+      }
+    }
+    .project {
+      .flexy(center);
+      width: 100%;
+      a {
+        height: @activity_line;
+        line-height: @activity_line;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &:not(:hover) {
+          color: fadein(@activity_color, 34);
+        }
+        &.toggle {
+          .box-sizing(border-box);
+          .flex(0, 0, auto);
+          width: @em * 2;
+          height: @em *2;
+          padding: 5px; // got this from trial and error
+          .ico {
+            width: 100%;
+            height: 100%;
+          }
+          .ico-repo {
+            fill: @activity_color;
+          }
+        }
+        &.title {
+          .flex(1, 1, auto);
+        }
+        &.latest {
+          .flex(0, 0, auto);
+          .icon_style(transparent, @activity_ico);
+          display: none;
+          width: @activity_line;
+          height: @activity_line;
+          line-height: @activity_line;
+          padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
+        }
+      }
+    }
+    .branch,
+    .status {
+      a {
+        height: @activity_line;
+        line-height: @activity_line;
+      }
+    }
+    .branch {
+      .flexy(center);
+      a {
+        width: 100%;
+        padding-left: (@activity_line + (@em / 2));
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        position: relative;
+        &:before,
+        &:after {
+          content: "";
+          width: (@activity_line / 2);
+          height: (@activity_line / 2);
+          position: absolute;
+          left: (@activity_line / 2);
+          border-left: 1px solid @blueDarker;
+        }
+        &:before {
+          top: 0;
+          border-bottom: 1px solid @blueDarker;
+        }
+        &:after {
+          top: (@activity_line / 2);
+          border-top: 1px solid @blueDarker;
+        }
+      }
+    }
+    .status {
+      .flex(1, 0, auto);
+      .flexy(center, flex-end);
+      a {
+        .flexy(center, center);
+        .icon_style(transparent, @activity_ico);
+        width: @activity_line;
+        &:first-child {
+          .flex(1, 0, auto);
+          .justify-content(flex-end);
+          padding-left: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
+          // padding-left: round(@em - ((@activity_line - @activity_ico) / 2)); // testing with smaller padding above
+          svg {
+            padding-right: round((@activity_line - @activity_ico) / 2);
+          }
+        }
+        &:not(:last-child) {
+          opacity: 0;
+          margin-left: -@activity_line;
+          transition: margin 400ms, opacity 400ms; // close slower than opening, less jarring
+        }
+        &:last-child {
+          padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
+        }
+      }
+    }
+    path {
+      &[class$="-light"] {
+        &:first-child {
+          stroke-width: 10;
+        }
+      }
+      &.ico-busy-light {stroke: @blueLight;}
+      &.ico-pass-light {stroke: @green;}
+      &.ico-fail-light {stroke: @redLight;}
+      &.ico-hold-light {stroke: @gray;}
+      &.ico-stop-light {stroke: @orange;}
+      &.ico-none-light {stroke: @white;}
+    }
+  }
+  .aside-slideup {
+    .flex(0, 0, auto);
+    .flexy(column);
+    margin-top: auto;
+    transition: box-shadow 300ms ease-in-out;
+    a {
+      &:last-child {
+        margin-bottom: ((@slideup_items - @slideup_visible) * -@tile);
+        transition: margin 400ms ease-in-out;
+      }
+      &:hover,
+      &:focus {
+        margin-bottom: 0;
+        ~ a:last-child {
+          margin-bottom: 0;
+          transition-delay: 1000ms;
+        }
+      }
+    }
+  }
+}

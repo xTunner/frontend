@@ -64,7 +64,7 @@
     %a{href: "https://github.com/alex-seville/blanket"} blanket.js,
     %a{href: "https://github.com/fishbar/jscoverage"} jscoverage
     or
-    %a{href: "https://github.com/gotwarlost/istanbul"} instanbul
+    %a{href: "https://github.com/gotwarlost/istanbul"} istanbul
     for Node
   %li
     %a{href: "https://github.com/sebastianbergmann/php-code-coverage"} php-code-coverage

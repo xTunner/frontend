@@ -2,8 +2,11 @@ CI.inner.OrgDashboardPage = class OrgDashboardPage extends CI.inner.DashboardPag
   constructor: (properties) ->
     @username = null
     super(properties)
-    @crumbs = [new CI.inner.OrgCrumb(@username, {active: true}),
-               new CI.inner.OrgSettingsCrumb(@username)]
+    @crumbs = [new CI.inner.OrgCrumb(@username, {active: true})]
+
+    @settings_link = CI.paths.org_settings_path(@username)
+
+    @settings_text = 'Organization Settings'
 
     @title = @username
     @show_branch = true

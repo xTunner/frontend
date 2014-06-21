@@ -9,8 +9,11 @@ CI.inner.ProjectBranchPage = class ProjectBranchPage extends CI.inner.DashboardP
                new CI.inner.ProjectCrumb(@username, @project),
                new CI.inner.ProjectBranchCrumb(@username, @project, ko.computed =>
                  @branch
-               {active: true})
-               new CI.inner.ProjectSettingsCrumb(@username, @project)]
+               {active: true})]
+
+    @settings_link = CI.paths.project_settings_path(@username, @project)
+
+    @settings_text = 'Project Settings'
 
     @title = "#{@branch} - #{@username}/#{@project}"
 

@@ -6,24 +6,39 @@ display = (template, args, subpage, hash) ->
 
   header =
     $("<header></header>")
-      .append(HAML.header(args))
+      .addClass('main-head')
+      .append(HAML.inner_header(args))
 
   content =
-    $("<main></main>")
+    $("<div></div>")
+      .addClass("main-body")
       .append(HAML[template](args))
 
   footer =
     $("<footer></footer>")
+      .addClass('main-foot')
       .append(HAML["footer"](args))
+
+  asideL =
+    $("<aside></aside>")
+      .addClass('app-aside-left')
+      .append(HAML["aside_left"](args))
+
+  main =
+    $("<main></main>")
+      .addClass('app-main')
+      .attr('tabindex', '1') # Auto-focus content to enable scrolling immediately
+      .append(header)
+      .append(content)
+      .append(footer)
 
   $('#app')
     .html("")
     .removeClass('outer')
     .removeClass('inner')
     .addClass(klass)
-    .append(header)
-    .append(content)
-    .append(footer)
+    .append(asideL)
+    .append(main)
 
 
   if subpage
@@ -39,6 +54,8 @@ display = (template, args, subpage, hash) ->
     document.title = "Continuous Integration and Deployment - CircleCI"
 
   ko.applyBindings(VM)
+
+  main.focus()
 
 splitSplat = (cx) ->
   p = cx.params.splat[0]
@@ -104,12 +121,15 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
         !@project().followed() &&
          @project().project_name() is @current_page().project_name
 
+    @browser_settings = new CI.BrowserSettings
+
     if window.renderContext.current_user
       @current_user = ko.observable(new CI.inner.User window.renderContext.current_user)
       @pusher = new CI.Pusher @current_user().login
       mixpanel.name_tag(@current_user().login)
       mixpanel.identify(@current_user().login)
       _rollbarParams.person = {id: @current_user().login}
+      @loadProjects() # needed on every page for aside-nav
 
     @logged_in = @komp =>
       @current_user?()
@@ -161,7 +181,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
       "/img/arrow_refresh.png"
 
   loadDashboard: (cx) =>
-    @loadProjects()
     page = parseInt(cx.params.page) or 0
     @loadRecentBuilds(page)
     if window._gaq? # we dont use ga in test mode
@@ -198,8 +217,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     @loadBuilds('/api/v1/recent-builds', page, refresh)
 
   loadOrg: (username, page, refresh) =>
-    if !@projects_have_been_loaded() then @loadProjects()
-
     @loadBuilds("/api/v1/organization/#{username}", page, refresh)
 
     if not refresh
@@ -207,8 +224,6 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
         builds_table: 'org'
 
   loadProject: (username, project, branch, page, refresh) =>
-    if !@projects_have_been_loaded() then @loadProjects()
-
     project_name = "#{username}/#{project}"
     path = "/api/v1/project/#{project_name}"
     path += "/tree/#{encodeURIComponent(branch)}" if branch?

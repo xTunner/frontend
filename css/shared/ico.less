@@ -1,0 +1,26 @@
+svg {
+  &.ico {
+    height: 1em;
+    width: 1em;
+    .ico-logo {
+      fill: @blueDark;
+    }
+    .ico-pass {
+      fill: @green;
+    }
+    .ico-fail {
+      fill: @redLight;
+    }
+    .ico-queued {
+      fill: @grayLight;
+    }
+    .ico-busy-light,
+    .ico-none-light,
+    .ico-settings-light {
+      &:last-child {
+        stroke-linecap: round;
+        stroke-width: 20;
+      }
+    }
+  }
+}

@@ -1,9 +1,5 @@
 .inner {
   background-color: @appBackgroundColor;
-  main {
-    .flex(1, 1);
-    padding: @innerContentPadding 0;
-  }
   p {
     > a {
       color: @blueDark;
@@ -14,6 +10,7 @@
       }
     }
   }
+  @import "aside.less";
   @import "terminal.less";
   @import "builds.less";
   @import "new-build.less";
