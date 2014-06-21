@@ -109,7 +109,6 @@
             show-all-branches? (get-in app state/show-all-branches-path)
             user (:current-user app)]
         (html/html
-         ;; XXX: browser settings
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
           [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
                                 ;; XXX: tooltips
