@@ -50,19 +50,32 @@
 
 
 (defmethod control-event :show-all-branches-toggled
-  [target message project-id state]
-  (update-in state [:settings :projects project-id :show-all-branches] not))
+  [target message value state]
+  (assoc-in state state/show-all-branches-path value))
 
-(defmethod post-control-event! :show-all-branches-toggled
-  [target message project-id previous-state current-state]
-  ;;; XXX This should happen on routing, obviously
-  ;; (print project-id
-  ;;        " show-all-branches-toggled "
-  ;;        (get-in previous-state [:settings :projects project-id :show-all-branches])
-  ;;        " => "
-  ;;        (get-in current-state [:settings :projects project-id :show-all-branches]))
-  )
+(defmethod control-event :collapse-branches-toggled
+  [target message {:keys [project-id]} state]
+  (update-in state (state/project-branches-collapsed-path project-id) not))
 
+(defmethod control-event :slim-aside-toggled
+  [target message {:keys [project-id]} state]
+  (update-in state state/slim-aside-path not))
+
+(defmethod control-event :show-admin-panel-toggled
+  [target message _ state]
+  (update-in state state/show-admin-panel-path not))
+
+(defmethod control-event :instrumentation-line-items-toggled
+  [target message _ state]
+  (update-in state state/show-instrumentation-line-items-path not))
+
+(defmethod control-event :clear-instrumentation-data-clicked
+  [target message _ state]
+  (assoc-in state state/instrumentation-path []))
+
+(defmethod control-event :show-inspector-toggled
+  [target message _ state]
+  (update-in state state/show-inspector-path not))
 
 (defmethod control-event :state-restored
   [target message path state]

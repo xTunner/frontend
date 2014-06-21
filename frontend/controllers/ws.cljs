@@ -151,5 +151,5 @@
     (condp = navigation-point
       :build (when (get-in current-state state/show-usage-queue-path)
                (api/get-usage-queue (get-in current-state state/build-path) api-ch))
-      :dashboard (api/get-dashboard-builds (:dashboard-data current-state) api-ch)
+      :dashboard (api/get-dashboard-builds (:navigation-data current-state) api-ch)
       nil)))

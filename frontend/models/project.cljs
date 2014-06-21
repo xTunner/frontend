@@ -1,5 +1,6 @@
 (ns frontend.models.project
-  (:require [goog.string :as gstring]))
+  (:require [frontend.utils :as utils :include-macros true]
+            [goog.string :as gstring]))
 
 (defn project-name [project]
   (subs (:vcs_url project) 19 (count (:vcs_url project))))
@@ -13,22 +14,22 @@
   (str "/gh/" (project-name project) "/edit"))
 
 (defn default-branch? [branch-name project]
-  (= branch-name (:default_branch project)))
+  (= (name branch-name) (:default_branch project)))
 
-(defn personal-branch? [user project branch-name branch]
-  (some #{(:login user)} (:pusher_logins branch)))
+(defn personal-branch? [user project branch-data]
+  (let [[branch-name build-info] branch-data]
+    (or (default-branch? branch-name project)
+        (some #{(:login user)} (:pusher_logins build-info)))))
 
-(defn personal-branches [user project]
-  (filter (fn [[name-kw branch]]
-            (or
-             (personal-branch? user project (name name-kw) branch)
-             (default-branch? (name name-kw) project)))
-          (:branches project)))
+(defn branch-builds [project branch-name-kw]
+  (let [build-data (get-in project [:branches branch-name-kw])]
+    (sort-by :build_num (concat (:running_builds build-data)
+                                (:recent_builds build-data)))))
 
-(defn show-toggle-branches? [user project]
-  (first (remove (fn [[name-kw branch]]
-                   (personal-branch? user project (name name-kw) branch))
-                 (:branches project))))
+(defn master-builds
+  "Returns branch builds for the project's default branch (usually master)"
+  [project]
+  (branch-builds project (keyword (:default_branch project))))
 
 (defn notification-settings [project]
   (select-keys project [:hipchat_room

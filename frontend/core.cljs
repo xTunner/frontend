@@ -5,6 +5,7 @@
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
             [dommy.core :as dommy]
+            [goog.dom]
             [goog.dom.DomHelper]
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
@@ -13,11 +14,13 @@
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
             [frontend.env :as env]
+            [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
             [frontend.pusher :as pusher]
             [frontend.history :as history]
+            [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
@@ -115,9 +118,13 @@
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
-     (let [previous-state @state]
-       (swap! state (partial api-con/api-event container (first value) (second value) (utils/third value)))
-       (api-con/post-api-event! container (first value) (second value) (utils/third value) previous-state @state)))))
+     (let [previous-state @state
+           message (first value)
+           status (second value)
+           api-data (utils/third value)]
+       (swap! state (wrap-api-instrumentation (partial api-con/api-event container message status api-data)
+                                              api-data))
+       (api-con/post-api-event! container message status api-data previous-state @state)))))
 
 (defn ws-handler
   [value state pusher]
@@ -133,7 +140,7 @@
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
-        target-name "app"
+        target-name "om-app"
         container   (sel1 top-level-node (str "#" target-name))
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
@@ -181,6 +188,8 @@
                                          (str "#" (.getFragment uri)))))))
 
 
+;; XXX this should go in IDidMount on the build container, also doesn't work
+;;     if the user goes to a build page from a different page
 (defn handle-browser-resize
   "Handles scrolling the container on the build page to the correct position when
   the size of the browser window chagnes. Has to add an event listener at the top level."
@@ -190,10 +199,18 @@
    #(when (= :build (:navigation-point @app-state))
       (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
 
+(defn apply-app-id-hack
+  "Hack to make the top-level id of the app the same as the
+   current knockout app. Lets us use the same stylesheet."
+  []
+  (goog.dom.setProperties (sel1 "#app") #js {:id "om-app"}))
+
 (defn ^:export setup! []
+  (apply-app-id-hack)
   (let [state (app-state)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
+    (browser-settings/setup! state)
     (main state (sel1 :body))
     (dispatch-to-current-location!)
     (handle-browser-resize state)

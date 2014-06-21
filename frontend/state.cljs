@@ -8,6 +8,8 @@
                              :selected-org {:login nil
                                             :type :org}}}
    :navigation-point :loading
+   :navigation-data nil
+   :navigation-settings {}
    :current-user nil
    :crumbs []
    :current-repos []
@@ -44,7 +46,8 @@
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
-                      :name nil}})
+                      :name nil}
+   :instrumentation []})
 
 (def user-path [:current-user])
 
@@ -102,6 +105,7 @@
 (defn repo-path [login type repo-index]
   (conj (repos-path login type) repo-index))
 
+
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-plan-path (conj org-data-path :plan))
@@ -109,3 +113,24 @@
 (def org-projects-path (conj org-data-path :projects))
 (def org-loaded-path (conj org-data-path :loaded))
 (def org-authorized?-path (conj org-data-path :authorized?))
+
+(def settings-path [:settings])
+
+(def projects-path [:projects])
+
+;; XXX make inner/outer something defined in navigation
+(def inner?-path [:current-user])
+
+(def show-nav-settings-link-path [:navigation-settings :show-settings-link])
+
+(def instrumentation-path [:instrumentation])
+
+(def browser-settings-path [:settings :browser-settings])
+(def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
+(def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
+(def slim-aside-path (conj browser-settings-path :slim-aside?))
+(def show-all-branches-path (conj browser-settings-path :show-all-branches))
+(defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
+(def show-inspector-path (conj browser-settings-path :show-inspector))
+
+(def flash-path [:render-context :flash])
