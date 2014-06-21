@@ -70,13 +70,14 @@
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             project-id (project-model/id project)
+            show-all-branches? (get-in data state/show-all-branches-path)
+            collapse-branches? (get-in data (state/project-branches-collapsed-path project-id))
             vcs-url (:vcs_url project)
             org (vcs-url/org-name vcs-url)
             repo (vcs-url/repo-name vcs-url)
-            personal-branches (project-model/personal-branches user project)
-            branches-filter (if (:show-all-branches settings) identity (partial project-model/personal-branch? user project))]
+            branches-filter (if show-all-branches? identity (partial project-model/personal-branch? user project))]
         (html
-         [:ul {:class (when-not (get-in settings [:projects project-id :branches-collapsed]) "open")}
+         [:ul {:class (when-not collapse-branches? "open")}
           [:li
            [:div.project {:role "button"}
             [:a.toggle {:title "show/hide"
@@ -89,12 +90,13 @@
              (project-model/project-name project)]
             (when-let [latest-master-build (first (project-model/master-builds project))]
               (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
-          (for [branch-data (filter branches-filter (:branches project))]
-            (om/build branch
-                      {:branch-data branch-data
-                       :org org
-                       :repo repo}
-                      {:react-key (first branch-data)}))])))))
+          (when-not collapse-branches?
+            (for [branch-data (filter branches-filter (:branches project))]
+              (om/build branch
+                        {:branch-data branch-data
+                         :org org
+                         :repo repo}
+                        {:react-key (first branch-data)})))])))))
 
 (defn aside [app owner]
   (reify
@@ -104,6 +106,7 @@
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
             slim-aside? (get-in app state/slim-aside-path)
+            show-all-branches? (get-in app state/show-all-branches-path)
             user (:current-user app)]
         (html/html
          ;; XXX: browser settings
@@ -116,10 +119,10 @@
           [:div.aside-activity {:class (when-not slim-aside? "open")}
            [:div.wrapper
             [:div.toggle-all-branches
-             [:button {:class (when-not (:show-all-branches settings) "active")
+             [:button {:class (when-not show-all-branches? "active")
                        :on-click #(put! controls-ch [:show-all-branches-toggled false])}
               "You"]
-             [:button {:class (when (:show-all-branches settings) "active")
+             [:button {:class (when show-all-branches? "active")
                        :on-click #(put! controls-ch [:show-all-branches-toggled true])}
               "All"]]
             (for [project projects]

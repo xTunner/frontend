@@ -49,27 +49,22 @@
   (update-in state [:settings :menus :user :open] not))
 
 
-;; XXX: persist these to localstorage
 (defmethod control-event :show-all-branches-toggled
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
 
-;; XXX: persist these to localstorage
 (defmethod control-event :collapse-branches-toggled
   [target message {:keys [project-id]} state]
   (update-in state (state/project-branches-collapsed-path project-id) not))
 
-;; XXX: persist these to localstorage
 (defmethod control-event :slim-aside-toggled
   [target message {:keys [project-id]} state]
   (update-in state state/slim-aside-path not))
 
-;; XXX: persist these to localstorage
 (defmethod control-event :show-admin-panel-toggled
   [target message _ state]
   (update-in state state/show-admin-panel-path not))
 
-;; XXX: persist these to localstorage
 (defmethod control-event :instrumentation-line-items-toggled
   [target message _ state]
   (update-in state state/show-instrumentation-line-items-path not))

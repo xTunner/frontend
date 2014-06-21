@@ -100,8 +100,6 @@
   (conj (repos-path login type) repo-index))
 
 (def settings-path [:settings])
-(def show-all-branches-path (conj settings-path :show-all-branches))
-(defn project-branches-collapsed-path [project-id] (conj settings-path :projects project-id :branches-collapsed))
 
 (def projects-path [:projects])
 
@@ -116,3 +114,5 @@
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def slim-aside-path (conj browser-settings-path :slim-aside?))
+(def show-all-branches-path (conj browser-settings-path :show-all-branches))
+(defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))

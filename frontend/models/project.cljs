@@ -21,24 +21,15 @@
     (or (default-branch? branch-name project)
         (some #{(:login user)} (:pusher_logins build-info)))))
 
-
-;; XXX: this fn can probably go away
-(defn personal-branches [user project]
-  (filter (fn [branch-info]
-            (or
-             (personal-branch? user project branch-info)
-             (default-branch? (name (first branch-info)) project)))
-          (:branches project)))
-
-(defn branch-builds [project branch-name]
-  (let [build-data (get-in project [:branches branch-name])]
+(defn branch-builds [project branch-name-kw]
+  (let [build-data (get-in project [:branches branch-name-kw])]
     (sort-by :build_num (concat (:running_builds build-data)
                                 (:recent_builds build-data)))))
 
 (defn master-builds
   "Returns branch builds for the project's default branch (usually master)"
   [project]
-  (branch-builds project (:personal_branch project)))
+  (branch-builds project (keyword (:default_branch project))))
 
 (defn notification-settings [project]
   (select-keys project [:hipchat_room
