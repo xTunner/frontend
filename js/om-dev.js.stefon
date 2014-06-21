@@ -21,5 +21,7 @@
 
   "ab_test_definitions.coffee" ;; TODO: necessary, convert to clojurescript
 
+  "stefon-hack-for-om.coffee.ref"
+
   "../../components/react/react.js"
 ]
