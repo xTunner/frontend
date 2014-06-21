@@ -61,7 +61,8 @@
                (om/build aside/aside app)])
             [:main.app-main {:tab-index 1}
              (om/build header/header app)
-             [:div.main-body
-              (om/build dom-com app)]
+             (when inner? ;; XXX: remove when outer is built out
+               [:div.main-body
+                (om/build dom-com app)])
              [:footer.main-foot
               (footer/footer)]]]))))))

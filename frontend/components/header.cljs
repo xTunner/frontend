@@ -115,7 +115,49 @@
   (reify
     om/IRender
     (render [_]
-      (html [:div "so we know its outer header"]))))
+      (let [flash (get-in app state/flash-path)
+            logged-in? (get-in app state/user-path)]
+        (html
+         [:div
+          [:div
+           (when flash
+             [:div#flash flash])]
+          [:div#navbar
+           [:div.container
+            [:div.row
+             [:div.span8
+              [:div.row
+               [:a#logo.span2
+                {:href "/"}
+                [:img
+                 {:width "130",
+                  :src (utils/asset-path "/img/logo-new.svg")
+                  :height "40"}]]
+               [:nav.span6
+                {:role "navigation"}
+                [:ul.nav.nav-pills
+                 [:li [:a {:href "/about"} "About"]]
+                 [:li [:a {:href "/pricing"} "Pricing"]]
+                 [:li [:a {:href "/docs"} "Documentation"]]
+                 [:li [:a {:href "/jobs"} "Jobs"]]
+                 [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]]
+             [:div.controls.span4
+              (if logged-in?
+                [:div.controls.span4
+                 [:a#login.login-link {:href "/"} "Return to App"]]
+
+                [:div.controls.span4
+                 ;; XXX: mixpanel event tracking
+                 [:a#login.login-link {:href (auth-url)
+                                       :title "Sign in with Github"
+                                       :data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'header sign-in', 'url' : window.location.pathname}}"}
+                  "Sign in"]
+                 [:span.seperator "|"]
+                 [:a#login.login-link {:href (auth-url)
+                                       :title "Sign up with Github"
+                                       :data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'header sign-up', 'url' : window.location.pathname}}"}
+                  "Sign up "
+                  [:i.fa.fa-github-alt]]])]]]]])))))
 
 (defn header [app owner]
   (reify
