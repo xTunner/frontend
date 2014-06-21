@@ -68,8 +68,8 @@
             controls-ch (om/get-shared owner [:comms :controls])
             user-session-settings (get-in app [:render-context :user_session_settings])]
         (html
-         [:div.head-admin {:class (utils/inspect (concat (when open? ["open"])
-                                                         (when expanded? ["expanded"])))}
+         [:div.head-admin {:class (concat (when open? ["open"])
+                                          (when expanded? ["expanded"]))}
           [:div.admin-tools
            [:div.environment {:class (str "env-" (name (env/env)))
                               :role "button"
