@@ -103,16 +103,17 @@
       (let [controls-ch (om/get-shared owner [:comms :controls])
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
+            slim-aside? (get-in app state/slim-aside-path)
             user (:current-user app)]
         (html/html
          ;; XXX: browser settings
-         [:nav.aside-left-nav {:class (when (:slim-aside? settings) "slim")}
+         [:nav.aside-left-nav {:class (when slim-aside? "slim")}
           [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
                                 ;; XXX: tooltips
                                 :href "/"}
            [:div.logomark
             (common/ico :logo)]]
-          [:div.aside-activity {:class (when-not (:slim-aside? settings) "open")}
+          [:div.aside-activity {:class (when-not slim-aside? "open")}
            [:div.wrapper
             [:div.toggle-all-branches
              [:button {:class (when-not (:show-all-branches settings) "active")
@@ -151,7 +152,7 @@
             [:span "Logout"]]
            [:a.aside-item {:data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
                            :on-click #(put! controls-ch [:slim-aside-toggled])}
-            (if (:slim-aside? settings)
+            (if slim-aside?
               [:i.fa.fa-long-arrow-right]
               (list
                [:i.fa.fa-long-arrow-left]

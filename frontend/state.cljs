@@ -102,7 +102,6 @@
 (def settings-path [:settings])
 (def show-all-branches-path (conj settings-path :show-all-branches))
 (defn project-branches-collapsed-path [project-id] (conj settings-path :projects project-id :branches-collapsed))
-(def slim-aside-path (conj settings-path :slim-aside?))
 
 (def projects-path [:projects])
 
@@ -112,5 +111,8 @@
 (def show-nav-settings-link-path [:navigation-settings :show-settings-link])
 
 (def instrumentation-path [:instrumentation])
-(def show-instrumentation-line-items-path [:settings :show-instrumentatin-line-items])
-(def show-admin-panel-path [:settings :show-admin-panel])
+
+(def browser-settings-path [:settings :browser-settings])
+(def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
+(def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
+(def slim-aside-path (conj browser-settings-path :slim-aside?))

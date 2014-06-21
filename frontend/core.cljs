@@ -20,6 +20,7 @@
             [om.core :as om :include-macros true]
             [frontend.pusher :as pusher]
             [frontend.history :as history]
+            [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
@@ -187,6 +188,8 @@
                                          (str "#" (.getFragment uri)))))))
 
 
+;; XXX this should go in IDidMount on the build container, also doesn't work
+;;     if the user goes to a build page from a different page
 (defn handle-browser-resize
   "Handles scrolling the container on the build page to the correct position when
   the size of the browser window chagnes. Has to add an event listener at the top level."
@@ -207,6 +210,7 @@
   (let [state (app-state)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
+    (browser-settings/setup! state)
     (main state (sel1 :body))
     (dispatch-to-current-location!)
     (handle-browser-resize state)
