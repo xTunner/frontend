@@ -46,13 +46,14 @@
     cursor: pointer;
   }
   .admin-tools {
-    .flexy(center);
     height: @tile;
     line-height: 200%;
+    &.expanded {
+      height: auto;
+    }
     .metrics {
       .flexy(center);
       .user-select(none);
-      height: @tile;
       padding: 0 1em;
       cursor: s-resize;
       font-size: @baseFontSize * 1.5;
@@ -81,7 +82,7 @@
     &.env-test        { background: @green;     }
   }
   .options {
-    margin: 0 1em 0 auto;
+    margin-left: 1em;
     a {
       &:not(:first-child) {
         &:before {
