@@ -54,7 +54,7 @@
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link (boolean (:repo args))})
+             :navigation-settings {:show-settings-link (boolean (:org args))})
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
