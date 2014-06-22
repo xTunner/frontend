@@ -8,6 +8,8 @@
             [frontend.models.user :as user-model]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.plans :as plans-component]
+            [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -70,13 +72,13 @@
                  "plan's organization page"]
                 "."]]]]))))
 
-(defn users [data owner]
+(defn users [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [users (get-in data state/org-users-path)
-            projects (get-in data state/org-projects-path)
-            org-name (get-in data state/org-name-path)
+      (let [users (get-in app state/org-users-path)
+            projects (get-in app state/org-projects-path)
+            org-name (get-in app state/org-name-path)
             projects-by-follower (org-model/projects-by-follower projects)
             sorted-users (sort-by (fn [u]
                                     (- (count (get projects-by-follower (:login u)))))
@@ -146,15 +148,15 @@
             " "
             [:span (:login follower)]])]]))))
 
-(defn projects [data owner]
+(defn projects [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [users (get-in data state/org-users-path)
-            projects (get-in data state/org-projects-path)
+      (let [users (get-in app state/org-users-path)
+            projects (get-in app state/org-projects-path)
             {followed-projects true unfollowed-projects false} (group-by #(pos? (count (:followers %)))
                                                                          projects)
-            org-name (get-in data state/org-name-path)]
+            org-name (get-in app state/org-name-path)]
         (html
          [:div
           [:div.followed-projects.row-fluid
@@ -241,7 +243,7 @@
      [:p
       "You can create a separate plan for " current-org-name " by selecting from the plans below."]]]])
 
-(defn plan [data owner]
+(defn plan [app owner]
   (reify
     om/IRender
     (render [_]
@@ -257,7 +259,10 @@
               (plans-trial-notification plan org-name controls-ch))
             (when (plan-model/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
-            " + $c(HAML.org_plan_summary()) + $c(HAML.pricing_plans()) + $c(HAML.customers_trust()) + $c(HAML.pricing_features()) + $c(HAML.pricing_faq()) + $c(HAML.confirm_plan_modal())"]))))))
+            (om/build plans-component/plans app)
+            (shared/customers-trust)
+            plans-component/pricing-features
+            plans-component/pricing-faq]))))))
 
 (def main-component
   {:users users
@@ -269,13 +274,13 @@
    ;; :cancel cancel
    })
 
-(defn org-settings [data owner]
+(defn org-settings [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [subpage (get data :org-settings-subpage)
-            org-data (get-in data state/org-data-path)
-            plan (get-in data state/org-plan-path)]
+      (let [subpage (get app :org-settings-subpage)
+            org-data (get-in app state/org-data-path)
+            plan (get-in app state/org-plan-path)]
         (html [:div.container-fluid.org-page
                (if-not (:name org-data)
                  [:div.loading-spinner common/spinner]
@@ -286,8 +291,8 @@
                    [:div#subpage
                     [:div
                      (if (:authorized? org-data)
-                       (om/build (get main-component subpage projects) data)
+                       (om/build (get main-component subpage projects) app)
                        [:div (om/build non-admin-plan
-                                       {:login (get-in data [:current-user :login])
-                                        :org-name (:org-settings-org-name data)
+                                       {:login (get-in app [:current-user :login])
+                                        :org-name (:org-settings-org-name app)
                                         :subpage subpage})])]]]])])))))
