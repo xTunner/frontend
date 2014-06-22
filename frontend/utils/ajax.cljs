@@ -1,5 +1,5 @@
 (ns frontend.utils.ajax
-  (:require [ajax.core :as ajax]
+  (:require [ajax.core :as clj-ajax]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
             [frontend.async :refer [put!]]
@@ -35,24 +35,24 @@
                         (if prefix (str " prefix '" prefix "'"))
                         (if keywords? " keywordize"))}))
 
-
 ;; XXX only implementing JSON format and not implementing prefixes for now since we don't use either
 (defn ajax [method url message channel & {:keys [params keywords? context]
                                           :or {keywords? true}}]
   (let [uuid frontend.async/*uuid*]
     (put! channel [message :started context])
-    (ajax/ajax-request url method
-                       (ajax/transform-opts
-                        {:format (json-response-format {:keywords? keywords? :url url :method method})
-                         :response-format :json
-                         :keywords? keywords?
-                         :params params
-                         :headers (merge {:Accept "application/json"}
-                                         (when (re-find #"^/" url)
-                                           {:X-CSRFToken (utils/csrf-token)}))
-                         :handler #(binding [frontend.async/*uuid* uuid]
-                                     (put! channel [message :success (assoc % :context context)]))
-                         :error-handler #(binding [frontend.async/*uuid* uuid]
-                                           (put! channel [message :failed (assoc % :context context)]))
-                         :finally #(binding [frontend.async/*uuid* uuid]
-                                     (put! channel [message :finished context]))}))))
+    (clj-ajax/ajax-request url method
+                           (clj-ajax/transform-opts
+                            {:format (merge (clj-ajax/json-request-format)
+                                            (json-response-format {:keywords? keywords? :url url :method method}))
+                             :response-format :json
+                             :keywords? keywords?
+                             :params params
+                             :headers (merge {:Accept "application/json"}
+                                             (when (re-find #"^/" url)
+                                               {:X-CSRFToken (utils/csrf-token)}))
+                             :handler #(binding [frontend.async/*uuid* uuid]
+                                         (put! channel [message :success (assoc % :context context)]))
+                             :error-handler #(binding [frontend.async/*uuid* uuid]
+                                               (put! channel [message :failed (assoc % :context context)]))
+                             :finally #(binding [frontend.async/*uuid* uuid]
+                                         (put! channel [message :finished context]))}))))
