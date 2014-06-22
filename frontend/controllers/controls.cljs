@@ -1,18 +1,21 @@
 (ns frontend.controllers.controls
-  (:require [cljs.reader :as reader]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [cljs.reader :as reader]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
+            [frontend.components.forms :refer [release-button!]]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
             [frontend.state :as state]
+            [frontend.stripe :as stripe]
             [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog]]
+            [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
-                   [frontend.utils :refer [inspect]])
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.fx.dom.Scroll]))
 
 ;; --- Helper Methods ---
@@ -36,12 +39,12 @@
 
 (defmethod control-event :default
   [target message args state]
-  (mlog "Unknown controls: " message)
+  (utils/mlog "Unknown controls: " message)
   state)
 
 (defmethod post-control-event! :default
   [target message args previous-state current-state]
-  (mlog "No post-control for: " message))
+  (utils/mlog "No post-control for: " message))
 
 
 (defmethod control-event :user-menu-toggled
@@ -534,3 +537,15 @@
               (get-in current-state [:comms :api])
               :context {:project-name project-name
                         :project-id project-id}))
+
+
+(defmethod post-control-event! :new-plan-clicked
+  [target message {:keys [containers price description]} previous-state current-state]
+  (let [ch (chan)
+        uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :controls])]
+    (stripe/open-checkout {:price price :description description} ch)
+    (go (let [[message data] (<! ch)]
+          (condp = message
+            :stripe-checkout-closed (release-button! uuid :idle)
+            nil)))))

@@ -1,6 +1,8 @@
 (ns frontend.components.plans
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.components.forms :as forms]
+            [frontend.models.plan :as plan-model]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -14,11 +16,13 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [node sel sel1]]))
 
+
 (defn pricing-cloud [app owner opts]
   (om/component
-   (let [{:keys [containers price plan-name recommended]} opts
+   (let [{:keys [containers plan-name recommended]} opts
          logged-in? (get-in app state/user-path)
-         controls-ch (om/get-shared owner [:comms :controls])]
+         controls-ch (om/get-shared owner [:comms :controls])
+         price (plan-model/cost plan-model/default-template-properties containers)]
      (html
       [:div.span3.plan {:class (when recommended "recommended")}
        [:div.plan-head
@@ -26,19 +30,20 @@
           [:div.popular-ribbon [:span "Popular"]])
         [:h3 plan-name]]
        [:div.plan-body
-        [:h2
-         price "/mo"]
+        [:h2 (str "$" price "/mo")]
         [:ul
-         [:li "Includes " (pluralize containers "containers")]
+         [:li "Includes " (pluralize containers "container")]
          [:li "Additional containers $50/mo"]
          [:li "No other limits"]]]
        [:div.plan-foot
         (if logged-in?
-          (forms/stateful-button
+          (forms/managed-button
            [:a {:data-loading-text "Paying...",
                 :data-failed-text "Failed!",
                 :data-success-text "Paid!",
-                :on-click #(put! controls-ch [:new-plan-clicked {:containers containers}])}
+                :on-click #(put! controls-ch [:new-plan-clicked {:containers containers
+                                                                 :price price
+                                                                 :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
           [:a {:data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"}
@@ -63,9 +68,9 @@
     [:div.row-fluid.pricing-plans
      [:div.span12
       [:div.row-fluid
-       (om/build pricing-cloud app {:opts {:containers 1 :price "$19" :plan-name "Solo"}})
-       (om/build pricing-cloud app {:opts {:containers 2 :price "$69" :plan-name "Startup" :recommended true}})
-       (om/build pricing-cloud app {:opts {:containers 6 :price "$269" :plan-name "Small Business"}})
+       (om/build pricing-cloud app {:opts {:containers 1 :plan-name "Solo"}})
+       (om/build pricing-cloud app {:opts {:containers 2 :plan-name "Startup" :recommended true}})
+       (om/build pricing-cloud app {:opts {:containers 6 :plan-name "Small Business"}})
        pricing-enterprise]]])))
 
 (def features

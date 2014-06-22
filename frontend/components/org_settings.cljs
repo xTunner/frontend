@@ -1,5 +1,6 @@
 (ns frontend.components.org-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer put! close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
