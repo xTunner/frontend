@@ -3,6 +3,7 @@
             [frontend.api :as api]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
@@ -65,11 +66,11 @@
       (api/get-projects api-ch))
     (api/get-dashboard-builds (:navigation-data current-state) api-ch)
     (when (:repo args)
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
-                  :project-settings
-                  api-ch
-                  :context {:project-name (str (:org args) "/" (:repo args))})))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
+                 :project-settings
+                 api-ch
+                 :context {:project-name (str (:org args) "/" (:repo args))})))
   (set-page-title!))
 
 
@@ -97,23 +98,23 @@
         ws-ch (get-in current-state [:comms :ws])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (utils/ajax :get
-                (gstring/format "/api/v1/project/%s/%s" project-name build-num)
-                :build
-                api-ch
-                :context {:project-name project-name :build-num build-num})
+    (ajax/ajax :get
+               (gstring/format "/api/v1/project/%s/%s" project-name build-num)
+               :build
+               api-ch
+               :context {:project-name project-name :build-num build-num})
     (when (not (get-in current-state state/project-path))
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/settings" project-name)
-                  :project-settings
-                  api-ch
-                  :context {:project-name project-name}))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 :project-settings
+                 api-ch
+                 :context {:project-name project-name}))
     (when (not (get-in current-state state/project-plan-path))
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/plan" project-name)
-                  :project-plan
-                  api-ch
-                  :context {:project-name project-name}))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/plan" project-name)
+                 :project-plan
+                 api-ch
+                 :context {:project-name project-name}))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
                                                                              :build-num build-num})
                              :messages pusher/build-messages}]))
@@ -129,8 +130,8 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (utils/ajax :get "/api/v1/user/organizations" :organizations api-ch)
-    (utils/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
+    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (ajax/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
   (set-page-title! "Add projects"))
 
 
@@ -164,35 +165,35 @@
       (api/get-projects api-ch))
     (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/settings" project-name)
-                  :project-settings
-                  api-ch
-                  :context {:project-name project-name}))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 :project-settings
+                 api-ch
+                 :context {:project-name project-name}))
 
     (cond (and (= subpage :parallel-builds)
                (not (get-in current-state state/project-plan-path)))
-          (utils/ajax :get
-                      (gstring/format "/api/v1/project/%s/plan" project-name)
-                      :project-plan
-                      api-ch
-                      :context {:project-name project-name})
+          (ajax/ajax :get
+                     (gstring/format "/api/v1/project/%s/plan" project-name)
+                     :project-plan
+                     api-ch
+                     :context {:project-name project-name})
 
           (and (= subpage :api)
                (not (get-in current-state state/project-tokens-path)))
-          (utils/ajax :get
-                      (gstring/format "/api/v1/project/%s/token" project-name)
-                      :project-token
-                      api-ch
-                      :context {:project-name project-name})
+          (ajax/ajax :get
+                     (gstring/format "/api/v1/project/%s/token" project-name)
+                     :project-token
+                     api-ch
+                     :context {:project-name project-name})
 
           (and (= subpage :env-vars)
                (not (get-in current-state state/project-envvars-path)))
-          (utils/ajax :get
-                      (gstring/format "/api/v1/project/%s/envvar" project-name)
-                      :project-envvar
-                      api-ch
-                      :context {:project-name project-name})
+          (ajax/ajax :get
+                     (gstring/format "/api/v1/project/%s/envvar" project-name)
+                     :project-envvar
+                     api-ch
+                     :context {:project-name project-name})
           :else nil))
 
   ;; XXX: check for XSS
@@ -218,16 +219,16 @@
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
       (mlog "plan details already loaded for" org-name)
-      (utils/ajax :get
-                  (gstring/format "/api/v1/organization/%s/plan" org-name)
-                  :org-plan
-                  api-ch
-                  :context {:org-name org-name}))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/organization/%s/plan" org-name)
+                 :org-plan
+                 api-ch
+                 :context {:org-name org-name}))
     (if (= org-name (get-in current-state state/org-name-path))
       (mlog "organization details already loaded for" org-name)
-      (utils/ajax :get
-                  (gstring/format "/api/v1/organization/%s/settings" org-name)
-                  :org-settings
-                  api-ch
-                  :context {:org-name org-name})))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/organization/%s/settings" org-name)
+                 :org-settings
+                 api-ch
+                 :context {:org-name org-name})))
   (set-page-title! (str "Org settings - " org-name)))

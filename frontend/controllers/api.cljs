@@ -9,6 +9,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils.mixpanel :as mixpanel]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
@@ -255,11 +256,11 @@
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])]
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/settings" project-name)
-                  :project-settings
-                  api-ch
-                  :context {:project-name project-name}))))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 :project-settings
+                 api-ch
+                 :context {:project-name project-name}))))
 
 
 (defmethod api-event [:delete-ssh-key :success]
@@ -359,10 +360,10 @@
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
-      state
-      (-> state
-          (update-in state/org-data-path merge resp)
-          (assoc-in state/org-authorized?-path true))))
+    state
+    (-> state
+        (update-in state/org-data-path merge resp)
+        (assoc-in state/org-authorized?-path true))))
 
 
 ;; XXX: only show org-failure on 401s
@@ -394,10 +395,10 @@
                          (subs 1))]
       (put! nav-ch [:navigate! build-path]))
     (when (repo-model/should-do-first-follower-build? (:context args))
-      (utils/ajax :post
-                  (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
-                  :start-build
-                  (get-in current-state [:comms :api])))))
+      (ajax/ajax :post
+                 (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
+                 :start-build
+                 (get-in current-state [:comms :api])))))
 
 
 (defmethod api-event [:unfollow-repo :success]

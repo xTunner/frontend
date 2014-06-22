@@ -10,6 +10,7 @@
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils.mixpanel :as mixpanel]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
@@ -113,11 +114,11 @@
   (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :get
-              (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
-              :repos
-              api-ch
-              :context args)))
+    (ajax/ajax :get
+               (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
+               :repos
+               api-ch
+               :context args)))
 
 
 (defmethod control-event :show-artifacts-toggled
@@ -129,13 +130,13 @@
   (when (get-in current-state state/show-artifacts-path)
     (let [api-ch (get-in current-state [:comms :api])
           build (get-in current-state state/build-path)]
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/%s/artifacts"
-                                  (vcs-url/project-name (:vcs_url build))
-                                  (:build_num build))
-                  :build-artifacts
-                  api-ch
-                  :context (build-model/id build)))))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/%s/artifacts"
+                                 (vcs-url/project-name (:vcs_url build))
+                                 (:build_num build))
+                 :build-artifacts
+                 api-ch
+                 :context (build-model/id build)))))
 
 
 (defmethod control-event :container-selected
@@ -181,11 +182,11 @@
                                   (:build_num build)
                                   step
                                   index))]
-        (utils/ajax :get
-                    url
-                    :action-log
-                    api-ch
-                    :context args)))))
+        (ajax/ajax :get
+                   url
+                   :action-log
+                   api-ch
+                   :context args)))))
 
 
 (defmethod control-event :selected-project-parallelism
@@ -199,12 +200,12 @@
     (let [project-name (vcs-url/project-name project-id)
           api-ch (get-in current-state [:comms :api])]
       ;; TODO: edit project settings api call should respond with updated project settings
-      (utils/ajax :put
-                  (gstring/format "/api/v1/project/%s/settings" project-name)
-                  :update-project-parallelism
-                  api-ch
-                  :params {:parallel parallelism}
-                  :context {:project-id project-id}))))
+      (ajax/ajax :put
+                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 :update-project-parallelism
+                 api-ch
+                 :params {:parallel parallelism}
+                 :context {:project-id project-id}))))
 
 
 (defmethod control-event :dismiss-invite-form
@@ -262,50 +263,50 @@
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
-                :retry-build
-                api-ch)))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
+               :retry-build
+               api-ch)))
 
 
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
-                :follow-repo
-                api-ch
-                :context repo)))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
+               :follow-repo
+               api-ch
+               :context repo)))
 
 
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
-                :follow-project
-                api-ch
-                :context {:project-id project-id})))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
+               :follow-project
+               api-ch
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
-                :unfollow-repo
-                api-ch
-                :context repo)))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
+               :unfollow-repo
+               api-ch
+               :context repo)))
 
 
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
-                :unfollow-project
-                api-ch
-                :context {:project-id project-id})))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
+               :unfollow-project
+               api-ch
+               :context {:project-id project-id})))
 
 
 ;; XXX: clean this up
@@ -338,71 +339,71 @@
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
     ;; TODO: edit project settings api call should respond with updated project settings
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))
-                :start-build
-                api-ch)))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))
+               :start-build
+               api-ch)))
 
 
 (defmethod post-control-event! :created-env-var
   [target message {:keys [project-id env-var]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/envvar" project-name)
-                :create-env-var
-                api-ch
-                :params env-var
-                :context {:project-id project-id})))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/envvar" project-name)
+               :create-env-var
+               api-ch
+               :params env-var
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-env-var
   [target message {:keys [project-id env-var-name]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :delete
-                (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
-                :delete-env-var
-                api-ch
-                :context {:project-id project-id
-                          :env-var-name env-var-name})))
+    (ajax/ajax :delete
+               (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
+               :delete-env-var
+               api-ch
+               :context {:project-id project-id
+                         :env-var-name env-var-name})))
 
 
 (defmethod post-control-event! :saved-dependencies-commands
   [target message {:keys [project-id settings]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :put
-                (gstring/format "/api/v1/project/%s/settings" project-name)
-                :save-dependencies-commands
-                api-ch
-                :params settings
-                :context {:project-id project-id})))
+    (ajax/ajax :put
+               (gstring/format "/api/v1/project/%s/settings" project-name)
+               :save-dependencies-commands
+               api-ch
+               :params settings
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :saved-test-commands
   [target message {:keys [project-id settings]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :put
-                (gstring/format "/api/v1/project/%s/settings" project-name)
-                :save-test-commands
-                api-ch
-                :params settings
-                :context {:project-id project-id})))
+    (ajax/ajax :put
+               (gstring/format "/api/v1/project/%s/settings" project-name)
+               :save-test-commands
+               api-ch
+               :params settings
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :saved-test-commands-and-build
   [target message {:keys [project-id settings branch]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :put
-                (gstring/format "/api/v1/project/%s/settings" project-name)
-                :save-test-commands-and-build
-                api-ch
-                :params settings
-                :context {:project-id project-id
-                          :branch branch})))
+    (ajax/ajax :put
+               (gstring/format "/api/v1/project/%s/settings" project-name)
+               :save-test-commands-and-build
+               api-ch
+               :params settings
+               :context {:project-id project-id
+                         :branch branch})))
 
 
 (defmethod post-control-event! :saved-notification-hooks
@@ -410,84 +411,84 @@
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
         settings (project-model/notification-settings (get-in current-state state/project-path))]
-    (utils/ajax :put
-                (gstring/format "/api/v1/project/%s/settings" project-name)
-                :save-notification-hooks
-                api-ch
-                :params settings
-                :context {:project-id project-id})))
+    (ajax/ajax :put
+               (gstring/format "/api/v1/project/%s/settings" project-name)
+               :save-notification-hooks
+               api-ch
+               :params settings
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :saved-ssh-key
   [target message {:keys [project-id ssh-key]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
-                :save-ssh-key
-                api-ch
-                :params ssh-key
-                :context {:project-id project-id})))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+               :save-ssh-key
+               api-ch
+               :params ssh-key
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-ssh-key
   [target message {:keys [project-id fingerprint]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :delete
-                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
-                :delete-ssh-key
-                api-ch
-                :params {:fingerprint fingerprint}
-                :context {:project-id project-id
-                          :fingerprint fingerprint})))
+    (ajax/ajax :delete
+               (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+               :delete-ssh-key
+               api-ch
+               :params {:fingerprint fingerprint}
+               :context {:project-id project-id
+                         :fingerprint fingerprint})))
 
 
 (defmethod post-control-event! :saved-project-api-token
   [target message {:keys [project-id api-token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/token" project-name)
-                :save-project-api-token
-                api-ch
-                :params api-token
-                :context {:project-id project-id})))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/token" project-name)
+               :save-project-api-token
+               api-ch
+               :params api-token
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-project-api-token
   [target message {:keys [project-id token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :delete
-                (gstring/format "/api/v1/project/%s/token/%s" project-name token)
-                :delete-project-api-token
-                api-ch
-                :context {:project-id project-id
-                          :token token})))
+    (ajax/ajax :delete
+               (gstring/format "/api/v1/project/%s/token/%s" project-name token)
+               :delete-project-api-token
+               api-ch
+               :context {:project-id project-id
+                         :token token})))
 
 
 (defmethod post-control-event! :set-heroku-deploy-user
   [target message {:keys [project-id login]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :post
-                (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
-                :set-heroku-deploy-user
-                api-ch
-                :context {:project-id project-id
-                          :login login})))
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+               :set-heroku-deploy-user
+               api-ch
+               :context {:project-id project-id
+                         :login login})))
 
 
 (defmethod post-control-event! :removed-heroku-deploy-user
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (utils/ajax :delete
-                (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
-                :remove-heroku-deploy-user
-                api-ch
-                :context {:project-id project-id})))
+    (ajax/ajax :delete
+               (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+               :remove-heroku-deploy-user
+               api-ch
+               :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :set-user-session-setting
@@ -497,21 +498,21 @@
 
 (defmethod post-control-event! :load-first-green-build-github-users
   [target message {:keys [project-name]} previous-state current-state]
-  (utils/ajax :get
-              (gstring/format "/api/v1/project/%s/users" project-name)
-              :first-green-build-github-users
-              (get-in current-state [:comms :api])
-              :context {:project-name project-name}))
+  (ajax/ajax :get
+             (gstring/format "/api/v1/project/%s/users" project-name)
+             :first-green-build-github-users
+             (get-in current-state [:comms :api])
+             :context {:project-name project-name}))
 
 
 (defmethod post-control-event! :invited-github-users
   [target message {:keys [project-name invitees]} previous-state current-state]
-  (utils/ajax :post
-              (gstring/format "/api/v1/project/%s/users/invite" project-name)
-              :invite-github-users
-              (get-in current-state [:comms :api])
-              :context {:project-name project-name}
-              :params invitees)
+  (ajax/ajax :post
+             (gstring/format "/api/v1/project/%s/users/invite" project-name)
+             :invite-github-users
+             (get-in current-state [:comms :api])
+             :context {:project-name project-name}
+             :params invitees)
   (mixpanel/track "Sent invitations" {:first_green_build true
                                       :project project-name
                                       :users (map :login invitees)})
@@ -531,12 +532,12 @@
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]
-  (utils/ajax :post
-              (gstring/format "/api/v1/project/%s/enable" project-name)
-              :enable-project
-              (get-in current-state [:comms :api])
-              :context {:project-name project-name
-                        :project-id project-id}))
+  (ajax/ajax :post
+             (gstring/format "/api/v1/project/%s/enable" project-name)
+             :enable-project
+             (get-in current-state [:comms :api])
+             :context {:project-name project-name
+                       :project-id project-id}))
 
 
 (defmethod post-control-event! :new-plan-clicked
