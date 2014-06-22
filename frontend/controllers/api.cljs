@@ -442,3 +442,27 @@
   [target message status {:keys [context resp]} previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])]
     (put! controls-ch [:started-edit-settings-build context])))
+
+
+(defmethod api-event [:plan-card :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (assoc-in state state/stripe-card-path resp)))
+
+
+(defmethod api-event [:create-plan :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (assoc-in state state/org-plan-path resp)))
+
+
+(defmethod post-api-event! [:create-plan :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (mixpanel/track "Paid")
+  (perfect-audience/track "payer")
+  (adroll/record-payer)
+  (when (= (:org-name context) (:org-settings-org-name current-state))
+    (put! (get-in current-state [:comms :nav]) [:navigate! (routes/v1-org-settings-subpage {:org (:org-name context)
+                                                                                            :subpage "containers"})])))

@@ -1,6 +1,7 @@
 (ns frontend.stripe
   (:require [frontend.async :refer [put!]]
             [frontend.env :as env]
+            [frontend.utils :as utils]
             [goog.net.jsloader]))
 
 ;; We may want to add StripeCheckout to externs to avoid all of the aget noise.
@@ -21,9 +22,8 @@
   (let [checkout (aget js/window "StripeCheckout")
         args (merge checkout-defaults
                     checkout-args
-                    ;; n.b. this is a rare case where we put something into a channel
-                    ;; that we don't care about serializing.
-                    {:token #(put! channel [:stripe-checkout-succeeded %])
+                    ;; XXX: check what happens on failure
+                    {:token #(put! channel [:stripe-checkout-succeeded (utils/js->clj-kw %)])
                      :closed #(put! channel [:stripe-checkout-closed])})]
     ((aget checkout "open") (clj->js args))))
 

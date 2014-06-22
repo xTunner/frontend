@@ -109,6 +109,7 @@
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-plan-path (conj org-data-path :plan))
+(def stripe-card-path (conj org-data-path :card))
 (def org-users-path (conj org-data-path :users))
 (def org-projects-path (conj org-data-path :projects))
 (def org-loaded-path (conj org-data-path :loaded))
