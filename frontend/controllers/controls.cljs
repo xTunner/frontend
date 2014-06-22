@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
+            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.components.forms :refer [release-button!]]
@@ -9,7 +10,6 @@
             [frontend.intercom :as intercom]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
-            [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
