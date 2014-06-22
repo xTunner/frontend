@@ -136,9 +136,10 @@ You queue them up, we'll knock 'em down."},
           [:strong (:headline feature)]
           [:i.fa.fa-info-circle]]]
         (for [plan ["Solo" "Startup" "Small Business" "Enterprise"]]
-          (when (or (not (:enterprise feature))
-                    (= "Enterprise" plan))
-            [:td.span2 [:i.fa.fa-check]]))])]]])
+          [:td.span2
+           (when (or (not (:enterprise feature))
+                     (= "Enterprise" plan))
+             [:i.fa.fa-check])])])]]])
 
 (def pricing-faq
   [:div.faq.row
@@ -185,4 +186,4 @@ You queue them up, we'll knock 'em down."},
     [:h4 "My team needs something not listed here"]
     [:p "Contact us at "
      [:a {:href "mailto:enterprise@circleci.com"} "enterprise@circleci.com"]
-     "to discuss the benefits of an enterprise plan."]]])
+     " to discuss the benefits of an enterprise plan."]]])
