@@ -155,38 +155,6 @@
           (state-utils/reset-current-project %)
           %))))
 
-
-(defmethod navigated-to :org-settings
-  [history-imp navigation-point {:keys [subpage org-name]} state]
-  (mlog "Navigated to subpage:" subpage)
-  (-> state
-      (assoc :navigation-point navigation-point)
-      (assoc :org-settings-subpage subpage)
-      (assoc :org-settings-org-name org-name)
-      (#(if (state-utils/stale-current-org? % org-name)
-          (state-utils/reset-current-org %)
-          %))))
-
-(defmethod post-navigated-to! :org-settings
-  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
-    (if (get-in current-state state/org-plan-path)
-      (mlog "plan details already loaded for" org-name)
-      (utils/ajax :get
-                  (gstring/format "/api/v1/organization/%s/plan" org-name)
-                  :org-plan
-                  api-ch
-                  :context {:org-name org-name}))
-    (if (= org-name (get-in current-state state/org-name-path))
-      (mlog "organization details already loaded for" org-name)
-      (utils/ajax :get
-                  (gstring/format "/api/v1/organization/%s/settings" org-name)
-                  :org-settings
-                  api-ch
-                  :context {:org-name org-name})))
-  (set-page-title! (str "Org settings - " org-name)))
-
-
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?
 (defmethod post-navigated-to! :project-settings
@@ -229,3 +197,37 @@
 
   ;; XXX: check for XSS
   (set-page-title! (str "Edit settings - " project-name)))
+
+
+(defmethod navigated-to :org-settings
+  [history-imp navigation-point {:keys [subpage org-name] :as args} state]
+  (mlog "Navigated to subpage:" subpage)
+  (-> state
+      (assoc :navigation-point navigation-point)
+      (assoc :nagivation-data args)
+      (assoc :org-settings-subpage subpage)
+      (assoc :org-settings-org-name org-name)
+      (#(if (state-utils/stale-current-org? % org-name)
+          (state-utils/reset-current-org %)
+          %))))
+
+(defmethod post-navigated-to! :org-settings
+  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
+    (if (get-in current-state state/org-plan-path)
+      (mlog "plan details already loaded for" org-name)
+      (utils/ajax :get
+                  (gstring/format "/api/v1/organization/%s/plan" org-name)
+                  :org-plan
+                  api-ch
+                  :context {:org-name org-name}))
+    (if (= org-name (get-in current-state state/org-name-path))
+      (mlog "organization details already loaded for" org-name)
+      (utils/ajax :get
+                  (gstring/format "/api/v1/organization/%s/settings" org-name)
+                  :org-settings
+                  api-ch
+                  :context {:org-name org-name})))
+  (set-page-title! (str "Org settings - " org-name)))
