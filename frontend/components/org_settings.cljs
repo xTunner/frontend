@@ -11,6 +11,7 @@
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
+            [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -245,13 +246,37 @@
 
 (defn plan [app owner]
   (reify
-    om/IRender
-    (render [_]
-      (let [plan (get-in data state/org-plan-path)
-            org-name (get-in data state/org-name-path)
+
+    ;; We're loading Checkout here because the loading status is not something
+    ;; that we can hope to serialize into the state. It will be stale when we
+    ;; move to a different browser or auto-refresh the page.
+    ;; Making the component responsible for loading Checkout seems like the best
+    ;; way to make sure it's loaded when we need it.
+    om/IInitState
+    (init-state [_]
+      {:checkout-loaded? (stripe/checkout-loaded?)
+       :checkout-loaded-chan (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (let [ch (om/get-state owner [:checkout-loaded-chan])
+            checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (when-not checkout-loaded?
+          (go (<! ch) ;; wait for success message
+              (utils/mlog "Stripe checkout loaded")
+              (om/set-state! owner [:checkout-loaded?] true))
+          (utils/mlog "Loading Stripe checkout")
+          (stripe/load-checkout ch))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (close! (om/get-state owner [:checkout-loaded-chan])))
+
+    om/IRenderState
+    (render-state [_ {:keys [checkout-loaded?]}]
+      (let [plan (get-in app state/org-plan-path)
+            org-name (get-in app state/org-name-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         (if-not plan
+         (if-not (and plan checkout-loaded?)
            [:div.loading-spinner common/spinner]
 
            [:div#billing.plans.pricing.row-fluid
