@@ -137,7 +137,7 @@
     (ajax/ajax-request url method
                        (ajax/transform-opts
                         {:format (json-response-format {:keywords? keywords? :url url :method method})
-                         :response-format response-format
+                         :response-format :json
                          :keywords? keywords?
                          :params params
                          :headers (merge {:Accept "application/json"}
