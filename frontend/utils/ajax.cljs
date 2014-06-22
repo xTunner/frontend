@@ -56,3 +56,21 @@
                                                (put! channel [message :failed (assoc % :context context)]))
                              :finally #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :finished context]))}))))
+
+(defn managed-ajax [method url & {:keys [params keywords?]
+                                  :or {keywords? true}}]
+  (let [channel (chan)]
+    (clj-ajax/ajax-request url method
+                       (clj-ajax/transform-opts
+                        {:format (merge (clj-ajax/json-request-format)
+                                        (json-response-format {:keywords? keywords? :url url :method method}))
+                         :response-format :json
+                         :keywords? keywords?
+                         :params params
+                         :headers (merge {:Accept "application/json"}
+                                         (when (re-find #"^/" url)
+                                           {:X-CSRFToken (utils/csrf-token)}))
+                         :handler #(put! channel (assoc % :status :success))
+                         :error-handler #(put! channel (assoc % :status :failed))
+                         :finally #(close! channel)}))
+    channel))
