@@ -26,7 +26,7 @@
   (not= (get-in plan [:template_properties :type] "trial") "trial"))
 
 (defn can-edit-plan? [plan org-name]
-  (and (utils/inspect (paid? plan)) (not (piggieback? plan org-name))))
+  (and (paid? plan) (not (piggieback? plan org-name))))
 
 (defn trial? [plan]
   (some-> plan :template_properties :type name (= "trial")))
@@ -55,3 +55,14 @@
 
           :else
           (str (time/in-minutes trial-interval) " minutes"))))
+
+;; The template tells how to price the plan
+(def default-template-properties {:price 19 :container_cost 50 :id "p18" :max_containers 1000 :free_containers 1})
+
+(defn container-cost [template-properties containers]
+  (let [{:keys [free_containers container_cost]} template-properties]
+    (max 0 (* container_cost (- containers free_containers)))))
+
+(defn cost [template-properties containers]
+  (+ (:price template-properties)
+     (container-cost template-properties containers)))
