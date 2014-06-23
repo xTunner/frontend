@@ -544,7 +544,7 @@
   [target message {:keys [containers price description base-template-id]} previous-state current-state]
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
-        api-ch (get-in current-state [:comms :controls])
+        api-ch (get-in current-state [:comms :api])
         org-name (get-in current-state state/org-name-path)]
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
@@ -569,7 +569,7 @@
 (defmethod post-control-event! :update-containers-clicked
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
-        api-ch (get-in current-state [:comms :controls])
+        api-ch (get-in current-state [:comms :api])
         org-name (get-in current-state state/org-name-path)]
     (go
      (let [api-result (<! (ajax/managed-ajax
@@ -582,7 +582,7 @@
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
-        api-ch (get-in current-state [:comms :controls])]
+        api-ch (get-in current-state [:comms :api])]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
