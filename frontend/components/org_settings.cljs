@@ -433,13 +433,72 @@
                   :data-bind "click: saveOrganizations"}
                  "Also pay for these organizations"])]]]])]]]))))
 
+(defn billing [app owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:checkout-loaded? (stripe/checkout-loaded?)
+       :checkout-loaded-chan (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (let [ch (om/get-state owner [:checkout-loaded-chan])
+            checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (when-not checkout-loaded?
+          (go (<! ch) ;; wait for success message
+              (utils/mlog "Stripe checkout loaded")
+              (om/set-state! owner [:checkout-loaded?] true))
+          (utils/mlog "Loading Stripe checkout")
+          (stripe/load-checkout ch))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (close! (om/get-state owner [:checkout-loaded-chan])))
+
+    om/IRenderState
+    (render-state [_ {:keys [checkout-loaded?]}]
+      (html
+        (let [card (get-in app state/stripe-card-path)
+              controls-ch (om/get-shared owner [:comms :controls])]
+          (if-not card
+            [:div.loading-spinner common/spinner]
+            [:div
+                [:div.card.row-fluid [:fieldset [:legend.span8 "Card on file"]]]
+                [:div.row-fluid
+                 [:div.offset1.span6
+                  [:table.table.table-condensed
+                   {:data-bind "with: cardInfo"}
+                   [:thead
+                    [:th "Name"]
+                    [:th "Card type"]
+                    [:th "Card Number"]
+                    [:th "Expiry"]]
+                   [:tbody
+                    [:tr
+                     [:td (:name card)]
+                     [:td (:type card)]
+                     [:td "xxxx-xxxx-xxxx-" (:last4 card)]
+                     [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]]]]
+                [:div.row-fluid
+                 [:div.offset1.span7
+                  [:form.form-horizontal
+                   [:div.control-group
+                    [:div.control
+                     (forms/managed-button
+                       [:button#charge-button.btn.btn-primary.submit-button
+                        {:data-success-text "Success",
+                         :data-failed-text "Failed",
+                         :data-loading-text "Updating",
+                         :on-click #(do (put! controls-ch [:update-card-clicked])
+                                        false)
+                         :type "submit"}
+                        "Change credit card"])]]]]]]))))))
+
 (def main-component
   {:users users
    :projects projects
    :plan plan
    :containers containers
    :organizations organizations
-   ;; :billing billing
+   :billing billing
    ;; :cancel cancel
    })
 

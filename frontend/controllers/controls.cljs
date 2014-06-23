@@ -590,3 +590,23 @@
                            :params {:piggieback-orgs selected-piggyback-orgs}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :update-card-clicked
+  [target message {:keys [containers price description base-template-id]} previous-state current-state]
+  (let [stripe-ch (chan)
+        uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (stripe/open-checkout {:panelLabel "Update card"} stripe-ch)
+    (go (let [[message data] (<! stripe-ch)]
+          (condp = message
+            :stripe-checkout-closed (release-button! uuid :idle)
+            :stripe-checkout-succeeded
+            (let [token-id (:id data)]
+              (let [api-result (<! (ajax/managed-ajax
+                                    :put
+                                    (gstring/format "/api/v1/organization/%s/card" org-name)
+                                    :params {:token token-id}))]
+                (put! api-ch [:plan-card (:status api-result) (assoc api-result :context {:org-name org-name})])
+                (release-button! uuid (:status api-result))))
+            nil)))))
