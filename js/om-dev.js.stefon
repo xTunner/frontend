@@ -5,6 +5,7 @@
   "../../components/jquery.cookie/jquery.cookie.js" ;; TODO: used by ab-tests
   "../../components/jquery-placeholder/jquery.placeholder.js" ;; TODO: necessary?
   "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
+  "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js" ;; temporary until apple releases a fix
   "../../components/knockout/build/output/knockout-latest.js" ;; TODO: used by ab-tests
   "../../components/underscore/underscore.js" ;; TODO: used by CI.terminal
 
