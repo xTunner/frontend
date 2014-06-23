@@ -230,5 +230,7 @@
                  (gstring/format "/api/v1/organization/%s/settings" org-name)
                  :org-settings
                  api-ch
-                 :context {:org-name org-name})))
+                 :context {:org-name org-name}))
+    (when (= subpage :organizations)
+      (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)))
   (set-page-title! (str "Org settings - " org-name)))

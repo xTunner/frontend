@@ -97,6 +97,9 @@
     (conj crumbs-path project-branch-crumb-index)))
 
 ;; XXX we probably shouldn't be storing repos in the user...
+(def user-organizations-path (conj user-path :organizations))
+(def user-collaborators-path (conj user-path :collaborators))
+
 (defn repos-path
   "Path for a given set of repos (e.g. all heavybit repos). Login is the username,
    type is :user or :org"
@@ -114,6 +117,9 @@
 (def org-projects-path (conj org-data-path :projects))
 (def org-loaded-path (conj org-data-path :loaded))
 (def org-authorized?-path (conj org-data-path :authorized?))
+(def selected-containers-path (conj org-data-path :selected-containers))
+;; Map of org login to boolean (selected or not selected)
+(def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
 
 (def settings-path [:settings])
 

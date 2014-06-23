@@ -150,12 +150,12 @@
 
 (defmethod api-event [:organizations :success]
   [target message status args state]
-  (assoc-in state [:current-user :organizations] (:resp args)))
+  (assoc-in state state/user-organizations-path (:resp args)))
 
 
 (defmethod api-event [:collaborators :success]
   [target message status args state]
-  (assoc-in state [:current-user :collaborators] (:resp args)))
+  (assoc-in state state/user-collaborators-path (:resp args)))
 
 
 (defmethod api-event [:usage-queue :success]
@@ -464,5 +464,12 @@
   (perfect-audience/track "payer")
   (adroll/record-payer)
   (when (= (:org-name context) (:org-settings-org-name current-state))
-    (put! (get-in current-state [:comms :nav]) [:navigate! (routes/v1-org-settings-subpage {:org (:org-name context)
-                                                                                            :subpage "containers"})])))
+    (let [nav-ch (get-in current-state [:comms :nav])]
+      (put! nav-ch [:navigate! (routes/v1-org-settings-subpage {:org (:org-name context)
+                                                                :subpage "containers"})]))))
+
+(defmethod api-event [:update-plan :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (update-in state state/org-plan-path merge resp)))

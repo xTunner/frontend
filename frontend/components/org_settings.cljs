@@ -1,5 +1,6 @@
 (ns frontend.components.org-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.set]
             [frontend.async :refer [put!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
@@ -46,7 +47,7 @@
                 (when plan
                   (if (plan-model/can-edit-plan? plan org-name)
                     (nav-links [{:page :containers :text "Add containers"}
-                                {:page :organizations :text "Organization"}
+                                {:page :organizations :text "Organizations"}
                                 {:page :billing :text "Billing info"}
                                 {:page :cancel :text "Cancel"}])
                     (nav-links [{:page :plan :text "Choose plan"}])))]])))))
@@ -290,12 +291,154 @@
             plans-component/pricing-features
             plans-component/pricing-faq]))))))
 
+(defn containers [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan (get-in app state/org-plan-path)
+            selected-containers (or (get-in app state/selected-containers-path)
+                                    (:containers plan))
+            controls-ch (om/get-shared owner [:comms :controls])
+            old-total (plan-model/stripe-cost plan)
+            new-total (plan-model/cost (:template_properties plan) selected-containers)]
+        (html
+         (if-not plan
+           [:div.loading-spinner common/spinner]
+
+           [:div#edit-plan
+            [:fieldset
+             [:legend
+              "Our pricing is flexible and scales with you. Add as many containers as you want for $"
+              (get-in plan [:template_properties :container_cost])
+              "/month each."]
+             [:div.main-content
+              [:div.left-section
+               [:div.plan
+                [:h2 "Your Current Plan"]
+                [:p
+                 [:strong "$" old-total] "/ month"]
+                [:ul [:li "Includes " (:containers plan) " containers"]
+                 [:li "Additional containers for $"
+                  (get-in plan [:template_properties :container_cost]) "/month"]
+                 [:li [:strong "No other limits"]]]]]
+              [:div.right-section
+               [:h3 "New total: $" new-total]
+               [:h4
+                "Old total: $" old-total
+                (when (plan-model/grandfathered? plan)
+                  [:span.grandfather
+                   "(grandfathered"
+                   [:i.fa.fa-question-circle
+                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"
+                     :data-bind "tooltip: {animation: false}"}]
+                   ")"])]
+               [:form
+                [:div.container-picker
+                 [:p "You can add or remove containers below; more containers means faster builds and lower queue times."]
+                 [:div.container-slider
+                  [:span (get-in plan [:template_properties :free_containers])]
+                  (let [max (if (< selected-containers 80)
+                              80
+                              (let [num (+ 80 selected-containers)]
+                                (+ num (- 10 (mod num 10)))))]
+                    (list
+                     [:input#rangevalue
+                      {:type "range"
+                       :value selected-containers
+                       :min (get-in plan [:template_properties :free_containers])
+                       :max max
+                       :on-change #(utils/edit-input controls-ch state/selected-containers-path %
+                                                     :value (int (.. % -target -value)))}]
+                     [:span max]))]
+                 [:div.container-input
+                  [:input
+                   {:type "text"
+                    :value selected-containers
+                    :on-change #(utils/edit-input controls-ch state/selected-containers-path %
+                                                  :value (int (.. % -target -value)))}]]]
+                [:fieldset
+                 (forms/managed-button
+                  [:button.btn.btn-large.btn-primary.center
+                   {:data-success-text "Saved",
+                    :data-loading-text "Saving...",
+                    :type "submit"
+                    :on-click #(do (put! controls-ch [:update-containers-clicked {:containers selected-containers}])
+                                   false)}
+                   "Update plan"])
+                 (when (< old-total new-total)
+                   [:span.help-block
+                    "We'll charge your card today, for the prorated difference between your new and old plans."])
+                 (when (> old-total new-total)
+                   [:span.help-block
+                    "We'll credit your account, for the prorated difference between your new and old plans."])]]]]
+             plans-component/pricing-faq]]))))))
+
+(defn organizations [app owner]
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          user-login (:login (get-in app state/user-path))
+          user-orgs (get-in app state/user-organizations-path)
+          plan (get-in app state/org-plan-path)
+          elligible-piggyback-orgs (-> (map :login user-orgs)
+                                       (set)
+                                       (disj org-name)
+                                       (conj user-login)
+                                       (sort))
+          ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
+          ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
+          ;; selected-orgs:           {"org-a" false "org-c" true}
+          ;; to return #{"org-b" "org-c"}
+          selected-piggyback-orgs (set (keys (filter last
+                                                     (merge (zipmap (:piggieback_orgs plan) (repeat true))
+                                                            (get-in app state/selected-piggyback-orgs-path)))))
+          controls-ch (om/get-shared owner [:comms :controls])]
+      [:div.row-fluid
+       [:div.span8
+        [:fieldset
+         [:legend "Extra organizations"]
+         [:p
+          "Your plan covers all repositories (including forks) in the "
+          [:strong org-name]
+          " organization by default."]
+         [:p "You can let any GitHub organization you belong to, including personal accounts, piggyback on your plan. Projects in your piggyback organizations will be able to run builds on your plan."]
+         [:p
+          [:span.label.label-info "Note:"]
+          " Members of the piggyback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
+         (if-not user-orgs
+           [:div "Loading organization list..."]
+           [:div.row-fluid
+            [:div.span12
+             [:form
+              [:div.controls
+               (for [org elligible-piggyback-orgs]
+                 [:div.control
+                  [:label.checkbox
+                   [:input
+                    {:value org
+                     :checked (contains? selected-piggyback-orgs org)
+                     ;; Note: this is broken if the org is already in piggieback_orgs, need to explicitly pass the value :(
+                     :on-change #(utils/toggle-input controls-ch (conj state/selected-piggyback-orgs-path org) %)
+                     :type "checkbox"}]
+                   org]])]
+              [:div.form-actions.span7
+               (forms/managed-button
+                [:button.btn.btn-large.btn-primary
+                 {:data-success-text "Saved",
+                  :data-loading-text "Saving...",
+                  :type "submit",
+                  :on-click #(do (put! controls-ch [:save-piggyback-orgs-clicked {:org-name org-name
+                                                                                  :selected-piggyback-orgs selected-piggyback-orgs}])
+                                 false)
+                  :data-bind "click: saveOrganizations"}
+                 "Also pay for these organizations"])]]]])]]]))))
+
 (def main-component
   {:users users
    :projects projects
    :plan plan
-   ;; :containers containers
-   ;; :organizations organizations
+   :containers containers
+   :organizations organizations
    ;; :billing billing
    ;; :cancel cancel
    })

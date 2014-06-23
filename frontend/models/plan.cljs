@@ -66,3 +66,12 @@
 (defn cost [template-properties containers]
   (+ (:price template-properties)
      (container-cost template-properties containers)))
+
+(defn stripe-cost
+  "Normalizes the Stripe amount on the plan to dollars."
+  [plan]
+  (/ (:amount plan) 100))
+
+(defn grandfathered? [plan]
+  (< (stripe-cost plan)
+     (cost (:template-properties plan) (:containers plan))))
