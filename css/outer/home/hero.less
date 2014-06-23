@@ -28,6 +28,82 @@
     .span4 {
       text-align: center;
     }
+    @animation_duration : 800ms;
+    @animation_delay : 800ms;
+    @cascade_delay : 50ms;
+    .stories-procedure {
+      .step {
+        .direction,
+        .pin {
+          animation: flash @animation_duration ; 
+          -webkit-animation: flash @animation_duration; 
+        }
+        .track {
+          animation: flash-track @animation_duration; 
+          -webkit-animation: flash-track @animation_duration; 
+        }
+      }
+      .step:nth-of-type(1) {
+        .direction,
+        .pin,
+        .track {
+          animation-delay: @animation_delay + (@cascade_delay * 1); 
+          -webkit-animation-delay: @animation_delay + (@cascade_delay * 1); 
+        }
+      }
+      .step:nth-of-type(2) {
+        .direction,
+        .pin,
+        .track {
+          animation-delay: @animation_delay + (@cascade_delay * 2); 
+          -webkit-animation-delay: @animation_delay + (@cascade_delay * 2); 
+        }
+      }
+      .step:nth-of-type(3) {
+        .direction,
+        .pin,
+        .track {
+          animation: none; 
+          -webkit-animation: none; 
+        }
+      }
+      .step:nth-of-type(4) {
+        .direction,
+        .pin,
+        .track {
+          animation-delay: @animation_delay + (@cascade_delay * 3); 
+          -webkit-animation-delay: @animation_delay + (@cascade_delay * 3); 
+        }
+      }
+      .step:nth-of-type(5) {
+        .direction,
+        .pin,
+        .track {
+          animation-delay: @animation_delay + (@cascade_delay * 4);
+          -webkit-animation-delay: @animation_delay + (@cascade_delay * 4);
+        }
+      }
+    }
+    @keyframes flash {
+      0% { stroke-width: 0; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 0; }
+    }
+    @-webkit-keyframes flash {
+      0% { stroke-width: 0; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 0; }
+    }
+    @keyframes flash-track {
+      0% { stroke-width: 2; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 2; }
+    }
+    @-webkit-keyframes flash-track {
+      0% { stroke-width: 2; }
+      50% { stroke-width: 10; }
+      100% { stroke-width: 2; }
+    }
   }
 
   .hero-unit-cta {
