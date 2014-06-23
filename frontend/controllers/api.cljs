@@ -1,6 +1,7 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
             [frontend.async :refer [put!]]
+            [frontend.analytics :as analytics]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -8,7 +9,6 @@
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils.mixpanel :as mixpanel]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
@@ -316,8 +316,8 @@
   [target message status {:keys [resp context]} previous-state current-state]
   ;; This is not ideal, but don't see a better place to put this
   (when (first (remove :following resp))
-    (mixpanel/track "Saw invitations prompt" {:first_green_build true
-                                              :project (:project-name context)})))
+    (analytics/track "Saw invitations prompt" {:first_green_build true
+                                               :project (:project-name context)})))
 
 
 (defmethod api-event [:invite-github-users :success]
@@ -357,7 +357,7 @@
 
 (defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
-  (js/_gaq.push ["_trackEvent" "Repos" "Add"])
+  (analytics/ga-track "Repos" "Add")
   (if-let [first-build (get-in args [:resp :first_build])]
     (let [nav-ch (get-in current-state [:comms :nav])
           build-path (-> first-build

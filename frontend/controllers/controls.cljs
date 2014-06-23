@@ -6,7 +6,7 @@
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
             [frontend.state :as state]
-            [frontend.utils.mixpanel :as mixpanel]
+            [frontend.analytics :as analytics]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog]]
             [goog.string :as gstring]
@@ -496,15 +496,15 @@
               (get-in current-state [:comms :api])
               :context {:project-name project-name}
               :params invitees)
-  (mixpanel/track "Sent invitations" {:first_green_build true
-                                      :project project-name
-                                      :users (map :login invitees)})
-  (doseq [u invitees]
-    (mixpanel/track "Sent invitation" {:first_green_build true
+  (analytics/track "Sent invitations" {:first_green_build true
                                        :project project-name
-                                       :login (:login u)
-                                       :id (:id u)
-                                       :email (:email u)})))
+                                       :users (map :login invitees)})
+  (doseq [u invitees]
+    (analytics/track "Sent invitation" {:first_green_build true
+                                        :project project-name
+                                        :login (:login u)
+                                        :id (:id u)
+                                        :email (:email u)})))
 
 
 (defmethod post-control-event! :report-build-clicked
