@@ -4,16 +4,6 @@
     .environment{data-bind: "if: showEnvironment, click: toggle_show_admin_panel, css: environmentColor", role: "button"}
       %strong{data-bind: "text: environment"}
     / /ko
-    .metrics{data-bind: "click: toggleExpanded"}
-      %span{data-bind: "text: '&nbsp;' + response_data().length"}
-      %strong requests
-      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0) + 'ms'"}
-      %strong client
-      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0) + 'ms'"}
-      %strong server
-      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0) + 'ms /'"}
-      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0) + ' queries'"}
-      %strong mongo
     .options
       %a{href: "/admin"} admin
       %a{href: "/admin/users"} users
@@ -25,6 +15,16 @@
         %a{data-bind: "click: function() { window.location.search = '?use-local-assets=true'}"} local assets on
       %a{data-bind: "click: function() { window.location.search = '?use-om=true'}"} use om
       %a{data-bind: "click: clearResponses"} clear stats
+    .metrics{data-bind: "click: toggleExpanded"}
+      %span{data-bind: "text: '&nbsp;' + response_data().length"}
+      %strong requests
+      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.client_latency}, 0) + 'ms'"}
+      %strong client
+      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.circle_latency}, 0) + 'ms'"}
+      %strong server
+      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_latency}, 0) + 'ms /'"}
+      %span{data-bind: "text: '&nbsp;' + _.reduce(response_data(), function(t,x) {return t + x.query_count}, 0) + ' queries'"}
+      %strong mongo
   <!-- ko if: expanded -->
     <!-- ko if: VM.browser_settings.settings().show_admin_panel -->
       .admin-stats

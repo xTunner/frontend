@@ -78,6 +78,19 @@
           margin-left: 0
         }
       }
+      .om-org-user {
+        display: flex;
+      }
+      .om-org-user-projects-container {
+        flex: 1;
+      }
+      .om-org-user-projects {
+        display: flex;
+        flex-wrap: wrap;
+        .om-org-user-project {
+          flex: 1 1 50%;
+        }
+      }
     }
     .gravatar {
       border: 2px solid @blueDarker;
@@ -156,7 +169,7 @@
           width: 50px;
           text-align: center;
           padding: 4px 10px;
-          background-color: #d4d4d4;
+          border-radius: 4px;
           .center;
         }
       }
