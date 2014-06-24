@@ -32,7 +32,7 @@
 (defmulti post-control-event!
   (fn [target message args previous-state current-state] message))
 
-;; --- Navigation Mutlimethod Implementations ---
+;; --- Navigation Multimethod Implementations ---
 
 (defmethod control-event :default
   [target message args state]
