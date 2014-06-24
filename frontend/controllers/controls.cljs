@@ -161,7 +161,20 @@
                                                   250)))]
       (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
       (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-      (.play scroller))))
+      (.play scroller)))
+  (when (not= (get-in previous-state state/current-container-path)
+              container-id)
+    (let [container (get-in current-state (state/container-path container-id))
+          last-action (-> container :actions last)]
+      (when (and (:has_output last-action)
+                 (action-model/visible? last-action)
+                 (:missing-pusher-output last-action))
+        (api/get-action-output {:vcs-url (:vcs_url (get-in current-state state/build-path))
+                                :build-num (:build_num (get-in current-state state/build-path))
+                                :step (:step last-action)
+                                :index (:index last-action)
+                                :output-url (:output_url last-action)}
+                               (get-in current-state [:comms :api]))))))
 
 
 (defmethod control-event :action-log-output-toggled

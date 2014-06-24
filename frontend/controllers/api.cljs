@@ -144,7 +144,8 @@
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (doseq [action (mapcat :actions (get-in current-state state/containers-path))
-              :when (action-model/visible? action)]
+              :when (and (:has_output action)
+                         (action-model/visible? action))]
         (api/get-action-output {:vcs-url (get-in args [:resp :vcs_url])
                                 :build-num build-num
                                 :step (:step action)
