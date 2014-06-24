@@ -530,6 +530,17 @@
   (intercom/raise-dialog (get-in current-state [:comms :errors])
                          (gstring/format "I think I found a bug in Circle at %s" build-url)))
 
+(defmethod post-control-event! :cancel-build-clicked
+  [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
+  (let [api-ch (-> current-state :comms :api)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+               :cancel-build
+               api-ch
+               :context {:build-id build-id})))
+
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]

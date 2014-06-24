@@ -125,6 +125,18 @@
                     (:branch build))
           (assoc-in state/containers-path containers)))))
 
+
+(defmethod api-event [:cancel-build :success]
+  [target message status args state]
+  (let [build-id (get-in args [:context :build-id])]
+    (if-not (= (build-model/id (get-in state state/build-path))
+               build-id)
+      state
+      (update-in state state/build-path merge (:resp args)))))
+
+
+
+
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
