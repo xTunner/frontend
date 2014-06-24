@@ -5,6 +5,7 @@
             [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.components.forms :refer [release-button!]]
+            [frontend.models.action :as action-model]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
@@ -164,13 +165,13 @@
 
 
 (defmethod control-event :action-log-output-toggled
-  [target message {:keys [index step]} state]
-  (update-in state (state/show-action-output-path index step) not))
+  [target message {:keys [index step value]} state]
+  (assoc-in state (state/show-action-output-path index step) value))
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
   (let [action (get-in current-state (state/action-path index step))]
-    (when (and (:show-output action)
+    (when (and (action-model/visible? action)
                (:has_output action)
                (not (:output action)))
       (let [api-ch (get-in current-state [:comms :api])
