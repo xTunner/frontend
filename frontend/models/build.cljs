@@ -145,8 +145,28 @@
 (defn config-errors? [build]
   (:circle_yml build))
 
+(defn fill-steps
+  "Canceled builds can have missing intermediate steps"
+  [build]
+  (let [parallel (or (:parallel build) 1)
+        last-step-index (-> build :steps last :actions first :step)]
+    (if (= last-step-index (dec (count (:steps build))))
+      build
+      (let [step-by-step-index (reduce (fn [step-by-step step]
+                                         (assoc step-by-step
+                                           (-> step :actions first :step) step))
+                                       {} (:steps build))]
+        (update-in build [:steps] (fn [steps]
+                                    (vec (map (fn [i]
+                                                (or (get step-by-step-index i)
+                                                    {:actions [{:index 0
+                                                                :step i
+                                                                :status "running"
+                                                                :filler-action true}]}))
+                                              (range (inc last-step-index))))))))))
+
 (defn containers [build]
-  (let [steps (:steps build)
+  (let [steps (-> build fill-steps :steps)
         parallel (:parallel build)
         actions (reduce (fn [groups step]
                           (map (fn [group action]
