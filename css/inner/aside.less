@@ -315,13 +315,17 @@
                 transition: margin 100ms 100ms, opacity 100ms 100ms;
               }
               &:hover {
-                path {
-                  opacity: 1;
+                &:nth-child(-n + 5) {
+                  path {
+                    opacity: 1;
+                  }
                 }
               }
-            }
-            path {
-              opacity: .5;
+              &:nth-last-of-type(1) path {opacity: .89}
+              &:nth-last-of-type(2) path {opacity: .55}
+              &:nth-last-of-type(3) path {opacity: .34}
+              &:nth-last-of-type(4) path {opacity: .21}
+              &:nth-last-of-type(5) path {opacity: .13}
             }
           }
         }
