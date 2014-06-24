@@ -45,7 +45,8 @@
               [:a
                {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (build-model/pretty-start-time build)]]
+               (when (:start_time build)
+                 (build-model/pretty-start-time build))]]
              [:td.recent-time-duration
               [:a
                {:title (build-model/duration build)
