@@ -56,7 +56,6 @@
     (append-cycle owner :loading)
     (let [{:keys [uuid channel]} (register-channel! owner)]
       (binding [frontend.async/*uuid* uuid]
-        frontend.async/*uuid*
         (go (append-cycle owner (<! channel))
             (deregister-channel! owner uuid))
         (apply handler args)))))
