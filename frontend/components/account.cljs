@@ -85,7 +85,8 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage     (get-in app state/account-subpage-path)
+      (let [subpage     (or (get-in app state/account-subpage-path)
+                            :notifications)
             coms        {:notifications notifications}
             subpage-com (get coms subpage)]
         (html
@@ -103,7 +104,6 @@
              [:a {:href (routes/v1-account-subpage {:subpage "plans"})} "Plan Pricing"]]]]
           [:div.row (common/flashes)]
           [:div.settings-item
-           {:data-bind "with: current_user"}
            [:div.settings-item-inner
             [:div#subpage
              (when subpage-com
