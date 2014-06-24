@@ -89,6 +89,21 @@ CI.inner.User = class User extends CI.inner.Obj
       current_repos = if @repos then @repos() else []
       current_repos.filter (repo) -> repo.name.toLowerCase().indexOf(current_filter) != -1
 
+    @activity_setting = @komp
+      deferEvaluation: true
+      read: ->
+        if VM.browser_settings.settings().show_all_branches
+          "All Branch Activity"
+        else
+          "Your Branch Activity"
+      write: (val) ->
+        if val is "All Branch Activity"
+          VM.browser_settings.set_setting("show_all_branches", true)
+        else
+          VM.browser_settings.set_setting("show_all_branches", false)
+        val
+      owner: @
+
   missing_scopes: () =>
     user_scopes = ['user', 'user:email']
 

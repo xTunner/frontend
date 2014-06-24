@@ -30,9 +30,8 @@
 %nav.aside-left-nav.context
   .aside-activity.open
     .wrapper
-      .toggle-all-branches
-        %button{data-bind: "css: {active: !VM.browser_settings.settings().show_all_branches}, click: toggle_show_all_branches"} You
-        %button{data-bind: "css: {active:  VM.browser_settings.settings().show_all_branches}, click: toggle_show_all_branches"} All
+      %header
+        %select{name: "toggle-all-branches", data-bind: "options: ['Your Branch Activity', 'All Branch Activity'], value: activity_setting"}
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         %ul{data-bind: "css: {open: !branches_collapsed()}"}
           %li
