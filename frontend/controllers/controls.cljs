@@ -590,3 +590,17 @@
                            :params {:piggieback-orgs selected-piggyback-orgs}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))))
+
+(defmethod control-event :preferences-updated
+  [target message args state]
+  (update-in state state/user-path merge args))
+
+(defmethod post-control-event! :preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
+            :selected_email    (get-in current-state (conj state/user-path :selected_email))}))

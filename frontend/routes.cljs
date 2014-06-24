@@ -32,6 +32,10 @@
 (defn open-to-add-projects! [nav-ch]
   (put! nav-ch [:add-projects]))
 
+(defn open-to-account!
+  [nav-ch subpage]
+  (put! nav-ch [:account {:subpage subpage}]))
+
 ;; XXX validate subpage, send to 404
 (defn open-to-project-settings! [nav-ch org repo subpage]
   (let [project-name (str org "/" repo)]
@@ -80,5 +84,9 @@
       (open-to-org-settings! nav-ch org (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
+    (defroute v1-account "/account" []
+      (open-to-account! nav-ch))
+    (defroute v1-account-subpage "/account/:subpage" [subpage]
+      (open-to-account! nav-ch (keyword subpage)))
     (defroute v1-root "/" []
       (open-to-dashboard! nav-ch))))

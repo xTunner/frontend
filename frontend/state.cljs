@@ -141,3 +141,4 @@
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 
 (def flash-path [:render-context :flash])
+(def account-subpage-path [:account-settings-subpage])

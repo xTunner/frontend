@@ -1,6 +1,7 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.account :as account]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
@@ -30,12 +31,13 @@
 
 (defn dominant-component [app-state]
   (condp = (get-in app-state [:navigation-point])
-    :build build-com/build
-    :dashboard dashboard/dashboard
-    :add-projects add-projects/add-projects
-    :loading loading
+    :build            build-com/build
+    :dashboard        dashboard/dashboard
+    :add-projects     add-projects/add-projects
+    :loading          loading
     :project-settings project-settings/project-settings
-    :org-settings org-settings/org-settings))
+    :org-settings     org-settings/org-settings
+    :account          account/account))
 
 (defn app [app owner]
   (reify
