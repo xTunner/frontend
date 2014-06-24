@@ -47,14 +47,35 @@
       height: @tile;
       box-shadow: 0 -1px @grayBoxBorder inset;
       padding: @em;
+      position: relative;
       select {
-        background: none;
+        .box-sizing(content-box);
+        -webkit-appearance: none; // gets rid of ugly shadow in safari
         border: none;
         outline: none;
-        margin: 0;
-        height: 100%;
+        margin: 0 (-@tile / 2) 0 0;
+        padding: @em 0 @em @em;
+        height: @em;
+        line-height: @em;
         &:hover {
           color: @blueLight;
+          + .select-arrow {
+            color: @blueLight;
+          }
+        }
+      }
+      .select-arrow {
+        .flexy();
+        text-align: center;
+        position: absolute;
+        width: @em;
+        height: @em;
+        top: 28px;
+        right: 28px;
+        pointer-events: none;
+        i {
+          width: @em;
+          line-height: round(@em * .9);
         }
       }
     }

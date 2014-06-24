@@ -41,6 +41,8 @@
     .wrapper
       %header
         %select{name: "toggle-all-branches", data-bind: "options: ['Your Branch Activity', 'All Branch Activity'], value: activity_setting"}
+        .select-arrow
+          %i.fa.fa-caret-down
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         %ul{data-bind: "css: {open: !branches_collapsed()}"}
           %li
