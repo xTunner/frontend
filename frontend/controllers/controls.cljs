@@ -610,3 +610,16 @@
                 (put! api-ch [:plan-card (:status api-result) (assoc api-result :context {:org-name org-name})])
                 (release-button! uuid (:status api-result))))
             nil)))))
+
+(defmethod post-control-event! :save-invoice-data-clicked
+  [target message data previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                              :put
+                              (gstring/format "/api/v1/organization/%s/plan" org-name)
+                              :params data))]
+        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))

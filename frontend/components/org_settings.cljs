@@ -433,7 +433,7 @@
                   :data-bind "click: saveOrganizations"}
                  "Also pay for these organizations"])]]]])]]]))))
 
-(defn billing [app owner]
+(defn- billing-card [app owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -452,7 +452,6 @@
     om/IWillUnmount
     (will-unmount [_]
       (close! (om/get-state owner [:checkout-loaded-chan])))
-
     om/IRenderState
     (render-state [_ {:keys [checkout-loaded?]}]
       (html
@@ -461,36 +460,112 @@
           (if-not (and card checkout-loaded?)
             [:div.loading-spinner common/spinner]
             [:div
-                [:div.card.row-fluid [:fieldset [:legend.span8 "Card on file"]]]
-                [:div.row-fluid
-                 [:div.offset1.span6
-                  [:table.table.table-condensed
-                   {:data-bind "with: cardInfo"}
-                   [:thead
-                    [:th "Name"]
-                    [:th "Card type"]
-                    [:th "Card Number"]
-                    [:th "Expiry"]]
-                   [:tbody
-                    [:tr
-                     [:td (:name card)]
-                     [:td (:type card)]
-                     [:td "xxxx-xxxx-xxxx-" (:last4 card)]
-                     [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]]]]
-                [:div.row-fluid
-                 [:div.offset1.span7
-                  [:form.form-horizontal
-                   [:div.control-group
-                    [:div.control
-                     (forms/managed-button
-                       [:button#charge-button.btn.btn-primary.submit-button
-                        {:data-success-text "Success",
-                         :data-failed-text "Failed",
-                         :data-loading-text "Updating",
-                         :on-click #(do (put! controls-ch [:update-card-clicked])
-                                        false)
-                         :type "submit"}
-                        "Change credit card"])]]]]]]))))))
+              [:div.card.row-fluid [:legend.span8 "Card on file"]]
+              [:div.row-fluid
+               [:div.offset1.span6
+                [:table.table.table-condensed
+                 {:data-bind "with: cardInfo"}
+                 [:thead
+                  [:th "Name"]
+                  [:th "Card type"]
+                  [:th "Card Number"]
+                  [:th "Expiry"]]
+                 [:tbody
+                  [:tr
+                   [:td (:name card)]
+                   [:td (:type card)]
+                   [:td "xxxx-xxxx-xxxx-" (:last4 card)]
+                   [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]]]]
+              [:div.row-fluid
+               [:div.offset1.span7
+                [:form.form-horizontal
+                 [:div.control-group
+                  [:div.control
+                   (forms/managed-button
+                     [:button#charge-button.btn.btn-primary.submit-button
+                      {:data-success-text "Success",
+                       :data-failed-text "Failed",
+                       :data-loading-text "Updating",
+                       :on-click #(do (put! controls-ch [:update-card-clicked])
+                                      false)
+                       :type "submit"}
+                      "Change credit card"])]]]]]]))))))
+
+(defn- billing-invoice-data [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [controls-ch (om/get-shared owner [:comms :controls])
+              plan-data (get-in app state/org-plan-path)
+              b-email (:billing_email plan-data)
+              b-name (:billing_name plan-data)
+              b-extra (:extra_billing_data plan-data)]
+          (if-not plan-data
+            [:div.loading-spinner common/spinner]
+            [:div.invoice-data.row-fluid
+             [:fieldset
+              [:legend.span8 "Invoice data"]
+              [:form.form-horizontal.span8
+               [:div.control-group
+                [:label.control-label {:for "billing_email"} "Billing email"]
+                [:div.controls
+                 [:input.span10
+                  {:value b-email,
+                   :name "billing_email",
+                   :type "text"
+                   :on-change #(utils/edit-input controls-ch
+                                                 (conj state/org-plan-path :billing_email)
+                                                 %
+                                                 :value (.. % -target -value))}]]]
+               [:div.control-group
+                [:label.control-label {:for "billing_name"} "Billing name"]
+                [:div.controls
+                 [:input.span10
+                  {:value b-name
+                   :name "billing_name",
+                   :type "text"
+                   :on-change #(utils/edit-input controls-ch
+                                                 (conj state/org-plan-path :billing_name)
+                                                 %
+                                                 :value (.. % -target -value))}]]]
+               [:div.control-group
+                [:label.control-label
+                 {:for "extra_billing_data"}
+                 "Extra data to include in your invoice"]
+                [:div.controls
+                 [:textarea.span10
+                  {:value b-extra
+                   :placeholder
+                   "Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.",
+                   :rows 3
+                   :name "extra_billing_data"
+                   :on-change #(utils/edit-input controls-ch
+                                                 (conj state/org-plan-path :extra_billing_data)
+                                                 %
+                                                 :value (.. % -target -value))}]]]
+               [:div.control-group
+                [:div.controls
+                 (forms/managed-button
+                   [:button.btn.btn-primary
+                    {:data-success-text "Saved invoice data",
+                     :data-loading-text "Saving invoice data...",
+                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked
+                                                       {:billing-email b-email
+                                                        :billing-name b-name
+                                                        :extra-billing-data b-extra}])
+                                    false)
+                     :type "submit",}
+                    "Save invoice data"])]]]]]))))))
+
+(defn billing [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+          (om/build billing-card app)
+          (om/build billing-invoice-data app)]))))
 
 (def main-component
   {:users users
