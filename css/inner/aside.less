@@ -179,11 +179,16 @@
         height: @tile;
       }
     }
-    // &:nth-child(2) > i {transition-delay: @cascade_delay * 1;} //
-    // &:nth-child(3) > i {transition-delay: @cascade_delay * 2;} //
-    // &:nth-child(4) > i {transition-delay: @cascade_delay * 3;} // hold off on this animation until there's multi accordions
-    // &:nth-child(5) > i {transition-delay: @cascade_delay * 4;} //
-    // &:nth-child(6) > i {transition-delay: @cascade_delay * 5;} //
+    &:nth-child(2)  > i {transition-delay: @cascade_delay *  1;}
+    &:nth-child(3)  > i {transition-delay: @cascade_delay *  2;}
+    &:nth-child(4)  > i {transition-delay: @cascade_delay *  3;}
+    &:nth-child(5)  > i {transition-delay: @cascade_delay *  4;}
+    &:nth-child(6)  > i {transition-delay: @cascade_delay *  5;}
+    &:nth-child(7)  > i {transition-delay: @cascade_delay *  6;}
+    &:nth-child(8)  > i {transition-delay: @cascade_delay *  7;}
+    &:nth-child(9)  > i {transition-delay: @cascade_delay *  8;}
+    &:nth-child(10) > i {transition-delay: @cascade_delay *  9;}
+    &:nth-child(11) > i {transition-delay: @cascade_delay * 10;}
     i {
       min-width: @baseFontSize;
       margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
