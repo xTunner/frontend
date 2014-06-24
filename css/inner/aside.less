@@ -13,16 +13,16 @@
   .app-aside-left {
     .flex(0, 0);
     .flexy();
-    .tooltip {                  //
-      font-size: @baseFontSize; //
-      .tooltip-inner {          //
-        border-radius: 2em;     //
-        padding: .5em 1em;      // BS RESET
-      }                         //
-      .tooltip-arrow {          //
-        display: none;          //
-      }                         //
-    }                           //
+    .tooltip {                    //
+      font-size: @baseFontSize;   //
+      .tooltip-inner {            //
+        border-radius: (@em * 2); //
+        padding: (@em / 2) @em;   // BS RESET
+      }                           //
+      .tooltip-arrow {            //
+        display: none;            //
+      }                           //
+    }                             //
   }
   .aside-left-nav {
     .flex(0, 0);
@@ -46,7 +46,7 @@
       .flexy(center, space-between);
       height: @tile;
       box-shadow: 0 -1px @grayBoxBorder inset;
-      padding: 1em;
+      padding: @em;
       select {
         background: none;
         border: none;
@@ -281,7 +281,7 @@
       .flexy();
       .box-sizing(border-box);
       width: (@aside_nav_width - @activity_scroll);
-      line-height: 1em; // BS RESET
+      line-height: @em; // BS RESET
       &:hover {
         .status {
           a {
