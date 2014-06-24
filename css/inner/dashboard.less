@@ -88,15 +88,15 @@
       display: block;
       position: absolute;
       content: attr(title);
-      left: (@baseFontSize / 2);
+      left: (@fontSizeSmall / 2);
       top: ~"calc(50% - @{half_height})";
-      width: (@tile - @baseFontSize);
+      width: (@tile - @fontSizeSmall);
       text-align: center;
       background: @grayLight;
       border-radius: @half_height;
       color: @white;
       font-weight: bold;
-      font-size: 12px;
+      font-size: @fontSizeSmall;
       text-transform: capitalize;
     }
     &.pass:before {background: @green}
