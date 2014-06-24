@@ -12,11 +12,9 @@
 .recent-log {
   word-break: break-all;
 }
-#dashboard {
-  margin-top: -.5em;
-}
 .recent-builds-table {
   width: 100%;
+  margin-top: 1em;
   tbody {
     tr {
       border-bottom-style: dotted;
@@ -36,8 +34,10 @@
     color: @gray;
     white-space: nowrap;
     text-align: left;
-    padding: 0 .5em .5em;
-    height: @tile - @baseFontSize - 1px;
+    padding: 0 .5em 2em;
+    // height: (@tile - @baseFontSize - (@baseFontSize / 2) - 1px);
+    height: @baseFontSize;
+    line-height: @baseFontSize;
     font-weight: bold;
     &:first-child {
       padding-left: @baseFontSize;
