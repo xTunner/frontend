@@ -18,6 +18,17 @@ body {
     height: 100vh;
     padding: 0;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background: @grayLighter;
+      }
+    }
   }
   .main-head {
     .flexy(column);
