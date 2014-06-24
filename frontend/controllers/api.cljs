@@ -1,5 +1,6 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
+            [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
@@ -135,8 +136,6 @@
       (update-in state state/build-path merge (:resp args)))))
 
 
-
-
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
@@ -146,11 +145,12 @@
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (doseq [action (mapcat :actions (get-in current-state state/containers-path))
               :when (action-model/visible? action)]
-        ;; XXX: should this fetch the action logs itself creating controls events?
-        (put! (get-in current-state [:comms :controls])
-              [:action-log-output-toggled (-> action
-                                              (select-keys [:step :index])
-                                              (assoc :value true))])))))
+        (api/get-action-output {:vcs-url (get-in args [:resp :vcs_url])
+                                :build-num build-num
+                                :step (:step action)
+                                :index (:index action)
+                                :output-url (:output_url action)}
+                               (get-in current-state [:comms :api]))))))
 
 
 (defmethod api-event [:repos :success]

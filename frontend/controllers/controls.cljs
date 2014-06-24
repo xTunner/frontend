@@ -170,24 +170,17 @@
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
-  (let [action (get-in current-state (state/action-path index step))]
+  (let [action (get-in current-state (state/action-path index step))
+        build (get-in current-state state/build-path)]
     (when (and (action-model/visible? action)
                (:has_output action)
                (not (:output action)))
-      (let [api-ch (get-in current-state [:comms :api])
-            build (get-in current-state state/build-path)
-            url (if (:output_url action)
-                  (:output_url action)
-                  (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
-                                  (vcs-url/project-name (:vcs_url build))
-                                  (:build_num build)
-                                  step
-                                  index))]
-        (ajax/ajax :get
-                   url
-                   :action-log
-                   api-ch
-                   :context args)))))
+      (api/get-action-output {:vcs-url (:vcs_url build)
+                              :build-num (:build_num build)
+                              :step step
+                              :index index
+                              :output-url (:output_url action)}
+                             (get-in current-state [:comms :api])))))
 
 
 (defmethod control-event :selected-project-parallelism
