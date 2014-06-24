@@ -6,12 +6,21 @@
   %a.aside-item{href: "/docs", data-bind: "tooltip: {title: 'Documentation', placement: 'right', trigger: 'hover'}"}
     %i.fa.fa-copy
     %span Documentation
+  %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog", data-toggle: "modal", data-target: "#inviteForm"}
+    %i.fa.fa-bug
+    %span Report Bug
+  %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank", data-bind: "tooltip: {title: 'Live Support', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-comments
+    %span Live Support
   %a.aside-item#add-projects{href: "/add-projects", data-bind: "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
     %i.fa.fa-plus-circle
     %span Add Projects
   %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}", data-toggle: "modal", data-target: "#inviteForm"}
     %i.fa.fa-envelope-o
     %span Invite Teammate
+  %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-cog
+    %span Settings
   %a.aside-item{href: "#", data-bind: "click: toggle_aside_expanded, tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"}
     / ko if: VM.browser_settings.settings().aside_is_slim
     %i.fa.fa-long-arrow-right
