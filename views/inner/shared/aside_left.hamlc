@@ -3,7 +3,7 @@
   %a.aside-item.logo{href: "/", data-bind: "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"}
     .logomark
       != HAML.ico(n:'logo')
-  %a.aside-item#add-projects{href: "/docs", data-bind: "tooltip: {title: 'Documentation', placement: 'right', trigger: 'hover'}"}
+  %a.aside-item{href: "/docs", data-bind: "tooltip: {title: 'Documentation', placement: 'right', trigger: 'hover'}"}
     %i.fa.fa-copy
     %span Documentation
   %a.aside-item#add-projects{href: "/add-projects", data-bind: "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
