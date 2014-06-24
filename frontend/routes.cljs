@@ -39,8 +39,12 @@
                                      :org org-id
                                      :repo repo-id}])))
 
+(defn open-to-landing! [nav-ch]
+  (put! nav-ch [:landing]))
+
 (defn define-routes! [app]
-  (let [nav-ch (get-in @app [:comms :nav])]
+  (let [nav-ch (get-in @app [:comms :nav])
+        authenticated (boolean (:current-user @app))]
     (defroute v1-org-dashboard "/gh/:org" {:as params}
       (open-to-dashboard! nav-ch params))
     (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
@@ -66,4 +70,6 @@
       (open-to-add-projects! nav-ch))
     (defroute v1-root "/"
       [org-id repo-id build-num]
-      (open-to-dashboard! nav-ch))))
+      (if authenticated
+        (open-to-dashboard! nav-ch)
+        (open-to-landing! nav-ch)))))

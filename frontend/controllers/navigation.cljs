@@ -140,6 +140,12 @@
           (state-utils/reset-current-project %)
           %))))
 
+(defmethod navigated-to :landing
+  [history-imp navigation-point _ state]
+  (assoc state
+         :navigation-point navigation-point
+         :navigation-data {}))
+
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?
 (defmethod post-navigated-to! :project-settings

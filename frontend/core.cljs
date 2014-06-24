@@ -130,11 +130,9 @@
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
        (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
 
-
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
-        target-name "app"
-        container   (sel1 top-level-node (str "#" target-name))
+        container   (sel1 top-level-node :body)
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
