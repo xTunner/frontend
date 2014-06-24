@@ -3,10 +3,13 @@
 (defn initial-state []
   {:environment "development"
    :settings {:projects {}            ; hash of project-id to settings
+              :organizations  {:circleci  {:plan {}}}
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
    :navigation-point :loading
+   :navigation-data nil
+   :navigation-settings {}
    :current-user nil
    :crumbs []
    :current-repos []
@@ -15,6 +18,8 @@
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
+   :org-settings-subpage nil
+   :org-settings-org-name nil
    :dashboard-data {:branch nil
                     :repo nil
                     :org nil}
@@ -38,7 +43,11 @@
                                       ;; for each build to have its own copy of github-users, especially
                                       ;; since it's used so infrequently and goes stale fast.
                                       :github-users nil}}
-   :current-organization nil})
+   :current-org-data {:plan nil
+                      :projects nil
+                      :users nil
+                      :name nil}
+   :instrumentation []})
 
 (def user-path [:current-user])
 
@@ -88,6 +97,9 @@
     (conj crumbs-path project-branch-crumb-index)))
 
 ;; XXX we probably shouldn't be storing repos in the user...
+(def user-organizations-path (conj user-path :organizations))
+(def user-collaborators-path (conj user-path :collaborators))
+
 (defn repos-path
   "Path for a given set of repos (e.g. all heavybit repos). Login is the username,
    type is :user or :org"
@@ -95,3 +107,37 @@
 
 (defn repo-path [login type repo-index]
   (conj (repos-path login type) repo-index))
+
+
+(def org-data-path [:current-org-data])
+(def org-name-path (conj org-data-path :name))
+(def org-plan-path (conj org-data-path :plan))
+(def stripe-card-path (conj org-data-path :card))
+(def org-users-path (conj org-data-path :users))
+(def org-projects-path (conj org-data-path :projects))
+(def org-loaded-path (conj org-data-path :loaded))
+(def org-authorized?-path (conj org-data-path :authorized?))
+(def selected-containers-path (conj org-data-path :selected-containers))
+;; Map of org login to boolean (selected or not selected)
+(def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
+
+(def settings-path [:settings])
+
+(def projects-path [:projects])
+
+;; XXX make inner/outer something defined in navigation
+(def inner?-path [:current-user])
+
+(def show-nav-settings-link-path [:navigation-settings :show-settings-link])
+
+(def instrumentation-path [:instrumentation])
+
+(def browser-settings-path [:settings :browser-settings])
+(def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
+(def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
+(def slim-aside-path (conj browser-settings-path :slim-aside?))
+(def show-all-branches-path (conj browser-settings-path :show-all-branches))
+(defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
+(def show-inspector-path (conj browser-settings-path :show-inspector))
+
+(def flash-path [:render-context :flash])

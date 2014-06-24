@@ -83,7 +83,7 @@
             (om/build-all invite-tile users {:key :login})]]
           [:footer
            (forms/stateful-button
-            [:button (let [users-to-invite (utils/inspect (invitees users))]
+            [:button (let [users-to-invite (invitees users)]
                        {:data-success-text "Sent"
                         :on-click #(put! controls-ch [:invited-github-users {:invitees users-to-invite
                                                                              :project-name project-name}])})

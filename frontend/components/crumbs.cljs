@@ -6,8 +6,8 @@
 
 (defn crumb-node [{:keys [active name path]}]
   (if active
-    [:span {:title name} name]
-    [:a {:href path :title name} name]))
+    [:a {:disabled true :title name} name " "]
+    [:a {:href path :title name} name " "]))
 
 (defmulti render-crumb
   (fn [{:keys [type]}] type))
@@ -24,7 +24,7 @@
 
 (defmethod render-crumb :project-settings
   [{:keys [username project active]}]
-  (crumb-node {:name "Edit settings"
+  (crumb-node {:name "project settings"
                :path (routes/v1-project-settings {:org-id username :repo-id project})
                :active active}))
 
@@ -41,7 +41,7 @@
 (defmethod render-crumb :build
   [{:keys [username project build-num active]}]
   (crumb-node {:name (str "build " build-num)
-               :path (routes/v1-inspect-build username project build-num)
+               :path (routes/v1-build-path username project build-num)
                :active active}))
 
 (defmethod render-crumb :org
@@ -52,12 +52,9 @@
 
 (defmethod render-crumb :org-settings
   [{:keys [username active]}]
-  (crumb-node {:name "Organization settings"
+  (crumb-node {:name "organization settings"
                :path (routes/v1-org-settings {:org-id username})
                :active active}))
 
-(defn crumbs [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html [:nav (map render-crumb data)]))))
+(defn crumbs [crumbs-data]
+  (map render-crumb crumbs-data))

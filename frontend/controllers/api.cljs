@@ -9,6 +9,10 @@
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.analytics.adroll :as adroll]
+            [frontend.analytics.mixpanel :as mixpanel]
+            [frontend.analytics.perfect-audience :as perfect-audience]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
@@ -147,12 +151,12 @@
 
 (defmethod api-event [:organizations :success]
   [target message status args state]
-  (assoc-in state [:current-user :organizations] (:resp args)))
+  (assoc-in state state/user-organizations-path (:resp args)))
 
 
 (defmethod api-event [:collaborators :success]
   [target message status args state]
-  (assoc-in state [:current-user :collaborators] (:resp args)))
+  (assoc-in state state/user-collaborators-path (:resp args)))
 
 
 (defmethod api-event [:usage-queue :success]
@@ -255,11 +259,11 @@
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])]
-      (utils/ajax :get
-                  (gstring/format "/api/v1/project/%s/settings" project-name)
-                  :project-settings
-                  api-ch
-                  :context {:project-name project-name}))))
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 :project-settings
+                 api-ch
+                 :context {:project-name project-name}))))
 
 
 (defmethod api-event [:delete-ssh-key :success]
@@ -343,9 +347,36 @@
 
 (defmethod api-event [:unfollow-project :success]
   [target message status {:keys [resp context]} state]
-  (if-not (inspect (= (:project-id context) (project-model/id (get-in state state/project-path))))
+  (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (assoc-in state (conj state/project-path :followed) false)))
+
+
+(defmethod api-event [:org-plan :success]
+  [target message status {:keys [resp context]} state]
+  (let [org-name (:org-name context)]
+    (if-not (= org-name (:org-settings-org-name state))
+      state
+      (assoc-in state state/org-plan-path resp))))
+
+
+(defmethod api-event [:org-settings :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (-> state
+        (update-in state/org-data-path merge resp)
+        (assoc-in state/org-authorized?-path true))))
+
+
+;; XXX: only show org-failure on 401s
+(defmethod api-event [:org-settings :failed]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (-> state
+        (assoc-in [:current-organization :loaded] true)
+        (assoc-in [:current-organization :authorized] false))))
 
 
 (defmethod api-event [:follow-repo :success]
@@ -367,10 +398,10 @@
                          (subs 1))]
       (put! nav-ch [:navigate! build-path]))
     (when (repo-model/should-do-first-follower-build? (:context args))
-      (utils/ajax :post
-                  (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
-                  :start-build
-                  (get-in current-state [:comms :api])))))
+      (ajax/ajax :post
+                 (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
+                 :start-build
+                 (get-in current-state [:comms :api])))))
 
 
 (defmethod api-event [:unfollow-repo :success]
@@ -412,3 +443,34 @@
   [target message status {:keys [context resp]} previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])]
     (put! controls-ch [:started-edit-settings-build context])))
+
+
+(defmethod api-event [:plan-card :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (assoc-in state state/stripe-card-path resp)))
+
+
+(defmethod api-event [:create-plan :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (assoc-in state state/org-plan-path resp)))
+
+
+(defmethod post-api-event! [:create-plan :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (mixpanel/track "Paid")
+  (perfect-audience/track "payer")
+  (adroll/record-payer)
+  (when (= (:org-name context) (:org-settings-org-name current-state))
+    (let [nav-ch (get-in current-state [:comms :nav])]
+      (put! nav-ch [:navigate! (routes/v1-org-settings-subpage {:org (:org-name context)
+                                                                :subpage "containers"})]))))
+
+(defmethod api-event [:update-plan :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (update-in state state/org-plan-path merge resp)))

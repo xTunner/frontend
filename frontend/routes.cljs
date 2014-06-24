@@ -21,10 +21,10 @@
       (on-loaded @app)
       (add-watch app listener-id sentinel))))
 
-(defn open-build-inspector!
-  [app nav-ch org-id repo-id build-num]
-  (let [project-name (str org-id "/" repo-id)]
-    (put! nav-ch [:build [project-name build-num org-id repo-id]])))
+(defn open-to-build!
+  [app nav-ch org repo build-num]
+  (let [project-name (str org "/" repo)]
+    (put! nav-ch [:build {:project-name project-name :build-num build-num :org org :repo repo}])))
 
 (defn open-to-dashboard! [nav-ch & [args]]
   (put! nav-ch [:dashboard args]))
@@ -32,12 +32,28 @@
 (defn open-to-add-projects! [nav-ch]
   (put! nav-ch [:add-projects]))
 
-(defn open-to-project-settings! [nav-ch org-id repo-id subpage]
-  (let [project-name (str org-id "/" repo-id)]
+;; XXX validate subpage, send to 404
+(defn open-to-project-settings! [nav-ch org repo subpage]
+  (let [project-name (str org "/" repo)]
     (put! nav-ch [:project-settings {:project-name project-name
                                      :subpage subpage
-                                     :org org-id
-                                     :repo repo-id}])))
+                                     :org org
+                                     :repo repo}])))
+
+;; XXX validate subpage, send to 404
+(defn open-to-org-settings!
+  ([nav-ch org]
+   (open-to-org-settings! nav-ch org :projects))
+  ([nav-ch org subpage]
+   (put! nav-ch [:org-settings {:subpage subpage
+                                :org-name org}])))
+
+
+(defn v1-build-path
+  "Temporary helper method for v1-build until we figure out how to make
+   secretary's render-route work for regexes"
+  [org repo build-num]
+  (str "/gh/" org "/" repo "/" build-num))
 
 (defn open-to-landing! [nav-ch]
   (put! nav-ch [:landing]))
@@ -51,25 +67,24 @@
       (open-to-dashboard! nav-ch params))
     (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
       (open-to-dashboard! nav-ch params))
-    (defroute v1-inspect-build #"/gh/([^/]+)/([^/]+)/(\d+)"
-      [org-id repo-id build-num]
-      (open-build-inspector! app nav-ch org-id repo-id (js/parseInt build-num)))
-    (defroute v1-project-settings "/gh/:org-id/:repo-id/edit"
-      [org-id repo-id]
-      (open-to-project-settings! nav-ch org-id repo-id nil))
-    (defroute v1-project-settings-subpage "/gh/:org-id/:repo-id/edit#:subpage"
-      [org-id repo-id subpage]
-      (open-to-project-settings! nav-ch org-id repo-id (keyword subpage)))
-    (defroute v1-org-settings "/gh/organizations/:org-id/settings"
-      [org-id]
-      (utils/mlog "org settings route hasn't been hooked up yet"))
-    (defroute v1-org-settings-subpage "/gh/organizations/:org-id/settings#:subpage"
-      [org-id subpage]
-      (utils/mlog "org settings route hasn't been hooked up yet"))
+    (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
+      [org repo build-num]
+      (open-to-build! app nav-ch org repo (js/parseInt build-num)))
+    (defroute v1-project-settings "/gh/:org/:repo/edit"
+      [org repo]
+      (open-to-project-settings! nav-ch org repo nil))
+    (defroute v1-project-settings-subpage "/gh/:org/:repo/edit#:subpage"
+      [org repo subpage]
+      (open-to-project-settings! nav-ch org repo (keyword subpage)))
+    (defroute v1-org-settings "/gh/organizations/:org/settings"
+      [org]
+      (open-to-org-settings! nav-ch org))
+    (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
+      [org subpage]
+      (open-to-org-settings! nav-ch org (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
-    (defroute v1-root "/"
-      [org-id repo-id build-num]
+    (defroute v1-root "/" []
       (if authenticated
         (open-to-dashboard! nav-ch)
         (open-to-landing! nav-ch)))))

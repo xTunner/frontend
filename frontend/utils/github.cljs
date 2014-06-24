@@ -9,6 +9,9 @@
   ;; XXX check on advanced compilation
   (js/CI.github.authUrl (clj->js scope)))
 
+;; TODO: We want the identicon to take over the if the gravatar is the default. There's no
+;;       way to know if the gravatar_id is the default without passing in default=true
+;;       query param, so we'd have to do that elsewhere.
 (defn gravatar-url [{:keys [gravatar_id login size]
                      :or {size 200}}]
   (cond (not (string/blank? gravatar_id))

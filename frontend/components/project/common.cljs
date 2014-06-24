@@ -14,18 +14,6 @@
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn pretty-trial-time [plan]
-  (let [trial-interval (time/interval (time/now) (time-format/parse (:trial_end plan)))
-        hours-left (time/in-hours trial-interval)]
-    (cond (< 24 hours-left)
-          (str (plan-model/days-left-in-trial plan) " days")
-
-          (< 1 hours-left)
-          (str hours-left " hours")
-
-          :else
-          (str (time/in-minutes trial-interval) " minutes"))))
-
 (defn trial-notice [plan owner]
   (reify
     om/IRender
@@ -56,7 +44,7 @@
                       " to keep running your builds.")
 
                 :else
-                (list (gstring/format "%s's trial expires in %s!" org-name (pretty-trial-time plan))
+                (list (gstring/format "%s's trial expires in %s!" org-name (plan-model/pretty-trial-time plan))
                       [:a {:href plan-path} "Add a plan"]
                       " to keep running your builds."))])))))
 
