@@ -3,6 +3,9 @@
   %a.aside-item.logo{href: "/", data-bind: "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"}
     .logomark
       != HAML.ico(n:'logo')
+  %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-cog
+    %span Settings
   %a.aside-item{href: "/docs", data-bind: "tooltip: {title: 'Documentation', placement: 'right', trigger: 'hover'}"}
     %i.fa.fa-copy
     %span Documentation
@@ -18,9 +21,6 @@
   %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}", data-toggle: "modal", data-target: "#inviteForm"}
     %i.fa.fa-envelope-o
     %span Invite Teammate
-  %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}"}
-    %i.fa.fa-cog
-    %span Settings
   %a.aside-item{href: "#", data-bind: "click: toggle_aside_expanded, tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"}
     / ko if: VM.browser_settings.settings().aside_is_slim
     %i.fa.fa-long-arrow-right
