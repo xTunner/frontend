@@ -146,7 +146,6 @@
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
                :on-click          #(do (create-token! (om/get-state owner :token-label))
-                                       (js/alert "Return false")
                                        false)
                :type "submit"
                :value "Create"}])]]
