@@ -3,9 +3,9 @@
     - if c.body
       %span{data-bind: 'tooltip: {animation: "false", placement: "bottom"}',
             title: "#{ $e c.body}"}
-        = c.subject
+        != c.subject
     - else
-      = c.subject
+      != c.subject
     %a.sha-one{href: c.commit_url, title: c.commit}
       = c.commit.slice(0,7)
       %i.fa.fa-github

@@ -345,13 +345,21 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @author_isnt_committer = @komp =>
       (@committer_email() isnt @author_email()) or (@committer_name() isnt @author_name())
 
+    @linkified_commits = @komp =>
+      linkified = (commit) =>
+        lc = $.extend({}, commit)  # make a shallow copy, for purity's sake
+        lc.subject = CI.stringHelpers.linkify lc.subject
+        lc
+
+      (linkified commit for commit in @all_commit_details())
+
     @head_commits = @komp =>
       # careful not to modify the all_commit_details array here
-      @all_commit_details().slice(-3).reverse()
+      @linkified_commits().slice(-3).reverse()
 
     @rest_commits = @komp =>
       # careful not to modify the all_commit_details array here
-      @all_commit_details().slice(0,-3).reverse()
+      @linkified_commits().slice(0,-3).reverse()
 
     @tooltip_title = @komp =>
       @status_words() + ": " + @build_num
