@@ -5,6 +5,7 @@
             [frontend.components.crumbs :as crumbs]
             [frontend.env :as env]
             [frontend.state :as state]
+            [frontend.stefon :refer [data-uri]]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true]
@@ -16,17 +17,17 @@
    [:div.span4
     [:img {:height 150
            :width 150
-           :src XXXX}]
+           :src (data-uri "/img/outer/home/octocat.png")}]
     [:h4 "Push your new code to GitHub"]]
    [:div.span4
     [:img {:height 150
            :width 150
-           :src XXXX}]
+           :src (data-uri "/img/outer/home/test-output.png")}]
     [:h4 "Your tests run on the CircleCI platform"]]
    [:div.span4
     [:img {:height 150
            :width 150
-           :src XXXX}]
+           :src (data-uri "/img/outer/home/deploy.png")}]
     [:h4 "Deploy green builds to your servers"]]])
 
 (defn home-button
@@ -145,7 +146,7 @@
 (defn customer-image [customer-name image]
   [:div.big-company
    [:img {:title customer-name
-          :src image}]])
+          :src (data-uri image)}]])
 
 (def home-customers
  [:section.customers
@@ -157,11 +158,11 @@
       "CircleCI is the #1 hosted continuous deployment provider.But don't take our word for it, read what our awesome customers have to say."]]]
    [:div.customers-trust.row
     [:h4 [:span "Trusted By"]]
-    (customer-image "Salesforce" "img/logos/salesforce.png")
-    (customer-image "Samsung" "img/logos/samsung.png")
-    (customer-image "Kickstarter" "img/logos/kickstarter.png")
-    (customer-image "Cisco" "img/logos/cisco.png")
-    (customer-image "Shopify" "img/logos/shopify.png")
+    (customer-image "Salesforce" "/img/logos/salesforce.png")
+    (customer-image "Samsung" "/img/logos/samsung.png")
+    (customer-image "Kickstarter" "/img/logos/kickstarter.png")
+    (customer-image "Cisco" "/img/logos/cisco.png")
+    (customer-image "Shopify" "/img/logos/shopify.png")
     [:span.stretch]]
   [:div.container
    [:div.row
@@ -169,7 +170,8 @@
      [:p
       "CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go. "
       [:strong "I'm a huge fan."]]
-     " + $c(HAML.john_collison_image())"
+      [:img {:src (data-uri "/img/outer/home/john-collison-2.png")
+             :alt "John Collison"}]
      [:h4 "John Collison"]
      [:p
       "Founder at "
@@ -183,7 +185,8 @@
       "It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. "
       [:strong "The first time it happened, my team cheered."]
       "The fact that we don't have to admin the server ourselves is a big timesaver."]
-     " + $c(HAML.jon_crawford_image())"
+     [:img {:src (data-uri "/img/outer/home/jon-crawford-2.png")
+            :alt "Jon Crawford"}]
      [:h4 "Jon Crawford"]
      [:p
       "CEO of "
@@ -197,7 +200,8 @@
       "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. "
       [:strong "CircleCI's customer support is outstanding."]
       "We get quick, thorough answers to all our questions."]
-     " + $c(HAML.aaron_suggs_image())"
+     [:img {:src (data-uri "/img/outer/home/aaron-suggs.jpg")
+            :alt "Aaron Suggs"}]
      [:h4 "Aaron Suggs"]
      [:p
       "Operations Engineer at "
@@ -288,7 +292,8 @@
        [:p
         "At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know."]]]]]])
 
-(def home-technology
+(defn home-technology
+  []
   [:section.technology
    [:div.container
     [:h2 "We support your stack"]
@@ -383,22 +388,22 @@
      [:div.tab-content
       [:div#languages.active.tab-pane
        [:div.row-fluid
-        [:div.span6 " + $c(HAML.languages_image())"]
+        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-languages.png")}]]
         [:div.span6
          "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.You can customize any step, or set up your test steps manually for PHP or other languages."]]]
       [:div#databases.tab-pane
        [:div.row-fluid
-        [:div.span6 " + $c(HAML.dbs_image())"]
+        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-databases.png")}]]
         [:div.span6
          "If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away."]]]
       [:div#queues.tab-pane
        [:div.fluid.row
-        [:div.span6 " + $c(HAML.queues_image())"]
+        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-queues.png")}]]
         [:div.span6
          "If you need to test against queues, we have them installed on our boxes.We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need."]]]
       [:div#browsers.tab-pane
        [:div.row-fluid
-        [:div.span6 " + $c(HAML.browsers_image())"]
+        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-browsers.png")}]]
         [:div.span6
          "We support continuous integration testing in your apps against a wide range of browsers.We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS.Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber."]]]
       [:div#libraries.tab-pane
@@ -408,14 +413,14 @@
           "We run a recent version Ubuntu and have installed all of the libraries you need for development.We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.As new important libraries come out it's trivial for us to add them for you."]]]]
       [:div#deployment.tab-pane
        [:div.row-fluid
-        [:div.span6 " + $c(HAML.deployment_image())"]
+        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-deployment.png")}]]
         [:div.span6
          "Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.Many of our customers deploy directly after a green push to master or another branch.We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3."]]]
       [:div#custom.tab-pane
        [:div.row-fluid
         [:div.offset2.span8
          [:p
-          "Although we do our best to set up your tests in one click, occasionally developers have custom setups.Need to use npm in your PHP project?Using Haskell?Use a specific Ruby patchset?Do you depend on private repos?We have support for dozens of different ways to customize, and we make it trivial to customize basically anything.Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."]]]]]]]])  
+          "Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use npm in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."]]]]]]]])  
 
 (def home-get-started
   [:div.get-started
@@ -468,7 +473,7 @@
             (home-hero-unit ab-tests)
             home-customers
             home-features
-            home-technology
+            (home-technology)
             home-get-started]])))
 
 
