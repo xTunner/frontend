@@ -604,3 +604,23 @@
    (get-in current-state [:comms :api])
    :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
             :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+
+(defmethod control-event :heroku-key-added
+  [target message args state]
+  (update-in state state/user-path assoc :heroku_api_key (:heroku_api_key args)))
+
+(defmethod control-event :heroku-key-add-attempted
+  [target message args state]
+  state)
+
+(defmethod post-control-event! :heroku-key-add-attempted
+  [target message args previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/heroku-key"
+                           :params {:apiKey (:heroku_api_key args)}))]
+       (put! api-ch [:update-heroku-key (:status api-result) (assoc api-result :context {})])
+       (release-button! uuid (:status api-result))))))

@@ -473,3 +473,13 @@
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (update-in state state/org-plan-path merge resp)))
+
+(defmethod api-event [:update-heroku-key :failed]
+  [target message status {:keys [resp context]} state]
+  ;; XXX Should we put the resp text somewhere, maybe the flash?
+  state)
+
+(defmethod api-event [:update-heroku-key :success]
+  [target message status {:keys [resp context]} state]
+  ;; XXX Do we have to check if the user is 'fresh' here?
+  (update-in state state/user-path assoc :heroku_api_key (:heroku_api_key resp)))
