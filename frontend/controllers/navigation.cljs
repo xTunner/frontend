@@ -234,3 +234,18 @@
     (when (= subpage :organizations)
       (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)))
   (set-page-title! (str "Org settings - " org-name)))
+
+
+(defmethod navigated-to :error
+  [history-imp navigation-point {:keys [status] :as args} state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
+
+(defmethod post-navigated-to! :error
+  [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
+  (set-page-title! (condp = status
+                     401 "Login required"
+                     404 "Page not found"
+                     500 "Internal server error"
+                     "Something unexpected happened")))
