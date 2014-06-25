@@ -55,6 +55,12 @@
   [org repo build-num]
   (str "/gh/" org "/" repo "/" build-num))
 
+(defn open-to-documentation-root! [nav-ch]
+  (put! nav-ch [:documentation-root]))
+
+(defn open-to-documentation-page! [nav-ch doc-page]
+  (put! nav-ch [:documentation-page [doc-page]]))
+
 (defn open-to-landing! [nav-ch]
   (put! nav-ch [:landing]))
 
@@ -84,6 +90,10 @@
       (open-to-org-settings! nav-ch org (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
+    (defroute v1-doc-root "/docs" []
+      (open-to-documentation-root! nav-ch))
+    (defroute v1-doc-page #"/docs/(.*)" [doc-page]
+      (open-to-documentation-page! nav-ch doc-page))
     (defroute v1-root "/" []
       (if authenticated
         (open-to-dashboard! nav-ch)

@@ -4,6 +4,7 @@
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
+            [frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
@@ -37,6 +38,8 @@
     :loading loading
     :landing landing/home
     :project-settings project-settings/project-settings
+    :documentation-root docs/documentation
+    :documentation-page docs/docpage
     :org-settings org-settings/org-settings))
 
 (defn app [app owner]

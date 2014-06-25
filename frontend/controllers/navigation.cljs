@@ -156,6 +156,16 @@
           (state-utils/reset-current-project %)
           %))))
 
+(defmethod navigated-to :documentation-root
+  [history-imp to _ state]
+  (assoc state :navigation-point :documentation-root))
+
+(defmethod navigated-to :documentation-page
+  [history-imp to [page] state]
+  (assoc state
+    :navigation-point :documentation-page
+    :current-documentation-page page))
+
 (defmethod navigated-to :landing
   [history-imp navigation-point _ state]
   (assoc state
