@@ -655,7 +655,7 @@
     om/IRender
     (render [_]
       (html
-        [:div
+        [:div.plans
           (om/build billing-card app)
           (om/build billing-invoice-data app)
           (om/build billing-invoices app)]))))
