@@ -624,3 +624,27 @@
                            :params {:apiKey (:heroku_api_key args)}))]
        (put! api-ch [:update-heroku-key (:status api-result) (assoc api-result :context {})])
        (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-revocation-attempted
+  [target message {:keys [token]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :delete
+                           (gstring/format "/api/v1/user/token/%s" (:token token))
+                           :params {}))]
+       (put! api-ch [:delete-api-token (:status api-result) (assoc api-result :context {:token token})])
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-creation-attempted
+  [target message {:keys [label]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/token"
+                           :params {:label label}))]
+       (put! api-ch [:create-api-token (:status api-result) (assoc api-result :context {:label label})])
+       (release-button! uuid (:status api-result))))))

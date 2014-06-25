@@ -98,6 +98,7 @@
 
 ;; XXX we probably shouldn't be storing repos in the user...
 (def user-organizations-path (conj user-path :organizations))
+(def user-tokens-path (conj user-path :tokens))
 (def user-collaborators-path (conj user-path :collaborators))
 
 (defn repos-path

@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.datetime :as datetime]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -87,9 +88,9 @@
             [:br]
             "You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
            [:form
-            {:onSubmit (fn [event]
-                         (.preventDefault event)
-                         (submit-form! heroku-api-key-input))}
+            {:on-submit (fn [event]
+                          (.preventDefault event)
+                          (submit-form! heroku-api-key-input))}
             (when heroku-api-key
               [:div
                [:input.disabled
@@ -114,49 +115,64 @@
                   :on-click          #(submit-form! heroku-api-key-input)}
               "Save Heroku key"])]]])))))
 
-;; XXX Not finished - how to find current list of tokens?
+;; XXX 1. Not finished - how to tie form-submit to managed-button?
+;; 2. Disable form while creating
+;; 3. Clear form after success
 (defn api-tokens [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
+      (let [controls-ch   (om/get-shared owner [:comms :controls])
+            tokens        (get-in app state/user-tokens-path)
+            create-token! #(put! controls-ch [:api-token-creation-attempted {:label %}])]
         (html/html
          [:div#settings-api
           [:div.api-item
            [:h2 "API Tokens"]
            [:p
-            "Create and revoke API tokens to access this account's details using our API.Apps using these tokens can act as you, and have full read- and write-permissions!"]
+            "Create and revoke API tokens to access this account's details using our API. Apps using these tokens can act as you, and have full read- and write-permissions!"]
            [:form
+            {:on-submit (fn [event]
+                          (.preventDefault event)
+                          (create-token! (om/get-state owner :token-label)))}
             [:input#api-token
-             {:required "",
-              :name "label",
-              :type "text",
-              :data-bind "value: tokenLabel"}]
+             {:required  "",
+              :name      "label",
+              :type      "text",
+              :value     (str (om/get-state owner :token-label))
+              :on-change #(let [v (.. % -target -value)]
+                            (om/set-state! owner :token-label v))}]
             [:label {:placeholder "Token name"}]
-            [:input.btn
-             {:data-failed-text  "Failed",
-              :data-success-text "Created",
-              :data-loading-text "Creating...",
-              :data-bind         "click: create_token",
-              :value             "Create",
-              :type              "submit"}]]]
+            (forms/managed-button
+             [:a
+              {:data-loading-text "Creating...",
+               :data-failed-text  "Failed to add token",
+               :data-success-text "Created",
+               :on-click          #(create-token! (om/get-state owner :token-label))}
+              "Create"])]]
           [:div.api-item
            {:data-bind "if: tokens().length"}
-           [:table.table
-            [:thead [:th "Label"] [:th "Token"] [:th "Created"] [:th]]
-            [:tbody
-             {:data-bind "foreach: tokens"}
-             [:tr
-              [:td {:data-bind "text: label"}]
-              [:td [:span.code {:data-bind "text: token"}]]
-              [:td {:data-bind "text: time"}]
-              [:td
-               [:span
-                {:data-bind "click: $root.current_user().delete_token"}
-                [:a.revoke-token
-                 {:title "Revoke this token", :href "#"}
-                 [:i.fa {:fa-times-circle "fa-times-circle"}]
-                 " revoke"]]]]]]]])))))
+           (when (seq tokens)
+             [:table.table
+              [:thead [:th "Label"] [:th "Token"] [:th "Created"] [:th]]
+              [:tbody
+               {:data-bind "foreach: tokens"}
+               (map (fn [token]
+                      (let [token (om/value token)]
+                        [:tr
+                         [:td {:data-bind "text: label"} (:label token)]
+                         [:td [:span.code {:data-bind "text: token"} (:token token)]]
+                         [:td {:data-bind "text: time"} (datetime/full-datetime (js/Date.parse (:time token)))]
+                         [:td
+                          [:span
+                           {:data-bind "click: $root.current_user().delete_token"}
+                           (forms/managed-button
+                            [:a.revoke-token
+                             {:data-loading-text "Revoking...",
+                              :data-failed-text  "Failed to revoke token",
+                              :data-success-text "Revoked",
+                              :on-click          #(put! controls-ch [:api-token-revocation-attempted {:token token}])}
+                             "Revoke"])]]])) tokens)]])]])))))
 
 (defn notifications [app owner]
   (reify

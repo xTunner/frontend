@@ -249,4 +249,5 @@
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects (get-in current-state [:comms :api])))
     (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
