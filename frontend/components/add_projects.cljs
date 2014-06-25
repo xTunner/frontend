@@ -10,11 +10,11 @@
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+                   [frontend.utils :refer [html]]))
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div

@@ -12,8 +12,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def sidebar
   [:ul.side-list

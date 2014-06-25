@@ -1,4 +1,5 @@
-(ns frontend.utils)
+(ns frontend.utils
+  (:require [sablono.core :as html]))
 
 (defmacro inspect
   "prints the expression '<name> is <value>', and returns the value"
@@ -42,3 +43,27 @@
      (reify
        om.core/IRender
        (~'render [~'_] ~@body))))
+
+(defmacro html [body]
+  `(let [body# ~body]
+     (if-not (:render-colors? initial-query-map)
+       (html/html body#)
+       (try
+         (let [[tag# & rest#] body#
+               attrs# (if (map? (first rest#))
+                        (first rest#)
+                        {})
+               rest# (if (map? (first rest#))
+                       (rest rest#)
+                       rest#)]
+           (html/html (vec (concat [tag# (assoc-in attrs# [:style :border] (str "5px solid rgb("
+                                                                                (rand-int 255)
+                                                                                ","
+                                                                                (rand-int 255)
+                                                                                ","
+                                                                                (rand-int 255)
+                                                                                ")"))]
+                                   rest#))))
+         (catch :default e#
+           (html/html body#))))))
+

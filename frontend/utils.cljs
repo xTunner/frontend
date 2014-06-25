@@ -8,7 +8,8 @@
             [goog.crypt.Md5 :as md5]
             [goog.Uri]
             [goog.events :as ge]
-            [goog.net.EventType :as gevt])
+            [goog.net.EventType :as gevt]
+            [sablono.core :as html :include-macros true])
   (:require-macros [frontend.utils :refer (inspect)]))
 
 (defn csrf-token []
@@ -30,7 +31,8 @@
    :logging-enabled? (parse-uri-bool (.getParameterValue parsed-uri "logging-enabled"))
    :restore-state? (parse-uri-bool (.getParameterValue parsed-uri "restore-state"))
    :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))
-   :inspector? (parse-uri-bool (.getParameterValue parsed-uri "inspector"))})
+   :inspector? (parse-uri-bool (.getParameterValue parsed-uri "inspector"))
+   :render-colors? (parse-uri-bool (.getParameterValue parsed-uri "render-colors"))})
 
 (def logging-enabled?
   (if (nil? (:logging-enabled? initial-query-map))

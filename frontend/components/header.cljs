@@ -13,8 +13,8 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]

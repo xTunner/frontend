@@ -2,8 +2,8 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.builds-table :as builds-table]
-            [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn dashboard [data owner]
   (reify

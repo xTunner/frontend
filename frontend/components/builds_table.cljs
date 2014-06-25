@@ -6,8 +6,8 @@
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn build-row [build controls-ch show-actions?]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
