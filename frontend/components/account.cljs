@@ -21,7 +21,6 @@
 (defn handle-email-notification-change [ch pref]
   (put! ch [:preferences-updated {:basic_email_prefs pref}]))
 
-;; XXX 1. Styling is off here (spacing between avatar and login name)
 (defn plans [app owner]
   (reify
     om/IRender
@@ -53,6 +52,7 @@
                     {:src    avatar-url
                      :height 25
                      :width  25}]]
+                  " "
                   [:a
                    {:href org-url}
                    [:span (:login org)]]
