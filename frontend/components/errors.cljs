@@ -1,11 +1,7 @@
 (ns frontend.components.errors
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
-            [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+  (:require [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn error-page [app owner]
