@@ -141,12 +141,15 @@
                             (om/set-state! owner :token-label v))}]
             [:label {:placeholder "Token name"}]
             (forms/managed-button
-             [:a
+             [:input
               {:data-loading-text "Creating...",
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
-               :on-click          #(create-token! (om/get-state owner :token-label))}
-              "Create"])]]
+               :on-click          #(do (create-token! (om/get-state owner :token-label))
+                                       (js/alert "Return false")
+                                       false)
+               :type "submit"
+               :value "Create"}])]]
           [:div.api-item
            {:data-bind "if: tokens().length"}
            (when (seq tokens)
