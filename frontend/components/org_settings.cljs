@@ -604,13 +604,22 @@
                                     false)}
                     "Resend"])]]])))))
 
+(defn- ->balance-string [balance]
+  (let [suffix (cond
+                (< balance 0) " in credit."
+                (> balance 0) " payment outstanding."
+                :else "")
+        amount (-> balance Math/abs (/ 100) .toLocaleString)]
+    (str "$" amount suffix)))
+
 (defn- billing-invoices [app owner]
   (reify
     om/IRender
     (render [_]
       (html
-        (let [invoices (get-in app state/org-invoices-path)]
-          (if-not invoices
+        (let [account-balance (get-in app state/org-plan-balance-path)
+              invoices (get-in app state/org-invoices-path)]
+          (if-not (and account-balance invoices)
             [:div.loading-spinner common/spinner]
             [:div.row-fluid
              [:div.span8
@@ -624,9 +633,9 @@
                    :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
                                       "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
                                       "<p>This amount may take a few hours to refresh.</p>")
-                   :data-bind "popover: {animation: false, trigger: 'hover', html: true}"}]]]
+                   :data-bind "popover: {animation: false, trigger: 'hover', html: true}"}]]
                 [:dd
-                 [:span {:data-bind "accountBalance: account_balance"}]]
+                 [:span (->balance-string account-balance)]]]
                [:table.table.table-bordered.table-striped
                 [:thead
                  [:tr
