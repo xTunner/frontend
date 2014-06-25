@@ -28,3 +28,16 @@
     width: 940px;
   }
 }
+.inner {
+  .recent-status-badge {
+    a {
+      &[title="timed out"],
+      &[title="circle bug"] {
+        &:before {
+          font-size: 10px;
+          padding-bottom: 1px;
+        }
+      }
+    }
+  }
+}
