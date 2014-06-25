@@ -480,32 +480,32 @@
 
 (defmethod api-event [:update-heroku-key :failed]
   [target message status {:keys [resp context]} state]
-  ;; XXX Should we put the resp text somewhere, maybe the flash?
+  ;; XXX-ResponseText Don't drop the resp text on the floor here,
+  ;; should be shown to the user
   state)
 
 (defmethod api-event [:update-heroku-key :success]
   [target message status {:keys [resp context]} state]
-  ;; XXX Do we have to check if the user is 'fresh' here?
   (update-in state state/user-path assoc :heroku_api_key (:heroku_api_key resp)))
 
 (defmethod api-event [:create-api-token :failed]
   [target message status {:keys [resp context]} state]
-  ;; XXX Should we put the resp text somewhere, maybe the flash?
+  ;; XXX-ResponseText Don't drop the resp text on the floor here,
+  ;; should be shown to the user
   state)
 
 (defmethod api-event [:create-api-token :success]
   [target message status {:keys [resp context]} state]
-  ;; XXX Do we have to check if the user is 'fresh' here?
   (update-in state state/user-tokens-path conj resp))
 
 (defmethod api-event [:delete-api-token :failed]
   [target message status {:keys [resp context]} state]
-  ;; XXX Should we put the resp text somewhere, maybe the flash?
+  ;; XXX Don't drop the resp text on the floor here, should be shown
+  ;; to the user
   state)
 
 (defmethod api-event [:delete-api-token :success]
   [target message status {:keys [resp context]} state]
-  ;; XXX Do we have to check if the user is 'fresh' here?
   (let [deleted-token (:token context)]
     (update-in state state/user-tokens-path (fn [tokens]
                                               (vec (remove #(= (:token %) (:token deleted-token)) tokens))))))
