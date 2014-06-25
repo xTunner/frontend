@@ -136,7 +136,7 @@
                           (.preventDefault event)
                           (create-token! (om/get-state owner :token-label)))}
             [:input#api-token
-             {:required  "",
+             {:required  true
               :name      "label",
               :type      "text",
               :value     (str (om/get-state owner :token-label))
