@@ -514,6 +514,7 @@
                   {:value b-email,
                    :name "billing_email",
                    :type "text"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
                    :on-change #(utils/edit-input controls-ch
                                                  (conj state/org-plan-path :billing_email)
                                                  %
@@ -525,6 +526,7 @@
                   {:value b-name
                    :name "billing_name",
                    :type "text"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
                    :on-change #(utils/edit-input controls-ch
                                                  (conj state/org-plan-path :billing_name)
                                                  %
@@ -540,6 +542,7 @@
                    "Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.",
                    :rows 3
                    :name "extra_billing_data"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
                    :on-change #(utils/edit-input controls-ch
                                                  (conj state/org-plan-path :extra_billing_data)
                                                  %
