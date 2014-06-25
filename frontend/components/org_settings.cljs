@@ -558,6 +558,89 @@
                      :type "submit",}
                     "Save invoice data"])]]]]]))))))
 
+(defn- invoice-total
+  [invoice]
+  (/ (:amount_due invoice) 100))
+
+(defn- stripe-ts->date
+  [ts]
+  (datetime/year-month-day-date (* 1000 ts)))
+
+(defn invoice-view
+  "Render an invoice table row.
+  Invoices fetched from the API look like:
+
+  ;; Invoice API Format
+  ;; ------------------
+  ;; amount_due: 3206
+  ;; currency: \"usd\"
+  ;; date: 1403535350
+  ;; id: \"in_2398vhs098AHYoi\"
+  ;; paid: true
+  ;; period_end: 1403535350
+  ;; period_start: 1402665929"
+  [invoice owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [controls-ch (om/get-shared owner [:comms :controls])
+              invoice-id (:id invoice)]
+          [:tr
+            [:td (stripe-ts->date (:date invoice))]
+            [:td (str (stripe-ts->date (:period_start invoice)))
+                      " - "
+                      (stripe-ts->date (:period_end invoice))]
+            [:td (str "$" (invoice-total invoice))]
+            [:td
+              [:span
+                (forms/managed-button
+                  [:button.btn.btn-mini.btn-primary
+                    {:data-failed-text "Failed",
+                     :data-success-text "Sent",
+                     :data-loading-text "Sending...",
+                     :on-click #(do (put! controls-ch [:resend-invoice-clicked
+                                                       {:invoice-id invoice-id}])
+                                    false)}
+                    "Resend"])]]])))))
+
+(defn- billing-invoices [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [invoices (get-in app state/org-invoices-path)]
+          (if-not invoices
+            [:div.loading-spinner common/spinner]
+            [:div.row-fluid
+             [:div.span8
+               [:legend "Invoices"]
+               [:dl.dl-horizontal
+                [:dt
+                 "Account balance"
+                 [:i.fa.fa-question-circle
+                  {:title "Account balance"
+                   ;; XXX popovers
+                   :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
+                                      "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
+                                      "<p>This amount may take a few hours to refresh.</p>")
+                   :data-bind "popover: {animation: false, trigger: 'hover', html: true}"}]]]
+                [:dd
+                 [:span {:data-bind "accountBalance: account_balance"}]]
+               [:table.table.table-bordered.table-striped
+                [:thead
+                 [:tr
+                  [:th "Invoice date"]
+                  [:th "Time period covered"]
+                  [:th "Total"]
+                  [:th
+                   [:i.fa.fa-question-circle
+                    {:title "Resend an invoice to the billing email above."
+                     :data-bind "tooltip: {animation: false}"}]
+                   "Actions"]]]
+                [:tbody
+                 (om/build-all invoice-view invoices)]]]]))))))
+
 (defn billing [app owner]
   (reify
     om/IRender
@@ -565,7 +648,8 @@
       (html
         [:div
           (om/build billing-card app)
-          (om/build billing-invoice-data app)]))))
+          (om/build billing-invoice-data app)
+          (om/build billing-invoices app)]))))
 
 (def main-component
   {:users users
