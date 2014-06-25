@@ -166,7 +166,7 @@
                         [:tr
                          [:td {:data-bind "text: label"} (:label token)]
                          [:td [:span.code {:data-bind "text: token"} (:token token)]]
-                         [:td {:data-bind "text: time"} (datetime/full-datetime (js/Date.parse (:time token)))]
+                         [:td {:data-bind "text: time"} (datetime/medium-datetime (js/Date.parse (:time token)))]
                          [:td
                           [:span
                            {:data-bind "click: $root.current_user().delete_token"}
