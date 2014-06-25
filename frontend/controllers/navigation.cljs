@@ -245,6 +245,8 @@
 
 (defmethod post-navigated-to! :account
   [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
-  (when-not (seq (get-in current-state state/projects-path))
-    (api/get-projects (get-in current-state [:comms :api])))
-  (set-page-title! "Account"))
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects (get-in current-state [:comms :api])))
+    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (set-page-title! "Account")))

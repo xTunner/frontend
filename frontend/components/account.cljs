@@ -20,14 +20,14 @@
 (defn handle-email-notification-change [ch pref]
   (put! ch [:preferences-updated {:basic_email_prefs pref}]))
 
-;; XXX 1. Styling is off here
-;; 2. user-and-orgs is just user data now, find out how to get real data
+;; XXX 1. Styling is off here (spacing between avatar and login name)
 (defn plans [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            user-and-orgs [(get-in app state/user-path)]]
+      (let [controls-ch   (om/get-shared owner [:comms :controls])
+            user-and-orgs (conj (get-in app state/user-organizations-path)
+                                (get-in app state/user-path))]
         (html/html
          [:div#settings-plans
           [:div.plans-item [:h2 "Org Settings"]]
@@ -37,12 +37,14 @@
            [:div
             (map
              (fn [org]
-               ;; XXX Dummy org data, make sure works with real org data
                (let [org-url    (routes/v1-org-settings-subpage {:org     (:login org)
                                                                  :subpage "plans"})
-                     avatar-url (gh-utils/gravatar-url {:gravatar_id (:gravatar_id org)
-                                                        :login       (:login org)
-                                                        :size        25})]
+                     ;; XXX Is there a nicer helper for sized avatar urls?
+                     avatar-url (if-let [avatar-url (:avatar_url org)]
+                                  (str avatar-url "25")
+                                  (gh-utils/gravatar-url {:gravatar_id (:gravatar_id org)
+                                                          :login       (:login org)
+                                                          :size        25}))]
                  [:div
                   [:a
                    {:href org-url}
@@ -53,6 +55,7 @@
                   [:a
                    {:href org-url}
                    [:span (:login org)]]
+                  [:br]
                   [:br]]))
              user-and-orgs)]]])))))
 
