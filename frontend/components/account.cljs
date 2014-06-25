@@ -61,18 +61,25 @@
              user-and-orgs)]]])))))
 
 ;; XXX 1. How can we re-enable the form after it's been processed?
+;; 2. I don't want the submit event to fire unless there's actually
+;; input (or some other predicate is met), but the managed-button
+;; seems to wrap/override my on-click event
 (defn heroku-key [app owner]
   (reify
-    om/IRender
-    (render [_]
-      (let [controls-ch          (om/get-shared owner [:comms :controls])
-            heroku-api-key       (get-in app (conj state/user-path :heroku_api_key))
-            heroku-api-key-input (str (om/get-state owner :heroku-api-key-input))
-            processing-form?     (om/get-state owner :processing?)
-            form-processed?      false
-            submit-form!         #(when (seq heroku-api-key-input)
-                                    (om/set-state! owner :processing? true)
-                                    (put! controls-ch [:heroku-key-add-attempted {:heroku_api_key %}]))]
+    om/IInitState
+    (init-state [_]
+      {:processing? false})
+    om/IRenderState
+    (render-state [_ _]
+      (let [controls-ch               (om/get-shared owner [:comms :controls])
+            set-heroku-api-key-input! #(om/set-state! owner :heroku-api-key-input %)
+            heroku-api-key            (get-in app (conj state/user-path :heroku_api_key))
+            heroku-api-key-input      (str (om/get-state owner :heroku-api-key-input))
+            processing-form?          (om/get-state owner :processing?)
+            form-processed?           false
+            submit-form!              #(when (seq heroku-api-key-input)
+                                         (om/set-state! owner :processing? true)
+                                         (put! controls-ch [:heroku-key-add-attempted {:heroku_api_key %}]))]
         (html/html
          [:div#settings-heroku
           [:div.heroku-item
@@ -86,9 +93,6 @@
             [:br]
             "You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
            [:form
-            {:on-submit (fn [event]
-                          (.preventDefault event)
-                          (submit-form! heroku-api-key-input))}
             (when heroku-api-key
               [:div
                [:input.disabled
@@ -102,15 +106,19 @@
               :value     heroku-api-key-input
               :class     (when processing-form?
                            "disabled")
-              :on-change  (fn [event]
-                            (om/set-state! owner :heroku-api-key-input (.. event -target -value)))}]
+              :on-change  #(set-heroku-api-key-input! (.. % -target -value))}]
             [:label {:placeholder "Add new key"}]
             (forms/managed-button
-             [:a {:data-loading-text "Saving...",
-                  :data-failed-text  "Failed to save Heroku key",
-                  :data-success-text "Saved",
-                  :on-click          #(submit-form! heroku-api-key-input)}
-              "Save Heroku key"])]]])))))
+             [:input
+              {:data-loading-text "Saving...",
+               :data-failed-text  "Failed to save Heroku key",
+               :data-success-text "Saved",
+               :type "submit"
+               :value "Save Heroku key"
+               :on-click          (fn [event]
+                                    (when (seq (.. event -target -value))
+                                      (submit-form! heroku-api-key-input))
+                                    false)}])]]])))))
 
 ;; XXX 1. Not finished - how to tie form-submit to managed-button?
 ;; 2. Disable form while creating
