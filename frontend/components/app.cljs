@@ -17,8 +17,8 @@
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [ankha.core :as ankha]
-            [sablono.core :as html :refer-macros [html]]))
+            [ankha.core :as ankha])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def keymap
   (atom nil))
@@ -48,7 +48,7 @@
             show-inspector? (get-in app state/show-inspector-path)]
         (reset! keymap {["ctrl+s"] persist-state!
                         ["ctrl+r"] restore-state!})
-        (html/html
+        (html
          ;; XXX: determine inner or outer in the routing layer
          (let [inner? (get-in app state/inner?-path)]
            [:div#app {:class (if inner? "inner" "outer")}

@@ -10,8 +10,8 @@
             [goog.string :as gstring]
             goog.string.format
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn build-queue [data owner]
   (reify

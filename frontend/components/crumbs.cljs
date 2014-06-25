@@ -1,8 +1,8 @@
 (ns frontend.components.crumbs
   (:require [frontend.routes :as routes]
             [frontend.utils :as utils]
-            [om.core :as om]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.core :as om])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn crumb-node [{:keys [active name path]}]
   (if active

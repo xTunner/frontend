@@ -8,11 +8,11 @@
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]
             [goog.string :as gstring]
             goog.string.format
             goog.fx.dom.Scroll
-            goog.fx.easing))
+            goog.fx.easing)
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn source-type [source]
   (condp = source

@@ -10,8 +10,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -108,7 +108,7 @@
             slim-aside? (get-in app state/slim-aside-path)
             show-all-branches? (get-in app state/show-all-branches-path)
             user (:current-user app)]
-        (html/html
+        (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
           [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
                                 ;; XXX: tooltips

@@ -19,13 +19,13 @@
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [node sel sel1]]))
+                   [dommy.macros :refer [node sel sel1]]
+                   [frontend.utils :refer [html]]))
 
 (defn sidebar [{:keys [subpage plan org-name]} owner]
   (reify

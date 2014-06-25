@@ -6,8 +6,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.core :as om :include-macros true])
+    (:require-macros [frontend.utils :refer [html]]))
 
 (defn diagnostics [config owner]
   (reify
