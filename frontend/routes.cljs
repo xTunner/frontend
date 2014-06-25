@@ -48,6 +48,9 @@
    (put! nav-ch [:org-settings {:subpage subpage
                                 :org-name org}])))
 
+(defn logout! [nav-ch]
+  (put! nav-ch [:logout]))
+
 
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
@@ -80,5 +83,7 @@
       (open-to-org-settings! nav-ch org (keyword subpage)))
     (defroute v1-add-projects "/add-projects" []
       (open-to-add-projects! nav-ch))
+    (defroute v1-logout "/logout" []
+      (logout! nav-ch))
     (defroute v1-root "/" []
       (open-to-dashboard! nav-ch))))

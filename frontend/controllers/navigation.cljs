@@ -1,5 +1,6 @@
 (ns frontend.controllers.navigation
-  (:require [frontend.async :refer [put!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -8,7 +9,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
-  (:require-macros [frontend.utils :refer [inspect]]))
+  (:require-macros [frontend.utils :refer [inspect]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; XXX we could really use some middleware here, so that we don't forget to
 ;;     assoc things in state on every handler
@@ -234,3 +236,9 @@
     (when (= subpage :organizations)
       (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)))
   (set-page-title! (str "Org settings - " org-name)))
+
+
+(defmethod post-navigated-to! :logout
+  [history-imp navigation-point _ previous-state current-state]
+  (go (let [api-result (<! (ajax/managed-ajax :post "/logout"))]
+        (set! js/window.location "/"))))
