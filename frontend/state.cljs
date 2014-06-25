@@ -46,6 +46,7 @@
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
+                      :invoices nil
                       :name nil}
    :instrumentation []})
 
@@ -120,6 +121,7 @@
 (def selected-containers-path (conj org-data-path :selected-containers))
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
+(def org-invoices-path (conj org-data-path :invoices))
 
 (def settings-path [:settings])
 
