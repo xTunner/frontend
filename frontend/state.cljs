@@ -143,3 +143,4 @@
 
 (def flash-path [:render-context :flash])
 (def account-subpage-path [:account-settings-subpage])
+(def new-user-token-path (conj user-path :new-user-token))

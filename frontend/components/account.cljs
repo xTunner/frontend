@@ -60,9 +60,7 @@
                   [:br]]))
              user-and-orgs)]]])))))
 
-;; XXX 1. The placeholder drops over the field value whenever saving, not
-;; sure why
-;; XXX 2. How can we re-enable the form after it's been processed?
+;; XXX 1. How can we re-enable the form after it's been processed?
 (defn heroku-key [app owner]
   (reify
     om/IRender
@@ -102,11 +100,10 @@
              {:required  true
               :type      "text",
               :value     heroku-api-key-input
-              :disabled  processing-form?
               :class     (when processing-form?
                            "disabled")
-              :onChange  (fn [event]
-                           (om/set-state! owner :heroku-api-key-input (.. event -target -value)))}]
+              :on-change  (fn [event]
+                            (om/set-state! owner :heroku-api-key-input (.. event -target -value)))}]
             [:label {:placeholder "Add new key"}]
             (forms/managed-button
              [:a {:data-loading-text "Saving...",
@@ -124,7 +121,8 @@
     (render [_]
       (let [controls-ch   (om/get-shared owner [:comms :controls])
             tokens        (get-in app state/user-tokens-path)
-            create-token! #(put! controls-ch [:api-token-creation-attempted {:label %}])]
+            create-token! #(put! controls-ch [:api-token-creation-attempted {:label %}])
+            new-user-token (get-in app state/new-user-token-path)]
         (html/html
          [:div#settings-api
           [:div.api-item
@@ -136,16 +134,15 @@
              {:required  true
               :name      "label",
               :type      "text",
-              :value     (str (om/get-state owner :token-label))
-              :on-change #(let [v (.. % -target -value)]
-                            (om/set-state! owner :token-label v))}]
+              :value     (str new-user-token)
+              :on-change #(utils/edit-input controls-ch state/new-user-token-path %)}]
             [:label {:placeholder "Token name"}]
             (forms/managed-button
              [:input
               {:data-loading-text "Creating...",
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
-               :on-click          #(do (create-token! (om/get-state owner :token-label))
+               :on-click          #(do (create-token! new-user-token)
                                        false)
                :type "submit"
                :value "Create"}])]]
