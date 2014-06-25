@@ -473,3 +473,10 @@
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (update-in state state/org-plan-path merge resp)))
+
+(defmethod api-event [:plan-invoices :success]
+  [target message status {:keys [resp context]} state]
+  (utils/mlog ":plan-invoices API event: " resp)
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (assoc-in state state/org-invoices-path resp)))
