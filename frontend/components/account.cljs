@@ -132,9 +132,6 @@
            [:p
             "Create and revoke API tokens to access this account's details using our API. Apps using these tokens can act as you, and have full read- and write-permissions!"]
            [:form
-            {:on-submit (fn [event]
-                          (.preventDefault event)
-                          (create-token! (om/get-state owner :token-label)))}
             [:input#api-token
              {:required  true
               :name      "label",
