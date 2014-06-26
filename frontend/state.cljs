@@ -126,7 +126,7 @@
 (def projects-path [:projects])
 
 ;; XXX make inner/outer something defined in navigation
-(def inner?-path [:current-user])
+(def inner?-path [:navigation-data :inner?])
 
 (def show-nav-settings-link-path [:navigation-settings :show-settings-link])
 
@@ -141,3 +141,4 @@
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 
 (def flash-path [:render-context :flash])
+(def error-data-path [:error-data])

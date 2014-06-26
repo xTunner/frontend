@@ -71,6 +71,6 @@
                                          (when (re-find #"^/" url)
                                            {:X-CSRFToken (utils/csrf-token)}))
                          :handler #(put! channel (assoc % :status :success))
-                         :error-handler #(put! channel (assoc % :status :failed))
+                         :error-handler #(put! channel %)
                          :finally #(close! channel)}))
     channel))

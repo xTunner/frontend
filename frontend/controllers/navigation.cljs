@@ -1,5 +1,6 @@
 (ns frontend.controllers.navigation
-  (:require [frontend.async :refer [put!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -8,7 +9,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
-  (:require-macros [frontend.utils :refer [inspect]]))
+  (:require-macros [frontend.utils :refer [inspect]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; XXX we could really use some middleware here, so that we don't forget to
 ;;     assoc things in state on every handler
@@ -64,7 +66,13 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (api/get-dashboard-builds (:navigation-data current-state) api-ch)
+    (go (let [builds-url (api/dashboard-builds-url (:navigation-data current-state))
+              api-resp (<! (ajax/managed-ajax :get builds-url))
+              comms (get-in current-state [:comms])]
+          (condp = (inspect (:status api-resp))
+            :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
+            404 (put! (:nav comms) [:error {:status 404 :inner? false}])
+            (put! (:errors comms) [:api-error api-resp]))))
     (when (:repo args)
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
@@ -234,3 +242,18 @@
     (when (= subpage :organizations)
       (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)))
   (set-page-title! (str "Org settings - " org-name)))
+
+
+(defmethod navigated-to :error
+  [history-imp navigation-point {:keys [status] :as args} state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
+
+(defmethod post-navigated-to! :error
+  [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
+  (set-page-title! (condp = status
+                     401 "Login required"
+                     404 "Page not found"
+                     500 "Internal server error"
+                     "Something unexpected happened")))
