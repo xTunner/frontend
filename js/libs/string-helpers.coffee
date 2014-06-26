@@ -16,9 +16,5 @@ CI.stringHelpers =
     # www. sans http:// or https://
     pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim
 
-    # Email addressess
-    emailPattern = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim
-
     inputText.replace(urlPattern, '<a href="$1" target="_blank">$1</a>')
              .replace(pseudoUrlPattern, '$1<a href="http://$2" target="_blank">$2</a>')
-             .replace(emailPattern, '<a href="mailto:$1">$1</a>')
