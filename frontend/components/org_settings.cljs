@@ -458,7 +458,7 @@
       (html
         (let [card (get-in app state/stripe-card-path)
               controls-ch (om/get-shared owner [:comms :controls])]
-          (if-not card
+          (if-not (and card checkout-loaded?)
             [:div.loading-spinner common/spinner]
             [:div
                 [:div.card.row-fluid [:fieldset [:legend.span8 "Card on file"]]]
