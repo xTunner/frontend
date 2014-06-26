@@ -233,7 +233,9 @@
                 [:button.cancel_build
                  {:data-loading-text "Canceling",
                   :title "Cancel this build",
-                  :on-click #(put! controls-ch [:cancel-build-clicked build-id])}
+                  :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
+                                                                       :vcs-url vcs-url
+                                                                       :build-num build-num}])}
                  "Cancel"]))]]
            (when (:show-usage-queue usage-queue-data)
              (om/build build-queue {:build build

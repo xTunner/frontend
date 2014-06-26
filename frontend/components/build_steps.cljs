@@ -52,8 +52,7 @@
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
-            visible? (get action :show-output (or (not= "success" (:status action))
-                                                  (seq (:messages action))))
+            visible? (action-model/visible? action)
             header-classes  (concat [(:status action)]
                                     (when-not visible?
                                       ["minimize"])
@@ -73,7 +72,8 @@
                            ;; TODO: figure out what to put here
                            :on-click #(put! controls-ch [:action-log-output-toggled
                                                          {:index (:index @action)
-                                                          :step (:step @action)}])}
+                                                          :step (:step @action)
+                                                          :value (not visible?)}])}
               [:div.button {:class (when (action-model/has-content? action)
                                      header-classes)}
                (when (action-model/has-content? action)

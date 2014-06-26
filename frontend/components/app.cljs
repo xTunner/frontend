@@ -5,6 +5,7 @@
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
@@ -35,7 +36,8 @@
     :add-projects add-projects/add-projects
     :loading loading
     :project-settings project-settings/project-settings
-    :org-settings org-settings/org-settings))
+    :org-settings org-settings/org-settings
+    :error errors/error-page))
 
 (defn app [app owner]
   (reify
@@ -64,8 +66,7 @@
                (om/build aside/aside app)])
             [:main.app-main {:tab-index 1}
              (om/build header/header app)
-             (when inner? ;; XXX: remove when outer is built out
-               [:div.main-body
-                (om/build dom-com app)])
+             [:div.main-body
+              (om/build dom-com app)]
              [:footer.main-foot
               (footer/footer)]]]))))))

@@ -67,7 +67,13 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (api/get-dashboard-builds (:navigation-data current-state) api-ch)
+    (go (let [builds-url (api/dashboard-builds-url (:navigation-data current-state))
+              api-resp (<! (ajax/managed-ajax :get builds-url))
+              comms (get-in current-state [:comms])]
+          (condp = (inspect (:status api-resp))
+            :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
+            404 (put! (:nav comms) [:error {:status 404 :inner? false}])
+            (put! (:errors comms) [:api-error api-resp]))))
     (when (:repo args)
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
@@ -243,3 +249,19 @@
   [history-imp navigation-point _ previous-state current-state]
   (go (let [api-result (<! (ajax/managed-ajax :post "/logout"))]
         (set! js/window.location "/"))))
+
+
+(defmethod navigated-to :error
+  [history-imp navigation-point {:keys [status] :as args} state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
+
+(defmethod post-navigated-to! :error
+  [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
+  (set-page-title! (condp = status
+                     401 "Login required"
+                     404 "Page not found"
+                     500 "Internal server error"
+                     "Something unexpected happened")))
+>>>>>>> refs/remotes/origin/master

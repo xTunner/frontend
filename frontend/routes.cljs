@@ -10,47 +10,14 @@
   (:import [goog.history Html5History]
            [goog History]))
 
-(defn listen-once-for-app!
-  [app pred on-loaded]
-  (let [listener-id   (keyword (utils/uuid))
-        sentinel      (fn [_ _ _ new-state]
-                        (when (pred new-state)
-                          (remove-watch app listener-id)
-                          (on-loaded new-state)))]
-    (if (pred @app)
-      (on-loaded @app)
-      (add-watch app listener-id sentinel))))
+(defn open-to-inner! [nav-ch navigation-point args]
+  (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
-(defn open-to-build!
-  [app nav-ch org repo build-num]
-  (let [project-name (str org "/" repo)]
-    (put! nav-ch [:build {:project-name project-name :build-num build-num :org org :repo repo}])))
-
-(defn open-to-dashboard! [nav-ch & [args]]
-  (put! nav-ch [:dashboard args]))
-
-(defn open-to-add-projects! [nav-ch]
-  (put! nav-ch [:add-projects]))
-
-;; XXX validate subpage, send to 404
-(defn open-to-project-settings! [nav-ch org repo subpage]
-  (let [project-name (str org "/" repo)]
-    (put! nav-ch [:project-settings {:project-name project-name
-                                     :subpage subpage
-                                     :org org
-                                     :repo repo}])))
-
-;; XXX validate subpage, send to 404
-(defn open-to-org-settings!
-  ([nav-ch org]
-   (open-to-org-settings! nav-ch org :projects))
-  ([nav-ch org subpage]
-   (put! nav-ch [:org-settings {:subpage subpage
-                                :org-name org}])))
+(defn open-to-outer! [nav-ch navigation-point args]
+  (put! nav-ch [navigation-point (assoc args :inner? false)]))
 
 (defn logout! [nav-ch]
   (put! nav-ch [:logout]))
-
 
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
@@ -61,29 +28,40 @@
 (defn define-routes! [app]
   (let [nav-ch (get-in @app [:comms :nav])]
     (defroute v1-org-dashboard "/gh/:org" {:as params}
-      (open-to-dashboard! nav-ch params))
+      (open-to-inner! nav-ch :dashboard params))
     (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
-      (open-to-dashboard! nav-ch params))
+      (open-to-inner! nav-ch :dashboard params))
     (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
-      (open-to-dashboard! nav-ch params))
+      (open-to-inner! nav-ch :dashboard params))
     (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
       [org repo build-num]
-      (open-to-build! app nav-ch org repo (js/parseInt build-num)))
+      (open-to-inner! nav-ch :build {:project-name (str org "/" repo)
+                                     :build-num (js/parseInt build-num)
+                                     :org org
+                                     :repo repo}))
     (defroute v1-project-settings "/gh/:org/:repo/edit"
       [org repo]
-      (open-to-project-settings! nav-ch org repo nil))
+      (open-to-inner! nav-ch :project-settings {:project-name (str org "/" repo)
+                                                :subpage nil
+                                                :org org
+                                                :repo repo}))
     (defroute v1-project-settings-subpage "/gh/:org/:repo/edit#:subpage"
       [org repo subpage]
-      (open-to-project-settings! nav-ch org repo (keyword subpage)))
+      (open-to-inner! nav-ch :project-settings {:project-name (str org "/" repo)
+                                                :subpage (keyword subpage)
+                                                :org org
+                                                :repo repo}))
     (defroute v1-org-settings "/gh/organizations/:org/settings"
       [org]
-      (open-to-org-settings! nav-ch org))
+      (open-to-inner! nav-ch :org-settings {:org org :subpage nil}))
     (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
       [org subpage]
-      (open-to-org-settings! nav-ch org (keyword subpage)))
+      (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
     (defroute v1-add-projects "/add-projects" []
-      (open-to-add-projects! nav-ch))
+      (open-to-inner! nav-ch :add-projects {}))
     (defroute v1-logout "/logout" []
       (logout! nav-ch))
     (defroute v1-root "/" []
-      (open-to-dashboard! nav-ch))))
+      (open-to-inner! nav-ch :dashboard {}))
+    (defroute v1-not-found "*" []
+      (open-to-outer! nav-ch :error {:status 404}))))
