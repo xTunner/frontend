@@ -124,7 +124,7 @@
              [:button {:class (when show-all-branches? "active")
                        :on-click #(put! controls-ch [:show-all-branches-toggled true])}
               "All"]]
-            (for [project projects]
+            (for [project (sort project-model/sidebar-sort projects)]
               (om/build project-aside
                         {:project project
                          :user user
