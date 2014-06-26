@@ -91,7 +91,11 @@
             (when-let [latest-master-build (first (project-model/master-builds project))]
               (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
           (when-not collapse-branches?
-            (for [branch-data (filter branches-filter (:branches project))]
+            (for [branch-data (->> project
+                                   :branches
+                                   (filter branches-filter)
+                                   ;; alphabetize
+                                   (sort-by first))]
               (om/build branch
                         {:branch-data branch-data
                          :org org
