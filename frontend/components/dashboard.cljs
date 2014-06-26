@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.builds-table :as builds-table]
+            [frontend.components.common :as common]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -19,4 +20,6 @@
          ;; XXX logic for show_build_table
          [:div#dashboard
           [:section
-           (om/build builds-table/builds-table builds {:opts {:show-actions? false}})]])))))
+           (if-not builds
+             [:div.loading-spinner common/spinner]
+             (om/build builds-table/builds-table builds {:opts {:show-actions? false}}))]])))))
