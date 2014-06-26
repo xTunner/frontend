@@ -2,60 +2,26 @@ CI.ajax.init()
 CI.instrumentation.init()
 
 display = (template, args, subpage, hash) ->
-  klass = 'inner'
-
-  header =
-    $("<header></header>")
-      .addClass('main-head')
-      .append(HAML.inner_header(args))
-
-  content =
-    $("<div></div>")
-      .addClass("main-body")
-      .append(HAML[template](args))
-
-  footer =
-    $("<footer></footer>")
-      .addClass('main-foot')
-      .append(HAML["footer"](args))
-
-  asideL =
-    $("<aside></aside>")
-      .addClass('app-aside-left')
-      .append(HAML["aside_left"](args))
-
-  main =
-    $("<main></main>")
-      .addClass('app-main')
-      .attr('tabindex', '1') # Auto-focus content to enable scrolling immediately
-      .append(header)
-      .append(content)
-      .append(footer)
-
-  $('#app')
-    .html("")
-    .removeClass('outer')
-    .removeClass('inner')
-    .addClass(klass)
-    .append(asideL)
-    .append(main)
-
-
   if subpage
-    $('#subpage').html(HAML["#{template}_#{subpage}"](args))
-    $("##{subpage}").addClass('active')
-  if $('#hash').length
-    $('#hash').html(HAML["#{template}_#{subpage}_#{hash}"](args))
-    $("##{hash}").addClass('active')
+    VM.template_subpage("#{template}_#{subpage}")
+
+  VM.main_template(template)
+  VM.template_args(args)
+
+  # Only rebuild if this is the first time we're building the page or if we're
+  # transitioning from outer
+  if $(".app-aside-left").length is 0
+    $('#app').removeClass('outer').addClass('inner').html("").append(HAML.app({}))
+    ko.applyBindings(VM)
 
   if VM.current_page().title
     document.title = "#{VM.current_page().title} - CircleCI"
   else
     document.title = "Continuous Integration and Deployment - CircleCI"
 
-  ko.applyBindings(VM)
+  # ko.applyBindings(VM)
 
-  main.focus()
+  $("main").focus()
 
 splitSplat = (cx) ->
   p = cx.params.splat[0]
@@ -67,6 +33,10 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   constructor: ->
     super()
+
+    @main_template = ko.observable()
+    @template_args = ko.observable({})
+    @template_subpage = ko.observable()
 
     # outer
     @home = new CI.outer.Home("home", "Continuous Integration and Deployment")
