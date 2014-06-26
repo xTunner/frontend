@@ -1,5 +1,6 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
+            [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
@@ -125,6 +126,16 @@
                     (:branch build))
           (assoc-in state/containers-path containers)))))
 
+
+(defmethod api-event [:cancel-build :success]
+  [target message status args state]
+  (let [build-id (get-in args [:context :build-id])]
+    (if-not (= (build-model/id (get-in state state/build-path))
+               build-id)
+      state
+      (update-in state state/build-path merge (:resp args)))))
+
+
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
@@ -133,11 +144,14 @@
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (doseq [action (mapcat :actions (get-in current-state state/containers-path))
-              :when (or (= "running" (:status action))
-                        (action-model/failed? action))]
-        ;; XXX: should this fetch the action logs itself creating controls events?
-        (put! (get-in current-state [:comms :controls])
-              [:action-log-output-toggled (select-keys action [:step :index])])))))
+              :when (and (:has_output action)
+                         (action-model/visible? action))]
+        (api/get-action-output {:vcs-url (get-in args [:resp :vcs_url])
+                                :build-num build-num
+                                :step (:step action)
+                                :index (:index action)
+                                :output-url (:output_url action)}
+                               (get-in current-state [:comms :api]))))))
 
 
 (defmethod api-event [:repos :success]

@@ -29,3 +29,17 @@
 (defn get-dashboard-builds [{:keys [branch repo org] :as args} api-ch]
   (let [url (dashboard-builds-url args)]
     (ajax/ajax :get url :recent-builds api-ch)))
+
+(defn get-action-output [{:keys [vcs-url build-num step index output-url]
+                          :as args} api-ch]
+  (let [url (or output-url
+                (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
+                                (vcs-url/project-name vcs-url)
+                                build-num
+                                step
+                                index))]
+    (ajax/ajax :get
+               url
+               :action-log
+               api-ch
+               :context args)))
