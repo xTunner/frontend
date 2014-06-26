@@ -17,8 +17,7 @@
   }
 }
 .build-head {
-  max-width: 83%;
-  margin: 0 auto;
+  margin: 0 1em;
   section {
     margin: @innerContentPadding 0 0 0;
     padding-top: @innerContentPadding;
@@ -75,15 +74,18 @@
   }
 }
 .build-actions {
-  .displayFlex();
-  .align-items(center);
+  .flexy(column);
   .flex(0, 0);
+  .actions {
+    .flexy(center, flex-end);
+    margin-bottom: .5em;
+  }
   button {
     .subtleButton(@grayLight);
     .aRowOfButtons(2em);
+    float: none;
   }
   .ssh_build {
-    margin-right: 1em;
     border-top-right-radius: 2em;
     border-bottom-right-radius: 2em;
   }
