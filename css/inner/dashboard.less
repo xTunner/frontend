@@ -35,8 +35,8 @@
     white-space: nowrap;
     text-align: left;
     padding: 0 .5em 2em;
-    height: @baseFontSize;
-    line-height: @baseFontSize;
+    height: (@baseFontSize - 1);      //
+    line-height: (@baseFontSize - 1); // minus 1px to compensate for border height
     &:first-child {
       padding-left: @baseFontSize;
     }
