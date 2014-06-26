@@ -8,6 +8,23 @@ CI.stringHelpers =
       start_slice = Math.ceil((goal_len - 3) / 3)
       str.slice(0, start_slice) + "..." + str.slice(start_slice + over)
 
+  stripHTMLTagsExcept: (html, allowedTags) ->
+    container = $("<div>#{html}</div>")
+    container.find("*:not(#{allowedTags})").each (i, elt) ->
+      $(elt).replaceWith(elt.innerText)
+    container.html()
+
+  stripHTMLAttributesExcept: (html, allowedAttributes) ->
+    container = $("<div>#{html}</div>")
+    container.find("*").each (i, elt) ->
+      tag = elt.nodeName.toLowerCase()
+      newElt = $("<#{tag}>#{elt.innerText}</#{tag}>")[0]
+      for attribute in allowedAttributes
+        if elt[attribute]
+          newElt[attribute] = elt[attribute]
+      $(elt).replaceWith(newElt.outerHTML)
+    container.html()
+
   linkify: (text, project_name) ->
     # urlPattern and psudoUrlPattern are taken from http://stackoverflow.com/a/7123542
 
@@ -37,5 +54,9 @@ CI.stringHelpers =
 
       text = text.replace(branchPattern, "<a href='#{branchUrl}' target='_blank'>$1</a>")
                  .replace(issuePattern, "<a href='#{issueUrl}' target='_blank'>#$1</a>")
+
+    # sanitize HTML to protect against potential XSS exploits
+    text = @stripHTMLTagsExcept(text, 'a')
+    text = @stripHTMLAttributesExcept(text, ['href', 'target'])
 
     text
