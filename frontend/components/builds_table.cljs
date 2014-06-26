@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
+            [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
@@ -50,7 +51,9 @@
               [:a
                {:title (build-model/duration build)
                 :href url}
-               (build-model/duration build)]]))
+               (if (build-model/running? build)
+                 (om/build common/updating-duration (:start_time build))
+                 (build-model/duration build))]]))
      [:td.recent-status-badge
       [:a
        {:title (build-model/status-words build)

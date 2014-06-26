@@ -44,6 +44,10 @@
         (#{"not_run" "infrastructure_fail"} (:status build)) "fa-ban"
         :else nil))
 
+(defn running? [build]
+  (and (:start_time build)
+       (not (:stop_time build))))
+
 ;; XXX figure out how to update duration
 (defn duration [{:keys [start_time stop_time] :as build}]
   (let [start-time (when start_time (js/Date.parse start_time))

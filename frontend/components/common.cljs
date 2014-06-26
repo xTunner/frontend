@@ -1,7 +1,11 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [cljs-time.core :as time]
             [frontend.async :refer [put!]]
-            [frontend.utils :as utils :include-macros true]))
+            [frontend.datetime :as datetime]
+            [frontend.utils :as utils :include-macros true]
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 ;; XXX flashes
 (defn flashes []
@@ -96,3 +100,25 @@
                                            " d='" (get-in icon-shapes [:turn :path]) "'></path>")])
                                    [(str "<path class='" (name icon-name) "' fill='none'"
                                          " d='" (get-in icon-shapes [icon-name :path]) "'></path>")]))}}])
+
+;; XXX: add opts if we want to do something more interesting, e.g. different formatting
+(defn updating-duration [start owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:watcher-uuid (utils/uuid)
+       :now (time/now)})
+    om/IDidMount
+    (did-mount [_]
+      (let [timer-atom (om/get-shared owner [:timer-atom])
+            uuid (om/get-state owner [:watcher-uuid])]
+        (add-watch timer-atom uuid (fn [_ _ _ t]
+                                     (om/set-state! owner [:now] t)))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (remove-watch (om/get-shared owner [:timer-atom])
+                    (om/get-state owner [:watcher-uuid])))
+    om/IRenderState
+    (render-state [_ {:keys [now]}]
+      (html [:span (datetime/as-duration (- (.getTime now)
+                                            (.getTime (js/Date. start))))]))))
