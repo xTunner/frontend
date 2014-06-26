@@ -517,8 +517,7 @@
                    ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
                    :on-change #(utils/edit-input controls-ch
                                                  (conj state/org-plan-path :billing_email)
-                                                 %
-                                                 :value (.. % -target -value))}]]]
+                                                 %)}]]]
                [:div.control-group
                 [:label.control-label {:for "billing_name"} "Billing name"]
                 [:div.controls
@@ -529,8 +528,7 @@
                    ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
                    :on-change #(utils/edit-input controls-ch
                                                  (conj state/org-plan-path :billing_name)
-                                                 %
-                                                 :value (.. % -target -value))}]]]
+                                                 %)}]]]
                [:div.control-group
                 [:label.control-label
                  {:for "extra_billing_data"}
@@ -545,8 +543,7 @@
                    ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
                    :on-change #(utils/edit-input controls-ch
                                                  (conj state/org-plan-path :extra_billing_data)
-                                                 %
-                                                 :value (.. % -target -value))}]]]
+                                                 %)}]]]
                [:div.control-group
                 [:div.controls
                  (forms/managed-button
