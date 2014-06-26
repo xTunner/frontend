@@ -25,4 +25,4 @@
                   repo (gstring/format "/api/v1/project/%s/%s" org repo)
                   org (gstring/format "/api/v1/organization/%s" org)
                   :else "/api/v1/recent-builds")]
-    (ajax/ajax :get url :recent-builds api-ch)))
+    (ajax/ajax :get url :recent-builds api-ch :context {:branch branch :repo repo :org org})))
