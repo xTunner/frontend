@@ -31,7 +31,7 @@
 .build-info {
   .displayFlex();
   table {
-    .flex(1, 1, 100%);
+    .flex(0.5, 1, 50%);
     display: block;
     line-height: 1.5em;
   }
@@ -75,7 +75,8 @@
 }
 .build-actions {
   .flexy(column);
-  .flex(0, 0);
+  .flex(1, 0);
+  padding-top: 4px; // to match space from line height in table
   .actions {
     .flexy(center, flex-end);
     margin-bottom: .5em;
