@@ -26,7 +26,7 @@ CI.stringHelpers =
     container.html()
 
   linkify: (text, project_name) ->
-    # urlPattern and psudoUrlPattern are taken from http://stackoverflow.com/a/7123542
+    # urlPattern and pseudoUrlPattern are taken from http://stackoverflow.com/a/7123542
 
     # http://, https://, ftp://
     urlPattern = /(\b(https?|ftp):\/\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\/%=~_|])/g
@@ -56,7 +56,7 @@ CI.stringHelpers =
                  .replace(issuePattern, "<a href='#{issueUrl}' target='_blank'>#$1</a>")
 
     # sanitize HTML to protect against potential XSS exploits
-    text = @stripHTMLTagsExcept(text, 'a')
+    text = @stripHTMLTagsExcept(text, ['a'])
     text = @stripHTMLAttributesExcept(text, ['href', 'target'])
 
     text
