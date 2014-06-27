@@ -67,7 +67,8 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (go (let [builds-url (api/dashboard-builds-url (:navigation-data current-state))
+    (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
+                                                     :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               comms (get-in current-state [:comms])]
           (condp = (inspect (:status api-resp))

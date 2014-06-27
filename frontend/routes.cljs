@@ -25,6 +25,16 @@
   [org repo build-num]
   (str "/gh/" org "/" repo "/" build-num))
 
+(defn v1-dashboard-path
+  "Temporary helper method for v1-*-dashboard until we figure out how to
+   make secretary's render-route work for multiple pages"
+  [{:keys [org repo branch page]}]
+  (let [url (cond branch (str "/gh/" org "/" repo "/tree/" branch)
+                  repo (str "/gh/" org "/" repo)
+                  org (str "/gh/" org)
+                  :else "/")]
+    (str url (when page (str "?page=" page)))))
+
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
     (open-to-inner! nav-ch :dashboard {:admin true})))
@@ -64,8 +74,8 @@
     (open-to-inner! nav-ch :add-projects {}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
-  (defroute v1-root "/" []
-    (open-to-inner! nav-ch :dashboard {})))
+  (defroute v1-root "/" {:as params}
+    (open-to-inner! nav-ch :dashboard params)))
 
 (defn define-spec-routes! [nav-ch]
   (defroute v1-not-found "*" []

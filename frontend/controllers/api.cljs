@@ -111,7 +111,9 @@
                (= (get-in state [:navigation-data :repo])
                   (get-in args [:context :repo]))
                (= (get-in state [:navigation-data :branch])
-                  (get-in args [:context :branch])))
+                  (get-in args [:context :branch]))
+               (= (get-in state [:navigation-data :query-params :page])
+                  (get-in args [:context :query-params :page])))
     state
     (assoc-in state [:recent-builds] (:resp args))))
 

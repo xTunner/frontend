@@ -7,6 +7,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
+   :builds-per-page 30
    :navigation-point nil
    :navigation-data nil
    :navigation-settings {}
