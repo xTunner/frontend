@@ -46,6 +46,7 @@
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
+                      :invoices nil
                       :name nil}
    :instrumentation []})
 
@@ -112,6 +113,7 @@
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-plan-path (conj org-data-path :plan))
+(def org-plan-balance-path (conj org-plan-path :account_balance))
 (def stripe-card-path (conj org-data-path :card))
 (def org-users-path (conj org-data-path :users))
 (def org-projects-path (conj org-data-path :projects))
@@ -120,6 +122,7 @@
 (def selected-containers-path (conj org-data-path :selected-containers))
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
+(def org-invoices-path (conj org-data-path :invoices))
 
 (def settings-path [:settings])
 

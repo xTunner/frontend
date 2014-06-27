@@ -239,8 +239,19 @@
                  :org-settings
                  api-ch
                  :context {:org-name org-name}))
-    (when (= subpage :organizations)
-      (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)))
+    (condp = subpage
+      :organizations (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+      :billing (do
+                 (ajax/ajax :get
+                            (gstring/format "/api/v1/organization/%s/card" org-name)
+                            :plan-card
+                            api-ch
+                            :context {:org-name org-name})
+                 (ajax/ajax :get
+                            (gstring/format "/api/v1/organization/%s/invoices" org-name)
+                            :plan-invoices
+                            api-ch
+                            :context {:org-name org-name}))))
   (set-page-title! (str "Org settings - " org-name)))
 
 

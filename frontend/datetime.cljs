@@ -90,6 +90,12 @@
 (def calendar-date
   (partial format-date calendar-date-format))
 
+(def year-month-day-date-format
+  (goog.i18n.DateTimeFormat. "yyyy/MM/dd"))
+
+(def year-month-day-date
+  (partial format-date year-month-day-date-format))
+
 (defn date-in-ms [date]
   (let [[y m d] (map js/parseInt (.split (name date) #"-"))]
     (.getTime (js/Date. (js/Date.UTC y (dec m) (dec d) 0 0 0)))))
