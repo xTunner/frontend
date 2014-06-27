@@ -114,10 +114,10 @@
 (def year
   (* month 12))
 
-(defn time-ago [time]
-  (let [now (.getTime (js/Date.))
-        ago (.floor js/Math (/ (- now time) 1000))
-        interval (cond (< ago hour)  {:divisor minute :unit "minute" }
+(defn time-ago [duration-ms]
+  (let [ago (.floor js/Math (/ duration-ms 1000))
+        interval (cond (< ago minute){:divisor 1      :unit "second" }
+                       (< ago hour)  {:divisor minute :unit "minute" }
                        (< ago day)   {:divisor hour   :unit "hour"   }
                        (< ago month) {:divisor day    :unit "day"    }
                        (< ago year)  {:divisor month  :unit "month"  }
