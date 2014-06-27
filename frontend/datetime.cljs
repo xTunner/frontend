@@ -1,5 +1,6 @@
 (ns frontend.datetime
-  (:require [goog.string :as g-string]
+  (:require [frontend.utils :as utils :include-macros true]
+            [goog.string :as g-string]
             goog.string.format
             [goog.i18n.DateTimeFormat.Format :as date-formats]))
 
@@ -125,11 +126,14 @@
       (str count " "  (:unit interval) (when-not (= 1 count) "s")))))
 
 (defn as-duration [duration]
-  (let [seconds (js/Math.floor (/ duration 1000))
-        minutes (js/Math.floor (/ seconds 60))
-        hours (js/Math.floor (/ minutes 60))
-        display-seconds (g-string/format "%02d" (mod seconds 60))
-        display-minutes (g-string/format "%02d" (mod minutes 60))]
-    (if (pos? hours)
-      (g-string/format "%s:%s:%s" hours display-minutes display-seconds)
-      (g-string/format "%s:%s" display-minutes display-seconds))))
+  (if (neg? duration)
+    (do (utils/mwarn "got negative duration" duration "returning 00:00")
+        "00:00")
+    (let [seconds (js/Math.floor (/ duration 1000))
+          minutes (js/Math.floor (/ seconds 60))
+          hours (js/Math.floor (/ minutes 60))
+          display-seconds (g-string/format "%02d" (mod seconds 60))
+          display-minutes (g-string/format "%02d" (mod minutes 60))]
+      (if (pos? hours)
+        (g-string/format "%s:%s:%s" hours display-minutes display-seconds)
+        (g-string/format "%s:%s" display-minutes display-seconds)))))
