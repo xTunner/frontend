@@ -158,7 +158,7 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
 
   loadAddProjects: (cx) =>
     $.getScript "//platform.twitter.com/oct.js", ()->
-      twttr.conversion.trackPid('l4lg6');
+      twttr.conversion.trackPid('l4lg6')
     @current_user().loadOrganizations()
     @current_user().loadCollaboratorAccounts()
     display "add_projects", {}

@@ -255,6 +255,8 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
             "track"
             "payer"
         ]
+      $.getScript "//platform.twitter.com/oct.js", ()->
+        twttr.conversion.trackPid('l4m9v')
         __adroll.record_user adroll_segments: "payer"
         @loadPlanData(data)
         @loadInvoices()
