@@ -46,7 +46,7 @@
               [:a
                {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (build-model/pretty-start-time build)]]
+               (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
              [:td.recent-time-duration
               [:a
                {:title (build-model/duration build)
