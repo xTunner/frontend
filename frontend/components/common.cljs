@@ -102,7 +102,7 @@
                                          " d='" (get-in icon-shapes [icon-name :path]) "'></path>")]))}}])
 
 ;; XXX: add opts if we want to do something more interesting, e.g. different formatting
-(defn updating-duration [start owner]
+(defn updating-duration [start owner opts]
   (reify
     om/IInitState
     (init-state [_]
@@ -120,5 +120,6 @@
                     (om/get-state owner [:watcher-uuid])))
     om/IRenderState
     (render-state [_ {:keys [now]}]
-      (html [:span (datetime/as-duration (- (.getTime now)
-                                            (.getTime (js/Date. start))))]))))
+      (let [formatter (get opts :formatter datetime/as-duration)
+            duration-ms (- (.getTime now) (.getTime (js/Date. start)))]
+        (html [:span (formatter duration-ms)])))))
