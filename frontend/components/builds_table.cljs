@@ -87,8 +87,8 @@
             [:th "Author"]
             [:th "Log"]
             ;; XXX show_queued logic
-            [:th "Started at"]
-            [:th "Length"]
+            [:th.condense "Started at"]
+            [:th.condense "Length"]
             [:th.condense "Status"]
             (when show-actions?
               [:th.condense "Actions"])]]
