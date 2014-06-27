@@ -110,7 +110,6 @@
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
             slim-aside? (get-in app state/slim-aside-path)
-            show-all-branches? (get-in app state/show-all-branches-path)
             user (:current-user app)]
         (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
@@ -119,21 +118,28 @@
                                 :href "/"}
            [:div.logomark
             (common/ico :logo)]]
-          [:div.aside-activity {:class (when-not slim-aside? "open")}
-           [:div.wrapper
-            [:div.toggle-all-branches
-             [:button {:class (when-not show-all-branches? "active")
-                       :on-click #(put! controls-ch [:show-all-branches-toggled false])}
-              "You"]
-             [:button {:class (when show-all-branches? "active")
-                       :on-click #(put! controls-ch [:show-all-branches-toggled true])}
-              "All"]]
-            (for [project (sort project-model/sidebar-sort projects)]
-              (om/build project-aside
-                        {:project project
-                         :user user
-                         :settings settings}
-                        {:react-key (project-model/id project)}))]]
+          [:a.aside-item {:data-bind "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}",
+                          :href "/account"}
+           [:i.fa.fa-cog]
+           [:span "Settings"]]
+
+          [:a.aside-item {:data-bind "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}"
+                          :href "/docs"}
+           [:i.fa.fa-copy]
+           [:span "Documentation"]]
+
+          [:a.aside-item {:on-click #(put! controls-ch [:intercom-dialog-raised])
+                          :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
+           [:i.fa.fa-bug]
+           [:span "Report Bug"]]
+
+          [:a.aside-item
+           {:href "https://www.hipchat.com/gjwkHcrD5",
+            :target "_blank",
+            :data-bind "tooltip: {title: 'Live Support', placement: 'right', trigger: 'hover'}"}
+           [:i.fa.fa-comments]
+           [:span "Live Support"]]
+
           [:a#add-projects.aside-item {:href "/add-projects",
                                        :data-bind "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
            [:i.fa.fa-plus-circle]
@@ -145,6 +151,14 @@
            [:i.fa.fa-envelope-o]
            [:span "Invite Teammate"]]
 
+          [:a.aside-item {:data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
+                          :on-click #(put! controls-ch [:slim-aside-toggled])}
+           (if slim-aside?
+             [:i.fa.fa-long-arrow-right]
+             (list
+              [:i.fa.fa-long-arrow-left]
+              [:span "Collapse"]))]
+
           [:div.aside-slideup
            [:a.aside-item {:href "/account"
                            :data-bind "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
@@ -152,14 +166,8 @@
                                                 :login (:login user)
                                                 :size 50})}]
             (:login user)]
+
            [:a.aside-item {:href "/logout"
                            :data-bind "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
             [:i.fa.fa-sign-out]
-            [:span "Logout"]]
-           [:a.aside-item {:data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
-                           :on-click #(put! controls-ch [:slim-aside-toggled])}
-            (if slim-aside?
-              [:i.fa.fa-long-arrow-right]
-              (list
-               [:i.fa.fa-long-arrow-left]
-               [:span "Collapse"]))]]])))))
+            [:span "Logout"]]]])))))
