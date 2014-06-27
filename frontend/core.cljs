@@ -194,7 +194,7 @@
 (defn dispatch-to-current-location! []
   (let [uri (goog.Uri. js/document.location.href)]
     (sec/dispatch! (str (.getPath uri)
-                        (when (.getQuery uri)
+                        (when-not (string/blank? (.getQuery uri))
                           (str "?" (.getQuery uri)))
                         (when-not (string/blank? (.getFragment uri))
                           (str "#" (.getFragment uri)))))))
