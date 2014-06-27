@@ -210,50 +210,50 @@
 
 
 (defmethod navigated-to :org-settings
-  [history-imp navigation-point {:keys [subpage org-name] :as args} state]
+  [history-imp navigation-point {:keys [subpage org] :as args} state]
   (mlog "Navigated to subpage:" subpage)
   (-> state
       (assoc :navigation-point navigation-point)
-      (assoc :nagivation-data args)
+      (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
-      (assoc :org-settings-org-name org-name)
-      (#(if (state-utils/stale-current-org? % org-name)
+      (assoc :org-settings-org-name org)
+      (#(if (state-utils/stale-current-org? % org)
           (state-utils/reset-current-org %)
           %))))
 
 (defmethod post-navigated-to! :org-settings
-  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
+  [history-imp navigation-point {:keys [org subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
-      (mlog "plan details already loaded for" org-name)
+      (mlog "plan details already loaded for" org)
       (ajax/ajax :get
-                 (gstring/format "/api/v1/organization/%s/plan" org-name)
+                 (gstring/format "/api/v1/organization/%s/plan" org)
                  :org-plan
                  api-ch
-                 :context {:org-name org-name}))
-    (if (= org-name (get-in current-state state/org-name-path))
-      (mlog "organization details already loaded for" org-name)
+                 :context {:org-name org}))
+    (if (= org (get-in current-state state/org-name-path))
+      (mlog "organization details already loaded for" org)
       (ajax/ajax :get
-                 (gstring/format "/api/v1/organization/%s/settings" org-name)
+                 (gstring/format "/api/v1/organization/%s/settings" org)
                  :org-settings
                  api-ch
-                 :context {:org-name org-name}))
+                 :context {:org-name org}))
     (condp = subpage
       :organizations (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
       :billing (do
                  (ajax/ajax :get
-                            (gstring/format "/api/v1/organization/%s/card" org-name)
+                            (gstring/format "/api/v1/organization/%s/card" org)
                             :plan-card
                             api-ch
-                            :context {:org-name org-name})
+                            :context {:org-name org})
                  (ajax/ajax :get
-                            (gstring/format "/api/v1/organization/%s/invoices" org-name)
+                            (gstring/format "/api/v1/organization/%s/invoices" org)
                             :plan-invoices
                             api-ch
-                            :context {:org-name org-name}))))
-  (set-page-title! (str "Org settings - " org-name)))
+                            :context {:org-name org}))))
+  (set-page-title! (str "Org settings - " org)))
 
 
 (defmethod post-navigated-to! :logout
