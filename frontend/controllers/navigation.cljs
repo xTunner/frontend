@@ -132,8 +132,8 @@
 
 
 (defmethod navigated-to :add-projects
-  [history-imp navigation-point _ state]
-  (assoc state :navigation-point navigation-point :navigation-data {} :navigation-settings {}))
+  [history-imp navigation-point args state]
+  (assoc state :navigation-point navigation-point :navigation-data args :navigation-settings {}))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
