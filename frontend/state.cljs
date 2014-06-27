@@ -7,7 +7,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
-   :navigation-point :loading
+   :navigation-point nil
    :navigation-data nil
    :navigation-settings {}
    :current-user nil

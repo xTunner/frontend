@@ -106,8 +106,14 @@
 
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
-  (mlog "recentbuilds success")
-  (assoc-in state [:recent-builds] (:resp args)))
+  (if-not (and (= (get-in state [:navigation-data :org])
+                  (get-in args [:context :org]))
+               (= (get-in state [:navigation-data :repo])
+                  (get-in args [:context :repo]))
+               (= (get-in state [:navigation-data :branch])
+                  (get-in args [:context :branch])))
+    state
+    (assoc-in state [:recent-builds] (:resp args))))
 
 
 (defmethod api-event [:build :success]

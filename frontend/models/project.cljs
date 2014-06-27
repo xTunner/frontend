@@ -1,5 +1,6 @@
 (ns frontend.models.project
-  (:require [frontend.utils :as utils :include-macros true]
+  (:require [clojure.string :refer [lower-case]]
+            [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]))
 
 (defn project-name [project]
@@ -54,6 +55,22 @@
                         :irc_username
                         :irc_password
                         :irc_notify_prefs]))
+
+(defn last-master-build
+  "Gets the last finished master build on the branch"
+  [project]
+  (first (get-in project [:branches (keyword (:default_branch project)) :recent_builds])))
+
+(defn sidebar-sort [l, r]
+  (let [l-last-build (last-master-build l)
+        r-last-build (last-master-build r)]
+    (cond (and l-last-build r-last-build)
+          (compare (:build_num r-last-build)
+                   (:build_num l-last-build))
+
+          l-last-build -1
+          r-last-build 1
+          :else (compare (lower-case (:vcs_url l)) (lower-case (:vcs_url r))))))
 
 (defn id [project]
   (:vcs_url project))

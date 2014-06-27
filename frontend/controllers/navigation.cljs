@@ -57,7 +57,8 @@
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link (boolean (:org args))})
+             :navigation-settings {:show-settings-link (boolean (:org args))}
+             :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
@@ -253,6 +254,12 @@
                             api-ch
                             :context {:org-name org-name}))))
   (set-page-title! (str "Org settings - " org-name)))
+
+
+(defmethod post-navigated-to! :logout
+  [history-imp navigation-point _ previous-state current-state]
+  (go (let [api-result (<! (ajax/managed-ajax :post "/logout"))]
+        (set! js/window.location "/"))))
 
 
 (defmethod navigated-to :error

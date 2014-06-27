@@ -20,15 +20,16 @@
              api-ch
              :context (build-model/id build)))
 
-(defn dashboard-builds-url [{:keys [branch repo org]}]
-  (cond branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
+(defn dashboard-builds-url [{:keys [branch repo org admin]}]
+  (cond admin "/api/v1/admin/recent-builds"
+        branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
         repo (gstring/format "/api/v1/project/%s/%s" org repo)
         org (gstring/format "/api/v1/organization/%s" org)
         :else "/api/v1/recent-builds"))
 
 (defn get-dashboard-builds [{:keys [branch repo org] :as args} api-ch]
   (let [url (dashboard-builds-url args)]
-    (ajax/ajax :get url :recent-builds api-ch)))
+    (ajax/ajax :get url :recent-builds api-ch :context {:branch branch :repo repo :org org})))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]

@@ -18,24 +18,29 @@
     om/IRender
     (render [_]
       (let [{:keys [build builds]} data
-            controls-ch (om/get-shared owner [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)]
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
            [:div
-            (when-not (build-model/in-usage-queue? build)
-              [:p (str "Circle " (when-not (build-model/in-run-queue? build) "has")
-                       " spent " (build-model/run-queued-time build)
+            (when-not usage-queued?
+              [:p (str "Circle "
+                       (when run-queued? "has") " spent "
+                       (if run-queued?
+                         (om/build common/updating-duration (:queued_at build))
+                         (datetime/as-duration (build-model/run-queued-time build)))
                        " acquiring containers for this build")])
 
             (when (seq builds)
               ;; XXX this could still use some work
               (list
-               [:p (str "This build " (if (build-model/in-usage-queue? build)
-                                        "has been"
-                                        "was")
-                        " queued behind the following builds for "
-                        (build-model/usage-queued-time build))]
+               [:p "This build " (if usage-queued? "has been" "was")
+                " queued behind the following builds for "
+                (if usage-queued?
+                  (om/build common/updating-duration (:usage_queued_at build))
+                  (build-model/usage-queued-time build))]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))]))))))
 
@@ -141,7 +146,9 @@
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
-            usage-queue-data (:usage-queue-data build-data)]
+            usage-queue-data (:usage-queue-data build-data)
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -155,12 +162,14 @@
                       [:a {:href (str "mailto:" (:author_email build))}
                        (build-model/author build)])]
                [:th "Started"]
-               [:td (build-model/pretty-start-time build)]]
+               [:td (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
                [:th "Duration"]
-               [:td (build-model/duration build)]]
+               [:td (if (build-model/running? build)
+                      (om/build common/updating-duration (:start_time build))
+                      (build-model/duration build))]]
               [:tr
                [:th "Previous"]
                (if-not (:previous_build build)
@@ -176,7 +185,23 @@
               [:tr
                (when (:usage_queued_at build)
                  (list [:th "Queued"]
-                       [:td (build-model/queued-time-summary build)
+                       [:td (if (< 0 (build-model/run-queued-time build))
+                              [:span
+                               (if usage-queued?
+                                 (om/build common/updating-duration (:usage_queued_at build))
+                                 (datetime/as-duration (build-model/usage-queued-time build)))
+                               " waiting + "
+                               (if run-queued?
+                                 (om/build common/updating-duration (:queued_at build))
+                                 (datetime/as-duration (build-model/run-queued-time build)))
+                               " in queue"]
+
+                              [:span
+                               (if usage-queued?
+                                 (om/build common/updating-duration (:usage_queued_at build))
+                                 (datetime/as-duration (build-model/usage-queued-time build)))
+                               " waiting for builds to finish"])
+
                         [:a#queued_explanation
                          {:on-click #(put! controls-ch [:usage-queue-why-toggled
                                                         {:build-id build-id
