@@ -63,14 +63,14 @@
               [:ol
                [:li
                 "Sign up for a plan from your "
-                [:a {:href (routes/v1-org-settings-subpage {:org-id login
+                [:a {:href (routes/v1-org-settings-subpage {:org login
                                                             :subpage "plan"})}
                  "\"personal organization\" page"]]
                [:li
                 "Add " org-name
                 " to the list of organizations you pay for or transfer the plan to "
                 org-name " from the "
-                [:a {:href (routes/v1-org-settings-subpage {:org-id login
+                [:a {:href (routes/v1-org-settings-subpage {:org login
                                                             :subpage "organizations"})}
                  "plan's organization page"]
                 "."]]]]))))

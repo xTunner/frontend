@@ -453,10 +453,10 @@
                 (:project-id context))
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
-          org-id (vcs-url/org-name (:project-id context))
-          repo-id (vcs-url/repo-name (:project-id context))]
-      (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org-id org-id
-                                                                    :repo-id repo-id
+          org (vcs-url/org-name (:project-id context))
+          repo (vcs-url/repo-name (:project-id context))]
+      (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org org
+                                                                    :repo repo
                                                                     :subpage "tests"})]))))
 
 
