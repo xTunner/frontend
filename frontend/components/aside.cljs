@@ -102,7 +102,36 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
-(defn aside [app owner]
+(defn activity [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [slim-aside? (get-in app state/slim-aside-path)
+            show-all-branches? (get-in app state/show-all-branches-path)
+            projects (get-in app state/projects-path)
+            settings (get-in app state/settings-path)
+            controls-ch (om/get-shared owner [:comms :controls])
+            user (:current-user app)]
+        (html
+         [:nav.aside-left-nav.context
+          [:div.aside-activity.open
+           [:div.wrapper
+            [:header
+             [:select {:name "toggle-all-branches"
+                       :on-change #(put! controls-ch [:show-all-branches-toggled
+                                                      (utils/parse-uri-bool (.. % -target -value))])
+                       :value show-all-branches?}
+              [:option {:value false} "Your Branch Activity"]
+              [:option {:value true} "All Branch Activity" ]]
+             [:div.select-arrow [:i.fa.fa-caret-down]]]
+            (for [project (sort project-model/sidebar-sort projects)]
+              (om/build project-aside
+                        {:project project
+                         :user user
+                         :settings settings}
+                        {:react-key (project-model/id project)}))]]])))))
+
+(defn aside-nav [app owner]
   (reify
     om/IRender
     (render [_]
@@ -171,3 +200,12 @@
                            :data-bind "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
             [:i.fa.fa-sign-out]
             [:span "Logout"]]]])))))
+
+(defn aside [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:aside.app-aside-left
+        (om/build aside-nav app)
+        (om/build activity app)]))))

@@ -66,8 +66,7 @@
                 ;;     expanding all datastructures.
                 (om/build inspector/inspector app))
               (when inner?
-                [:aside.app-aside-left
-                 (om/build aside/aside app)])
+                (om/build aside/aside app))
               [:main.app-main {:tab-index 1}
                (om/build header/header app)
                [:div.main-body
