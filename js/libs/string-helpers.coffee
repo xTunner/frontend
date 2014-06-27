@@ -8,12 +8,17 @@ CI.stringHelpers =
       start_slice = Math.ceil((goal_len - 3) / 3)
       str.slice(0, start_slice) + "..." + str.slice(start_slice + over)
 
-  stripHTMLTagsExcept: (html, allowedTags) ->
+  # escapes all HTML tags in html except for those explicity allowed
+  escapeHTMLTagsExcept: (html, allowedTags) ->
+    escape = (html) ->
+      $('<textarea>').html(html).html()   # see http://stackoverflow.com/a/9251169/2608804
+
     container = $("<div>#{html}</div>")
     container.find("*:not(#{allowedTags})").each (i, elt) ->
-      $(elt).replaceWith(elt.innerText)
+      $(elt).replaceWith(escape(elt.outerHTML))
     container.html()
 
+  # strips all attributes from all HTML tags in html except for those explicitly allowed
   stripHTMLAttributesExcept: (html, allowedAttributes) ->
     container = $("<div>#{html}</div>")
     container.find("*").each (i, elt) ->
@@ -56,7 +61,7 @@ CI.stringHelpers =
                  .replace(issuePattern, "<a href='#{issueUrl}' target='_blank'>#$1</a>")
 
     # sanitize HTML to protect against potential XSS exploits
-    text = @stripHTMLTagsExcept(text, ['a'])
+    text = @escapeHTMLTagsExcept(text, ['a'])
     text = @stripHTMLAttributesExcept(text, ['href', 'target'])
 
     text
