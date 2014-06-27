@@ -101,8 +101,11 @@
                                    [(str "<path class='" (name icon-name) "' fill='none'"
                                          " d='" (get-in icon-shapes [icon-name :path]) "'></path>")]))}}])
 
-;; XXX: add opts if we want to do something more interesting, e.g. different formatting
-(defn updating-duration [start owner opts]
+(defn updating-duration
+  "Takes a start time string and updates the component every second.
+   By default, uses datetime/as-duration, but can also take a custom :formatter
+   function in opts."
+  [start owner opts]
   (reify
     om/IInitState
     (init-state [_]
