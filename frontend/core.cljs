@@ -193,8 +193,11 @@
 
 (defn dispatch-to-current-location! []
   (let [uri (goog.Uri. js/document.location.href)]
-    (sec/dispatch! (str (.getPath uri) (when-not (string/blank? (.getFragment uri))
-                                         (str "#" (.getFragment uri)))))))
+    (sec/dispatch! (str (.getPath uri)
+                        (when (.getQuery uri)
+                          (str "?" (.getQuery uri)))
+                        (when-not (string/blank? (.getFragment uri))
+                          (str "#" (.getFragment uri)))))))
 
 
 ;; XXX this should go in IDidMount on the build container, also doesn't work
