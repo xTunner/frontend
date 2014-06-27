@@ -46,6 +46,7 @@
         %td{colspan: 2}
       <!-- /ko -->
       %td.recent-status-badge
+        -# content gets inserted into this anchor via CSS in dashboard.less with its 'title' attribute
         %a{data-bind: "attr: { href: url, title: status_words }, css: style"}
 
       - if @actions
