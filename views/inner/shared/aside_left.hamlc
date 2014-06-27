@@ -1,3 +1,4 @@
+!= HAML.invite_form({})
 <!-- ko with: current_user -->
 %nav.aside-left-nav{data-bind: "css: {slim: VM.browser_settings.settings().aside_is_slim}"}
   %a.aside-item.logo{href: "/", data-bind: "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"}
