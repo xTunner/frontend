@@ -23,10 +23,7 @@
 
     (set! (.-createUrl transformer)
           (fn [token path-prefix location]
-            (let [[path hash] (string/split token #"#")]
-              (str path-prefix
-                   path
-                   (when hash (str "#" hash))))))
+            (str path-prefix token)))
 
     transformer))
 
