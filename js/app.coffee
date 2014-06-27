@@ -19,8 +19,6 @@ display = (template, args, subpage, hash) ->
   else
     document.title = "Continuous Integration and Deployment - CircleCI"
 
-  # ko.applyBindings(VM)
-
   $("main").focus()
 
 splitSplat = (cx) ->
