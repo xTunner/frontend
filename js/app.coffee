@@ -2,11 +2,12 @@ CI.ajax.init()
 CI.instrumentation.init()
 
 display = (template, args, subpage, hash) ->
-  if subpage
-    VM.template_subpage("#{template}_#{subpage}")
-
+  VM.template_subpage(null)
   VM.main_template(template)
   VM.template_args(args)
+
+  if subpage
+    VM.template_subpage("#{template}_#{subpage}")
 
   # Only rebuild if this is the first time we're building the page or if we're
   # transitioning from outer

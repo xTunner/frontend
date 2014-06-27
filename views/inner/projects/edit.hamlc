@@ -38,7 +38,9 @@
         %a{href: "#deployment"} Other Deployments
   .project-settings-inner{data-bind: "with: project"}
     != HAML['flashes']({})
+    / ko if: VM.template_subpage
     #subpage{data-bind: "haml: {template: VM.template_subpage, args: VM.template_args}"}
+    / /ko
   .follow-status{data-bind: "with: project"}
     .followed{data-bind: "if: followed"}
       %i.fa.fa-group
