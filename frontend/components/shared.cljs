@@ -4,6 +4,7 @@
             [frontend.stefon :refer (data-uri)]
             [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -23,6 +24,16 @@
    [:div {:class company-size}
     [:img {:title "Shopify" :src (data-uri "/img/logos/shopify.png")}]]
    [:span.stretch]])
+
+(defn home-button [{:keys [source]} controls-ch]
+  [:a.btn.btn-primary.bold-btn {:on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                            :properties {:source "hero"}
+                                                                                            :path (gh-utils/auth-url)}])
+                                :href (gh-utils/auth-url)
+                                :title "Sign up with GitHub"}
+   [:i.fa.fa-github-alt]
+   " Sign up with "
+   [:strong.white "GitHub"]])
 
 (defn contact-form
   "It's not clear how this should fit into the global state, so it's using component-local

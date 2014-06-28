@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
+            [frontend.components.shared :as shared]
             [frontend.env :as env]
             [frontend.state :as state]
             [frontend.stefon :refer [data-uri]]
@@ -32,21 +33,11 @@
            :src (data-uri "/img/outer/home/deploy.png")}]
     [:h4 "Deploy green builds to your servers"]]])
 
-(defn home-button [{:keys [source]} controls-ch]
-  [:a.btn.btn-primary.bold-btn {:on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                            :properties {:source "hero"}
-                                                                                            :path (auth-url)}])
-                                :href (auth-url)
-                                :title "Sign up with GitHub"}
-   [:i.fa.fa-github-alt]
-   "Sign up with "
-   [:strong.white "GitHub"]])
-
 (defn home-cta [controls-ch]
   [:div.ctabox {:class (if first "line")}
    [:div
     [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-   (home-button {:source "hero"} controls-ch)
+   (shared/home-button {:source "hero"} controls-ch)
    [:div
     [:p
      [:i "CircleCI keeps your code safe. "

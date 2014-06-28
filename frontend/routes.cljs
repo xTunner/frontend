@@ -91,6 +91,9 @@
   (defroute v1-about "/jobs" []
     (open-to-outer! nav-ch :jobs {}))
 
+  (defroute v1-privacy "/privacy" []
+    (open-to-outer! nav-ch :privacy {}))
+
   (defroute v1-root "/" {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
