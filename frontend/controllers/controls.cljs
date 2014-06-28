@@ -10,7 +10,6 @@
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
             [frontend.state :as state]
-            [frontend.analytics :as analytics]
             [frontend.stripe :as stripe]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
@@ -521,15 +520,17 @@
              (get-in current-state [:comms :api])
              :context {:project-name project-name}
              :params invitees)
+  ;; XXX: move all of the tracking stuff into frontend.analytics and let it
+  ;;      keep track of which service to send things to
   (mixpanel/track "Sent invitations" {:first_green_build true
                                       :project project-name
                                       :users (map :login invitees)})
   (doseq [u invitees]
-    (analytics/track "Sent invitation" {:first_green_build true
-                                        :project project-name
-                                        :login (:login u)
-                                        :id (:id u)
-                                        :email (:email u)})))
+    (mixpanel/track "Sent invitation" {:first_green_build true
+                                       :project project-name
+                                       :login (:login u)
+                                       :id (:id u)
+                                       :email (:email u)})))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
