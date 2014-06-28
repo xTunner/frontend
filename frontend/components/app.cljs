@@ -11,6 +11,7 @@
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
+            [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
@@ -45,6 +46,7 @@
     :landing landing/home
     :about about/about
     :pricing pricing/pricing
+    :jobs jobs/jobs
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

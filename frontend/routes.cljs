@@ -88,6 +88,9 @@
       (open-to-inner! nav-ch :account {:subpage "plans"})
       (open-to-outer! nav-ch :pricing {})))
 
+  (defroute v1-about "/jobs" []
+    (open-to-outer! nav-ch :jobs {}))
+
   (defroute v1-root "/" {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
