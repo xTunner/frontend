@@ -1,7 +1,7 @@
 (ns frontend.core
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
-            ;; XXX remove browser repl in prod
+            [cljs-time.core :as time]
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
             [dommy.core :as dommy]
@@ -137,9 +137,17 @@
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
        (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
 
+(defn setup-timer-atom
+  "Sets up an atom that will keep track of the current time.
+   Used from frontend.components.common/updating-duration "
+  []
+  (let [mya (atom (time/now))]
+    (js/setInterval #(reset! mya (time/now)) 1000)
+    mya))
+
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
-        container   (sel1 top-level-node :body)
+        container   (sel1 top-level-node "#om-app")
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
@@ -153,7 +161,8 @@
      app/app
      state
      {:target container
-      :shared {:comms comms}})
+      :shared {:comms comms
+               :timer-atom (setup-timer-atom)}})
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -182,8 +191,11 @@
 
 (defn dispatch-to-current-location! []
   (let [uri (goog.Uri. js/document.location.href)]
-    (sec/dispatch! (str (.getPath uri) (when-not (string/blank? (.getFragment uri))
-                                         (str "#" (.getFragment uri)))))))
+    (sec/dispatch! (str (.getPath uri)
+                        (when-not (string/blank? (.getQuery uri))
+                          (str "?" (.getQuery uri)))
+                        (when-not (string/blank? (.getFragment uri))
+                          (str "#" (.getFragment uri)))))))
 
 
 ;; XXX this should go in IDidMount on the build container, also doesn't work

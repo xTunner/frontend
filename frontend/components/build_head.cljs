@@ -6,6 +6,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format
@@ -18,26 +19,40 @@
     om/IRender
     (render [_]
       (let [{:keys [build builds]} data
-            controls-ch (om/get-shared owner [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (:plan data)]
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
            [:div
-            (when-not (build-model/in-usage-queue? build)
-              [:p (str "Circle " (when-not (build-model/in-run-queue? build) "has")
-                       " spent " (build-model/run-queued-time build)
+            (when-not usage-queued?
+              [:p (str "Circle "
+                       (when run-queued? "has") " spent "
+                       (if run-queued?
+                         (om/build common/updating-duration (:queued_at build))
+                         (datetime/as-duration (build-model/run-queued-time build)))
                        " acquiring containers for this build")])
+            (when (< 10000 (build-model/run-queued-time build))
+              [:p "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
 
             (when (seq builds)
               ;; XXX this could still use some work
               (list
-               [:p (str "This build " (if (build-model/in-usage-queue? build)
-                                        "has been"
-                                        "was")
-                        " queued behind the following builds for "
-                        (build-model/usage-queued-time build))]
+               [:p "This build " (if usage-queued? "has been" "was")
+                " queued behind the following builds for "
+                (if usage-queued?
+                  (om/build common/updating-duration (:usage_queued_at build))
+                  (build-model/usage-queued-time build))]
 
-               (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))]))))))
+               (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
+            (when (and plan (< 10000 (build-model/usage-queued-time build)))
+              [:p#additional_containers_offer
+               "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                                                        :subpage "containers"})}
+                                             "add more containers"]
+               " and finish even faster."])]))))))
 
 (defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
   [:div
@@ -132,16 +147,20 @@
                         (:pretty_path artifact)]])
                     artifacts)]))])))))
 
-(defn build-head [build-data owner]
+(defn build-head [data owner]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
+            build-data (:build-data data)
             build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
-            usage-queue-data (:usage-queue-data build-data)]
+            usage-queue-data (:usage-queue-data build-data)
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (get-in data [:project-data :plan])]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -155,12 +174,14 @@
                       [:a {:href (str "mailto:" (:author_email build))}
                        (build-model/author build)])]
                [:th "Started"]
-               [:td (build-model/pretty-start-time build)]]
+               [:td (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
                [:th "Duration"]
-               [:td (build-model/duration build)]]
+               [:td (if (build-model/running? build)
+                      (om/build common/updating-duration (:start_time build))
+                      (build-model/duration build))]]
               [:tr
                [:th "Previous"]
                (if-not (:previous_build build)
@@ -176,7 +197,23 @@
               [:tr
                (when (:usage_queued_at build)
                  (list [:th "Queued"]
-                       [:td (build-model/queued-time-summary build)
+                       [:td (if (< 0 (build-model/run-queued-time build))
+                              [:span
+                               (if usage-queued?
+                                 (om/build common/updating-duration (:usage_queued_at build))
+                                 (datetime/as-duration (build-model/usage-queued-time build)))
+                               " waiting + "
+                               (if run-queued?
+                                 (om/build common/updating-duration (:queued_at build))
+                                 (datetime/as-duration (build-model/run-queued-time build)))
+                               " in queue"]
+
+                              [:span
+                               (if usage-queued?
+                                 (om/build common/updating-duration (:usage_queued_at build))
+                                 (datetime/as-duration (build-model/usage-queued-time build)))
+                               " waiting for builds to finish"])
+
                         [:a#queued_explanation
                          {:on-click #(put! controls-ch [:usage-queue-why-toggled
                                                         {:build-id build-id
@@ -199,45 +236,50 @@
                      :href (build-model/path-for-parallelism build)}
                  (str (:parallel build) "x")]]]]]
             [:div.build-actions
-             (forms/stateful-button
-              [:button.retry_build
-               {:data-loading-text "Rebuilding",
-                :title "Retry the same tests",
-                :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num
-                                                                    :clear-cache? false}])}
-               "Rebuild"])
-             (forms/stateful-button
-              [:button.clear_cache_retry
-               {:data-loading-text "Rebuilding",
-                :title "Clear cache and retry",
-                :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num
-                                                                    :clear-cache? true}])}
-               "w/ cleared cache"])
+             [:div.actions
+              (forms/stateful-button
+               [:button.retry_build
+                {:data-loading-text "Rebuilding",
+                 :title "Retry the same tests",
+                 :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num
+                                                                     :clear-cache? false}])}
+                "Rebuild"])
+              (forms/stateful-button
+               [:button.clear_cache_retry
+                {:data-loading-text "Rebuilding",
+                 :title "Clear cache and retry",
+                 :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num
+                                                                     :clear-cache? true}])}
+                "& clear cache"])
 
-             (forms/stateful-button
-              [:button.ssh_build
-               {:data-loading-text "Rebuilding",
-                :title "Retry with SSH in VM",
-                :on-click #(put! controls-ch [:ssh-build-clicked build-id])}
-               "w/ ssh enabled"])
-             [:button.report_build
-              {:title "Report error with build",
-               :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
-              "Report"]
-             (when (build-model/can-cancel? build)
-               (forms/stateful-button
-                [:button.cancel_build
-                 {:data-loading-text "Canceling",
-                  :title "Cancel this build",
-                  :on-click #(put! controls-ch [:cancel-build-clicked build-id])}
-                 "Cancel"]))]]
+              (forms/stateful-button
+               [:button.ssh_build
+                {:data-loading-text "Rebuilding",
+                 :title "Retry with SSH in VM",
+                 :on-click #(put! controls-ch [:ssh-build-clicked build-id])}
+                "& enable ssh"])]
+             [:div.actions
+              [:button.report_build
+               {:title "Report error with build",
+                :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
+               "Report"]
+              (when (build-model/can-cancel? build)
+                (forms/stateful-button
+                 [:button.cancel_build
+                  {:data-loading-text "Canceling",
+                   :title "Cancel this build",
+                   :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
+                                                                        :vcs-url vcs-url
+                                                                        :build-num build-num}])}
+                  "Cancel"]))]]]
            (when (:show-usage-queue usage-queue-data)
              (om/build build-queue {:build build
-                                    :builds (:builds usage-queue-data)}))
+                                    :builds (:builds usage-queue-data)
+                                    :plan plan}))
            (when (:subject build)
              (om/build build-commits build))
            (when (build-model/ssh-enabled-now? build)

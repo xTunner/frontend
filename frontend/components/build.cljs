@@ -66,10 +66,11 @@
     om/IRender
     (render [_]
       (let [{:keys [containers current-container-id]} container-data
-            controls-ch (om/get-shared owner [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])
+            hide-pills? (or (>= 1 (count containers))
+                            (not (first (mapcat :actions containers))))]
         (html
-         [:div.containers.pagination.pagination-centered (when-not (< 1 (count containers))
-                                                           {:style {:display "none"}})
+         [:div.containers.pagination.pagination-centered (when hide-pills? {:style {:display "none"}})
           [:ul.container-list
            (for [container containers]
              (om/build container-pill
@@ -133,7 +134,8 @@
              [:div.loading-spinner common/spinner]]
 
             [:div
-             (om/build build-head/build-head (dissoc build-data :container-data))
+             (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
+                                              :project-data project-data})
              (common/flashes)
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data})

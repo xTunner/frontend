@@ -2,6 +2,7 @@
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
             [frontend.state :as state]
+            [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -44,7 +45,10 @@
         (#{"not_run" "infrastructure_fail"} (:status build)) "fa-ban"
         :else nil))
 
-;; XXX figure out how to update duration
+(defn running? [build]
+  (and (:start_time build)
+       (not (:stop_time build))))
+
 (defn duration [{:keys [start_time stop_time] :as build}]
   (let [start-time (when start_time (js/Date.parse start_time))
         stop-time (when stop_time (js/Date.parse stop_time))]
@@ -108,10 +112,10 @@
     (:status build)))
 
 (defn status-class [build]
-  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "label-important"
-        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "label-warning"
-        (= "success" (:outcome build)) "label-success"
-        (= "running" (:status build)) "info-style"
+  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
+        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "stop"
+        (= "success" (:outcome build)) "pass"
+        (= "running" (:status build)) "busy"
         :else nil))
 
 (defn why-in-words [build]
@@ -145,8 +149,28 @@
 (defn config-errors? [build]
   (:circle_yml build))
 
+(defn fill-steps
+  "Canceled builds can have missing intermediate steps"
+  [build]
+  (let [parallel (or (:parallel build) 1)
+        last-step-index (-> build :steps last :actions first :step)]
+    (if (= last-step-index (dec (count (:steps build))))
+      build
+      (let [step-by-step-index (reduce (fn [step-by-step step]
+                                         (assoc step-by-step
+                                           (-> step :actions first :step) step))
+                                       {} (:steps build))]
+        (update-in build [:steps] (fn [steps]
+                                    (vec (map (fn [i]
+                                                (or (get step-by-step-index i)
+                                                    {:actions [{:index 0
+                                                                :step i
+                                                                :status "running"
+                                                                :filler-action true}]}))
+                                              (range (inc last-step-index))))))))))
+
 (defn containers [build]
-  (let [steps (:steps build)
+  (let [steps (-> build fill-steps :steps)
         parallel (:parallel build)
         actions (reduce (fn [groups step]
                           (map (fn [group action]

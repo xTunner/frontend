@@ -1,5 +1,6 @@
 (ns frontend.controllers.navigation
-  (:require [frontend.async :refer [put!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -8,7 +9,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
-  (:require-macros [frontend.utils :refer [inspect]]))
+  (:require-macros [frontend.utils :refer [inspect]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; XXX we could really use some middleware here, so that we don't forget to
 ;;     assoc things in state on every handler
@@ -55,7 +57,8 @@
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link (boolean (:org args))})
+             :navigation-settings {:show-settings-link (boolean (:org args))}
+             :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
 
@@ -64,7 +67,14 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (api/get-dashboard-builds (:navigation-data current-state) api-ch)
+    (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
+                                                     :builds-per-page (:builds-per-page current-state)))
+              api-resp (<! (ajax/managed-ajax :get builds-url))
+              comms (get-in current-state [:comms])]
+          (condp = (inspect (:status api-resp))
+            :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
+            404 (put! (:nav comms) [:error {:status 404 :inner? false}])
+            (put! (:errors comms) [:api-error api-resp]))))
     (when (:repo args)
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
@@ -122,8 +132,8 @@
 
 
 (defmethod navigated-to :add-projects
-  [history-imp navigation-point _ state]
-  (assoc state :navigation-point navigation-point :navigation-data {} :navigation-settings {}))
+  [history-imp navigation-point args state]
+  (assoc state :navigation-point navigation-point :navigation-data args :navigation-settings {}))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
@@ -157,20 +167,23 @@
           %))))
 
 (defmethod navigated-to :documentation-root
-  [history-imp to _ state]
-  (assoc state :navigation-point :documentation-root))
+  [history-imp to args state]
+  (assoc state
+    :navigation-point :documentation-root
+    :navigationo-data args))
 
 (defmethod navigated-to :documentation-page
-  [history-imp to [page] state]
+  [history-imp to args state]
   (assoc state
     :navigation-point :documentation-page
-    :current-documentation-page page))
+    :navigation-data args
+    :current-documentation-page (:page args)))
 
 (defmethod navigated-to :landing
-  [history-imp navigation-point _ state]
+  [history-imp navigation-point args state]
   (assoc state
          :navigation-point navigation-point
-         :navigation-data {}))
+         :navigation-data args))
 
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?
@@ -217,36 +230,68 @@
 
 
 (defmethod navigated-to :org-settings
-  [history-imp navigation-point {:keys [subpage org-name] :as args} state]
+  [history-imp navigation-point {:keys [subpage org] :as args} state]
   (mlog "Navigated to subpage:" subpage)
   (-> state
       (assoc :navigation-point navigation-point)
-      (assoc :nagivation-data args)
+      (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
-      (assoc :org-settings-org-name org-name)
-      (#(if (state-utils/stale-current-org? % org-name)
+      (assoc :org-settings-org-name org)
+      (#(if (state-utils/stale-current-org? % org)
           (state-utils/reset-current-org %)
           %))))
 
 (defmethod post-navigated-to! :org-settings
-  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
+  [history-imp navigation-point {:keys [org subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
-      (mlog "plan details already loaded for" org-name)
+      (mlog "plan details already loaded for" org)
       (ajax/ajax :get
-                 (gstring/format "/api/v1/organization/%s/plan" org-name)
+                 (gstring/format "/api/v1/organization/%s/plan" org)
                  :org-plan
                  api-ch
-                 :context {:org-name org-name}))
-    (if (= org-name (get-in current-state state/org-name-path))
-      (mlog "organization details already loaded for" org-name)
+                 :context {:org-name org}))
+    (if (= org (get-in current-state state/org-name-path))
+      (mlog "organization details already loaded for" org)
       (ajax/ajax :get
-                 (gstring/format "/api/v1/organization/%s/settings" org-name)
+                 (gstring/format "/api/v1/organization/%s/settings" org)
                  :org-settings
                  api-ch
-                 :context {:org-name org-name}))
-    (when (= subpage :organizations)
-      (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)))
-  (set-page-title! (str "Org settings - " org-name)))
+                 :context {:org-name org}))
+    (condp = subpage
+      :organizations (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+      :billing (do
+                 (ajax/ajax :get
+                            (gstring/format "/api/v1/organization/%s/card" org)
+                            :plan-card
+                            api-ch
+                            :context {:org-name org})
+                 (ajax/ajax :get
+                            (gstring/format "/api/v1/organization/%s/invoices" org)
+                            :plan-invoices
+                            api-ch
+                            :context {:org-name org}))))
+  (set-page-title! (str "Org settings - " org)))
+
+
+(defmethod post-navigated-to! :logout
+  [history-imp navigation-point _ previous-state current-state]
+  (go (let [api-result (<! (ajax/managed-ajax :post "/logout"))]
+        (set! js/window.location "/"))))
+
+
+(defmethod navigated-to :error
+  [history-imp navigation-point {:keys [status] :as args} state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
+
+(defmethod post-navigated-to! :error
+  [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
+  (set-page-title! (condp = status
+                     401 "Login required"
+                     404 "Page not found"
+                     500 "Internal server error"
+                     "Something unexpected happened")))

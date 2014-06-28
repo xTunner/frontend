@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
+            [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
@@ -29,7 +30,7 @@
        {:title (build-model/branch-in-words build)
         :href url}
        (-> build build-model/branch-in-words (utils/trim-middle 23))]]
-     [:td
+     [:td.recent-author
       [:a
        {:title (build-model/author build)
         :href url}
@@ -41,23 +42,23 @@
        (:subject build)]]
      (if (= "not_run" (:status build))
        [:td {:col-span 2}]
-       (list [:td.recent-time-started
+       (list [:td.recent-time
               [:a
                {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (build-model/pretty-start-time build)]]
-             [:td.recent-time-duration
+               (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
+             [:td.recent-time
               [:a
                {:title (build-model/duration build)
                 :href url}
-               (build-model/duration build)]]))
+               (if (build-model/running? build)
+                 (om/build common/updating-duration (:start_time build))
+                 (build-model/duration build))]]))
      [:td.recent-status-badge
       [:a
        {:title (build-model/status-words build)
-        :href url}
-       [:span.label.build_status
-        {:class (build-model/status-class build)}
-        (build-model/status-words build)]]]
+        :href url
+        :class (build-model/status-class build)}]]
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)
@@ -84,8 +85,8 @@
             [:th "Author"]
             [:th "Log"]
             ;; XXX show_queued logic
-            [:th "Started at"]
-            [:th "Length"]
+            [:th.condense "Started at"]
+            [:th.condense "Length"]
             [:th.condense "Status"]
             (when show-actions?
               [:th.condense "Actions"])]]

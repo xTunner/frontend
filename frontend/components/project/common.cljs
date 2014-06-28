@@ -20,7 +20,7 @@
     (render [_]
       (let [days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-subpage {:org-id org-name :subpage "plan"})]
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})]
         (html
          [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
           (cond (plan-model/trial-over? plan)
