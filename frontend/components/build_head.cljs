@@ -6,6 +6,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format
@@ -20,7 +21,8 @@
       (let [{:keys [build builds]} data
             controls-ch (om/get-shared owner [:comms :controls])
             run-queued? (build-model/in-run-queue? build)
-            usage-queued? (build-model/in-usage-queue? build)]
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (:plan data)]
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
@@ -32,6 +34,8 @@
                          (om/build common/updating-duration (:queued_at build))
                          (datetime/as-duration (build-model/run-queued-time build)))
                        " acquiring containers for this build")])
+            (when (< 10000 (build-model/run-queued-time build))
+              [:p "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
 
             (when (seq builds)
               ;; XXX this could still use some work
@@ -42,7 +46,13 @@
                   (om/build common/updating-duration (:usage_queued_at build))
                   (build-model/usage-queued-time build))]
 
-               (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))]))))))
+               (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
+            (when (and plan (< 10000 (build-model/usage-queued-time build)))
+              [:p#additional_containers_offer
+               "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                                                        :subpage "containers"})}
+                                             "add more containers"]
+               " and finish even faster."])]))))))
 
 (defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
   [:div
@@ -137,18 +147,20 @@
                         (:pretty_path artifact)]])
                     artifacts)]))])))))
 
-(defn build-head [build-data owner]
+(defn build-head [data owner]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
+            build-data (:build-data data)
             build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
-            usage-queued? (build-model/in-usage-queue? build)]
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (get-in data [:project-data :plan])]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -266,7 +278,8 @@
                   "Cancel"]))]]]
            (when (:show-usage-queue usage-queue-data)
              (om/build build-queue {:build build
-                                    :builds (:builds usage-queue-data)}))
+                                    :builds (:builds usage-queue-data)
+                                    :plan plan}))
            (when (:subject build)
              (om/build build-commits build))
            (when (build-model/ssh-enabled-now? build)

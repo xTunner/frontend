@@ -134,7 +134,8 @@
              [:div.loading-spinner common/spinner]]
 
             [:div
-             (om/build build-head/build-head (dissoc build-data :container-data))
+             (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
+                                              :project-data project-data})
              (common/flashes)
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data})
