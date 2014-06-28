@@ -891,8 +891,8 @@
     :preserves
       general:
         artifacts:
-          - foobar
-          - barbaz
+          - "selenium/screenshots" # relative to the build directory
+          - "~/simplecov" # relative to the user's home directory
 
 %h2#help Need anything else?
 
