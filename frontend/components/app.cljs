@@ -17,6 +17,7 @@
             [frontend.components.pricing :as pricing]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
+            [frontend.components.security :as security]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
@@ -49,6 +50,7 @@
     :pricing pricing/pricing
     :jobs jobs/jobs
     :privacy privacy/privacy
+    :security security/security
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

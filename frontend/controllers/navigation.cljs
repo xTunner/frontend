@@ -319,3 +319,9 @@
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
+
+(defmethod navigated-to :security
+  [history-imp navigation-point args state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))

@@ -94,6 +94,9 @@
   (defroute v1-privacy "/privacy" []
     (open-to-outer! nav-ch :privacy {}))
 
+  (defroute v1-privacy "/security" []
+    (open-to-outer! nav-ch :security {}))
+
   (defroute v1-root "/" {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
