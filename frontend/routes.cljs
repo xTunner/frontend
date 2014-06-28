@@ -80,6 +80,8 @@
   (defroute v1-doc-page #"/docs/(.*)" [doc-page]
     (open-to-outer! nav-ch :documentation-page {:page doc-page}))
 
+  (defroute v1-about "/about" []
+    (open-to-outer! nav-ch :about {}))
 
   (defroute v1-root "/" {:as params}
     (if authenticated?

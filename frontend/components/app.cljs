@@ -1,6 +1,7 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.about :as about]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
@@ -41,6 +42,7 @@
     :loading loading
 
     :landing landing/home
+    :about about/about
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

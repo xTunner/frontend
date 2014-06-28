@@ -295,3 +295,9 @@
                      404 "Page not found"
                      500 "Internal server error"
                      "Something unexpected happened")))
+
+(defmethod navigated-to :about
+  [history-imp navigation-point args state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
