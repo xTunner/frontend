@@ -36,7 +36,7 @@
                         (if keywords? " keywordize"))}))
 
 ;; XXX only implementing JSON format and not implementing prefixes for now since we don't use either
-(defn ajax [method url message channel & {:keys [params keywords? context]
+(defn ajax [method url message channel & {:keys [params keywords? context headers]
                                           :or {keywords? true}}]
   (let [uuid frontend.async/*uuid*]
     (put! channel [message :started context])
@@ -49,7 +49,8 @@
                              :params params
                              :headers (merge {:Accept "application/json"}
                                              (when (re-find #"^/" url)
-                                               {:X-CSRFToken (utils/csrf-token)}))
+                                               {:X-CSRFToken (utils/csrf-token)})
+                                             headers)
                              :handler #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :success (assoc % :context context)]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
@@ -57,7 +58,7 @@
                              :finally #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :finished context]))}))))
 
-(defn managed-ajax [method url & {:keys [params keywords?]
+(defn managed-ajax [method url & {:keys [params keywords? headers]
                                   :or {keywords? true}}]
   (let [channel (chan)]
     (clj-ajax/ajax-request url method
@@ -69,8 +70,29 @@
                          :params params
                          :headers (merge {:Accept "application/json"}
                                          (when (re-find #"^/" url)
-                                           {:X-CSRFToken (utils/csrf-token)}))
+                                           {:X-CSRFToken (utils/csrf-token)})
+                                         headers)
                          :handler #(put! channel (assoc % :status :success))
                          :error-handler #(put! channel %)
                          :finally #(close! channel)}))
+    channel))
+
+
+;; XXX this should be possible to do with the normal ajax function, but punting for now
+(defn managed-form-post [url & {:keys [params headers keywords?]
+                                :or {keywords? true}}]
+  (let [channel (chan)]
+    (clj-ajax/ajax-request url :post
+                           (clj-ajax/transform-opts
+                            {:format  (merge (clj-ajax/url-request-format)
+                                             (json-response-format {:keywords? keywords? :url url :method :post}))
+                             :response-format :json
+                             :params params
+                             :headers (merge {:Accept "application/json"}
+                                             (when (re-find #"^/" url)
+                                               {:X-CSRFToken (utils/csrf-token)})
+                                             headers)
+                             :handler #(put! channel (assoc % :status :success))
+                             :error-handler #(put! channel %)
+                             :finally #(close! channel)}))
     channel))
