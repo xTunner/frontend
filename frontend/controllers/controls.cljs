@@ -661,3 +661,7 @@
 (defmethod control-event :home-technology-tab-selected
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
+
+(defmethod post-control-event! :home-technology-tab-selected
+  [target message {:keys [tab]} previous-state current-state]
+  (mixpanel/track "Test Stack" {:tab (name tab)}))
