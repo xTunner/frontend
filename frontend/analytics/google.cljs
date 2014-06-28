@@ -6,7 +6,7 @@
      ((aget gaq "push") (clj->js args))))
 
 (defn track-event [& args]
-  (utils/swallow-errors (push "_trackEvent" args)))
+  (utils/swallow-errors (push (cons "_trackEvent" args))))
 
 (defn track-pageview [& args]
-  (utils/swallow-errors (push "_trackPageview" args)))
+  (utils/swallow-errors (push (cons "_trackPageview" args))))
