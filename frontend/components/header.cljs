@@ -134,7 +134,7 @@
                 {:href "/"}
                 [:img
                  {:width "130",
-                  :src (utils/asset-path "/img/logo-new.svg")
+                  :src (utils/cdn-path "/img/logo-new.svg")
                   :height "40"}]]
                [:nav.span6
                 {:role "navigation"}

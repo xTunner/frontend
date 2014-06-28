@@ -90,7 +90,7 @@
   [ds]
   (js->clj ds :keywordize-keys true))
 
-(defn asset-path
+(defn cdn-path
   "Returns path of asset in CDN"
   [path]
   (-> js/window
