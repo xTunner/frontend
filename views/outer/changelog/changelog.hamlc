@@ -14,10 +14,12 @@
           .entry-info{data-bind: "css: type"}
             %strong{data-bind: "text: type"}
             != surround 'by', ' on', ->
-              %a{data-bind: "text: $parent.author(author), attr: {href: $parent.twitter(author)}"}
+              %span{data-bind: "if: $parent.author_exists(author)"}
+                %a{data-bind: "text: $parent.author(author), attr: {href: $parent.twitter(author)}"}
+              %span{data-bind: "ifnot: $parent.author_exists(author), text: author"}
             %a{data-bind: "attr: {href: link, id: pubDate}, text: CI.time.as_time_since(pubDate)"}
-        .entry-avatar
-          %img{data-bind: "attr: {src: assetPath($parent.image(author))}"}
+          .entry-avatar{data-bind: "if: $parent.author_exists(author)"}
+            %img{data-bind: "attr: {src: assetPath($parent.image(author))}"}
 
         -# these are intended to be hashtags, that can then be used to filter
         -# .categories{data-bind: "foreach: categories"}

@@ -5,7 +5,9 @@ CI.outer.Changelog = class Changelog extends CI.outer.Page
     @name = "changelog"
     @entries = ko.observableArray([])
 
-  # NOTE: You cannot add a user who does not appear on the about page. This is intentional.
+  author_exists: (author) =>
+    VM.about.team[author]?
+
   image: (author) =>
     VM.about.team[author].img_path
 
