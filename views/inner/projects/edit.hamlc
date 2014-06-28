@@ -36,10 +36,9 @@
         %a{href: "#heroku"} Heroku
       %li
         %a{href: "#deployment"} Other Deployments
-  .project-settings-inner
+  .project-settings-inner{data-bind: "with: project"}
     != HAML['flashes']({})
-    #subpage{data-bind: "with: project"}
-      %p Loading...
+    #subpage{data-bind: "haml: {template: VM.template_subpage, args: VM.template_args}"}
   .follow-status{data-bind: "with: project"}
     .followed{data-bind: "if: followed"}
       %i.fa.fa-group

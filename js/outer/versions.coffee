@@ -189,10 +189,10 @@ CI.Versions =
   erlang: 'r14b04'
 
   default_java_package: "oraclejdk7"
-  default_java_version: "1.7.0_21"
+  default_java_version: "1.7.0_55"
   java_packages: [
     { name: "Oracle JDK 8", package: "oraclejdk8", version: "1.8.0" },
-    { name: "Oracle JDK 7", package: "oraclejdk7", version: "1.7.0_21", default: true },
+    { name: "Oracle JDK 7", package: "oraclejdk7", version: "1.7.0_55", default: true },
     { name: "Oracle JDK 6", package: "oraclejdk6", version: "1.6.0_37" },
     { name: "Open JDK 7", package: "openjdk7" },
     { name: "Open JDK 6", package: "openjdk6" }

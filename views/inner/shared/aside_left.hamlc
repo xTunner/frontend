@@ -3,14 +3,46 @@
   %a.aside-item.logo{href: "/", data-bind: "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"}
     .logomark
       != HAML.ico(n:'logo')
-  -# %a.aside-item{href: "#", tooltip: "Activity", data-bind: "click: toggle_recent_activity"}
-  -#   %i.fa.fa-code
-  -#   %span Activity
-  .aside-activity{data-bind: "css: {open: VM.browser_settings.settings().recent_activity_visible}"}
+  %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-cog
+    %span Settings
+  %a.aside-item{href: "/docs", data-bind: "tooltip: {title: 'Documentation', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-copy
+    %span Documentation
+  %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog"}
+    %i.fa.fa-bug
+    %span Report Bug
+  %a.aside-item{href: "https://www.hipchat.com/gjwkHcrD5", target: "_blank", data-bind: "tooltip: {title: 'Live Support', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-comments
+    %span Live Support
+  %a.aside-item#add-projects{href: "/add-projects", data-bind: "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
+    %i.fa.fa-plus-circle
+    %span Add Projects
+  %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}", data-toggle: "modal", data-target: "#inviteForm"}
+    %i.fa.fa-envelope-o
+    %span Invite Teammate
+  %a.aside-item{href: "#", data-bind: "click: toggle_aside_expanded, tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"}
+    / ko if: VM.browser_settings.settings().aside_is_slim
+    %i.fa.fa-long-arrow-right
+    / /ko
+    / ko ifnot: VM.browser_settings.settings().aside_is_slim
+    %i.fa.fa-long-arrow-left
+    / /ko
+    %span Collapse
+  .aside-slideup
+    %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
+      %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
+      %span{data-bind: "text: login"}
+    %a.aside-item{href: "/logout", data-bind: "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
+      %i.fa.fa-sign-out
+      %span Logout
+%nav.aside-left-nav.context
+  .aside-activity.open
     .wrapper
-      .toggle-all-branches
-        %button{data-bind: "css: {active: !VM.browser_settings.settings().show_all_branches}, click: toggle_show_all_branches"} You
-        %button{data-bind: "css: {active:  VM.browser_settings.settings().show_all_branches}, click: toggle_show_all_branches"} All
+      %header
+        %select{name: "toggle-all-branches", data-bind: "options: ['Your Branch Activity', 'All Branch Activity'], value: activity_setting"}
+        .select-arrow
+          %i.fa.fa-caret-down
       <!-- ko foreach: {data: $root.followed_projects(), as: 'p'} -->
         %ul{data-bind: "css: {open: !branches_collapsed()}"}
           %li
@@ -31,27 +63,6 @@
                 <!-- /ko -->
           <!-- /ko -->
       <!-- /ko -->
-  %a.aside-item#add-projects{href: "/add-projects", data-bind: "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
-    %i.fa.fa-plus-circle
-    %span Add Projects
-  %a.aside-item{href: "#", data-bind: "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}", data-toggle: "modal", data-target: "#inviteForm"}
-    %i.fa.fa-envelope-o
-    %span Invite Teammate
-  .aside-slideup
-    %a.aside-item{href: "/account", data-bind: "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
-      %img{data-bind: "attr: {src: gravatar_url(50, true)}"}
-      %span{data-bind: "text: login"}
-    %a.aside-item{href: "/logout", data-bind: "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
-      %i.fa.fa-sign-out
-      %span Logout
-    %a.aside-item{href: "#", data-bind: "click: toggle_aside_expanded, tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"}
-      / ko if: VM.browser_settings.settings().aside_is_slim
-      %i.fa.fa-long-arrow-right
-      / /ko
-      / ko ifnot: VM.browser_settings.settings().aside_is_slim
-      %i.fa.fa-long-arrow-left
-      / /ko
-      %span Collapse
 <!-- /ko -->
 
 
