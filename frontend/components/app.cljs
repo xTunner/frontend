@@ -13,6 +13,7 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
+            [frontend.components.pricing :as pricing]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
@@ -43,6 +44,7 @@
 
     :landing landing/home
     :about about/about
+    :pricing pricing/pricing
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

@@ -47,7 +47,10 @@
                                                                  :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
-          [:a {:data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"}
+          [:a {:href (gh-utils/auth-url)
+               :on-click #(put! controls-ch [:track-external-link-clicked {:path (gh-utils/auth-url)
+                                                                           :event "Auth GitHub"
+                                                                           :properties {:source "pricing-business"}}])}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise
