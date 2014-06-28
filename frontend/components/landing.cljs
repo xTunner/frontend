@@ -10,7 +10,8 @@
             [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [sablono.core :as html :refer-macros [html]])
+  (:require-macros [frontend.utils :refer [defrender]]))
 
 (def hero-graphic
   [:div.row-fluid.how
