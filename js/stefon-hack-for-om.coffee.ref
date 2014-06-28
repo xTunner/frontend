@@ -10,8 +10,3 @@ window.stefon_hack_for_om =
     "/img/outer/home/jon-crawford-2.png": '(data-uri "img/outer/home/jon-crawford-2.png")'
     "/img/outer/home/octocat.png": '(data-uri "img/outer/home/octocat.png")'
     "/img/outer/home/test-output.png": '(data-uri "img/outer/home/test-output.png")'
-    "/img/outer/home/tech-browsers.png": '(data_uri "img/outer/home/tech-browsers.png")'
-    "/img/outer/home/tech-databases.png": '(data_uri "img/outer/home/tech-databases.png")'
-    "/img/outer/home/tech-deployment.png": '(data_uri "img/outer/home/tech-deployment.png")'
-    "/img/outer/home/tech-languages.png": '(data_uri "img/outer/home/tech-languages.png")'
-    "/img/outer/home/tech-queues.png": '(data_uri "img/outer/home/tech-queues.png")'
