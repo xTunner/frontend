@@ -32,7 +32,7 @@
 
 (defn home-button
   [{:keys [source]}]
-  [:a.btn.btn-primary.bold-btn {:href XXXXX
+  [:a.btn.btn-primary.bold-btn {:href (auth-url)
                                 :title "Sign up with GitHub"
                                 ;; XXXXX on click track auth event
                                 }
@@ -464,7 +464,7 @@
         "All plans include a "
         [:strong [:i "Free 14 Day Trial."]]]]]]]])
 
-(utils/defrender home
+(defrender home
   []
   (let [ab-tests nil]
     (html [:div.landing.page
