@@ -1,5 +1,6 @@
 (ns frontend.components.landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -109,15 +110,14 @@
     </g>
   </svg>"}}])
 
-(defn home-hero-unit
-  [ab-tests]
+(defn home-hero-unit [ab-tests]
   [:div#hero
    [:div.container
     [:h1 "Ship better code, faster"]
-    (if (:top-copy ab-tests)
+    (if (:top_copy ab-tests)
       [:h3 "Continuous Integration and Deployment that just works. Signup and get running in under 60 seconds."]
       [:h3 "CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance."])
-    (if (:hero-graphic ab-tests)
+    (if (:hero_graphic ab-tests)
       hero-graphic
       stories-procedure)
     [:div.row-fluid
@@ -273,135 +273,53 @@
        [:p
         "At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know."]]]]]])
 
-(defn home-technology
-  []
-  [:section.technology
-   [:div.container
-    [:h2 "We support your stack"]
-    [:div.tabbable
+(defn tech-tab [tab selected controls-ch]
+  [:li {:class (when (= tab selected) "active")}
+   [:a {:on-click #(put! controls-ch [:home-technology-tab-selected {:tab tab}])}
+    (str/capitalize (name tab))]])
+
+(defn tech-tab-content [tab template]
+  [:div.active.tab-pane {:id (name tab)}
+   (if (:img-url template)
      [:div.row-fluid
-      [:div.nav-tabs-container.span12
-       [:ul#tech.nav.nav-tabs
-        [:li.active
-         [:a
-          {:language "language",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#languages"}
-          "Languages"]]
-        [:li
-         [:a
-          {:databases "databases",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#databases"}
-          "Databases"]]
-        [:li
-         [:a
-          {:queues "queues",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#queues"}
-          "Queues"]]
-        [:li
-         [:a
-          {:browsers "browsers",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#browsers"}
-          "Browsers"]]
-        [:li
-         [:a
-          {:libraries "libraries",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#libraries"}
-          "Libraries"]]
-        [:li
-         [:a
-          {:deployment "deployment",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#deployment"}
-          "Deployment"]]
-        [:li
-         [:a
-          {:custom "custom",
-           :tab:_ "tab:_",
-           :properties:_ "properties:_",
-           :stack "stack",
-           :test "test",
-           :event:_ "event:_",
-           :data-bind "\\track:",
-           :data-toggle "tab",
-           :href "#custom"}
-          "Custom"]]]]]
-     [:div.tab-content
-      [:div#languages.active.tab-pane
-       [:div.row-fluid
-        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-languages.png")}]]
-        [:div.span6
-         "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.You can customize any step, or set up your test steps manually for PHP or other languages."]]]
-      [:div#databases.tab-pane
-       [:div.row-fluid
-        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-databases.png")}]]
-        [:div.span6
-         "If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away."]]]
-      [:div#queues.tab-pane
-       [:div.fluid.row
-        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-queues.png")}]]
-        [:div.span6
-         "If you need to test against queues, we have them installed on our boxes.We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need."]]]
-      [:div#browsers.tab-pane
-       [:div.row-fluid
-        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-browsers.png")}]]
-        [:div.span6
-         "We support continuous integration testing in your apps against a wide range of browsers.We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS.Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber."]]]
-      [:div#libraries.tab-pane
-       [:div.row-fluid
-        [:div.offset2.span8
-         [:p
-          "We run a recent version Ubuntu and have installed all of the libraries you need for development.We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.As new important libraries come out it's trivial for us to add them for you."]]]]
-      [:div#deployment.tab-pane
-       [:div.row-fluid
-        [:div.span6 [:img {:src (data-uri "/img/outer/home/tech-deployment.png")}]]
-        [:div.span6
-         "Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.Many of our customers deploy directly after a green push to master or another branch.We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3."]]]
-      [:div#custom.tab-pane
-       [:div.row-fluid
-        [:div.offset2.span8
-         [:p
-          "Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use npm in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."]]]]]]]])  
+      [:div.span6 [:img {:src (utils/cdn-path (:img-url template))}]]
+      [:div.span6
+       (:blurb template)]]
+     [:div.row-fluid
+      [:div.offset2.span8
+       [:p (:blurb template)]]])])
+
+(defn home-technology [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [selected-tab (or (get-in app state/selected-home-technology-tab-path)
+                             :languages)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+         [:section.technology
+          [:div.container
+           [:h2 "We support your stack"]
+           [:div.tabbable
+            [:div.row-fluid
+             [:div.nav-tabs-container.span12
+              [:ul#tech.nav.nav-tabs
+               (for [tab [:languages :databases :queues :browsers :libraries :deployment :custom]]
+                 (tech-tab tab selected-tab controls-ch))]]]
+            [:div.tab-content
+             (let [templates {:languages {:img-url "/img/outer/home/tech-languages.png"
+                                          :blurb "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.You can customize any step, or set up your test steps manually for PHP or other languages."}
+                              :databases {:img-url "/img/outer/home/tech-databases.png"
+                                          :blurb "If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away."}
+                              :queues {:img-url "/img/outer/home/tech-queues.png"
+                                       :blurb "If you need to test against queues, we have them installed on our boxes.We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need."}
+                              :browsers {:img-url "/img/outer/home/tech-browsers.png"
+                                         :blurb "We support continuous integration testing in your apps against a wide range of browsers.We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS.Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber."}
+                              :libraries {:blurb "We run a recent version Ubuntu and have installed all of the libraries you need for development.We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.As new important libraries come out it's trivial for us to add them for you."}
+                              :deployment {:img-url "/img/outer/home/tech-deployment.png"
+                                           :blurb "Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.Many of our customers deploy directly after a green push to master or another branch.We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3."}
+                              :custom {:blurb "Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use npm in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."}}]
+               (tech-tab-content selected-tab (get templates selected-tab)))]]]])))))
 
 (def home-get-started
   [:div.get-started
@@ -456,5 +374,5 @@
                 (home-hero-unit ab-tests)
                 home-customers
                 home-features
-                (home-technology)
+                (om/build home-technology app)
                 home-get-started]])))))

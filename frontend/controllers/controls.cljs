@@ -655,3 +655,8 @@
         ;; TODO Handle this message in the API channel
         (put! api-ch [:resend-invoice (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
+
+
+(defmethod control-event :home-technology-tab-selected
+  [target message {:keys [tab]} state]
+  (assoc-in state state/selected-home-technology-tab-path tab))

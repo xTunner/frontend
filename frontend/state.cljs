@@ -8,6 +8,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
+   :selected-home-technology-tab nil
    :builds-per-page 30
    :navigation-point nil
    :navigation-data nil
@@ -147,3 +148,5 @@
 
 (def flash-path [:render-context :flash])
 (def error-data-path [:error-data])
+
+(def selected-home-technology-tab-path [:selected-home-technology-tab])
