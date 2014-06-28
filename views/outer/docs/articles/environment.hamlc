@@ -371,7 +371,7 @@ We also install some release candidate and beta versions (see the above URL for 
   %li
     %code= @v.v('redis')
   %li
-    %code= @v.v('memcache')
+    %code= @v.v('memcached')
   %li
     %code= @v.v('sphinx')
   %li

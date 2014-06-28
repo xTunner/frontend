@@ -14,10 +14,22 @@ body {
   .app-main {
     .flex(1, 1);
     outline: none; // Appears when auto-focused
-    width: ~"calc(100% - @{aside_nav_width})";
+    // width: ~"calc(100% - @{aside_nav_width})";
     height: 100vh;
     padding: 0;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 5px;
+    }
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background: @grayLighter;
+      }
+    }
   }
   .main-head {
     .flexy(column);
@@ -31,8 +43,10 @@ body {
         width: @tile;
         height: @tile;
         font-size: 1.5em;
-        &:not(:hover) {
-          color: @grayDark;
+        &:hover {
+          path {
+            stroke: @blueLight;
+          }
         }
         svg {
           path {
@@ -51,7 +65,8 @@ body {
   .main-body {
     .box-sizing(border-box);
     min-height: ~"calc(100% - @{tile})";
-    padding: @innerContentPadding 0;
+    // padding: @innerContentPadding 0;
+    padding: @baseFontSize 0;
   }
   .main-foot {
     padding: @footerItemSize 0;
