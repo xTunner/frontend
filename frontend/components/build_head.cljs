@@ -224,44 +224,46 @@
                      :href (build-model/path-for-parallelism build)}
                  (str (:parallel build) "x")]]]]]
             [:div.build-actions
-             (forms/stateful-button
-              [:button.retry_build
-               {:data-loading-text "Rebuilding",
-                :title "Retry the same tests",
-                :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num
-                                                                    :clear-cache? false}])}
-               "Rebuild"])
-             (forms/stateful-button
-              [:button.clear_cache_retry
-               {:data-loading-text "Rebuilding",
-                :title "Clear cache and retry",
-                :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num
-                                                                    :clear-cache? true}])}
-               "w/ cleared cache"])
+             [:div.actions
+              (forms/stateful-button
+               [:button.retry_build
+                {:data-loading-text "Rebuilding",
+                 :title "Retry the same tests",
+                 :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num
+                                                                     :clear-cache? false}])}
+                "Rebuild"])
+              (forms/stateful-button
+               [:button.clear_cache_retry
+                {:data-loading-text "Rebuilding",
+                 :title "Clear cache and retry",
+                 :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num
+                                                                     :clear-cache? true}])}
+                "& clear cache"])
 
-             (forms/stateful-button
-              [:button.ssh_build
-               {:data-loading-text "Rebuilding",
-                :title "Retry with SSH in VM",
-                :on-click #(put! controls-ch [:ssh-build-clicked build-id])}
-               "w/ ssh enabled"])
-             [:button.report_build
-              {:title "Report error with build",
-               :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
-              "Report"]
-             (when (build-model/can-cancel? build)
-               (forms/stateful-button
-                [:button.cancel_build
-                 {:data-loading-text "Canceling",
-                  :title "Cancel this build",
-                  :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
-                                                                       :vcs-url vcs-url
-                                                                       :build-num build-num}])}
-                 "Cancel"]))]]
+              (forms/stateful-button
+               [:button.ssh_build
+                {:data-loading-text "Rebuilding",
+                 :title "Retry with SSH in VM",
+                 :on-click #(put! controls-ch [:ssh-build-clicked build-id])}
+                "& enable ssh"])]
+             [:div.actions
+              [:button.report_build
+               {:title "Report error with build",
+                :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
+               "Report"]
+              (when (build-model/can-cancel? build)
+                (forms/stateful-button
+                 [:button.cancel_build
+                  {:data-loading-text "Canceling",
+                   :title "Cancel this build",
+                   :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
+                                                                        :vcs-url vcs-url
+                                                                        :build-num build-num}])}
+                  "Cancel"]))]]]
            (when (:show-usage-queue usage-queue-data)
              (om/build build-queue {:build build
                                     :builds (:builds usage-queue-data)}))
