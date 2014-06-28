@@ -665,3 +665,11 @@
 (defmethod post-control-event! :home-technology-tab-selected
   [target message {:keys [tab]} previous-state current-state]
   (mixpanel/track "Test Stack" {:tab (name tab)}))
+
+(defmethod post-control-event! :track-external-link-clicked
+  [target message {:keys [path event properties]} previous-state current-state]
+  (let [redirect #(js/window.location.replace path)]
+    (go (alt!
+         (mixpanel/managed-track event properties) ([v] (do (utils/mlog "tracked" v "... redirecting")
+                                                            (redirect)))
+         (async/timeout 1000) (redirect)))))

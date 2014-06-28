@@ -32,21 +32,21 @@
            :src (data-uri "/img/outer/home/deploy.png")}]
     [:h4 "Deploy green builds to your servers"]]])
 
-(defn home-button
-  [{:keys [source]}]
-  [:a.btn.btn-primary.bold-btn {:href (auth-url)
-                                :title "Sign up with GitHub"
-                                ;; XXXXX on click track auth event
-                                }
+(defn home-button [{:keys [source]} controls-ch]
+  [:a.btn.btn-primary.bold-btn {:on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                            :properties {:source "hero"}
+                                                                                            :path (auth-url)}])
+                                :href (auth-url)
+                                :title "Sign up with GitHub"}
    [:i.fa.fa-github-alt]
    "Sign up with "
    [:strong.white "GitHub"]])
 
-(def home-cta
+(defn home-cta [controls-ch]
   [:div.ctabox {:class (if first "line")}
    [:div
     [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-   (home-button {:source "hero"})
+   (home-button {:source "hero"} controls-ch)
    [:div
     [:p
      [:i "CircleCI keeps your code safe."
@@ -110,7 +110,7 @@
     </g>
   </svg>"}}])
 
-(defn home-hero-unit [ab-tests]
+(defn home-hero-unit [ab-tests controls-ch]
   [:div#hero
    [:div.container
     [:h1 "Ship better code, faster"]
@@ -122,7 +122,7 @@
       stories-procedure)
     [:div.row-fluid
      [:div.hero-unit-cta
-      home-cta]]]])
+      (home-cta controls-ch)]]]])
 
 (defn customer-image [customer-name image]
   [:div.big-company
@@ -321,7 +321,7 @@
                               :custom {:blurb "Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use npm in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."}}]
                (tech-tab-content selected-tab (get templates selected-tab)))]]]])))))
 
-(def home-get-started
+(defn home-get-started [controls-ch]
   [:div.get-started
    [:div.container
     [:div.row
@@ -339,40 +339,30 @@
         [:div.main-cta
          [:div.ctabox
           [:a.btn.btn-action-orange.btn-jumbo
-           {:event:_ "event:_",
-            :source:_ "source:_",
-            :auth "auth",
-            :ci.github.authurl "ci.github.authurl",
-            :github "github",
-            :get_started_section "get_started_section",
-            :properties:_ "properties:_",
-            :data-bind "\\attr:",
-            :href:_ "href:_",
-            :track_link:_ "track_link:_"}
+           {:href (auth-url)
+            :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                        :properties {:source "get_started_section"}
+                                                                        :path (auth-url)}])}
            "RUN YOUR TESTS"]]]]
        [:p.center
-        [:i
-         "CircleCI keeps your code safe. "
-         [:a
-          {:title "Privacy and Security", :href "/privacy"}
+        [:i "CircleCI keeps your code safe. "
+         [:a {:title "Privacy and Security", :href "/privacy"}
           "Learn how."]]]
-       [:p.center
-        "Plans start at "
-        [:i "$19 per month"]
+       [:p.center "Plans start at " [:i "$19 per month"]
         [:br]
-        "All plans include a "
-        [:strong [:i "Free 14 Day Trial."]]]]]]]])
+        "All plans include a " [:strong [:i "Free 14 Day Trial."]]]]]]]])
 
 (defn home [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [ab-tests (:ab-tests app)]
+      (let [ab-tests (:ab-tests app)
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.landing.page
                [:div.banner]
                [:div
-                (home-hero-unit ab-tests)
+                (home-hero-unit ab-tests controls-ch)
                 home-customers
                 home-features
                 (om/build home-technology app)
-                home-get-started]])))))
+                (home-get-started controls-ch)]])))))
