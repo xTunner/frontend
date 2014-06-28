@@ -112,10 +112,10 @@
     (:status build)))
 
 (defn status-class [build]
-  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "label-important"
-        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "label-warning"
-        (= "success" (:outcome build)) "label-success"
-        (= "running" (:status build)) "info-style"
+  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
+        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "stop"
+        (= "success" (:outcome build)) "pass"
+        (= "running" (:status build)) "busy"
         :else nil))
 
 (defn why-in-words [build]

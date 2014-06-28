@@ -30,7 +30,7 @@
        {:title (build-model/branch-in-words build)
         :href url}
        (-> build build-model/branch-in-words (utils/trim-middle 23))]]
-     [:td
+     [:td.recent-author
       [:a
        {:title (build-model/author build)
         :href url}
@@ -42,12 +42,12 @@
        (:subject build)]]
      (if (= "not_run" (:status build))
        [:td {:col-span 2}]
-       (list [:td.recent-time-started
+       (list [:td.recent-time
               [:a
                {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
                (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
-             [:td.recent-time-duration
+             [:td.recent-time
               [:a
                {:title (build-model/duration build)
                 :href url}
@@ -57,10 +57,8 @@
      [:td.recent-status-badge
       [:a
        {:title (build-model/status-words build)
-        :href url}
-       [:span.label.build_status
-        {:class (build-model/status-class build)}
-        (build-model/status-words build)]]]
+        :href url
+        :class (build-model/status-class build)}]]
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)

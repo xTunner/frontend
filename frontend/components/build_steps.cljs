@@ -114,7 +114,7 @@
                          [:span.exit-code.pull-right
                           (str "Exit code: " (:exit_code action))])
                        [:pre.bash-command
-                        {:title "The full bash comand used to run this setup"}
+                        {:title "The full bash command used to run this setup"}
                         (:bash_command action)]])
                     [:pre.output.solarized {:style {:white-space "normal"}}
                      (when (:truncated action)
