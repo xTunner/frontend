@@ -1,7 +1,8 @@
 (ns frontend.state)
 
 (defn initial-state []
-  {:environment "development"
+  {:ab-tests {}
+   :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
               :organizations  {:circleci  {:plan {}}}
               :add-projects {:repo-filter-string ""

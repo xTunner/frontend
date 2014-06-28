@@ -445,14 +445,16 @@
         "All plans include a "
         [:strong [:i "Free 14 Day Trial."]]]]]]]])
 
-(defrender home
-  []
-  (let [ab-tests nil]
-    (html [:div.landing.page
-           [:div.banner]
-           [:div
-            (home-hero-unit ab-tests)
-            home-customers
-            home-features
-            (home-technology)
-            home-get-started]])))
+(defn home [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [ab-tests (:ab-tests app)]
+        (html [:div.landing.page
+               [:div.banner]
+               [:div
+                (home-hero-unit ab-tests)
+                home-customers
+                home-features
+                (home-technology)
+                home-get-started]])))))
