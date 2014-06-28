@@ -1,5 +1,3 @@
-!= HAML.invite_form({})
-
 -# hold off on visual change, work in progress
 -# .dashboard-messages
 
