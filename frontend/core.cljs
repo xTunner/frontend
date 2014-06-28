@@ -59,8 +59,25 @@
   ws-ch
   (chan))
 
+(defn get-ab-tests []
+  (let [definitions (aget js/window "ab_test_definitions")
+        overrides (-> js/window
+                      (aget "renderContext")
+                      (aget "abOverrides"))
+        ABTests (-> js/window
+                    (aget "CI")
+                    (aget "ABTests"))
+        ko->js (-> js/window
+                   (aget "ko")
+                   (aget "toJS"))]
+    (-> (new ABTests definitions overrides)
+        (aget "ab_tests")
+        (ko->js)
+        (utils/js->clj-kw))))
+
 (defn app-state []
   (atom (assoc (state/initial-state)
+          :ab-tests (get-ab-tests)
           :current-user (-> js/window
                             (aget "renderContext")
                             (aget "current_user")
