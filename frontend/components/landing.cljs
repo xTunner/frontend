@@ -49,7 +49,7 @@
    (home-button {:source "hero"} controls-ch)
    [:div
     [:p
-     [:i "CircleCI keeps your code safe."
+     [:i "CircleCI keeps your code safe. "
       [:a {:href "/security" :title "Security"} "Learn how."]]]]])
 
 (def stories-procedure
@@ -136,7 +136,7 @@
    [:div.center
     [:div.were-number-one
      [:h2
-      "CircleCI is the #1 hosted continuous deployment provider.But don't take our word for it, read what our awesome customers have to say."]]]
+      "CircleCI is the #1 hosted continuous deployment provider. But don't take our word for it, read what our awesome customers have to say."]]]
    [:div.customers-trust.row
     [:h4 [:span "Trusted By"]]
     (customer-image "Salesforce" "/img/logos/salesforce.png")
