@@ -51,7 +51,9 @@
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
-  (dommy/append! top-level-node [:input.history.hide])
+  (let [dom-helper (goog.dom.DomHelper.)
+        node (.createDom dom-helper "input" #js {:class "history hide"})]
+    (.append dom-helper node))
   (doto (goog.history.Html5History. js/window token-transformer)
     (.setUseFragment false)
     (.setPathPrefix "/")
