@@ -53,32 +53,45 @@
             enterprise? (:enterprise? opts)]
         (html
          [:form.contact-us
-          [:label {:for "name"} "Full name"]
           [:input {:value name
+                   :required true
                    :class (when loading? "disabled")
                    :type "text",
-                   :placeholder "Your Name",
                    :name "name"
                    :on-change #(do (clear-notice!) (om/set-state! owner [:name] (.. % -target -value)))}]
-          [:label {:for "email"} "Email address"]
+          [:label {:for "name" :alt "Enter name" :placeholder "Name"}]
+
           [:input {:value email,
                    :class (when loading? "disabled")
                    :type "email",
-                   :placeholder "Your email address",
                    :name "email"
+                   :required true
                    :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))}]
-          [:label {:for "message"} "Message"]
-          [:textarea {:value message,
-                      :class (when loading? "disabled")
-                      :placeholder "Tell us what you're thinking"
-                      :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))}]
+          [:label {:for "email" :alt "Enter email" :placeholder "Email"}]
+
+          (if enterprise?
+            (list
+             [:input {:required true
+                      :value message
+                      :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))
+                      :type "text"}]
+             [:label {:alt "Enter phone (optional)", :placeholder "Phone"}])
+
+            (list
+             [:textarea {:value message,
+                         :class (when loading? "disabled")
+                         :required true
+                         :name "message"
+                         :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))}]
+             [:label {:for "message" :placeholder "Tell us what you're thinking"}]))
+
           [:div.notice (when notice
                          [:div {:class (:type notice)}
                           (:message notice)])]
           [:button.btn-primary {:class (when loading? "disabled")
                                 :on-click #(do (if-not (and (seq name) (seq email))
                                                  (om/set-state! owner [:notice] {:type "error"
-                                                                                 :message "Name, email, and message are all required."})
+                                                                                 :message "Name and email are required."})
                                                  (do
                                                    (om/set-state! owner [:loading?] true)
                                                    (go (let [resp (<! (ajax/managed-form-post
@@ -87,7 +100,6 @@
                                                                                 :email email
                                                                                 :message message
                                                                                 :enterprise enterprise?}))]
-                                                         (utils/inspect resp)
                                                          (if (= (:status resp) :success)
                                                            (om/update-state! owner (fn [s]
                                                                                      {:name ""
