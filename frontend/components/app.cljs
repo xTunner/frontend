@@ -52,6 +52,7 @@
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security
+    :security-hall-of-fame security/hall-of-fame
     :enterprise enterprise/enterprise
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage

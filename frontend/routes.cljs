@@ -97,6 +97,9 @@
   (defroute v1-security "/security" []
     (open-to-outer! nav-ch :security {}))
 
+  (defroute v1-security-hall-of-fame "/security/hall-of-fame" []
+    (open-to-outer! nav-ch :security-hall-of-fame {}))
+
   (defroute v1-enterprise "/enterprise" []
     (open-to-outer! nav-ch :enterprise {}))
 
