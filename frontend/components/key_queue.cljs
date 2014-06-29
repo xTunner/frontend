@@ -105,27 +105,25 @@
     om/IDidMount
     (did-mount [_]
       (let [ch (om/get-state owner :ch)]
-        (comment        (async/tap key-mult ch)
-                        (async/go-loop [waiting-keys []
-                                        t-chan nil]
-                                       (let [t-chan        (or t-chan (async/chan))
-                                             [e read-chan] (async/alts! [ch t-chan])]
-                                         (if (= read-chan ch)
-                                           (let [all-keys (conj waiting-keys e)]
-                                             (if-let [key-fn (match-keys @keymap all-keys)]
-                                               (do (try (key-fn e)
-                                                        ;; Catch any errors to avoid breaking key loop
-                                                        (catch js/Object error
-                                                          (utils/log-pr "Error calling" key-fn
-                                                                        "with key event" e ":")
-                                                          (utils/stack-trace error)
-                                                          (put! error-ch [:keyboard-handler-error error])))
-                                                   (recur [] nil))
-                                               ;; No match yet, but remember in case user is entering
-                                               ;; a multi-key combination.
-                                               (recur all-keys (async/timeout 1000))))
-                                           ;; Read channel was timeout.  Forget stored keys
-                                           (recur [] nil)))))))
+        (async/tap key-mult ch)
+        (async/go-loop [waiting-keys []
+                        t-chan nil]
+                       (let [t-chan        (or t-chan (async/chan))
+                             [e read-chan] (async/alts! [ch t-chan])]
+                         (if (= read-chan ch)
+                           (let [all-keys (conj waiting-keys e)]
+                             (if-let [key-fn (match-keys @keymap all-keys)]
+                               (do (try (key-fn e)
+                                        ;; Catch any errors to avoid breaking key loop
+                                        (catch js/Object error
+                                          (utils/merror error "Error calling" key-fn "with key event" e)
+                                          (put! error-ch [:keyboard-handler-error error])))
+                                   (recur [] nil))
+                               ;; No match yet, but remember in case user is entering
+                               ;; a multi-key combination.
+                               (recur all-keys (async/timeout 1000))))
+                           ;; Read channel was timeout.  Forget stored keys
+                           (recur [] nil))))))
     om/IWillUnmount
     (will-unmount [_]
       (let [ch (om/get-state owner :ch)]
