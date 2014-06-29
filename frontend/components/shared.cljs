@@ -14,15 +14,15 @@
   [:div.customers-trust.row
    [:h4 [:span "Trusted By"]]
    [:div {:class company-size}
-    [:img {:title "Salesforce" :src (data-uri "/img/logos/salesforce.png")}]]
+    [:img {:title "Salesforce" :src (data-uri "/img/logos/salesforce.png")}] " "]
    [:div {:class company-size}
-    [:img {:title "Samsung" :src (data-uri "/img/logos/samsung.png")}]]
+    [:img {:title "Samsung" :src (data-uri "/img/logos/samsung.png")}] " "]
    [:div {:class company-size}
-    [:img {:title "Kickstarter" :src (data-uri "/img/logos/kickstarter.png")}]]
+    [:img {:title "Kickstarter" :src (data-uri "/img/logos/kickstarter.png")}] " "]
    [:div {:class company-size}
-    [:img {:title "Cisco", :src (data-uri "/img/logos/cisco.png")}]]
+    [:img {:title "Cisco", :src (data-uri "/img/logos/cisco.png")}] " "]
    [:div {:class company-size}
-    [:img {:title "Shopify" :src (data-uri "/img/logos/shopify.png")}]]
+    [:img {:title "Shopify" :src (data-uri "/img/logos/shopify.png")}] " "]
    [:span.stretch]])
 
 (defn home-button [{:keys [source]} controls-ch]
