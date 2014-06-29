@@ -89,7 +89,7 @@
                [:span.time {:title (str (:start_time action) " to "
                                         (:end_time action))}
                 (om/build common/updating-duration {:start (:start_time action)
-                                                    :stop (:stop_time action)})
+                                                    :stop (:end_time action)})
                 (when (:timedout action) " (timed out)")]
                [:span.action-source
                 [:span.action-source-inner {:title (source-title (:source action))}
