@@ -115,3 +115,11 @@
   event is the Synthetic React event."
   [controls-ch path event]
   (put! controls-ch [:toggled-input {:path path}]))
+
+(defn open-modal
+  "Open bootstrap modal with given selector"
+  [selector]
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        modal (aget $node "modal")]
+    (.call modal $node #js {:open true})))
