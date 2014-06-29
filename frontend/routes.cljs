@@ -83,18 +83,18 @@
   (defroute v1-about "/about" []
     (open-to-outer! nav-ch :about {}))
 
-  (defroute v1-about "/pricing" []
+  (defroute v1-pricing "/pricing" []
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage "plans"})
       (open-to-outer! nav-ch :pricing {})))
 
-  (defroute v1-about "/jobs" []
+  (defroute v1-jobs "/jobs" []
     (open-to-outer! nav-ch :jobs {}))
 
   (defroute v1-privacy "/privacy" []
     (open-to-outer! nav-ch :privacy {}))
 
-  (defroute v1-privacy "/security" []
+  (defroute v1-security "/security" []
     (open-to-outer! nav-ch :security {}))
 
   (defroute v1-root "/" {:as params}
