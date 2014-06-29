@@ -9,8 +9,10 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
-            [goog.string :as gstring])
+            [goog.string :as gstring]
+            [goog.style])
   (:require-macros [frontend.utils :refer [inspect]]
+                   [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; XXX we could really use some middleware here, so that we don't forget to
@@ -23,6 +25,14 @@
   (set! (.-title js/document) (if title
                                 (str title  " - CircleCI")
                                 "CircleCI")))
+
+(defn scroll-to-fragment!
+  "Scrolls to the element with id of fragment, if one exists"
+  [fragment]
+  (utils/inspect fragment)
+  (when-let [node (sel1 (str "#" fragment))]
+    (let [main (sel1 "main.app-main")]
+      (set! (.-scrollTop main) (.-y (goog.style.getContainerOffsetToScrollInto node main))))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -44,7 +54,10 @@
 
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
-  (set-page-title! (str/capitalize (name navigation-point))))
+  (set-page-title! (str/capitalize (name navigation-point)))
+  (when (:_fragment args)
+    ;; give the page time to render
+    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))))
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point path previous-state current-state]
@@ -180,12 +193,6 @@
     :navigation-point :documentation-page
     :navigation-data args
     :current-documentation-page (:page args)))
-
-(defmethod navigated-to :landing
-  [history-imp navigation-point args state]
-  (assoc state
-         :navigation-point navigation-point
-         :navigation-data args))
 
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?

@@ -1,14 +1,12 @@
 (ns frontend.routes
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [goog.events :as events]
-            [goog.history.Html5History :as html5-history]
             [frontend.models.project :as proj-mod]
             [frontend.utils :as utils :include-macros true]
             [secretary.core :as sec :include-macros true :refer [defroute]])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
-  (:import [goog.history Html5History]
-           [goog History]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defn open-to-inner! [nav-ch navigation-point args]
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
@@ -38,6 +36,23 @@
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
     (open-to-inner! nav-ch :dashboard {:admin true})))
+
+
+;; TODO: make this handle params
+;; Creates a route that will ignore fragments and add them to params as {:_fragment "#fragment"}
+(defrecord FragmentRoute [route]
+  sec/IRenderRoute
+  (render-route [this]
+    route))
+
+(extend-protocol sec/IRouteMatches
+  FragmentRoute
+  (route-matches [this route]
+    (let [[normal-route fragment] (str/split route #"#" 2)]
+      (when-let [match (sec/route-matches (sec/compile-route (:route this)) normal-route)]
+        (merge match
+               (when fragment {:_fragment fragment}))))))
+
 
 (defn define-user-routes! [nav-ch authenticated?]
   (defroute v1-org-dashboard "/gh/:org" {:as params}
@@ -80,33 +95,33 @@
   (defroute v1-doc-page #"/docs/(.*)" [doc-page]
     (open-to-outer! nav-ch :documentation-page {:page doc-page}))
 
-  (defroute v1-about "/about" []
-    (open-to-outer! nav-ch :about {}))
+  (defroute v1-about (FragmentRoute. "/about") {:as params}
+    (open-to-outer! nav-ch :about params))
 
-  (defroute v1-pricing "/pricing" []
+  (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage "plans"})
-      (open-to-outer! nav-ch :pricing {})))
+      (open-to-outer! nav-ch :pricing params)))
 
-  (defroute v1-jobs "/jobs" []
-    (open-to-outer! nav-ch :jobs {}))
+  (defroute v1-jobs (FragmentRoute. "/jobs") {:as params}
+    (open-to-outer! nav-ch :jobs params))
 
-  (defroute v1-privacy "/privacy" []
-    (open-to-outer! nav-ch :privacy {}))
+  (defroute v1-privacy (FragmentRoute. "/privacy") {:as params}
+    (open-to-outer! nav-ch :privacy params))
 
-  (defroute v1-security "/security" []
-    (open-to-outer! nav-ch :security {}))
+  (defroute v1-security (FragmentRoute. "/security") {:as params}
+    (open-to-outer! nav-ch :security params))
 
-  (defroute v1-security-hall-of-fame "/security/hall-of-fame" []
-    (open-to-outer! nav-ch :security-hall-of-fame {}))
+  (defroute v1-security-hall-of-fame (FragmentRoute. "/security/hall-of-fame") {:as params}
+    (open-to-outer! nav-ch :security-hall-of-fame params))
 
-  (defroute v1-enterprise "/enterprise" []
-    (open-to-outer! nav-ch :enterprise {}))
+  (defroute v1-enterprise (FragmentRoute. "/enterprise") {:as params}
+    (open-to-outer! nav-ch :enterprise params))
 
-  (defroute v1-root "/" {:as params}
+  (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
-      (open-to-outer! nav-ch :landing {}))))
+      (open-to-outer! nav-ch :landing params))))
 
 (defn define-spec-routes! [nav-ch]
   (defroute v1-not-found "*" []
