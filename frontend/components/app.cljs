@@ -59,6 +59,7 @@
 
 (defn app [app owner]
   (reify
+    om/IDisplayName (display-name [_] "App")
     om/IRender
     (render [_]
       (if-not (:navigation-point app)

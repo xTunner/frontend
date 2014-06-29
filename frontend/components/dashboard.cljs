@@ -9,6 +9,7 @@
 
 (defn dashboard [data owner]
   (reify
+    om/IDisplayName (display-name [_] "Dashboard")
     om/IRender
     (render [_]
       (let [builds (:recent-builds data)

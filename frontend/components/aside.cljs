@@ -44,6 +44,7 @@
 
 (defn branch [data owner]
   (reify
+    om/IDisplayName (display-name [_] "Aside Branch Activity")
     om/IRender
     (render [_]
       (let [{:keys [org repo branch-data]} data
@@ -63,6 +64,7 @@
 
 (defn project-aside [data owner]
   (reify
+    om/IDisplayName (display-name [_] "Aside Project Activity")
     om/IRender
     (render [_]
       (let [user (:user data)
@@ -104,6 +106,7 @@
 
 (defn activity [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Aside Activity")
     om/IRender
     (render [_]
       (let [slim-aside? (get-in app state/slim-aside-path)
@@ -133,6 +136,7 @@
 
 (defn aside-nav [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Aside Nav")
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
@@ -203,6 +207,7 @@
 
 (defn aside [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
       (html

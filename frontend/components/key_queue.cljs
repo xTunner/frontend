@@ -98,6 +98,7 @@
 
 (defn KeyboardHandler [app owner {:keys [keymap error-ch]}]
   (reify
+    om/IDisplayName (display-name [_] "Keyboard Handler")
     om/IInitState
     (init-state [_]
       {:ch (chan)})

@@ -69,6 +69,7 @@
 
 (defn builds-table [builds owner opts]
   (reify
+    om/IDisplayName (display-name [_] "Builds Table")
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])

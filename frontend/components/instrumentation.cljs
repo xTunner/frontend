@@ -15,6 +15,7 @@
 
 (defn line-items [instrumentation-data owner]
   (reify
+    om/IDisplayName (display-name [_] "Instrumentation Line Items")
     om/IRender
     (render [_]
       (html
@@ -38,6 +39,7 @@
 
 (defn summary [instrumentation-data owner]
   (reify
+    om/IDisplayName (display-name [_] "Instrumentation Summary")
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])

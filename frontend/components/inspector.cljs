@@ -9,6 +9,7 @@
 
 (defn inspector [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Inspector")
     om/IRender
     (render [_]
       (om/build ankha/inspector app))))
