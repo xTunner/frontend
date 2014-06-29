@@ -88,10 +88,9 @@
                        (gstring/format " (%s)" (:index action))))]
                [:span.time {:title (str (:start_time action) " to "
                                         (:end_time action))}
-                (if (action-model/running? action)
-                  (om/build common/updating-duration (:start_time action))
-                  (str (action-model/duration action)
-                       (when (:timedout action) " (timed out)")))]
+                (om/build common/updating-duration {:start (:start_time action)
+                                                    :stop (:stop_time action)})
+                (when (:timedout action) " (timed out)")]
                [:span.action-source
                 [:span.action-source-inner {:title (source-title (:source action))}
                  (source-type (:source action))]]]]

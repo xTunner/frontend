@@ -30,9 +30,8 @@
             (when-not usage-queued?
               [:p (str "Circle "
                        (when run-queued? "has") " spent "
-                       (if run-queued?
-                         (om/build common/updating-duration (:queued_at build))
-                         (datetime/as-duration (build-model/run-queued-time build)))
+                       (om/build common/updating-duration {:start (:queued_at build)
+                                                           :stop (or (:start_time build) (:stop_time build))})
                        " acquiring containers for this build")])
             (when (< 10000 (build-model/run-queued-time build))
               [:p "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
@@ -42,9 +41,8 @@
               (list
                [:p "This build " (if usage-queued? "has been" "was")
                 " queued behind the following builds for "
-                (if usage-queued?
-                  (om/build common/updating-duration (:usage_queued_at build))
-                  (build-model/usage-queued-time build))]
+                (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                    :stop (or (:queued_at build) (:stop_time build))})]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
             (when (and plan (< 10000 (build-model/usage-queued-time build)))
@@ -174,13 +172,14 @@
                       [:a {:href (str "mailto:" (:author_email build))}
                        (build-model/author build)])]
                [:th "Started"]
-               [:td (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
+               [:td (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
                [:th "Duration"]
                [:td (if (build-model/running? build)
-                      (om/build common/updating-duration (:start_time build))
+                      (om/build common/updating-duration {:start (:start_time build)
+                                                          :stop (:stop_time build)})
                       (build-model/duration build))]]
               [:tr
                [:th "Previous"]
@@ -199,19 +198,16 @@
                  (list [:th "Queued"]
                        [:td (if (< 0 (build-model/run-queued-time build))
                               [:span
-                               (if usage-queued?
-                                 (om/build common/updating-duration (:usage_queued_at build))
-                                 (datetime/as-duration (build-model/usage-queued-time build)))
+                               (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                   :stop (or (:queued_at build) (:stop_time build))})
                                " waiting + "
-                               (if run-queued?
-                                 (om/build common/updating-duration (:queued_at build))
-                                 (datetime/as-duration (build-model/run-queued-time build)))
+                               (om/build common/updating-duration {:start (:queued_at build)
+                                                                   :stop (or (:start_time build) (:stop_time build))})
                                " in queue"]
 
                               [:span
-                               (if usage-queued?
-                                 (om/build common/updating-duration (:usage_queued_at build))
-                                 (datetime/as-duration (build-model/usage-queued-time build)))
+                               (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                   :stop (or (:queued_at build) (:stop_time build))})
                                " waiting for builds to finish"])
 
                         [:a#queued_explanation

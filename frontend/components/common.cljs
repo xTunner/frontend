@@ -4,7 +4,8 @@
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 ;; XXX flashes
@@ -102,27 +103,42 @@
                                          " d='" (get-in icon-shapes [icon-name :path]) "'></path>")]))}}])
 
 (defn updating-duration
-  "Takes a start time string and updates the component every second.
+  "Takes a :start time string and :stop time string. Updates the component every second
+   if the stop-time is nil.
    By default, uses datetime/as-duration, but can also take a custom :formatter
    function in opts."
-  [start owner opts]
+  [{:keys [start stop]} owner opts]
   (reify
+    om/IDisplayName (display-name [_] "Updating Duration")
     om/IInitState
     (init-state [_]
       {:watcher-uuid (utils/uuid)
-       :now (time/now)})
+       :now (time/now)
+       :has-watcher? false})
     om/IDidMount
     (did-mount [_]
-      (let [timer-atom (om/get-shared owner [:timer-atom])
-            uuid (om/get-state owner [:watcher-uuid])]
-        (add-watch timer-atom uuid (fn [_ _ _ t]
-                                     (om/set-state! owner [:now] t)))))
+      (when-not stop
+        (let [timer-atom (om/get-shared owner [:timer-atom])
+              uuid (om/get-state owner [:watcher-uuid])]
+          (add-watch timer-atom uuid (fn [_k _r _p t]
+                                       (om/set-state! owner [:now] t)))
+          (om/set-state! owner [:has-watcher?] true))))
     om/IWillUnmount
     (will-unmount [_]
-      (remove-watch (om/get-shared owner [:timer-atom])
-                    (om/get-state owner [:watcher-uuid])))
+      (when (om/get-state owner [:has-watcher?])
+        (remove-watch (om/get-shared owner [:timer-atom])
+                      (om/get-state owner [:watcher-uuid]))))
+
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (and stop (om/get-state owner [:has-watcher?]))
+        (remove-watch (om/get-shared owner [:timer-atom])
+                      (om/get-state owner [:watcher-uuid]))))
     om/IRenderState
     (render-state [_ {:keys [now]}]
-      (let [formatter (get opts :formatter datetime/as-duration)
-            duration-ms (- (.getTime now) (.getTime (js/Date. start)))]
-        (html [:span (formatter duration-ms)])))))
+      (let [end-ms (if stop
+                     (.getTime (js/Date. stop))
+                     (.getTime now))
+            formatter (get opts :formatter datetime/as-duration)
+            duration-ms (- end-ms (.getTime (js/Date. start)))]
+        (dom/span nil (formatter duration-ms))))))

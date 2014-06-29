@@ -46,14 +46,13 @@
               [:a
                {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (om/build common/updating-duration (:start_time build) {:opts {:formatter datetime/time-ago}}) " ago"]]
+               (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
              [:td.recent-time
               [:a
                {:title (build-model/duration build)
                 :href url}
-               (if (build-model/running? build)
-                 (om/build common/updating-duration (:start_time build))
-                 (build-model/duration build))]]))
+               (om/build common/updating-duration {:start (:start_time build)
+                                                   :stop (:stop_time build)})]]))
      [:td.recent-status-badge
       [:a
        {:title (build-model/status-words build)
