@@ -29,7 +29,6 @@
 (defn scroll-to-fragment!
   "Scrolls to the element with id of fragment, if one exists"
   [fragment]
-  (utils/inspect fragment)
   (when-let [node (sel1 (str "#" fragment))]
     (let [main (sel1 "main.app-main")]
       (set! (.-scrollTop main) (.-y (goog.style.getContainerOffsetToScrollInto node main))))))
@@ -55,9 +54,10 @@
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
   (set-page-title! (str/capitalize (name navigation-point)))
-  (when (:_fragment args)
+  (if (:_fragment args)
     ;; give the page time to render
-    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))))
+    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)) 32)
+    (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0) 32)))
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point path previous-state current-state]
