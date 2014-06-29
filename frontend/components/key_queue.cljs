@@ -99,12 +99,10 @@
 (defn KeyboardHandler [app owner {:keys [keymap error-ch]}]
   (reify
     om/IDisplayName (display-name [_] "Keyboard Handler")
-    om/IInitState
-    (init-state [_]
-      {:ch (chan)})
     om/IDidMount
     (did-mount [_]
-      (let [ch (om/get-state owner :ch)]
+      (let [ch (chan)]
+        (om/set-state! owner :ch ch)
         (async/tap key-mult ch)
         (async/go-loop [waiting-keys []
                         t-chan nil]
@@ -128,6 +126,6 @@
     (will-unmount [_]
       (let [ch (om/get-state owner :ch)]
         (async/untap key-mult ch)))
-    om/IRenderState
-    (render-state [_ _]
+    om/IRender
+    (render [_]
       (html/html [:span.hidden]))))
