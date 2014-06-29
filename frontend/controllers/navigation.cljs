@@ -1,5 +1,6 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.pusher :as pusher]
@@ -37,12 +38,13 @@
 
 (defmethod navigated-to :default
   [history-imp navigation-point args state]
-  (mlog "Unknown nav event: " (pr-str navigation-point))
-  state)
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
 
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
-  (mlog "No post-nav for: " navigation-point))
+  (set-page-title! (str/capitalize (name navigation-point))))
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point path previous-state current-state]
@@ -295,33 +297,3 @@
                      404 "Page not found"
                      500 "Internal server error"
                      "Something unexpected happened")))
-
-(defmethod navigated-to :about
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :pricing
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :jobs
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :privacy
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :security
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
