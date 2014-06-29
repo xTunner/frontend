@@ -97,6 +97,9 @@
   (defroute v1-security "/security" []
     (open-to-outer! nav-ch :security {}))
 
+  (defroute v1-enterprise "/enterprise" []
+    (open-to-outer! nav-ch :enterprise {}))
+
   (defroute v1-root "/" {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)

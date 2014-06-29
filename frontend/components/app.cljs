@@ -7,6 +7,7 @@
             [frontend.components.dashboard :as dashboard]
             ;;[frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.enterprise :as enterprise]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
@@ -51,6 +52,7 @@
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security
+    :enterprise enterprise/enterprise
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 
