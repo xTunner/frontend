@@ -38,32 +38,38 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
-(defn branch-picker [project-data controls-ch & {:keys [button-text channel-message channel-args]
-                                                 :or {button-text "Start a build"
-                                                      channel-message :started-edit-settings-build}}]
-  (let [project (:project project-data)
-        project-id (project-model/id project)
-        default-branch (:default_branch project)
-        settings-branch (get project-data :settings-branch default-branch)]
-    [:form
-     [:input {:name "branch"
-              :required true
-              :type "text"
-              :value settings-branch
-              ;; XXX typeahead
-              :on-change #(utils/edit-input controls-ch state/project-settings-branch-path %)}]
-     [:label {:placeholder "Test settings on..."}]
-     (forms/stateful-button
-      [:input
-       {:value button-text
-        :on-click #(do (put! controls-ch [channel-message (merge {:project-id project-id
-                                                                  :branch settings-branch}
-                                                                 channel-args)])
-                       false)
-        :data-api-count 2
-        :data-loading-text "Starting..."
-        :data-success-text "Started..."
-        :type "submit"}])]))
+(defn branch-picker [project-data owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [button-text channel-message channel-args]
+             :or {button-text "Start a build"
+                  channel-message :started-edit-settings-build}} opts
+            project (:project project-data)
+            project-id (project-model/id project)
+            default-branch (:default_branch project)
+            settings-branch (get project-data :settings-branch default-branch)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+         [:form
+          [:input {:name "branch"
+                   :required true
+                   :type "text"
+                   :value settings-branch
+                   ;; XXX typeahead
+                   :on-change #(utils/edit-input controls-ch state/project-settings-branch-path %)}]
+          [:label {:placeholder "Test settings on..."}]
+          (forms/stateful-button
+           [:input
+            {:value button-text
+             :on-click #(do (put! controls-ch [channel-message (merge {:project-id project-id
+                                                                       :branch settings-branch}
+                                                                      channel-args)])
+                            false)
+             :data-api-count 2
+             :data-loading-text "Starting..."
+             :data-success-text "Started..."
+             :type "submit"}])])))))
 
 (defn overview [project-data owner]
   (reify
@@ -195,7 +201,7 @@
        (list
         (when (:parallelism-edited project-data)
           [:div.try-out-build
-           (branch-picker project-data controls-ch :button-text (str "Try a build!"))])
+           (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
          (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
                                          (inc 24)))]
@@ -364,12 +370,13 @@
                                                                     :extra extra}}])
                                      false)}])
             [:div.try-out-build
-             (branch-picker project-data controls-ch
-                            :button-text "Save & Go!"
-                            :channel-message :saved-test-commands-and-build
-                            :channel-args {:project-id project-id
-                                           :settings {:test test
-                                                      :extra extra}})]]]])))))
+             (om/build branch-picker
+                       project-data
+                       {:opts {:button-text "Save & Go!"
+                               :channel-message :saved-test-commands-and-build
+                               :channel-args {:project-id project-id
+                                              :settings {:test test
+                                                         :extra extra}}}})]]]])))))
 
 (defn fixed-failed-input [project controls-ch field]
   (let [notify_pref (get project field)
