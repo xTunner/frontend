@@ -35,6 +35,14 @@
                         (if prefix (str " prefix '" prefix "'"))
                         (if keywords? " keywordize"))}))
 
+(defn xml-request-response []
+  {:read (fn read-xml [xhrio]
+           (set! js/window.testx (.getResponseXml xhrio))
+           {:resp (.getResponseXml xhrio)})
+   :description "XML"
+   :content-type "application/xml"
+   :write identity})
+
 ;; XXX only implementing JSON format and not implementing prefixes for now since we don't use either
 (defn ajax [method url message channel & {:keys [params keywords? context headers]
                                           :or {keywords? true}}]
@@ -58,23 +66,33 @@
                              :finally #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :finished context]))}))))
 
-(defn managed-ajax [method url & {:keys [params keywords? headers]
-                                  :or {keywords? true}}]
-  (let [channel (chan)]
+;; This is all very mess, it should be cleaned up at some point
+(defn managed-ajax [method url & {:keys [params keywords? headers format response-format]
+                                  :or {keywords? true
+                                       response-format :json
+                                       format :json}}]
+  (let [channel (chan)
+        format (get {:xml (xml-request-response)
+                     :json (merge (clj-ajax/json-request-format)
+                                  (json-response-format {:keywords? keywords? :url url :method method}))}
+                    format)
+        accept-header (get {:xml "application/xml"
+                            :json "application/json"}
+                           response-format)]
     (clj-ajax/ajax-request url method
-                       (clj-ajax/transform-opts
-                        {:format (merge (clj-ajax/json-request-format)
-                                        (json-response-format {:keywords? keywords? :url url :method method}))
-                         :response-format :json
-                         :keywords? keywords?
-                         :params params
-                         :headers (merge {:Accept "application/json"}
-                                         (when (re-find #"^/" url)
-                                           {:X-CSRFToken (utils/csrf-token)})
-                                         headers)
-                         :handler #(put! channel (assoc % :status :success))
-                         :error-handler #(put! channel %)
-                         :finally #(close! channel)}))
+                           (clj-ajax/transform-opts
+                            {:format format
+                             :response-format response-format
+                             :keywords? keywords?
+                             :params params
+                             :headers (merge (when accept-header
+                                               {:Accept accept-header})
+                                             (when (re-find #"^/" url)
+                                               {:X-CSRFToken (utils/csrf-token)})
+                                             headers)
+                             :handler #(put! channel (assoc % :status :success))
+                             :error-handler #(put! channel %)
+                             :finally #(close! channel)}))
     channel))
 
 
@@ -84,8 +102,8 @@
   (let [channel (chan)]
     (clj-ajax/ajax-request url :post
                            (clj-ajax/transform-opts
-                            {:format  (merge (clj-ajax/url-request-format)
-                                             (json-response-format {:keywords? keywords? :url url :method :post}))
+                            {:format (merge (clj-ajax/url-request-format)
+                                            (json-response-format {:keywords? keywords? :url url :method :post}))
                              :response-format :json
                              :params params
                              :headers (merge {:Accept "application/json"}
