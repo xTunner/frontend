@@ -10,6 +10,7 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.style])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -30,9 +31,20 @@
 (defn scroll-to-fragment!
   "Scrolls to the element with id of fragment, if one exists"
   [fragment]
-  (when-let [node (sel1 (str "#" fragment))]
-    (let [main (sel1 "main.app-main")]
-      (set! (.-scrollTop main) (.-y (goog.style.getContainerOffsetToScrollInto node main))))))
+  (when-let [node (goog.dom.getElement fragment)]
+    (let [main (goog.dom.getElementByClass "app-main")
+          node-top (goog.style/getPageOffsetTop node)
+          main-top (goog.style/getPageOffsetTop main)
+          main-scroll (.-scrollTop main)]
+      (set! (.-scrollTop main) (+ main-scroll (- node-top main-top))))))
+
+(defn scroll!
+  "Scrolls to fragment if the url had one, or scrolls to the top of the page"
+  [args]
+  (if (:_fragment args)
+    ;; give the page time to render
+    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))
+    (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
