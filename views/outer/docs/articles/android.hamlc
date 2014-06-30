@@ -20,3 +20,14 @@
       dependencies:
         pre:
           \- echo y | android update sdk --no-ui --filter "android-18"
+
+%p
+  Note that if you need extended SDK components, such as build-tools, you'll
+  also need to install those separately. For example:
+
+%pre
+  %code.no-highlight<>
+    :preserve
+      dependencies:
+        pre:
+          \- echo y | android update sdk --no-ui --filter "build-tools-19.1.0"
