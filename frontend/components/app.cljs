@@ -19,6 +19,7 @@
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
+            [frontend.components.stories :as stories]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
@@ -54,6 +55,7 @@
     :security security/security
     :security-hall-of-fame security/hall-of-fame
     :enterprise enterprise/enterprise
+    :shopify-story stories/shopify
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

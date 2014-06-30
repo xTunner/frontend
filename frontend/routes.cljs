@@ -118,6 +118,11 @@
   (defroute v1-enterprise (FragmentRoute. "/enterprise") {:as params}
     (open-to-outer! nav-ch :enterprise params))
 
+
+  ;; TODO: this should be stories/:company, but we'll wait for more stories
+  (defroute v1-enterprise (FragmentRoute. "/stories/shopify") {:as params}
+    (open-to-outer! nav-ch :shopify-story params))
+
   (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
