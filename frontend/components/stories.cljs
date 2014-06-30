@@ -87,7 +87,7 @@
              :class (when loading? "disabled")
              :on-click #(do (if-not (seq email)
                               (om/set-state! owner [:notice] {:type "error"
-                                                              :message "Name and email are required."})
+                                                              :message "Email is required."})
                               (do
                                 (om/set-state! owner [:loading?] true)
                                 (go (let [resp (<! (marketo/submit-munchkin-form 1022 {:FirstName first-name
