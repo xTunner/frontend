@@ -127,7 +127,7 @@
              "Experience building fat JS apps, stateful HTML5 apps, and data visualizations."]
             [:li "Good product and user experience sensibilities."]]
            [:a
-            {:role "button", :href "/jobs?role=engineering#apply"}
+            {:role "button", :href "/jobs#apply"}
             [:span "Apply for Engineering roles"]]]
 
           [:div#designer
@@ -174,7 +174,7 @@
             [:li
              "Most importantly, relate to our customers; primarily developers."]]
            [:a
-            {:role "button", :href "/jobs?role=design#apply"}
+            {:role "button", :href "/jobs#apply"}
             [:span "Apply for Design roles"]]]
 
           [:div#business
@@ -220,7 +220,7 @@
             [:li "Are supremely organized and resourceful."]
             [:li "Have reasonable to strong coding ability."]]
            [:a
-            {:role "button", :href "/jobs?role=business#apply"}
+            {:role "button", :href "/jobs#apply"}
             [:span "Apply for Business roles"]]]]
 
          [:div.jobs-how
