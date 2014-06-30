@@ -26,7 +26,6 @@ CI.tracking =
     try
       $.getScript "//platform.twitter.com/oct.js", ()->
         twttr.conversion.trackPid('l4m9v')
-        __adroll.record_user adroll_segments: "payer"
     catch e
       console.error e
     
