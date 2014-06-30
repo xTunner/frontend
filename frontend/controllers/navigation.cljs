@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
+            [frontend.changelog :as changelog]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
@@ -54,10 +55,7 @@
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
   (set-page-title! (str/capitalize (name navigation-point)))
-  (if (:_fragment args)
-    ;; give the page time to render
-    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)) 32)
-    (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0) 32)))
+  (scroll! args))
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point path previous-state current-state]
@@ -304,3 +302,14 @@
                      404 "Page not found"
                      500 "Internal server error"
                      "Something unexpected happened")))
+
+(defmethod post-navigated-to! :changelog
+  [history-imp navigation-point args previous-state current-state]
+  (scroll! args)
+  (go (let [comms (get-in current-state [:comms])
+            api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
+        (if (= :success (:status api-result))
+          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
+              ;; might need to scroll to the fragment
+              (js/requestAnimationFrame #(scroll! args)))
+          (put! (:errors comms) [:api-error api-result])))))

@@ -503,3 +503,8 @@
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (assoc-in state state/org-invoices-path resp)))
+
+
+(defmethod api-event [:changelog :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state state/changelog-path resp))

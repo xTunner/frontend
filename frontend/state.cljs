@@ -2,6 +2,7 @@
 
 (defn initial-state []
   {:ab-tests {}
+   :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
               :organizations  {:circleci  {:plan {}}}
@@ -150,3 +151,5 @@
 (def error-data-path [:error-data])
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
+
+(def changelog-path [:changelog])

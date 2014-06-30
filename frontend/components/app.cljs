@@ -7,6 +7,7 @@
             [frontend.components.dashboard :as dashboard]
             ;;[frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
@@ -58,6 +59,7 @@
     :enterprise enterprise/enterprise
     :shopify-story stories/shopify
     :docker-integration integrations/docker
+    :changelog changelog/changelog
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

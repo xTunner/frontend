@@ -127,6 +127,9 @@
   (defroute v1-enterprise (FragmentRoute. "/integrations/docker") {:as params}
     (open-to-outer! nav-ch :docker-integration params))
 
+  (defroute v1-enterprise (FragmentRoute. "/changelog") {:as params}
+    (open-to-outer! nav-ch :changelog params))
+
   (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
