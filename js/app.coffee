@@ -158,11 +158,13 @@ class CI.inner.CircleViewModel extends CI.inner.Foundation
     display "dashboard"
 
   loadAddProjects: (cx) =>
+    CI.tracking.trackSignUp()
     @current_user().loadOrganizations()
     @current_user().loadCollaboratorAccounts()
     display "add_projects", {}
     if @current_user().repos().length == 0
       track_signup_conversion()
+
 
   loadBuilds: (path, page, refresh) =>
     @cleanObjs(@builds())
