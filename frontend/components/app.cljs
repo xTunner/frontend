@@ -12,6 +12,7 @@
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
+            [frontend.components.integrations :as integrations]
             [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
@@ -56,6 +57,7 @@
     :security-hall-of-fame security/hall-of-fame
     :enterprise enterprise/enterprise
     :shopify-story stories/shopify
+    :docker-integration integrations/docker
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 
