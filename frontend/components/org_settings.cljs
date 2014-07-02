@@ -288,7 +288,7 @@
               (plans-piggieback-plan-notification plan org-name))
             (om/build plans-component/plans app)
             (shared/customers-trust)
-            plans-component/pricing-features
+            (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
 (defn containers [app owner]
@@ -614,6 +614,12 @@
 
 (defn- billing-invoices [app owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/popover "#invoice-popover-hack"
+                     {:animation false
+                      :trigger "hover"
+                      :html true}))
     om/IRender
     (render [_]
       (html
@@ -627,13 +633,12 @@
                [:dl.dl-horizontal
                 [:dt
                  "Account balance"
-                 [:i.fa.fa-question-circle
+                 [:i.fa.fa-question-circle#invoice-popover-hack
                   {:title "Account balance"
                    ;; XXX popovers
                    :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
                                       "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
-                                      "<p>This amount may take a few hours to refresh.</p>")
-                   :data-bind "popover: {animation: false, trigger: 'hover', html: true}"}]]
+                                      "<p>This amount may take a few hours to refresh.</p>")}]]
                 [:dd
                  [:span (->balance-string account-balance)]]]
                [:table.table.table-bordered.table-striped

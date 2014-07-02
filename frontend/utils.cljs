@@ -115,3 +115,14 @@
   event is the Synthetic React event."
   [controls-ch path event]
   (put! controls-ch [:toggled-input {:path path}]))
+
+;; TODO: get rid of bootstrap popovers
+(defn popover
+  "Sets up a popover given selector and options. Once this is called, the popover
+   should work as expected"
+  [selector options]
+  (mwarn "Please remove the popover on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        popover (aget $node "popover")]
+    (.call popover $node (clj->js options))))

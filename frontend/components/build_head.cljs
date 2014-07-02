@@ -94,15 +94,19 @@
 
 (defn build-ssh [nodes owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/popover "#ssh-popover-hack"
+                     {:placement "right"
+                      :content "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."
+                      :title "SSH"}))
     om/IRender
     (render [_]
       (html
        [:section.build-ssh
         [:div.build-ssh-title
          [:strong "SSH Info "]
-         [:i.fa.fa-question-circle
-          ;; XXX popovers
-          {:title "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."}]]
+         [:i.fa.fa-question-circle {:id "ssh-popover-hack" :title "SSH"}]]
         [:div.build-ssh-list
          [:dl.dl-horizontal
           (map (fn [node]

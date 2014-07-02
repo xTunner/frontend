@@ -25,5 +25,5 @@
         [:div.container.content
          (om/build plans-component/plans app)
          (shared/customers-trust)
-         plans-component/pricing-features
+         (om/build plans-component/pricing-features app)
          plans-component/pricing-faq]]))))

@@ -13,7 +13,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html]]
+                   [dommy.macros :refer [node]]))
 
 (def sidebar
   [:ul.side-list
@@ -558,8 +559,32 @@
       "#2259"]
      " to merge."])))
 
+(defn scope-popover-html []
+  ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
+  (.-innerHTML
+   (node
+    [:div
+     [:p "A token's scope limits what can be done with it."]
+     [:h5 "Status"]
+     [:p
+      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
+      [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
+      " and "
+      [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
+      " for private projects."]
+     [:h5 "All"]
+     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]])))
+
 (defn api-tokens [project-data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/popover "#scope-popover-hack" {:html true
+                                            :delay 0
+                                            :animation false
+                                            :placement "left"
+                                            :title "Scope"
+                                            :content (scope-popover-html)}))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -571,9 +596,8 @@
          [:div.circle-api-page
           [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
           [:div.circle-api-page-inner
-           [:p "Create and revoke project-specific API tokens to access this project's details using ourAPI. First choose a scope "
-            ;; XXX popovers
-            [:i.fa.fa-question-circle {:data-bind "popover"}]
+           [:p "Create and revoke project-specific API tokens to access this project's details using our API. First choose a scope "
+            [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
             " and then create a label."]
            [:form
             [:div.styled-select

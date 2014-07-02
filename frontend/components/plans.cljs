@@ -118,32 +118,50 @@ You queue them up, we'll knock 'em down."},
    {:headline "Debug with ease",
     :detail "When your tests are broken, we help you get them fixed. We automatically warn you about common mistakes, and document how to fix them. We provide all the information you need to reproduce an error locally. And if you still can't reproduce it, you can SSH into our VMs to debug it yourself."}])
 
-(def pricing-features
-  [:div.features.row
-   [:h2 "Features"]
-   [:table.table
-    [:thead
-     [:tr
-      [:th.span4]
-      [:th.span2 "Solo"]
-      [:th.span2 "Startup"]
-      [:th.span2 "Small Business"]
-      [:th.span2 "Enterprise"]]]
-    [:tbody
-     (for [feature features]
+(defn feature [feature owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/popover (str "#" (:popover-uuid feature))
+                     {:html true
+                      :trigger "hover"
+                      :delay 0
+                      :animation false
+                      :placement "right"
+                      :template "<div class=\"popover billing-popover\"><div class=\"popover-inner\"><h3 class=\"popover-title\"></h3><div class=\"popover-content\"></div></div></div>"}))
+    om/IRender
+    (render [_]
+      (html
        [:tr
         [:td.span4
          [:span {:title (:headline feature)
                  :data-content (:detail feature)
-                 ;; XXX popovers
-                 :data-bind  "popover: {html: true, trigger: 'hover', delay: 0, animation: false, placement: 'bottom', template: '<div class=\"popover billing-popover\"><div class=\"popover-inner\"><h3 class=\"popover-title\"></h3><div class=\"popover-content\"></div></div></div>', placement: 'right'}"}
+                 :id (:popover-uuid feature)}
           [:strong (:headline feature)]
           [:i.fa.fa-info-circle]]]
         (for [plan ["Solo" "Startup" "Small Business" "Enterprise"]]
           [:td.span2
            (when (or (not (:enterprise feature))
                      (= "Enterprise" plan))
-             [:i.fa.fa-check])])])]]])
+             [:i.fa.fa-check])])]))))
+
+(defn pricing-features [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.features.row
+        [:h2 "Features"]
+        [:table.table
+         [:thead
+          [:tr
+           [:th.span4]
+           [:th.span2 "Solo"]
+           [:th.span2 "Startup"]
+           [:th.span2 "Small Business"]
+           [:th.span2 "Enterprise"]]]
+         [:tbody
+          (om/build-all feature (map #(assoc % :popover-uuid (utils/uuid)) features))]]]))))
 
 (def pricing-faq
   [:div.faq.row
