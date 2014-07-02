@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
+            [frontend.components.shared :as shared]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
@@ -177,10 +178,10 @@
                                        :data-bind "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
            [:i.fa.fa-plus-circle]
            [:span "Add Projects"]]
-          [:a.aside-item {:href "#",
-                          :data-bind "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}"
-                          :data-toggle "modal"
-                          :data-target "#inviteForm"}
+
+          [:a.aside-item {:data-bind "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}"
+                          ;; modal lives in aside
+                          :on-click #(utils/open-modal "#inviteForm")}
            [:i.fa.fa-envelope-o]
            [:span "Invite Teammate"]]
 
@@ -212,5 +213,6 @@
     (render [_]
       (html
        [:aside.app-aside-left
+        shared/invite-form ;; modal trigger is in aside-nav
         (om/build aside-nav app)
         (om/build activity app)]))))

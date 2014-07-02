@@ -120,6 +120,7 @@
 (defn open-modal
   "Open bootstrap modal with given selector"
   [selector]
+  (mwarn "Please remove the modal on" selector)
   (let [jq (aget js/window "$")
         $node (jq selector)
         modal (aget $node "modal")]

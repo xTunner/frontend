@@ -126,12 +126,11 @@
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 [:i.fa.fa-lock]
-                ;; XXX implement modals
-                [:button {:data-target "#inviteForm", :data-toggle "modal"}
+                [:button {:on-click #(utils/open-modal "#inviteForm-addprojects")}
                  [:span "Follow"]]]))))))
 
 (def invite-modal
-  [:div#inviteForm.fade.hide.modal
+  [:div#inviteForm-addprojects.fade.hide.modal
    {:tabindex "-1",
     :role "dialog",
     :aria-labelledby "inviteFormLabel",
@@ -144,10 +143,7 @@
    [:div.modal-body
     [:p
      "For security purposes only a project's Github administrator may setup Circle. Invite this project's admin(s) by sending them the link below and asking them to setup the project in Circle. You may also ask them to make you a Github administrator."]
-    [:p.pull-right
-     [:input
-      {:value "https://circleci.com/?join=dont-test-alone",
-       :type "text"}]]]
+    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]]
    [:div.modal-footer
     [:button.btn.btn-primary
      {:data-dismiss "modal", :aria-hidden "true"}

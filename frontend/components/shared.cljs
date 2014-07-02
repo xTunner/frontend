@@ -95,6 +95,21 @@
    " Sign up with "
    [:strong.white "GitHub"]])
 
+(def invite-form
+  [:div#inviteForm.fade.hide.invite-form.modal {:tabindex "-1",
+                                                :role "dialog",
+                                                :aria-labelledby "inviteFormLabel",
+                                                :aria-hidden "true"}
+   [:div.modal-header
+    [:button.close {:type "button", :data-dismiss "modal", :aria-hidden "true"} "×"]
+    [:h3#inviteFormLabel "Invite Your Colleagues"]]
+   [:div.modal-body
+    [:p [:strong "To invite your friends, and colleagues to Circle, just send them this link:"]]
+    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
+    [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]]
+   [:div.modal-footer
+    [:button.btn.btn-primary {:data-dismiss "modal", :aria-hidden "true"} "Got it"]]])
+
 (defn contact-form
   "It's not clear how this should fit into the global state, so it's using component-local
    state for now."
