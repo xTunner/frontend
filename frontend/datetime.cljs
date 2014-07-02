@@ -1,5 +1,7 @@
 (ns frontend.datetime
   (:require [frontend.utils :as utils :include-macros true]
+            [cljs-time.coerce :refer [from-long]]
+            [cljs-time.format :as time-format]
             [goog.string :as g-string]
             goog.string.format
             [goog.i18n.DateTimeFormat.Format :as date-formats]))
@@ -143,3 +145,14 @@
       (if (pos? hours)
         (g-string/format "%s:%s:%s" hours display-minutes display-seconds)
         (g-string/format "%s:%s" display-minutes display-seconds)))))
+
+(defn as-time-since [date-string]
+  (let [time (.getTime (js/Date. date-string))
+        now (.getTime (js/Date.))
+        ago (.floor js/Math (/ (- now time) 1000))]
+    (cond (< ago minute) "just now"
+          (< ago hour) (str ago "m ago")
+          (< ago day) (time-format/unparse (time-format/formatter "h:mma") (from-long time))
+          (< ago (* 2 day)) "yesterday"
+          (< ago year) (time-format/unparse (time-format/formatter "MMM d") (from-long time))
+          :else (time-format/unparse (time-format/formatter "MMM yyyy") (from-long time)))))

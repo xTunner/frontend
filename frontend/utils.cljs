@@ -116,6 +116,15 @@
   [controls-ch path event]
   (put! controls-ch [:toggled-input {:path path}]))
 
+;; TODO: get rid of bootstrap modals
+(defn open-modal
+  "Open bootstrap modal with given selector"
+  [selector]
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        modal (aget $node "modal")]
+    (.call modal $node #js {:open true})))
+
 ;; TODO: get rid of bootstrap popovers
 (defn popover
   "Sets up a popover given selector and options. Once this is called, the popover

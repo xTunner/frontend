@@ -7,10 +7,13 @@
             [frontend.components.dashboard :as dashboard]
             ;;[frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.changelog :as changelog]
+            [frontend.components.enterprise :as enterprise]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
+            [frontend.components.integrations :as integrations]
             [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
@@ -18,6 +21,7 @@
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
+            [frontend.components.stories :as stories]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
@@ -51,6 +55,11 @@
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security
+    :security-hall-of-fame security/hall-of-fame
+    :enterprise enterprise/enterprise
+    :shopify-story stories/shopify
+    :docker-integration integrations/docker
+    :changelog changelog/changelog
     ;; :documentation-root docs/documentation
     ;; :documentation-page docs/docpage
 

@@ -673,3 +673,7 @@
          (mixpanel/managed-track event properties) ([v] (do (utils/mlog "tracked" v "... redirecting")
                                                             (redirect)))
          (async/timeout 1000) (redirect)))))
+
+(defmethod post-control-event! :enterprise-learn-more-clicked
+  [target message {:keys [source]} previous-state current-state]
+  (utils/open-modal "#enterpriseModal"))

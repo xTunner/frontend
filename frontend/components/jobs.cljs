@@ -33,7 +33,7 @@
           [:h2 "Why you'll love working at CircleCI"]
           [:p
            [:strong "Our culture is customer-driven."]
-           "Our customers and our founders are engineers, and most of our employees are too. We are inspired by companies like "
+           " Our customers and our founders are engineers, and most of our employees are too. We are inspired by companies like "
            [:a {:href "http://blog.alexmaccaw.com/stripes-culture"} "Stripe,"]
            " "
            [:a {:href "http://gigaom.com/2012/03/26/tales-from-the-trenches-github/"} "GitHub,"]
@@ -66,7 +66,7 @@
           [:p
            [:strong "Local"]
            [:span " — "]
-           "Our team is dedicated to creating the most productive environment possible. That means we ensure everyone is able to enjoy their own personal level of comfort and privacy.We work in San Francisco's beautiful Financial District, where you'll have a "
+           "Our team is dedicated to creating the most productive environment possible. That means we ensure everyone is able to enjoy their own personal level of comfort and privacy. We work in San Francisco's beautiful Financial District, where you'll have a "
            [:a
             {:href "http://blog.circleci.com/silence-is-for-the-weak"}
             "private office"]
@@ -94,7 +94,7 @@
              [:a
               {:href "http://blog.circleci.com/kindness-is-underrated"}
               "Pleasant people"]
-             " , and good conversationalists - we'll be spending the next few years together after all."]
+             ", and good conversationalists - we'll be spending the next few years together after all."]
             [:li
              "Folks with an interest in the whole company, not just their job. Our transparent culture allows everyone to take a holistic view of the company. As a result, we really like people who enjoy getting familiar with the whole business, customers, product, culture, selling, etc."]]]
 
@@ -127,7 +127,7 @@
              "Experience building fat JS apps, stateful HTML5 apps, and data visualizations."]
             [:li "Good product and user experience sensibilities."]]
            [:a
-            {:role "button", :href "/jobs?role=engineering#apply"}
+            {:role "button", :href "/jobs#apply"}
             [:span "Apply for Engineering roles"]]]
 
           [:div#designer
@@ -174,7 +174,7 @@
             [:li
              "Most importantly, relate to our customers; primarily developers."]]
            [:a
-            {:role "button", :href "/jobs?role=design#apply"}
+            {:role "button", :href "/jobs#apply"}
             [:span "Apply for Design roles"]]]
 
           [:div#business
@@ -220,16 +220,16 @@
             [:li "Are supremely organized and resourceful."]
             [:li "Have reasonable to strong coding ability."]]
            [:a
-            {:role "button", :href "/jobs?role=business#apply"}
+            {:role "button", :href "/jobs#apply"}
             [:span "Apply for Business roles"]]]]
 
          [:div.jobs-how
           [:h2#apply "How to apply"]
-          [:p "Send an email to " [:a {:href "mailto:jobs@circleci.com"} "jobs@circleci.com"] " including a resume."]
+          [:p "Send an email to " [:a {:href "mailto:jobs@circleci.com"} "jobs@circleci.com"] ", including a resume."]
           [:p
-           "We're mostly interested in seeing evidence that you're great at what you do. (Don't worry if you're not convinced about your abilities, just work to convince us.) This might include great projects you've worked on, a portfolio, wonderful references, open source you've contributed to, products you've built or scaled, your grades at MIT, that you got hired by Google, or anything that hints that you might be a particularly amazing individual.We're also interested in reading about technologies you've worked with in the past, and what you did with them."]
+           "We're mostly interested in seeing evidence that you're great at what you do. (Don't worry if you're not convinced about your abilities, just work to convince us.) This might include great projects you've worked on, a portfolio, wonderful references, open source you've contributed to, products you've built or scaled, your grades at MIT, that you got hired by Google, or anything that hints that you might be a particularly amazing individual. We're also interested in reading about technologies you've worked with in the past, and what you did with them."]
           [:p
-           "The kind of people we want to work with tend to pitch us as to why they should work at CircleCI.This is both why you're interested, and why you think you'd be a good part of the team. If all goes well we're going to spend a lot of time together, so it's worth it for both of us to discuss this in advance."]
+           "The kind of people we want to work with tend to pitch us as to why they should work at CircleCI. This is both why you're interested, and why you think you'd be a good part of the team. If all goes well we're going to spend a lot of time together, so it's worth it for both of us to discuss this in advance."]
           [:p
            "Naturally, this goes both ways. We're happy to answer any questions you have about CircleCI, where we're going, why it's an amazing place to work, and what we're doing to keep it that way."]
           [:p

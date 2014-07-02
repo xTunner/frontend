@@ -1,15 +1,20 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
+            [frontend.changelog :as changelog]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
-            [goog.string :as gstring])
+            [goog.dom]
+            [goog.string :as gstring]
+            [goog.style])
   (:require-macros [frontend.utils :refer [inspect]]
+                   [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; XXX we could really use some middleware here, so that we don't forget to
@@ -22,6 +27,24 @@
   (set! (.-title js/document) (if title
                                 (str title  " - CircleCI")
                                 "CircleCI")))
+
+(defn scroll-to-fragment!
+  "Scrolls to the element with id of fragment, if one exists"
+  [fragment]
+  (when-let [node (goog.dom.getElement fragment)]
+    (let [main (goog.dom.getElementByClass "app-main")
+          node-top (goog.style/getPageOffsetTop node)
+          main-top (goog.style/getPageOffsetTop main)
+          main-scroll (.-scrollTop main)]
+      (set! (.-scrollTop main) (+ main-scroll (- node-top main-top))))))
+
+(defn scroll!
+  "Scrolls to fragment if the url had one, or scrolls to the top of the page"
+  [args]
+  (if (:_fragment args)
+    ;; give the page time to render
+    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))
+    (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -37,12 +60,14 @@
 
 (defmethod navigated-to :default
   [history-imp navigation-point args state]
-  (mlog "Unknown nav event: " (pr-str navigation-point))
-  state)
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data args)))
 
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
-  (mlog "No post-nav for: " navigation-point))
+  (set-page-title! (str/capitalize (name navigation-point)))
+  (scroll! args))
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point path previous-state current-state]
@@ -179,12 +204,6 @@
     :navigation-data args
     :current-documentation-page (:page args)))
 
-(defmethod navigated-to :landing
-  [history-imp navigation-point args state]
-  (assoc state
-         :navigation-point navigation-point
-         :navigation-data args))
-
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?
 (defmethod post-navigated-to! :project-settings
@@ -296,32 +315,13 @@
                      500 "Internal server error"
                      "Something unexpected happened")))
 
-(defmethod navigated-to :about
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :pricing
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :jobs
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :privacy
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod navigated-to :security
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
+(defmethod post-navigated-to! :changelog
+  [history-imp navigation-point args previous-state current-state]
+  (scroll! args)
+  (go (let [comms (get-in current-state [:comms])
+            api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
+        (if (= :success (:status api-result))
+          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
+              ;; might need to scroll to the fragment
+              (js/requestAnimationFrame #(scroll! args)))
+          (put! (:errors comms) [:api-error api-result])))))
