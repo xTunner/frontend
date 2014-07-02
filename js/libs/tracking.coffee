@@ -7,7 +7,7 @@ CI.tracking =
     catch e
      console.error e
 
-  trackPayer: () ->
+  trackPayer: (login) ->
     # track mixpanel
     try
       mixpanel.track('Paid')
@@ -16,10 +16,7 @@ CI.tracking =
       # track perfect audience
     try
       window._pq = window._pq or []
-      _pq.push [
-          "track"
-          "payer"
-      ]
+      _pq.push ["track", "payer", [orderId: login]]
     catch e
       console.error e
     # track twtitter

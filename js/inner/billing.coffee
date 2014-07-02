@@ -249,7 +249,7 @@ CI.inner.Billing = class Billing extends CI.inner.Obj
         'billing-name': @billing_name() || @org_name()
         'containers' : plan.containers
       success: (data) =>
-        CI.tracking.trackPayer()
+        CI.tracking.trackPayer(VM.current_user().login)
         @loadPlanData(data)
         @loadInvoices()
         VM.org().subpage('containers')
