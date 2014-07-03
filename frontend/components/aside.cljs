@@ -9,6 +9,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -62,12 +63,12 @@
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-aside [data owner]
+(defn project-aside [data owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Project Activity")
     om/IRender
     (render [_]
-      (let [user (:user data)
+      (let [login {:login opts}
             project (:project data)
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
@@ -77,7 +78,7 @@
             vcs-url (:vcs_url project)
             org (vcs-url/org-name vcs-url)
             repo (vcs-url/repo-name vcs-url)
-            branches-filter (if show-all-branches? identity (partial project-model/personal-branch? user project))]
+            branches-filter (if show-all-branches? identity (partial project-model/personal-branch? {:login login} project))]
         (html
          [:ul {:class (when-not collapse-branches? "open")}
           [:li
@@ -104,7 +105,7 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
-(defn activity [app owner]
+(defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
     om/IRender
@@ -113,8 +114,7 @@
             show-all-branches? (get-in app state/show-all-branches-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
-            controls-ch (om/get-shared owner [:comms :controls])
-            user (:current-user app)]
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:nav.aside-left-nav.context
           [:div.aside-activity.open
@@ -130,11 +130,11 @@
             (for [project (sort project-model/sidebar-sort projects)]
               (om/build project-aside
                         {:project project
-                         :user user
                          :settings settings}
-                        {:react-key (project-model/id project)}))]]])))))
+                        {:react-key (project-model/id project)
+                         :opts {:login (:login opts)}}))]]])))))
 
-(defn aside-nav [app owner]
+(defn aside-nav [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IRender
@@ -142,8 +142,7 @@
       (let [controls-ch (om/get-shared owner [:comms :controls])
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
-            slim-aside? (get-in app state/slim-aside-path)
-            user (:current-user app)]
+            slim-aside? (get-in app state/slim-aside-path)]
         (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
           [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
@@ -195,10 +194,10 @@
           [:div.aside-slideup
            [:a.aside-item {:href "/account"
                            :data-bind "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
-            [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar_id user)
-                                                :login (:login user)
+            [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
+                                                :login (:login opts)
                                                 :size 50})}]
-            (:login user)]
+            (:login opts)]
 
            [:a.aside-item {:href "/logout"
                            :data-bind "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
@@ -210,7 +209,12 @@
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
-      (html
-       [:aside.app-aside-left
-        (om/build aside-nav app)
-        (om/build activity app)]))))
+      (let [data (select-in app [state/projects-path state/settings-path])
+            user (get-in app state/user-path)
+            login (:login user)
+            gravatar-id (:gravatar_id user)]
+        (html
+         [:aside.app-aside-left
+          (om/build aside-nav data {:opts {:login login
+                                           :gravatar-id gravatar-id}})
+          (om/build activity data {:opts {:login login}})])))))
