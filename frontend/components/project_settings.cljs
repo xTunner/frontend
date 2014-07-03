@@ -11,6 +11,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]
@@ -41,6 +42,12 @@
 
 (defn branch-picker [project-data owner opts]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
+        (utils/typeahead "#branch-picker-typeahead-hack"
+                         {:source (map (comp gstring/urlDecode name) (keys (:branches (:project project-data))))
+                          :updater #(put! controls-ch [:edited-input {:path state/project-settings-branch-path :value %}])})))
     om/IRender
     (render [_]
       (let [{:keys [button-text channel-message channel-args]
@@ -54,6 +61,7 @@
         (html
          [:form
           [:input {:name "branch"
+                   :id "branch-picker-typeahead-hack"
                    :required true
                    :type "text"
                    :value settings-branch

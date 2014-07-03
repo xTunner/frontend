@@ -149,3 +149,14 @@
     (if options
       (.call $tooltip $node (clj->js options))
       (.call $tooltip $node))))
+
+;; TODO: get rid of bootstrap typeahead
+(defn typeahead
+  "Sets up typahead given selector and options. Once this is called, typeahead
+   should work as expected"
+  [selector & [options]]
+  (mwarn "Please remove typeahead on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        $typeahead (aget $node "typeahead")]
+    (.call $typeahead $node (clj->js options))))
