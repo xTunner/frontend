@@ -123,8 +123,8 @@
   (mwarn "Please remove the modal on" selector)
   (let [jq (aget js/window "$")
         $node (jq selector)
-        modal (aget $node "modal")]
-    (.call modal $node #js {:open true})))
+        $modal (aget $node "modal")]
+    (.call $modal $node #js {:open true})))
 
 ;; TODO: get rid of bootstrap popovers
 (defn popover
@@ -134,8 +134,8 @@
   (mwarn "Please remove the popover on" selector)
   (let [jq (aget js/window "$")
         $node (jq selector)
-        popover (aget $node "popover")]
-    (.call popover $node (clj->js options))))
+        $popover (aget $node "popover")]
+    (.call $popover $node (clj->js options))))
 
 ;; TODO: get rid of bootstrap tooltips
 (defn tooltip
@@ -145,7 +145,7 @@
   (mwarn "Please remove the tooltip on" selector)
   (let [jq (aget js/window "$")
         $node (jq selector)
-        popover (aget $node "tooltip")]
+        $tooltip (aget $node "tooltip")]
     (if options
-      (.call popover $node (clj->js options))
-      (.call popover $node))))
+      (.call $tooltip $node (clj->js options))
+      (.call $tooltip $node))))
