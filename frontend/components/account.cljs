@@ -62,29 +62,18 @@
 
 (defn heroku-key [app owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:processing? false})
     om/IRenderState
     (render-state [_ _]
-      (let [controls-ch               (om/get-shared owner [:comms :controls])
-            set-heroku-api-key-input! #(om/set-state! owner :heroku-api-key-input %)
-            heroku-api-key            (get-in app (conj state/user-path :heroku_api_key))
-            heroku-api-key-input      (str (om/get-state owner :heroku-api-key-input))
-            processing-form?          (om/get-state owner :processing?)
-            form-processed?           false
-            submit-form!              #(when (seq heroku-api-key-input)
-                                         (om/set-state! owner :processing? true)
-                                         (put! controls-ch [:heroku-key-add-attempted {:heroku_api_key %}]))]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            heroku-api-key (get-in app (conj state/user-path :heroku_api_key))
+            heroku-api-key-input (get-in app (conj state/user-path :heroku-api-key-input))
+            submit-form! #(put! controls-ch [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])]
         (html/html
          [:div#settings-heroku
           [:div.heroku-item
            [:h2 "Heroku API key"]
            [:p
-            "Add your "
-            [:a
-             {:href "\\https://dashboard.heroku.com/account\\"}
-             "Heroku API Key"]
+            "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
             [:br]
             "You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
@@ -92,7 +81,7 @@
             (when heroku-api-key
               [:div
                [:input.disabled
-                {:required  "",
+                {:required  true
                  :type      "text",
                  :value heroku-api-key}]
                [:label {:placeholder "Current Heroku key"}]])
@@ -100,9 +89,7 @@
              {:required  true
               :type      "text",
               :value     heroku-api-key-input
-              :class     (when processing-form?
-                           "disabled")
-              :on-change  #(set-heroku-api-key-input! (.. % -target -value))}]
+              :on-change  #(utils/edit-input controls-ch (conj state/user-path :heroku-api-key-input) %)}]
             [:label {:placeholder "Add new key"}]
             (forms/managed-button
              [:input
@@ -111,10 +98,7 @@
                :data-success-text "Saved",
                :type "submit"
                :value "Save Heroku key"
-               :on-click          (fn [event]
-                                    (when (seq (.. event -target -value))
-                                      (submit-form! heroku-api-key-input))
-                                    false)}])]]])))))
+               :on-click #(do (submit-form!) false)}])]]])))))
 
 (defn api-tokens [app owner]
   (reify
