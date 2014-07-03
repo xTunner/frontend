@@ -115,9 +115,6 @@
                                       (submit-form! heroku-api-key-input))
                                     false)}])]]])))))
 
-;; XXX 1. Not finished - how to tie form-submit to managed-button?
-;; 2. Disable form while creating
-;; 3. Clear form after success
 (defn api-tokens [app owner]
   (reify
     om/IRender
@@ -141,7 +138,7 @@
               :on-change #(utils/edit-input controls-ch state/new-user-token-path %)}]
             [:label {:placeholder "Token name"}]
             (forms/managed-button
-             [:input
+             [:input.btn
               {:data-loading-text "Creating...",
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
@@ -150,31 +147,32 @@
                :type "submit"
                :value "Create"}])]]
           [:div.api-item
-           {:data-bind "if: tokens().length"}
            (when (seq tokens)
              [:table.table
               [:thead [:th "Label"] [:th "Token"] [:th "Created"] [:th]]
               [:tbody
-               {:data-bind "foreach: tokens"}
-               (map (fn [token]
-                      (let [token (om/value token)]
-                        [:tr
-                         [:td {:data-bind "text: label"} (:label token)]
-                         [:td [:span.code {:data-bind "text: token"} (:token token)]]
-                         [:td {:data-bind "text: time"} (datetime/medium-datetime (js/Date.parse (:time token)))]
-                         [:td
-                          [:span
-                           {:data-bind "click: $root.current_user().delete_token"}
-                           (forms/managed-button
-                            [:a.revoke-token
-                             {:data-loading-text "Revoking...",
-                              :data-failed-text  "Failed to revoke token",
-                              :data-success-text "Revoked",
-                              :on-click          #(put! controls-ch [:api-token-revocation-attempted {:token token}])}
-                             "Revoke"])]]])) tokens)]])]])))))
+               (for [token tokens]
+                 (let [token (om/value token)]
+                   [:tr
+                    [:td {:data-bind "text: label"} (:label token)]
+                    [:td [:span.code {:data-bind "text: token"} (:token token)]]
+                    [:td {:data-bind "text: time"} (datetime/medium-datetime (js/Date.parse (:time token)))]
+                    [:td
+                     [:span
+                      [:a.revoke-token
+                       {:data-loading-text "Revoking...",
+                        :data-failed-text  "Failed to revoke token",
+                        :data-success-text "Revoked",
+                        :on-click          #(put! controls-ch [:api-token-revocation-attempted {:token token}])}
+                       [:i.fa.fa-times-circle]
+                       " Revoke"]]]]))]])]])))))
 
 (defn notifications [app owner]
   (reify
+    ;; Wait for https://github.com/circleci/circle/pull/2805
+    ;; om/IDidMount
+    ;; (did-mount [_]
+    ;;   (utils/tooltip "#email-addresses-tooltip-hack" {:placement "right" :trigger "hover"}))
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
@@ -191,33 +189,29 @@
                 :type "radio"
                 :checked (= email-pref "all")
                 :on-change (partial handle-email-notification-change controls-ch "all")}]
-              [:span
-               "Send me a personalized email for every build in all of my projects."]]
+              "Send me a personalized email for every build in all of my projects."]
              [:label.radio
               [:input
                {:name "email_pref",
                 :type "radio"
                 :checked (= email-pref "smart")
                 :on-change (partial handle-email-notification-change controls-ch "smart")}]
-              [:span
-               "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
+              "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]
              [:label.radio
               [:input
                {:name "email_pref",
                 :type "radio"
                 :checked (= email-pref "none")
                 :on-change (partial handle-email-notification-change controls-ch "none")}]
-              [:span "Don't send me emails."]]]]]
+              "Don't send me emails."]]]]
           [:div.notification-item
            [:form#email_address.form-horizontal
             [:fieldset
              [:legend
               "Email Addresses"
-              [:i.fa.fa-info-circle
-               {:data-bind
-                "tooltip: {title: \\Addresses added to your GitHub account will be reflected here\\, placement: 'right', trigger: 'hover'}"}]]
+              [:i.fa.fa-info-circle#email-addresses-tooltip-hack
+               {:title "Addresses added to your GitHub account will be reflected here"}]]
              [:div
-              {:data-bind "foreach: all_emails"}
               (map (fn [email]
                      [:label.radio
                       [:input
@@ -225,15 +219,13 @@
                         :value email
                         :name "selected_email"
                         :type "radio"
-                        :on-click (fn [event]
-                                    (put! controls-ch [:preferences-updated {:selected_email email}]))}]
+                        :on-click #(put! controls-ch [:preferences-updated {:selected_email email}])}]
                       [:span email]]) (get-in app (conj state/user-path :all_emails)))]]]]
           [:div.notification-item
            [:form
             [:fieldset
              [:legend "Project preferences"]
-             [:p
-              "Projects can be individually configured, from a project's 'Settings' page. Instant message settings are per-project; edit a project to set them."]]]]])))))
+             [:p "Projects can be individually configured, from a project's 'Settings' page. Instant message settings are per-project; edit a project to set them."]]]]])))))
 
 (defn account [app owner]
   (reify
