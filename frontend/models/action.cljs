@@ -39,9 +39,10 @@
 
 (defn format-output [action output-index]
   (let [output (get-in action [:output output-index])
+        escaped-message (gstring/htmlEscape (:message output))
         converter (new-converter action (keyword (:type output)))]
     (-> action
-        (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
+        (assoc-in [:output output-index :converted-message] (.append converter escaped-message))
         (assoc-in [:output output-index :react-key] (utils/uuid))
         (assoc-in [:converters-state (keyword (:type output))] (utils/js->clj-kw (.currentState converter))))))
 
