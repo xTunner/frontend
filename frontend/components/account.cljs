@@ -9,6 +9,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.seq :refer [select-in]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom]
@@ -257,5 +258,4 @@
           [:div.settings-item
            [:div.settings-item-inner
             [:div#subpage
-             (when subpage-com
-               (om/build subpage-com app))]]]])))))
+             (om/build subpage-com (select-in app [state/user-path]))]]]])))))
