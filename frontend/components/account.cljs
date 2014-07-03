@@ -154,10 +154,9 @@
 
 (defn notifications [app owner]
   (reify
-    ;; Wait for https://github.com/circleci/circle/pull/2805
-    ;; om/IDidMount
-    ;; (did-mount [_]
-    ;;   (utils/tooltip "#email-addresses-tooltip-hack" {:placement "right" :trigger "hover"}))
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#email-addresses-tooltip-hack" {:placement "right" :trigger "hover"}))
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
