@@ -39,7 +39,6 @@
              (fn [org]
                (let [org-url    (routes/v1-org-settings-subpage {:org     (:login org)
                                                                  :subpage "plans"})
-                     ;; XXX Is there a nicer helper for sized avatar urls?
                      avatar-url (if-let [avatar-url (:avatar_url org)]
                                   (str avatar-url "25")
                                   (gh-utils/gravatar-url {:gravatar_id (:gravatar_id org)
@@ -60,10 +59,6 @@
                   [:br]]))
              user-and-orgs)]]])))))
 
-;; XXX 1. How can we re-enable the form after it's been processed?
-;; 2. I don't want the submit event to fire unless there's actually
-;; input (or some other predicate is met), but the managed-button
-;; seems to wrap/override my on-click event
 (defn heroku-key [app owner]
   (reify
     om/IInitState
@@ -252,7 +247,7 @@
                          :heroku        heroku-key
                          :api           api-tokens
                          :plans         plans}
-            subpage-com (get coms subpage)]
+            subpage-com (get coms subpage notifications)]
         (html
          [:div#account-settings
           [:div.account-top
