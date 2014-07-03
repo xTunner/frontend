@@ -624,14 +624,6 @@
    :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
             :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
 
-(defmethod control-event :heroku-key-added
-  [target message args state]
-  (update-in state state/user-path assoc :heroku_api_key (:heroku_api_key args)))
-
-(defmethod control-event :heroku-key-add-attempted
-  [target message args state]
-  state)
-
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state]
   (let [uuid frontend.async/*uuid*
