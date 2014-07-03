@@ -179,6 +179,14 @@
                      api-ch
                      :context {:project-name project-name})
 
+          (and (= subpage :checkout)
+               (not (get-in current-state state/project-checkout-keys-path)))
+          (ajax/ajax :get
+                     (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                     :project-checkout-key
+                     api-ch
+                     :context {:project-name project-name})
+
           (and (= subpage :api)
                (not (get-in current-state state/project-tokens-path)))
           (ajax/ajax :get

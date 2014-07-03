@@ -214,6 +214,13 @@
     (assoc-in state state/project-tokens-path resp)))
 
 
+(defmethod api-event [:project-checkout-key :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (assoc-in state state/project-checkout-keys-path resp)))
+
+
 (defmethod api-event [:project-envvar :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))

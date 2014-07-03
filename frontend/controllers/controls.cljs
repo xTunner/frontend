@@ -566,6 +566,21 @@
                 (release-button! uuid (:status api-result))))
             nil)))))
 
+(defmethod post-control-event! :new-checkout-key-clicked
+  [target message {:keys [project-id project-name key-type]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        err-ch (get-in current-state [:comms :errors])]
+    (go (let [api-resp (<! (ajax/managed-ajax
+                             :post
+                             (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                             :params {:type key-type}))]
+          (utils/inspect api-resp)
+          (if (= :success (:status api-resp))
+            (put! api-ch (utils/inspect [:checkout-key :success (assoc api-resp :context {:project-id project-id})]))
+            (put! err-ch (utils/inspect [:api-error api-resp])))
+          (release-button! uuid (utils/inspect (:status api-resp)))))))
+
 (defmethod post-control-event! :update-containers-clicked
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*

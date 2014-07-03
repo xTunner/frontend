@@ -27,6 +27,7 @@
                           :plan nil
                           :settings {}
                           :tokens nil
+                          :checkout-keys nil
                           :envvars nil}
    :current-build-data {:build nil
                         :usage-queue-data {:builds nil
@@ -79,6 +80,7 @@
 (def project-data-path [:current-project-data])
 (def project-plan-path (conj project-data-path :plan))
 (def project-tokens-path (conj project-data-path :tokens))
+(def project-checkout-keys-path (conj project-data-path :checkout-keys))
 (def project-envvars-path (conj project-data-path :envvars))
 (def project-settings-branch-path (conj project-data-path :settings-branch))
 (def project-path (conj project-data-path :project))

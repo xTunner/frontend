@@ -27,6 +27,7 @@
                                       :plan nil
                                       :settings {}
                                       :tokens nil
+                                      :checkout-keys nil
                                       :envvars nil}))
 
 (defn reset-current-org [state]
