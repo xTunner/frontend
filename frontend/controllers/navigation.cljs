@@ -331,7 +331,7 @@
   (mlog "Navigated to account subpage:" subpage)
   (-> state
       (assoc :navigation-point navigation-point)
-      (assoc :nagivation-data args)
+      (assoc :navigation-data args)
       (assoc :account-settings-subpage subpage)))
 
 (defmethod post-navigated-to! :account
