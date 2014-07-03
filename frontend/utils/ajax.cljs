@@ -91,7 +91,11 @@
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(put! channel (assoc % :status :success))
-                             :error-handler #(put! channel %)
+                             ;; TODO: clean this up
+                             :error-handler #(put! channel (-> %
+                                                               (assoc :status-code (:status %))
+                                                               (assoc :resp (get-in % [:response :resp]))
+                                                               (assoc :status :failed)))
                              :finally #(close! channel)}))
     channel))
 

@@ -104,6 +104,10 @@
   (mlog "projects success")
   (assoc-in state [:projects] (:resp args)))
 
+(defmethod api-event [:me :success]
+  [target message status args state]
+  (update-in state state/user-path merge (:resp args)))
+
 
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
@@ -180,6 +184,10 @@
   [target message status args state]
   (assoc-in state state/user-collaborators-path (:resp args)))
 
+(defmethod api-event [:tokens :success]
+  [target message status args state]
+  (print "Tokens received: " args)
+  (assoc-in state state/user-tokens-path (:resp args)))
 
 (defmethod api-event [:usage-queue :success]
   [target message status args state]
@@ -497,13 +505,33 @@
     state
     (update-in state state/org-plan-path merge resp)))
 
+(defmethod api-event [:update-heroku-key :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state (conj state/user-path :heroku-api-key-input) ""))
+
+(defmethod api-event [:create-api-token :success]
+  [target message status {:keys [resp context]} state]
+  (-> state
+      (assoc-in state/new-user-token-path "")
+      (update-in state/user-tokens-path conj resp)))
+
+(defmethod api-event [:delete-api-token :failed]
+  [target message status {:keys [resp context]} state]
+  ;; XXX Don't drop the resp text on the floor here, should be shown
+  ;; to the user
+  state)
+
+(defmethod api-event [:delete-api-token :success]
+  [target message status {:keys [resp context]} state]
+  (let [deleted-token (:token context)]
+    (update-in state state/user-tokens-path (fn [tokens]
+                                              (vec (remove #(= (:token %) (:token deleted-token)) tokens))))))
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (assoc-in state state/org-invoices-path resp)))
-
 
 (defmethod api-event [:changelog :success]
   [target message status {:keys [resp context]} state]

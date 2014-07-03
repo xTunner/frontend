@@ -610,6 +610,60 @@
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))))
 
+(defmethod control-event :preferences-updated
+  [target message args state]
+  (update-in state state/user-path merge args))
+
+(defmethod post-control-event! :preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
+            :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+
+(defmethod post-control-event! :heroku-key-add-attempted
+  [target message args previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/heroku-key"
+                           :params {:apikey (:heroku_api_key args)}))]
+       (if (= :success (:status api-result))
+         (let [me-result (<! (ajax/managed-ajax :get "/api/v1/me"))]
+           (put! api-ch [:update-heroku-key :success api-result])
+           (put! api-ch [:me (:status me-result) (assoc me-result :context {})]))
+         (put! (get-in current-state [:comms :errors]) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-revocation-attempted
+  [target message {:keys [token]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :delete
+                           (gstring/format "/api/v1/user/token/%s" (:token token))
+                           :params {}))]
+       (put! api-ch [:delete-api-token (:status api-result) (assoc api-result :context {:token token})])
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-creation-attempted
+  [target message {:keys [label]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/token"
+                           :params {:label label}))]
+       (put! api-ch [:create-api-token (:status api-result) (assoc api-result :context {:label label})])
+       (release-button! uuid (:status api-result))))))
+
 (defmethod post-control-event! :update-card-clicked
   [target message {:keys [containers price description base-template-id]} previous-state current-state]
   (let [stripe-ch (chan)

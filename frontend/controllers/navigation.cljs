@@ -325,3 +325,20 @@
               ;; might need to scroll to the fragment
               (js/requestAnimationFrame #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))
+
+(defmethod navigated-to :account
+  [history-imp navigation-point {:keys [subpage] :as args} state]
+  (mlog "Navigated to account subpage:" subpage)
+  (-> state
+      (assoc :navigation-point navigation-point)
+      (assoc :navigation-data args)
+      (assoc :account-settings-subpage subpage)))
+
+(defmethod post-navigated-to! :account
+  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects (get-in current-state [:comms :api])))
+    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
+    (set-page-title! "Account")))

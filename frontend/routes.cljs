@@ -8,6 +8,7 @@
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+
 (defn open-to-inner! [nav-ch navigation-point args]
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
@@ -87,6 +88,10 @@
     (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
+  (defroute v1-account "/account" []
+    (open-to-inner! nav-ch :account {:subpage nil}))
+  (defroute v1-account-subpage "/account/:subpage" [subpage]
+    (open-to-inner! nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 

@@ -40,13 +40,15 @@
        {:title (:body build)
         :href url}
        (:subject build)]]
-     (if (= "not_run" (:status build))
+     (if (or (not (:start_time build))
+             (= "not_run" (:status build)))
        [:td {:col-span 2}]
        (list [:td.recent-time
               [:a
-               {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
+               {:title  (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
+               (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
+               " ago"]]
              [:td.recent-time
               [:a
                {:title (build-model/duration build)
