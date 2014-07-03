@@ -218,13 +218,11 @@
     (render [_]
       (let [subpage     (or (get-in app state/account-subpage-path)
                             :notifications)
-            coms        {;; Finished converting
-                         :notifications notifications
-                         ;; Pending conversion
+            coms        {:notifications notifications
                          :heroku        heroku-key
                          :api           api-tokens
                          :plans         plans}
-            subpage-com (get coms subpage notifications)]
+            subpage-com (get coms subpage)]
         (html
          [:div#account-settings
           [:div.account-top
