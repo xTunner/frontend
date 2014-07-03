@@ -511,15 +511,11 @@
   [target message status {:keys [resp context]} state]
   (update-in state state/user-path assoc :heroku_api_key (:heroku_api_key resp)))
 
-(defmethod api-event [:create-api-token :failed]
-  [target message status {:keys [resp context]} state]
-  ;; XXX-ResponseText Don't drop the resp text on the floor here,
-  ;; should be shown to the user
-  state)
-
 (defmethod api-event [:create-api-token :success]
   [target message status {:keys [resp context]} state]
-  (update-in state state/user-tokens-path conj resp))
+  (-> state
+      (assoc-in state/new-user-token-path "")
+      (update-in state/user-tokens-path conj resp)))
 
 (defmethod api-event [:delete-api-token :failed]
   [target message status {:keys [resp context]} state]
