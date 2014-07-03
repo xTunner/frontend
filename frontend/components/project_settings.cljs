@@ -379,21 +379,27 @@
                                               :settings {:test test
                                                          :extra extra}}}})]]]])))))
 
-(defn fixed-failed-input [project controls-ch field]
-  (let [notify_pref (get project field)
-        id (string/replace (name field) "_" "-")]
-    [:label {:for id}
-     [:input {:id id
-              :checked (= "smart" notify_pref)
-              :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
-                                            :value (if (= "smart" notify_pref) nil "smart"))
-              :value "smart"
-              :type "checkbox"}]
-     [:span "Fixed/Failed Only"]
-     [:i.fa.fa-question-circle
-      {:data-bind "tooltip: {}",
-       :title
-       "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]]))
+(defn fixed-failed-input [{:keys [project field]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip (str "#fixed-failed-input-tooltip-hack-" (string/replace (name field) "_" "-"))))
+    om/IRender
+    (render [_]
+      (html
+       (let [controls-ch (om/get-shared owner [:comms :controls])
+             notify_pref (get project field)
+             id (string/replace (name field) "_" "-")]
+         [:label {:for id}
+          [:input {:id id
+                   :checked (= "smart" notify_pref)
+                   :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
+                                                 :value (if (= "smart" notify_pref) nil "smart"))
+                   :value "smart"
+                   :type "checkbox"}]
+          [:span "Fixed/Failed Only"]
+          [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
+                                     :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
 (defn chatroom-item [project controls-ch {:keys [service icon doc inputs show-fixed-failed?
                                                  top-section-content]}]
@@ -412,7 +418,7 @@
         [:label {:placeholder placeholder}]))]]
    [:div.chat-room-foot
     (when show-fixed-failed?
-      (fixed-failed-input project controls-ch :hipchat_notify_prefs))]])
+      (om/build fixed-failed-input {:project project :field :hipchat_notify_prefs}))]])
 
 (defn chatrooms [project-data owner]
   (reify

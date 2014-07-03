@@ -52,15 +52,23 @@
                                              "add more containers"]
                " and finish even faster."])]))))))
 
-(defn commit-line [{:keys [subject body commit_url commit] :as commit-details}]
-  [:div
-   ;; XXX add tooltips
-   [:span {:title body}
-    subject " "]
-   [:a.sha-one {:href commit_url
-                :title commit}
-    (subs commit 0 7)
-    [:i.fa.fa-github]]])
+(defn commit-line [{:keys [subject body commit_url commit] :as commit-details} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (when (seq body)
+        (utils/tooltip (str "#commit-line-tooltip-hack-" commit) {:placement "bottom" :animation false})))
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        [:span {:title body
+                :id (str "commit-line-tooltip-hack-" commit)}
+         subject " "]
+        [:a.sha-one {:href commit_url
+                     :title commit}
+         (subs commit 0 7)
+         [:i.fa.fa-github]]]))))
 
 (defn build-commits [build owner]
   (reify
@@ -83,14 +91,14 @@
               [:i.fa.fa-caret-down]])]
           [:div.build-commits-list
            (if-not (seq (:all_commit_details build))
-             (commit-line {:subject (:subject build)
-                           :body (:body build)
-                           :commit_url (build-model/github-commit-url build)
-                           :commit (:vcs_revision build)})
+             (om/build commit-line {:subject (:subject build)
+                                    :body (:body build)
+                                    :commit_url (build-model/github-commit-url build)
+                                    :commit (:vcs_revision build)})
              (list
-              (map commit-line (take 3 (:all_commit_details build)))
+              (om/build-all commit-line (take 3 (:all_commit_details build)))
               (when (:show-all-commits build)
-                (map commit-line (drop 3 (:all_commit_details build))))))]])))))
+                (om/build-all commit-line (drop 3 (:all_commit_details build))))))]])))))
 
 (defn build-ssh [nodes owner]
   (reify

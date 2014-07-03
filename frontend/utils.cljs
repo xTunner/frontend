@@ -136,3 +136,16 @@
         $node (jq selector)
         popover (aget $node "popover")]
     (.call popover $node (clj->js options))))
+
+;; TODO: get rid of bootstrap tooltips
+(defn tooltip
+  "Sets up a tooltip given selector and options. Once this is called, the tooltip
+   should work as expected"
+  [selector & [options]]
+  (mwarn "Please remove the tooltip on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        popover (aget $node "tooltip")]
+    (if options
+      (.call popover $node (clj->js options))
+      (.call popover $node))))

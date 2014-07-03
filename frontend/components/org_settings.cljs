@@ -293,6 +293,9 @@
 
 (defn containers [app owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
     om/IRender
     (render [_]
       (let [plan (get-in app state/org-plan-path)
@@ -328,9 +331,8 @@
                 (when (plan-model/grandfathered? plan)
                   [:span.grandfather
                    "(grandfathered"
-                   [:i.fa.fa-question-circle
-                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"
-                     :data-bind "tooltip: {animation: false}"}]
+                   [:i.fa.fa-question-circle#grandfathered-tooltip-hack
+                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
                    ")"])]
                [:form
                 [:div.container-picker
@@ -619,7 +621,9 @@
       (utils/popover "#invoice-popover-hack"
                      {:animation false
                       :trigger "hover"
-                      :html true}))
+                      :html true})
+      (utils/tooltip "#resend-invoice-tooltip-hack"
+                     {:animation false}))
     om/IRender
     (render [_]
       (html
@@ -648,9 +652,8 @@
                   [:th "Time period covered"]
                   [:th "Total"]
                   [:th
-                   [:i.fa.fa-question-circle
-                    {:title "Resend an invoice to the billing email above."
-                     :data-bind "tooltip: {animation: false}"}]
+                   [:i.fa.fa-question-circle#resend-invoice-tooltip-hack
+                    {:title "Resend an invoice to the billing email above."}]
                    "Actions"]]]
                 [:tbody
                  (om/build-all invoice-view invoices)]]]]))))))

@@ -138,6 +138,9 @@
 (defn aside-nav [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
@@ -147,22 +150,31 @@
             user (:current-user app)]
         (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
-          [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
-                                ;; XXX: tooltips
+          [:a.aside-item.logo  {:title "Home"
+                                :data-placement "right"
+                                :data-trigger "hover"
                                 :href "/"}
            [:div.logomark
             (common/ico :logo)]]
-          [:a.aside-item {:data-bind "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}",
+          [:a.aside-item {:title "Settings"
+                          :data-placement "right"
+                          :data-trigger "hover"
                           :href "/account"}
            [:i.fa.fa-cog]
            [:span "Settings"]]
 
-          [:a.aside-item {:data-bind "tooltip: {title: 'Settings', placement: 'right', trigger: 'hover'}"
+          [:a.aside-item {:title "Documentation"
+                          :data-placement "right"
+                          :data-trigger "hover"
                           :href "/docs"}
            [:i.fa.fa-copy]
            [:span "Documentation"]]
 
           [:a.aside-item {:on-click #(put! controls-ch [:intercom-dialog-raised])
+                          :title "Report Bug"
+                          :data-placement "right"
+                          :data-trigger "hover"
+
                           :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
            [:i.fa.fa-bug]
            [:span "Report Bug"]]
@@ -170,22 +182,30 @@
           [:a.aside-item
            {:href "https://www.hipchat.com/gjwkHcrD5",
             :target "_blank",
-            :data-bind "tooltip: {title: 'Live Support', placement: 'right', trigger: 'hover'}"}
+            :data-placement "right"
+            :data-trigger "hover"
+            :title "Live Support"}
            [:i.fa.fa-comments]
            [:span "Live Support"]]
 
           [:a#add-projects.aside-item {:href "/add-projects",
-                                       :data-bind "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
+                                       :data-placement "right"
+                                       :data-trigger "hover"
+                                       :title "Add Projects"}
            [:i.fa.fa-plus-circle]
            [:span "Add Projects"]]
 
-          [:a.aside-item {:data-bind "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}"
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Invite Teammate"
                           ;; modal lives in aside
                           :on-click #(utils/open-modal "#inviteForm")}
            [:i.fa.fa-envelope-o]
            [:span "Invite Teammate"]]
 
-          [:a.aside-item {:data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Expand"
                           :on-click #(put! controls-ch [:slim-aside-toggled])}
            (if slim-aside?
              [:i.fa.fa-long-arrow-right]
@@ -195,14 +215,18 @@
 
           [:div.aside-slideup
            [:a.aside-item {:href "/account"
-                           :data-bind "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "User Account"}
             [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar_id user)
                                                 :login (:login user)
                                                 :size 50})}]
             (:login user)]
 
            [:a.aside-item {:href "/logout"
-                           :data-bind "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Logout"}
             [:i.fa.fa-sign-out]
             [:span "Logout"]]]])))))
 

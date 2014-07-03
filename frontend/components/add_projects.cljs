@@ -38,6 +38,9 @@
 
 (defn org-sidebar [data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
       (let [user (:user data)
@@ -52,8 +55,7 @@
                     (filter (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))
                [:li.add-collabs
-                ;; XXX tooltips
-                [:span {:title "For all repos & forks"}
+                [:span#collaborators-tooltip-hack {:title "For all repos & forks"}
                  "Your Collaborators"]]
                (map (fn [org] (side-item org settings controls-ch))
                     (remove (fn [org] (= (:login user) (:login org)))
@@ -69,6 +71,9 @@
 
 (defn repo-item [data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip (str "#view-project-tooltip-" (-> data :repo repo-model/id (string/replace #"[^\w]" "")))))
     om/IRender
     (render [_]
       (let [repo (:repo data)
@@ -76,6 +81,7 @@
             login (get-in settings [:add-projects :selected-org :login])
             type (get-in settings [:add-projects :selected-org :type])
             repo-id (repo-model/id repo)
+            tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             should-build? (repo-model/should-do-first-follower-build? repo)]
@@ -103,8 +109,8 @@
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
-                 ;; XXX implement tooltips
-                 [:a {:title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
+                 [:a {:id tooltip-id
+                      :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
                       :href (vcs-url/project-path (:vcs_url repo))}
                   " "
                   [:i.fa.fa-external-link]]
