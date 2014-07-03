@@ -8,11 +8,11 @@
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]
             [goog.string :as gstring]
             goog.string.format
             goog.fx.dom.Scroll
-            goog.fx.easing))
+            goog.fx.easing)
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn source-type [source]
   (condp = source
@@ -52,8 +52,7 @@
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
-            visible? (get action :show-output (or (not= "success" (:status action))
-                                                  (seq (:messages action))))
+            visible? (action-model/visible? action)
             header-classes  (concat [(:status action)]
                                     (when-not visible?
                                       ["minimize"])
@@ -73,7 +72,8 @@
                            ;; TODO: figure out what to put here
                            :on-click #(put! controls-ch [:action-log-output-toggled
                                                          {:index (:index @action)
-                                                          :step (:step @action)}])}
+                                                          :step (:step @action)
+                                                          :value (not visible?)}])}
               [:div.button {:class (when (action-model/has-content? action)
                                      header-classes)}
                (when (action-model/has-content? action)
@@ -88,8 +88,9 @@
                        (gstring/format " (%s)" (:index action))))]
                [:span.time {:title (str (:start_time action) " to "
                                         (:end_time action))}
-                (str (action-model/duration action)
-                     (when (:timedout action) " (timed out)"))]
+                (om/build common/updating-duration {:start (:start_time action)
+                                                    :stop (:end_time action)})
+                (when (:timedout action) " (timed out)")]
                [:span.action-source
                 [:span.action-source-inner {:title (source-title (:source action))}
                  (source-type (:source action))]]]]
@@ -112,7 +113,7 @@
                          [:span.exit-code.pull-right
                           (str "Exit code: " (:exit_code action))])
                        [:pre.bash-command
-                        {:title "The full bash comand used to run this setup"}
+                        {:title "The full bash command used to run this setup"}
                         (:bash_command action)]])
                     [:pre.output.solarized {:style {:white-space "normal"}}
                      (when (:truncated action)

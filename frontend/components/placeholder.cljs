@@ -3,8 +3,8 @@
             [frontend.async :refer [put!]]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn placeholder [app owner]
   (reify

@@ -1,5 +1,8 @@
 (ns frontend.datetime
-  (:require [goog.string :as g-string]
+  (:require [frontend.utils :as utils :include-macros true]
+            [cljs-time.coerce :refer [from-long]]
+            [cljs-time.format :as time-format]
+            [goog.string :as g-string]
             goog.string.format
             [goog.i18n.DateTimeFormat.Format :as date-formats]))
 
@@ -90,6 +93,12 @@
 (def calendar-date
   (partial format-date calendar-date-format))
 
+(def year-month-day-date-format
+  (goog.i18n.DateTimeFormat. "yyyy/MM/dd"))
+
+(def year-month-day-date
+  (partial format-date year-month-day-date-format))
+
 (defn date-in-ms [date]
   (let [[y m d] (map js/parseInt (.split (name date) #"-"))]
     (.getTime (js/Date. (js/Date.UTC y (dec m) (dec d) 0 0 0)))))
@@ -113,10 +122,10 @@
 (def year
   (* month 12))
 
-(defn time-ago [time]
-  (let [now (.getTime (js/Date.))
-        ago (.floor js/Math (/ (- now time) 1000))
-        interval (cond (< ago hour)  {:divisor minute :unit "minute" }
+(defn time-ago [duration-ms]
+  (let [ago (.floor js/Math (/ duration-ms 1000))
+        interval (cond (< ago minute){:divisor 1      :unit "second" }
+                       (< ago hour)  {:divisor minute :unit "minute" }
                        (< ago day)   {:divisor hour   :unit "hour"   }
                        (< ago month) {:divisor day    :unit "day"    }
                        (< ago year)  {:divisor month  :unit "month"  }
@@ -125,11 +134,25 @@
       (str count " "  (:unit interval) (when-not (= 1 count) "s")))))
 
 (defn as-duration [duration]
-  (let [seconds (js/Math.floor (/ duration 1000))
-        minutes (js/Math.floor (/ seconds 60))
-        hours (js/Math.floor (/ minutes 60))
-        display-seconds (g-string/format "%02d" (mod seconds 60))
-        display-minutes (g-string/format "%02d" (mod minutes 60))]
-    (if (pos? hours)
-      (g-string/format "%s:%s:%s" hours display-minutes display-seconds)
-      (g-string/format "%s:%s" display-minutes display-seconds))))
+  (if (neg? duration)
+    (do (utils/mwarn "got negative duration" duration "returning 00:00")
+        "00:00")
+    (let [seconds (js/Math.floor (/ duration 1000))
+          minutes (js/Math.floor (/ seconds 60))
+          hours (js/Math.floor (/ minutes 60))
+          display-seconds (g-string/format "%02d" (mod seconds 60))
+          display-minutes (g-string/format "%02d" (mod minutes 60))]
+      (if (pos? hours)
+        (g-string/format "%s:%s:%s" hours display-minutes display-seconds)
+        (g-string/format "%s:%s" display-minutes display-seconds)))))
+
+(defn as-time-since [date-string]
+  (let [time (.getTime (js/Date. date-string))
+        now (.getTime (js/Date.))
+        ago (.floor js/Math (/ (- now time) 1000))]
+    (cond (< ago minute) "just now"
+          (< ago hour) (str ago "m ago")
+          (< ago day) (time-format/unparse (time-format/formatter "h:mma") (from-long time))
+          (< ago (* 2 day)) "yesterday"
+          (< ago year) (time-format/unparse (time-format/formatter "MMM d") (from-long time))
+          :else (time-format/unparse (time-format/formatter "MMM yyyy") (from-long time)))))

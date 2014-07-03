@@ -98,9 +98,10 @@
 
 (defn KeyboardHandler [app owner {:keys [keymap error-ch]}]
   (reify
+    om/IDisplayName (display-name [_] "Keyboard Handler")
     om/IDidMount
     (did-mount [_]
-      (let [ch (async/chan)]
+      (let [ch (chan)]
         (om/set-state! owner :ch ch)
         (async/tap key-mult ch)
         (async/go-loop [waiting-keys []
@@ -113,9 +114,7 @@
                                (do (try (key-fn e)
                                         ;; Catch any errors to avoid breaking key loop
                                         (catch js/Object error
-                                          (utils/log-pr "Error calling" key-fn
-                                                        "with key event" e ":")
-                                          (utils/stack-trace error)
+                                          (utils/merror error "Error calling" key-fn "with key event" e)
                                           (put! error-ch [:keyboard-handler-error error])))
                                    (recur [] nil))
                                ;; No match yet, but remember in case user is entering

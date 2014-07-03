@@ -13,8 +13,8 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]
@@ -38,6 +38,7 @@
 
 (defn head-user [app owner]
   (reify
+    om/IDisplayName (display-name [_] "User Header")
     om/IRender
     (render [_]
       (let [crumbs-data (get-in app state/crumbs-path)
@@ -61,6 +62,7 @@
 
 (defn head-admin [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Admin Header")
     om/IRender
     (render [_]
       (let [open? (get-in app state/show-admin-panel-path)
@@ -104,6 +106,7 @@
 
 (defn inner-header [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
     (render [_]
       (let [admin? (get-in app [:current-user :admin])]
@@ -116,6 +119,7 @@
 
 (defn outer-header [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Outer Header")
     om/IRender
     (render [_]
       (let [flash (get-in app state/flash-path)
@@ -134,7 +138,7 @@
                 {:href "/"}
                 [:img
                  {:width "130",
-                  :src (utils/asset-path "/img/logo-new.svg")
+                  :src (utils/cdn-path "/img/logo-new.svg")
                   :height "40"}]]
                [:nav.span6
                 {:role "navigation"}
@@ -164,6 +168,7 @@
 
 (defn header [app owner]
   (reify
+    om/IDisplayName (display-name [_] "Header")
     om/IRender
     (render [_]
       (let [inner? (get-in app state/inner?-path)]

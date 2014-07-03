@@ -2,12 +2,13 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
+            [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn build-row [build controls-ch show-actions?]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
@@ -29,7 +30,7 @@
        {:title (build-model/branch-in-words build)
         :href url}
        (-> build build-model/branch-in-words (utils/trim-middle 23))]]
-     [:td
+     [:td.recent-author
       [:a
        {:title (build-model/author build)
         :href url}
@@ -39,26 +40,26 @@
        {:title (:body build)
         :href url}
        (:subject build)]]
-     (if (= "not_run" (:status build))
+     (if (or (not (:start_time build))
+             (= "not_run" (:status build)))
        [:td {:col-span 2}]
-       (list [:td.recent-time-started
+       (list [:td.recent-time
               [:a
-               {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
+               {:title  (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (when (:start_time build)
-                 (build-model/pretty-start-time build))]]
-             [:td.recent-time-duration
+               (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
+               " ago"]]
+             [:td.recent-time
               [:a
                {:title (build-model/duration build)
                 :href url}
-               (build-model/duration build)]]))
+               (om/build common/updating-duration {:start (:start_time build)
+                                                   :stop (:stop_time build)})]]))
      [:td.recent-status-badge
       [:a
        {:title (build-model/status-words build)
-        :href url}
-       [:span.label.build_status
-        {:class (build-model/status-class build)}
-        (build-model/status-words build)]]]
+        :href url
+        :class (build-model/status-class build)}]]
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)
@@ -70,6 +71,7 @@
 
 (defn builds-table [builds owner opts]
   (reify
+    om/IDisplayName (display-name [_] "Builds Table")
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
@@ -85,8 +87,8 @@
             [:th "Author"]
             [:th "Log"]
             ;; XXX show_queued logic
-            [:th "Started at"]
-            [:th "Length"]
+            [:th.condense "Started at"]
+            [:th.condense "Length"]
             [:th.condense "Status"]
             (when show-actions?
               [:th.condense "Actions"])]]

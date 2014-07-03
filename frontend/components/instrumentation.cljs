@@ -10,11 +10,12 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn line-items [instrumentation-data owner]
   (reify
+    om/IDisplayName (display-name [_] "Instrumentation Line Items")
     om/IRender
     (render [_]
       (html
@@ -38,6 +39,7 @@
 
 (defn summary [instrumentation-data owner]
   (reify
+    om/IDisplayName (display-name [_] "Instrumentation Summary")
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])

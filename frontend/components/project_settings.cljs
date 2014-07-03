@@ -12,8 +12,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def sidebar
   [:ul.side-list
@@ -150,21 +150,21 @@
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
-               [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "plan"})}
                 "Upgrade"]]
 
               (> parallelism (plan-model/max-selectable-parallelism plan))
               [:div.insufficient-containers
                "Not enough containers available."
-               [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})}
                 "Add More"]])
 
         (when (> parallelism (plan-model/max-selectable-parallelism plan))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/usable-containers plan) " available containers."
-               [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "plan"})}
                 "Add a plan"]]))]
 
@@ -177,7 +177,7 @@
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
                                                parallelism "x parallelism.")}]
-        [:a {:href (routes/v1-org-settings-subpage {:org-id (:org_name plan)
+        [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                     :subpage "containers"})}
          "Upgrade"]]))))
 

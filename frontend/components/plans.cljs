@@ -8,13 +8,13 @@
             [frontend.utils.github :as gh-utils]
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [node sel sel1]]))
+                   [dommy.macros :refer [node sel sel1]]
+                   [frontend.utils :refer [html]]))
 
 
 (defn pricing-cloud [app owner opts]
@@ -47,7 +47,10 @@
                                                                  :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
-          [:a {:data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'pricing-business'}}"}
+          [:a {:href (gh-utils/auth-url)
+               :on-click #(put! controls-ch [:track-external-link-clicked {:path (gh-utils/auth-url)
+                                                                           :event "Auth GitHub"
+                                                                           :properties {:source "pricing-business"}}])}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise

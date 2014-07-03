@@ -3,9 +3,9 @@
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+            [om.core :as om :include-macros true])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+                   [frontend.utils :refer [html]]))
 
 
 ;; Version 2 of the stateful button follows. New code should prefer this version, managed-button, over the old version, stateful-button.
@@ -56,7 +56,6 @@
     (append-cycle owner :loading)
     (let [{:keys [uuid channel]} (register-channel! owner)]
       (binding [frontend.async/*uuid* uuid]
-        frontend.async/*uuid*
         (go (append-cycle owner (<! channel))
             (deregister-channel! owner uuid))
         (apply handler args)))))
