@@ -1,5 +1,6 @@
 (ns frontend.components.build-head
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as string]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -9,7 +10,7 @@
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
-            goog.string.format
+            [goog.string.format]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -133,13 +134,20 @@
           "Read our doc on interacting with the browser over VNC"]
          "."]]))))
 
-(defn build-artifacts-list [artifacts-data owner]
+(defn cleanup-artifact-path [path]
+  (-> path
+      (string/replace "$CIRCLE_ARTIFACTS/" "")
+      (gstring/truncateMiddle 80)))
+
+(defn build-artifacts-list [data owner]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
+            artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
-            show-artifacts (:show-artifacts artifacts-data)]
+            show-artifacts (:show-artifacts artifacts-data)
+            admin? (:admin (:user data))]
         (html
          [:section.build-artifacts {:class (when show-artifacts "active")}
           [:div.build-artifacts-title
@@ -155,8 +163,12 @@
               [:ol.build-artifacts-list
                (map (fn [artifact]
                       [:li
-                       [:a {:href (:url artifact) :target "_blank"}
-                        (:pretty_path artifact)]])
+                       (if admin?
+                         ;; Be extra careful about XSS of admins
+                         (cleanup-artifact-path (:pretty_path artifact))
+
+                         [:a {:href (:url artifact) :target "_blank"}
+                          (cleanup-artifact-path (:pretty_path artifact))])])
                     artifacts)]))])))))
 
 (defn build-head [data owner]
@@ -172,7 +184,8 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            plan (get-in data [:project-data :plan])]
+            plan (get-in data [:project-data :plan])
+            user (:user data)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -270,7 +283,9 @@
                [:button.ssh_build
                 {:data-loading-text "Rebuilding",
                  :title "Retry with SSH in VM",
-                 :on-click #(put! controls-ch [:ssh-build-clicked build-id])}
+                 :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
                 "& enable ssh"])]
              [:div.actions
               [:button.report_build
@@ -295,4 +310,5 @@
            (when (build-model/ssh-enabled-now? build)
              (om/build build-ssh (:node build)))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list (get build-data :artifacts-data)))]])))))
+             (om/build build-artifacts-list {:artifacts-data (get build-data :artifacts-data)
+                                             :user user}))]])))))

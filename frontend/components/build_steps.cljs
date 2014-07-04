@@ -8,11 +8,15 @@
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
+            [goog.events]
             [goog.string :as gstring]
+            goog.dom
+            goog.style
             goog.string.format
             goog.fx.dom.Scroll
             goog.fx.easing)
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html]]
+                   [dommy.macros :refer [sel1]]))
 
 (defn source-type [source]
   (condp = source
@@ -104,9 +108,15 @@
 
                    [:div#action-log-messages
                     ;; XXX click-to-scroll
-                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right]
+                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
+                     {:on-click #(let [node (om/get-node owner)
+                                       main (sel1 "main.app-main")]
+                                   (set! (.-scrollTop main) (- (+ (.-scrollTop main)
+                                                                  (.-y (goog.style/getRelativePosition node main))
+                                                                  (.-height (goog.style/getSize node)))
+                                                               (goog.dom/getDocumentHeight))))}
 
-                    (common/messages (:messages action))
+                     (common/messages (:messages action))]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -142,6 +152,32 @@
 
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:autoscroll? true})
+    om/IDidMount
+    (did-mount [_]
+      (let [container (om/get-node owner)
+            ;; autoscroll when the container_parent's tail-end is showing
+            scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
+                                                      (.-bottom (.getBoundingClientRect container)))]
+                               (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
+                                 (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
+        (om/set-state! owner [:scroll-listener-key] (goog.events/listen
+                                                     (sel1 "main.app-main")
+                                                     "scroll"
+                                                     scroll-listener))
+        ;; call it initially to set things up
+        (scroll-listener)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key])))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (om/get-state owner [:autoscroll?])
+        (let [main (sel1 "main.app-main")
+              very-large-numer 10000000]
+          (set! (.-scrollTop main) very-large-numer))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
@@ -157,7 +193,8 @@
           [:div#container_parent {:on-wheel (fn [e]
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (aset js/document.body "scrollTop" (+ (aget js/document.body "scrollTop") (aget e "deltaY")))))
+                                                (let [main (sel1 "main.app-main")]
+                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (.-deltaY e))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container

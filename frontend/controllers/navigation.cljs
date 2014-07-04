@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
+            [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
@@ -53,6 +54,7 @@
 
 (defmulti post-navigated-to!
   (fn [history-imp navigation-point args previous-state current-state]
+    (frontend.favicon/reset!)
     (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
     navigation-point))
 

@@ -6,6 +6,7 @@
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
+            [frontend.components.account :as account]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.routes :as routes]
@@ -813,7 +814,7 @@
             [:p (:heroku_api_key user)]
             [:div (when-not (:heroku_api_key user)
                     ;; XXX pull in set heroku-key from accounts
-                    (comment (frontend.components.account/heroku user controls-ch)))]
+                    (om/build account/heroku-key {:current-user user} {:opts {:project-page? true}}))]
             [:div (when (:heroku_api_key user)
                     [:p
                      "You can edit your Heroku key from your "
