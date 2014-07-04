@@ -67,7 +67,9 @@
          subject " "]
         [:a.sha-one {:href commit_url
                      :title commit}
+         " "
          (subs commit 0 7)
+         " "
          [:i.fa.fa-github]]]))))
 
 (defn build-commits [build owner]
