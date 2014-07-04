@@ -10,3 +10,6 @@
                  #{"user:email"})
                (when-not (contains? current-scopes "repo")
                  #{"repo"}))))
+
+(defn public-key-scope? [user]
+  (some #{"admin:public_key"} (:github_oauth_scopes user)))

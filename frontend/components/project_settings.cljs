@@ -5,11 +5,13 @@
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
+            [frontend.models.user :as user-model]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
@@ -565,12 +567,29 @@
                         [:i.fa.fa-times-circle]
                         [:span " Remove"]]]])]])]])))))
 
-(defn checkout-ssh-keys [project-data owner]
+(defn checkout-key-link [key project user]
+  (cond (= "deploy-key" (:type key))
+        (str "https://github.com/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
+
+        (and (= "github-user-key" (:type key)) (= (:login key) (:login user)))
+        "https://github.com/settings/ssh"
+
+        :else nil))
+
+(defn checkout-key-description [key project]
+  (condp = (:type key)
+    "deploy-key" (str (vcs-url/project-name (:vcs_url project)) " deploy key")
+    "github-user-key" (str (:login key) " user key")
+    nil))
+
+(defn checkout-ssh-keys [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [project (:project project-data)
-            project-id (project-model/id project) 
+      (let [project-data (:project-data data)
+            user (:user data)
+            project (:project project-data)
+            project-id (project-model/id project)
             project-name (vcs-url/project-name (:vcs_url project))
             checkout-keys (:checkout-keys project-data)
             controls-ch (om/get-shared owner [:comms :controls])]
@@ -580,35 +599,36 @@
           [:div.checkout-page-inner
            (if (nil? checkout-keys)
              [:div.loading-spinner common/spinner]
+
              [:div
               (if-not (seq checkout-keys)
                 [:p "No checkout key is currently configured! We won't be able to check out your project for testing :("]
                 [:div
                  [:p
-                  "Here are the keys we can currently use to check out your project, submodules, and private GitHub dependencies. The currently preferred key is highlighted, but we will automatically fall back to the other keys if the preferred key is revoked."]
+                  "Here are the keys we can currently use to check out your project, submodules, "
+                  "and private GitHub dependencies. The currently preferred key is highlighted, but "
+                  "we will automatically fall back to the other keys if the preferred key is revoked."]
                  [:table
                   [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
                   [:tbody
-                   (for [checkout-key checkout-keys]
+                   (for [checkout-key checkout-keys
+                         :let [fingerprint (:fingerprint checkout-key)
+                               github-link (checkout-key-link checkout-key project user)]]
                      [:tr {:class (when (:preferred checkout-key) "preferred")}
-                      [:td "TODO: checkout-key-link"
-                       "<!-- ko if: $parent.checkout_key_link($data) -->"
-                       #_[:a.slideBtn
-                          {:data-bind "attr: {href: $parent.checkout_key_link($data)}"}
-                          [:span
-                           {:data-bind
-                            "text: $parent.checkout_key_description($data)"}]
-                          [:i.fa.fa-github]]
-                       [:span
-                        {:data-bind "text: $parent.checkout_key_description($data)"}]
-                       "<!-- /ko -->"]
-                      [:td (:fingerprint checkout-key)]
+                      [:td
+                       (if github-link
+                         [:a.slideBtn {:href github-link :target "_blank"}
+                          (checkout-key-description checkout-key project) " " [:i.fa.fa-github]]
+
+                         (checkout-key-description checkout-key project))]
+                      [:td fingerprint]
                       [:td
                        [:a.slideBtn
                         {:title "Remove this key?",
-                         :data-bind "click: $parent.delete_checkout_key"}
-                        [:i.fa.fa-times-circle]
-                        [:span "Remove"]]]])]]])
+                         :on-click #(put! controls-ch [:delete-checkout-key-clicked {:project-id project-id
+                                                                                     :project-name project-name
+                                                                                     :fingerprint fingerprint}])}
+                        [:i.fa.fa-times-circle] " Remove"]]])]]])
               (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
                 [:div.add-key
                  [:h4 "Add deploy key"]
@@ -623,112 +643,58 @@
                                                                       :project-name project-name
                                                                       :key-type "deploy-key"}])
                                     false)
-                     :tooltip "Create a new deploy key, with access only to this project."
+                     :title "Create a new deploy key, with access only to this project."
                      :value (str "Create and add " project-name " deploy key")
                      :data-loading-text "Saving..."
-                     :data-success-text "Saved"}
-                    ])]])
-              "<!-- ko ifnot: _.some(checkout_keys(), function(ck) { return ck.type == \\github-user-key\\; }) -->"
-              [:div.add-key
-               [:h4 "Add user key"]
-               [:p
-                "If a deploy key can't access all of your project's private dependencies, we can configure it to use an SSH key with the same level of access to GitHub repositories that you have."]
-               [:div.authorization
-                {:data-bind "ifnot: $root.current_user().has_public_key_scope"}
-                [:p
-                 "In order to do so, you'll need to grant authorization from GitHub to the \\admin:public_key\\ scope. This will allow us to add a new authorized public key to your GitHub account. (Feel free to drop this additional scope after we've added the key!)"]
-                [:a.btn.ghu-authorize
-                 {:href
-                  " + ($c(CI.github.authUrl([admin:public_key, user:email, repo]))) + ",
-                  :account "account",
-                  :admin:public_key "admin:public_key",
-                  :to "to",
-                  :so "so",
-                  :authorization "authorization",
-                  :key "key",
-                  :_ "_",
-                  :a "a",
-                  :github "github",
-                  :ssh "ssh",
-                  :title:_ "title:_",
-                  :your "your",
-                  :data-bind "\\tooltip:",
-                  :animation:_ "animation:_",
-                  :grant "grant",
-                  :can "can",
-                  :add "add",
-                  :new "new",
-                  :false "false",
-                  :we "we",
-                  :that "that"}
-                 [:span "Authorize w/ GitHub"]
-                 [:i.fa.fa-github]]]
-               [:div.request-user
-                {:data-bind "if: $root.current_user().has_public_key_scope"}
-                [:input.btn
-                 {:root.current_user.login "root.current_user.login",
-                  :value:_ "value:_",
-                  :_.partialcreate_checkout_key "_.partialcreate_checkout_key",
-                  :tooltip:_ "tooltip:_",
-                  :to "to",
-                  :with "with",
-                  :data-success-text "Saved",
-                  :projects "projects",
-                  :key "key",
-                  :_ "_",
-                  :a "a",
-                  :data-loading-text "Saving...",
-                  :github "github",
-                  :title:_ "title:_",
-                  :your "your",
-                  :access "access",
-                  :of "of",
-                  :and "and",
-                  :data-bind "\\click:",
-                  :animation:_ "animation:_",
-                  :type "submit",
-                  :github-user-key "github-user-key",
-                  :this "this",
-                  :account. "account.",
-                  :add "add",
-                  :user "user",
-                  :all "all",
-                  :new "new",
-                  :for "for",
-                  :false "false",
-                  :the "the",
-                  :create "create",
-                  :project "project"}]]]
-              "<!-- /ko -->"
+                     :data-success-text "Saved"}])]])
+              (when-not (some #{"github-user-key"} (map :type checkout-keys))
+                [:div.add-key
+                 [:h4 "Add user key"]
+                 [:p
+                  "If a deploy key can't access all of your project's private dependencies, we can configure it to use an SSH key with the same level of access to GitHub repositories that you have."]
+                 [:div.authorization
+                  (if-not (user-model/public-key-scope? user)
+                    (list
+                     [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account. (Feel free to drop this additional scope after we've added the key!)"]
+                     [:a.btn.ghu-authorize
+                      {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
+                       :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
+                      "Authorize w/ GitHub " [:i.fa.fa-github]])
+
+                    [:div.request-user
+                     (forms/managed-button
+                      [:input.btn
+                       {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
+                        :type "submit"
+                        :on-click #(do (put! controls-ch [:new-checkout-key-clicked {:project-id project-id
+                                                                                     :project-name project-name
+                                                                                     :key-type "github-user-key"}])
+                                       false)
+                        :value (str "Create and add " (:login user) " user key" )
+                        :data-loading-text "Saving..."
+                        :data-success-text "Saved"}])])]])
+
               [:div.help-block
                [:h2 "About checkout keys"]
                [:h4 "What is a deploy key?"]
-               [:p
-                "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives read/write access to a single repository."]
+               [:p "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives read/write access to a single repository."]
                [:h4 "What is a user key?"]
-               [:p
-                "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
+               [:p "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
                [:h4 "How are these keys used?"]
-               [:p
-                "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with 'github.com'. Therefore, it gets used for:"]
+               [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with 'github.com'. Therefore, it gets used for:"]
                [:ul
                 [:li "checking out the main project"]
                 [:li "checking out any GitHub-hosted submodules"]
                 [:li "checking out any GitHub-hosted private dependencies"]
                 [:li "automatic git merging/tagging/etc."]]
                [:p]
-               [:p
-                "That's why a deploy key isn't sufficiently powerful for projects with additional private dependencies!"]
+               [:p "That's why a deploy key isn't sufficiently powerful for projects with additional private dependencies!"]
                [:h4 "What about security?"]
-               [:p
-                "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in Circle can read them. You shouldn't push untrusted code to Circle!"]
-               [:h4
-                "Isn't there a middle ground between deploy keys and user keys?"]
+               [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in Circle can read them. You shouldn't push untrusted code to Circle!"]
+               [:h4 "Isn't there a middle ground between deploy keys and user keys?"]
                [:p "Not really :("]
-               [:p
-                "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
-               [:p
-                "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls aGive this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
+               [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
+               [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls aGive this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
@@ -966,7 +932,7 @@
                 :hooks (om/build chatrooms project-data)
                 :webhooks (om/build webhooks project-data)
                 :ssh (om/build ssh-keys project-data)
-                :checkout (om/build checkout-ssh-keys project-data)
+                :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
                 :api (om/build api-tokens project-data)
                 :artifacts (om/build artifacts project-data)
                 :heroku (om/build heroku {:project-data project-data :user user})

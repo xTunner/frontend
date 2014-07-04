@@ -596,7 +596,22 @@
                              :params {:type key-type}))]
           (utils/inspect api-resp)
           (if (= :success (:status api-resp))
-            (put! api-ch (utils/inspect [:checkout-key :success (assoc api-resp :context {:project-id project-id})]))
+            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+              (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
+            (put! err-ch (utils/inspect [:api-error api-resp])))
+          (release-button! uuid (utils/inspect (:status api-resp)))))))
+
+(defmethod post-control-event! :delete-checkout-key-clicked
+  [target message {:keys [project-id project-name fingerprint]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        err-ch (get-in current-state [:comms :errors])]
+    (go (let [api-resp (<! (ajax/managed-ajax
+                             :delete
+                             (gstring/format "/api/v1/project/%s/checkout-key/%s" project-name fingerprint)))]
+          (if (= :success (:status api-resp))
+            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+              (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch (utils/inspect [:api-error api-resp])))
           (release-button! uuid (utils/inspect (:status api-resp)))))))
 
