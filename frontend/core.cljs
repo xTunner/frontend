@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [cljs-time.core :as time]
+            [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
             [dommy.core :as dommy]
@@ -201,7 +202,10 @@
                            :messages [:refresh]}]))
 
 (defn setup-browser-repl [repl-url]
-  (repl/connect repl-url)
+  (when repl-url
+    (repl/connect repl-url))
+  ;; this is harmless if it fails
+  (ws-repl/connect "ws://localhost:9001" :verbose true)
   ;; the repl tries to take over *out*, workaround for
   ;; https://github.com/cemerick/austin/issues/49
   (js/setInterval #(enable-console-print!) 1000))
@@ -244,8 +248,7 @@
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws])))
     (when (env/development?)
-      (when-let [repl-url (get-in @state [:render-context :browser_connected_repl_url])]
-        (try
-          (setup-browser-repl repl-url)
-          (catch js/error e
-            (merror e)))))))
+      (try
+        (setup-browser-repl (get-in @state [:render-context :browser_connected_repl_url]))
+        (catch js/error e
+          (merror e))))))
