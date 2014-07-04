@@ -2,6 +2,26 @@
 - @title = 'Continuous Deployment with Heroku'
 - @lastUpdated = "May 7, 2013"
 
+%h2 Quick start videos
+
+%p
+  Watch these videos for a step-by-step walkthrough of setting up a continuous delivery
+  pipeline with CircleCI and Heroku:
+
+%h4 Part 1: Green builds and red builds
+
+%iframe{src: "//www.youtube.com/embed/Hfs_1yuWDf4?rel=0", width: 600, height: 400, frameborder: 0, allowfullscreen: true}
+
+%h4 Part 2: Multiple environments
+
+%iframe{src: "//www.youtube.com/embed/YtvKVfjKGWw?rel=0", width: 600, height: 400, frameborder: 0, allowfullscreen: true}
+
+%br
+
+%p
+  You can also look at the GitHub repo used in the above videos
+  %a{href: "https://github.com/circleci/heroku-cd"} here.
+
 %h2 Heroku setup
 
 %p
