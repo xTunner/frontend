@@ -8,11 +8,14 @@
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
+            [goog.events]
             [goog.string :as gstring]
+            goog.dom
             goog.string.format
             goog.fx.dom.Scroll
             goog.fx.easing)
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html]]
+                   [dommy.macros :refer [sel1]]))
 
 (defn source-type [source]
   (condp = source
@@ -142,6 +145,32 @@
 
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:autoscroll? true})
+    om/IDidMount
+    (did-mount [_]
+      (let [container (om/get-node owner)
+            ;; autoscroll when the container_parent's tail-end is showing
+            scroll-listener #(let [new-autoscroll? (> (.-innerHeight js/window)
+                                                      (.-bottom (.getBoundingClientRect container)))]
+                               (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
+                                 (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
+        (om/set-state! owner [:scroll-listener-key] (goog.events/listen
+                                                     (sel1 "main.app-main")
+                                                     "scroll"
+                                                     scroll-listener))
+        ;; call it initially to set things up
+        (scroll-listener)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key])))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (om/get-state owner [:autoscroll?])
+        (let [main (sel1 "main.app-main")
+              very-large-numer 10000000]
+          (set! (.-scrollTop main) very-large-numer))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
