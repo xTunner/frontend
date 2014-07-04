@@ -11,6 +11,7 @@
             [goog.events]
             [goog.string :as gstring]
             goog.dom
+            goog.style
             goog.string.format
             goog.fx.dom.Scroll
             goog.fx.easing)
@@ -107,9 +108,15 @@
 
                    [:div#action-log-messages
                     ;; XXX click-to-scroll
-                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right]
+                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
+                     {:on-click #(let [node (om/get-node owner)
+                                       main (sel1 "main.app-main")]
+                                   (set! (.-scrollTop main) (- (+ (.-scrollTop main)
+                                                                  (.-y (goog.style/getRelativePosition node main))
+                                                                  (.-height (goog.style/getSize node)))
+                                                               (goog.dom/getDocumentHeight))))}
 
-                    (common/messages (:messages action))
+                     (common/messages (:messages action))]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -152,7 +159,7 @@
     (did-mount [_]
       (let [container (om/get-node owner)
             ;; autoscroll when the container_parent's tail-end is showing
-            scroll-listener #(let [new-autoscroll? (> (.-innerHeight js/window)
+            scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
                                                       (.-bottom (.getBoundingClientRect container)))]
                                (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
                                  (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
