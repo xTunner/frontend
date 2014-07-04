@@ -60,14 +60,15 @@
                   [:br]]))
              user-and-orgs)]]])))))
 
-(defn heroku-key [app owner]
+(defn heroku-key [app owner opts]
   (reify
     om/IRenderState
     (render-state [_ _]
       (let [controls-ch (om/get-shared owner [:comms :controls])
             heroku-api-key (get-in app (conj state/user-path :heroku_api_key))
             heroku-api-key-input (get-in app (conj state/user-path :heroku-api-key-input))
-            submit-form! #(put! controls-ch [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])]
+            submit-form! #(put! controls-ch [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
+            project-page? (:project-page? opts)]
         (html/html
          [:div#settings-heroku
           [:div.heroku-item
@@ -76,7 +77,9 @@
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
             [:br]
-            "You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
+            ;; Don't tell them to go to the project page if they're already there
+            (when-not project-page?
+              "You'll also need to set yourself as the Heroku deploy user from your project's settings page.")]
            [:form
             (when heroku-api-key
               [:div
