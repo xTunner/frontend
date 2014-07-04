@@ -90,7 +90,7 @@
   [ds]
   (js->clj ds :keywordize-keys true))
 
-(defn asset-path
+(defn cdn-path
   "Returns path of asset in CDN"
   [path]
   (-> js/window
@@ -115,3 +115,48 @@
   event is the Synthetic React event."
   [controls-ch path event]
   (put! controls-ch [:toggled-input {:path path}]))
+
+;; TODO: get rid of bootstrap modals
+(defn open-modal
+  "Open bootstrap modal with given selector"
+  [selector]
+  (mwarn "Please remove the modal on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        $modal (aget $node "modal")]
+    (.call $modal $node #js {:open true})))
+
+;; TODO: get rid of bootstrap popovers
+(defn popover
+  "Sets up a popover given selector and options. Once this is called, the popover
+   should work as expected"
+  [selector options]
+  (mwarn "Please remove the popover on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        $popover (aget $node "popover")]
+    (.call $popover $node (clj->js options))))
+
+;; TODO: get rid of bootstrap tooltips
+(defn tooltip
+  "Sets up a tooltip given selector and options. Once this is called, the tooltip
+   should work as expected"
+  [selector & [options]]
+  (mwarn "Please remove the tooltip on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        $tooltip (aget $node "tooltip")]
+    (if options
+      (.call $tooltip $node (clj->js options))
+      (.call $tooltip $node))))
+
+;; TODO: get rid of bootstrap typeahead
+(defn typeahead
+  "Sets up typahead given selector and options. Once this is called, typeahead
+   should work as expected"
+  [selector & [options]]
+  (mwarn "Please remove typeahead on" selector)
+  (let [jq (aget js/window "$")
+        $node (jq selector)
+        $typeahead (aget $node "typeahead")]
+    (.call $typeahead $node (clj->js options))))

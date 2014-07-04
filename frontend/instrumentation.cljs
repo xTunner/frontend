@@ -6,7 +6,7 @@
   (fn [state]
     (let [state (handler state)]
       (try
-        (if-not (:response-headers api-data)
+        (if-not (and (:response-headers api-data) (= \/ (first (:url api-data))))
           state
           (let [{:keys [url method request-time response-headers]} api-data]
             (update-in state state/instrumentation-path conj {:url url

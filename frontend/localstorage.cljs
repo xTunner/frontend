@@ -17,9 +17,9 @@
   "Fetches and deserializes key from localstorage
    Noops if localstorage isn't available."
   [localstorage-imp key]
-  (when (is-available? localstorage-imp))
-  (some-> (.get localstorage-imp key)
-          reader/read-string))
+  (when (is-available? localstorage-imp)
+    (some-> (.get localstorage-imp key)
+            reader/read-string)))
 
 (defn new-localstorage-imp []
   (goog.storage.mechanism.HTML5LocalStorage.))

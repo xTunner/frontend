@@ -1,5 +1,6 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
+            [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
@@ -11,6 +12,7 @@
             [frontend.analytics.adroll :as adroll]
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.analytics.perfect-audience :as perfect-audience]
+            [frontend.analytics.google :as gaq]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -102,11 +104,23 @@
   (mlog "projects success")
   (assoc-in state [:projects] (:resp args)))
 
+(defmethod api-event [:me :success]
+  [target message status args state]
+  (update-in state state/user-path merge (:resp args)))
+
 
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
-  (mlog "recentbuilds success")
-  (assoc-in state [:recent-builds] (:resp args)))
+  (if-not (and (= (get-in state [:navigation-data :org])
+                  (get-in args [:context :org]))
+               (= (get-in state [:navigation-data :repo])
+                  (get-in args [:context :repo]))
+               (= (get-in state [:navigation-data :branch])
+                  (get-in args [:context :branch]))
+               (= (get-in state [:navigation-data :query-params :page])
+                  (get-in args [:context :query-params :page])))
+    state
+    (assoc-in state [:recent-builds] (:resp args))))
 
 
 (defmethod api-event [:build :success]
@@ -125,6 +139,16 @@
                     (:branch build))
           (assoc-in state/containers-path containers)))))
 
+
+(defmethod api-event [:cancel-build :success]
+  [target message status args state]
+  (let [build-id (get-in args [:context :build-id])]
+    (if-not (= (build-model/id (get-in state state/build-path))
+               build-id)
+      state
+      (update-in state state/build-path merge (:resp args)))))
+
+
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
@@ -133,11 +157,14 @@
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (doseq [action (mapcat :actions (get-in current-state state/containers-path))
-              :when (or (= "running" (:status action))
-                        (action-model/failed? action))]
-        ;; XXX: should this fetch the action logs itself creating controls events?
-        (put! (get-in current-state [:comms :controls])
-              [:action-log-output-toggled (select-keys action [:step :index])])))))
+              :when (and (:has_output action)
+                         (action-model/visible? action))]
+        (api/get-action-output {:vcs-url (get-in args [:resp :vcs_url])
+                                :build-num build-num
+                                :step (:step action)
+                                :index (:index action)
+                                :output-url (:output_url action)}
+                               (get-in current-state [:comms :api]))))))
 
 
 (defmethod api-event [:repos :success]
@@ -157,6 +184,10 @@
   [target message status args state]
   (assoc-in state state/user-collaborators-path (:resp args)))
 
+(defmethod api-event [:tokens :success]
+  [target message status args state]
+  (print "Tokens received: " args)
+  (assoc-in state state/user-tokens-path (:resp args)))
 
 (defmethod api-event [:usage-queue :success]
   [target message status args state]
@@ -394,7 +425,7 @@
 
 (defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
-  (js/_gaq.push ["_trackEvent" "Repos" "Add"])
+  (gaq/track "Repos" "Add")
   (if-let [first-build (get-in args [:resp :first_build])]
     (let [nav-ch (get-in current-state [:comms :nav])
           build-path (-> first-build
@@ -438,10 +469,10 @@
                 (:project-id context))
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
-          org-id (vcs-url/org-name (:project-id context))
-          repo-id (vcs-url/repo-name (:project-id context))]
-      (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org-id org-id
-                                                                    :repo-id repo-id
+          org (vcs-url/org-name (:project-id context))
+          repo (vcs-url/repo-name (:project-id context))]
+      (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org org
+                                                                    :repo repo
                                                                     :subpage "tests"})]))))
 
 
@@ -480,3 +511,35 @@
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (update-in state state/org-plan-path merge resp)))
+
+(defmethod api-event [:update-heroku-key :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state (conj state/user-path :heroku-api-key-input) ""))
+
+(defmethod api-event [:create-api-token :success]
+  [target message status {:keys [resp context]} state]
+  (-> state
+      (assoc-in state/new-user-token-path "")
+      (update-in state/user-tokens-path conj resp)))
+
+(defmethod api-event [:delete-api-token :failed]
+  [target message status {:keys [resp context]} state]
+  ;; XXX Don't drop the resp text on the floor here, should be shown
+  ;; to the user
+  state)
+
+(defmethod api-event [:delete-api-token :success]
+  [target message status {:keys [resp context]} state]
+  (let [deleted-token (:token context)]
+    (update-in state state/user-tokens-path (fn [tokens]
+                                              (vec (remove #(= (:token %) (:token deleted-token)) tokens))))))
+(defmethod api-event [:plan-invoices :success]
+  [target message status {:keys [resp context]} state]
+  (utils/mlog ":plan-invoices API event: " resp)
+  (if-not (= (:org-name context) (:org-settings-org-name state))
+    state
+    (assoc-in state state/org-invoices-path resp)))
+
+(defmethod api-event [:changelog :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state state/changelog-path resp))

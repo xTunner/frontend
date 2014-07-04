@@ -63,14 +63,14 @@
               [:ol
                [:li
                 "Sign up for a plan from your "
-                [:a {:href (routes/v1-org-settings-subpage {:org-id login
+                [:a {:href (routes/v1-org-settings-subpage {:org login
                                                             :subpage "plan"})}
                  "\"personal organization\" page"]]
                [:li
                 "Add " org-name
                 " to the list of organizations you pay for or transfer the plan to "
                 org-name " from the "
-                [:a {:href (routes/v1-org-settings-subpage {:org-id login
+                [:a {:href (routes/v1-org-settings-subpage {:org login
                                                             :subpage "organizations"})}
                  "plan's organization page"]
                 "."]]]]))))
@@ -288,11 +288,14 @@
               (plans-piggieback-plan-notification plan org-name))
             (om/build plans-component/plans app)
             (shared/customers-trust)
-            plans-component/pricing-features
+            (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
 (defn containers [app owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
     om/IRender
     (render [_]
       (let [plan (get-in app state/org-plan-path)
@@ -328,9 +331,8 @@
                 (when (plan-model/grandfathered? plan)
                   [:span.grandfather
                    "(grandfathered"
-                   [:i.fa.fa-question-circle
-                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"
-                     :data-bind "tooltip: {animation: false}"}]
+                   [:i.fa.fa-question-circle#grandfathered-tooltip-hack
+                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
                    ")"])]
                [:form
                 [:div.container-picker
@@ -433,13 +435,246 @@
                   :data-bind "click: saveOrganizations"}
                  "Also pay for these organizations"])]]]])]]]))))
 
+(defn- billing-card [app owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:checkout-loaded? (stripe/checkout-loaded?)
+       :checkout-loaded-chan (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (let [ch (om/get-state owner [:checkout-loaded-chan])
+            checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (when-not checkout-loaded?
+          (go (<! ch) ;; wait for success message
+              (utils/mlog "Stripe checkout loaded")
+              (om/set-state! owner [:checkout-loaded?] true))
+          (utils/mlog "Loading Stripe checkout")
+          (stripe/load-checkout ch))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (close! (om/get-state owner [:checkout-loaded-chan])))
+    om/IRenderState
+    (render-state [_ {:keys [checkout-loaded?]}]
+      (html
+        (let [card (get-in app state/stripe-card-path)
+              controls-ch (om/get-shared owner [:comms :controls])]
+          (if-not (and card checkout-loaded?)
+            [:div.loading-spinner common/spinner]
+            [:div
+              [:div.card.row-fluid [:legend.span8 "Card on file"]]
+              [:div.row-fluid
+               [:div.offset1.span6
+                [:table.table.table-condensed
+                 {:data-bind "with: cardInfo"}
+                 [:thead
+                  [:th "Name"]
+                  [:th "Card type"]
+                  [:th "Card Number"]
+                  [:th "Expiry"]]
+                 [:tbody
+                  [:tr
+                   [:td (:name card)]
+                   [:td (:type card)]
+                   [:td "xxxx-xxxx-xxxx-" (:last4 card)]
+                   [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]]]]
+              [:div.row-fluid
+               [:div.offset1.span7
+                [:form.form-horizontal
+                 [:div.control-group
+                  [:div.control
+                   (forms/managed-button
+                     [:button#charge-button.btn.btn-primary.submit-button
+                      {:data-success-text "Success",
+                       :data-failed-text "Failed",
+                       :data-loading-text "Updating",
+                       :on-click #(do (put! controls-ch [:update-card-clicked])
+                                      false)
+                       :type "submit"}
+                      "Change credit card"])]]]]]]))))))
+
+(defn- billing-invoice-data [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [controls-ch (om/get-shared owner [:comms :controls])
+              plan-data (get-in app state/org-plan-path)
+              b-email (:billing_email plan-data)
+              b-name (:billing_name plan-data)
+              b-extra (:extra_billing_data plan-data)]
+          (if-not plan-data
+            [:div.loading-spinner common/spinner]
+            [:div.invoice-data.row-fluid
+             [:fieldset
+              [:legend.span8 "Invoice data"]
+              [:form.form-horizontal.span8
+               [:div.control-group
+                [:label.control-label {:for "billing_email"} "Billing email"]
+                [:div.controls
+                 [:input.span10
+                  {:value b-email,
+                   :name "billing_email",
+                   :type "text"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
+                   :on-change #(utils/edit-input controls-ch
+                                                 (conj state/org-plan-path :billing_email)
+                                                 %)}]]]
+               [:div.control-group
+                [:label.control-label {:for "billing_name"} "Billing name"]
+                [:div.controls
+                 [:input.span10
+                  {:value b-name
+                   :name "billing_name",
+                   :type "text"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
+                   :on-change #(utils/edit-input controls-ch
+                                                 (conj state/org-plan-path :billing_name)
+                                                 %)}]]]
+               [:div.control-group
+                [:label.control-label
+                 {:for "extra_billing_data"}
+                 "Extra data to include in your invoice"]
+                [:div.controls
+                 [:textarea.span10
+                  {:value b-extra
+                   :placeholder
+                   "Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.",
+                   :rows 3
+                   :name "extra_billing_data"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
+                   :on-change #(utils/edit-input controls-ch
+                                                 (conj state/org-plan-path :extra_billing_data)
+                                                 %)}]]]
+               [:div.control-group
+                [:div.controls
+                 (forms/managed-button
+                   [:button.btn.btn-primary
+                    {:data-success-text "Saved invoice data",
+                     :data-loading-text "Saving invoice data...",
+                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked
+                                                       {:billing-email b-email
+                                                        :billing-name b-name
+                                                        :extra-billing-data b-extra}])
+                                    false)
+                     :type "submit",}
+                    "Save invoice data"])]]]]]))))))
+
+(defn- invoice-total
+  [invoice]
+  (/ (:amount_due invoice) 100))
+
+(defn- stripe-ts->date
+  [ts]
+  (datetime/year-month-day-date (* 1000 ts)))
+
+(defn invoice-view
+  "Render an invoice table row.
+  Invoices fetched from the API look like:
+
+  ;; Invoice API Format
+  ;; ------------------
+  ;; amount_due: 3206
+  ;; currency: \"usd\"
+  ;; date: 1403535350
+  ;; id: \"in_2398vhs098AHYoi\"
+  ;; paid: true
+  ;; period_end: 1403535350
+  ;; period_start: 1402665929"
+  [invoice owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [controls-ch (om/get-shared owner [:comms :controls])
+              invoice-id (:id invoice)]
+          [:tr
+            [:td (stripe-ts->date (:date invoice))]
+            [:td (str (stripe-ts->date (:period_start invoice)))
+                      " - "
+                      (stripe-ts->date (:period_end invoice))]
+            [:td (str "$" (invoice-total invoice))]
+            [:td
+              [:span
+                (forms/managed-button
+                  [:button.btn.btn-mini.btn-primary
+                    {:data-failed-text "Failed",
+                     :data-success-text "Sent",
+                     :data-loading-text "Sending...",
+                     :on-click #(do (put! controls-ch [:resend-invoice-clicked
+                                                       {:invoice-id invoice-id}])
+                                    false)}
+                    "Resend"])]]])))))
+
+(defn- ->balance-string [balance]
+  (let [suffix (cond
+                (< balance 0) " in credit."
+                (> balance 0) " payment outstanding."
+                :else "")
+        amount (-> balance Math/abs (/ 100) .toLocaleString)]
+    (str "$" amount suffix)))
+
+(defn- billing-invoices [app owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/popover "#invoice-popover-hack"
+                     {:animation false
+                      :trigger "hover"
+                      :html true})
+      (utils/tooltip "#resend-invoice-tooltip-hack"
+                     {:animation false}))
+    om/IRender
+    (render [_]
+      (html
+        (let [account-balance (get-in app state/org-plan-balance-path)
+              invoices (get-in app state/org-invoices-path)]
+          (if-not (and account-balance invoices)
+            [:div.loading-spinner common/spinner]
+            [:div.row-fluid
+             [:div.span8
+               [:legend "Invoices"]
+               [:dl.dl-horizontal
+                [:dt
+                 "Account balance"
+                 [:i.fa.fa-question-circle#invoice-popover-hack
+                  {:title "Account balance"
+                   ;; XXX popovers
+                   :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
+                                      "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
+                                      "<p>This amount may take a few hours to refresh.</p>")}]]
+                [:dd
+                 [:span (->balance-string account-balance)]]]
+               [:table.table.table-bordered.table-striped
+                [:thead
+                 [:tr
+                  [:th "Invoice date"]
+                  [:th "Time period covered"]
+                  [:th "Total"]
+                  [:th
+                   [:i.fa.fa-question-circle#resend-invoice-tooltip-hack
+                    {:title "Resend an invoice to the billing email above."}]
+                   "Actions"]]]
+                [:tbody
+                 (om/build-all invoice-view invoices)]]]]))))))
+
+(defn billing [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.plans
+          (om/build billing-card app)
+          (om/build billing-invoice-data app)
+          (om/build billing-invoices app)]))))
+
 (def main-component
   {:users users
    :projects projects
    :plan plan
    :containers containers
    :organizations organizations
-   ;; :billing billing
+   :billing billing
    ;; :cancel cancel
    })
 

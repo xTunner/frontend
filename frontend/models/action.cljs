@@ -17,6 +17,15 @@
       (:bash_command action)
       (:output action)))
 
+(defn visible? [action]
+  (get action :show-output (or (not= "success" (:status action))
+                               (seq (:messages action)))))
+
+(defn running? [action]
+  (and (:start_time action)
+       (not (:stop_time action))
+       (not (:run_time_millis action))))
+
 (defn duration [{:keys [start_time stop_time] :as action}]
   (cond (:run_time_millis action) (datetime/as-duration (:run_time_millis action))
         (:start_time action) (datetime/as-duration (- (.getTime (js/Date.))
@@ -30,9 +39,10 @@
 
 (defn format-output [action output-index]
   (let [output (get-in action [:output output-index])
+        escaped-message (gstring/htmlEscape (:message output))
         converter (new-converter action (keyword (:type output)))]
     (-> action
-        (assoc-in [:output output-index :converted-message] (.append converter (:message output)))
+        (assoc-in [:output output-index :converted-message] (.append converter escaped-message))
         (assoc-in [:output output-index :react-key] (utils/uuid))
         (assoc-in [:converters-state (keyword (:type output))] (utils/js->clj-kw (.currentState converter))))))
 

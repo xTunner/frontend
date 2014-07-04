@@ -5,6 +5,7 @@
             [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.components.forms :refer [release-button!]]
+            [frontend.models.action :as action-model]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
@@ -36,7 +37,7 @@
 (defmulti post-control-event!
   (fn [target message args previous-state current-state] message))
 
-;; --- Navigation Mutlimethod Implementations ---
+;; --- Navigation Multimethod Implementations ---
 
 (defmethod control-event :default
   [target message args state]
@@ -160,33 +161,39 @@
                                                   250)))]
       (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
       (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-      (.play scroller))))
+      (.play scroller)))
+  (when (not= (get-in previous-state state/current-container-path)
+              container-id)
+    (let [container (get-in current-state (state/container-path container-id))
+          last-action (-> container :actions last)]
+      (when (and (:has_output last-action)
+                 (action-model/visible? last-action)
+                 (:missing-pusher-output last-action))
+        (api/get-action-output {:vcs-url (:vcs_url (get-in current-state state/build-path))
+                                :build-num (:build_num (get-in current-state state/build-path))
+                                :step (:step last-action)
+                                :index (:index last-action)
+                                :output-url (:output_url last-action)}
+                               (get-in current-state [:comms :api]))))))
 
 
 (defmethod control-event :action-log-output-toggled
-  [target message {:keys [index step]} state]
-  (update-in state (state/show-action-output-path index step) not))
+  [target message {:keys [index step value]} state]
+  (assoc-in state (state/show-action-output-path index step) value))
 
 (defmethod post-control-event! :action-log-output-toggled
   [target message {:keys [index step] :as args} previous-state current-state]
-  (let [action (get-in current-state (state/action-path index step))]
-    (when (and (:show-output action)
+  (let [action (get-in current-state (state/action-path index step))
+        build (get-in current-state state/build-path)]
+    (when (and (action-model/visible? action)
                (:has_output action)
                (not (:output action)))
-      (let [api-ch (get-in current-state [:comms :api])
-            build (get-in current-state state/build-path)
-            url (if (:output_url action)
-                  (:output_url action)
-                  (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
-                                  (vcs-url/project-name (:vcs_url build))
-                                  (:build_num build)
-                                  step
-                                  index))]
-        (ajax/ajax :get
-                   url
-                   :action-log
-                   api-ch
-                   :context args)))))
+      (api/get-action-output {:vcs-url (:vcs_url build)
+                              :build-num (:build_num build)
+                              :step step
+                              :index index
+                              :output-url (:output_url action)}
+                             (get-in current-state [:comms :api])))))
 
 
 (defmethod control-event :selected-project-parallelism
@@ -513,6 +520,8 @@
              (get-in current-state [:comms :api])
              :context {:project-name project-name}
              :params invitees)
+  ;; XXX: move all of the tracking stuff into frontend.analytics and let it
+  ;;      keep track of which service to send things to
   (mixpanel/track "Sent invitations" {:first_green_build true
                                       :project project-name
                                       :users (map :login invitees)})
@@ -523,11 +532,21 @@
                                        :id (:id u)
                                        :email (:email u)})))
 
-
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
   (intercom/raise-dialog (get-in current-state [:comms :errors])
                          (gstring/format "I think I found a bug in Circle at %s" build-url)))
+
+(defmethod post-control-event! :cancel-build-clicked
+  [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
+  (let [api-ch (-> current-state :comms :api)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+               :cancel-build
+               api-ch
+               :context {:build-id build-id})))
 
 
 (defmethod post-control-event! :enabled-project
@@ -605,3 +624,125 @@
                            :params {:piggieback-orgs selected-piggyback-orgs}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))))
+
+(defmethod control-event :preferences-updated
+  [target message args state]
+  (update-in state state/user-path merge args))
+
+(defmethod post-control-event! :preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
+            :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+
+(defmethod post-control-event! :heroku-key-add-attempted
+  [target message args previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/heroku-key"
+                           :params {:apikey (:heroku_api_key args)}))]
+       (if (= :success (:status api-result))
+         (let [me-result (<! (ajax/managed-ajax :get "/api/v1/me"))]
+           (put! api-ch [:update-heroku-key :success api-result])
+           (put! api-ch [:me (:status me-result) (assoc me-result :context {})]))
+         (put! (get-in current-state [:comms :errors]) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-revocation-attempted
+  [target message {:keys [token]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :delete
+                           (gstring/format "/api/v1/user/token/%s" (:token token))
+                           :params {}))]
+       (put! api-ch [:delete-api-token (:status api-result) (assoc api-result :context {:token token})])
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-creation-attempted
+  [target message {:keys [label]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/token"
+                           :params {:label label}))]
+       (put! api-ch [:create-api-token (:status api-result) (assoc api-result :context {:label label})])
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :update-card-clicked
+  [target message {:keys [containers price description base-template-id]} previous-state current-state]
+  (let [stripe-ch (chan)
+        uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (stripe/open-checkout {:panelLabel "Update card"} stripe-ch)
+    (go (let [[message data] (<! stripe-ch)]
+          (condp = message
+            :stripe-checkout-closed (release-button! uuid :idle)
+            :stripe-checkout-succeeded
+            (let [token-id (:id data)]
+              (let [api-result (<! (ajax/managed-ajax
+                                    :put
+                                    (gstring/format "/api/v1/organization/%s/card" org-name)
+                                    :params {:token token-id}))]
+                (put! api-ch [:plan-card (:status api-result) (assoc api-result :context {:org-name org-name})])
+                (release-button! uuid (:status api-result))))
+            nil)))))
+
+(defmethod post-control-event! :save-invoice-data-clicked
+  [target message data previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                              :put
+                              (gstring/format "/api/v1/organization/%s/plan" org-name)
+                              :params data))]
+        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :resend-invoice-clicked
+  [target message {:keys [invoice-id]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                              :post
+                              (gstring/format "/api/v1/organization/%s/invoice/resend" org-name)
+                              :params {:id invoice-id}))]
+        ;; TODO Handle this message in the API channel
+        (put! api-ch [:resend-invoice (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))
+
+
+(defmethod control-event :home-technology-tab-selected
+  [target message {:keys [tab]} state]
+  (assoc-in state state/selected-home-technology-tab-path tab))
+
+(defmethod post-control-event! :home-technology-tab-selected
+  [target message {:keys [tab]} previous-state current-state]
+  (mixpanel/track "Test Stack" {:tab (name tab)}))
+
+(defmethod post-control-event! :track-external-link-clicked
+  [target message {:keys [path event properties]} previous-state current-state]
+  (let [redirect #(js/window.location.replace path)]
+    (go (alt!
+         (mixpanel/managed-track event properties) ([v] (do (utils/mlog "tracked" v "... redirecting")
+                                                            (redirect)))
+         (async/timeout 1000) (redirect)))))
+
+(defmethod post-control-event! :enterprise-learn-more-clicked
+  [target message {:keys [source]} previous-state current-state]
+  (utils/open-modal "#enterpriseModal"))

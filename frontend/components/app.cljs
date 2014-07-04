@@ -1,16 +1,29 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
+            [frontend.components.account :as account]
+            [frontend.components.about :as about]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
+            ;;[frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.changelog :as changelog]
+            [frontend.components.enterprise :as enterprise]
+            [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
+            [frontend.components.integrations :as integrations]
+            [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
+            [frontend.components.pricing :as pricing]
+            [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
+            [frontend.components.security :as security]
+            [frontend.components.stories :as stories]
+            [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.state :as state]
@@ -33,39 +46,59 @@
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
-    :loading loading
     :project-settings project-settings/project-settings
-    :org-settings org-settings/org-settings))
+    :org-settings org-settings/org-settings
+    :account account/account
+    :loading loading
+
+    :landing landing/home
+    :about about/about
+    :pricing pricing/pricing
+    :jobs jobs/jobs
+    :privacy privacy/privacy
+    :security security/security
+    :security-hall-of-fame security/hall-of-fame
+    :enterprise enterprise/enterprise
+    :shopify-story stories/shopify
+    :docker-integration integrations/docker
+    :changelog changelog/changelog
+    ;; :documentation-root docs/documentation
+    ;; :documentation-page docs/docpage
+
+    :error errors/error-page))
 
 (defn app [app owner]
   (reify
+    om/IDisplayName (display-name [_] "App")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            persist-state! #(put! controls-ch [:state-persisted])
-            restore-state! #(put! controls-ch [:state-restored])
-            dom-com (dominant-component app)
-            show-inspector? (get-in app state/show-inspector-path)]
-        (reset! keymap {["ctrl+s"] persist-state!
-                        ["ctrl+r"] restore-state!})
-        (html
-         ;; XXX: determine inner or outer in the routing layer
-         (let [inner? (get-in app state/inner?-path)]
-           [:div#app {:class (if inner? "inner" "outer")}
-            (om/build keyq/KeyboardHandler app
-                      {:opts {:keymap keymap
-                              :error-ch (get-in app [:comms :errors])}})
-            (when show-inspector?
-              ;; XXX inspector still needs lots of work. It's slow and it defaults to
-              ;;     expanding all datastructures.
-              (om/build inspector/inspector app))
-            (when inner?
-              [:aside.app-aside-left
-               (om/build aside/aside app)])
-            [:main.app-main {:tab-index 1}
-             (om/build header/header app)
-             (when inner? ;; XXX: remove when outer is built out
+      (if-not (:navigation-point app)
+        (html [:div#app])
+
+        (let [controls-ch (om/get-shared owner [:comms :controls])
+              persist-state! #(put! controls-ch [:state-persisted])
+              restore-state! #(put! controls-ch [:state-restored])
+              dom-com (dominant-component app)
+              show-inspector? (get-in app state/show-inspector-path)]
+          (reset! keymap {["ctrl+s"] persist-state!
+                          ["ctrl+r"] restore-state!})
+          (html
+           ;; XXX: determine inner or outer in the routing layer
+           (let [inner? (get-in app state/inner?-path)]
+
+             [:div#app {:class (if inner? "inner" "outer")}
+              (om/build keyq/KeyboardHandler app
+                        {:opts {:keymap keymap
+                                :error-ch (get-in app [:comms :errors])}})
+              (when show-inspector?
+                ;; XXX inspector still needs lots of work. It's slow and it defaults to
+                ;;     expanding all datastructures.
+                (om/build inspector/inspector app))
+              (when inner?
+                (om/build aside/aside app))
+              [:main.app-main {:tab-index 1}
+               (om/build header/header app)
                [:div.main-body
-                (om/build dom-com app)])
-             [:footer.main-foot
-              (footer/footer)]]]))))))
+                (om/build dom-com app)]
+               [:footer.main-foot
+                (footer/footer)]]])))))))

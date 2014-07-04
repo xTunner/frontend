@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
+            [frontend.components.shared :as shared]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
@@ -9,6 +10,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -44,6 +46,7 @@
 
 (defn branch [data owner]
   (reify
+    om/IDisplayName (display-name [_] "Aside Branch Activity")
     om/IRender
     (render [_]
       (let [{:keys [org repo branch-data]} data
@@ -61,11 +64,12 @@
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-aside [data owner]
+(defn project-aside [data owner opts]
   (reify
+    om/IDisplayName (display-name [_] "Aside Project Activity")
     om/IRender
     (render [_]
-      (let [user (:user data)
+      (let [login {:login opts}
             project (:project data)
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
@@ -75,7 +79,7 @@
             vcs-url (:vcs_url project)
             org (vcs-url/org-name vcs-url)
             repo (vcs-url/repo-name vcs-url)
-            branches-filter (if show-all-branches? identity (partial project-model/personal-branch? user project))]
+            branches-filter (if show-all-branches? identity (partial project-model/personal-branch? {:login login} project))]
         (html
          [:ul {:class (when-not collapse-branches? "open")}
           [:li
@@ -91,71 +95,152 @@
             (when-let [latest-master-build (first (project-model/master-builds project))]
               (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
           (when-not collapse-branches?
-            (for [branch-data (filter branches-filter (:branches project))]
+            (for [branch-data (->> project
+                                   :branches
+                                   (filter branches-filter)
+                                   ;; alphabetize
+                                   (sort-by first))]
               (om/build branch
                         {:branch-data branch-data
                          :org org
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
-(defn aside [app owner]
+(defn activity [app owner opts]
   (reify
+    om/IDisplayName (display-name [_] "Aside Activity")
+    om/IRender
+    (render [_]
+      (let [slim-aside? (get-in app state/slim-aside-path)
+            show-all-branches? (get-in app state/show-all-branches-path)
+            projects (get-in app state/projects-path)
+            settings (get-in app state/settings-path)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+         [:nav.aside-left-nav.context
+          [:div.aside-activity.open
+           [:div.wrapper
+            [:header
+             [:select {:name "toggle-all-branches"
+                       :on-change #(put! controls-ch [:show-all-branches-toggled
+                                                      (utils/parse-uri-bool (.. % -target -value))])
+                       :value show-all-branches?}
+              [:option {:value false} "Your Branch Activity"]
+              [:option {:value true} "All Branch Activity" ]]
+             [:div.select-arrow [:i.fa.fa-caret-down]]]
+            (for [project (sort project-model/sidebar-sort projects)]
+              (om/build project-aside
+                        {:project project
+                         :settings settings}
+                        {:react-key (project-model/id project)
+                         :opts {:login (:login opts)}}))]]])))))
+
+(defn aside-nav [app owner opts]
+  (reify
+    om/IDisplayName (display-name [_] "Aside Nav")
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
-            slim-aside? (get-in app state/slim-aside-path)
-            show-all-branches? (get-in app state/show-all-branches-path)
-            user (:current-user app)]
+            slim-aside? (get-in app state/slim-aside-path)]
         (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
-          [:a.aside-item.logo  {:data-bind "tooltip: {title: 'Home', placement: 'right', trigger: 'hover'}"
-                                ;; XXX: tooltips
+          [:a.aside-item.logo  {:title "Home"
+                                :data-placement "right"
+                                :data-trigger "hover"
                                 :href "/"}
            [:div.logomark
             (common/ico :logo)]]
-          [:div.aside-activity {:class (when-not slim-aside? "open")}
-           [:div.wrapper
-            [:div.toggle-all-branches
-             [:button {:class (when-not show-all-branches? "active")
-                       :on-click #(put! controls-ch [:show-all-branches-toggled false])}
-              "You"]
-             [:button {:class (when show-all-branches? "active")
-                       :on-click #(put! controls-ch [:show-all-branches-toggled true])}
-              "All"]]
-            (for [project projects]
-              (om/build project-aside
-                        {:project project
-                         :user user
-                         :settings settings}
-                        {:react-key (project-model/id project)}))]]
+          [:a.aside-item {:title "Settings"
+                          :data-placement "right"
+                          :data-trigger "hover"
+                          :href "/account"}
+           [:i.fa.fa-cog]
+           [:span "Settings"]]
+
+          [:a.aside-item {:title "Documentation"
+                          :data-placement "right"
+                          :data-trigger "hover"
+                          :href "/docs"}
+           [:i.fa.fa-copy]
+           [:span "Documentation"]]
+
+          [:a.aside-item {:on-click #(put! controls-ch [:intercom-dialog-raised])
+                          :title "Report Bug"
+                          :data-placement "right"
+                          :data-trigger "hover"
+
+                          :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
+           [:i.fa.fa-bug]
+           [:span "Report Bug"]]
+
+          [:a.aside-item
+           {:href "https://www.hipchat.com/gjwkHcrD5",
+            :target "_blank",
+            :data-placement "right"
+            :data-trigger "hover"
+            :title "Live Support"}
+           [:i.fa.fa-comments]
+           [:span "Live Support"]]
+
           [:a#add-projects.aside-item {:href "/add-projects",
-                                       :data-bind "tooltip: {title: 'Add Projects', placement: 'right', trigger: 'hover'}"}
+                                       :data-placement "right"
+                                       :data-trigger "hover"
+                                       :title "Add Projects"}
            [:i.fa.fa-plus-circle]
            [:span "Add Projects"]]
-          [:a.aside-item {:href "#",
-                          :data-bind "tooltip: {title: 'Invite Teammate', placement: 'right', trigger: 'hover'}"
-                          :data-toggle "modal"
-                          :data-target "#inviteForm"}
+
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Invite Teammate"
+                          ;; modal lives in aside
+                          :on-click #(utils/open-modal "#inviteForm")}
            [:i.fa.fa-envelope-o]
            [:span "Invite Teammate"]]
 
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Expand"
+                          :on-click #(put! controls-ch [:slim-aside-toggled])}
+           (if slim-aside?
+             [:i.fa.fa-long-arrow-right]
+             (list
+              [:i.fa.fa-long-arrow-left]
+              [:span "Collapse"]))]
+
           [:div.aside-slideup
            [:a.aside-item {:href "/account"
-                           :data-bind "tooltip: {title: 'User Account', placement: 'right', trigger: 'hover'}"}
-            [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar_id user)
-                                                :login (:login user)
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "User Account"}
+            [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
+                                                :login (:login opts)
                                                 :size 50})}]
-            (:login user)]
+            (:login opts)]
+
            [:a.aside-item {:href "/logout"
-                           :data-bind "tooltip: {title: 'Logout', placement: 'right', trigger: 'hover'}"}
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Logout"}
             [:i.fa.fa-sign-out]
-            [:span "Logout"]]
-           [:a.aside-item {:data-bind "tooltip: {title: 'Expand', placement: 'right', trigger: 'hover'}"
-                           :on-click #(put! controls-ch [:slim-aside-toggled])}
-            (if slim-aside?
-              [:i.fa.fa-long-arrow-right]
-              (list
-               [:i.fa.fa-long-arrow-left]
-               [:span "Collapse"]))]]])))))
+            [:span "Logout"]]]])))))
+
+(defn aside [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Aside")
+    om/IRender
+    (render [_]
+      (let [data (select-in app [state/projects-path state/settings-path])
+            user (get-in app state/user-path)
+            login (:login user)
+            gravatar-id (:gravatar_id user)]
+        (html
+         [:aside.app-aside-left
+          shared/invite-form ;; modal trigger is in aside-nav
+          (om/build aside-nav data {:opts {:login login
+                                           :gravatar-id gravatar-id}})
+          (om/build activity data {:opts {:login login}})])))))

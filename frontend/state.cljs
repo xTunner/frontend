@@ -1,13 +1,17 @@
 (ns frontend.state)
 
 (defn initial-state []
-  {:environment "development"
+  {:ab-tests {}
+   :changelog nil
+   :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
               :organizations  {:circleci  {:plan {}}}
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
-   :navigation-point :loading
+   :selected-home-technology-tab nil
+   :builds-per-page 30
+   :navigation-point nil
    :navigation-data nil
    :navigation-settings {}
    :current-user nil
@@ -47,6 +51,7 @@
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
+                      :invoices nil
                       :name nil}
    :instrumentation []})
 
@@ -100,6 +105,7 @@
 
 ;; XXX we probably shouldn't be storing repos in the user...
 (def user-organizations-path (conj user-path :organizations))
+(def user-tokens-path (conj user-path :tokens))
 (def user-collaborators-path (conj user-path :collaborators))
 
 (defn repos-path
@@ -114,6 +120,7 @@
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-plan-path (conj org-data-path :plan))
+(def org-plan-balance-path (conj org-plan-path :account_balance))
 (def stripe-card-path (conj org-data-path :card))
 (def org-users-path (conj org-data-path :users))
 (def org-projects-path (conj org-data-path :projects))
@@ -122,13 +129,14 @@
 (def selected-containers-path (conj org-data-path :selected-containers))
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
+(def org-invoices-path (conj org-data-path :invoices))
 
 (def settings-path [:settings])
 
 (def projects-path [:projects])
 
 ;; XXX make inner/outer something defined in navigation
-(def inner?-path [:current-user])
+(def inner?-path [:navigation-data :inner?])
 
 (def show-nav-settings-link-path [:navigation-settings :show-settings-link])
 
@@ -142,4 +150,13 @@
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 
+(def account-subpage-path [:account-settings-subpage])
+(def new-user-token-path (conj user-path :new-user-token))
+
 (def flash-path [:render-context :flash])
+
+(def error-data-path [:error-data])
+
+(def selected-home-technology-tab-path [:selected-home-technology-tab])
+
+(def changelog-path [:changelog])

@@ -35,6 +35,15 @@
             (js* "debugger;")
             (throw e#)))))
 
+(defmacro defrender
+  "Reifies an IRender component that only has a render function and
+   splices the body into the render function"
+  [name args & body]
+  `(defn ~name ~args 
+     (reify
+       om.core/IRender
+       (~'render [~'_] ~@body))))
+
 (defmacro html [body]
   `(let [body# ~body]
      (if-not (:render-colors? initial-query-map)
@@ -57,3 +66,4 @@
                                    rest#))))
          (catch :default e#
            (html/html body#))))))
+

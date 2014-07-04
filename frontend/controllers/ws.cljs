@@ -103,7 +103,7 @@
     (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
       (if (not= container-index (get-in state state/current-container-path 0))
         (do (mlog "Ignoring output for inactive container: " container-index)
-            state)
+            (update-in state (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true))
 
         (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
           (-> state
@@ -151,5 +151,7 @@
     (condp = navigation-point
       :build (when (get-in current-state state/show-usage-queue-path)
                (api/get-usage-queue (get-in current-state state/build-path) api-ch))
-      :dashboard (api/get-dashboard-builds (:navigation-data current-state) api-ch)
+      :dashboard (api/get-dashboard-builds (assoc (:navigation-data current-state)
+                                             :builds-per-page (:builds-per-page current-state))
+                                           api-ch)
       nil)))
