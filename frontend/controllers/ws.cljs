@@ -2,6 +2,7 @@
   "Websocket controllers"
   (:require [clojure.set]
             [frontend.api :as api]
+            [frontend.favicon]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
@@ -73,6 +74,11 @@
     (if-let [index (usage-queue-build-index-from-channel-name state channel-name)]
       (update-in state (state/usage-queue-build-path index) merge (utils/js->clj-kw data))
       state)))
+
+(defmethod post-ws-event! :build/update
+  [pusher-imp message {:keys [data channel-name]} previous-state current-state]
+  (when-not (ignore-build-channel? current-state channel-name)
+    (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))))
 
 
 (defmethod ws-event :build/new-action

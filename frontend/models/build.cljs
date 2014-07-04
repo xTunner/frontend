@@ -118,6 +118,14 @@
         (= "running" (:status build)) "busy"
         :else nil))
 
+(defn favicon-color [build]
+  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "red"
+        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "orange"
+        (= "success" (:outcome build)) "green"
+        (= "running" (:status build)) "blue"
+        (#{"queued" "not_running" "scheduled" "retried"} (:status build)) "grey"
+        :else "blue"))
+
 (defn why-in-words [build]
   (condp = (:why build)
     "github" (str "GitHub push by " (get-in build [:user :login]))

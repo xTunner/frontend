@@ -13,6 +13,7 @@
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.analytics.perfect-audience :as perfect-audience]
             [frontend.analytics.google :as gaq]
+            [frontend.favicon]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -139,16 +140,6 @@
                     (:branch build))
           (assoc-in state/containers-path containers)))))
 
-
-(defmethod api-event [:cancel-build :success]
-  [target message status args state]
-  (let [build-id (get-in args [:context :build-id])]
-    (if-not (= (build-model/id (get-in state state/build-path))
-               build-id)
-      state
-      (update-in state state/build-path merge (:resp args)))))
-
-
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
@@ -164,7 +155,17 @@
                                 :step (:step action)
                                 :index (:index action)
                                 :output-url (:output_url action)}
-                               (get-in current-state [:comms :api]))))))
+                               (get-in current-state [:comms :api])))
+      (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path))))))
+
+
+(defmethod api-event [:cancel-build :success]
+  [target message status args state]
+  (let [build-id (get-in args [:context :build-id])]
+    (if-not (= (build-model/id (get-in state state/build-path))
+               build-id)
+      state
+      (update-in state state/build-path merge (:resp args)))))
 
 
 (defmethod api-event [:repos :success]
