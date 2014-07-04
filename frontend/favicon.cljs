@@ -15,4 +15,5 @@
      (attrs/set-attr! (sel1 favicon-query) :href (str "/favicon-" color ".ico?v=28")))))
 
 (defn reset! []
-  (set-color! "blue"))
+  ;; This seemed clever at the time, undefined is the default dark blue
+  (set-color! "undefined"))

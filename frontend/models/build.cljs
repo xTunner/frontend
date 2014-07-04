@@ -124,7 +124,8 @@
         (= "success" (:outcome build)) "green"
         (= "running" (:status build)) "blue"
         (#{"queued" "not_running" "scheduled" "retried"} (:status build)) "grey"
-        :else "blue"))
+        ;; undefined is the default dark blue
+        :else "undefined"))
 
 (defn why-in-words [build]
   (condp = (:why build)
