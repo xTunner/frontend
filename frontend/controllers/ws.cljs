@@ -106,12 +106,13 @@
 (defmethod ws-event :build/append-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
+    (let [container-index (aget data "index")
+          action-index (aget data "step")]
       (if (not= container-index (get-in state state/current-container-path 0))
         (do (mlog "Ignoring output for inactive container: " container-index)
             (update-in state (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true))
 
-        (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
+        (let [output (utils/js->clj-kw (aget data "out"))]
           (-> state
               (build-model/fill-containers container-index action-index)
               (update-in (state/action-output-path container-index action-index) vec)
