@@ -270,7 +270,9 @@
                [:button.ssh_build
                 {:data-loading-text "Rebuilding",
                  :title "Retry with SSH in VM",
-                 :on-click #(put! controls-ch [:ssh-build-clicked build-id])}
+                 :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
                 "& enable ssh"])]
              [:div.actions
               [:button.report_build

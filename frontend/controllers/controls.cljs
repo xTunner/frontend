@@ -276,6 +276,17 @@
                api-ch)))
 
 
+(defmethod post-control-event! :ssh-build-clicked
+  [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
+  (let [api-ch (-> current-state :comms :api)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
+    (ajax/ajax :post
+               (gstring/format "/api/v1/project/%s/%s/%s/ssh" org-name repo-name build-num)
+               :retry-build
+               api-ch)))
+
+
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
