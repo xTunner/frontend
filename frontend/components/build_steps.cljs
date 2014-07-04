@@ -186,7 +186,8 @@
           [:div#container_parent {:on-wheel (fn [e]
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (aset js/document.body "scrollTop" (+ (aget js/document.body "scrollTop") (aget e "deltaY")))))
+                                                (let [main (sel1 "main.app-main")]
+                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (.-deltaY e))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container
