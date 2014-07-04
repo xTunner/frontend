@@ -137,7 +137,7 @@
 
 (def invite-modal
   [:div#inviteForm-addprojects.fade.hide.modal
-   {:tabindex "-1",
+   {:tabIndex "-1",
     :role "dialog",
     :aria-labelledby "inviteFormLabel",
     :aria-hidden "true"}

@@ -96,7 +96,7 @@
    [:strong.white "GitHub"]])
 
 (def invite-form
-  [:div#inviteForm.fade.hide.invite-form.modal {:tabindex "-1",
+  [:div#inviteForm.fade.hide.invite-form.modal {:tabIndex "-1",
                                                 :role "dialog",
                                                 :aria-labelledby "inviteFormLabel",
                                                 :aria-hidden "true"}
