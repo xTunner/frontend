@@ -43,7 +43,7 @@
    :content-type "application/xml"
    :write identity})
 
-;; XXX only implementing JSON format and not implementing prefixes for now since we don't use either
+;; TODO only implementing JSON format and not implementing prefixes for now since we don't use either
 (defn ajax [method url message channel & {:keys [params keywords? context headers]
                                           :or {keywords? true}}]
   (let [uuid frontend.async/*uuid*]
@@ -100,7 +100,7 @@
     channel))
 
 
-;; XXX this should be possible to do with the normal ajax function, but punting for now
+;; TODO this should be possible to do with the normal ajax function, but punting for now
 (defn managed-form-post [url & {:keys [params headers keywords?]
                                 :or {keywords? true}}]
   (let [channel (chan)]

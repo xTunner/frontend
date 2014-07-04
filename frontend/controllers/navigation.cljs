@@ -18,9 +18,9 @@
                    [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-;; XXX we could really use some middleware here, so that we don't forget to
-;;     assoc things in state on every handler
-;;     We could also use a declarative way to specify each page.
+;; TODO we could really use some middleware here, so that we don't forget to
+;;      assoc things in state on every handler
+;;      We could also use a declarative way to specify each page.
 
 ;; --- Helper Methods ---
 
@@ -128,7 +128,6 @@
           (state-utils/reset-current-project %)
           %))))
 
-;; XXX: add unsubscribe when you leave the build page
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
@@ -178,7 +177,7 @@
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {}
-             ;; XXX can we get rid of project-settings-subpage in favor of navigation-data?
+             ;; TODO can we get rid of project-settings-subpage in favor of navigation-data?
              :project-settings-subpage subpage
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org
@@ -206,8 +205,6 @@
     :navigation-data args
     :current-documentation-page (:page args)))
 
-;; XXX: find a better place for all of the ajax functions, maybe a separate api
-;;      namespace that knows about all of the api routes?
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]

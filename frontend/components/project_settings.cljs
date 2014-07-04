@@ -68,7 +68,6 @@
                    :required true
                    :type "text"
                    :value settings-branch
-                   ;; XXX typeahead
                    :on-change #(utils/edit-input controls-ch state/project-settings-branch-path %)}]
           [:label {:placeholder "Test settings on..."}]
           (forms/stateful-button
@@ -813,7 +812,6 @@
                    [:p "Your Heroku key is entered. Great!"])
             [:p (:heroku_api_key user)]
             [:div (when-not (:heroku_api_key user)
-                    ;; XXX pull in set heroku-key from accounts
                     (om/build account/heroku-key {:current-user user} {:opts {:project-page? true}}))]
             [:div (when (:heroku_api_key user)
                     [:p

@@ -99,7 +99,6 @@
       (-> state
           (build-model/fill-containers container-index action-index)
           (update-in (state/action-path container-index action-index) merge action-log)
-          ;; XXX is this necessary here?
           (update-in (state/action-path container-index action-index) action-model/format-latest-output)))))
 
 

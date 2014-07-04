@@ -103,7 +103,7 @@
                                         first)]
     (conj crumbs-path project-branch-crumb-index)))
 
-;; XXX we probably shouldn't be storing repos in the user...
+;; TODO we probably shouldn't be storing repos in the user...
 (def user-organizations-path (conj user-path :organizations))
 (def user-tokens-path (conj user-path :tokens))
 (def user-collaborators-path (conj user-path :collaborators))
@@ -135,7 +135,6 @@
 
 (def projects-path [:projects])
 
-;; XXX make inner/outer something defined in navigation
 (def inner?-path [:navigation-data :inner?])
 
 (def show-nav-settings-link-path [:navigation-settings :show-settings-link])

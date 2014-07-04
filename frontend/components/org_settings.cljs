@@ -639,7 +639,6 @@
                  "Account balance"
                  [:i.fa.fa-question-circle#invoice-popover-hack
                   {:title "Account balance"
-                   ;; XXX popovers
                    :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
                                       "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
                                       "<p>This amount may take a few hours to refresh.</p>")}]]

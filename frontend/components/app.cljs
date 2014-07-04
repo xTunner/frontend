@@ -83,7 +83,6 @@
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
-           ;; XXX: determine inner or outer in the routing layer
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (if inner? "inner" "outer")}
@@ -91,7 +90,7 @@
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when show-inspector?
-                ;; XXX inspector still needs lots of work. It's slow and it defaults to
+                ;; TODO inspector still needs lots of work. It's slow and it defaults to
                 ;;     expanding all datastructures.
                 (om/build inspector/inspector app))
               (when inner?

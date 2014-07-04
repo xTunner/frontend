@@ -101,13 +101,11 @@
              [:div.detail-wrapper
               (when (and visible? (action-model/has-content? action))
                 [:div.detail {:class header-classes}
-                 ;; XXX: better way to indicate loading
                  (if (and (:has_output action)
                           (nil? (:output action)))
                    [:div.loading-spinner common/spinner]
 
                    [:div#action-log-messages
-                    ;; XXX click-to-scroll
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
                                        main (sel1 "main.app-main")]
@@ -205,8 +203,6 @@
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"
                                   :class (str "selected_" current-container-id)}
-           ;; XXX handle scrolling and resize sensor
-           ;; probably have to replace resize sensor with something else
            (for [container containers]
              (om/build container-view
                        {:container container

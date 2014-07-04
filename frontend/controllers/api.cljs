@@ -60,8 +60,6 @@
 
 (defmethod api-event [:default :started]
   [target message status args state]
-  ;; XXX Set the button to "saving" (is this the best place?)
-  ;; XXX Start the spinner
   (mlog "No api for" [message status])
   state)
 
@@ -90,8 +88,6 @@
 
 (defmethod api-event [:default :finished]
   [target message status args state]
-  ;; XXX Reset the button (is this the best place?)
-  ;; XXX Stop the spinner
   (mlog "No api for" [message status])
   state)
 
@@ -522,12 +518,6 @@
   (-> state
       (assoc-in state/new-user-token-path "")
       (update-in state/user-tokens-path conj resp)))
-
-(defmethod api-event [:delete-api-token :failed]
-  [target message status {:keys [resp context]} state]
-  ;; XXX Don't drop the resp text on the floor here, should be shown
-  ;; to the user
-  state)
 
 (defmethod api-event [:delete-api-token :success]
   [target message status {:keys [resp context]} state]

@@ -38,7 +38,6 @@
               [:p "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
 
             (when (seq builds)
-              ;; XXX this could still use some work
               (list
                [:p "This build " (if usage-queued? "has been" "was")
                 " queued behind the following builds for "

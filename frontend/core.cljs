@@ -151,7 +151,6 @@
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
-       ;; XXX: should these take the container like the rest of the controllers?
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
        (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
 

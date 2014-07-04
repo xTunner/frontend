@@ -24,7 +24,6 @@
 (defn report-error [build controls-ch]
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
-    ;; XXX add circle.yml errors
     (when (:failed build)
       [:div.alert.alert-danger
        (if-not (:infrastructure_fail build)

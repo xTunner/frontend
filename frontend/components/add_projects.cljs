@@ -20,7 +20,7 @@
   [:div
    [:div.alert.alert-error
     "We don't have all of the GitHub OAuth scopes we need to run your tests."
-    ;; XXX translate CI.github
+    ;; TODO translate CI.github
     [:a {:href (js/CI.github.authUrl (clj->js (concat missing-scopes current-scopes)))}
      (gstring/format "Click to grant Circle the %s %s."
                      (string/join "and " missing-scopes)
