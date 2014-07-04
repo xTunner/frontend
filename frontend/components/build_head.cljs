@@ -201,7 +201,7 @@
                [:th "Started"]
                [:td (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
               [:tr
-               [:th "Hello"]
+               [:th "Trigger"]
                [:td (build-model/why-in-words build)]
                [:th "Duration"]
                [:td (if (build-model/running? build)
