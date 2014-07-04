@@ -1,5 +1,6 @@
 (ns frontend.components.build-head
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as string]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -9,7 +10,7 @@
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
-            goog.string.format
+            [goog.string.format]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -133,6 +134,11 @@
           "Read our doc on interacting with the browser over VNC"]
          "."]]))))
 
+(defn cleanup-artifact-path [path]
+  (-> path
+      (string/replace "$CIRCLE_ARTIFACTS/" "")
+      (gstring/truncateMiddle 80)))
+
 (defn build-artifacts-list [artifacts-data owner]
   (reify
     om/IRender
@@ -156,7 +162,7 @@
                (map (fn [artifact]
                       [:li
                        [:a {:href (:url artifact) :target "_blank"}
-                        (:pretty_path artifact)]])
+                        (cleanup-artifact-path (:pretty_path artifact))]])
                     artifacts)]))])))))
 
 (defn build-head [data owner]
@@ -188,7 +194,7 @@
                [:th "Started"]
                [:td (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
               [:tr
-               [:th "Trigger"]
+               [:th "Hello"]
                [:td (build-model/why-in-words build)]
                [:th "Duration"]
                [:td (if (build-model/running? build)
