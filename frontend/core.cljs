@@ -252,3 +252,6 @@
         (setup-browser-repl (get-in @state [:render-context :browser_connected_repl_url]))
         (catch js/error e
           (merror e))))))
+
+(defn ^:export toggle-admin []
+  (swap! debug-state update-in [:current-user :admin] not))
