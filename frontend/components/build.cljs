@@ -125,6 +125,7 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             project-data (get-in data state/project-data-path)
+            user (get-in data state/user-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div#build-log-container
@@ -135,7 +136,8 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :project-data project-data})
+                                              :project-data project-data
+                                              :user user})
              (common/flashes)
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data})

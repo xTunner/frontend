@@ -139,13 +139,15 @@
       (string/replace "$CIRCLE_ARTIFACTS/" "")
       (gstring/truncateMiddle 80)))
 
-(defn build-artifacts-list [artifacts-data owner]
+(defn build-artifacts-list [data owner]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
+            artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
-            show-artifacts (:show-artifacts artifacts-data)]
+            show-artifacts (:show-artifacts artifacts-data)
+            admin? (:admin (:user data))]
         (html
          [:section.build-artifacts {:class (when show-artifacts "active")}
           [:div.build-artifacts-title
@@ -161,8 +163,12 @@
               [:ol.build-artifacts-list
                (map (fn [artifact]
                       [:li
-                       [:a {:href (:url artifact) :target "_blank"}
-                        (cleanup-artifact-path (:pretty_path artifact))]])
+                       (if admin?
+                         ;; Be extra careful about XSS of admins
+                         (cleanup-artifact-path (:pretty_path artifact))
+
+                         [:a {:href (:url artifact) :target "_blank"}
+                          (cleanup-artifact-path (:pretty_path artifact))])])
                     artifacts)]))])))))
 
 (defn build-head [data owner]
@@ -178,7 +184,8 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            plan (get-in data [:project-data :plan])]
+            plan (get-in data [:project-data :plan])
+            user (:user data)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -303,4 +310,5 @@
            (when (build-model/ssh-enabled-now? build)
              (om/build build-ssh (:node build)))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list (get build-data :artifacts-data)))]])))))
+             (om/build build-artifacts-list {:artifacts-data (get build-data :artifacts-data)
+                                             :user user}))]])))))
