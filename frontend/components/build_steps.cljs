@@ -194,7 +194,7 @@
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
                                                 (let [main (sel1 "main.app-main")]
-                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (.-deltaY e))))))
+                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (aget e "deltaY"))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container
