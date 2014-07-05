@@ -9,6 +9,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils.ajax :as ajax]
@@ -751,6 +752,27 @@
         ;; TODO Handle this message in the API channel
         (put! api-ch [:resend-invoice (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :cancel-plan-clicked
+  [target message {:keys [org-name cancel-reasons cancel-notes]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        nav-ch (get-in current-state [:comms :nav])
+        errors-ch (get-in current-state [:comms :errors])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :delete
+                           (gstring/format "/api/v1/organization/%s/plan" org-name)
+                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
+       (if-not (= :success (:status (utils/inspect api-result)))
+         (put! errors-ch [:api-error api-result])
+         (let [plan-api-result (<! (utils/inspect (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name))))]
+           (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org org-name
+                                                                            :subpage "plan"})
+                                     :replace-token? true}])))
+       (release-button! uuid (:status api-result))))))
+
 
 
 (defmethod control-event :home-technology-tab-selected

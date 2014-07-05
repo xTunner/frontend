@@ -460,7 +460,8 @@
         (let [card (get-in app state/stripe-card-path)
               controls-ch (om/get-shared owner [:comms :controls])]
           (if-not (and card checkout-loaded?)
-            [:div.loading-spinner common/spinner]
+            [:div.card.row-fluid [:legend.span8 "Card on file"]
+             [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
             [:div
               [:div.card.row-fluid [:legend.span8 "Card on file"]]
               [:div.row-fluid
@@ -504,7 +505,9 @@
               b-name (:billing_name plan-data)
               b-extra (:extra_billing_data plan-data)]
           (if-not plan-data
-            [:div.loading-spinner common/spinner]
+            [:div.invoice-data.row-fluid
+             [:legend.span8 "Invoice data"]
+             [:div.row-fluid [:div.span8 [:div.loading-spinner common/spinner]]]]
             [:div.invoice-data.row-fluid
              [:fieldset
               [:legend.span8 "Invoice data"]
@@ -630,7 +633,10 @@
         (let [account-balance (get-in app state/org-plan-balance-path)
               invoices (get-in app state/org-invoices-path)]
           (if-not (and account-balance invoices)
-            [:div.loading-spinner common/spinner]
+            [:div.row-fluid
+             [:div.span8
+               [:legend "Invoices"]
+              [:div.loading-spinner common/spinner]]]
             [:div.row-fluid
              [:div.span8
                [:legend "Invoices"]
@@ -667,6 +673,67 @@
           (om/build billing-invoice-data app)
           (om/build billing-invoices app)]))))
 
+(defn cancel [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            org-name (get-in app state/org-name-path)]
+        (html
+         [:div.org-cancel
+          [:div.row-fluid [:fieldset [:legend "Cancel"]]]
+          [:div.row-fluid
+           [:h3
+            {:data-bind "attr: {alt: cancelFormErrorText}"}
+            "Please tell us why you're canceling. This helps us make Circle better!"]
+           [:form
+            (for [reason [{:value "project-ended", :text "Project Ended"},
+                          {:value "slow-performance", :text "Slow Performance"},
+                          {:value "unreliable-performance", :text "Unreliable Performance"},
+                          {:value "too-expensive", :text "Too Expensive"},
+                          {:value "didnt-work", :text "Couldn't Make it Work"},
+                          {:value "missing-feature", :text "Missing Feature"},
+                          {:value "poor-support", :text "Poor Support"},
+                          {:value "other", :text "Other"}]]
+              [:label.cancel-reason
+               [:input
+                {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
+                 :on-change #(utils/toggle-input controls-ch (state/selected-cancel-reason-path (:value reason)) %)
+                 :type "checkbox"}]
+               (:text reason)])
+            [:textarea
+             {:required true
+              :value (get-in app state/cancel-notes-path)
+              :on-change #(utils/edit-input controls-ch state/cancel-notes-path %)}]
+            [:label
+             {:placeholder "Thanks for the feedback!",
+              :alt (if (get app (state/selected-cancel-reason-path "other"))
+                     "Would you mind elaborating more?"
+                     "Have any other thoughts?")}]
+            (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
+                                                    (filter second)
+                                                    keys
+                                                    set)
+                  notes (get-in app state/cancel-notes-path)
+                  errors (cond (empty? reasons) "Please select at least one reason."
+                               (and (contains? reasons "other") (string/blank? notes)) "Please specify above."
+                               :else nil)]
+              ;; This is a bit of a hack -- it could be much nicer if managed button exposed more of its interface
+              ;; or accepted hooks
+              (if errors
+                (list
+                 (when (om/get-state owner [:show-errors?])
+                   [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
+                 [:button {:on-click #(do (om/set-state! owner [:show-errors?] true) false)}
+                  "Cancel Plan"])
+                (forms/managed-button
+                 [:button {:data-spinner "true"
+                           :on-click #(do (put! controls-ch [:cancel-plan-clicked {:org-name org-name
+                                                                                   :cancel-reasons reasons
+                                                                                   :cancel-notes notes}])
+                                          false)}
+                  "Cancel Plan"])))]]])))))
+
 (def main-component
   {:users users
    :projects projects
@@ -674,16 +741,36 @@
    :containers containers
    :organizations organizations
    :billing billing
-   ;; :cancel cancel
-   })
+   :cancel cancel})
+
+(defn determine-subpage
+  "Determines which subpage we should show the user. If they have
+   a plan, then we don't want to show them the plan page; if they
+   don't have a plan, then we don't want to show them the invoices page."
+  [subpage plan org-name]
+  (cond (#{:users :projects} subpage)
+        subpage
+
+        (and plan
+             (plan-model/can-edit-plan? plan org-name)
+             (= subpage :plan))
+        :containers
+
+        (and plan
+             (not (plan-model/can-edit-plan? plan org-name))
+             (#{:containers :organizations :billing :cancel} subpage))
+        :plan
+
+        :else subpage))
 
 (defn org-settings [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [subpage (get app :org-settings-subpage)
+      (let [requested-subpage (get app :org-settings-subpage :projects)
             org-data (get-in app state/org-data-path)
-            plan (get-in app state/org-plan-path)]
+            plan (get-in app state/org-plan-path)
+            subpage (determine-subpage requested-subpage plan (:name org-data))]
         (html [:div.container-fluid.org-page
                (if-not (:name org-data)
                  [:div.loading-spinner common/spinner]

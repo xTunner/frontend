@@ -1,7 +1,7 @@
 (ns frontend.stripe
   (:require [frontend.async :refer [put!]]
             [frontend.env :as env]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [goog.net.jsloader]))
 
 ;; We may want to add StripeCheckout to externs to avoid all of the aget noise.
