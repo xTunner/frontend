@@ -223,7 +223,7 @@
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (:project-settings-project-name state))
+  (if-not (= (:project-name context) (str (get-in state [:navigation-data :org]) "/" (get-in state [:navigation-data :repo])))
     state
     (update-in state state/project-path merge resp)))
 
