@@ -100,10 +100,10 @@
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               comms (get-in current-state [:comms])]
-          (condp = (inspect (:status api-resp))
-            :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
-            404 (put! (:nav comms) [:error {:status 404 :inner? false}])
-            (put! (:errors comms) [:api-error api-resp]))))
+          (cond
+           (= :success (:status api-resp)) (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
+           (= 404 (:status-code api-resp)) (put! (:nav comms) [:error {:status 404 :inner? false}])
+           :else (put! (:errors comms) [:api-error api-resp]))))
     (when (:repo args)
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
