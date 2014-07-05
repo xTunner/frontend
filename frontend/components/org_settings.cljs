@@ -375,7 +375,7 @@
                     "We'll credit your account, for the prorated difference between your new and old plans."])]]]]
              plans-component/pricing-faq]]))))))
 
-(defn organizations [app owner]
+(defn piggyback-organizations [app owner]
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
@@ -384,8 +384,8 @@
           plan (get-in app state/org-plan-path)
           elligible-piggyback-orgs (-> (map :login user-orgs)
                                        (set)
-                                       (disj org-name)
                                        (conj user-login)
+                                       (disj org-name)
                                        (sort))
           ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
           ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
@@ -431,9 +431,76 @@
                   :type "submit",
                   :on-click #(do (put! controls-ch [:save-piggyback-orgs-clicked {:org-name org-name
                                                                                   :selected-piggyback-orgs selected-piggyback-orgs}])
-                                 false)
-                  :data-bind "click: saveOrganizations"}
+                                 false)}
                  "Also pay for these organizations"])]]]])]]]))))
+
+(defn transfer-organizations [app owner]
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          user-login (:login (get-in app state/user-path))
+          user-orgs (get-in app state/user-organizations-path)
+          elligible-transfer-orgs (-> (map :login user-orgs)
+                                      (set)
+                                      (conj user-login)
+                                      (disj org-name)
+                                      (sort))
+          plan (get-in app state/org-plan-path)
+          selected-transfer-org (get-in app state/selected-transfer-org-path)
+          controls-ch (om/get-shared owner [:comms :controls])]
+      [:div.row-fluid
+       [:div.span8
+        [:fieldset
+         [:legend "Transfer plan to a different organization"]
+         [:div.alert.alert-warning
+          [:strong "Warning!"]
+          [:p "If you're not an admin on the "
+           (if (seq selected-transfer-org)
+             (str selected-transfer-org " organization,")
+             "organization you transfer to,")
+           " then you won't be able to transfer the plan back or edit the plan."]
+          [:p
+           "The transferred plan will be extended to include the "
+           org-name " organization, so your builds will continue to run. Only admins of the "
+           (if (seq selected-transfer-org)
+             (str selected-transfer-org " org")
+             "organization you transfer to")
+           " will be able to edit the plan."]]
+         (if-not user-orgs
+           [:div "Loading organization list..."]
+           [:div.row-fluid
+            [:div.span12
+             [:div
+              [:form
+               [:div.controls
+                (for [org elligible-transfer-orgs]
+                  [:div.control
+                   [:label.radio {:name org}
+                    [:input {:value org
+                             :checked (= org selected-transfer-org)
+                             :on-change #(utils/edit-input controls-ch state/selected-transfer-org-path %)
+                             :type "radio"}]
+                    org]])]
+               [:div.form-actions.span6
+                (forms/managed-button
+                 [:button.btn.btn-danger.btn-large
+                  {:data-success-text "Transferred",
+                   :data-loading-text "Tranferring...",
+                   :type "submit",
+                   :class (when (empty? selected-transfer-org) "disabled")
+                   :on-click #(do (put! controls-ch [:transfer-plan-clicked {:org-name org-name
+                                                                             :to selected-transfer-org}])
+                                  false)
+                   :data-bind
+                   "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
+                  "Transfer plan" (when (seq selected-transfer-org) (str " to " selected-transfer-org))])]]]]])]]]))))
+
+(defn organizations [app owner]
+  (om/component
+   (html
+    [:div
+     (om/build piggyback-organizations app)
+     (om/build transfer-organizations app)])))
 
 (defn- billing-card [app owner]
   (reify

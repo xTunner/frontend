@@ -129,6 +129,7 @@
 (def selected-containers-path (conj org-data-path :selected-containers))
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
+(def selected-transfer-org-path (conj org-data-path :selected-transfer-org))
 (def org-invoices-path (conj org-data-path :invoices))
 (def selected-cancel-reasons-path (conj org-data-path :selected-cancel-reasons))
 ;; Map of reason to boolean (selected or not selected)
