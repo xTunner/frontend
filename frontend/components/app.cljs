@@ -22,6 +22,7 @@
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
+            [frontend.components.shared :as shared]
             [frontend.components.stories :as stories]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
@@ -79,7 +80,8 @@
               persist-state! #(put! controls-ch [:state-persisted])
               restore-state! #(put! controls-ch [:state-restored])
               dom-com (dominant-component app)
-              show-inspector? (get-in app state/show-inspector-path)]
+              show-inspector? (get-in app state/show-inspector-path)
+              logged-in? (get-in app state/user-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -100,4 +102,6 @@
                [:div.main-body
                 (om/build dom-com app)]
                [:footer.main-foot
-                (footer/footer)]]])))))))
+                (footer/footer)]
+               (when-not logged-in?
+                 (om/build shared/sticky-help-link app))]])))))))

@@ -1,10 +1,12 @@
 (ns frontend.components.shared
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [dommy.attrs :as attrs]
             [frontend.async :refer [put!]]
             [frontend.stefon :refer (data-uri)]
             [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [goog.style]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -188,3 +190,17 @@
                                                              (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."})))))))
                                                false)}
            (if loading? "Sending..." "Send")]])))))
+
+(defn sticky-help-link [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div#sticky-help-link {:class (when (om/get-state owner [:is-open?]) "isOpen")}
+        [:div.dark-background {:on-click #(do (om/update-state! owner [:is-open?] not)
+                                              ;; Don't let the notice change the width :(
+                                              (goog.style/setWidth (om/get-node owner) (.-width (goog.style/getSize (om/get-node owner)))))}
+         "Need Help? Contact us!"]
+        [:div.light-background
+         (om/build contact-form app)
+         [:span "Or, check out our " [:a {:target "_blank", :href "https://www.hipchat.com/gjwkHcrD5"} "live support!"]]]]))))
