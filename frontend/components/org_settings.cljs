@@ -460,7 +460,8 @@
         (let [card (get-in app state/stripe-card-path)
               controls-ch (om/get-shared owner [:comms :controls])]
           (if-not (and card checkout-loaded?)
-            [:div.loading-spinner common/spinner]
+            [:div.card.row-fluid [:legend.span8 "Card on file"]
+             [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
             [:div
               [:div.card.row-fluid [:legend.span8 "Card on file"]]
               [:div.row-fluid
@@ -504,7 +505,9 @@
               b-name (:billing_name plan-data)
               b-extra (:extra_billing_data plan-data)]
           (if-not plan-data
-            [:div.loading-spinner common/spinner]
+            [:div.invoice-data.row-fluid
+             [:legend.span8 "Invoice data"]
+             [:div.row-fluid [:div.span8 [:div.loading-spinner common/spinner]]]]
             [:div.invoice-data.row-fluid
              [:fieldset
               [:legend.span8 "Invoice data"]
@@ -630,7 +633,10 @@
         (let [account-balance (get-in app state/org-plan-balance-path)
               invoices (get-in app state/org-invoices-path)]
           (if-not (and account-balance invoices)
-            [:div.loading-spinner common/spinner]
+            [:div.row-fluid
+             [:div.span8
+               [:legend "Invoices"]
+              [:div.loading-spinner common/spinner]]]
             [:div.row-fluid
              [:div.span8
                [:legend "Invoices"]
