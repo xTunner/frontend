@@ -130,6 +130,10 @@
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
 (def org-invoices-path (conj org-data-path :invoices))
+(def selected-cancel-reasons-path (conj org-data-path :selected-cancel-reasons))
+;; Map of reason to boolean (selected or not selected)
+(defn selected-cancel-reason-path [reason] (conj selected-cancel-reasons-path reason))
+(def cancel-notes-path (conj org-data-path :cancel-notes))
 
 (def settings-path [:settings])
 

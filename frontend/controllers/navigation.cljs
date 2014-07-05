@@ -298,7 +298,8 @@
                             (gstring/format "/api/v1/organization/%s/invoices" org)
                             :plan-invoices
                             api-ch
-                            :context {:org-name org}))))
+                            :context {:org-name org}))
+      nil))
   (set-page-title! (str "Org settings - " org)))
 
 

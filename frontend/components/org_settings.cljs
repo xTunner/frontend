@@ -667,6 +667,67 @@
           (om/build billing-invoice-data app)
           (om/build billing-invoices app)]))))
 
+(defn cancel [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            org-name (get-in app state/org-name-path)]
+        (html
+         [:div.org-cancel
+          [:div.row-fluid [:fieldset [:legend "Cancel"]]]
+          [:div.row-fluid
+           [:h3
+            {:data-bind "attr: {alt: cancelFormErrorText}"}
+            "Please tell us why you're canceling. This helps us make Circle better!"]
+           [:form
+            (for [reason [{:value "project-ended", :text "Project Ended"},
+                          {:value "slow-performance", :text "Slow Performance"},
+                          {:value "unreliable-performance", :text "Unreliable Performance"},
+                          {:value "too-expensive", :text "Too Expensive"},
+                          {:value "didnt-work", :text "Couldn't Make it Work"},
+                          {:value "missing-feature", :text "Missing Feature"},
+                          {:value "poor-support", :text "Poor Support"},
+                          {:value "other", :text "Other"}]]
+              [:label.cancel-reason
+               [:input
+                {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
+                 :on-change #(utils/toggle-input controls-ch (state/selected-cancel-reason-path (:value reason)) %)
+                 :type "checkbox"}]
+               (:text reason)])
+            [:textarea
+             {:required true
+              :value (get-in app state/cancel-notes-path)
+              :on-change #(utils/edit-input controls-ch state/cancel-notes-path %)}]
+            [:label
+             {:placeholder "Thanks for the feedback!",
+              :alt (if (get app (state/selected-cancel-reason-path "other"))
+                     "Would you mind elaborating more?"
+                     "Have any other thoughts?")}]
+            (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
+                                                    (filter second)
+                                                    keys
+                                                    set)
+                  notes (get-in app state/cancel-notes-path)
+                  errors (cond (empty? reasons) "Please select at least one reason."
+                               (and (contains? reasons "other") (string/blank? notes)) "Please specify above."
+                               :else nil)]
+              ;; This is a bit of a hack -- it could be much nicer if managed button exposed more of its interface
+              ;; or accepted hooks
+              (if errors
+                (list
+                 (when (om/get-state owner [:show-errors?])
+                   [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
+                 [:button {:on-click #(do (om/set-state! owner [:show-errors?] true) false)}
+                  "Cancel Plan"])
+                (forms/managed-button
+                 [:button {:data-spinner "true"
+                           :on-click #(do (put! controls-ch [:cancel-plan-clicked {:org-name org-name
+                                                                                   :cancel-reasons reasons
+                                                                                   :cancel-notes notes}])
+                                          false)}
+                  "Cancel Plan"])))]]])))))
+
 (def main-component
   {:users users
    :projects projects
@@ -674,8 +735,7 @@
    :containers containers
    :organizations organizations
    :billing billing
-   ;; :cancel cancel
-   })
+   :cancel cancel})
 
 (defn org-settings [app owner]
   (reify
