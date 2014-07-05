@@ -109,6 +109,11 @@
                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
                  :project-settings
                  api-ch
+                 :context {:project-name (str (:org args) "/" (:repo args))})
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
+                 :project-plan
+                 api-ch
                  :context {:project-name (str (:org args) "/" (:repo args))})))
   (set-page-title!))
 
