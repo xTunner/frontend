@@ -24,7 +24,10 @@
                     checkout-args
                     ;; XXX: check what happens on failure
                     {:token #(put! channel [:stripe-checkout-succeeded (utils/js->clj-kw %)])
-                     :closed #(put! channel [:stripe-checkout-closed])})]
+                     ;; XXX: remove this when Stripe gets back to us about `close` being fired when the
+                     ;;      form is submitted. Or come up with a workaround if they don't fix it.
+                     ;;:closed #(put! channel [:stripe-checkout-closed])
+                     })]
     ((aget checkout "open") (clj->js args))))
 
 (defn checkout-loaded?
