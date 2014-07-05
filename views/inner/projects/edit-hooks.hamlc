@@ -13,7 +13,7 @@
       %section
         %input#hipchat-room{data-bind: "value: hipchat_room", type: "text", required: ""}
         %label{placeholder: "Room"}
-        %input#hipchat-token{data-bind: "value: hipchat_api_token", type: "text", required: ""}
+        %input#hipchat-api-token{data-bind: "value: hipchat_api_token", type: "text", required: ""}
         %label{placeholder: "API"}
     .chat-room-foot
       %label{for: "hipchat-notify-prefs"}
@@ -92,7 +92,7 @@
           %strong Settings > Integrations > CircleCI
           from within your Hall Group.
       %section
-        %input#hall-token{data-bind: "value: hall_room_api_token", type: "text", required: ""}
+        %input#hall-room-api-token{data-bind: "value: hall_room_api_token", type: "text", required: ""}
         %label{placeholder: "API"}
     .chat-room-foot
       %label{for: "hall-notify-prefs"}
