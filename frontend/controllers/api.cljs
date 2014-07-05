@@ -422,7 +422,6 @@
 
 (defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
-  (gaq/track "Repos" "Add")
   (if-let [first-build (get-in args [:resp :first_build])]
     (let [nav-ch (get-in current-state [:comms :nav])
           build-path (-> first-build
@@ -435,7 +434,8 @@
       (ajax/ajax :post
                  (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
                  :start-build
-                 (get-in current-state [:comms :api])))))
+                 (get-in current-state [:comms :api]))))
+  (gaq/track-event "Repos" "Add"))
 
 
 (defmethod api-event [:unfollow-repo :success]
