@@ -98,8 +98,7 @@
     (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
       (-> state
           (build-model/fill-containers container-index action-index)
-          (update-in (state/action-path container-index action-index) merge action-log)
-          (update-in (state/action-path container-index action-index) action-model/format-latest-output)))))
+          (update-in (state/action-path container-index action-index) merge action-log)))))
 
 
 (defmethod ws-event :build/append-action
