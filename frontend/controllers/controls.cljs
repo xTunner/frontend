@@ -570,6 +570,17 @@
              :context {:project-name project-name
                        :project-id project-id}))
 
+(defmethod post-control-event! :extend-trial-clicked
+  [target message {:keys [org-name]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go (let [api-result (<! (ajax/managed-ajax
+                              :post
+                              (gstring/format "/api/v1/organization/%s/extend-trial" org-name)
+                              :params {:org-name org-name}))]
+          (put! api-ch [:org-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+          (release-button! uuid (:status api-result))))))
+
 
 (defmethod post-control-event! :new-plan-clicked
   [target message {:keys [containers price description base-template-id]} previous-state current-state]

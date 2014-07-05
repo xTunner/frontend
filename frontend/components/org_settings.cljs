@@ -227,7 +227,7 @@
         [:button.btn.btn-mini.btn-success
          {:data-success-text "Extended!",
           :data-loading-text "Extending...",
-          :on-click #(put! controls-ch [:extend-trial {:org-name org-name}])}
+          :on-click #(put! controls-ch [:extend-trial-clicked {:org-name org-name}])}
          "Extend your trial"])])]])
 
 (defn plans-piggieback-plan-notification [plan current-org-name]
