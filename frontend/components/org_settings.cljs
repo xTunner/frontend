@@ -737,13 +737,34 @@
    :billing billing
    :cancel cancel})
 
+(defn determine-subpage
+  "Determines which subpage we should show the user. If they have
+   a plan, then we don't want to show them the plan page; if they
+   don't have a plan, then we don't want to show them the invoices page."
+  [subpage plan org-name]
+  (cond (#{:users :projects} subpage)
+        subpage
+
+        (and plan
+             (plan-model/can-edit-plan? plan org-name)
+             (= subpage :plan))
+        :containers
+
+        (and plan
+             (not (plan-model/can-edit-plan? plan org-name))
+             (#{:containers :organizations :billing :cancel} subpage))
+        :plan
+
+        :else subpage))
+
 (defn org-settings [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [subpage (get app :org-settings-subpage)
+      (let [requested-subpage (get app :org-settings-subpage :projects)
             org-data (get-in app state/org-data-path)
-            plan (get-in app state/org-plan-path)]
+            plan (get-in app state/org-plan-path)
+            subpage (determine-subpage requested-subpage plan (:name org-data))]
         (html [:div.container-fluid.org-page
                (if-not (:name org-data)
                  [:div.loading-spinner common/spinner]
