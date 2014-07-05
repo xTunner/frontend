@@ -69,7 +69,7 @@
     om/IDisplayName (display-name [_] "Aside Project Activity")
     om/IRender
     (render [_]
-      (let [login {:login opts}
+      (let [login (:login opts)
             project (:project data)
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
