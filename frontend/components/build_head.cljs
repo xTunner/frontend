@@ -27,15 +27,15 @@
         (html
          (if-not builds
            [:div.loading-spinner common/spinner]
-           [:div
+           [:div.build-queue.active
             (when-not usage-queued?
-              [:p (str "Circle "
-                       (when run-queued? "has") " spent "
-                       (om/build common/updating-duration {:start (:queued_at build)
-                                                           :stop (or (:start_time build) (:stop_time build))})
-                       " acquiring containers for this build")])
+              [:p "Circle " (when run-queued? "has") " spent "
+               (om/build common/updating-duration {:start (:queued_at build)
+                                                   :stop (or (:start_time build) (:stop_time build))})
+               " acquiring containers for this build."])
             (when (< 10000 (build-model/run-queued-time build))
-              [:p "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
+              [:p#circle_queued_explanation
+               "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
 
             (when (seq builds)
               (list
@@ -45,7 +45,9 @@
                                                     :stop (or (:queued_at build) (:stop_time build))})]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
-            (when (and plan (< 10000 (build-model/usage-queued-time build)))
+            (when (and plan
+                       (< 10000 (build-model/usage-queued-time build))
+                       (> 10000 (build-model/run-queued-time build)))
               [:p#additional_containers_offer
                "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                                                         :subpage "containers"})}
