@@ -430,7 +430,7 @@
                          (goog.Uri.)
                          (.getPath)
                          (subs 1))]
-      (put! nav-ch [:navigate! build-path]))
+      (put! nav-ch [:navigate! {:path build-path}]))
     (when (repo-model/should-do-first-follower-build? (:context args))
       (ajax/ajax :post
                  (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
@@ -450,14 +450,14 @@
   [target message status args previous-state current-state]
   (let [nav-ch (get-in current-state [:comms :nav])
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
-    (put! nav-ch [:navigate! build-url])))
+    (put! nav-ch [:navigate! {:path build-url}])))
 
 
 (defmethod post-api-event! [:retry-build :success]
   [target message status args previous-state current-state]
   (let [nav-ch (get-in current-state [:comms :nav])
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
-    (put! nav-ch [:navigate! build-url])))
+    (put! nav-ch [:navigate! {:path build-url}])))
 
 
 (defmethod post-api-event! [:save-dependencies-commands :success]
@@ -468,9 +468,9 @@
     (let [nav-ch (get-in current-state [:comms :nav])
           org (vcs-url/org-name (:project-id context))
           repo (vcs-url/repo-name (:project-id context))]
-      (put! nav-ch [:navigate! (routes/v1-project-settings-subpage {:org org
-                                                                    :repo repo
-                                                                    :subpage "tests"})]))))
+      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-subpage {:org org
+                                                                           :repo repo
+                                                                           :subpage "tests"})}]))))
 
 
 (defmethod post-api-event! [:save-test-commands-and-build :success]
@@ -500,8 +500,9 @@
   (adroll/record-payer)
   (when (= (:org-name context) (:org-settings-org-name current-state))
     (let [nav-ch (get-in current-state [:comms :nav])]
-      (put! nav-ch [:navigate! (routes/v1-org-settings-subpage {:org (:org-name context)
-                                                                :subpage "containers"})]))))
+      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org (:org-name context)
+                                                                       :subpage "containers"})
+                                :replace-token? true}]))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]

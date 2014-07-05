@@ -72,11 +72,13 @@
   (scroll! args))
 
 (defmethod post-navigated-to! :navigate!
-  [history-imp navigation-point path previous-state current-state]
+  [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
   (let [path (if (= \/ (first path))
                (subs path 1)
                path)]
-    (.setToken history-imp path)))
+    (if replace-token? ;; Don't break the back button if we want to redirect someone
+      (.replaceToken history-imp path)
+      (.setToken history-imp path))))
 
 
 (defmethod navigated-to :dashboard
