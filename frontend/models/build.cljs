@@ -150,7 +150,7 @@
 
 
 (defn display-build-invite [build]
-  (:first_green_build build))
+  (:is_first_green_build build))
 
 (defn config-errors? [build]
   (:circle_yml build))
