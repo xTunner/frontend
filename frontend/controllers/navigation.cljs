@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
+            [frontend.components.documentation :as docs]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
@@ -195,7 +196,11 @@
   [history-imp to args state]
   (assoc state
     :navigation-point :documentation-root
-    :navigationo-data args))
+    :navigation-data args))
+
+(defmethod post-navigated-to! :documentation-root
+  [history-imp navigation-point args previous-state current-state]
+  (set-page-title! "What can we help you with?"))
 
 (defmethod navigated-to :documentation-page
   [history-imp to args state]
@@ -203,6 +208,12 @@
     :navigation-point :documentation-page
     :navigation-data args
     :current-documentation-page (:page args)))
+
+(defmethod post-navigated-to! :documentation-page
+  [history-imp navigation-point args previous-state current-state]
+  (let [page-ref (keyword (:page args))
+        page-article (get docs/documentation-pages page-ref)]
+    (set-page-title! (:title page-article))))
 
 ;; XXX: find a better place for all of the ajax functions, maybe a separate api
 ;;      namespace that knows about all of the api routes?
