@@ -242,7 +242,10 @@
     (def debug-state state)
     (browser-settings/setup! state)
     (main state (sel1 :body))
-    (dispatch-to-current-location!)
+    (if-let [error-status (get-in @state [:render-context :status])]
+      ;; error codes from the server get passed as :status in the render-context
+      (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
+      (dispatch-to-current-location!))
     (handle-browser-resize state)
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws])))
