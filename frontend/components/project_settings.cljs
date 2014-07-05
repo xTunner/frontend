@@ -507,7 +507,7 @@
         [:label {:placeholder placeholder}]))]]
    [:div.chat-room-foot
     (when show-fixed-failed?
-      (om/build fixed-failed-input {:project project :field :hipchat_notify_prefs}))]])
+      (om/build fixed-failed-input {:project project :field (keyword (str (string/lower-case service) "_notify_prefs"))}))]])
 
 (defn chatrooms [project-data owner]
   (reify
