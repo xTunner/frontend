@@ -772,3 +772,20 @@
 (defmethod post-control-event! :enterprise-learn-more-clicked
   [target message {:keys [source]} previous-state current-state]
   (utils/open-modal "#enterpriseModal"))
+
+(defmethod control-event :project-feature-flag-checked
+  [target message {:keys [project-id project-name flag value]} state]
+  (assoc-in state (conj state/project-path :feature_flags flag) value))
+
+(defmethod post-control-event! :project-feature-flag-checked
+  [target message {:keys [project-id project-name flag value]} previous-state current-state]
+  (let [comms (get-in current-state [:comms])]
+    (go (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name)
+                                                :params {:feature_flags {flag value}}))]
+          (when (not= :success (:status api-result))
+            (put! (:errors comms) [:api-error api-result]))
+          (api/get-project-settings project-name (:api comms))))))
+
+(defmethod post-control-event! :project-experiments-feedback-clicked
+  [target message _ previous-state current-state]
+  (intercom/raise-dialog (get-in current-state [:comms :errors])))

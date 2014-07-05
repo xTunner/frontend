@@ -11,6 +11,7 @@
             [frontend.components.forms :as forms]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -27,6 +28,7 @@
    [:li.side-title "Tweaks"]
    [:li [:a {:href "#parallel-builds"} "Parallelism"]]
    [:li [:a {:href "#env-vars"} "Environment variables"]]
+   [:li [:a {:href "#experimental"} "Experimental Settings"]]
    [:li.side-title "Test Commands"]
    [:li [:a {:href "#setup"} "Dependencies"]]
    [:li [:a {:href "#tests"} "Tests"]]
@@ -300,6 +302,83 @@
                                                                      :env-var-name name}])}
                     [:i.fa.fa-times-circle]
                     [:span " Remove"]]]])]])]])))))
+
+(defn experiments [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            project-id (project-model/id project)
+            project-name (vcs-url/project-name (:vcs_url project))
+            controls-ch (om/get-shared owner [:comms :controls])
+            ;; This project's feature flags
+            feature-flags (:feature_flags project)
+            describe-flag (fn [{:keys [flag title blurb]}]
+                            (when (contains? (set (keys feature-flags)) flag)
+                              [:li
+                               [:h4 title]
+                               [:p blurb]
+                               [:form
+                                [:ul
+                                 [:li
+                                  [:label
+                                   [:input.radio
+                                    {:type "checkbox"
+                                     :checked (get feature-flags flag)
+                                     :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
+                                                                                                   :project-name project-name
+                                                                                                   :flag flag
+                                                                                                   :value true}])}]
+                                   " On"]]
+                                 [:li
+                                  [:label
+                                   [:input.radio
+                                    {:type "checkbox"
+                                     :checked (not (get feature-flags flag))
+                                     :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
+                                                                                                   :project-name project-name
+                                                                                                   :flag flag
+                                                                                                   :value false}])}]
+                                   " Off"]]]]]))]
+        (html
+         [:div.project-settings-block
+          [:h2 "Experimental Settings"]
+          [:p
+           " We've got a few settings you can play with, to enable things we're working on. We'd love to "
+           [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
+            "know what you think about them"]
+           " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
+          [:ul
+           (describe-flag {:flag :build_GH1157_container_oriented_ui
+                           :title "Container-Oriented Build Page"
+                           :blurb [:p
+                                   "We're looking at optimizing our build page for builds with large "
+                                   "numbers of containers. With this option set, the build actions "
+                                   "are separated into tabbed subpages corresponding to each container. "
+                                   "Note that this will only apply to builds run while this setting is "
+                                   "enabled -- it won't change old build pages."
+                                   [:p [:img {:width 600 :src (stefon/asset-path "/img/container-oriented.png")}]]]})
+           (describe-flag {:flag :junit
+                           :title "JUnit Support"
+                           :blurb [:p
+                                   "We've been experimenting with better ways to display and manage "
+                                   "test result data, especially for large test suites. This adds flags "
+                                   "to some of our inferred commands, and collects data supplied by JUnit and "
+                                   "JUnit-compatabile test runners. It only works for a handful of test "
+                                   "runners for now, and the data is only available through our API, though!"]})
+           (describe-flag {:flag :set-github-status
+                           :title "GitHub Status Updates"
+                           :blurb [:p
+                                   "By default, we update the status of every pushed commit with "
+                                   "GitHub's status API. If you'd like to turn this off (if, for example, "
+                                   "this is conflicting with another service), you can do so below."]})
+           (describe-flag {:flag :oss
+                           :title "Free and Open Source"
+                           :blurb [:p
+                                   "Be part of our F/OSS beta! Organizations now have a free container "
+                                   "reserved for F/OSS projects; enabling this will allow this project's "
+                                   "builds to use it and let others see your builds, both through the "
+                                   "web UI and the API."]})]])))))
 
 (defn dependencies [project-data owner]
   (reify
@@ -926,6 +1005,7 @@
               (condp = subpage
                 :parallel-builds (om/build parallel-builds project-data)
                 :env-vars (om/build env-vars project-data)
+                :experimental (om/build experiments project-data)
                 :setup (om/build dependencies project-data)
                 :tests (om/build tests project-data)
                 :hooks (om/build chatrooms project-data)

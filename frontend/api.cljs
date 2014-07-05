@@ -50,3 +50,6 @@
                :action-log
                api-ch
                :context args)))
+
+(defn get-project-settings [project-name api-ch]
+  (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
