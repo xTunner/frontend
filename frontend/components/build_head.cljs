@@ -200,7 +200,8 @@
                       [:a {:href (str "mailto:" (:author_email build))}
                        (build-model/author build)])]
                [:th "Started"]
-               [:td (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
+               [:td (when (:start_time build)
+                      (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago")]]
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
