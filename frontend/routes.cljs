@@ -56,6 +56,14 @@
 
 
 (defn define-user-routes! [nav-ch authenticated?]
+  (defroute v1-org-settings "/gh/organizations/:org/settings"
+    [org]
+    (open-to-inner! nav-ch :org-settings {:org org :subpage nil}))
+  (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
+    [org subpage]
+    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
+  (defroute v1-org-dashboard-alternative "/gh/organizations/:org" {:as params}
+    (open-to-inner! nav-ch :dashboard params))
   (defroute v1-org-dashboard "/gh/:org" {:as params}
     (open-to-inner! nav-ch :dashboard params))
   (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
@@ -80,12 +88,6 @@
                                               :subpage (keyword subpage)
                                               :org org
                                               :repo repo}))
-  (defroute v1-org-settings "/gh/organizations/:org/settings"
-    [org]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage nil}))
-  (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
-    [org subpage]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
   (defroute v1-account "/account" []
