@@ -33,10 +33,12 @@
          [:div#dashboard
           [:section
            (cond (nil? builds) [:div.loading-spinner common/spinner]
-                 (and (empty? builds) (empty? projects)) [:div
-                                                          [:h2 "You don't have any projects in CircleCI!"]
-                                                          [:p "Why don't you add a repository or two on the "
-                                                           [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
+                 (and (empty? builds)
+                      projects
+                      (empty? projects)) [:div
+                                          [:h2 "You don't have any projects in CircleCI!"]
+                                          [:p "Why don't you add a repository or two on the "
+                                           [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
                  :else
                  (list
                   (when (and plan (show-trial-notice? plan))
