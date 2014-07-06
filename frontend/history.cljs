@@ -7,6 +7,7 @@
             [secretary.core :as sec])
   (:require-macros [dommy.macros :refer [sel sel1]])
   (:import [goog.history Html5History]
+           [goog.events EventType Event]
            [goog History]))
 
 
@@ -39,6 +40,14 @@
    manually dispatch if there is no error code from the server."
   [history-imp]
   (events/listenOnce history-imp goog.history.EventType.NAVIGATE #(setup-dispatcher! history-imp)))
+
+(defn disable-popstate!
+  "Stops the browser's popstate from triggering NAVIGATION events.
+   We don't ever use it and it causes double dispatching."
+  [history-imp]
+  ;; get this history instance's version of window, might make for easier testing later
+  (let [window (.-window_ history-imp)]
+    (events/removeAll window goog.events.EventType.POPSTATE)))
 
 
 (defn route-fragment
@@ -88,6 +97,7 @@
     (.setUseFragment false)
     (.setPathPrefix "/")
     (bootstrap-dispatcher!)
+    (disable-popstate!)
     ;; This will fire a navigate event with the current token
     (.setEnabled true)
     (setup-link-dispatcher! top-level-node)))
