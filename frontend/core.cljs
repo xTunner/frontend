@@ -162,12 +162,12 @@
     (js/setInterval #(reset! mya (time/now)) 1000)
     mya))
 
-(defn main [state top-level-node]
+(defn main [state top-level-node starting-location]
   (let [comms       (:comms @state)
         container   (sel1 top-level-node "#om-app")
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
-        history-imp (history/new-history-imp top-level-node)
+        history-imp (history/new-history-imp top-level-node starting-location)
         pusher-imp (pusher/new-pusher-instance)
         controls-tap (chan)
         nav-tap (chan)
@@ -209,14 +209,13 @@
   ;; https://github.com/cemerick/austin/issues/49
   (js/setInterval #(enable-console-print!) 1000))
 
-(defn dispatch-to-current-location! []
+(defn current-location []
   (let [uri (goog.Uri. js/document.location.href)]
-    (sec/dispatch! (str (.getPath uri)
-                        (when-not (string/blank? (.getQuery uri))
-                          (str "?" (.getQuery uri)))
-                        (when-not (string/blank? (.getFragment uri))
-                          (str "#" (.getFragment uri)))))))
-
+    (str (.getPath uri)
+         (when-not (string/blank? (.getQuery uri))
+           (str "?" (.getQuery uri)))
+         (when-not (string/blank? (.getFragment uri))
+           (str "#" (.getFragment uri))))))
 
 ;; XXX this should go in IDidMount on the build container, also doesn't work
 ;;     if the user goes to a build page from a different page
@@ -237,15 +236,16 @@
 
 (defn ^:export setup! []
   (apply-app-id-hack)
-  (let [state (app-state)]
+  (let [state (app-state)
+        starting-location (current-location)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (browser-settings/setup! state)
-    (main state (sel1 :body))
+    (main state (sel1 :body) starting-location)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
-      (dispatch-to-current-location!))
+      (sec/dispatch! starting-location))
     (handle-browser-resize state)
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws])))

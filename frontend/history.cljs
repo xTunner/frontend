@@ -70,7 +70,7 @@
                           (do (utils/mlog "navigating to" location)
                               (.setToken history-imp new-token))))))))
 
-(defn new-history-imp [top-level-node]
+(defn new-history-imp [top-level-node starting-location]
   ;; need a history element, or goog will overwrite the entire dom
   (let [dom-helper (goog.dom.DomHelper.)
         node (.createDom dom-helper "input" #js {:class "history hide"})]
@@ -78,6 +78,7 @@
   (doto (goog.history.Html5History. js/window token-transformer)
     (.setUseFragment false)
     (.setPathPrefix "/")
+    (.setToken (subs starting-location 1))
     (setup-dispatcher!)
     (setup-link-dispatcher! top-level-node)
     (.setEnabled true)))
