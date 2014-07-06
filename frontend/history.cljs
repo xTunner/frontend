@@ -32,6 +32,15 @@
   (events/listen history-imp goog.history.EventType.NAVIGATE
                  #(sec/dispatch! (str "/" (.-token %)))))
 
+(defn bootstrap-dispatcher!
+  "We need lots of control over when we start listening to navigation events because
+   we may want to ignore the first event if the server sends an error status code (e.g. 401)
+   This function lets us ignore the first event that history-imp fires when we enable it. We'll
+   manually dispatch if there is no error code from the server."
+  [history-imp]
+  (events/listenOnce history-imp goog.history.EventType.NAVIGATE #(setup-dispatcher! history-imp)))
+
+
 (defn route-fragment
   "Returns the route fragment if this is a route that we've don't dispatch
   on fragments for."
@@ -70,7 +79,7 @@
                           (do (utils/mlog "navigating to" location)
                               (.setToken history-imp new-token))))))))
 
-(defn new-history-imp [top-level-node starting-location]
+(defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
   (let [dom-helper (goog.dom.DomHelper.)
         node (.createDom dom-helper "input" #js {:class "history hide"})]
@@ -78,7 +87,7 @@
   (doto (goog.history.Html5History. js/window token-transformer)
     (.setUseFragment false)
     (.setPathPrefix "/")
-    (.setToken (subs starting-location 1))
-    (setup-dispatcher!)
-    (setup-link-dispatcher! top-level-node)
-    (.setEnabled true)))
+    (bootstrap-dispatcher!)
+    ;; This will fire a navigate event with the current token
+    (.setEnabled true)
+    (setup-link-dispatcher! top-level-node)))

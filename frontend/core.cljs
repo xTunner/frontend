@@ -162,12 +162,12 @@
     (js/setInterval #(reset! mya (time/now)) 1000)
     mya))
 
-(defn main [state top-level-node starting-location]
+(defn main [state top-level-node]
   (let [comms       (:comms @state)
         container   (sel1 top-level-node "#om-app")
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
-        history-imp (history/new-history-imp top-level-node starting-location)
+        history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance)
         controls-tap (chan)
         nav-tap (chan)
@@ -241,7 +241,7 @@
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (browser-settings/setup! state)
-    (main state (sel1 :body) starting-location)
+    (main state (sel1 :body))
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
