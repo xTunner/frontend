@@ -125,7 +125,7 @@
                  (list
                   [:dt (when (> 1 (count nodes)) [:span (:index node)])]
                   [:dd {:class (when (:ssh_enabled node) "connected")}
-                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:ip_addr node))]
+                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
                    (when-not (:ssh_enabled node)
                      [:span.loading-spinner common/spinner])]))
                nodes)]]
