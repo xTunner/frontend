@@ -142,27 +142,29 @@
 
 
 (defmethod control-event :container-selected
-  [target message container-id state]
+  [target message {:keys [container-id]} state]
   (assoc-in state state/current-container-path container-id))
 
 (defmethod post-control-event! :container-selected
-  [target message container-id previous-state current-state]
+  [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
           current-scroll-top (.-scrollTop parent)
           current-scroll-left (.-scrollLeft parent)
-          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))
-          scroller (or (.-scroll_handler parent)
-                       (set! (.-scroll_handler parent)
-                             ;; Store this on the parent so that we don't handle parent scroll while
-                             ;; the animation is playing
-                             (goog.fx.dom.Scroll. parent
-                                                  #js [0 0]
-                                                  #js [0 0]
-                                                  250)))]
-      (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
-      (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-      (.play scroller)))
+          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
+      (if-not animate?
+        (set! (.-scrollLeft parent) new-scroll-left)
+        (let [scroller (or (.-scroll_handler parent)
+                            (set! (.-scroll_handler parent)
+                                  ;; Store this on the parent so that we don't handle parent scroll while
+                                  ;; the animation is playing
+                                  (goog.fx.dom.Scroll. parent
+                                                       #js [0 0]
+                                                       #js [0 0]
+                                                       250)))]
+          (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
+          (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
+          (.play scroller)))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
     (let [container (get-in current-state (state/container-path container-id))
@@ -350,7 +352,8 @@
     ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
     ;; do a swap here (or find a better way to structure this!)
     (when (not= current-container-id new-scrolled-container-id)
-      (put! controls-ch [:container-selected new-scrolled-container-id]))))
+      (put! controls-ch [:container-selected {:container-id new-scrolled-container-id
+                                              :animate? false}]))))
 
 
 (defmethod post-control-event! :started-edit-settings-build

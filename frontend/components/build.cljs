@@ -56,7 +56,7 @@
              controls-ch (om/get-shared owner [:comms :controls])]
          [:li {:class (when (= container-id current-container-id) "active")}
           [:a.container-selector
-           {:on-click #(put! controls-ch [:container-selected container-id])
+           {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
             :class (container-model/status-classes container)}
            (str "C" (:index container))]])))))
 

@@ -227,7 +227,7 @@
   (goog.events/listen
    js/window "resize"
    #(when (= :build (:navigation-point @app-state))
-      (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
+      (put! controls-ch [:container-selected {:container-id (get-in @app-state state/current-container-path)}]))))
 
 (defn apply-app-id-hack
   "Hack to make the top-level id of the app the same as the
