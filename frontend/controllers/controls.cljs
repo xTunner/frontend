@@ -844,3 +844,13 @@
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]
   (intercom/raise-dialog (get-in current-state [:comms :errors])))
+
+(defmethod control-event :refresh-admin-build-state-clicked
+  [target message _ state]
+  (let [s (assoc-in state state/build-state-path nil)]
+    (utils/inspect (get-in s state/build-state-path))
+    s))
+
+(defmethod post-control-event! :refresh-admin-build-state-clicked
+  [target message _ previous-state current-state]
+  (ajax/ajax :get "/api/v1/admin/build-state" :build-state (get-in current-state [:comms :api])))

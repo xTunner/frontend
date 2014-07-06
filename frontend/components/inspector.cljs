@@ -12,4 +12,5 @@
     om/IDisplayName (display-name [_] "Inspector")
     om/IRender
     (render [_]
-      (om/build ankha/inspector app))))
+      (html
+       [:code {:style {:width "450px"}} (om/build ankha/inspector app)]))))

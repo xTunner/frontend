@@ -164,3 +164,5 @@
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
 
 (def changelog-path [:changelog])
+
+(def build-state-path [:build-state])

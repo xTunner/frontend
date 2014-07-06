@@ -3,6 +3,7 @@
             [frontend.async :refer [put!]]
             [frontend.components.account :as account]
             [frontend.components.about :as about]
+            [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
@@ -50,6 +51,10 @@
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
     :account account/account
+
+    :admin admin/admin
+    :build-state admin/build-state
+
     :loading loading
 
     :landing landing/home
