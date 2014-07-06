@@ -309,6 +309,9 @@
       nil))
   (set-page-title! (str "Org settings - " org)))
 
+(defmethod navigated-to :logout
+  [history-imp navigation-point _ state]
+  state)
 
 (defmethod post-navigated-to! :logout
   [history-imp navigation-point _ previous-state current-state]
