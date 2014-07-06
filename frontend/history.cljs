@@ -68,25 +68,28 @@
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (let [dom-helper (goog.dom.DomHelper.)]
     (events/listen top-level-node "click"
-                   #(let [-target (.. % -target)
-                          target (if (= (.-tagName -target) "A")
-                                   -target
-                                   (.getAncestorByTagNameAndClass dom-helper -target "A"))
-                          location (when target (str (.-pathname target) (.-search target) (.-hash target)))
-                          new-token (when (seq location) (subs location 1 ))]
-                      (when (and (seq location)
-                                 (not= "_blank" (.-target target))
-                                 (= (.. js/window -location -hostname)
-                                    (.-hostname target)))
-                        (.stopPropagation %)
-                        (.preventDefault %)
-                        (if (and (route-fragment location)
-                                 (path-matches? (.getToken history-imp) new-token))
-                          (do (utils/mlog "scrolling to hash for" location)
-                              ;; don't break the back button
-                              (.replaceToken history-imp new-token))
-                          (do (utils/mlog "navigating to" location)
-                              (.setToken history-imp new-token))))))))
+                   #(when (and (.isMouseActionButton %) ; ignore middle clicks
+                               (not (.-metaKey %))) ; ignore cmd+click
+                      (let [-target (.. % -target)
+                            _ (set! js/window.teste %)
+                            target (if (= (.-tagName -target) "A")
+                                     -target
+                                     (.getAncestorByTagNameAndClass dom-helper -target "A"))
+                            location (when target (str (.-pathname target) (.-search target) (.-hash target)))
+                            new-token (when (seq location) (subs location 1 ))]
+                        (when (and (seq location)
+                                   (not= "_blank" (.-target target))
+                                   (= (.. js/window -location -hostname)
+                                      (.-hostname target)))
+                          (.stopPropagation %)
+                          (.preventDefault %)
+                          (if (and (route-fragment location)
+                                   (path-matches? (.getToken history-imp) new-token))
+                            (do (utils/mlog "scrolling to hash for" location)
+                                ;; don't break the back button
+                                (.replaceToken history-imp new-token))
+                            (do (utils/mlog "navigating to" location)
+                                (.setToken history-imp new-token)))))))))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
