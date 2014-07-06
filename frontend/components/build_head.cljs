@@ -86,7 +86,7 @@
            [:strong "Commit Log"]
            (when (:compare build)
              [:a.compare {:href (:compare build)}
-              "compare"
+              "compare "
               [:i.fa.fa-github]])
            (when (< 3 (count (:all_commit_details build)))
              [:a {:role "button"
