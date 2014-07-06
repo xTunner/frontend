@@ -24,10 +24,10 @@
                     checkout-args
                     ;; XXX: check what happens on failure
                     {:token #(put! channel [:stripe-checkout-succeeded (utils/js->clj-kw %)])
-                     ;; XXX: remove this when Stripe gets back to us about `close` being fired when the
-                     ;;      form is submitted. Or come up with a workaround if they don't fix it.
-                     ;;:closed #(put! channel [:stripe-checkout-closed])
-                     })]
+                     ;; Stripe will fire both callbacks on successful submit. This makes sure that
+                     ;; the closed event fires last. The timeout by itself is enough, but we'll
+                     ;; add 300ms for good measure.
+                     :closed (fn [] (js/setTimeout #(put! channel [:stripe-checkout-closed]) 300))})]
     ((aget checkout "open") (clj->js args))))
 
 (defn checkout-loaded?
