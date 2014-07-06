@@ -51,8 +51,8 @@
     (render [_]
       (let [{:keys [org repo branch-data]} data
             [name-kw branch-builds] branch-data
-            display-builds (take 5 (sort-by (comp - :build_num) (concat (:running_builds branch-builds)
-                                                                  (:recent_builds branch-builds))))]
+            display-builds (take-last 5 (sort-by :build_num (concat (:running_builds branch-builds)
+                                                                    (:recent_builds branch-builds))))]
         (html
          [:li {:class (-> display-builds last :status)}
           [:div.branch
@@ -92,7 +92,7 @@
                                                            :repo repo})
                        :title (project-model/project-name project)}
              (project-model/project-name project)]
-            (when-let [latest-master-build (first (project-model/master-builds project))]
+            (when-let [latest-master-build (last (project-model/master-builds project))]
               (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
           (when-not collapse-branches?
             (for [branch-data (->> project
