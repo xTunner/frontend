@@ -34,11 +34,16 @@
                  [:h3.title (:title entry)]
                  [:p.description {:dangerouslySetInnerHTML #js {"__html" (:description entry)}}]]
                 [:div.entry-info {:class (:type entry)}
-                 [:strong (:type entry)] " by " [:a {:href (if (:twitter team-member)
-                                                             (str "https://twitter.com/" (:twitter team-member))
-                                                             (str "https://github.com/" (:github team-member)))}
-                                                 (:name team-member)]
-                 " on " [:a {:href (:link entry)}
-                         (datetime/as-time-since (:pubDate entry))]]]
+                 [:strong (:type entry)]
+                 (when team-member
+                   (list " by "
+                         [:a {:href (if (:twitter team-member)
+                                      (str "https://twitter.com/" (:twitter team-member))
+                                      (str "https://github.com/" (:github team-member)))}
+                          (:name team-member)]
+                         " on "))
+                 [:a {:href (:link entry)}
+                  (datetime/as-time-since (:pubDate entry))]]]
                [:div.entry-avatar
-                [:img {:src (:img-path team-member)}]]])]]])))))
+                (when team-member
+                  [:img {:src (:img-path team-member)}])]])]]])))))
