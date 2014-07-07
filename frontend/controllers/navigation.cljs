@@ -206,6 +206,10 @@
           (state-utils/reset-current-project %)
           %))))
 
+(defmethod post-navigated-to! :landing
+  [history-imp navigation-point _ previous-state current-state]
+  (set-page-title! "Continuous Integration and Deployment"))
+
 (defmethod navigated-to :documentation-root
   [history-imp to args state]
   (assoc state
