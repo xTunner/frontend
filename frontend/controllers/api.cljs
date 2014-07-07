@@ -78,7 +78,6 @@
 
 (defmethod api-event [:default :failed]
   [target message status args state]
-  ;; XXX update the error message
   (mlog "No api for" [message status])
   state)
 

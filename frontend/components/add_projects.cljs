@@ -210,7 +210,6 @@
                                      (get-in settings [:add-projects :selected-org :type]))
             repos (get-in user [:repos repo-key])]
         (html
-         ;; XXX flashes
          [:div#add-projects
           (when (seq (user-model/missing-scopes user))
             (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))

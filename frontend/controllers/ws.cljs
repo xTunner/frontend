@@ -83,7 +83,6 @@
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]
-  ;; XXX non-parallel actions need to be repeated across containers
   (with-swallow-ignored-build-channels state channel-name
     (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
       (-> state
@@ -129,7 +128,6 @@
                                     (clojure.set/union new-messages)))))))
 
 
-;; XXX: is this the best place to handle subscriptions?
 (defmethod post-ws-event! :subscribe
   [pusher-imp message {:keys [channel-name messages context]} previous-state current-state]
   (let [ws-ch (get-in current-state [:comms :ws])]

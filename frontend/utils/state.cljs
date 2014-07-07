@@ -38,7 +38,6 @@
 
 (defn stale-current-project? [state project-name]
   (and (get-in state state/project-path)
-       ;; XXX: check for url-escaped characters (e.g. /)
        (not= project-name (vcs-url/project-name (get-in state (conj state/project-path :vcs_url))))))
 
 (defn stale-current-org? [state org-name]

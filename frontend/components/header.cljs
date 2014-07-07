@@ -153,7 +153,6 @@
                 [:a#login.login-link {:href "/"} "Return to App"]]
 
                [:div.controls.span4
-                ;; XXX: mixpanel event tracking
                 [:a#login.login-link {:href (auth-url)
                                       :on-click #(put! controls-ch [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                       :title "Sign in with Github"}

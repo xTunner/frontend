@@ -535,7 +535,7 @@
              (get-in current-state [:comms :api])
              :context {:project-name project-name}
              :params invitees)
-  ;; XXX: move all of the tracking stuff into frontend.analytics and let it
+  ;; TODO: move all of the tracking stuff into frontend.analytics and let it
   ;;      keep track of which service to send things to
   (mixpanel/track "Sent invitations" {:first_green_build true
                                       :project project-name

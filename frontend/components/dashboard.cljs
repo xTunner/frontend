@@ -29,7 +29,6 @@
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)]
         (html
-         ;; XXX logic for trial notices
          [:div#dashboard
           [:section
            (cond (nil? builds) [:div.loading-spinner common/spinner]

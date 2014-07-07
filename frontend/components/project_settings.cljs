@@ -218,7 +218,6 @@
         [:form.parallelism-items
          (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
                                          (inc 24)))]
-           ;; XXX do we need parallel focus in
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
