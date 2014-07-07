@@ -25,9 +25,10 @@
 ;; --- Helper Methods ---
 
 (defn set-page-title! [& [title]]
-  (set! (.-title js/document) (if title
-                                (str title  " - CircleCI")
-                                "CircleCI")))
+  (set! (.-title js/document) (gstring/htmlEscape
+                               (if title
+                                 (str title  " - CircleCI")
+                                 "CircleCI"))))
 
 (defn scroll-to-fragment!
   "Scrolls to the element with id of fragment, if one exists"
@@ -280,7 +281,6 @@
                      :context {:project-name project-name})
           :else nil))
 
-  ;; XXX: check for XSS
   (set-page-title! (str "Edit settings - " project-name)))
 
 
