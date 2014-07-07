@@ -29,9 +29,15 @@
 
     transformer))
 
+(defn set-current-token!
+  "Lets us keep track of the history state, so that we don't dispatch twice on the same URL"
+  [history-imp & [token]]
+  (set! (.-_current_token history-imp) (or token (.getToken history-imp))))
+
 (defn setup-dispatcher! [history-imp]
   (events/listen history-imp goog.history.EventType.NAVIGATE
-                 #(sec/dispatch! (str "/" (.-token %)))))
+                 #(do (set-current-token! history-imp)
+                      (sec/dispatch! (str "/" (.-token %))))))
 
 (defn bootstrap-dispatcher!
   "We need lots of control over when we start listening to navigation events because
@@ -41,14 +47,18 @@
   [history-imp]
   (events/listenOnce history-imp goog.history.EventType.NAVIGATE #(setup-dispatcher! history-imp)))
 
-(defn disable-popstate!
-  "Stops the browser's popstate from triggering NAVIGATION events.
-   We don't ever use it and it causes double dispatching."
+(defn disable-erroneous-popstate!
+  "Stops the browser's popstate from triggering NAVIGATION events unless the url has really
+   changed. Fixes duplicate dispatch in Safari and the build machines."
   [history-imp]
   ;; get this history instance's version of window, might make for easier testing later
   (let [window (.-window_ history-imp)]
-    (events/removeAll window goog.events.EventType.POPSTATE)))
-
+    (events/removeAll window goog.events.EventType.POPSTATE)
+    (events/listen window goog.events.EventType.POPSTATE
+                   #(if (= (.getToken history-imp)
+                           (.-_current_token history-imp))
+                      (utils/mlog "Ignoring duplicate dispatch event to" (.getToken history-imp))
+                      (.onHistoryEvent_ history-imp)))))
 
 (defn route-fragment
   "Returns the route fragment if this is a route that we've don't dispatch
@@ -100,7 +110,7 @@
     (.setUseFragment false)
     (.setPathPrefix "/")
     (bootstrap-dispatcher!)
-    (disable-popstate!)
-    ;; This will fire a navigate event with the current token
-    (.setEnabled true)
+    (set-current-token!) ; Stop Safari from double-dispatching
+    (disable-erroneous-popstate!) ; Stop Safari from double-dispatching
+    (.setEnabled true) ; This will fire a navigate event with the current token
     (setup-link-dispatcher! top-level-node)))
