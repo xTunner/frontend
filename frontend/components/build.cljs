@@ -47,7 +47,7 @@
           (common/contact-us-inner controls-ch)
           " if you're interested in the cause of the problem."])])))
 
-(defn container-pill [{:keys [container current-container-id]} owner]
+(defn container-pill [{:keys [container current-container-id build-running?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -57,23 +57,26 @@
          [:li {:class (when (= container-id current-container-id) "active")}
           [:a.container-selector
            {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
-            :class (container-model/status-classes container)}
+            :class (container-model/status-classes container build-running?)}
            (str "C" (:index container))]])))))
 
-(defn container-pills [container-data owner]
+(defn container-pills [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [containers current-container-id]} container-data
+      (let [container-data (:container-data data)
+            build-running? (:build-running? data)
+            {:keys [containers current-container-id]} container-data
             controls-ch (om/get-shared owner [:comms :controls])
             hide-pills? (or (>= 1 (count containers))
-                            (not (first (mapcat :actions containers))))]
+                            (empty? (mapcat :actions containers)))]
         (html
          [:div.containers.pagination.pagination-centered (when hide-pills? {:style {:display "none"}})
           [:ul.container-list
            (for [container containers]
              (om/build container-pill
                        {:container container
+                        :build-running? build-running?
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))]])))))
 
@@ -140,7 +143,8 @@
              (common/flashes)
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data})
-             (om/build container-pills container-data)
+             (om/build container-pills {:container-data container-data
+                                        :build-running? (build-model/running? build)})
              (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))
