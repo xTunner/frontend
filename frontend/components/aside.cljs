@@ -57,9 +57,9 @@
          [:li {:class (-> display-builds last :status)}
           [:div.branch
            {:role "button"}
-           [:a {:href (routes/v1-project-branch-dashboard {:org org :repo repo :branch (name name-kw)})
-                :title (name name-kw)}
-            (-> name-kw name js/decodeURIComponent (utils/trim-middle 23))]]
+           [:a {:href (routes/v1-dashboard-path {:org org :repo repo :branch (name name-kw)})
+                :title (utils/display-branch name-kw)}
+            (-> name-kw utils/display-branch (utils/trim-middle 23))]]
           [:div.status {:role "button"}
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))

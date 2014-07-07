@@ -100,6 +100,12 @@
              path
              (str "/" path)))))
 
+(defn display-branch [branch]
+  (-> branch name js/decodeURIComponent))
+
+(defn encode-branch [branch]
+  (-> branch name js/encodeURIComponent))
+
 (defn edit-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.
   Path is the vector of keys you would pass to assoc-in to change the value in state,

@@ -72,8 +72,9 @@
     (open-to-inner! nav-ch :dashboard params))
   (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
     (open-to-inner! nav-ch :dashboard params))
-  (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
-    (open-to-inner! nav-ch :dashboard params))
+  (defroute v1-project-branch-dashboard #"/gh/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
+    [org repo branch]
+    (open-to-inner! nav-ch :dashboard {:org org :repo repo :branch branch}))
   (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
     [org repo build-num]
     (open-to-inner! nav-ch :build {:project-name (str org "/" repo)

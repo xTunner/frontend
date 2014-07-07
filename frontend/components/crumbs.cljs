@@ -1,6 +1,6 @@
 (ns frontend.components.crumbs
   (:require [frontend.routes :as routes]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [om.core :as om])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -19,7 +19,7 @@
 (defmethod render-crumb :project
   [{:keys [username project active]}]
   (crumb-node {:name project
-               :path (routes/v1-project-dashboard {:org username :repo project})
+               :path (routes/v1-dashboard-path {:org username :repo project})
                :active active}))
 
 (defmethod render-crumb :project-settings
@@ -31,11 +31,11 @@
 (defmethod render-crumb :project-branch
   [{:keys [username project branch active]}]
   (crumb-node {:name (if branch
-                       (utils/trim-middle branch 45)
+                       (utils/trim-middle (utils/display-branch branch) 45)
                        "...")
-               :path (routes/v1-project-branch-dashboard {:org username
-                                                          :repo project
-                                                          :branch branch})
+               :path (routes/v1-dashboard-path {:org username
+                                                :repo project
+                                                :branch branch})
                :active active}))
 
 (defmethod render-crumb :build
@@ -47,7 +47,7 @@
 (defmethod render-crumb :org
   [{:keys [username active]}]
   (crumb-node {:name username
-               :path (routes/v1-org-dashboard {:org username})
+               :path (routes/v1-dashboard-path {:org username})
                :active active}))
 
 (defmethod render-crumb :org-settings
