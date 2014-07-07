@@ -417,11 +417,12 @@
                  [:div.control
                   [:label.checkbox
                    [:input
-                    {:value org
-                     :checked (contains? selected-piggyback-orgs org)
-                     ;; Note: this is broken if the org is already in piggieback_orgs, need to explicitly pass the value :(
-                     :on-change #(utils/toggle-input controls-ch (conj state/selected-piggyback-orgs-path org) %)
-                     :type "checkbox"}]
+                    (let [checked? (contains? selected-piggyback-orgs org)]
+                      {:value org
+                       :checked checked?
+                       ;; Note: this is broken if the org is already in piggieback_orgs, need to explicitly pass the value :(
+                       :on-change #(utils/edit-input controls-ch (conj state/selected-piggyback-orgs-path org) % :value (not checked?))
+                       :type "checkbox"})]
                    org]])]
               [:div.form-actions.span7
                (forms/managed-button
