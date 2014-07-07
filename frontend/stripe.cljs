@@ -22,7 +22,8 @@
   (let [checkout (aget js/window "StripeCheckout")
         args (merge checkout-defaults
                     checkout-args
-                    ;; XXX: check what happens on failure
+                    ;; Stripe will always return a token, even if the card is invalid.
+                    ;; We'll propagate the error from the backend when we make the next API call
                     {:token #(put! channel [:stripe-checkout-succeeded (utils/js->clj-kw %)])
                      ;; Stripe will fire both callbacks on successful submit. This makes sure that
                      ;; the closed event fires last. The timeout by itself is enough, but we'll
