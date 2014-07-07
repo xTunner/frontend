@@ -69,7 +69,7 @@
             {:keys [containers current-container-id]} container-data
             controls-ch (om/get-shared owner [:comms :controls])
             hide-pills? (or (>= 1 (count containers))
-                            (empty? (mapcat :actions containers)))]
+                            (empty? (remove :filler-action (mapcat :actions containers))))]
         (html
          [:div.containers.pagination.pagination-centered (when hide-pills? {:style {:display "none"}})
           [:ul.container-list
