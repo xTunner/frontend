@@ -99,7 +99,8 @@
          [:div.row-fluid
           [:div.offset1.span10
            [:div (common/messages (:messages build))]
-           [:div (report-error build controls-ch)]
+           (when (empty? (:messages build))
+             [:div (report-error build controls-ch)])
 
            (when (and plan (show-trial-notice? plan))
              (om/build project-common/trial-notice plan))

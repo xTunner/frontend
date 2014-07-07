@@ -133,7 +133,7 @@
           (assoc-in state/build-path build)
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
-                    (utils/encode-branch (:branch build)))
+                    (some-> build :branch utils/encode-branch))
           (assoc-in state/containers-path containers)))))
 
 (defmethod post-api-event! [:build :success]
