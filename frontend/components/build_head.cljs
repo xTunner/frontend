@@ -74,14 +74,15 @@
          " "
          [:i.fa.fa-github]]]))))
 
-(defn build-commits [build owner]
+(defn build-commits [build-data owner]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
+            build (:build build-data)
             build-id (build-model/id build)]
         (html
-         [:section.build-commits {:class (when (:show-all-commits build) "active")}
+         [:section.build-commits {:class (when (:show-all-commits build-data) "active")}
           [:div.build-commits-title
            [:strong "Commit Log"]
            (when (:compare build)
@@ -91,9 +92,11 @@
               " "])
            (when (< 3 (count (:all_commit_details build)))
              [:a {:role "button"
-                  :on-click #(put! controls-ch [:toggle-show-all-commits build-id])}
+                  :on-click #(put! controls-ch [:show-all-commits-toggled {:build-id build-id}])}
               (str (- (count (:all_commit_details build)) 3) " more ")
-              [:i.fa.fa-caret-down]])]
+              (if (:show-all-commits build-data)
+                [:i.fa.fa-caret-up]
+                [:i.fa.fa-caret-down])])]
           [:div.build-commits-list
            (if-not (seq (:all_commit_details build))
              (om/build commit-line {:subject (:subject build)
@@ -102,7 +105,7 @@
                                     :commit (:vcs_revision build)})
              (list
               (om/build-all commit-line (take 3 (:all_commit_details build)))
-              (when (:show-all-commits build)
+              (when (:show-all-commits build-data)
                 (om/build-all commit-line (drop 3 (:all_commit_details build))))))]])))))
 
 (defn build-ssh [nodes owner]
@@ -310,7 +313,7 @@
                                     :builds (:builds usage-queue-data)
                                     :plan plan}))
            (when (:subject build)
-             (om/build build-commits build))
+             (om/build build-commits build-data))
            (when (build-model/ssh-enabled-now? build)
              (om/build build-ssh (:node build)))
            (when (:has_artifacts build)

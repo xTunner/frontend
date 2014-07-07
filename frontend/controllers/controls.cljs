@@ -858,3 +858,7 @@
 (defmethod control-event :clear-error-message-clicked
   [target message _ state]
   (assoc-in state state/error-message-path nil))
+
+(defmethod control-event :show-all-commits-toggled
+  [target message _ state]
+  (update-in state (conj state/build-data-path :show-all-commits) not))
