@@ -18,7 +18,7 @@
    :crumbs []
    :current-repos []
    :render-context nil
-   :projects []
+   :projects nil
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
