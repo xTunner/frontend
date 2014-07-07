@@ -201,7 +201,8 @@
                        (build-model/author build)])]
                [:th "Started"]
                [:td (when (:start_time build)
-                      (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago")]]
+                      (list
+                       (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"))]]
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
