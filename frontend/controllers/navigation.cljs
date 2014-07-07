@@ -185,7 +185,10 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
+          (put! api-ch [:organizations (:status api-result) api-result])
+          (when-let [first-org (first (:resp api-result))]
+            (put! (get-in current-state [:comms :controls]) [:selected-add-projects-org {:login (:login first-org) :type :org}]))))
     (ajax/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
   (set-page-title! "Add projects"))
 
