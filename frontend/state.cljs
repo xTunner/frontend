@@ -1,7 +1,8 @@
 (ns frontend.state)
 
 (defn initial-state []
-  {:ab-tests {}
+  {:error-message nil
+   :ab-tests {}
    :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
@@ -15,7 +16,7 @@
    :navigation-data nil
    :navigation-settings {}
    :current-user nil
-   :crumbs []
+   :crumbs nil
    :current-repos []
    :render-context nil
    :projects nil
@@ -166,3 +167,5 @@
 (def changelog-path [:changelog])
 
 (def build-state-path [:build-state])
+
+(def error-message-path [:error-message])

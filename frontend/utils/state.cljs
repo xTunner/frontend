@@ -50,3 +50,8 @@
    [state login type repo-name]
    (when-let [repos (get-in state (state/repos-path login type))]
      (find-index #(= repo-name (:name %)) repos)))
+
+(defn clear-page-state [state]
+  (-> state
+      (assoc :crumbs nil)
+      (assoc-in state/error-message-path nil)))

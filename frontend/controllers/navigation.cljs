@@ -63,6 +63,7 @@
 (defmethod navigated-to :default
   [history-imp navigation-point args state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
 
@@ -84,6 +85,7 @@
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {:show-settings-link (boolean (:org args))}
@@ -128,6 +130,7 @@
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {:show-settings-link true}
@@ -173,7 +176,9 @@
 
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
-  (assoc state :navigation-point navigation-point :navigation-data args :navigation-settings {}))
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point :navigation-data args :navigation-settings {})))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
@@ -188,6 +193,7 @@
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {}
@@ -212,16 +218,18 @@
 
 (defmethod navigated-to :documentation-root
   [history-imp to args state]
-  (assoc state
-    :navigation-point :documentation-root
-    :navigationo-data args))
+  (-> state
+      (assoc :navigation-point :documentation-root
+             :navigation-data args)
+      state-utils/clear-page-state))
 
 (defmethod navigated-to :documentation-page
   [history-imp to args state]
-  (assoc state
-    :navigation-point :documentation-page
-    :navigation-data args
-    :current-documentation-page (:page args)))
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point :documentation-page
+             :navigation-data args
+             :current-documentation-page (:page args))))
 
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
@@ -277,6 +285,7 @@
   [history-imp navigation-point {:keys [subpage org] :as args} state]
   (mlog "Navigated to subpage:" subpage)
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point)
       (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
@@ -322,7 +331,7 @@
 
 (defmethod navigated-to :logout
   [history-imp navigation-point _ state]
-  state)
+  (state-utils/clear-page-state state))
 
 (defmethod post-navigated-to! :logout
   [history-imp navigation-point _ previous-state current-state]
@@ -333,6 +342,7 @@
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
 
@@ -359,6 +369,7 @@
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (mlog "Navigated to account subpage:" subpage)
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point)
       (assoc :navigation-data args)
       (assoc :account-settings-subpage subpage)))

@@ -845,7 +845,7 @@
                  [:div.row-fluid
                   (om/build sidebar {:subpage subpage :plan plan :org-name (:name org-data)})
                   [:div.span9
-                   (common/flashes)
+                   (om/build common/flashes (get-in app state/error-message-path))
                    [:div#subpage
                     [:div
                      (if (:authorized? org-data)

@@ -4,13 +4,36 @@
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-;; XXX flashes
-(defn flashes []
-  "")
+(defn contact-us-inner [controls-ch]
+  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
+   "contact us"])
+
+(defn flashes
+  "Displays common error messages (poorly named since flashes has another use in the app)."
+  [error-message owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            ;; use error messages that have html without passing html around
+            display-message (condp = error-message
+                              :logged-out [:span "You've been logged out, " [:a {:href (gh-utils/auth-url)} "log back in"] " to continue."]
+                              error-message)]
+        (html
+         (if-not error-message
+           [:span]
+
+           [:div.flash-error-wrapper.row-fluid
+            [:div.offset1.span10
+             [:div.alert.alert-block.alert-danger
+              [:a.close {:on-click #(put! controls-ch [:clear-error-message-clicked])} "×"]
+              "Error: " display-message
+              " If we can help, " (contact-us-inner controls-ch) "."]]]))))))
 
 (def spinner
   [:svg {:viewBox "0 0 100 100"
@@ -20,10 +43,6 @@
                          <animateTransform attributeName=\"transform\" begin=\"0ms\" dur=\"600ms\" fill=\"freeze\" type=\"rotate\" repeatDur=\"indefinite\" values=\"0 50 50;359 50 50\" keyTimes=\"0;1\" calcMode=\"spline\" keySplines=\"0.42 0 0.58 1\"></animateTransform>
                        </path>
                        <circle fill=\"#fff\" cx=\"50\" cy=\"50\" r=\"11.905\"></circle>"}}])
-
-(defn contact-us-inner [controls-ch]
-  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
-   " contact us "])
 
 (defn messages [messages]
   [:div.row-fluid

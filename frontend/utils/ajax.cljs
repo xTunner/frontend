@@ -62,7 +62,7 @@
                              :handler #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :success (assoc % :context context)]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
-                                               (put! channel [message :failed (assoc % :context context)]))
+                                               (put! channel [message :failed (assoc % :context context :url url)]))
                              :finally #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :finished context]))}))))
 
@@ -95,7 +95,8 @@
                              :error-handler #(put! channel (-> %
                                                                (assoc :status-code (:status %))
                                                                (assoc :resp (get-in % [:response :resp]))
-                                                               (assoc :status :failed)))
+                                                               (assoc :status :failed)
+                                                               (assoc :url url)))
                              :finally #(close! channel)}))
     channel))
 

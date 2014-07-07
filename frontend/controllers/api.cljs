@@ -84,6 +84,7 @@
 
 (defmethod post-api-event! [:default :failed]
   [target message status args previous-state current-state]
+  (put! (get-in current-state [:comms :errors]) [:api-error args])
   (mlog "No post-api for: " [message status]))
 
 (defmethod api-event [:default :finished]

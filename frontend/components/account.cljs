@@ -238,7 +238,7 @@
              [:a {:href (routes/v1-account-subpage {:subpage "heroku"})} "Heroku Key"]]
             [:li#plans (active-class-if-active subpage :plans)
              [:a {:href (routes/v1-account-subpage {:subpage "plans"})} "Plan Pricing"]]]]
-          [:div.row (common/flashes)]
+          [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div.settings-item
            [:div.settings-item-inner
             [:div#subpage

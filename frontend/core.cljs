@@ -14,6 +14,7 @@
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
+            [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
@@ -50,7 +51,7 @@
 (def api-ch
   (chan))
 
-(def error-ch
+(def errors-ch
   (chan))
 
 (def navigation-ch
@@ -88,12 +89,12 @@
                               utils/js->clj-kw)
           :comms {:controls  controls-ch
                   :api       api-ch
-                  :errors    error-ch
+                  :errors    errors-ch
                   :nav       navigation-ch
                   :ws        ws-ch
                   :controls-mult (async/mult controls-ch)
                   :api-mult (async/mult api-ch)
-                  :errors-mult (async/mult error-ch)
+                  :errors-mult (async/mult errors-ch)
                   :nav-mult (async/mult navigation-ch)
                   :ws-mult (async/mult ws-ch)
                   :mouse-move {:ch mouse-move-ch
@@ -154,6 +155,16 @@
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
        (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
 
+(defn errors-handler
+  [value state container]
+  (when (log-channels?)
+    (mlog "Errors Verbose: " value))
+  (swallow-errors
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial errors-con/error container (first value) (second value)))
+       (errors-con/post-error! container (first value) (second value) previous-state @state)))))
+
 (defn setup-timer-atom
   "Sets up an atom that will keep track of the current time.
    Used from frontend.components.common/updating-duration "
@@ -171,7 +182,8 @@
         controls-tap (chan)
         nav-tap (chan)
         api-tap (chan)
-        ws-tap (chan)]
+        ws-tap (chan)
+        errors-tap (chan)]
     (routes/define-routes! state)
     (om/root
      app/app
@@ -184,6 +196,7 @@
     (async/tap (:nav-mult comms) nav-tap)
     (async/tap (:api-mult comms) api-tap)
     (async/tap (:ws-mult comms) ws-tap)
+    (async/tap (:errors-mult comms) errors-tap)
 
     (go (while true
           (alt!
@@ -191,6 +204,7 @@
            nav-tap ([v] (nav-handler v state history-imp))
            api-tap ([v] (api-handler v state container))
            ws-tap ([v] (ws-handler v state pusher-imp))
+           errors-tap ([v] (errors-handler v state container))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))

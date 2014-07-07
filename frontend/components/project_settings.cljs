@@ -1000,7 +1000,7 @@
            [:div#project-settings
             [:aside sidebar]
             [:div.project-settings-inner
-             (common/flashes)
+             (om/build common/flashes (get-in data state/error-message-path))
              [:div#subpage
               (condp = subpage
                 :parallel-builds (om/build parallel-builds project-data)
