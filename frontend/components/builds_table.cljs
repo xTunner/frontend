@@ -63,10 +63,15 @@
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)
-          (let [build-id (build-model/id build)]
-            ;; XXX: how are we going to get back to the correct build in the app-state?
+          (let [build-id (build-model/id build)
+                vcs-url (:vcs_url build)
+                build-num (:build_num build)]
+            ;; TODO: how are we going to get back to the correct build in the app-state?
+            ;;       Not a problem here, b/c the websocket will be updated, but something to think about
             (forms/stateful-button
-             [:a {:on-click #(put! controls-ch [:cancel-build-clicked build-id])}
+             [:a {:on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
+                                                                       :vcs-url vcs-url
+                                                                       :build-num build-num}])}
               "Cancel"])))])]))
 
 (defn builds-table [builds owner opts]
