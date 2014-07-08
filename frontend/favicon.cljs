@@ -1,4 +1,5 @@
 (ns frontend.favicon
+  (:refer-clojure :exclude [reset!])
   (:require [dommy.attrs :as attrs]
             [frontend.utils :as utils :include-macros true])
   (:require-macros [dommy.macros :refer [sel sel1]]))
