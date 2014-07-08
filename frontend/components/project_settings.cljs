@@ -9,6 +9,7 @@
             [frontend.components.account :as account]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.inputs :as inputs]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
@@ -49,10 +50,12 @@
   (reify
     om/IDidMount
     (did-mount [_]
+      (inputs/did-mount owner)
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (utils/typeahead "#branch-picker-typeahead-hack"
                          {:source (map (comp gstring/urlDecode name) (keys (:branches (:project project-data))))
                           :updater #(put! controls-ch [:edited-input {:path state/project-settings-branch-path :value %}])})))
+    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [{:keys [button-text channel-message channel-args]
@@ -61,7 +64,7 @@
             project (:project project-data)
             project-id (project-model/id project)
             default-branch (:default_branch project)
-            settings-branch (get project-data :settings-branch default-branch)
+            settings-branch (get (inputs/get-inputs-from-app-state owner) :settings-branch default-branch)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:form
@@ -72,14 +75,13 @@
                    :value settings-branch
                    :on-change #(utils/edit-input controls-ch state/project-settings-branch-path %)}]
           [:label {:placeholder "Test settings on..."}]
-          (forms/stateful-button
+          (forms/managed-button
            [:input
             {:value button-text
              :on-click #(do (put! controls-ch [channel-message (merge {:project-id project-id
                                                                        :branch settings-branch}
                                                                       channel-args)])
                             false)
-             :data-api-count 2
              :data-loading-text "Starting..."
              :data-success-text "Started..."
              :type "submit"}])])))))
@@ -247,11 +249,14 @@
 
 (defn env-vars [project-data owner]
   (reify
+    om/IDidMount (did-mount [_] (inputs/did-mount owner))
+    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
-            new-env-var-name (:new-env-var-name project-data)
-            new-env-var-value (:new-env-var-value project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+            new-env-var-name (:new-env-var-name inputs)
+            new-env-var-value (:new-env-var-value inputs)
             project-id (project-model/id project)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
@@ -269,11 +274,11 @@
            [:form
             [:input#env-var-name
              {:required true, :type "text", :value new-env-var-name
-              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-env-var-name) %)}]
+              :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-name) %)}]
             [:label {:placeholder "Name"}]
             [:input#env-var-value
              {:required true, :type "text", :value new-env-var-value
-              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-env-var-value) %)}]
+              :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-value) %)}]
             [:label {:placeholder "Value"}]
             (forms/stateful-button
              [:input {:data-failed-text "Failed",
@@ -381,11 +386,17 @@
 
 (defn dependencies [project-data owner]
   (reify
+    om/IDidMount (did-mount [_] (inputs/did-mount owner))
+    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [setup dependencies post_dependencies]} project
+            inputs (inputs/get-inputs-from-app-state owner)
+            setup (or (:setup inputs) (:setup project))
+            dependencies (or (:dependencies inputs) (:dependencies project))
+            post_dependencies (or (:post_dependencies inputs) (:post_dependencies project))
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.dependencies-page
@@ -396,23 +407,23 @@
              [:textarea {:name "setup",
                          :required true
                          :value setup
-                         :on-change #(utils/edit-input controls-ch (conj state/project-path :setup) %)}]
+                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :setup) %)}]
              [:label {:placeholder "Pre-dependency commands"}]
              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
              [:textarea {:name "dependencies",
                          :required true
                          :value dependencies
-                         :on-change #(utils/edit-input controls-ch (conj state/project-path :dependencies) %)}]
+                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :dependencies) %)}]
              [:label {:placeholder "Dependency overrides"}]
              [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
               [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
               [:code "configure"] ", " [:code "make"] ", etc."]
              [:textarea {:required true
                          :value post_dependencies
-                         :on-change #(utils/edit-input controls-ch (conj state/projet-path :post_dependencies) %)}]
+                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :post_dependencies) %)}]
              [:label {:placeholder "Post-dependency commands"}]
              [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
-             (forms/stateful-button
+             (forms/managed-button
               [:input {:value "Next, setup your tests",
                        :type "submit"
                        :data-loading-text "Saving..."
@@ -425,11 +436,15 @@
 
 (defn tests [project-data owner]
   (reify
+    om/IDidMount (did-mount [_] (inputs/did-mount owner))
+    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
             project-id (project-model/id project)
-            {:keys [test extra]} project
+            inputs (inputs/get-inputs-from-app-state owner)
+            test (or (:test inputs) (:test project))
+            extra (or (:extra inputs) (:extra project))
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.tests-page
@@ -439,16 +454,16 @@
             [:textarea {:name "test",
                         :required true
                         :value test
-                        :on-change #(utils/edit-input controls-ch (conj state/project-path :test) %)}]
+                        :on-change #(utils/edit-input controls-ch (conj state/inputs-path :test) %)}]
             [:label {:placeholder "Test commands"}]
             [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
             [:textarea {:name "extra",
                         :required true
                         :value extra
-                        :on-change #(utils/edit-input controls-ch (conj state/project-path :extra) %)}]
+                        :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra) %)}]
             [:label {:placeholder "Post-test commands"}]
             [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
-            (forms/stateful-button
+            (forms/managed-button
              [:input {:name "save",
                       :data-loading-text "Saving...",
                       :value "Save commands",
@@ -462,8 +477,9 @@
              (om/build branch-picker
                        project-data
                        {:opts {:button-text "Save & Go!"
-                               :channel-message :saved-test-commands-and-build
+                               :channel-message :saved-test-commands
                                :channel-args {:project-id project-id
+                                              :start-build? true
                                               :settings {:test test
                                                          :extra extra}}}})]]]])))))
 
@@ -471,17 +487,21 @@
   (reify
     om/IDidMount
     (did-mount [_]
+      (inputs/did-mount owner)
       (utils/tooltip (str "#fixed-failed-input-tooltip-hack-" (string/replace (name field) "_" "-"))))
+    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (html
        (let [controls-ch (om/get-shared owner [:comms :controls])
-             notify_pref (get project field)
+             inputs (inputs/get-inputs-from-app-state owner)
+             notify_pref (or (get inputs field)
+                             (get project field))
              id (string/replace (name field) "_" "-")]
          [:label {:for id}
           [:input {:id id
                    :checked (= "smart" notify_pref)
-                   :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %
                                                  :value (if (= "smart" notify_pref) nil "smart"))
                    :value "smart"
                    :type "checkbox"}]
@@ -489,7 +509,7 @@
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
                                      :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
-(defn chatroom-item [project controls-ch {:keys [service icon doc inputs show-fixed-failed?
+(defn chatroom-item [project inputs-state controls-ch {:keys [service icon doc inputs show-fixed-failed?
                                                  top-section-content]}]
   [:div.chat-room-item
    [:div.chat-room-head [:h4 {:class icon} service]]
@@ -501,8 +521,9 @@
      (for [{:keys [field placeholder]} inputs]
        (list
         [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
-                 :value (get project field)
-                 :on-change #(utils/edit-input controls-ch (conj state/project-path field) %)}]
+                 :value (or (get inputs-state field)
+                            (get project field))
+                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
         [:label {:placeholder placeholder}]))]]
    [:div.chat-room-foot
     (when show-fixed-failed?
@@ -510,11 +531,14 @@
 
 (defn chatrooms [project-data owner]
   (reify
+    om/IDidMount (did-mount [_] (inputs/did-mount owner))
+    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
             project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            controls-ch (om/get-shared owner [:comms :controls])
+            inputs (inputs/get-inputs-from-app-state owner)]
         (html
          [:div
           [:h2 "Chatroom setup for" (vcs-url/project-name (:vcs_url project))]
@@ -527,8 +551,8 @@
                                          {:for "hipchat-notify"}
                                          [:input#hipchat-notify
                                           {:type "checkbox"
-                                           :checked (:hipchat_notify project)
-                                           :on-change #(utils/toggle-input controls-ch (conj state/project-path :hipchat_notify) %)}]
+                                           :checked (:hipchat_notify inputs)
+                                           :on-change #(utils/toggle-input controls-ch (conj state/inputs-path :hipchat_notify) %)}]
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
@@ -574,7 +598,7 @@
                                    " from within your Hall Group."]
                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
                              :show-fixed-failed? true}]]
-             (chatroom-item project controls-ch chat-spec))]
+             (chatroom-item project inputs controls-ch chat-spec))]
           [:div.chat-room-save
            (forms/stateful-button
             [:input

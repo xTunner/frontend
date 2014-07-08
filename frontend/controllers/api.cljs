@@ -269,8 +269,8 @@
     state
     (-> state
         (update-in state/project-envvars-path (fnil conj []) resp)
-        (assoc-in (conj state/project-data-path :new-env-var-name) "")
-        (assoc-in (conj state/project-data-path :new-env-var-value) ""))))
+        (assoc-in (conj state/inputs-path :new-env-var-name) "")
+        (assoc-in (conj state/inputs-path :new-env-var-value) ""))))
 
 
 (defmethod api-event [:delete-env-var :success]

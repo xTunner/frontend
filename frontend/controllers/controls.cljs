@@ -249,6 +249,13 @@
   [target message {:keys [path]} state]
   (update-in state path not))
 
+(defmethod control-event :clear-inputs
+  ;; assumes that paths are relative to inputs, e.g. [:new-env-var], not [:inputs :new-env-var]
+  [target message {:keys [paths]} state]
+  (reduce (fn [state path]
+            (assoc-in state (concat state/inputs-path path) nil))
+          state paths))
+
 
 (defmethod post-control-event! :intercom-dialog-raised
   [target message dialog-message previous-state current-state]
@@ -359,13 +366,13 @@
 (defmethod post-control-event! :started-edit-settings-build
   [target message {:keys [project-id branch]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
+        uuid frontend.async/*uuid*
+        comms (get-in current-state [:comms])]
     ;; TODO: edit project settings api call should respond with updated project settings
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))
-               :start-build
-               api-ch)))
-
+    (go
+     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+       (put! (:api comms) [:start-build (:status api-result) api-result])
+       (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :created-env-var
   [target message {:keys [project-id env-var]} previous-state current-state]
@@ -394,25 +401,39 @@
 (defmethod post-control-event! :saved-dependencies-commands
   [target message {:keys [project-id settings]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-dependencies-commands
-               api-ch
-               :params settings
-               :context {:project-id project-id})))
+        org (vcs-url/org-name project-id)
+        repo (vcs-url/repo-name project-id)
+        uuid frontend.async/*uuid*
+        comms (get-in current-state [:comms])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+       (if (= :success (:status api-result))
+         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
+           (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-subpage {:org org :repo repo :subpage "tests"})}]))
+         (put! (:errors comms) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-test-commands
-  [target message {:keys [project-id settings]} previous-state current-state]
+  [target message {:keys [project-id settings start-build? branch]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-test-commands
-               api-ch
-               :params settings
-               :context {:project-id project-id})))
+        org (vcs-url/org-name project-id)
+        repo (vcs-url/repo-name project-id)
+        uuid frontend.async/*uuid*
+        comms (get-in current-state [:comms])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+       (if (= :success (:status api-result))
+         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
+           (when start-build?
+             (let [build-api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+               (put! (:api comms) [:start-build (:status build-api-result) build-api-result]))))
+         (put! (:errors comms) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-test-commands-and-build
@@ -432,7 +453,7 @@
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
-        settings (project-model/notification-settings (get-in current-state state/project-path))]
+        settings (project-model/notification-settings (get-in current-state state/inputs-path))]
     (ajax/ajax :put
                (gstring/format "/api/v1/project/%s/settings" project-name)
                :save-notification-hooks
