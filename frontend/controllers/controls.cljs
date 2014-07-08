@@ -15,6 +15,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
             goog.style)
@@ -254,7 +255,7 @@
   ;; assumes that paths are relative to inputs, e.g. [:new-env-var], not [:inputs :new-env-var]
   [target message {:keys [paths]} state]
   (reduce (fn [state path]
-            (assoc-in state (concat state/inputs-path path) nil))
+            (dissoc-in state (concat state/inputs-path path)))
           state paths))
 
 

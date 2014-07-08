@@ -402,20 +402,20 @@
             [:fieldset
              [:textarea {:name "setup",
                          :required true
-                         :value (:setup settings)
+                         :value (str (:setup settings))
                          :on-change #(utils/edit-input controls-ch (conj state/inputs-path :setup) % owner)}]
              [:label {:placeholder "Pre-dependency commands"}]
              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
              [:textarea {:name "dependencies",
                          :required true
-                         :value (:dependencies settings)
+                         :value (str (:dependencies settings))
                          :on-change #(utils/edit-input controls-ch (conj state/inputs-path :dependencies) %)}]
              [:label {:placeholder "Dependency overrides"}]
              [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
               [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
               [:code "configure"] ", " [:code "make"] ", etc."]
              [:textarea {:required true
-                         :value (:post_dependencies settings)
+                         :value (str (:post_dependencies settings))
                          :on-change #(utils/edit-input controls-ch (conj state/inputs-path :post_dependencies) %)}]
              [:label {:placeholder "Post-dependency commands"}]
              [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
@@ -444,13 +444,13 @@
            [:fieldset.spec_form
             [:textarea {:name "test",
                         :required true
-                        :value (:test settings)
+                        :value (str (:test settings))
                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :test) %)}]
             [:label {:placeholder "Test commands"}]
             [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
             [:textarea {:name "extra",
                         :required true
-                        :value (:extra settings)
+                        :value (str (:extra settings))
                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra) %)}]
             [:label {:placeholder "Post-test commands"}]
             [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
@@ -504,7 +504,7 @@
      (for [{:keys [field placeholder]} inputs]
        (list
         [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
-                 :value (get settings field)
+                 :value (str (get settings field))
                  :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
         [:label {:placeholder placeholder}]))]]
    [:div.chat-room-foot
@@ -617,13 +617,13 @@
           [:div.sshkeys-inner
            [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
            [:form
-            [:input#hostname {:required true, :type "text" :value hostname
+            [:input#hostname {:required true, :type "text" :value (str hostname)
                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
             [:label {:placeholder "Hostname"}]
-            [:input#publicKey {:required true, :type "text" :value public-key
+            [:input#publicKey {:required true, :type "text" :value (str public-key)
                                :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :public-key) %)}]
             [:label {:placeholder "Public Key"}]
-            [:textarea#privateKey {:required true :value private-key
+            [:textarea#privateKey {:required true :value (str private-key)
                                    :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
             [:label {:placeholder "Private Key"}]
             (forms/stateful-button
@@ -829,7 +829,7 @@
               [:option {:value "all"} "All"]]
              [:i.fa.fa-chevron-down]]
             [:input
-             {:required true, :type "text" :value label
+             {:required true, :type "text" :value (str label)
               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
             [:label {:placeholder "Token label"}]
             (forms/stateful-button
