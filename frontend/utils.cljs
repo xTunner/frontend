@@ -10,7 +10,7 @@
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect)]))
+  (:require-macros [frontend.utils :refer (inspect timing)]))
 
 (defn csrf-token []
   (aget js/window "CSRFToken"))
@@ -126,7 +126,7 @@
   Optionally takes :value as a keyword arg to override the event's value"
   [controls-ch path event & {:keys [value]
                              :or {value (.. event -target -value)}}]
-  (debounce path #(put! controls-ch [:edited-input {:path path :value value}])))
+  (put! controls-ch [:edited-input {:path path :value value}]))
 
 (defn toggle-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.

@@ -31,10 +31,13 @@
         app-state (om/get-shared owner [:_app-state-do-not-use])]
     (om/set-state! owner [:app-state-inputs-watcher-uuid] watcher-uuid)
     (om/set-state! owner state/inputs-path (get-in @app-state state/inputs-path))
-    (add-watch app-state watcher-uuid (fn [_ _ old new]
-                                        (when (not= (get-in old state/inputs-path)
-                                                    (get-in new state/inputs-path))
-                                          (om/set-state! owner state/inputs-path (get-in new state/inputs-path)))))))
+    (add-watch app-state watcher-uuid
+               (fn [_ _ old new]
+                 (when (not (identical? (get-in old state/inputs-path)
+                                        (get-in new state/inputs-path)))
+                   (utils/debounce
+                    watcher-uuid
+                    #(om/set-state! owner state/inputs-path (get-in new state/inputs-path))))))))
 
 (defn will-unmount
   "Clears app watcher"
