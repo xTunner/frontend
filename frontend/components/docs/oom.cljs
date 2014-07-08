@@ -3,6 +3,7 @@
 (def article
   {:title "OOM killer ran"
    :last-updated "Feb 2, 2013"
+   :url :oom
    :content [:div
              [:p
               "Your build contains a message that says the Linux Out-of-Memory (OOM)killer ran."]

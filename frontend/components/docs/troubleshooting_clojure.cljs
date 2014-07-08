@@ -3,5 +3,5 @@
 (def article
   {:title "Troubleshooting Clojure"
    :url :troubleshooting-clojure
-   :content [:div " + $c(HAML['article_list'](this))"]})
+   :children [:clojure-12]})
 

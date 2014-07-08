@@ -3,4 +3,5 @@
 (def article
   {:title "Troubleshooting browsers"
    :url :troubleshooting-browsers
-   :content [:div " + $c(HAML['article_list'](this))"]})
+   :children [:browser-debugging
+              :chromedriver-moving-elements]})

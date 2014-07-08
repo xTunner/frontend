@@ -3,4 +3,4 @@
 (def article
   {:title "Troubleshooting Python"
    :url :troubleshooting-python
-   :content [:div " + $c(HAML['article_list'](this))"]})
+   :children [:git-pip-install]})

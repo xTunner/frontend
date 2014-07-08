@@ -3,4 +3,11 @@
 (def article
   {:title "Troubleshooting Ruby"
    :url :troubleshooting-ruby
-   :content [:div " + $c(HAML['article_list'](this))"]})
+   :children [:bundler-latest
+              :rspec-wrong-exit-code
+              :ruby-debugger-problems
+              :capybara-timeout
+              :git-bundle-install
+              :ruby-exception-during-schema-load
+              :wrong-ruby-commands
+              :wrong-ruby-version]})

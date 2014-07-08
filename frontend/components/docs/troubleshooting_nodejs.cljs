@@ -3,4 +3,4 @@
 (def article
   {:title "Troubleshooting NodeJS"
    :url :troubleshooting-nodejs
-   :content [:div " + $c(HAML['article_list'](this))"]})
+   :children [:git-npm-install]})

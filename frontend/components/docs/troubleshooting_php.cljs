@@ -3,4 +3,5 @@
 (def article
   {:title "Troubleshooting PHP"
    :url :troubleshooting-php
-   :content [:div " + $c(HAML['article_list'](this))"]})
+   :children [:php-memcached-compile-error
+              :composer-api-rate-limit]})

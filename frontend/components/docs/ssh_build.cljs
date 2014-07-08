@@ -33,20 +33,9 @@
              [:h5 "Ensure that you can authenticate with github"]
              [:p
               "Github makes it very easy to test that your keys are setup as expected.Just run:"]
-             [:pre
-              "’  ‘"
-              [:code.bash "’  " [:preserve "  $ ssh git@github.com  "] "  ‘"]
-              "’‘"]
-             [:p]
+             [:pre "  $ ssh git@github.com"]
              [:div "and you should see:"]
-             [:pre
-              "’  ‘"
-              [:code.bash
-               "’  "
-               [:preserve
-                "  Hi :username! You've successfully authenticated...  "]
-               "  ‘"]
-              "’‘"]
+             [:pre "  Hi :username! You've successfully authenticated...  "]
              [:p
               "If you"
               [:em "don't"]
@@ -54,14 +43,7 @@
              [:h5 "Ensure that you're authenticating as the correct user"]
              [:p
               "If you have multiple github accounts, double-check that you areauthenticated as the right one! Again, using github's ssh service,run ssh git@github.com and look at the output:"]
-             [:pre
-              "’  ‘"
-              [:code.no-highlight
-               "’  "
-               [:preserve
-                "  Hi :username! You've successfully authenticated...  "]
-               "  ‘"]
-              "’‘"]
+             [:pre "  Hi :username! You've successfully authenticated...  "]
              [:p
               "In order to ssh to a circle build, the username must be one which hasaccess to the project being built!"]
              [:p
@@ -71,43 +53,22 @@
               "If you've verified that you can authenticate with github as the correctuser, but you're still getting \\Permission denied\\ from CircleCI, youmay be offering the wrong credentials to us. (This can happen forseveral reasons, depending on your ssh configuration.)"]
              [:p
               "Figure out which key is being offered to github that authenticates you, byrunning:"]
-             [:pre
-              "’  ‘"
-              [:code.bash "’  " [:preserve "  $ ssh -v git@github.com  "] "  ‘"]
-              "’‘"]
+             [:pre "  $ ssh -v git@github.com  "]
              [:p "In the output, look for a sequence like this:"]
              [:pre
-              "’  ‘"
-              [:code.no-highlight
-               "’  "
-               [:preserve
-                "  debug1: Offering RSA public key: /Users/me/.ssh/id_rsa_github  "
-                [:_... "  debug1: Authentication succeeded (publickey).  "]]
-               "  ‘"]
-              "’‘"]
+                "  debug1: Offering RSA public key: /Users/me/.ssh/id_rsa_github\n"
+                "  <...>\n"
+                "  debug1: Authentication succeeded (publickey)."]
              [:p
               "This sequence indicates that the key /Users/me/.ssh/id_rsa_github is the one whichgithub accepted."]
              [:p
               "Next, run the ssh command for your circle build, but add the -v flag.In the output, look for one or more lines like this:"]
-             [:pre
-              "’  ‘"
-              [:code.no-highlight
-               "’  "
-               [:preserve "  debug1: Offering RSA public key: ...  "]
-               "  ‘"]
-              "’‘"]
+             [:pre "  debug1: Offering RSA public key: ...  "]
              [:p
               "Make sure that the key which github accepted (in ourexample, /Users/me/.ssh/id_rsa_github) was also offered to CircleCI."]
              [:p
               "If it was not offered, you can specify it via the -i command-lineargument to ssh. For example:"]
-             [:pre
-              "’  ‘"
-              [:code.bash
-               "’  "
-               [:preserve
-                "  $ ssh -i /Users/me/.ssh/id_rsa_github -p 64784 ubuntu@54.224.97.243  "]
-               "  ‘"]
-              "’‘"]
+             [:pre "  $ ssh -i /Users/me/.ssh/id_rsa_github -p 64784 ubuntu@54.224.97.243  "]
              [:h5 "Nope, still broken"]
              [:p "Drat! Well, + $c(HAML['contact_us']())and we'll try to help."]]})
 
