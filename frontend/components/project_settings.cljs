@@ -51,7 +51,6 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (inputs/did-mount owner)
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (utils/typeahead
          "#branch-picker-typeahead-hack"
@@ -59,7 +58,6 @@
           :updater (fn [branch]
                      (put! controls-ch [:edited-input {:path (conj state/inputs-path :settings-branch) :value branch}])
                      branch)})))
-    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [{:keys [button-text channel-message channel-args]
@@ -250,8 +248,6 @@
 
 (defn env-vars [project-data owner]
   (reify
-    om/IDidMount (did-mount [_] (inputs/did-mount owner))
-    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -385,8 +381,6 @@
 
 (defn dependencies [project-data owner]
   (reify
-    om/IDidMount (did-mount [_] (inputs/did-mount owner))
-    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -428,8 +422,6 @@
 
 (defn tests [project-data owner]
   (reify
-    om/IDidMount (did-mount [_] (inputs/did-mount owner))
-    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -472,9 +464,7 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (inputs/did-mount owner)
       (utils/tooltip (str "#fixed-failed-input-tooltip-hack-" (string/replace (name field) "_" "-"))))
-    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (html
@@ -513,8 +503,6 @@
 
 (defn chatrooms [project-data owner]
   (reify
-    om/IDidMount (did-mount [_] (inputs/did-mount owner))
-    om/IWillUnmount (will-unmount [_] (inputs/will-unmount owner))
     om/IRender
     (render [_]
       (let [project (:project project-data)
