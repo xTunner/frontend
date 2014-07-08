@@ -54,7 +54,9 @@
                       :users nil
                       :invoices nil
                       :name nil}
-   :instrumentation []})
+   :instrumentation []
+   ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
+   :inputs nil})
 
 (def user-path [:current-user])
 
@@ -169,3 +171,5 @@
 (def build-state-path [:build-state])
 
 (def error-message-path [:error-message])
+
+(def inputs-path [:inputs])

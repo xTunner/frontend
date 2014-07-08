@@ -190,7 +190,8 @@
      state
      {:target container
       :shared {:comms comms
-               :timer-atom (setup-timer-atom)}})
+               :timer-atom (setup-timer-atom)
+               :_app-state-do-not-use state}})
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)

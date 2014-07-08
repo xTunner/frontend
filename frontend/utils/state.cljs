@@ -53,4 +53,5 @@
 (defn clear-page-state [state]
   (-> state
       (assoc :crumbs nil)
+      (assoc-in state/inputs-path nil)
       (assoc-in state/error-message-path nil)))

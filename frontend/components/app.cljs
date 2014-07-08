@@ -73,7 +73,7 @@
 
     :error errors/error-page))
 
-(defn app [app owner]
+(defn app* [app owner]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
@@ -110,3 +110,7 @@
                 (footer/footer)]
                (when-not logged-in?
                  (om/build shared/sticky-help-link app))]])))))))
+
+
+(defn app [app owner]
+  (reify om/IRender (render [_] (om/build app* (dissoc app :inputs)))))
