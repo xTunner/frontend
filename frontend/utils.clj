@@ -45,9 +45,9 @@
        (~'render [~'_] ~@body))))
 
 (defmacro html [body]
-  `(let [body# ~body]
-     (if-not (:render-colors? initial-query-map)
-       (html/html body#)
+  `(if-not (:render-colors? initial-query-map)
+     (html/html ~body)
+     (let [body# ~body]
        (try
          (let [[tag# & rest#] body#
                attrs# (if (map? (first rest#))
@@ -66,4 +66,3 @@
                                    rest#))))
          (catch :default e#
            (html/html body#))))))
-
