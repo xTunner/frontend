@@ -106,6 +106,19 @@
 (defn encode-branch [branch]
   (-> branch name js/encodeURIComponent))
 
+;; Stores unique keys to uuids for the functions
+(def debounce-state (atom {}))
+
+(defn debounce
+  "Takes a unique key and a function, will only execute the last function
+   in a sliding 20ms interval (slightly longer than 16ms, time for rAF, seems to work best)"
+  [unique-key f]
+  (let [f-uuid (uuid)]
+    (swap! debounce-state assoc unique-key f-uuid)
+    (js/setTimeout #(when (= f-uuid (get @debounce-state unique-key))
+                      (f))
+                   20)))
+
 (defn edit-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.
   Path is the vector of keys you would pass to assoc-in to change the value in state,
@@ -113,7 +126,7 @@
   Optionally takes :value as a keyword arg to override the event's value"
   [controls-ch path event & {:keys [value]
                              :or {value (.. event -target -value)}}]
-  (put! controls-ch [:edited-input {:path path :value value}]))
+  (debounce path #(put! controls-ch [:edited-input {:path path :value value}])))
 
 (defn toggle-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.
