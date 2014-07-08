@@ -15,6 +15,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
             goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
@@ -364,10 +365,11 @@
 
 
 (defmethod post-control-event! :started-edit-settings-build
-  [target message {:keys [project-id branch]} previous-state current-state]
+  [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         uuid frontend.async/*uuid*
-        comms (get-in current-state [:comms])]
+        comms (get-in current-state [:comms])
+        branch (get-in current-state (conj state/inputs-path :settings-branch) (get-in current-state (conj state/project-path :default_branch)))]
     ;; TODO: edit project settings api call should respond with updated project settings
     (go
      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
@@ -375,14 +377,15 @@
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :created-env-var
-  [target message {:keys [project-id env-var]} previous-state current-state]
+  [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :post
                (gstring/format "/api/v1/project/%s/envvar" project-name)
                :create-env-var
                api-ch
-               :params env-var
+               :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
+                        :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
                :context {:project-id project-id})))
 
 
@@ -399,8 +402,11 @@
 
 
 (defmethod post-control-event! :saved-dependencies-commands
-  [target message {:keys [project-id settings]} previous-state current-state]
+  [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        settings (state-utils/merge-inputs (get-in current-state state/projects-path)
+                                           (get-in current-state state/inputs-path)
+                                           [:setup :dependencies :post_dependencies])
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
         uuid frontend.async/*uuid*
@@ -417,8 +423,12 @@
 
 
 (defmethod post-control-event! :saved-test-commands
-  [target message {:keys [project-id settings start-build? branch]} previous-state current-state]
+  [target message {:keys [project-id start-build?]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        project (get-in current-state state/project-path)
+        inputs (get-in current-state state/inputs-path)
+        settings (state-utils/merge-inputs project inputs [:test :extra])
+        branch (utils/inspect (get inputs :settings-branch (:default_branch project)))
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
         uuid frontend.async/*uuid*
@@ -436,30 +446,22 @@
        (release-button! uuid (:status api-result))))))
 
 
-(defmethod post-control-event! :saved-test-commands-and-build
-  [target message {:keys [project-id settings branch]} previous-state current-state]
-  (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-test-commands-and-build
-               api-ch
-               :params settings
-               :context {:project-id project-id
-                         :branch branch})))
-
-
 (defmethod post-control-event! :saved-notification-hooks
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])
-        settings (project-model/notification-settings (get-in current-state state/inputs-path))]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-notification-hooks
-               api-ch
-               :params settings
-               :context {:project-id project-id})))
+        comms (get-in current-state [:comms])
+        uuid frontend.async/*uuid*
+        project (get-in current-state state/project-path)
+        inputs (get-in current-state state/inputs-path)
+        settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+       (if (= :success (:status api-result))
+         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
+         (put! (:errors comms) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-ssh-key
