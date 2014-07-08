@@ -112,12 +112,11 @@
 (defn debounce
   "Takes a unique key and a function, will only execute the last function
    in a sliding 20ms interval (slightly longer than 16ms, time for rAF, seems to work best)"
-  [unique-key f]
-  (let [f-uuid (uuid)]
-    (swap! debounce-state assoc unique-key f-uuid)
-    (js/setTimeout #(when (= f-uuid (get @debounce-state unique-key))
-                      (f))
-                   20)))
+  [unique-key f & {:keys [timeout]
+                   :or {timeout 100}}]
+  (js/clearTimeout (get @debounce-state unique-key))
+  (let [timeout-id (js/setTimeout f timeout)]
+    (swap! debounce-state assoc unique-key timeout-id)))
 
 (defn edit-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.
