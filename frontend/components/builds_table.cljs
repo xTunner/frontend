@@ -69,9 +69,10 @@
             ;; TODO: how are we going to get back to the correct build in the app-state?
             ;;       Not a problem here, b/c the websocket will be updated, but something to think about
             (forms/stateful-button
-             [:a {:on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
-                                                                       :vcs-url vcs-url
-                                                                       :build-num build-num}])}
+             [:button.cancel_build
+              {:on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
+                                                                    :vcs-url vcs-url
+                                                                    :build-num build-num}])}
               "Cancel"])))])]))
 
 (defn builds-table [builds owner opts]
