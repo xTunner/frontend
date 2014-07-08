@@ -10,12 +10,14 @@
             [frontend.models.user :as user-model]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.inputs :as inputs]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -569,9 +571,9 @@
       (html
         (let [controls-ch (om/get-shared owner [:comms :controls])
               plan-data (get-in app state/org-plan-path)
-              b-email (:billing_email plan-data)
-              b-name (:billing_name plan-data)
-              b-extra (:extra_billing_data plan-data)]
+              settings (state-utils/merge-inputs plan-data
+                                                 (inputs/get-inputs-from-app-state owner)
+                                                 [:billing_email :billing_name :extra_billing_data])]
           (if-not plan-data
             [:div.invoice-data.row-fluid
              [:legend.span8 "Invoice data"]
@@ -584,49 +586,38 @@
                 [:label.control-label {:for "billing_email"} "Billing email"]
                 [:div.controls
                  [:input.span10
-                  {:value b-email,
+                  {:value (str (:billing_email settings))
                    :name "billing_email",
                    :type "text"
-                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch
-                                                 (conj state/org-plan-path :billing_email)
-                                                 %)}]]]
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :billing_email) %)}]]]
                [:div.control-group
                 [:label.control-label {:for "billing_name"} "Billing name"]
                 [:div.controls
                  [:input.span10
-                  {:value b-name
+                  {:value (str (:billing_name settings))
                    :name "billing_name",
                    :type "text"
-                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch
-                                                 (conj state/org-plan-path :billing_name)
-                                                 %)}]]]
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :billing_name) %)}]]]
                [:div.control-group
                 [:label.control-label
                  {:for "extra_billing_data"}
                  "Extra data to include in your invoice"]
                 [:div.controls
                  [:textarea.span10
-                  {:value b-extra
+                  {:value (str (:extra_billing_data settings))
                    :placeholder
                    "Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.",
                    :rows 3
                    :name "extra_billing_data"
                    ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch
-                                                 (conj state/org-plan-path :extra_billing_data)
-                                                 %)}]]]
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra_billing_data) %)}]]]
                [:div.control-group
                 [:div.controls
                  (forms/managed-button
                    [:button.btn.btn-primary
                     {:data-success-text "Saved invoice data",
                      :data-loading-text "Saving invoice data...",
-                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked
-                                                       {:billing-email b-email
-                                                        :billing-name b-name
-                                                        :extra-billing-data b-extra}])
+                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked])
                                     false)
                      :type "submit",}
                     "Save invoice data"])]]]]]))))))

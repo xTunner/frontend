@@ -784,15 +784,22 @@
             nil)))))
 
 (defmethod post-control-event! :save-invoice-data-clicked
-  [target message data previous-state current-state]
+  [target message _ previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        org-name (get-in current-state state/org-name-path)
+        settings (state-utils/merge-inputs (get-in current-state state/org-plan-path)
+                                           (get-in current-state state/inputs-path)
+                                           [:billing_email :billing_name :extra_billing_data])]
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :put
                               (gstring/format "/api/v1/organization/%s/plan" org-name)
-                              :params data))]
+                              :params {:billing-email (:billing_email settings)
+                                       :billing-name (:billing_name settings)
+                                       :extra-billing-data (:extra_billing_data settings)}))]
+        (when (= :success (:status api-result))
+          (put! (get-in current-state [:comms :controls]) [:clear-inputs (map vector (keys settings))]))
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
