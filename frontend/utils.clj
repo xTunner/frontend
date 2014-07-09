@@ -1,5 +1,6 @@
 (ns frontend.utils
-  (:require [sablono.core :as html]))
+  (:require [sablono.core :as html]
+            [frontend.analytics.rollbar :as rollbar]))
 
 (defmacro inspect
   "prints the expression '<name> is <value>', and returns the value"
@@ -27,10 +28,11 @@
 (defmacro swallow-errors
   "wraps errors in a try/catch statement, logging issues to the console
    and optionally rethrowing them if configured to do so."
-  [action]
-  `(try ~action
+  [& action]
+  `(try ~@action
         (catch :default e#
           (merror e#)
+          (rollbar/push e#)
           (when (:rethrow-errors? initial-query-map)
             (js* "debugger;")
             (throw e#)))))
