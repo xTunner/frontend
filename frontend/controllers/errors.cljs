@@ -38,10 +38,10 @@
 
 (defmethod error :api-error
   [container message {:keys [status-code status-text resp timeout? url] :as args} state]
-  (let [message (utils/inspect (cond (:message resp) (:message resp)
-                                     (= status-code 401) :logged-out
-                                     timeout? (str "A request timed out, talking to " url)
-                                     :else  (gstring/format "An unknown error occured: (%s - %s)." status-code status-text)))]
+  (let [message (cond (:message resp) (:message resp)
+                      (= status-code 401) :logged-out
+                      timeout? (str "A request timed out, talking to " url)
+                      :else  (gstring/format "An unknown error occured: (%s - %s)." status-code status-text))]
     (assoc-in state state/error-message-path message)))
 
 (defmethod post-error! :api-error

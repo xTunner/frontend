@@ -18,7 +18,7 @@
     om/IDisplayName (display-name [_] "Admin Build State")
     om/IRender
     (render [_]
-      (let [build-state (utils/inspect (get-in app state/build-state-path))
+      (let [build-state (get-in app state/build-state-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:section {:style {:padding-left "10px"}}

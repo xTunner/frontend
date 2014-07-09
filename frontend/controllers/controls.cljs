@@ -429,7 +429,7 @@
         project (get-in current-state state/project-path)
         inputs (get-in current-state state/inputs-path)
         settings (state-utils/merge-inputs project inputs [:test :extra])
-        branch (utils/inspect (get inputs :settings-branch (:default_branch project)))
+        branch (get inputs :settings-branch (:default_branch project))
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
         uuid frontend.async/*uuid*
@@ -644,12 +644,11 @@
                              :post
                              (gstring/format "/api/v1/project/%s/checkout-key" project-name)
                              :params {:type key-type}))]
-          (utils/inspect api-resp)
           (if (= :success (:status api-resp))
             (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
-            (put! err-ch (utils/inspect [:api-error api-resp])))
-          (release-button! uuid (utils/inspect (:status api-resp)))))))
+            (put! err-ch [:api-error api-resp]))
+          (release-button! uuid (:status api-resp))))))
 
 (defmethod post-control-event! :delete-checkout-key-clicked
   [target message {:keys [project-id project-name fingerprint]} previous-state current-state]
@@ -662,8 +661,8 @@
           (if (= :success (:status api-resp))
             (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
-            (put! err-ch (utils/inspect [:api-error api-resp])))
-          (release-button! uuid (utils/inspect (:status api-resp)))))))
+            (put! err-ch [:api-error api-resp]))
+          (release-button! uuid (:status api-resp))))))
 
 (defmethod post-control-event! :update-containers-clicked
   [target message {:keys [containers]} previous-state current-state]
@@ -828,9 +827,9 @@
                            :delete
                            (gstring/format "/api/v1/organization/%s/plan" org-name)
                            :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
-       (if-not (= :success (:status (utils/inspect api-result)))
+       (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
-         (let [plan-api-result (<! (utils/inspect (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name))))]
+         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org org-name
                                                                             :subpage "plan"})
@@ -879,7 +878,7 @@
 (defmethod control-event :refresh-admin-build-state-clicked
   [target message _ state]
   (let [s (assoc-in state state/build-state-path nil)]
-    (utils/inspect (get-in s state/build-state-path))
+    (get-in s state/build-state-path)
     s))
 
 (defmethod post-control-event! :refresh-admin-build-state-clicked

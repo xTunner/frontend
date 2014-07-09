@@ -27,7 +27,7 @@
                   repo (gstring/format "/api/v1/project/%s/%s" org repo)
                   org (gstring/format "/api/v1/organization/%s" org)
                   :else "/api/v1/recent-builds")
-        page (get (utils/inspect query-params) :page 0)]
+        page (get query-params :page 0)]
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset (* page builds-per-page)
                                                   :limit builds-per-page}
