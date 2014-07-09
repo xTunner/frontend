@@ -28,11 +28,10 @@
   (when (get-in app state/show-nav-settings-link-path)
     (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
-                                                  ;; XXX implement tooltips
-                                                  :tooltip "Project Settings"}
+                                                  :data-tooltip "Project Settings"}
                                      (common/ico :settings-light)]
             (:org navigation-data) [:a.settings {:href (routes/v1-org-settings navigation-data)
-                                                 :tooltip "Org Settings"}
+                                                 :data-tooltip "Org Settings"}
                                     (common/ico :settings-light)]
             :else nil))))
 
