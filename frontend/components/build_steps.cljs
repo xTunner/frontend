@@ -152,7 +152,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:autoscroll? true})
+      {:autoscroll? false})
     om/IDidMount
     (did-mount [_]
       (let [container (om/get-node owner)
@@ -164,9 +164,7 @@
         (om/set-state! owner [:scroll-listener-key] (goog.events/listen
                                                      (sel1 "main.app-main")
                                                      "scroll"
-                                                     scroll-listener))
-        ;; call it initially to set things up
-        (scroll-listener)))
+                                                     scroll-listener))))
     om/IWillUnmount
     (will-unmount [_]
       (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key])))
