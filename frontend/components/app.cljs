@@ -93,10 +93,9 @@
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (if inner? "inner" "outer")}
-              ;; Turning off key-queue for now, seems to slow down inputs
-              ;; (om/build keyq/KeyboardHandler app
-              ;;           {:opts {:keymap keymap
-              ;;                   :error-ch (get-in app [:comms :errors])}})
+              (om/build keyq/KeyboardHandler app
+                        {:opts {:keymap keymap
+                                :error-ch (get-in app [:comms :errors])}})
               (when show-inspector?
                 ;; TODO inspector still needs lots of work. It's slow and it defaults to
                 ;;     expanding all datastructures.

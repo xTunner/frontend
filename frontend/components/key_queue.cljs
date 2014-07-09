@@ -73,8 +73,7 @@
 (def global-key-ch
   (->> 1000 async/sliding-buffer async/chan))
 
-;; Turning off key-queue for now, seems to slow down inputs
-;; (start-key-queue global-key-ch)
+(start-key-queue global-key-ch)
 
 (def key-mult
   (async/mult global-key-ch))
