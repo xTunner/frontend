@@ -223,17 +223,6 @@
   ;; https://github.com/cemerick/austin/issues/49
   (js/setInterval #(enable-console-print!) 1000))
 
-;; XXX this should go in IDidMount on the build container, also doesn't work
-;;     if the user goes to a build page from a different page
-(defn handle-browser-resize
-  "Handles scrolling the container on the build page to the correct position when
-  the size of the browser window chagnes. Has to add an event listener at the top level."
-  [app-state]
-  (goog.events/listen
-   js/window "resize"
-   #(when (= :build (:navigation-point @app-state))
-      (put! controls-ch [:container-selected {:container-id (get-in @app-state state/current-container-path)}]))))
-
 (defn apply-app-id-hack
   "Hack to make the top-level id of the app the same as the
    current knockout app. Lets us use the same stylesheet."
@@ -253,7 +242,6 @@
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
       (sec/dispatch! (str "/" (.getToken history-imp))))
-    (handle-browser-resize state)
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws])))
     (when (env/development?)

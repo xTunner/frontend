@@ -6,6 +6,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
             [frontend.components.common :as common]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [goog.events]
@@ -148,6 +149,31 @@
                                :id (str "container_" (:index container))}
           (om/build-all action actions {:key :step})])))))
 
+(defn mount-browser-resize
+  "Handles scrolling the container on the build page to the correct position when
+  the size of the browser window chagnes. Has to add an event listener at the top level."
+  [owner]
+  (om/set-state! owner [:browser-resize-key]
+                 (goog.events/listen
+                  js/window
+                  "resize"
+                  #(put! (om/get-shared owner [:comms :controls])
+                         ;; This is pretty hacky, it would be nice if we had a better way to do this
+                         [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
+                                               :animate? false}]))))
+
+(defn mount-autoscroll [owner]
+  (let [container (om/get-node owner)
+        ;; autoscroll when the container_parent's tail-end is showing
+        scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
+                                                  (.-bottom (.getBoundingClientRect container)))]
+                           (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
+                             (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
+    (om/set-state! owner [:scroll-listener-key] (goog.events/listen
+                                                 (sel1 "main.app-main")
+                                                 "scroll"
+                                                 scroll-listener))))
+
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
     om/IInitState
@@ -155,19 +181,12 @@
       {:autoscroll? false})
     om/IDidMount
     (did-mount [_]
-      (let [container (om/get-node owner)
-            ;; autoscroll when the container_parent's tail-end is showing
-            scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
-                                                      (.-bottom (.getBoundingClientRect container)))]
-                               (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
-                                 (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
-        (om/set-state! owner [:scroll-listener-key] (goog.events/listen
-                                                     (sel1 "main.app-main")
-                                                     "scroll"
-                                                     scroll-listener))))
+      (mount-autoscroll owner)
+      (mount-browser-resize owner))
     om/IWillUnmount
     (will-unmount [_]
-      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key])))
+      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key]))
+      (goog.events/unlistenByKey (om/get-state owner [:browser-resize-key])))
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
