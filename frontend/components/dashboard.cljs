@@ -7,6 +7,7 @@
             [frontend.models.plan :as plan-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -42,7 +43,9 @@
                  (list
                   (when (and plan (show-trial-notice? plan))
                     (om/build project-common/trial-notice plan))
-                  (om/build builds-table/builds-table builds {:opts {:show-actions? false}})
+                  (om/build builds-table/builds-table builds {:opts {:show-actions? false
+                                                                     :show-branch? (not (:branch nav-data))
+                                                                     :show-project? (not (:repo nav-data))}})
                   [:div.recent-builds-pager
                    [:a
                     {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))

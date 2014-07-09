@@ -10,26 +10,25 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn build-row [build controls-ch show-actions?]
+(defn build-row [build controls-ch {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:tr {:class (when (:dont_build build) "dont_build")}
      [:td
-      [:a
-       {:title (str (:username build) "/" (:reponame build) " #" (:build_num build)),
-        ;; XXX todo: add include_project logic
-        :href url}
-       (str (:username build) "/" (:reponame build) " #" (:build_num build))]]
+      [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+          :href url}
+       (when show-project? (str (:username build) "/" (:reponame build) " ")) "#" (:build_num build)]]
      [:td
       (if-not (:vcs_revision build)
         [:a {:href url}]
         [:a {:title (build-model/github-revision build)
              :href url}
          (build-model/github-revision build)])]
-     [:td
-      [:a
-       {:title (build-model/branch-in-words build)
-        :href url}
-       (-> build build-model/branch-in-words (utils/trim-middle 23))]]
+     (when show-branch?
+       [:td
+        [:a
+         {:title (build-model/branch-in-words build)
+          :href url}
+         (-> build build-model/branch-in-words (utils/trim-middle 23))]])
      [:td.recent-author
       [:a
        {:title (build-model/author build)
@@ -75,28 +74,29 @@
                                                                     :build-num build-num}])}
               "Cancel"])))])]))
 
-(defn builds-table [builds owner opts]
+(defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
+                                  :or {show-branch? true
+                                       show-project? true}
+                                  :as opts}]
   (reify
     om/IDisplayName (display-name [_] "Builds Table")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            show-actions? (:show-actions? opts)]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:table.recent-builds-table
           [:thead
            [:tr
             [:th "Build"]
             [:th "Revision"]
-            ;; XXX show_branch logic
-            [:th "Branch"]
+            (when show-branch?
+              [:th "Branch"])
             [:th "Author"]
             [:th "Log"]
-            ;; XXX show_queued logic
             [:th.condense "Started at"]
             [:th.condense "Length"]
             [:th.condense "Status"]
             (when show-actions?
               [:th.condense "Actions"])]]
           [:tbody
-           (map #(build-row % controls-ch show-actions?) builds)]])))))
+           (map #(build-row % controls-ch opts) builds)]])))))
