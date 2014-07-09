@@ -12,3 +12,5 @@ mixpanel.unregister;
 mixpanel.people;
 mixpanel.people.clear_charges;
 mixpanel.people.delete_user;
+mixpanel.name_tag
+mixpanel.identify

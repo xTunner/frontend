@@ -32,7 +32,8 @@
    :restore-state? (parse-uri-bool (.getParameterValue parsed-uri "restore-state"))
    :rethrow-errors? (parse-uri-bool (.getParameterValue parsed-uri "rethrow-errors"))
    :inspector? (parse-uri-bool (.getParameterValue parsed-uri "inspector"))
-   :render-colors? (parse-uri-bool (.getParameterValue parsed-uri "render-colors"))})
+   :render-colors? (parse-uri-bool (.getParameterValue parsed-uri "render-colors"))
+   :invited-by (.getParameterValue parsed-uri "invited-by")})
 
 (def logging-enabled?
   (if (nil? (:logging-enabled? initial-query-map))

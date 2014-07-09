@@ -113,31 +113,38 @@
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage "plans"})
-      (open-to-outer! nav-ch :pricing params)))
+      (open-to-outer! nav-ch :pricing (assoc params
+                                        :_analytics-page "View Pricing Outer"
+                                        :_title "Plans and Pricing"))))
 
   (defroute v1-jobs (FragmentRoute. "/jobs") {:as params}
-    (open-to-outer! nav-ch :jobs params))
+    (open-to-outer! nav-ch :jobs (assoc params
+                                   :_analytics-page "View jobs"
+                                   :_title "Work at CircleCI")))
 
   (defroute v1-privacy (FragmentRoute. "/privacy") {:as params}
-    (open-to-outer! nav-ch :privacy params))
+    (open-to-outer! nav-ch :privacy (assoc params :_analytics-page "View Privacy")))
 
   (defroute v1-security (FragmentRoute. "/security") {:as params}
-    (open-to-outer! nav-ch :security params))
+    (open-to-outer! nav-ch :security (assoc params :_analytics-page "View Security")))
 
   (defroute v1-security-hall-of-fame (FragmentRoute. "/security/hall-of-fame") {:as params}
-    (open-to-outer! nav-ch :security-hall-of-fame params))
+    (open-to-outer! nav-ch :security-hall-of-fame (assoc params
+                                                    :_title "Security Hall of Fame"
+                                                    :_analytics-page "View Security Hall of Fame")))
 
   (defroute v1-enterprise (FragmentRoute. "/enterprise") {:as params}
-    (open-to-outer! nav-ch :enterprise params))
+    (open-to-outer! nav-ch :enterprise (assoc params
+                                         :_title "CircleCI for the enterprise")))
 
 
   ;; TODO: this should be stories/:company, but we'll wait for more stories
   (defroute v1-enterprise (FragmentRoute. "/stories/shopify") {:as params}
-    (open-to-outer! nav-ch :shopify-story params))
+    (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
 
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
   (defroute v1-enterprise (FragmentRoute. "/integrations/docker") {:as params}
-    (open-to-outer! nav-ch :docker-integration params))
+    (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
 
   (defroute v1-enterprise (FragmentRoute. "/changelog") {:as params}
     (open-to-outer! nav-ch :changelog params))

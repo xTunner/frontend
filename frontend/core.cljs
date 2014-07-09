@@ -8,6 +8,7 @@
             [dommy.core :as dommy]
             [goog.dom]
             [goog.dom.DomHelper]
+            [frontend.analytics :as analytics]
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
@@ -241,9 +242,12 @@
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
-      (sec/dispatch! (str "/" (.getToken history-imp))))
+      (do (analytics/track-path (str "/" (.getToken history-imp)))
+          (sec/dispatch! (str "/" (.getToken history-imp)))))
     (when-let [user (:current-user @state)]
-      (subscribe-to-user-channel user (get-in @state [:comms :ws])))
+      (subscribe-to-user-channel user (get-in @state [:comms :ws]))
+      (analytics/init-user (:login user)))
+    (analytics/track-invited-by (:invited-by utils/initial-query-map))
     (when (env/development?)
       (try
         (setup-browser-repl (get-in @state [:render-context :browser_connected_repl_url]))

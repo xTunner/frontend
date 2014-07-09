@@ -1,6 +1,7 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
@@ -68,10 +69,16 @@
       (assoc :navigation-point navigation-point
              :navigation-data args)))
 
+(defn post-default [navigation-point args]
+  (set-page-title! (or (:_title args)
+                       (str/capitalize (name navigation-point))))
+  (scroll! args)
+  (when (:_analytics-page args)
+    (analytics/track-page (:_analytics-page args))))
+
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
-  (set-page-title! (str/capitalize (name navigation-point)))
-  (scroll! args))
+  (post-default navigation-point args))
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
@@ -118,6 +125,7 @@
                  :project-plan
                  api-ch
                  :context {:project-name (str (:org args) "/" (:repo args))})))
+  (analytics/track-dashboard)
   (set-page-title!))
 
 (defmethod post-navigated-to! :build-state
@@ -152,11 +160,10 @@
         ws-ch (get-in current-state [:comms :ws])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get
-               (gstring/format "/api/v1/project/%s/%s" project-name build-num)
-               :build
-               api-ch
-               :context {:project-name project-name :build-num build-num})
+    (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/%s" project-name build-num)))]
+          (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
+          (when (= :success (:status api-result))
+            (analytics/track-build (:resp api-result)))))
     (when (not (get-in current-state state/project-path))
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/settings" project-name)
@@ -191,7 +198,8 @@
           (when-let [first-org (first (:resp api-result))]
             (put! (get-in current-state [:comms :controls]) [:selected-add-projects-org {:login (:login first-org) :type :org}]))))
     (ajax/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
-  (set-page-title! "Add projects"))
+  (set-page-title! "Add projects")
+  (analytics/track-signup))
 
 
 (defmethod navigated-to :project-settings
@@ -218,7 +226,8 @@
 
 (defmethod post-navigated-to! :landing
   [history-imp navigation-point _ previous-state current-state]
-  (set-page-title! "Continuous Integration and Deployment"))
+  (set-page-title! "Continuous Integration and Deployment")
+  (analytics/track-homepage))
 
 (defmethod navigated-to :documentation-root
   [history-imp to args state]
@@ -330,6 +339,7 @@
                             api-ch
                             :context {:org-name org}))
       nil))
+  (analytics/track-org-settings org)
   (set-page-title! (str "Org settings - " org)))
 
 (defmethod navigated-to :logout

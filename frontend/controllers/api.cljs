@@ -9,10 +9,8 @@
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.analytics.adroll :as adroll]
+            [frontend.analytics :as analytics]
             [frontend.analytics.mixpanel :as mixpanel]
-            [frontend.analytics.perfect-audience :as perfect-audience]
-            [frontend.analytics.google :as gaq]
             [frontend.favicon]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
@@ -434,8 +432,7 @@
       (ajax/ajax :post
                  (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
                  :start-build
-                 (get-in current-state [:comms :api]))))
-  (gaq/track-event "Repos" "Add"))
+                 (get-in current-state [:comms :api])))))
 
 
 (defmethod api-event [:unfollow-repo :success]
@@ -495,14 +492,12 @@
 
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
-  (mixpanel/track "Paid")
-  (perfect-audience/track "payer")
-  (adroll/record-payer)
   (when (= (:org-name context) (:org-settings-org-name current-state))
     (let [nav-ch (get-in current-state [:comms :nav])]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org (:org-name context)
                                                                        :subpage "containers"})
-                                :replace-token? true}]))))
+                                :replace-token? true}])))
+  (analytics/track-payer (get-in current-state [:current-user :login])))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]

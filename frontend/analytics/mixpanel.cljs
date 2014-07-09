@@ -6,8 +6,8 @@
 (defn track [event & [props]]
   (utils/swallow-errors (js/mixpanel.track event (clj->js props))))
 
-(defn track-pageview []
-  (utils/swallow-errors (js/mixpanel.track_pageview )))
+(defn track-pageview [path]
+  (utils/swallow-errors (js/mixpanel.track_pageview path)))
 
 (defn register-once [props]
   (utils/swallow-errors (js/mixpanel.register_once (clj->js props))))
@@ -23,3 +23,7 @@
     (js/mixpanel.track event (clj->js props)
                        #(do (put! ch %) (close! ch)))
     ch))
+
+(defn init-user [login]
+  (name-tag login)
+  (identify login))
