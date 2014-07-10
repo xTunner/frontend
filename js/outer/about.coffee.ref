@@ -141,6 +141,7 @@ CI.outer.About = class About extends CI.outer.Page
       visible: true
       role: "Developer Advocate"
       github: "bellkev"
+      twitter: "iamkevinbell"
       email: "kevin@circleci.com"
       bio: ""
 
