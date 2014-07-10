@@ -114,6 +114,7 @@
     :visible true
     :role "Developer Advocate"
     :github "bellkev"
+    :twitter "iamkevinbell"
     :email "kevin@circleci.com"}])
 
 (def placeholder-image [:svg.about-placeholder {:height "150px" :width "150px" :viewBox "0 0 150 150"}
