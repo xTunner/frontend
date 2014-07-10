@@ -3,6 +3,7 @@
 (def article
   {:title  "Test Android applications"
    :last-updated "March 22, 2013"
+   :url :android
    :content [:div
              [:p
               "CircleCI support testing Android applications. The SDK isalready installed on the VM at"
@@ -14,3 +15,4 @@
               [:code.no-highlight
                "’dependencies:  pre:    \\- echo y | android update sdk --no-ui --filter \\android-18\\‘"]
               "’‘"]]})
+

@@ -2,6 +2,7 @@
 
 (def article
   {:title "Troubleshooting Ruby"
+   :short-title "Ruby"
    :url :troubleshooting-ruby
    :children [:bundler-latest
               :rspec-wrong-exit-code

@@ -2,6 +2,7 @@
 
 (def article
   {:title "Troubleshooting Clojure"
+   :short-title "Clojure"
    :url :troubleshooting-clojure
    :children [:clojure-12]})
 

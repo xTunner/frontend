@@ -242,12 +242,15 @@
     :ref :privacy-and-security
     :docs privacy-and-security}])
 
-(defn sidebar-article [article-ref]
+(defn article-list-item [article-ref & [title-key]]
   (if-let [article (get documentation-pages article-ref)]
     (let [article-name (:url article)
           article-href (str "/docs/" (name article-name))
           article-children (:children article)
-          title (:title article)
+          title (or
+                  ((or title-key :title) article)
+                  ;; if no short title exists, fall back to using :title
+                  (:title article))
           formatted-title (if (seq article-children)
                             (str title " (" (count article-children) ")")
                             title)]
@@ -260,7 +263,7 @@
    [:li
     [:h4
      [:a {:href (:ref category)} (:name category)]]]
-   (map #(sidebar-article %) (:docs category))])
+   (map #(article-list-item % :short-title) (:docs category))])
 
 (def sidebar (map #(sidebar-category %) sidebar-menu))
 
@@ -299,7 +302,7 @@
                 last-updated])
              (when-let [children (-> article :children seq)]
                [:ul.article_list
-                (map sidebar-article children)])
+                (map article-list-item children)])
              (:content article)]))))
 
 (defrender documentation [app owner opts]
@@ -312,9 +315,9 @@
             [:div.articles.span4
              [:h4 "Getting started"]
              [:ul.articles_list
-              (map sidebar-article getting-started)]]
+              (map article-list-item getting-started)]]
             [:div.articles.span4
              [:h4 "Troubleshooting"]
              [:ul.articles_list
-              (map sidebar-article troubleshooting)]]]])))
+              (map article-list-item troubleshooting)]]]])))
 

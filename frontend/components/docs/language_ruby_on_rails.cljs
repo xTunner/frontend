@@ -2,6 +2,7 @@
 
 (def article
   {:title "Continuous Integration and Continuous Deployment with Ruby/Rails"
+   :short-title "Ruby/Rails"
    :last-updated "March 12, 2014"
    :url :language-ruby-on-rails
    :content [:div
