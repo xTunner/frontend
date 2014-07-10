@@ -1,7 +1,6 @@
 (ns frontend.components.documentation
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [frontend.docs :as docs]
             [frontend.components.docs.android :as android]
             [frontend.components.docs.api :as api]
             [frontend.components.docs.background-process :as background-process]
