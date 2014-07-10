@@ -7,23 +7,23 @@
    :url :language-python
    :content [:div
              [:p
-              "CircleCI works well for Python projects.We run automatic inference on each build to determine your dependencies and test commands.If we don't infer all of your settings, you can also add custom configuration to a"
+              "CircleCI works well for Python projects. We run automatic inference on each build to determine your dependencies and test commands. If we don't infer all of your settings, you can also add custom configuration to a "
               [:a {:href "/docs/configuration"} "circle.yml"]
-              "file checked into your repo's root directory."]
+              " file checked into your repo's root directory."]
              [:h3 "Version"]
              [:p
               "When Circle detects Python, we automatically use "
               [:code "virtualenv"]
-              "to create an isolated Python environment using Python"]
+              " to create an isolated Python environment using Python"]
              [:p
-              "We have"
+              "We have "
               [:a {:href "/docs/environment#python"} "many versions of Python"]
-              "pre-installed. If you don't want to use the default, you can specify your Python version from your circle.yml:"]
+              " pre-installed. If you don't want to use the default, you can specify your Python version from your circle.yml:"]
              [:p
               "Please + $c(HAML.contact_us())if other versions of Python would be of use to you."]
              [:p
               [:span.label.label-info "Note:"]
-              "Circle will set up "
+              " Circle will set up "
               [:code "virtualenv"]
               " if you specify your Python version in your "
               [:code "circle.yml"]
@@ -32,34 +32,31 @@
              [:p
               "Circle automatically installs your dependencies using either "
               [:code "pip"]
-              "when we find a "
+              " when we find a "
               [:code "requirements.txt"]
               ", or "
               [:code "distutils"]
-              "when we find a "
+              " when we find a "
               [:code "setup.py"]
               " file."]
              [:p
-              "You can also"
+              "You can also "
               [:a
                {:href "/docs/configuration#dependencies"}
-               "add custom dependencies commands"]
+               " add custom dependencies commands"]
               "from your "
               [:code "circle.yml"]
               ", for example:"]
              [:pre
-              "’‘"
               [:code.no-highlight
-               "’dependencies:  pre:    - pip install PIL --allow-external PIL --allow-unverified PIL‘"]
-              "’‘"]
-             [:p]
+               "dependencies:\n  pre:\n    - pip install PIL --allow-external PIL --allow-unverified PIL"]]
              [:h3 "Databases"]
              [:p
-              "Circle has pre-installed more than a dozenincluding PostgreSQL and MySQL.If needed, you can"
+              "Circle has pre-installed more than a dozenincluding PostgreSQL and MySQL. If needed, you can "
               [:a
                {:href "/docs/manually#dependencies"}
                "manually set up your test database"]
-              "from your "
+              " from your "
               [:code "circle.yml"]
               "."]
              [:h3 "Testing"]
@@ -68,25 +65,23 @@
               [:code "tox"]
               " when we find a "
               [:code "tox.ini"]
-              " file,and runs "
+              " file, and runs "
               [:code "nosetests"]
               " when we find a "
               [:code "unittest.py"]
-              " file.If you are using Django, then Circle will run "
+              " file. If you are using Django, then Circle will run "
               [:code "manage.py test"]
-              ".You can"
+              ". You can"
               [:a {:href "/docs/configuration#test"} "add custom test commands"]
-              "from your "
+              " from your "
               [:code "circle.yml"]
               ":"]
              [:pre
-              "’‘"
               [:code.no-highlight
-               "’test:  override:    - ./my_testing_script.sh‘"]
-              "’‘"]
+               "test:\n  override:\n    - ./my_testing_script.sh"]]
              [:h3 "Deployment"]
              [:p
-              "CircleCI has"
+              "CircleCI has "
               [:a
                {:href "/docs/configuration#deployment"}
                "first-class support for deployment"]
@@ -94,17 +89,14 @@
               [:code "circle.yml"]
               ":"]
              [:pre
-              "’‘"
               [:code.no-highlight
-               "’deployment:  production:    branch: master    commands:      - fab deploy‘"]
-              "’‘"]
-             [:p]
+               "deployment:\n  production:\n    branch: master\n    commands:\n      - fab deploy"]]
              [:h3 "Troubleshooting for Python"]
              [:p
-              "Problems?Check out our"
+              "Problems? Check out our "
               [:a {:href "/docs/troubleshooting-python"} "Python troubleshooting"]
-              "information:"]
+              " information:"]
              " + $c(this.include_article('troubleshooting_python'))"
              [:p
-              "If you are still having trouble, please + $c(HAML.contact_us())and we will be happy to help."]]})
+              "If you are still having trouble, please $c(HAML.contact_us()) and we will be happy to help."]]})
 
