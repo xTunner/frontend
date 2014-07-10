@@ -1,0 +1,71 @@
+(ns frontend.components.docs.installing-custom-software)
+
+(def article
+  {:title "Install custom software"
+   :last-updated "May 2, 2013"
+   :url :installing-custom-software
+   :content [:div
+             [:p
+              "The CircleCI environment provides the libraries, languages, and databases needed for most development work(check out the"
+              [:a {:href "/docs/environment"} "comprehensive list)."]
+              "However, if you need to install a particular version of software—to match your production systems or to test backward compatibility, for example—or add custom code, CircleCI makes it easy to set up your environment to meet your testing needs."]
+             [:h2 "Root commands and packages"]
+             [:p
+              "to add any packages we don't currently have.We'll add them to your project, and you'll be able to start using them immediately.We'll add common packages to our VM image too."]
+             [:p
+              "We can run any arbitrary command for you in the same way, not just package management.This means we can tweak our VM in any way you need.Let us know what commands you need when you"]
+             [:p
+              "In case you're curious, the reason we require this is that our virtualization does not support providing "
+              [:code "sudo"]
+              " to arbitrary users.We use LXC (the same technology used by Heroku, Docker, and other PaaSes).LXC is one of the many technologies we use to make your builds run so fast, especially compared to alternatives such as VirtualBox or OpenVZ.The tradeoff is you need to + $c(HAML.contact_us())for "
+              [:code "sudo"]
+              " commands.We plan to address this in the future."]
+             [:h2 "Installing via the circle.yml"]
+             [:p
+              "If you don't need root to install your custom software, you can do it manually.You do this by adding extra commands within the dependencies section in your"
+              [:code "circle.yml"]
+              "file."]
+             [:p
+              "For example, if you need to use a specific version of Redis, you would download and compile the needed version as part of your build."]
+             [:pre
+              "’‘"
+              [:code.no-highlight
+               "’dependencies:  pre:    - wget http://redis.googlecode.com/files/redis-2.4.18.tar.gz    - tar xvzf redis-2.4.18.tar.gz    - cd redis-2.4.18 && make‘"]
+              "’‘"]
+             [:h3 "Caching"]
+             [:p
+              "Natually, downloading and compiling this custom software can take time, making your build longer.To reduce the time spent installing dependencies, CircleCI will cache them between builds.You can add arbitrary directories to this cache, allowing you to avoid the overhead of building your custom software during the build."]
+             [:p "Tell CircleCI to save a cached copy using the"]
+             [:pre
+              "’‘"
+              [:code.no-highlight
+               "’dependencies:  cache_directories:    - redis-2.4.18   # relative to the build directory‘"]
+              "’‘"]
+             [:h3 "Avoid recompiles"]
+             [:p
+              "To take advantage of this, you'll need to test for the presence of an existing cached install of your software.If the software is already present, no need to build it.You should test that your cache is there by including a"
+              [:code "test"]
+              "command in the dependencies section in your"
+              [:code "circle.yml"]
+              "file."]
+             [:pre
+              "’‘"
+              [:code.bash
+               "’dependencies:  cache_directories:    - redis-2.4.18  pre:    - if [[ ! -e redis-2.4.18/src/redis-server ]]; then wget http://redis.googlecode.com/files/redis-2.4.18.tar.gz && tar xzf redis-2.4.18.tar.gz && cd redis-2.4.18 && make; fi‘"]
+              "’‘"]
+             [:p "Or, a little more cleanly:"]
+             [:pre
+              "’‘"
+              [:code.bash
+               "’dependencies:  pre:    - bash ./install-redis-2.4.18.sh‘"]
+              "’‘"]
+             [:p
+              "where"
+              [:code "install-redis-2.4.18.sh"]
+              "isa file checked into your repository, like the following:"]
+             [:pre
+              "’‘"
+              [:code.bash
+               "’set -xset -eif [ ! -e redis-2.4.18/src/redis-server ]; then  wget http://redis.googlecode.com/files/redis-2.4.18.tar.gz  tar xzf redis-2.4.18.tar.gz  cd redis-2.4.18  make;fi‘"]
+              "’‘"]]})
+
