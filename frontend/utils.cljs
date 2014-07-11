@@ -63,11 +63,14 @@
                        (take 3 (drop 15 r)) ["-"]
                        (take 12 (drop 18 r))))))
 
+(defn md5 [content]
+  (let [container (goog.crypt.Md5.)]
+    (.update container content)
+    (crypt/byteArrayToHex (.digest container))))
+
 (defn email->gravatar-url [email]
   (let [email (or email "unknown-email@unknown-domain.com")
-        container (goog.crypt.Md5.)
-        _ (.update container email)
-        hash (crypt/byteArrayToHex (.digest container))]
+        hash (md5 email)]
     (str "https://secure.gravatar.com/avatar/" hash "?s=50")))
 
 (defn notify-error [ch message]
