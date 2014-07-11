@@ -126,14 +126,14 @@
          [:i.fa.fa-question-circle {:id "ssh-popover-hack" :title "SSH"}]]
         [:div.build-ssh-list
          [:dl.dl-horizontal
-          (map (fn [node]
+          (map (fn [node i]
                  (list
-                  [:dt (when (> 1 (count nodes)) [:span (:index node)])]
+                  [:dt (when (< 1 (count nodes)) [:span i])]
                   [:dd {:class (when (:ssh_enabled node) "connected")}
                    [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
                    (when-not (:ssh_enabled node)
                      [:span.loading-spinner common/spinner])]))
-               nodes)]]
+               nodes (range))]]
         [:div.build-ssh-doc
          "Debugging Selenium browser tests? "
          [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
