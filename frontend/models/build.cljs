@@ -146,7 +146,8 @@
 (defn ssh-enabled-now? [build]
   (and (:ssh_enabled build)
        (:node build)
-       (every? :ssh_enabled (:node build))))
+       (or (running? build)
+           (every? :ssh_enabled (:node build)))))
 
 
 (defn display-build-invite [build]
