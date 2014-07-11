@@ -145,7 +145,7 @@
       (string/replace "$CIRCLE_ARTIFACTS/" "")
       (gstring/truncateMiddle 80)))
 
-(defn build-artifacts-list [data owner]
+(defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
   (reify
     om/IRender
     (render [_]
@@ -168,13 +168,14 @@
 
               [:ol.build-artifacts-list
                (map (fn [artifact]
-                      [:li
-                       (if admin?
-                         ;; Be extra careful about XSS of admins
-                         (cleanup-artifact-path (:pretty_path artifact))
-
-                         [:a {:href (:url artifact) :target "_blank"}
-                          (cleanup-artifact-path (:pretty_path artifact))])])
+                      (let [display-path (-> artifact
+                                             :pretty_path
+                                             cleanup-artifact-path
+                                             (str (when show-node-indices? (str " (" (:node_index artifact) ")"))))]
+                        [:li
+                         (if admin? ; Be extra careful about XSS of admins
+                           display-path
+                           [:a {:href (:url artifact) :target "_blank"} display-path])]))
                     artifacts)]))])))))
 
 (defn build-head [data owner]
@@ -317,5 +318,6 @@
            (when (build-model/ssh-enabled-now? build)
              (om/build build-ssh (:node build)))
            (when (:has_artifacts build)
-             (om/build build-artifacts-list {:artifacts-data (get build-data :artifacts-data)
-                                             :user user}))]])))))
+             (om/build build-artifacts-list
+                       {:artifacts-data (get build-data :artifacts-data) :user user}
+                       {:opts {:show-node-indices? (< 1 (:parallel build))}}))]])))))
