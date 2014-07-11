@@ -9,6 +9,7 @@
             [frontend.components.forms :as forms]
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
@@ -217,12 +218,11 @@
                       (build-model/duration build))]]
               [:tr
                [:th "Previous"]
-               (if-not (:previous_build build)
+               (if-not (:previous build)
                  [:td "none"]
                  [:td
-                  [:a {:href (build-model/path-for (select-keys build [:vcs_url])
-                                                   (assoc build :build_num (:previous_build build)))}
-                   (:previous_build build)]])
+                  [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
+                   (:build_num (:previous build))]])
                [:th "Status"]
                [:td
                 [:span.build-status {:class (:status build)}
