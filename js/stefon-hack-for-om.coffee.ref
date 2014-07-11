@@ -14,7 +14,6 @@ window.stefon_hack_for_om =
 
   asset_paths:
     "/img/outer/about/paul.png": '(asset-path "img/outer/about/paul.png")'
-    "/img/outer/about/allen.png": '(asset-path "img/outer/about/allen.png")'
     "/img/outer/about/david.png": '(asset-path "img/outer/about/david.png")'
     "/img/outer/about/jenneviere.png": '(asset-path "img/outer/about/jenneviere.png")'
     "/img/outer/about/daniel.png": '(asset-path "img/outer/about/daniel.png")'
@@ -22,9 +21,7 @@ window.stefon_hack_for_om =
     "/img/outer/about/gordon.png": '(asset-path "img/outer/about/gordon.png")'
     "/img/outer/about/danny.png": '(asset-path "img/outer/about/danny.png")'
     "/img/outer/about/nick.png": '(asset-path "img/outer/about/nick.png")'
-    "/img/outer/about/dave.png": '(asset-path "img/outer/about/dave.png")'
     "/img/outer/about/tim.png": '(asset-path "img/outer/about/tim.png")'
-    "/img/outer/about/josh.png": '(asset-path "img/outer/about/josh.png")'
     "/img/outer/stories/john.jpg": '(asset-path "img/outer/stories/john.jpg")'
     "/img/outer/stories/arthur.jpg": '(asset-path "img/outer/stories/arthur.jpg")'
     "/img/container-oriented.png": '(asset-path "img/container-oriented.png")'
