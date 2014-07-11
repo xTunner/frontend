@@ -348,15 +348,6 @@
             "know what you think about them"]
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
-           (describe-flag {:flag :build_GH1157_container_oriented_ui
-                           :title "Container-Oriented Build Page"
-                           :blurb [:p
-                                   "We're looking at optimizing our build page for builds with large "
-                                   "numbers of containers. With this option set, the build actions "
-                                   "are separated into tabbed subpages corresponding to each container. "
-                                   "Note that this will only apply to builds run while this setting is "
-                                   "enabled -- it won't change old build pages."
-                                   [:p [:img {:width 600 :src (stefon/asset-path "/img/container-oriented.png")}]]]})
            (describe-flag {:flag :junit
                            :title "JUnit Support"
                            :blurb [:p
