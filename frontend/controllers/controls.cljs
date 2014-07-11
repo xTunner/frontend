@@ -95,7 +95,7 @@
 
 (defmethod control-event :state-restored
   [target message path state]
-  (let [str-data (.getItem js/localStorage "circle-state")]
+  (let [str-data (.getItem js/sessionStorage "circle-state")]
     (if (seq str-data)
       (-> str-data
           reader/read-string
@@ -281,7 +281,7 @@
 
 (defmethod post-control-event! :state-persisted
   [target message channel-id previous-state current-state]
-  (.setItem js/localStorage "circle-state"
+  (.setItem js/sessionStorage "circle-state"
             (pr-str (dissoc current-state :comms))))
 
 
