@@ -63,8 +63,9 @@
   (assoc-in state state/show-all-branches-path value))
 
 (defmethod control-event :collapse-branches-toggled
-  [target message {:keys [project-id]} state]
-  (update-in state (state/project-branches-collapsed-path project-id) not))
+  [target message {:keys [project-id project-id-hash]} state]
+  ;; Lets us store this in localstorage without leaking info about the user
+  (update-in state (state/project-branches-collapsed-path project-id-hash) not))
 
 (defmethod control-event :slim-aside-toggled
   [target message {:keys [project-id]} state]
