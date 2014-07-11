@@ -135,15 +135,6 @@ CI.outer.About = class About extends CI.outer.Page
       twitter: "iand675"
       email: "ian@circleci.com"
       bio: ""
-    "bellkev":
-      name: "Kevin Bell"
-      img_path: ''
-      visible: true
-      role: "Developer Advocate"
-      github: "bellkev"
-      twitter: "iamkevinbell"
-      email: "kevin@circleci.com"
-      bio: ""
 
   viewContext: =>
     team: @team
