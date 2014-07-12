@@ -58,6 +58,7 @@ CI.Versions =
     "2.1.0-p0",
     "2.1.1",
     "2.1.2",
+    "2.1.2-railsexpress",
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4",
@@ -71,13 +72,14 @@ CI.Versions =
     "jruby-1.7.12",
     "rbx-2.2.6"
     ]
-  bundler: "1.6.2"
+  bundler: "1.6.3"
   cucumber: "1.2.0"
   rspec: "2.14.4"
   rake: "10.1.0"
 
   default_node: "0.8.12"
   node_versions: [
+     "0.11.13",
      "0.11.8",
      "0.10.28",
      "0.10.26",
@@ -97,7 +99,7 @@ CI.Versions =
 
   lein: "2.3.1"
   ant: "1.8.2"
-  maven: "3.0.5"
+  maven: "3.2.1"
 
   default_python: "2.7.3"
   python: "2.7.3"
@@ -152,8 +154,8 @@ CI.Versions =
      "stackless-2.7.2",
      "stackless-3.2.2"
   ]
-  pip: "1.4.1"
-  virtualenv: "1.11.4"
+  pip: "1.5.6"
+  virtualenv: "1.11.6"
 
   default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.5"
@@ -185,7 +187,7 @@ CI.Versions =
     "5.5.11"
   ]
 
-  golang: '1.2.1'
+  golang: '1.3'
   erlang: 'r14b04'
 
   default_java_package: "oraclejdk7"
@@ -212,22 +214,22 @@ CI.Versions =
 
   solr: "4.3.1"
   postgresql: "9.3"
-  mysql: "5.5.32"
+  mysql: "5.5.37"
   mongodb: "2.4.10"
   riak: "1.4.8-1"
   cassandra: "2.0.6"
-  redis: "2.8.8"
+  redis: "2.8.12"
   memcache: "1.4.13"
   sphinx: "2.0.4-release"
   elasticsearch: "0.90.2"
   beanstalkd: "1.4.6"
   couchbase: "2.0.0"
   couchdb: "1.3.0"
-  neo4j: "2.0.1"
-  rabbitmq: "3.3.1"
+  neo4j: "2.1.2"
+  rabbitmq: "3.3.4"
 
 
-  git: "1.8.5.1"
+  git: "1.8.5.5"
 
   ghc: "7.6.3"
   ghc_versions: [

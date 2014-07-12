@@ -16,7 +16,7 @@ CI.tracking =
       # track perfect audience
     try
       window._pq = window._pq or []
-      _pq.push ["track", "payer", [orderId: login]]
+      _pq.push ["track", "payer", {orderId: login}]
     catch e
       console.error e
     # track twtitter
