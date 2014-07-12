@@ -32,8 +32,7 @@
   [project]
   (branch-builds project (keyword (:default_branch project))))
 
-(defn notification-settings [project]
-  (select-keys project [:hipchat_room
+(def notification-keys [:hipchat_room
                         :hipchat_api_token
                         :hipchat_notify
                         :hipchat_notify_prefs
@@ -54,7 +53,10 @@
                         :irc_keyword
                         :irc_username
                         :irc_password
-                        :irc_notify_prefs]))
+                        :irc_notify_prefs])
+
+(defn notification-settings [project]
+  (select-keys project notification-keys))
 
 (defn last-master-build
   "Gets the last finished master build on the branch"

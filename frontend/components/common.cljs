@@ -4,26 +4,45 @@
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-;; XXX flashes
-(defn flashes []
-  "")
+(defn contact-us-inner [controls-ch]
+  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
+   "contact us"])
+
+(defn flashes
+  "Displays common error messages (poorly named since flashes has another use in the app)."
+  [error-message owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            ;; use error messages that have html without passing html around
+            display-message (condp = error-message
+                              :logged-out [:span "You've been logged out, " [:a {:href (gh-utils/auth-url)} "log back in"] " to continue."]
+                              error-message)]
+        (html
+         (if-not error-message
+           [:span]
+
+           [:div.flash-error-wrapper.row-fluid
+            [:div.offset1.span10
+             [:div.alert.alert-block.alert-danger
+              [:a.close {:on-click #(put! controls-ch [:clear-error-message-clicked])} "×"]
+              "Error: " display-message
+              " If we can help, " (contact-us-inner controls-ch) "."]]]))))))
 
 (def spinner
   [:svg {:viewBox "0 0 100 100"
-         :spinner ""
+         :data-spinner true
          :dangerouslySetInnerHTML
          #js {"__html" "<path fill=\"#fff\" d=\"M50 0c-23.297 0-42.873 15.936-48.424 37.5-.049.191-.083.389-.083.595 0 1.315 1.066 2.381 2.381 2.381h20.16c.96 0 1.783-.572 2.159-1.391l.041-.083c4.157-8.968 13.231-15.192 23.766-15.192 14.465 0 26.19 11.726 26.19 26.19 0 14.465-11.726 26.191-26.19 26.191-10.535 0-19.609-6.225-23.766-15.191l-.041-.084c-.376-.82-1.199-1.393-2.16-1.393h-20.159c-1.315 0-2.381 1.066-2.381 2.381 0 .207.035.406.083.596 5.551 21.564 25.127 37.5 48.424 37.5 27.614 0 50-22.385 50-50 0-27.614-22.386-50-50-50z\">
                          <animateTransform attributeName=\"transform\" begin=\"0ms\" dur=\"600ms\" fill=\"freeze\" type=\"rotate\" repeatDur=\"indefinite\" values=\"0 50 50;359 50 50\" keyTimes=\"0;1\" calcMode=\"spline\" keySplines=\"0.42 0 0.58 1\"></animateTransform>
                        </path>
                        <circle fill=\"#fff\" cx=\"50\" cy=\"50\" r=\"11.905\"></circle>"}}])
-
-(defn contact-us-inner [controls-ch]
-  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
-   " contact us "])
 
 (defn messages [messages]
   [:div.row-fluid

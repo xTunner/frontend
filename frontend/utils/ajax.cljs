@@ -43,7 +43,7 @@
    :content-type "application/xml"
    :write identity})
 
-;; XXX only implementing JSON format and not implementing prefixes for now since we don't use either
+;; TODO only implementing JSON format and not implementing prefixes for now since we don't use either
 (defn ajax [method url message channel & {:keys [params keywords? context headers]
                                           :or {keywords? true}}]
   (let [uuid frontend.async/*uuid*]
@@ -62,7 +62,7 @@
                              :handler #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :success (assoc % :context context)]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
-                                               (put! channel [message :failed (assoc % :context context)]))
+                                               (put! channel [message :failed (assoc % :context context :url url)]))
                              :finally #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :finished context]))}))))
 
@@ -91,12 +91,17 @@
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(put! channel (assoc % :status :success))
-                             :error-handler #(put! channel %)
+                             ;; TODO: clean this up
+                             :error-handler #(put! channel (-> %
+                                                               (assoc :status-code (:status %))
+                                                               (assoc :resp (get-in % [:response :resp]))
+                                                               (assoc :status :failed)
+                                                               (assoc :url url)))
                              :finally #(close! channel)}))
     channel))
 
 
-;; XXX this should be possible to do with the normal ajax function, but punting for now
+;; TODO this should be possible to do with the normal ajax function, but punting for now
 (defn managed-form-post [url & {:keys [params headers keywords?]
                                 :or {keywords? true}}]
   (let [channel (chan)]

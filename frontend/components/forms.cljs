@@ -194,7 +194,7 @@
                    {:api-count api-count
                     :success-fn
                     #(append-cycle owner :success)
-                    :error-fn
+                    :failure-fn
                     #(append-cycle owner :failed)})
           (apply handler args))))))
 

@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
+            [frontend.analytics :as analytics]
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
@@ -9,11 +10,14 @@
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.intercom :as intercom]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.seq :refer [dissoc-in]]
+            [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
             goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
@@ -59,12 +63,19 @@
   (assoc-in state state/show-all-branches-path value))
 
 (defmethod control-event :collapse-branches-toggled
-  [target message {:keys [project-id]} state]
-  (update-in state (state/project-branches-collapsed-path project-id) not))
+  [target message {:keys [project-id project-id-hash]} state]
+  ;; Lets us store this in localstorage without leaking info about the user
+  (update-in state (state/project-branches-collapsed-path project-id-hash) not))
 
 (defmethod control-event :slim-aside-toggled
   [target message {:keys [project-id]} state]
   (update-in state state/slim-aside-path not))
+
+(defmethod post-control-event! :slim-aside-toggled
+  [target message {:keys [project-id]} previous-state current-state]
+  (if (get-in current-state state/slim-aside-path)
+    (analytics/track-expand-nav)
+    (analytics/track-collapse-nav)))
 
 (defmethod control-event :show-admin-panel-toggled
   [target message _ state]
@@ -84,7 +95,7 @@
 
 (defmethod control-event :state-restored
   [target message path state]
-  (let [str-data (.getItem js/localStorage "circle-state")]
+  (let [str-data (.getItem js/sessionStorage "circle-state")]
     (if (seq str-data)
       (-> str-data
           reader/read-string
@@ -141,27 +152,29 @@
 
 
 (defmethod control-event :container-selected
-  [target message container-id state]
+  [target message {:keys [container-id]} state]
   (assoc-in state state/current-container-path container-id))
 
 (defmethod post-control-event! :container-selected
-  [target message container-id previous-state current-state]
+  [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
           current-scroll-top (.-scrollTop parent)
           current-scroll-left (.-scrollLeft parent)
-          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))
-          scroller (or (.-scroll_handler parent)
-                       (set! (.-scroll_handler parent)
-                             ;; Store this on the parent so that we don't handle parent scroll while
-                             ;; the animation is playing
-                             (goog.fx.dom.Scroll. parent
-                                                  #js [0 0]
-                                                  #js [0 0]
-                                                  250)))]
-      (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
-      (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-      (.play scroller)))
+          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
+      (if-not animate?
+        (set! (.-scrollLeft parent) new-scroll-left)
+        (let [scroller (or (.-scroll_handler parent)
+                            (set! (.-scroll_handler parent)
+                                  ;; Store this on the parent so that we don't handle parent scroll while
+                                  ;; the animation is playing
+                                  (goog.fx.dom.Scroll. parent
+                                                       #js [0 0]
+                                                       #js [0 0]
+                                                       250)))]
+          (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
+          (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
+          (.play scroller)))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
     (let [container (get-in current-state (state/container-path container-id))
@@ -246,6 +259,13 @@
   [target message {:keys [path]} state]
   (update-in state path not))
 
+(defmethod control-event :clear-inputs
+  ;; assumes that paths are relative to inputs, e.g. [:new-env-var], not [:inputs :new-env-var]
+  [target message {:keys [paths]} state]
+  (reduce (fn [state path]
+            (dissoc-in state (concat state/inputs-path path)))
+          state paths))
+
 
 (defmethod post-control-event! :intercom-dialog-raised
   [target message dialog-message previous-state current-state]
@@ -261,19 +281,33 @@
 
 (defmethod post-control-event! :state-persisted
   [target message channel-id previous-state current-state]
-  (.setItem js/localStorage "circle-state"
+  (.setItem js/sessionStorage "circle-state"
             (pr-str (dissoc current-state :comms))))
 
 
 (defmethod post-control-event! :retry-build-clicked
+  [target message {:keys [build-num build-id vcs-url clear-cache?] :as args} previous-state current-state]
+  (let [api-ch (-> current-state :comms :api)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
+                                             :params (when clear-cache? {:no-cache true})))]
+       (put! api-ch [:retry-build (:status api-result) api-result])
+       (when (= :success (:status api-result))
+         (analytics/track-trigger-build (:resp api-result) :clear-cache? clear-cache?))))))
+
+
+(defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
-               :retry-build
-               api-ch)))
+    (go
+     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/ssh" org-name repo-name build-num)))]
+       (put! api-ch [:retry-build (:status api-result) api-result])
+       (when (= :success (:status api-result))
+         (analytics/track-trigger-build (:resp api-result) :ssh? true))))))
 
 
 (defmethod post-control-event! :followed-repo
@@ -283,7 +317,8 @@
                (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
                :follow-repo
                api-ch
-               :context repo)))
+               :context repo))
+  (analytics/track-follow-repo))
 
 
 (defmethod post-control-event! :followed-project
@@ -293,7 +328,8 @@
                (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
                :follow-project
                api-ch
-               :context {:project-id project-id})))
+               :context {:project-id project-id}))
+  (analytics/track-follow-project))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -303,7 +339,8 @@
                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
                :unfollow-repo
                api-ch
-               :context repo)))
+               :context repo))
+  (analytics/track-unfollow-repo))
 
 
 (defmethod post-control-event! :unfollowed-project
@@ -313,7 +350,8 @@
                (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
                :unfollow-project
                api-ch
-               :context {:project-id project-id})))
+               :context {:project-id project-id}))
+  (analytics/track-unfollow-project))
 
 
 ;; XXX: clean this up
@@ -338,29 +376,32 @@
     ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
     ;; do a swap here (or find a better way to structure this!)
     (when (not= current-container-id new-scrolled-container-id)
-      (put! controls-ch [:container-selected new-scrolled-container-id]))))
+      (put! controls-ch [:container-selected {:container-id new-scrolled-container-id
+                                              :animate? false}]))))
 
 
 (defmethod post-control-event! :started-edit-settings-build
-  [target message {:keys [project-id branch]} previous-state current-state]
+  [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
+        uuid frontend.async/*uuid*
+        comms (get-in current-state [:comms])
+        branch (get-in current-state (conj state/inputs-path :settings-branch) (get-in current-state (conj state/project-path :default_branch)))]
     ;; TODO: edit project settings api call should respond with updated project settings
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))
-               :start-build
-               api-ch)))
-
+    (go
+     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+       (put! (:api comms) [:start-build (:status api-result) api-result])
+       (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :created-env-var
-  [target message {:keys [project-id env-var]} previous-state current-state]
+  [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :post
                (gstring/format "/api/v1/project/%s/envvar" project-name)
                :create-env-var
                api-ch
-               :params env-var
+               :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
+                        :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
                :context {:project-id project-id})))
 
 
@@ -377,53 +418,66 @@
 
 
 (defmethod post-control-event! :saved-dependencies-commands
-  [target message {:keys [project-id settings]} previous-state current-state]
+  [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-dependencies-commands
-               api-ch
-               :params settings
-               :context {:project-id project-id})))
+        settings (state-utils/merge-inputs (get-in current-state state/projects-path)
+                                           (get-in current-state state/inputs-path)
+                                           [:setup :dependencies :post_dependencies])
+        org (vcs-url/org-name project-id)
+        repo (vcs-url/repo-name project-id)
+        uuid frontend.async/*uuid*
+        comms (get-in current-state [:comms])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+       (if (= :success (:status api-result))
+         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
+           (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-subpage {:org org :repo repo :subpage "tests"})}]))
+         (put! (:errors comms) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-test-commands
-  [target message {:keys [project-id settings]} previous-state current-state]
+  [target message {:keys [project-id start-build?]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-test-commands
-               api-ch
-               :params settings
-               :context {:project-id project-id})))
-
-
-(defmethod post-control-event! :saved-test-commands-and-build
-  [target message {:keys [project-id settings branch]} previous-state current-state]
-  (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-test-commands-and-build
-               api-ch
-               :params settings
-               :context {:project-id project-id
-                         :branch branch})))
+        project (get-in current-state state/project-path)
+        inputs (get-in current-state state/inputs-path)
+        settings (state-utils/merge-inputs project inputs [:test :extra])
+        branch (get inputs :settings-branch (:default_branch project))
+        org (vcs-url/org-name project-id)
+        repo (vcs-url/repo-name project-id)
+        uuid frontend.async/*uuid*
+        comms (get-in current-state [:comms])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+       (if (= :success (:status api-result))
+         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
+           (when start-build?
+             (let [build-api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+               (put! (:api comms) [:start-build (:status build-api-result) build-api-result]))))
+         (put! (:errors comms) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-notification-hooks
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
-        api-ch (get-in current-state [:comms :api])
-        settings (project-model/notification-settings (get-in current-state state/project-path))]
-    (ajax/ajax :put
-               (gstring/format "/api/v1/project/%s/settings" project-name)
-               :save-notification-hooks
-               api-ch
-               :params settings
-               :context {:project-id project-id})))
+        comms (get-in current-state [:comms])
+        uuid frontend.async/*uuid*
+        project (get-in current-state state/project-path)
+        inputs (get-in current-state state/inputs-path)
+        settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
+    (go
+     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+       (if (= :success (:status api-result))
+         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
+         (put! (:errors comms) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-ssh-key
@@ -520,7 +574,7 @@
              (get-in current-state [:comms :api])
              :context {:project-name project-name}
              :params invitees)
-  ;; XXX: move all of the tracking stuff into frontend.analytics and let it
+  ;; TODO: move all of the tracking stuff into frontend.analytics and let it
   ;;      keep track of which service to send things to
   (mixpanel/track "Sent invitations" {:first_green_build true
                                       :project project-name
@@ -558,6 +612,18 @@
              :context {:project-name project-name
                        :project-id project-id}))
 
+(defmethod post-control-event! :extend-trial-clicked
+  [target message {:keys [org-name]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go (let [api-result (<! (ajax/managed-ajax
+                              :post
+                              (gstring/format "/api/v1/organization/%s/extend-trial" org-name)
+                              :params {:org-name org-name}))]
+          (put! api-ch [:org-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+          (release-button! uuid (:status api-result))))
+    (analytics/track-extend-trial)))
+
 
 (defmethod post-control-event! :new-plan-clicked
   [target message {:keys [containers price description base-template-id]} previous-state current-state]
@@ -585,6 +651,35 @@
                 (release-button! uuid (:status api-result))))
             nil)))))
 
+(defmethod post-control-event! :new-checkout-key-clicked
+  [target message {:keys [project-id project-name key-type]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        err-ch (get-in current-state [:comms :errors])]
+    (go (let [api-resp (<! (ajax/managed-ajax
+                             :post
+                             (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                             :params {:type key-type}))]
+          (if (= :success (:status api-resp))
+            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+              (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
+            (put! err-ch [:api-error api-resp]))
+          (release-button! uuid (:status api-resp))))))
+
+(defmethod post-control-event! :delete-checkout-key-clicked
+  [target message {:keys [project-id project-name fingerprint]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        err-ch (get-in current-state [:comms :errors])]
+    (go (let [api-resp (<! (ajax/managed-ajax
+                             :delete
+                             (gstring/format "/api/v1/project/%s/checkout-key/%s" project-name fingerprint)))]
+          (if (= :success (:status api-resp))
+            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+              (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
+            (put! err-ch [:api-error api-resp]))
+          (release-button! uuid (:status api-resp))))))
+
 (defmethod post-control-event! :update-containers-clicked
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
@@ -596,7 +691,8 @@
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
-       (release-button! uuid (:status api-result))))))
+       (release-button! uuid (:status api-result))))
+    (analytics/track-save-containers)))
 
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
@@ -608,6 +704,80 @@
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                            :params {:piggieback-orgs selected-piggyback-orgs}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+       (release-button! uuid (:status api-result))))
+    (analytics/track-save-orgs)))
+
+(defmethod post-control-event! :transfer-plan-clicked
+  [target message {:keys [to org-name]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        errors-ch (get-in current-state [:comms :errors])
+        nav-ch (get-in current-state [:comms :nav])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :put
+                           (gstring/format "/api/v1/organization/%s/%s" org-name "transfer-plan")
+                           :params {:org-name to}))]
+       (if-not (= :success (:status api-result))
+         (put! errors-ch [:api-error api-result])
+         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
+           (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org org-name
+                                                                            :subpage "plan"})}])))
+       (release-button! uuid (:status api-result))))))
+
+(defmethod control-event :preferences-updated
+  [target message args state]
+  (update-in state state/user-path merge args))
+
+(defmethod post-control-event! :preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
+            :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+
+(defmethod post-control-event! :heroku-key-add-attempted
+  [target message args previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/heroku-key"
+                           :params {:apikey (:heroku_api_key args)}))]
+       (if (= :success (:status api-result))
+         (let [me-result (<! (ajax/managed-ajax :get "/api/v1/me"))]
+           (put! api-ch [:update-heroku-key :success api-result])
+           (put! api-ch [:me (:status me-result) (assoc me-result :context {})]))
+         (put! (get-in current-state [:comms :errors]) [:api-error api-result]))
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-revocation-attempted
+  [target message {:keys [token]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :delete
+                           (gstring/format "/api/v1/user/token/%s" (:token token))
+                           :params {}))]
+       (put! api-ch [:delete-api-token (:status api-result) (assoc api-result :context {:token token})])
+       (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :api-token-creation-attempted
+  [target message {:keys [label]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :post
+                           "/api/v1/user/token"
+                           :params {:label label}))]
+       (put! api-ch [:create-api-token (:status api-result) (assoc api-result :context {:label label})])
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :update-card-clicked
@@ -631,15 +801,22 @@
             nil)))))
 
 (defmethod post-control-event! :save-invoice-data-clicked
-  [target message data previous-state current-state]
+  [target message _ previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        org-name (get-in current-state state/org-name-path)
+        settings (state-utils/merge-inputs (get-in current-state state/org-plan-path)
+                                           (get-in current-state state/inputs-path)
+                                           [:billing_email :billing_name :extra_billing_data])]
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :put
                               (gstring/format "/api/v1/organization/%s/plan" org-name)
-                              :params data))]
+                              :params {:billing-email (:billing_email settings)
+                                       :billing-name (:billing_name settings)
+                                       :extra-billing-data (:extra_billing_data settings)}))]
+        (when (= :success (:status api-result))
+          (put! (get-in current-state [:comms :controls]) [:clear-inputs (map vector (keys settings))]))
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
@@ -656,6 +833,27 @@
         ;; TODO Handle this message in the API channel
         (put! api-ch [:resend-invoice (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :cancel-plan-clicked
+  [target message {:keys [org-name cancel-reasons cancel-notes]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        nav-ch (get-in current-state [:comms :nav])
+        errors-ch (get-in current-state [:comms :errors])]
+    (go
+     (let [api-result (<! (ajax/managed-ajax
+                           :delete
+                           (gstring/format "/api/v1/organization/%s/plan" org-name)
+                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
+       (if-not (= :success (:status api-result))
+         (put! errors-ch [:api-error api-result])
+         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
+           (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org org-name
+                                                                            :subpage "plan"})
+                                     :replace-token? true}])))
+       (release-button! uuid (:status api-result))))))
+
 
 
 (defmethod control-event :home-technology-tab-selected
@@ -677,3 +875,38 @@
 (defmethod post-control-event! :enterprise-learn-more-clicked
   [target message {:keys [source]} previous-state current-state]
   (utils/open-modal "#enterpriseModal"))
+
+(defmethod control-event :project-feature-flag-checked
+  [target message {:keys [project-id project-name flag value]} state]
+  (assoc-in state (conj state/project-path :feature_flags flag) value))
+
+(defmethod post-control-event! :project-feature-flag-checked
+  [target message {:keys [project-id project-name flag value]} previous-state current-state]
+  (let [comms (get-in current-state [:comms])]
+    (go (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name)
+                                                :params {:feature_flags {flag value}}))]
+          (when (not= :success (:status api-result))
+            (put! (:errors comms) [:api-error api-result]))
+          (api/get-project-settings project-name (:api comms))))))
+
+(defmethod post-control-event! :project-experiments-feedback-clicked
+  [target message _ previous-state current-state]
+  (intercom/raise-dialog (get-in current-state [:comms :errors])))
+
+(defmethod control-event :refresh-admin-build-state-clicked
+  [target message _ state]
+  (let [s (assoc-in state state/build-state-path nil)]
+    (get-in s state/build-state-path)
+    s))
+
+(defmethod post-control-event! :refresh-admin-build-state-clicked
+  [target message _ previous-state current-state]
+  (ajax/ajax :get "/api/v1/admin/build-state" :build-state (get-in current-state [:comms :api])))
+
+(defmethod control-event :clear-error-message-clicked
+  [target message _ state]
+  (assoc-in state state/error-message-path nil))
+
+(defmethod control-event :show-all-commits-toggled
+  [target message _ state]
+  (update-in state (conj state/build-data-path :show-all-commits) not))

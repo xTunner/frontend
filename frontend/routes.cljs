@@ -8,6 +8,7 @@
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+
 (defn open-to-inner! [nav-ch navigation-point args]
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
@@ -35,7 +36,11 @@
 
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
-    (open-to-inner! nav-ch :dashboard {:admin true})))
+    (open-to-inner! nav-ch :dashboard {:admin true}))
+  (defroute v1-admin-build-state "/admin/build-state" []
+    (open-to-inner! nav-ch :build-state {:admin true}))
+  (defroute v1-admin "/admin" []
+    (open-to-inner! nav-ch :admin {:admin true})))
 
 
 ;; TODO: make this handle params
@@ -55,12 +60,21 @@
 
 
 (defn define-user-routes! [nav-ch authenticated?]
+  (defroute v1-org-settings "/gh/organizations/:org/settings"
+    [org]
+    (open-to-inner! nav-ch :org-settings {:org org :subpage nil}))
+  (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
+    [org subpage]
+    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
+  (defroute v1-org-dashboard-alternative "/gh/organizations/:org" {:as params}
+    (open-to-inner! nav-ch :dashboard params))
   (defroute v1-org-dashboard "/gh/:org" {:as params}
     (open-to-inner! nav-ch :dashboard params))
   (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
     (open-to-inner! nav-ch :dashboard params))
-  (defroute v1-project-branch-dashboard "/gh/:org/:repo/tree/:branch" {:as params}
-    (open-to-inner! nav-ch :dashboard params))
+  (defroute v1-project-branch-dashboard #"/gh/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
+    [org repo branch]
+    (open-to-inner! nav-ch :dashboard {:org org :repo repo :branch branch}))
   (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
     [org repo build-num]
     (open-to-inner! nav-ch :build {:project-name (str org "/" repo)
@@ -79,14 +93,12 @@
                                               :subpage (keyword subpage)
                                               :org org
                                               :repo repo}))
-  (defroute v1-org-settings "/gh/organizations/:org/settings"
-    [org]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage nil}))
-  (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
-    [org subpage]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
+  (defroute v1-account "/account" []
+    (open-to-inner! nav-ch :account {:subpage nil}))
+  (defroute v1-account-subpage "/account/:subpage" [subpage]
+    (open-to-inner! nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
@@ -101,31 +113,38 @@
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage "plans"})
-      (open-to-outer! nav-ch :pricing params)))
+      (open-to-outer! nav-ch :pricing (assoc params
+                                        :_analytics-page "View Pricing Outer"
+                                        :_title "Plans and Pricing"))))
 
   (defroute v1-jobs (FragmentRoute. "/jobs") {:as params}
-    (open-to-outer! nav-ch :jobs params))
+    (open-to-outer! nav-ch :jobs (assoc params
+                                   :_analytics-page "View jobs"
+                                   :_title "Work at CircleCI")))
 
   (defroute v1-privacy (FragmentRoute. "/privacy") {:as params}
-    (open-to-outer! nav-ch :privacy params))
+    (open-to-outer! nav-ch :privacy (assoc params :_analytics-page "View Privacy")))
 
   (defroute v1-security (FragmentRoute. "/security") {:as params}
-    (open-to-outer! nav-ch :security params))
+    (open-to-outer! nav-ch :security (assoc params :_analytics-page "View Security")))
 
   (defroute v1-security-hall-of-fame (FragmentRoute. "/security/hall-of-fame") {:as params}
-    (open-to-outer! nav-ch :security-hall-of-fame params))
+    (open-to-outer! nav-ch :security-hall-of-fame (assoc params
+                                                    :_title "Security Hall of Fame"
+                                                    :_analytics-page "View Security Hall of Fame")))
 
   (defroute v1-enterprise (FragmentRoute. "/enterprise") {:as params}
-    (open-to-outer! nav-ch :enterprise params))
+    (open-to-outer! nav-ch :enterprise (assoc params
+                                         :_title "CircleCI for the enterprise")))
 
 
   ;; TODO: this should be stories/:company, but we'll wait for more stories
   (defroute v1-enterprise (FragmentRoute. "/stories/shopify") {:as params}
-    (open-to-outer! nav-ch :shopify-story params))
+    (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
 
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
   (defroute v1-enterprise (FragmentRoute. "/integrations/docker") {:as params}
-    (open-to-outer! nav-ch :docker-integration params))
+    (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
 
   (defroute v1-enterprise (FragmentRoute. "/changelog") {:as params}
     (open-to-outer! nav-ch :changelog params))

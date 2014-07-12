@@ -44,7 +44,7 @@
                       " to keep running your builds.")
 
                 :else
-                (list (gstring/format "%s's trial expires in %s!" org-name (plan-model/pretty-trial-time plan))
+                (list (gstring/format "%s's trial expires in %s! " org-name (plan-model/pretty-trial-time plan))
                       [:a {:href plan-path} "Add a plan"]
                       " to keep running your builds."))])))))
 

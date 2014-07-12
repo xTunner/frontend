@@ -10,26 +10,25 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn build-row [build controls-ch show-actions?]
+(defn build-row [build controls-ch {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:tr {:class (when (:dont_build build) "dont_build")}
      [:td
-      [:a
-       {:title (str (:username build) "/" (:reponame build) " #" (:build_num build)),
-        ;; XXX todo: add include_project logic
-        :href url}
-       (str (:username build) "/" (:reponame build) " #" (:build_num build))]]
+      [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+          :href url}
+       (when show-project? (str (:username build) "/" (:reponame build) " ")) "#" (:build_num build)]]
      [:td
       (if-not (:vcs_revision build)
         [:a {:href url}]
         [:a {:title (build-model/github-revision build)
              :href url}
          (build-model/github-revision build)])]
-     [:td
-      [:a
-       {:title (build-model/branch-in-words build)
-        :href url}
-       (-> build build-model/branch-in-words (utils/trim-middle 23))]]
+     (when show-branch?
+       [:td
+        [:a
+         {:title (build-model/branch-in-words build)
+          :href url}
+         (-> build build-model/branch-in-words (utils/trim-middle 23))]])
      [:td.recent-author
       [:a
        {:title (build-model/author build)
@@ -40,13 +39,15 @@
        {:title (:body build)
         :href url}
        (:subject build)]]
-     (if (= "not_run" (:status build))
+     (if (or (not (:start_time build))
+             (= "not_run" (:status build)))
        [:td {:col-span 2}]
        (list [:td.recent-time
               [:a
-               {:title (datetime/full-datetime (js/Date.parse (:start_time build)))
+               {:title  (datetime/full-datetime (js/Date.parse (:start_time build)))
                 :href url}
-               (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"]]
+               (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
+               " ago"]]
              [:td.recent-time
               [:a
                {:title (build-model/duration build)
@@ -61,34 +62,41 @@
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)
-          (let [build-id (build-model/id build)]
-            ;; XXX: how are we going to get back to the correct build in the app-state?
+          (let [build-id (build-model/id build)
+                vcs-url (:vcs_url build)
+                build-num (:build_num build)]
+            ;; TODO: how are we going to get back to the correct build in the app-state?
+            ;;       Not a problem here, b/c the websocket will be updated, but something to think about
             (forms/stateful-button
-             [:a {:on-click #(put! controls-ch [:cancel-build-clicked build-id])}
+             [:button.cancel_build
+              {:on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
+                                                                    :vcs-url vcs-url
+                                                                    :build-num build-num}])}
               "Cancel"])))])]))
 
-(defn builds-table [builds owner opts]
+(defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
+                                  :or {show-branch? true
+                                       show-project? true}
+                                  :as opts}]
   (reify
     om/IDisplayName (display-name [_] "Builds Table")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            show-actions? (:show-actions? opts)]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:table.recent-builds-table
           [:thead
            [:tr
             [:th "Build"]
             [:th "Revision"]
-            ;; XXX show_branch logic
-            [:th "Branch"]
+            (when show-branch?
+              [:th "Branch"])
             [:th "Author"]
             [:th "Log"]
-            ;; XXX show_queued logic
             [:th.condense "Started at"]
             [:th.condense "Length"]
             [:th.condense "Status"]
             (when show-actions?
               [:th.condense "Actions"])]]
           [:tbody
-           (map #(build-row % controls-ch show-actions?) builds)]])))))
+           (map #(build-row % controls-ch opts) builds)]])))))

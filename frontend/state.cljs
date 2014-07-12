@@ -1,7 +1,8 @@
 (ns frontend.state)
 
 (defn initial-state []
-  {:ab-tests {}
+  {:error-message nil
+   :ab-tests {}
    :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
@@ -15,10 +16,10 @@
    :navigation-data nil
    :navigation-settings {}
    :current-user nil
-   :crumbs []
+   :crumbs nil
    :current-repos []
    :render-context nil
-   :projects []
+   :projects nil
    :recent-builds nil
    :project-settings-subpage nil
    :project-settings-project-name nil
@@ -31,6 +32,7 @@
                           :plan nil
                           :settings {}
                           :tokens nil
+                          :checkout-keys nil
                           :envvars nil}
    :current-build-data {:build nil
                         :usage-queue-data {:builds nil
@@ -52,7 +54,9 @@
                       :users nil
                       :invoices nil
                       :name nil}
-   :instrumentation []})
+   :instrumentation []
+   ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
+   :inputs nil})
 
 (def user-path [:current-user])
 
@@ -84,6 +88,7 @@
 (def project-data-path [:current-project-data])
 (def project-plan-path (conj project-data-path :plan))
 (def project-tokens-path (conj project-data-path :tokens))
+(def project-checkout-keys-path (conj project-data-path :checkout-keys))
 (def project-envvars-path (conj project-data-path :envvars))
 (def project-settings-branch-path (conj project-data-path :settings-branch))
 (def project-path (conj project-data-path :project))
@@ -101,8 +106,9 @@
                                         first)]
     (conj crumbs-path project-branch-crumb-index)))
 
-;; XXX we probably shouldn't be storing repos in the user...
+;; TODO we probably shouldn't be storing repos in the user...
 (def user-organizations-path (conj user-path :organizations))
+(def user-tokens-path (conj user-path :tokens))
 (def user-collaborators-path (conj user-path :collaborators))
 
 (defn repos-path
@@ -126,13 +132,17 @@
 (def selected-containers-path (conj org-data-path :selected-containers))
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggyback-orgs-path (conj org-data-path :selected-piggyback-orgs))
+(def selected-transfer-org-path (conj org-data-path :selected-transfer-org))
 (def org-invoices-path (conj org-data-path :invoices))
+(def selected-cancel-reasons-path (conj org-data-path :selected-cancel-reasons))
+;; Map of reason to boolean (selected or not selected)
+(defn selected-cancel-reason-path [reason] (conj selected-cancel-reasons-path reason))
+(def cancel-notes-path (conj org-data-path :cancel-notes))
 
 (def settings-path [:settings])
 
 (def projects-path [:projects])
 
-;; XXX make inner/outer something defined in navigation
 (def inner?-path [:navigation-data :inner?])
 
 (def show-nav-settings-link-path [:navigation-settings :show-settings-link])
@@ -147,9 +157,19 @@
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 
+(def account-subpage-path [:account-settings-subpage])
+(def new-user-token-path (conj user-path :new-user-token))
+
 (def flash-path [:render-context :flash])
+
 (def error-data-path [:error-data])
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
 
 (def changelog-path [:changelog])
+
+(def build-state-path [:build-state])
+
+(def error-message-path [:error-message])
+
+(def inputs-path [:inputs])

@@ -1,10 +1,12 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
+            [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
@@ -18,16 +20,17 @@
                    [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-;; XXX we could really use some middleware here, so that we don't forget to
-;;     assoc things in state on every handler
-;;     We could also use a declarative way to specify each page.
+;; TODO we could really use some middleware here, so that we don't forget to
+;;      assoc things in state on every handler
+;;      We could also use a declarative way to specify each page.
 
 ;; --- Helper Methods ---
 
 (defn set-page-title! [& [title]]
-  (set! (.-title js/document) (if title
-                                (str title  " - CircleCI")
-                                "CircleCI")))
+  (set! (.-title js/document) (gstring/htmlEscape
+                               (if title
+                                 (str title  " - CircleCI")
+                                 "CircleCI"))))
 
 (defn scroll-to-fragment!
   "Scrolls to the element with id of fragment, if one exists"
@@ -54,6 +57,7 @@
 
 (defmulti post-navigated-to!
   (fn [history-imp navigation-point args previous-state current-state]
+    (frontend.favicon/reset!)
     (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
     navigation-point))
 
@@ -62,25 +66,35 @@
 (defmethod navigated-to :default
   [history-imp navigation-point args state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
 
+(defn post-default [navigation-point args]
+  (set-page-title! (or (:_title args)
+                       (str/capitalize (name navigation-point))))
+  (scroll! args)
+  (when (:_analytics-page args)
+    (analytics/track-page (:_analytics-page args))))
+
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
-  (set-page-title! (str/capitalize (name navigation-point)))
-  (scroll! args))
+  (post-default navigation-point args))
 
 (defmethod post-navigated-to! :navigate!
-  [history-imp navigation-point path previous-state current-state]
+  [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
   (let [path (if (= \/ (first path))
                (subs path 1)
                path)]
-    (.setToken history-imp path)))
+    (if replace-token? ;; Don't break the back button if we want to redirect someone
+      (.replaceToken history-imp path)
+      (.setToken history-imp path))))
 
 
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {:show-settings-link (boolean (:org args))}
@@ -97,22 +111,36 @@
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               comms (get-in current-state [:comms])]
-          (condp = (inspect (:status api-resp))
+          (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
-            404 (put! (:nav comms) [:error {:status 404 :inner? false}])
+            :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
             (put! (:errors comms) [:api-error api-resp]))))
     (when (:repo args)
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
                  :project-settings
                  api-ch
+                 :context {:project-name (str (:org args) "/" (:repo args))})
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
+                 :project-plan
+                 api-ch
                  :context {:project-name (str (:org args) "/" (:repo args))})))
+  (analytics/track-dashboard)
   (set-page-title!))
 
+(defmethod post-navigated-to! :build-state
+  [history-imp navigation-point args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
+    (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
+  (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {:show-settings-link true}
@@ -127,18 +155,16 @@
           (state-utils/reset-current-project %)
           %))))
 
-;; XXX: add unsubscribe when you leave the build page
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get
-               (gstring/format "/api/v1/project/%s/%s" project-name build-num)
-               :build
-               api-ch
-               :context {:project-name project-name :build-num build-num})
+    (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/%s" project-name build-num)))]
+          (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
+          (when (= :success (:status api-result))
+            (analytics/track-build (:resp api-result)))))
     (when (not (get-in current-state state/project-path))
       (ajax/ajax :get
                  (gstring/format "/api/v1/project/%s/settings" project-name)
@@ -159,25 +185,32 @@
 
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
-  (assoc state :navigation-point navigation-point :navigation-data args :navigation-settings {}))
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point :navigation-data args :navigation-settings {})))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
+          (put! api-ch [:organizations (:status api-result) api-result])
+          (when-let [first-org (first (:resp api-result))]
+            (put! (get-in current-state [:comms :controls]) [:selected-add-projects-org {:login (:login first-org) :type :org}]))))
     (ajax/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
-  (set-page-title! "Add projects"))
+  (set-page-title! "Add projects")
+  (analytics/track-signup))
 
 
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :navigation-settings {}
-             ;; XXX can we get rid of project-settings-subpage in favor of navigation-data?
+             ;; TODO can we get rid of project-settings-subpage in favor of navigation-data?
              :project-settings-subpage subpage
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org
@@ -192,22 +225,25 @@
           (state-utils/reset-current-project %)
           %))))
 
+(defmethod post-navigated-to! :landing
+  [history-imp navigation-point _ previous-state current-state]
+  (set-page-title! "Continuous Integration and Deployment")
+  (analytics/track-homepage))
+
 (defmethod navigated-to :documentation-root
   [history-imp to args state]
-  (assoc state
-    :navigation-point :documentation-root
-    :navigation-data args))
-
-(defmethod post-navigated-to! :documentation-root
-  [history-imp navigation-point args previous-state current-state]
-  (set-page-title! "What can we help you with?"))
+  (-> state
+      (assoc :navigation-point :documentation-root
+             :navigation-data args)
+      state-utils/clear-page-state))
 
 (defmethod navigated-to :documentation-page
   [history-imp to args state]
-  (assoc state
-    :navigation-point :documentation-page
-    :navigation-data args
-    :current-documentation-page (:page args)))
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point :documentation-page
+             :navigation-data args
+             :current-documentation-page (:page args))))
 
 (defmethod post-navigated-to! :documentation-page
   [history-imp navigation-point args previous-state current-state]
@@ -215,8 +251,6 @@
         page-article (get docs/documentation-pages page-ref)]
     (set-page-title! (:title page-article))))
 
-;; XXX: find a better place for all of the ajax functions, maybe a separate api
-;;      namespace that knows about all of the api routes?
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
@@ -238,6 +272,14 @@
                      api-ch
                      :context {:project-name project-name})
 
+          (and (= subpage :checkout)
+               (not (get-in current-state state/project-checkout-keys-path)))
+          (ajax/ajax :get
+                     (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                     :project-checkout-key
+                     api-ch
+                     :context {:project-name project-name})
+
           (and (= subpage :api)
                (not (get-in current-state state/project-tokens-path)))
           (ajax/ajax :get
@@ -255,7 +297,6 @@
                      :context {:project-name project-name})
           :else nil))
 
-  ;; XXX: check for XSS
   (set-page-title! (str "Edit settings - " project-name)))
 
 
@@ -263,6 +304,7 @@
   [history-imp navigation-point {:keys [subpage org] :as args} state]
   (mlog "Navigated to subpage:" subpage)
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point)
       (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
@@ -302,9 +344,14 @@
                             (gstring/format "/api/v1/organization/%s/invoices" org)
                             :plan-invoices
                             api-ch
-                            :context {:org-name org}))))
+                            :context {:org-name org}))
+      nil))
+  (analytics/track-org-settings org)
   (set-page-title! (str "Org settings - " org)))
 
+(defmethod navigated-to :logout
+  [history-imp navigation-point _ state]
+  (state-utils/clear-page-state state))
 
 (defmethod post-navigated-to! :logout
   [history-imp navigation-point _ previous-state current-state]
@@ -315,6 +362,7 @@
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
   (-> state
+      state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
 
@@ -336,3 +384,21 @@
               ;; might need to scroll to the fragment
               (js/requestAnimationFrame #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))
+
+(defmethod navigated-to :account
+  [history-imp navigation-point {:keys [subpage] :as args} state]
+  (mlog "Navigated to account subpage:" subpage)
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point)
+      (assoc :navigation-data args)
+      (assoc :account-settings-subpage subpage)))
+
+(defmethod post-navigated-to! :account
+  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects (get-in current-state [:comms :api])))
+    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
+    (set-page-title! "Account")))

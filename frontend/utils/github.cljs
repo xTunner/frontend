@@ -3,10 +3,9 @@
             [goog.string :as gstring]
             [goog.string.format]))
 
-;; XXX convert CI.github
+;; TODO convert CI.github
 (defn auth-url [& {:keys [scope]
                    :or {scope ["user:email" "repo"]}}]
-  ;; XXX check on advanced compilation
   (js/CI.github.authUrl (clj->js scope)))
 
 ;; TODO: We want the identicon to take over the if the gravatar is the default. There's no

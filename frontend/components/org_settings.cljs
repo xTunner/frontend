@@ -10,12 +10,14 @@
             [frontend.models.user :as user-model]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.inputs :as inputs]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -227,7 +229,7 @@
         [:button.btn.btn-mini.btn-success
          {:data-success-text "Extended!",
           :data-loading-text "Extending...",
-          :on-click #(put! controls-ch [:extend-trial {:org-name org-name}])}
+          :on-click #(put! controls-ch [:extend-trial-clicked {:org-name org-name}])}
          "Extend your trial"])])]])
 
 (defn plans-piggieback-plan-notification [plan current-org-name]
@@ -288,11 +290,14 @@
               (plans-piggieback-plan-notification plan org-name))
             (om/build plans-component/plans app)
             (shared/customers-trust)
-            plans-component/pricing-features
+            (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
 (defn containers [app owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
     om/IRender
     (render [_]
       (let [plan (get-in app state/org-plan-path)
@@ -328,9 +333,8 @@
                 (when (plan-model/grandfathered? plan)
                   [:span.grandfather
                    "(grandfathered"
-                   [:i.fa.fa-question-circle
-                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"
-                     :data-bind "tooltip: {animation: false}"}]
+                   [:i.fa.fa-question-circle#grandfathered-tooltip-hack
+                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
                    ")"])]
                [:form
                 [:div.container-picker
@@ -373,7 +377,7 @@
                     "We'll credit your account, for the prorated difference between your new and old plans."])]]]]
              plans-component/pricing-faq]]))))))
 
-(defn organizations [app owner]
+(defn piggyback-organizations [app owner]
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
@@ -382,8 +386,8 @@
           plan (get-in app state/org-plan-path)
           elligible-piggyback-orgs (-> (map :login user-orgs)
                                        (set)
-                                       (disj org-name)
                                        (conj user-login)
+                                       (disj org-name)
                                        (sort))
           ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
           ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
@@ -415,11 +419,12 @@
                  [:div.control
                   [:label.checkbox
                    [:input
-                    {:value org
-                     :checked (contains? selected-piggyback-orgs org)
-                     ;; Note: this is broken if the org is already in piggieback_orgs, need to explicitly pass the value :(
-                     :on-change #(utils/toggle-input controls-ch (conj state/selected-piggyback-orgs-path org) %)
-                     :type "checkbox"}]
+                    (let [checked? (contains? selected-piggyback-orgs org)]
+                      {:value org
+                       :checked checked?
+                       ;; Note: this is broken if the org is already in piggieback_orgs, need to explicitly pass the value :(
+                       :on-change #(utils/edit-input controls-ch (conj state/selected-piggyback-orgs-path org) % :value (not checked?))
+                       :type "checkbox"})]
                    org]])]
               [:div.form-actions.span7
                (forms/managed-button
@@ -429,9 +434,76 @@
                   :type "submit",
                   :on-click #(do (put! controls-ch [:save-piggyback-orgs-clicked {:org-name org-name
                                                                                   :selected-piggyback-orgs selected-piggyback-orgs}])
-                                 false)
-                  :data-bind "click: saveOrganizations"}
+                                 false)}
                  "Also pay for these organizations"])]]]])]]]))))
+
+(defn transfer-organizations [app owner]
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          user-login (:login (get-in app state/user-path))
+          user-orgs (get-in app state/user-organizations-path)
+          elligible-transfer-orgs (-> (map :login user-orgs)
+                                      (set)
+                                      (conj user-login)
+                                      (disj org-name)
+                                      (sort))
+          plan (get-in app state/org-plan-path)
+          selected-transfer-org (get-in app state/selected-transfer-org-path)
+          controls-ch (om/get-shared owner [:comms :controls])]
+      [:div.row-fluid
+       [:div.span8
+        [:fieldset
+         [:legend "Transfer plan to a different organization"]
+         [:div.alert.alert-warning
+          [:strong "Warning!"]
+          [:p "If you're not an admin on the "
+           (if (seq selected-transfer-org)
+             (str selected-transfer-org " organization,")
+             "organization you transfer to,")
+           " then you won't be able to transfer the plan back or edit the plan."]
+          [:p
+           "The transferred plan will be extended to include the "
+           org-name " organization, so your builds will continue to run. Only admins of the "
+           (if (seq selected-transfer-org)
+             (str selected-transfer-org " org")
+             "organization you transfer to")
+           " will be able to edit the plan."]]
+         (if-not user-orgs
+           [:div "Loading organization list..."]
+           [:div.row-fluid
+            [:div.span12
+             [:div
+              [:form
+               [:div.controls
+                (for [org elligible-transfer-orgs]
+                  [:div.control
+                   [:label.radio {:name org}
+                    [:input {:value org
+                             :checked (= org selected-transfer-org)
+                             :on-change #(utils/edit-input controls-ch state/selected-transfer-org-path %)
+                             :type "radio"}]
+                    org]])]
+               [:div.form-actions.span6
+                (forms/managed-button
+                 [:button.btn.btn-danger.btn-large
+                  {:data-success-text "Transferred",
+                   :data-loading-text "Tranferring...",
+                   :type "submit",
+                   :class (when (empty? selected-transfer-org) "disabled")
+                   :on-click #(do (put! controls-ch [:transfer-plan-clicked {:org-name org-name
+                                                                             :to selected-transfer-org}])
+                                  false)
+                   :data-bind
+                   "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
+                  "Transfer plan" (when (seq selected-transfer-org) (str " to " selected-transfer-org))])]]]]])]]]))))
+
+(defn organizations [app owner]
+  (om/component
+   (html
+    [:div
+     (om/build piggyback-organizations app)
+     (om/build transfer-organizations app)])))
 
 (defn- billing-card [app owner]
   (reify
@@ -458,7 +530,8 @@
         (let [card (get-in app state/stripe-card-path)
               controls-ch (om/get-shared owner [:comms :controls])]
           (if-not (and card checkout-loaded?)
-            [:div.loading-spinner common/spinner]
+            [:div.card.row-fluid [:legend.span8 "Card on file"]
+             [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
             [:div
               [:div.card.row-fluid [:legend.span8 "Card on file"]]
               [:div.row-fluid
@@ -498,11 +571,13 @@
       (html
         (let [controls-ch (om/get-shared owner [:comms :controls])
               plan-data (get-in app state/org-plan-path)
-              b-email (:billing_email plan-data)
-              b-name (:billing_name plan-data)
-              b-extra (:extra_billing_data plan-data)]
+              settings (state-utils/merge-inputs plan-data
+                                                 (inputs/get-inputs-from-app-state owner)
+                                                 [:billing_email :billing_name :extra_billing_data])]
           (if-not plan-data
-            [:div.loading-spinner common/spinner]
+            [:div.invoice-data.row-fluid
+             [:legend.span8 "Invoice data"]
+             [:div.row-fluid [:div.span8 [:div.loading-spinner common/spinner]]]]
             [:div.invoice-data.row-fluid
              [:fieldset
               [:legend.span8 "Invoice data"]
@@ -511,49 +586,38 @@
                 [:label.control-label {:for "billing_email"} "Billing email"]
                 [:div.controls
                  [:input.span10
-                  {:value b-email,
+                  {:value (str (:billing_email settings))
                    :name "billing_email",
                    :type "text"
-                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch
-                                                 (conj state/org-plan-path :billing_email)
-                                                 %)}]]]
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :billing_email) %)}]]]
                [:div.control-group
                 [:label.control-label {:for "billing_name"} "Billing name"]
                 [:div.controls
                  [:input.span10
-                  {:value b-name
+                  {:value (str (:billing_name settings))
                    :name "billing_name",
                    :type "text"
-                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch
-                                                 (conj state/org-plan-path :billing_name)
-                                                 %)}]]]
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :billing_name) %)}]]]
                [:div.control-group
                 [:label.control-label
                  {:for "extra_billing_data"}
                  "Extra data to include in your invoice"]
                 [:div.controls
                  [:textarea.span10
-                  {:value b-extra
+                  {:value (str (:extra_billing_data settings))
                    :placeholder
                    "Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.",
                    :rows 3
                    :name "extra_billing_data"
                    ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch
-                                                 (conj state/org-plan-path :extra_billing_data)
-                                                 %)}]]]
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra_billing_data) %)}]]]
                [:div.control-group
                 [:div.controls
                  (forms/managed-button
                    [:button.btn.btn-primary
                     {:data-success-text "Saved invoice data",
                      :data-loading-text "Saving invoice data...",
-                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked
-                                                       {:billing-email b-email
-                                                        :billing-name b-name
-                                                        :extra-billing-data b-extra}])
+                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked])
                                     false)
                      :type "submit",}
                     "Save invoice data"])]]]]]))))))
@@ -614,26 +678,35 @@
 
 (defn- billing-invoices [app owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/popover "#invoice-popover-hack"
+                     {:animation false
+                      :trigger "hover"
+                      :html true})
+      (utils/tooltip "#resend-invoice-tooltip-hack"
+                     {:animation false}))
     om/IRender
     (render [_]
       (html
         (let [account-balance (get-in app state/org-plan-balance-path)
               invoices (get-in app state/org-invoices-path)]
           (if-not (and account-balance invoices)
-            [:div.loading-spinner common/spinner]
+            [:div.row-fluid
+             [:div.span8
+               [:legend "Invoices"]
+              [:div.loading-spinner common/spinner]]]
             [:div.row-fluid
              [:div.span8
                [:legend "Invoices"]
                [:dl.dl-horizontal
                 [:dt
                  "Account balance"
-                 [:i.fa.fa-question-circle
+                 [:i.fa.fa-question-circle#invoice-popover-hack
                   {:title "Account balance"
-                   ;; XXX popovers
                    :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
                                       "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
-                                      "<p>This amount may take a few hours to refresh.</p>")
-                   :data-bind "popover: {animation: false, trigger: 'hover', html: true}"}]]
+                                      "<p>This amount may take a few hours to refresh.</p>")}]]
                 [:dd
                  [:span (->balance-string account-balance)]]]
                [:table.table.table-bordered.table-striped
@@ -643,9 +716,8 @@
                   [:th "Time period covered"]
                   [:th "Total"]
                   [:th
-                   [:i.fa.fa-question-circle
-                    {:title "Resend an invoice to the billing email above."
-                     :data-bind "tooltip: {animation: false}"}]
+                   [:i.fa.fa-question-circle#resend-invoice-tooltip-hack
+                    {:title "Resend an invoice to the billing email above."}]
                    "Actions"]]]
                 [:tbody
                  (om/build-all invoice-view invoices)]]]]))))))
@@ -660,6 +732,67 @@
           (om/build billing-invoice-data app)
           (om/build billing-invoices app)]))))
 
+(defn cancel [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            org-name (get-in app state/org-name-path)]
+        (html
+         [:div.org-cancel
+          [:div.row-fluid [:fieldset [:legend "Cancel"]]]
+          [:div.row-fluid
+           [:h3
+            {:data-bind "attr: {alt: cancelFormErrorText}"}
+            "Please tell us why you're canceling. This helps us make Circle better!"]
+           [:form
+            (for [reason [{:value "project-ended", :text "Project Ended"},
+                          {:value "slow-performance", :text "Slow Performance"},
+                          {:value "unreliable-performance", :text "Unreliable Performance"},
+                          {:value "too-expensive", :text "Too Expensive"},
+                          {:value "didnt-work", :text "Couldn't Make it Work"},
+                          {:value "missing-feature", :text "Missing Feature"},
+                          {:value "poor-support", :text "Poor Support"},
+                          {:value "other", :text "Other"}]]
+              [:label.cancel-reason
+               [:input
+                {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
+                 :on-change #(utils/toggle-input controls-ch (state/selected-cancel-reason-path (:value reason)) %)
+                 :type "checkbox"}]
+               (:text reason)])
+            [:textarea
+             {:required true
+              :value (get-in app state/cancel-notes-path)
+              :on-change #(utils/edit-input controls-ch state/cancel-notes-path %)}]
+            [:label
+             {:placeholder "Thanks for the feedback!",
+              :alt (if (get app (state/selected-cancel-reason-path "other"))
+                     "Would you mind elaborating more?"
+                     "Have any other thoughts?")}]
+            (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
+                                                    (filter second)
+                                                    keys
+                                                    set)
+                  notes (get-in app state/cancel-notes-path)
+                  errors (cond (empty? reasons) "Please select at least one reason."
+                               (and (contains? reasons "other") (string/blank? notes)) "Please specify above."
+                               :else nil)]
+              ;; This is a bit of a hack -- it could be much nicer if managed button exposed more of its interface
+              ;; or accepted hooks
+              (if errors
+                (list
+                 (when (om/get-state owner [:show-errors?])
+                   [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
+                 [:button {:on-click #(do (om/set-state! owner [:show-errors?] true) false)}
+                  "Cancel Plan"])
+                (forms/managed-button
+                 [:button {:data-spinner "true"
+                           :on-click #(do (put! controls-ch [:cancel-plan-clicked {:org-name org-name
+                                                                                   :cancel-reasons reasons
+                                                                                   :cancel-notes notes}])
+                                          false)}
+                  "Cancel Plan"])))]]])))))
+
 (def main-component
   {:users users
    :projects projects
@@ -667,23 +800,43 @@
    :containers containers
    :organizations organizations
    :billing billing
-   ;; :cancel cancel
-   })
+   :cancel cancel})
+
+(defn determine-subpage
+  "Determines which subpage we should show the user. If they have
+   a plan, then we don't want to show them the plan page; if they
+   don't have a plan, then we don't want to show them the invoices page."
+  [subpage plan org-name]
+  (cond (#{:users :projects} subpage)
+        subpage
+
+        (and plan
+             (plan-model/can-edit-plan? plan org-name)
+             (= subpage :plan))
+        :containers
+
+        (and plan
+             (not (plan-model/can-edit-plan? plan org-name))
+             (#{:containers :organizations :billing :cancel} subpage))
+        :plan
+
+        :else subpage))
 
 (defn org-settings [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [subpage (get app :org-settings-subpage)
+      (let [requested-subpage (get app :org-settings-subpage :projects)
             org-data (get-in app state/org-data-path)
-            plan (get-in app state/org-plan-path)]
+            plan (get-in app state/org-plan-path)
+            subpage (determine-subpage requested-subpage plan (:name org-data))]
         (html [:div.container-fluid.org-page
                (if-not (:name org-data)
                  [:div.loading-spinner common/spinner]
                  [:div.row-fluid
                   (om/build sidebar {:subpage subpage :plan plan :org-name (:name org-data)})
                   [:div.span9
-                   (common/flashes)
+                   (om/build common/flashes (get-in app state/error-message-path))
                    [:div#subpage
                     [:div
                      (if (:authorized? org-data)

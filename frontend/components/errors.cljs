@@ -14,11 +14,11 @@
           [:div.banner
            [:div.container
             [:h1 status]
-            [:h3 (condp = status
-                   401 "Login required"
-                   404 "Page not found"
-                   500 "Internal server error"
-                   "Something unexpected happened")]]]
+            [:h3 (str (condp = status
+                        401 "Login required"
+                        404 "Page not found"
+                        500 "Internal server error"
+                        "Something unexpected happened"))]]]
           [:div.container
            (condp = status
              401 [:p

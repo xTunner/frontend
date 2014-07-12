@@ -7,7 +7,7 @@
             [frontend.components.shared :as shared]
             [frontend.env :as env]
             [frontend.state :as state]
-            [frontend.stefon :refer [data-uri]]
+            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true]
@@ -20,17 +20,17 @@
    [:div.span4
     [:img {:height 150
            :width 150
-           :src (data-uri "/img/outer/home/octocat.png")}]
+           :src (stefon/data-uri "/img/outer/home/octocat.png")}]
     [:h4 "Push your new code to GitHub"]]
    [:div.span4
     [:img {:height 150
            :width 150
-           :src (data-uri "/img/outer/home/test-output.png")}]
+           :src (stefon/data-uri "/img/outer/home/test-output.png")}]
     [:h4 "Your tests run on the CircleCI platform"]]
    [:div.span4
     [:img {:height 150
            :width 150
-           :src (data-uri "/img/outer/home/deploy.png")}]
+           :src (stefon/data-uri "/img/outer/home/deploy.png")}]
     [:h4 "Deploy green builds to your servers"]]])
 
 (defn home-cta [controls-ch]
@@ -48,11 +48,12 @@
    [:div.container
     [:h1 "Ship better code, faster"]
     (if (:top_copy ab-tests)
-      [:h3 "Continuous Integration and Deployment that just works. Signup and get running in under 60 seconds."]
-      [:h3 "CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance."])
-    (if (:hero_graphic ab-tests)
-      hero-graphic
-      shared/stories-procedure)
+      [:h3 "CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance."]
+      [:h3 "CircleCI is Continuous Integration and Delivery for modern web development."])
+    [:div.how.row-fluid
+     (if (:hero_graphic ab-tests)
+       hero-graphic
+       shared/stories-procedure)]
     [:div.row-fluid
      [:div.hero-unit-cta
       (home-cta controls-ch)]]]])
@@ -60,72 +61,49 @@
 (defn customer-image [customer-name image]
   [:div.big-company
    [:img {:title customer-name
-          :src (data-uri image)}]])
+          :src (stefon/data-uri image)}]])
 
 (def home-customers
- [:section.customers
-  [:div.container
-   [:div.row.span12]
-   [:div.center
-    [:div.were-number-one
-     [:h2
-      "CircleCI is the #1 hosted continuous deployment provider. But don't take our word for it, read what our awesome customers have to say."]]]
-   [:div.customers-trust.row
-    [:h4 [:span "Trusted By"]]
-    (customer-image "Salesforce" "/img/logos/salesforce.png")
-    (customer-image "Samsung" "/img/logos/samsung.png")
-    (customer-image "Kickstarter" "/img/logos/kickstarter.png")
-    (customer-image "Cisco" "/img/logos/cisco.png")
-    (customer-image "Shopify" "/img/logos/shopify.png")
-    [:span.stretch]]
-  [:div.container
-   [:div.row
-    [:div.customer.span4.well
-     [:p
-      "CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go. "
-      [:strong "I'm a huge fan."]]
-      [:img {:src (data-uri "/img/outer/home/john-collison-2.png")
+  [:section.customers
+   [:div.container
+    [:div.row.span12]
+    [:div.center
+     [:div.were-number-one
+      [:h2
+       "CircleCI is the #1 hosted continuous deployment provider. But don't take our word for it, read what our awesome customers have to say."]]]
+    (shared/customers-trust)]
+   [:div.container
+    [:div.row
+     [:div.customer.span4.well
+      [:p
+       "CircleCI has significantly improved our testing infrastructure. Tests finish faster. We add new projects rapidly and continuous integration happens from the get-go. "
+       [:strong "I'm a huge fan."]]
+      [:img {:src (stefon/data-uri "/img/outer/home/john-collison-2.png")
              :alt "John Collison"}]
-     [:h4 "John Collison"]
-     [:p
-      "Founder at "
-      [:a
-       {:title "Stripe",
-        :href "https://stripe.com/",
-        :alt-there "Stripe"}
-       "Stripe"]]]
-    [:div.customer.span4.well
-     [:p
-      "It's super fun and helpful to see test results hit our Hipchat room a few minutes after a push. "
-      [:strong "The first time it happened, my team cheered."]
-      "The fact that we don't have to admin the server ourselves is a big timesaver."]
-     [:img {:src (data-uri "/img/outer/home/jon-crawford-2.png")
-            :alt "Jon Crawford"}]
-     [:h4 "Jon Crawford"]
-     [:p
-      "CEO of "
-      [:a
-       {:title "Storenvy",
-        :href "http://www.storenvy.com/",
-        :alt "Storenvy"}
-       "Storenvy"]]]
-    [:div.customer.span4.well
-     [:p
-      "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. "
-      [:strong "CircleCI's customer support is outstanding."]
-      "We get quick, thorough answers to all our questions."]
-     [:img {:src (data-uri "/img/outer/home/aaron-suggs.jpg")
-            :alt "Aaron Suggs"}]
-     [:h4 "Aaron Suggs"]
-     [:p
-      "Operations Engineer at "
-      [:a
-       {:title "Kickstarter",
-        :href "http://www.kickstarter.com/",
-        :alt "Kickstarter"}
-       "Kickstarter"]]]]]]
-  [:a.customer-story-link.center-text {:href "stories/shopify"}
-   "Read how Shopify grew with Circle"]])
+      [:h4 "John Collison"]
+      [:p
+       "Founder at Stripe"]]
+     [:div.customer.span4.well
+      [:p
+       "CircleCI lets us be more agile and ship product faster. "
+       [:strong "We can focus on delivering value to our customers,"]
+       " not maintaining Continuous Integration and Delivery infrastructure."]
+      [:img {:src (stefon/asset-path "/img/outer/stories/john.jpg")
+             :alt "Jon Crawford"}]
+      [:h4 "John Duff"]
+      [:p "Director of Engineering at Shopify"]]
+     [:div.customer.span4.well
+      [:p
+       "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. "
+       [:strong "CircleCI's customer support is outstanding."]
+       " We get quick, thorough answers to all our questions."]
+      [:img {:src (stefon/data-uri "/img/outer/home/aaron-suggs.jpg")
+             :alt "Aaron Suggs"}]
+      [:h4 "Aaron Suggs"]
+      [:p
+       "Operations Engineer at Kickstarter"]]]]
+   [:a.customer-story-link.center-text {:href "stories/shopify"}
+    "Read how Shopify grew with Circle"]])
 
 (def home-features
   [:div.benefits
@@ -142,13 +120,13 @@
        [:h3 "Quick Setup"]
        [:p
         [:strong "Set up your continuous integration in 20 seconds"]
-        ", not two days. With one click CircleCI detects test settings for a wide range of web apps, and sets them up automatically on our servers."]]]
+        ", not two days. With one click CircleCI detects test settings for a wide range of web apps, and set them up automatically on our servers."]]]
      [:div.clearfix.fast-tests.section.span4
       [:div.section-graphic [:i.fa.fa-bolt]]
       [:div.section-content
        [:h3 "Fast Tests"]
        [:p
-        "Your productivity relies on fast test results. CircleCI runs your tests"
+        "Your productivity relies on fast test results. CircleCI runs your tests "
         [:strong "faster than your Macbook Pro"]
         ", EC2, your local server, or any other service."]]]
      [:div.clearfix.deep-customization.section.span4
@@ -241,16 +219,16 @@
                  (tech-tab tab selected-tab controls-ch))]]]
             [:div.tab-content
              (let [templates {:languages {:img-url "/img/outer/home/tech-languages.png"
-                                          :blurb "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests.You can customize any step, or set up your test steps manually for PHP or other languages."}
+                                          :blurb "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages."}
                               :databases {:img-url "/img/outer/home/tech-databases.png"
-                                          :blurb "If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use.Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away."}
+                                          :blurb "If you use any of the dozen most common databases, we have them pre-installed for you, set up to be trivial to use. Postgres and MySQL have their permissions set and are running, Redis, Mongo and Riak are running for you, and the other DBs are just a configuration switch away."}
                               :queues {:img-url "/img/outer/home/tech-queues.png"
-                                       :blurb "If you need to test against queues, we have them installed on our boxes.We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need."}
+                                       :blurb "If you need to test against queues, we have them installed on our boxes. We support RabbitMQ and Beanstalk, have Redis installed so you can use Resque, and can install anything else you need."}
                               :browsers {:img-url "/img/outer/home/tech-browsers.png"
-                                         :blurb "We support continuous integration testing in your apps against a wide range of browsers.We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS.Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber."}
-                              :libraries {:blurb "We run a recent version Ubuntu and have installed all of the libraries you need for development.We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev.As new important libraries come out it's trivial for us to add them for you."}
+                                         :blurb "We support continuous integration testing in your apps against a wide range of browsers. We have latest Chrome, Firefox and webkit installed using xvfb, as well as PhantomJS and CasperJS. Headless browser testing is completely supported, so you can test using Selenium, directly against PhantomJS, or using abstraction layers such as Capybara and Cucumber."}
+                              :libraries {:blurb "We run a recent version Ubuntu and have installed all of the libraries you need for development. We have common libs like libxml2, uncommon ones like libblas, and downright rare libraries like libavahi-compat-libdnssd-dev. As new important libraries come out it's trivial for us to add them for you."}
                               :deployment {:img-url "/img/outer/home/tech-deployment.png"
-                                           :blurb "Continuous Deployment means that you can deploy your fresh code to production fast and with no fear.Many of our customers deploy directly after a green push to master or another branch.We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3."}
+                                           :blurb "Continuous Deployment means that you can deploy your fresh code to production fast and with no fear. Many of our customers deploy directly after a green push to master or another branch. We manage SSH keys and allow you to deploy any way you wish, whether directly to a PaaS, using Capistrano, Fabric, or arbitrary bash commands, or – for you autoscalers – by auto-merging to another branch, or packaging code up to S3."}
                               :custom {:blurb "Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use npm in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."}}]
                (tech-tab-content selected-tab (get templates selected-tab)))]]]])))))
 
@@ -296,6 +274,6 @@
                [:div
                 (home-hero-unit ab-tests controls-ch)
                 home-customers
-                home-features
                 (om/build home-technology app)
+                home-features
                 (home-get-started controls-ch)]])))))

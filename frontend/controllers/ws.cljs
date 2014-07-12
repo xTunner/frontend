@@ -2,6 +2,7 @@
   "Websocket controllers"
   (:require [clojure.set]
             [frontend.api :as api]
+            [frontend.favicon]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
@@ -74,10 +75,14 @@
       (update-in state (state/usage-queue-build-path index) merge (utils/js->clj-kw data))
       state)))
 
+(defmethod post-ws-event! :build/update
+  [pusher-imp message {:keys [data channel-name]} previous-state current-state]
+  (when-not (ignore-build-channel? current-state channel-name)
+    (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))))
+
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]
-  ;; XXX non-parallel actions need to be repeated across containers
   (with-swallow-ignored-build-channels state channel-name
     (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
       (-> state
@@ -92,20 +97,19 @@
     (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
       (-> state
           (build-model/fill-containers container-index action-index)
-          (update-in (state/action-path container-index action-index) merge action-log)
-          ;; XXX is this necessary here?
-          (update-in (state/action-path container-index action-index) action-model/format-latest-output)))))
+          (update-in (state/action-path container-index action-index) merge action-log)))))
 
 
 (defmethod ws-event :build/append-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
+    (let [container-index (aget data "index")
+          action-index (aget data "step")]
       (if (not= container-index (get-in state state/current-container-path 0))
         (do (mlog "Ignoring output for inactive container: " container-index)
             (update-in state (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true))
 
-        (let [{action-index :step container-index :index output :out} (utils/js->clj-kw data)]
+        (let [output (utils/js->clj-kw (aget data "out"))]
           (-> state
               (build-model/fill-containers container-index action-index)
               (update-in (state/action-output-path container-index action-index) vec)
@@ -124,7 +128,6 @@
                                     (clojure.set/union new-messages)))))))
 
 
-;; XXX: is this the best place to handle subscriptions?
 (defmethod post-ws-event! :subscribe
   [pusher-imp message {:keys [channel-name messages context]} previous-state current-state]
   (let [ws-ch (get-in current-state [:comms :ws])]

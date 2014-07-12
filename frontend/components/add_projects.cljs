@@ -20,7 +20,7 @@
   [:div
    [:div.alert.alert-error
     "We don't have all of the GitHub OAuth scopes we need to run your tests."
-    ;; XXX translate CI.github
+    ;; TODO translate CI.github
     [:a {:href (js/CI.github.authUrl (clj->js (concat missing-scopes current-scopes)))}
      (gstring/format "Click to grant Circle the %s %s."
                      (string/join "and " missing-scopes)
@@ -38,6 +38,9 @@
 
 (defn org-sidebar [data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
       (let [user (:user data)
@@ -52,8 +55,7 @@
                     (filter (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))
                [:li.add-collabs
-                ;; XXX tooltips
-                [:span {:title "For all repos & forks"}
+                [:span#collaborators-tooltip-hack {:title "For all repos & forks"}
                  "Your Collaborators"]]
                (map (fn [org] (side-item org settings controls-ch))
                     (remove (fn [org] (= (:login user) (:login org)))
@@ -69,6 +71,9 @@
 
 (defn repo-item [data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip (str "#view-project-tooltip-" (-> data :repo repo-model/id (string/replace #"[^\w]" "")))))
     om/IRender
     (render [_]
       (let [repo (:repo data)
@@ -76,6 +81,7 @@
             login (get-in settings [:add-projects :selected-org :login])
             type (get-in settings [:add-projects :selected-org :type])
             repo-id (repo-model/id repo)
+            tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             should-build? (repo-model/should-do-first-follower-build? repo)]
@@ -103,8 +109,8 @@
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
-                 ;; XXX implement tooltips
-                 [:a {:title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
+                 [:a {:id tooltip-id
+                      :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
                       :href (vcs-url/project-path (:vcs_url repo))}
                   " "
                   [:i.fa.fa-external-link]]
@@ -126,13 +132,12 @@
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 [:i.fa.fa-lock]
-                ;; XXX implement modals
-                [:button {:data-target "#inviteForm", :data-toggle "modal"}
+                [:button {:on-click #(utils/open-modal "#inviteForm-addprojects")}
                  [:span "Follow"]]]))))))
 
 (def invite-modal
-  [:div#inviteForm.fade.hide.modal
-   {:tabindex "-1",
+  [:div#inviteForm-addprojects.fade.hide.modal
+   {:tabIndex "-1",
     :role "dialog",
     :aria-labelledby "inviteFormLabel",
     :aria-hidden "true"}
@@ -144,10 +149,7 @@
    [:div.modal-body
     [:p
      "For security purposes only a project's Github administrator may setup Circle. Invite this project's admin(s) by sending them the link below and asking them to setup the project in Circle. You may also ask them to make you a Github administrator."]
-    [:p.pull-right
-     [:input
-      {:value "https://circleci.com/?join=dont-test-alone",
-       :type "text"}]]]
+    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]]
    [:div.modal-footer
     [:button.btn.btn-primary
      {:data-dismiss "modal", :aria-hidden "true"}
@@ -208,7 +210,6 @@
                                      (get-in settings [:add-projects :selected-org :type]))
             repos (get-in user [:repos repo-key])]
         (html
-         ;; XXX flashes
          [:div#add-projects
           (when (seq (user-model/missing-scopes user))
             (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))

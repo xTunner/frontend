@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]))
 
 (defn project-name [vcs-url]
-  (subs vcs-url 19 (count vcs-url)))
+  (last (re-find #"^https?://[^/]+/(.*)" vcs-url)))
 
 ;; slashes aren't allowed in github org/user names or project names
 (defn org-name [vcs-url]

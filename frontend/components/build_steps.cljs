@@ -6,13 +6,18 @@
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
             [frontend.components.common :as common]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
+            [goog.events]
             [goog.string :as gstring]
+            goog.dom
+            goog.style
             goog.string.format
             goog.fx.dom.Scroll
             goog.fx.easing)
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html]]
+                   [dommy.macros :refer [sel1]]))
 
 (defn source-type [source]
   (condp = source
@@ -97,16 +102,20 @@
              [:div.detail-wrapper
               (when (and visible? (action-model/has-content? action))
                 [:div.detail {:class header-classes}
-                 ;; XXX: better way to indicate loading
                  (if (and (:has_output action)
                           (nil? (:output action)))
                    [:div.loading-spinner common/spinner]
 
                    [:div#action-log-messages
-                    ;; XXX click-to-scroll
-                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right]
+                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
+                     {:on-click #(let [node (om/get-node owner)
+                                       main (sel1 "main.app-main")]
+                                   (set! (.-scrollTop main) (- (+ (.-scrollTop main)
+                                                                  (.-y (goog.style/getRelativePosition node main))
+                                                                  (.-height (goog.style/getSize node)))
+                                                               (goog.dom/getDocumentHeight))))}
 
-                    (common/messages (:messages action))
+                     (common/messages (:messages action))]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -140,8 +149,50 @@
                                :id (str "container_" (:index container))}
           (om/build-all action actions {:key :step})])))))
 
+(defn mount-browser-resize
+  "Handles scrolling the container on the build page to the correct position when
+  the size of the browser window chagnes. Has to add an event listener at the top level."
+  [owner]
+  (om/set-state! owner [:browser-resize-key]
+                 (goog.events/listen
+                  js/window
+                  "resize"
+                  #(put! (om/get-shared owner [:comms :controls])
+                         ;; This is pretty hacky, it would be nice if we had a better way to do this
+                         [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
+                                               :animate? false}]))))
+
+(defn mount-autoscroll [owner]
+  (let [container (om/get-node owner)
+        ;; autoscroll when the container_parent's tail-end is showing
+        scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
+                                                  (.-bottom (.getBoundingClientRect container)))]
+                           (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
+                             (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
+    (om/set-state! owner [:scroll-listener-key] (goog.events/listen
+                                                 (sel1 "main.app-main")
+                                                 "scroll"
+                                                 scroll-listener))))
+
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:autoscroll? false})
+    om/IDidMount
+    (did-mount [_]
+      (mount-autoscroll owner)
+      (mount-browser-resize owner))
+    om/IWillUnmount
+    (will-unmount [_]
+      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key]))
+      (goog.events/unlistenByKey (om/get-state owner [:browser-resize-key])))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (om/get-state owner [:autoscroll?])
+        (let [main (sel1 "main.app-main")
+              very-large-numer 10000000]
+          (set! (.-scrollTop main) very-large-numer))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
@@ -157,7 +208,8 @@
           [:div#container_parent {:on-wheel (fn [e]
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (aset js/document.body "scrollTop" (+ (aget js/document.body "scrollTop") (aget e "deltaY")))))
+                                                (let [main (sel1 "main.app-main")]
+                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (aget e "deltaY"))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container
@@ -168,8 +220,6 @@
                                   :window-resize "realign_container_viewport"
                                   :resize-sensor "height_changed"
                                   :class (str "selected_" current-container-id)}
-           ;; XXX handle scrolling and resize sensor
-           ;; probably have to replace resize sensor with something else
            (for [container containers]
              (om/build container-view
                        {:container container

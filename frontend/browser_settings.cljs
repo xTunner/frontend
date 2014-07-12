@@ -9,8 +9,8 @@
   (swap! state-atom assoc-in state/browser-settings-path (localstorage/read localstorage-imp browser-settings-key)))
 
 (defn browser-settings-watcher [localstorage-imp key ref old-data new-data]
-  (when (not= (get-in old-data state/browser-settings-path)
-              (get-in new-data state/browser-settings-path))
+  (when (not (identical? (get-in old-data state/browser-settings-path)
+                         (get-in new-data state/browser-settings-path)))
     (localstorage/save! localstorage-imp browser-settings-key (get-in new-data state/browser-settings-path))))
 
 (defn add-browser-settings-watcher [localstorage-imp state-atom]

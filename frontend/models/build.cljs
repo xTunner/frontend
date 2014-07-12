@@ -6,7 +6,7 @@
             [goog.string :as gstring]
             goog.string.format))
 
-;; XXX paths should use secretary
+;; TODO paths should use secretary
 (defn path-for [project build]
   (str "/gh/" (proj/project-name project) "/" (:build_num build)))
 
@@ -73,7 +73,6 @@
        (:queued_at build)
        (not (:start_time build))))
 
-;; XXX figure out how to update duration
 (defn run-queued-time [{:keys [start_time stop_time queued_at] :as build}]
   (cond (and start_time queued_at) (- (js/Date.parse start_time) (js/Date.parse queued_at))
         ;; canceled before left queue
@@ -81,7 +80,6 @@
         queued_at (- (.getTime (js/Date.)) (js/Date.parse queued_at))
         :else 0))
 
-;; XXX figure out how to update duration
 (defn usage-queued-time [{:keys [stop_time queued_at usage_queued_at] :as build}]
   (cond (and usage_queued_at queued_at) (- (js/Date.parse queued_at) (js/Date.parse usage_queued_at))
         ;; canceled before left queue
@@ -93,7 +91,6 @@
   (+ (usage-queued-time build)
      (run-queued-time build)))
 
-;; XXX figure out how to update duration
 (defn queued-time-summary [build]
   (if (> 0 (run-queued-time build))
     (gstring/format "%s waiting + %s in queue"
@@ -118,6 +115,15 @@
         (= "running" (:status build)) "busy"
         :else nil))
 
+(defn favicon-color [build]
+  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "red"
+        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "orange"
+        (= "success" (:outcome build)) "green"
+        (= "running" (:status build)) "blue"
+        (#{"queued" "not_running" "scheduled" "retried"} (:status build)) "grey"
+        ;; undefined is the default dark blue
+        :else "undefined"))
+
 (defn why-in-words [build]
   (condp = (:why build)
     "github" (str "GitHub push by " (get-in build [:user :login]))
@@ -140,11 +146,12 @@
 (defn ssh-enabled-now? [build]
   (and (:ssh_enabled build)
        (:node build)
-       (every? :ssh_enabled (:node build))))
+       (or (running? build)
+           (every? :ssh_enabled (:node build)))))
 
 
 (defn display-build-invite [build]
-  (:first_green_build build))
+  (:is_first_green_build build))
 
 (defn config-errors? [build]
   (:circle_yml build))

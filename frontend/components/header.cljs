@@ -28,11 +28,10 @@
   (when (get-in app state/show-nav-settings-link-path)
     (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
-                                                  ;; XXX implement tooltips
-                                                  :tooltip "Project Settings"}
+                                                  :data-tooltip "Project Settings"}
                                      (common/ico :settings-light)]
             (:org navigation-data) [:a.settings {:href (routes/v1-org-settings navigation-data)
-                                                 :tooltip "Org Settings"}
+                                                 :data-tooltip "Org Settings"}
                                     (common/ico :settings-light)]
             :else nil))))
 
@@ -80,10 +79,9 @@
             (name (env/env))]
 
            [:div.options
-            [:a {:href "/admin"} "admin "]
-            [:a {:href "/admin/users"} "users "]
+            [:a {:href "/admin"} "switch "]
+            [:a {:href "/admin/build-state"} "build state "]
             [:a {:href "/admin/recent-builds"} "builds "]
-            [:a {:href "/admin/projects"} "projects "]
             (let [use-local-assets (get user-session-settings :use_local_assets)]
               [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
                                                                             :value (not use-local-assets)}])}
@@ -123,7 +121,8 @@
     om/IRender
     (render [_]
       (let [flash (get-in app state/flash-path)
-            logged-in? (get-in app state/user-path)]
+            logged-in? (get-in app state/user-path)
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div
           [:div
@@ -148,23 +147,21 @@
                  [:li [:a {:href "/docs"} "Documentation"]]
                  [:li [:a {:href "/jobs"} "Jobs"]]
                  [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]]
-             [:div.controls.span4
-              (if logged-in?
-                [:div.controls.span4
-                 [:a#login.login-link {:href "/"} "Return to App"]]
+             (if logged-in?
+               [:div.controls.span4
+                [:a#login.login-link {:href "/"} "Return to App"]]
 
-                [:div.controls.span4
-                 ;; XXX: mixpanel event tracking
-                 [:a#login.login-link {:href (auth-url)
-                                       :title "Sign in with Github"
-                                       :data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'header sign-in', 'url' : window.location.pathname}}"}
-                  "Sign in"]
-                 [:span.seperator "|"]
-                 [:a#login.login-link {:href (auth-url)
-                                       :title "Sign up with Github"
-                                       :data-bind "track_link: {event: 'Auth GitHub', properties: {'source': 'header sign-up', 'url' : window.location.pathname}}"}
-                  "Sign up "
-                  [:i.fa.fa-github-alt]]])]]]]])))))
+               [:div.controls.span4
+                [:a#login.login-link {:href (auth-url)
+                                      :on-click #(put! controls-ch [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                      :title "Sign in with Github"}
+                 "Sign in"]
+                [:span.seperator " | "]
+                [:a#login.login-link {:href (auth-url)
+                                      :on-click #(put! controls-ch [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                      :title "Sign up with Github"}
+                 "Sign up "
+                 [:i.fa.fa-github-alt]]])]]]])))))
 
 (defn header [app owner]
   (reify

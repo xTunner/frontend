@@ -13,7 +13,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      ;; XXX convert CI.inner.Diagnostics to clojurescript
+      ;; TODO convert CI.inner.Diagnostics to clojurescript
       {:configDiagnostics (js/CI.inner.Diagnostics. (:string config) (clj->js (:errors config)))})
     om/IRenderState
     (render-state [_ {:keys [configDiagnostics]}]

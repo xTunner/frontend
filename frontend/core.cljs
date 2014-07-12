@@ -2,17 +2,20 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [cljs-time.core :as time]
+            [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
             [dommy.core :as dommy]
             [goog.dom]
             [goog.dom.DomHelper]
+            [frontend.analytics :as analytics]
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
             [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
+            [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
@@ -49,7 +52,7 @@
 (def api-ch
   (chan))
 
-(def error-ch
+(def errors-ch
   (chan))
 
 (def navigation-ch
@@ -87,12 +90,12 @@
                               utils/js->clj-kw)
           :comms {:controls  controls-ch
                   :api       api-ch
-                  :errors    error-ch
+                  :errors    errors-ch
                   :nav       navigation-ch
                   :ws        ws-ch
                   :controls-mult (async/mult controls-ch)
                   :api-mult (async/mult api-ch)
-                  :errors-mult (async/mult error-ch)
+                  :errors-mult (async/mult errors-ch)
                   :nav-mult (async/mult navigation-ch)
                   :ws-mult (async/mult ws-ch)
                   :mouse-move {:ch mouse-move-ch
@@ -150,9 +153,18 @@
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
-       ;; XXX: should these take the container like the rest of the controllers?
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
        (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
+
+(defn errors-handler
+  [value state container]
+  (when (log-channels?)
+    (mlog "Errors Verbose: " value))
+  (swallow-errors
+   (binding [frontend.async/*uuid* (:uuid (meta value))]
+     (let [previous-state @state]
+       (swap! state (partial errors-con/error container (first value) (second value)))
+       (errors-con/post-error! container (first value) (second value) previous-state @state)))))
 
 (defn setup-timer-atom
   "Sets up an atom that will keep track of the current time.
@@ -162,29 +174,31 @@
     (js/setInterval #(reset! mya (time/now)) 1000)
     mya))
 
-(defn main [state top-level-node]
+(defn main [state top-level-node history-imp]
   (let [comms       (:comms @state)
         container   (sel1 top-level-node "#om-app")
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
-        history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance)
         controls-tap (chan)
         nav-tap (chan)
         api-tap (chan)
-        ws-tap (chan)]
+        ws-tap (chan)
+        errors-tap (chan)]
     (routes/define-routes! state)
     (om/root
      app/app
      state
      {:target container
       :shared {:comms comms
-               :timer-atom (setup-timer-atom)}})
+               :timer-atom (setup-timer-atom)
+               :_app-state-do-not-use state}})
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
     (async/tap (:api-mult comms) api-tap)
     (async/tap (:ws-mult comms) ws-tap)
+    (async/tap (:errors-mult comms) errors-tap)
 
     (go (while true
           (alt!
@@ -192,6 +206,7 @@
            nav-tap ([v] (nav-handler v state history-imp))
            api-tap ([v] (api-handler v state container))
            ws-tap ([v] (ws-handler v state pusher-imp))
+           errors-tap ([v] (errors-handler v state container))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
            (async/timeout 10000) (do (print "TODO: print out history: ")))))))
@@ -201,30 +216,13 @@
                            :messages [:refresh]}]))
 
 (defn setup-browser-repl [repl-url]
-  (repl/connect repl-url)
+  (when repl-url
+    (repl/connect repl-url))
+  ;; this is harmless if it fails
+  (ws-repl/connect "ws://localhost:9001" :verbose true)
   ;; the repl tries to take over *out*, workaround for
   ;; https://github.com/cemerick/austin/issues/49
   (js/setInterval #(enable-console-print!) 1000))
-
-(defn dispatch-to-current-location! []
-  (let [uri (goog.Uri. js/document.location.href)]
-    (sec/dispatch! (str (.getPath uri)
-                        (when-not (string/blank? (.getQuery uri))
-                          (str "?" (.getQuery uri)))
-                        (when-not (string/blank? (.getFragment uri))
-                          (str "#" (.getFragment uri)))))))
-
-
-;; XXX this should go in IDidMount on the build container, also doesn't work
-;;     if the user goes to a build page from a different page
-(defn handle-browser-resize
-  "Handles scrolling the container on the build page to the correct position when
-  the size of the browser window chagnes. Has to add an event listener at the top level."
-  [app-state]
-  (goog.events/listen
-   js/window "resize"
-   #(when (= :build (:navigation-point @app-state))
-      (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
 
 (defn apply-app-id-hack
   "Hack to make the top-level id of the app the same as the
@@ -234,18 +232,27 @@
 
 (defn ^:export setup! []
   (apply-app-id-hack)
-  (let [state (app-state)]
+  (let [state (app-state)
+        top-level-node (sel1 :body)
+        history-imp (history/new-history-imp top-level-node)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (browser-settings/setup! state)
-    (main state (sel1 :body))
-    (dispatch-to-current-location!)
-    (handle-browser-resize state)
+    (main state top-level-node history-imp)
+    (if-let [error-status (get-in @state [:render-context :status])]
+      ;; error codes from the server get passed as :status in the render-context
+      (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
+      (do (analytics/track-path (str "/" (.getToken history-imp)))
+          (sec/dispatch! (str "/" (.getToken history-imp)))))
     (when-let [user (:current-user @state)]
-      (subscribe-to-user-channel user (get-in @state [:comms :ws])))
+      (subscribe-to-user-channel user (get-in @state [:comms :ws]))
+      (analytics/init-user (:login user)))
+    (analytics/track-invited-by (:invited-by utils/initial-query-map))
     (when (env/development?)
-      (when-let [repl-url (get-in @state [:render-context :browser_connected_repl_url])]
-        (try
-          (setup-browser-repl repl-url)
-          (catch js/error e
-            (merror e)))))))
+      (try
+        (setup-browser-repl (get-in @state [:render-context :browser_connected_repl_url]))
+        (catch js/error e
+          (merror e))))))
+
+(defn ^:export toggle-admin []
+  (swap! debug-state update-in [:current-user :admin] not))

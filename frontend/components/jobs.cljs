@@ -195,7 +195,7 @@
             [:li "Proven success in previous projects."]]
            [:h5
             [:strong "Dev-awareness"]
-            " — Are you interesting in telling customers about CircleCI? If so, we'd love to see:"]
+            " — Are you interested in telling customers about CircleCI? If so, we'd love to see:"]
            [:ul
             [:li
              "Anything you may have written about or put into practice related to conversion rate optimization, A/B testing, SaaS metrics, lifecycle marketing, virality, or marketing automation."]

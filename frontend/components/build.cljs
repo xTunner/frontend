@@ -24,7 +24,6 @@
 (defn report-error [build controls-ch]
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
-    ;; XXX add circle.yml errors
     (when (:failed build)
       [:div.alert.alert-danger
        (if-not (:infrastructure_fail build)
@@ -48,7 +47,7 @@
           (common/contact-us-inner controls-ch)
           " if you're interested in the cause of the problem."])])))
 
-(defn container-pill [{:keys [container current-container-id]} owner]
+(defn container-pill [{:keys [container current-container-id build-running?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -57,24 +56,27 @@
              controls-ch (om/get-shared owner [:comms :controls])]
          [:li {:class (when (= container-id current-container-id) "active")}
           [:a.container-selector
-           {:on-click #(put! controls-ch [:container-selected container-id])
-            :class (container-model/status-classes container)}
+           {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
+            :class (container-model/status-classes container build-running?)}
            (str "C" (:index container))]])))))
 
-(defn container-pills [container-data owner]
+(defn container-pills [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [containers current-container-id]} container-data
+      (let [container-data (:container-data data)
+            build-running? (:build-running? data)
+            {:keys [containers current-container-id]} container-data
             controls-ch (om/get-shared owner [:comms :controls])
             hide-pills? (or (>= 1 (count containers))
-                            (not (first (mapcat :actions containers))))]
+                            (empty? (remove :filler-action (mapcat :actions containers))))]
         (html
          [:div.containers.pagination.pagination-centered (when hide-pills? {:style {:display "none"}})
           [:ul.container-list
            (for [container containers]
              (om/build container-pill
                        {:container container
+                        :build-running? build-running?
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))]])))))
 
@@ -97,7 +99,8 @@
          [:div.row-fluid
           [:div.offset1.span10
            [:div (common/messages (:messages build))]
-           [:div (report-error build controls-ch)]
+           (when (empty? (:messages build))
+             [:div (report-error build controls-ch)])
 
            (when (and plan (show-trial-notice? plan))
              (om/build project-common/trial-notice plan))
@@ -125,21 +128,24 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             project-data (get-in data state/project-data-path)
+            user (get-in data state/user-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div#build-log-container
           (if-not build
            [:div
-             (common/flashes)
+             (om/build common/flashes (get-in data state/error-message-path))
              [:div.loading-spinner common/spinner]]
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :project-data project-data})
-             (common/flashes)
+                                              :project-data project-data
+                                              :user user})
+             (om/build common/flashes (get-in data state/error-message-path))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data})
-             (om/build container-pills container-data)
+             (om/build container-pills {:container-data container-data
+                                        :build-running? (build-model/running? build)})
              (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))

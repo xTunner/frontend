@@ -1,10 +1,12 @@
 (ns frontend.components.shared
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [dommy.attrs :as attrs]
             [frontend.async :refer [put!]]
             [frontend.stefon :refer (data-uri)]
             [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [goog.style]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -14,15 +16,19 @@
   [:div.customers-trust.row
    [:h4 [:span "Trusted By"]]
    [:div {:class company-size}
-    [:img {:title "Salesforce" :src (data-uri "/img/logos/salesforce.png")}] " "]
+    [:img {:title "Salesforce" :src (data-uri "/img/logos/salesforce.png")} " "] " "]
+   " "
    [:div {:class company-size}
-    [:img {:title "Samsung" :src (data-uri "/img/logos/samsung.png")}] " "]
+    [:img {:title "Samsung" :src (data-uri "/img/logos/samsung.png")} " "] " "]
+   " "
    [:div {:class company-size}
-    [:img {:title "Kickstarter" :src (data-uri "/img/logos/kickstarter.png")}] " "]
+    [:img {:title "Kickstarter" :src (data-uri "/img/logos/kickstarter.png")} " "] " "]
+   " "
    [:div {:class company-size}
-    [:img {:title "Cisco", :src (data-uri "/img/logos/cisco.png")}] " "]
+    [:img {:title "Cisco", :src (data-uri "/img/logos/cisco.png")} " "] " "]
+   " "
    [:div {:class company-size}
-    [:img {:title "Shopify" :src (data-uri "/img/logos/shopify.png")}] " "]
+    [:img {:title "Shopify" :src (data-uri "/img/logos/shopify.png")} " "] " "]
    [:span.stretch]])
 
 (def stories-procedure
@@ -95,6 +101,21 @@
    " Sign up with "
    [:strong.white "GitHub"]])
 
+(def invite-form
+  [:div#inviteForm.fade.hide.invite-form.modal {:tabIndex "-1",
+                                                :role "dialog",
+                                                :aria-labelledby "inviteFormLabel",
+                                                :aria-hidden "true"}
+   [:div.modal-header
+    [:button.close {:type "button", :data-dismiss "modal", :aria-hidden "true"} "×"]
+    [:h3#inviteFormLabel "Invite Your Colleagues"]]
+   [:div.modal-body
+    [:p [:strong "To invite your friends, and colleagues to Circle, just send them this link:"]]
+    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
+    [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]]
+   [:div.modal-footer
+    [:button.btn.btn-primary {:data-dismiss "modal", :aria-hidden "true"} "Got it"]]])
+
 (defn contact-form
   "It's not clear how this should fit into the global state, so it's using component-local
    state for now."
@@ -156,10 +177,11 @@
                                                    (om/set-state! owner [:loading?] true)
                                                    (go (let [resp (<! (ajax/managed-form-post
                                                                        "/about/contact"
-                                                                       :params {:name name
-                                                                                :email email
-                                                                                :message message
-                                                                                :enterprise enterprise?}))]
+                                                                       :params (merge {:name name
+                                                                                       :email email
+                                                                                       :message message}
+                                                                                      (when enterprise?
+                                                                                        {:enterprise enterprise?}))))]
                                                          (if (= (:status resp) :success)
                                                            (om/update-state! owner (fn [s]
                                                                                      {:name ""
@@ -172,3 +194,17 @@
                                                              (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."})))))))
                                                false)}
            (if loading? "Sending..." "Send")]])))))
+
+(defn sticky-help-link [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div#sticky-help-link {:class (when (om/get-state owner [:is-open?]) "isOpen")}
+        [:div.dark-background {:on-click #(do (om/update-state! owner [:is-open?] not)
+                                              ;; Don't let the notice change the width :(
+                                              (goog.style/setWidth (om/get-node owner) (.-width (goog.style/getSize (om/get-node owner)))))}
+         "Need Help? Contact us!"]
+        [:div.light-background
+         (om/build contact-form app)
+         [:span "Or, check out our " [:a {:target "_blank", :href "https://www.hipchat.com/gjwkHcrD5"} "live support!"]]]]))))

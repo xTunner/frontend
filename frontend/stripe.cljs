@@ -1,7 +1,7 @@
 (ns frontend.stripe
   (:require [frontend.async :refer [put!]]
             [frontend.env :as env]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :include-macros true]
             [goog.net.jsloader]))
 
 ;; We may want to add StripeCheckout to externs to avoid all of the aget noise.
@@ -22,9 +22,13 @@
   (let [checkout (aget js/window "StripeCheckout")
         args (merge checkout-defaults
                     checkout-args
-                    ;; XXX: check what happens on failure
+                    ;; Stripe will always return a token, even if the card is invalid.
+                    ;; We'll propagate the error from the backend when we make the next API call
                     {:token #(put! channel [:stripe-checkout-succeeded (utils/js->clj-kw %)])
-                     :closed #(put! channel [:stripe-checkout-closed])})]
+                     ;; Stripe will fire both callbacks on successful submit. This makes sure that
+                     ;; the closed event fires last. The timeout by itself is enough, but we'll
+                     ;; add 300ms for good measure.
+                     :closed (fn [] (js/setTimeout #(put! channel [:stripe-checkout-closed]) 300))})]
     ((aget checkout "open") (clj->js args))))
 
 (defn checkout-loaded?

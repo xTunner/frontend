@@ -1,7 +1,7 @@
 (ns frontend.analytics.perfect-audience
   (:require [frontend.utils :as utils :include-macros true]))
 
-(defn track [event]
+(defn track [event & [props]]
   (utils/swallow-errors
    (let [pq (or (aget js/window "_pq") #js [])]
-     ((aget pq "push") #js ["track" event]))))
+     ((aget pq "push") (clj->js (concat ["track" event] props))))))

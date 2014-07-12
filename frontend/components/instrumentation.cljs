@@ -48,7 +48,7 @@
                          {} instrumentation-data)]
         (html
          [:div.metrics {:on-click #(put! controls-ch [:instrumentation-line-items-toggled])}
-          [:span.data (count instrumentation-data)]
+          [:span.data (str (count instrumentation-data))]
           [:strong "requests"]
           [:span.data (:request-time sums) "ms"]
           [:strong "client"]

@@ -27,6 +27,7 @@
                                       :plan nil
                                       :settings {}
                                       :tokens nil
+                                      :checkout-keys nil
                                       :envvars nil}))
 
 (defn reset-current-org [state]
@@ -37,7 +38,6 @@
 
 (defn stale-current-project? [state project-name]
   (and (get-in state state/project-path)
-       ;; XXX: check for url-escaped characters (e.g. /)
        (not= project-name (vcs-url/project-name (get-in state (conj state/project-path :vcs_url))))))
 
 (defn stale-current-org? [state org-name]
@@ -49,3 +49,13 @@
    [state login type repo-name]
    (when-let [repos (get-in state (state/repos-path login type))]
      (find-index #(= repo-name (:name %)) repos)))
+
+(defn clear-page-state [state]
+  (-> state
+      (assoc :crumbs nil)
+      (assoc-in state/inputs-path nil)
+      (assoc-in state/error-message-path nil)))
+
+(defn merge-inputs [defaults inputs keys]
+  (merge (select-keys defaults keys)
+         (select-keys inputs keys)))
