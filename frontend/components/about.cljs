@@ -20,6 +20,7 @@
     :visible true
     :bio ["You might not know it by looking at him, but Paul is a wicked card shark. When he's not making his poker buddies cry, he seeks out mogul-laced ski trails to hurl himself down, and within the first five minutes of meeting him he'll probably tell you the story about how he mostly landed a backflip on his skis. Lest his ego get too big, though, we can always remind him of the time he failed at a YCombinator startup, and he'll go bury his emotions in the sweet sweet taste of artisan chocolate--or any chocolate, really.",
           "Paul's been interviewed by the Wall Street Journal, and one of his proudest achievements was giving a Google Tech Talk on compilers and programming languages. He wrote phc, an open source PHP compiler, while doing his PhD on compilers and static analysis in Dublin. After moving to the Bay Area, Paul worked on the Firefox Javascript engine, started Circle, and then wrote stefon, an asset pipeline for Clojure. Because it pains Paul to see so much time wasted due to inadequate developer tools, he approaches continuous integration from the perspective of developer productivity. He loves to focus on building the Circle product, but, as he'll tell you while he's walloping you at table tennis, he also has to take care of the business side of things, too."]}
+   {:name "David Lowe"
     :visible true
     :role "Backend Developer"
     :github "dlowe"
