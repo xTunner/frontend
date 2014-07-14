@@ -55,7 +55,26 @@
                                              "add more containers"]
                " and finish even faster."])]))))))
 
-(defn commit-line [{:keys [subject body commit_url commit] :as commit-details} owner]
+(defn linkify [text]
+  (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
+        pseudo-url-pattern #"(?im)(^|[^/])(www\.[\S]+(\b|$))"]
+    (-> text
+        ;; TODO: switch to clojure.string/replace when they fix
+        ;; http://dev.clojure.org/jira/browse/CLJS-485...
+        (.replace (js/RegExp. (.-source url-pattern) "gim")
+                  "<a href=\"$1\" target=\"_blank\">$1</a>")
+        (.replace (js/RegExp. (.-source pseudo-url-pattern) "gim")
+                  "$1<a href=\"http://$2\" target=\"_blank\">$2</a>"))))
+
+(defn maybe-project-linkify [text project-name]
+  (if-not project-name
+    text
+    (let [issue-pattern #"(^|\s)#(\d+)\b"]
+      (-> text
+          (string/replace issue-pattern
+                          (gstring/format "$1<a href='https://github.com/%s/issues/$2' target='_blank'>#$2</a>" project-name))))))
+
+(defn commit-line [{:keys [build subject body commit_url commit] :as commit-details} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -66,8 +85,11 @@
       (html
        [:div
         [:span {:title body
-                :id (str "commit-line-tooltip-hack-" commit)}
-         subject " "]
+                :id (str "commit-line-tooltip-hack-" commit)
+                :dangerouslySetInnerHTML {:__html (-> subject
+                                                      (gstring/htmlEscape)
+                                                      (linkify)
+                                                      (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]
         [:a.sha-one {:href commit_url
                      :title commit}
          " "
@@ -100,14 +122,17 @@
                 [:i.fa.fa-caret-down])])]
           [:div.build-commits-list
            (if-not (seq (:all_commit_details build))
-             (om/build commit-line {:subject (:subject build)
+             (om/build commit-line {:build build
+                                    :subject (:subject build)
                                     :body (:body build)
                                     :commit_url (build-model/github-commit-url build)
                                     :commit (:vcs_revision build)})
              (list
-              (om/build-all commit-line (take 3 (:all_commit_details build)))
+              (om/build-all commit-line (take 3 (map #(assoc % :build build)
+                                                     (:all_commit_details build))))
               (when (:show-all-commits build-data)
-                (om/build-all commit-line (drop 3 (:all_commit_details build))))))]])))))
+                (om/build-all commit-line (drop 3 (map #(assoc % :build build)
+                                                       (:all_commit_details build)))))))]])))))
 
 (defn build-ssh [nodes owner]
   (reify
