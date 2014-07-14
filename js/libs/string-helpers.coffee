@@ -12,12 +12,13 @@ CI.stringHelpers =
     # urlPattern and pseudoUrlPattern are taken from http://stackoverflow.com/a/7123542
 
     # http://, https://, ftp://
-    urlPattern = /(\b(https?|ftp):\/\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\/%=~_|])/gim
+    urlPattern = /(\b(https?|ftp):\/\/[-A-Za-z0-9+@#\/%?=~_|!:,.;]*[-A-Za-z0-9+@#\/%=~_|])/gim
 
     # www. sans http:// or https://
     pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim
 
-    text = text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>')
+    text = text.replace(/&#x2F;/g, '/') # undo overzealous _.escape()
+               .replace(urlPattern, '<a href="$1" target="_blank">$1</a>')
                .replace(pseudoUrlPattern, '$1<a href="http://$2" target="_blank">$2</a>')
 
     if project_name
