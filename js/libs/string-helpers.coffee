@@ -23,9 +23,9 @@ CI.stringHelpers =
 
     if project_name
       #issueNum
-      issuePattern = /\W#(\d+)\b/g
-      issueUrl = "https://github.com/#{project_name}/issues/$1"
+      issuePattern = /(^|\s)#(\d+)\b/g
+      issueUrl = "https://github.com/#{project_name}/issues/$2"
 
-      text = text.replace(issuePattern, "<a href='#{issueUrl}' target='_blank'>#$1</a>")
+      text = text.replace(issuePattern, "$1<a href='#{issueUrl}' target='_blank'>#$2</a>")
 
     text
