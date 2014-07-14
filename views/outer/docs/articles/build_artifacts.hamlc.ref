@@ -11,7 +11,15 @@
   read-only <code>$CIRCLE_ARTIFACTS</code>
   != succeed ".", ->
     %a{ href: "/docs/environment-variables" } environment variable
-  After the build finishes, everything in this directory is saved and linked to the build.
+
+%p
+  If you prefer, you can also
+  %a{ href: "/docs/configuration#artifacts" } configure directories whose contents will
+  be saved.
+
+%p
+  After the build finishes, everything in these directories is saved and linked to the build.
+
 %P  
   %img.artifacts-image{src: assetPath('(asset-path "img/docs/artifacts.png")')}
 %p

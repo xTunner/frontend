@@ -879,6 +879,20 @@
 %p
   Circle will run its inference as well as all build commands from that directory.
 
+%h2#artifacts Specifying custom artifacts directories
+
+%p
+  You can specify extra directories to be
+  != succeed ":", ->
+    %a{href: "/docs/build_artifacts"}saved as artifacts
+
+%pre
+  %code<>
+    :preserves
+      general:
+        artifacts:
+          - "selenium/screenshots" # relative to the build directory
+          - "~/simplecov" # relative to the user's home directory
 
 %h2#help Need anything else?
 

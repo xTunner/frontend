@@ -97,6 +97,7 @@ a {
 input {
   @height: 3em;
   &[type="text"],
+  &[type="search"],
   &[type="email"] {
     .smart_label(@height, (@height / 2));
   }
@@ -121,7 +122,7 @@ textarea {
     }
   }
 }
-button [spinner] {
+button [spinner], button [data-spinner]{
   width:  @baseLineHeight;
   height: @baseLineHeight;
   vertical-align: top;
@@ -152,10 +153,6 @@ button [spinner] {
     .error { color: @errorText; }
     .success { color: @successText; }
     margin: 0 0 15px;
-  }
-
-  textarea {
-    height: 100px;
   }
 
   button {
