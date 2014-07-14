@@ -121,13 +121,10 @@ CI.inner.Build = class Build extends CI.inner.Obj
           false
 
     @style =
-      "label-important": @important_style
-      "label-warning": @warning_style
-
-      "label-success": @success_style
-      "label-info": @info_style
-      label: true
-      build_status: true
+      "fail": @important_style
+      "stop": @warning_style
+      "pass": @success_style
+      "busy": @info_style
 
     @favicon_color = @komp =>
       if @important_style()

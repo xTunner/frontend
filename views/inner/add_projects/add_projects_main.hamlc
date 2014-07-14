@@ -56,12 +56,12 @@
         %span.forked{data-bind: "text: '(' + org_name() + ')'"}<>
         <!-- /ko -->
       %i.fa.fa-lock
-      %button{data-toggle: "modal", data-target: "#inviteForm"}
+      %button{data-toggle: "modal", data-target: "#inviteForm-addprojects"}
         %span Follow
     <!-- /ko -->
   <!-- /ko -->
 
-  #inviteForm.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
+  #inviteForm-addprojects.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "inviteFormLabel", :role => "dialog", :tabindex => "-1"}
     .modal-header
       %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
       %h3#inviteFormLabel This requires an Administrator

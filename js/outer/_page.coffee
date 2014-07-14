@@ -71,7 +71,11 @@ CI.outer.Page = class Page
   scroll: (hash) =>
     if hash == '' or hash == '#' then hash = "body"
     if $(hash).offset()
-      $('html, body').animate({scrollTop: $(hash).offset().top}, 0)
+      # Not sure why, but this works. Maybe setTimeout gives the page time to render?
+      # Without the setTimeout, we end up scrolling past by 50px
+      setTimeout () ->
+        $main = $('.app-main')
+        $main.animate({scrollTop: ($(hash).offset().top + $main.scrollTop())}, 0)
 
   title: =>
     @_title

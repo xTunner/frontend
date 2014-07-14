@@ -20,4 +20,6 @@
     != HAML['flashes']({})
   .settings-item{data-bind: "with: current_user"}
     .settings-item-inner
-      #subpage
+      / ko if: VM.template_subpage
+      #subpage{data-bind: "haml: {template: VM.template_subpage, args: VM.template_args}"}
+      / /ko

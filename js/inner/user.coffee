@@ -89,6 +89,21 @@ CI.inner.User = class User extends CI.inner.Obj
       current_repos = if @repos then @repos() else []
       current_repos.filter (repo) -> repo.name.toLowerCase().indexOf(current_filter) != -1
 
+    @activity_setting = @komp
+      deferEvaluation: true
+      read: ->
+        if VM.browser_settings.settings().show_all_branches
+          "All Branch Activity"
+        else
+          "Your Branch Activity"
+      write: (val) ->
+        if val is "All Branch Activity"
+          VM.browser_settings.set_setting("show_all_branches", true)
+        else
+          VM.browser_settings.set_setting("show_all_branches", false)
+        val
+      owner: @
+
   missing_scopes: () =>
     user_scopes = ['user', 'user:email']
 
@@ -226,11 +241,16 @@ CI.inner.User = class User extends CI.inner.Obj
     VM.browser_settings.toggle_setting("recent_activity_visible")
 
   toggle_aside_expanded: () =>
-    VM.browser_settings.toggle_setting("aside_is_slim")
-    if VM.browser_settings.settings().aside_is_slim and VM.browser_settings.settings().recent_activity_visible
-      VM.browser_settings.set_setting("recent_activity_visible", false)
-    if !VM.browser_settings.settings().aside_is_slim                   #
-      VM.browser_settings.set_setting("recent_activity_visible", true) # meant to disable hiding until there's another accordion
+    new_setting = !VM.browser_settings.settings().aside_is_slim
+    VM.browser_settings.set_setting("aside_is_slim", new_setting)
+    VM.browser_settings.set_setting("recent_activity_visible", new_setting)
+    try
+      if new_setting
+        mixpanel.track('aside_nav_collapsed')
+      else
+        mixpanel.track('aside_nav_expanded')
+    catch e
+      console.error e
 
   toggle_show_all_branches: () =>
     VM.browser_settings.toggle_setting("show_all_branches")
