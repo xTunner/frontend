@@ -345,7 +345,7 @@ CI.inner.Build = class Build extends CI.inner.Obj
     @linkified_commits = @komp =>
       linkified = (commit) =>
         lc = $.extend({}, commit)  # make a shallow copy, for purity's sake
-        lc.subject = CI.stringHelpers.linkify lc.subject, @project_name()
+        lc.subject = CI.stringHelpers.linkify _.escape(lc.subject), @project_name()
         lc
 
       (linkified commit for commit in @all_commit_details())
