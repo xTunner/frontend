@@ -460,13 +460,15 @@
     (render [_]
       (html
        (let [controls-ch (om/get-shared owner [:comms :controls])
-             inputs (inputs/get-inputs-from-app-state owner)
              notify_pref (get settings field)
              id (string/replace (name field) "_" "-")]
          [:label {:for id}
           [:input {:id id
                    :checked (= "smart" notify_pref)
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) % :value (if (= "smart" notify_pref) nil "smart"))
+                   ;; note: can't use inputs-state here because react won't let us
+                   ;;       change checked state without rerendering
+                   :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
+                                                 :value (if (= "smart" notify_pref) nil "smart"))
                    :value "smart"
                    :type "checkbox"}]
           [:span "Fixed/Failed Only"]
@@ -514,7 +516,9 @@
                                          [:input#hipchat-notify
                                           {:type "checkbox"
                                            :checked (:hipchat_notify settings)
-                                           :on-change #(utils/edit-input controls-ch (conj state/inputs-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
+                                           ;; n.b. can't use inputs-state b/c react won't changed
+                                           ;;      checked state without a rerender
+                                           :on-change #(utils/edit-input controls-ch (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
