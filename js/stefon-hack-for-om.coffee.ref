@@ -14,6 +14,7 @@ window.stefon_hack_for_om =
 
   asset_paths:
     "/img/outer/about/paul.png": '(asset-path "img/outer/about/paul.png")'
+    "/img/outer/about/allen.png": '(asset-path "img/outer/about/allen.png")'
     "/img/outer/about/david.png": '(asset-path "img/outer/about/david.png")'
     "/img/outer/about/jenneviere.png": '(asset-path "img/outer/about/jenneviere.png")'
     "/img/outer/about/daniel.png": '(asset-path "img/outer/about/daniel.png")'
