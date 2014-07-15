@@ -51,9 +51,7 @@
       [:h3 "CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance."]
       [:h3 "CircleCI is Continuous Integration and Delivery for modern web development."])
     [:div.how.row-fluid
-     (if (:hero_graphic ab-tests)
-       hero-graphic
-       shared/stories-procedure)]
+       hero-graphic]
     [:div.row-fluid
      [:div.hero-unit-cta
       (home-cta controls-ch)]]]])
