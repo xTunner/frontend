@@ -134,45 +134,25 @@
            [:h3 [:span "Design roles"]]
            [:p
             "Our customers love great experiences, and so do we. We're looking for amazing designers who can provide them."]
-           [:h5 "We're looking for"]
+           [:h5 "You will be responsible for"]
            [:ul
-            [:li
-             "An inspiring ability to create graceful solutions when confronted by complex design challenges."]
-            [:li
-             "An obsessive devotion to user-experience problem solving and a sharp understanding of its inherit imperfections."]
-            [:li
-             "An exceedingly confident resolve, built from an exceedingly diverse repertoire of skillsets."]
-            [:li
-             "An intimate love affair with learning and an equally essential appetite for ground-breakingly new ideas."]
-            [:li
-             "An exceptional talent for communicating efficiently in a developer-centric, fast-paced environment."]
-            [:li
-             "An understanding of how to engage with developers, both inside and outside the context of a team."]
-            [:li "Taste."]]
-           [:h5 "We'd love to see"]
+             [:li "Actively engaging with product strategy and development."]
+             [:li "Collaborating between various teams with diverse skill sets."]
+             [:li "Embracing an environment with increasingly tight feedback loops."]
+             [:li "Prototyping, producing, and shipping your own designs."]
+             [:li "Acting as a self-starter and motivating yourself to meet your own deadlines."]
+             [:li "Upholding and improving upon existing brand standards and guidelines."]]
+           [:h5 "We would love to see"]
            [:ul
-            [:li "Any cool stuff you may have on dribbble, Behance, etc."]
-            [:li
-             "What kind of high-level or back-end programming knowledge you may have."]
-            [:li
-             "How you manage and traverse large, complex technology stacks."]
-            [:li
-             "You send — along with your coverletter — an image of a puppy, in formal wear, doing yoga."]
-            [:li
-             "If you've ever built or helped build any type of developer-oriented tools in the past."]]
-           [:h5 "With the ability to"]
-           [:ul
-            [:li "Write beautiful HTML and CSS."]
-            [:li
-             "Navigate JS/Coffee comfortably and fix things when they break."]
-            [:li
-             "Build your own mockups, prototypes, and production-ready concepts."]
-            [:li
-             "Ship, believing done is better than perfect and iteration is better than perfection."]
-            [:li
-             "Uphold and improve upon existing brand standards and guidelines."]
-            [:li
-             "Most importantly, relate to our customers; primarily developers."]]
+             [:li "An ability to create simple solutions for complex challenges."]
+             [:li "Someone who considers the user's experience from start to finish."]
+             [:li "An aptitude in many skill sets and a hunger for learning."]
+             [:li "The ability to communicate effeciently in a developer-centric environment."]
+             [:li "A strong personality with a equally strong sense of taste."]
+             [:li "A deep understanding of web design and development best practices."]
+             [:li "Work you've done for other web-based developer tools."]
+             [:li "Any other interesting work you wish to share, finished or not."]
+             [:li "A willingness to approach sophisticated problems with an incredibly talented team at your side."]]
            [:a
             {:role "button", :href "/jobs#apply"}
             [:span "Apply for Design roles"]]]
