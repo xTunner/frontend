@@ -74,8 +74,10 @@
             controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             project-id (project-model/id project)
+            ;; lets us store collapse branches in localstorage without leaking info
+            project-id-hash (utils/md5 project-id)
             show-all-branches? (get-in data state/show-all-branches-path)
-            collapse-branches? (get-in data (state/project-branches-collapsed-path project-id))
+            collapse-branches? (get-in data (state/project-branches-collapsed-path project-id-hash))
             vcs-url (:vcs_url project)
             org (vcs-url/org-name vcs-url)
             repo (vcs-url/repo-name vcs-url)
@@ -85,7 +87,8 @@
           [:li
            [:div.project {:role "button"}
             [:a.toggle {:title "show/hide"
-                        :on-click #(put! controls-ch [:collapse-branches-toggled {:project-id project-id}])}
+                        :on-click #(put! controls-ch [:collapse-branches-toggled {:project-id project-id
+                                                                                  :project-id-hash project-id-hash}])}
              (common/ico :repo)]
 
             [:a.title {:href (routes/v1-project-dashboard {:org org

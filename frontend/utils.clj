@@ -43,6 +43,8 @@
   [name args & body]
   `(defn ~name ~args 
      (reify
+       om.core/IDisplayName
+       (~'display-name [~'_] ~(str name))
        om.core/IRender
        (~'render [~'_] ~@body))))
 
