@@ -345,7 +345,7 @@
           [:p
            " We've got a few settings you can play with, to enable things we're working on. We'd love to "
            [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
-            "know what you think about them"]
+            "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
            (describe-flag {:flag :junit
