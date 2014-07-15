@@ -9,7 +9,6 @@
     %h3 CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance.
     / /ko
     .row-fluid.how
-      / ko if: VM.ab().hero_graphic()
       .span4
         %img{height: "150", src: '(data-uri "img/outer/home/octocat.png" 150 150)', width: "150"}
         %h4 Push your new code to GitHub
@@ -21,10 +20,6 @@
       .span4
         %img{height: "150", src: '(data-uri "img/outer/home/deploy.png" 150 150)', width: "150"}
         %h4 Deploy green builds to your servers
-      / /ko
-      / ko ifnot: VM.ab().hero_graphic()
-      != HAML.stories_procedure()
-      / /ko
     .row-fluid
       .hero-unit-cta
         != HAML.home_cta({first: true, source: "hero"})
