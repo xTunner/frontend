@@ -29,7 +29,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
     irc_username: null
     irc_password: null
     irc_notify_prefs: null
-    github_user: null
     heroku_deploy_user: null
     ssh_keys: []
     followed: null
@@ -468,26 +467,6 @@ CI.inner.Project = class Project extends CI.inner.Obj
       type: "DELETE"
       event: event
       url: "/api/v1/project/#{@project_name()}/heroku-deploy-user"
-      success: (result) =>
-        true
-        @refresh()
-    false
-
-  set_github_user: (data, event) =>
-    $.ajax
-      type: "POST"
-      event: event
-      url: "/api/v1/project/#{@project_name()}/github-user"
-      success: (result) =>
-        true
-        @refresh()
-    false
-
-  clear_github_user: (data, event) =>
-    $.ajax
-      type: "DELETE"
-      event: event
-      url: "/api/v1/project/#{@project_name()}/github-user"
       success: (result) =>
         true
         @refresh()
