@@ -98,15 +98,6 @@
     :github "esnyder"
     :twitter "emilesnyder"
     :email "emile@circleci.com"}
-   {:name "Dave Jarvis"
-    :img-path (stefon/asset-path "/img/outer/about/dave.png")
-    :visible true
-    :role "Developer"
-    :github "venantius"
-    :twitter "venantius"
-    :email "dave@circleci.com"
-    :bio ["Dave's worst nightmare is to be boring. His childhood was split between New York City, Tokyo, and Bristol (U.K.), and he's never really felt at home anywhere since. In his spare time he plays an unreasonable amount of pool at the diviest bars he can find, and gardens aggressively in the hours before they open. One of the lucky few to live somewhere in San Francisco with a decent back yard, he's also a (discreet) amateur archer. In his prior life as a theater nerd, he designed theater sets (a production of Richard III being his favorite) and acted in independent theater productions in Chicago. Along with a few friends, he founded, edited and wrote a blog consisting of critical essays on video games, right up until the day he forgot to renew the domain name. Womp-womp.",
-          "CircleCI is his first job as a software developer, though his prior job involved hacking together the tools and libraries needed to help analyze petabyte-scale datasets as a data scientist. Before that, he worked as an honest-to-god economist for a small consulting outfit in Chicago, where he conducted economic impact analysis work for such clients as Argonne National Laboratory and the U.S. Department of Energy. He's now in the midst of launching a small hedge fund...because there actually *are* enough hours in the day. He joins Circle with the daydream of getting the time between each push and the next commit just that tiny bit shorter."]}
    {:name "Tim Dixon"
     :img-path (stefon/asset-path "/img/outer/about/tim.png")
     :visible true
@@ -118,14 +109,7 @@
     :role "Developer"
     :github "iand675"
     :twitter "iand675"
-    :email "ian@circleci.com"}
-   {:name "Joshua Ballanco"
-    :img-path (stefon/asset-path "/img/outer/about/josh.png")
-    :visible true
-    :role "Developer"
-    :github "jballanc"
-    :twitter "manhattanmetric"
-    :email "jballanc@circleci.com"}])
+    :email "ian@circleci.com"}])
 
 (def placeholder-image [:svg.about-placeholder {:height "150px" :width "150px" :viewBox "0 0 150 150"}
                         [:path.bust {:d "M-1.673,151.75v-13.856c0,0,0.901-8.505,11.143-11.142c0,0,16.495-6.022,29.415-11.646 c6.681-2.907,8.119-4.652,14.859-7.631c0,0,0.703-3.461,0.45-5.521h5.271c0,0,1.204,0.702,0-7.43c0,0-6.425-1.705-6.725-14.655 c0,0-4.825,1.625-5.121-6.224c-0.202-5.321-4.318-9.939,1.607-13.753l-3.012-8.131c0,0-6.023-32.826,11.294-28.008 c-7.305-8.734,41.409-17.465,44.574,10.24c0,0,2.256,14.958,0,25.197c0,0,7.113-0.824,2.357,12.852c0,0-2.609,9.836-6.627,7.628 c0,0,0.656,12.447-5.668,14.559c0,0,0.449,6.625,0.449,7.075l6.025,0.903c0,0-0.906,5.424,0.152,6.022c0,0,7.142,4.894,15.657,7.081 c16.414,4.212,35.837,11.44,35.837,17.766c0,0,1.659,8.435,1.659,18.673H-1.673z",
