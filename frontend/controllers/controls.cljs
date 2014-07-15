@@ -63,8 +63,9 @@
   (assoc-in state state/show-all-branches-path value))
 
 (defmethod control-event :collapse-branches-toggled
-  [target message {:keys [project-id]} state]
-  (update-in state (state/project-branches-collapsed-path project-id) not))
+  [target message {:keys [project-id project-id-hash]} state]
+  ;; Lets us store this in localstorage without leaking info about the user
+  (update-in state (state/project-branches-collapsed-path project-id-hash) not))
 
 (defmethod control-event :slim-aside-toggled
   [target message {:keys [project-id]} state]
@@ -94,7 +95,7 @@
 
 (defmethod control-event :state-restored
   [target message path state]
-  (let [str-data (.getItem js/localStorage "circle-state")]
+  (let [str-data (.getItem js/sessionStorage "circle-state")]
     (if (seq str-data)
       (-> str-data
           reader/read-string
@@ -280,7 +281,7 @@
 
 (defmethod post-control-event! :state-persisted
   [target message channel-id previous-state current-state]
-  (.setItem js/localStorage "circle-state"
+  (.setItem js/sessionStorage "circle-state"
             (pr-str (dissoc current-state :comms))))
 
 

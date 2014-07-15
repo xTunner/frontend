@@ -5,6 +5,7 @@
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
+            [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -243,6 +244,12 @@
       (assoc :navigation-point :documentation-page
              :navigation-data args
              :current-documentation-page (:page args))))
+
+(defmethod post-navigated-to! :documentation-page
+  [history-imp navigation-point args previous-state current-state]
+  (let [page-ref (keyword (:page args))
+        page-article (get docs/documentation-pages page-ref)]
+    (set-page-title! (:title page-article))))
 
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
