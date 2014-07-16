@@ -36,12 +36,18 @@
   [container message args previous-state current-state]
   (utils/mlog "No post-error for: " message))
 
+(defn format-unknown-error [{:keys [status-code status-text url] :as args}]
+  (gstring/format (str "We got an error "
+                       (str "(" (when status-code (str status-code " - ")) status-text ")")
+                       (when url (str " while talking to " url))
+                       ".")))
+
 (defmethod error :api-error
   [container message {:keys [status-code status-text resp timeout? url] :as args} state]
   (let [message (cond (:message resp) (:message resp)
                       (= status-code 401) :logged-out
                       timeout? (str "A request timed out, talking to " url)
-                      :else  (gstring/format "An unknown error occured: (%s - %s)." status-code status-text))]
+                      :else (format-unknown-error args))]
     (assoc-in state state/error-message-path message)))
 
 (defmethod post-error! :api-error
