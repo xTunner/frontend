@@ -106,8 +106,8 @@
        [:div
         (doc-utils/render-haml-template "docs_title" {:article doc})
         (if (:category doc)
-          (doc-utils/render-haml-template "article_list" {:article doc :slug true})
-          (doc-utils/render-haml-template (:slug doc) doc))]))))
+          (doc-utils/render-haml-template "article_list" (assoc doc :article doc))
+          (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
