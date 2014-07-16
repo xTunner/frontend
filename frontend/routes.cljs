@@ -104,7 +104,7 @@
     (logout! nav-ch))
 
   (defroute v1-doc "/docs" []
-    (open-to-outer! nav-ch :documentation {}))
+    (open-to-outer! nav-ch :documentation {:_title "What can we help you with?"}))
   (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
     (let [subpage (keyword (:subpage params))]
       (if-let [doc (get (doc-utils/find-all-docs) subpage)]
