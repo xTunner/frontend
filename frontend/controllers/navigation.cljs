@@ -81,6 +81,10 @@
   [history-imp navigation-point args previous-state current-state]
   (post-default navigation-point args))
 
+(defmethod navigated-to :navigate!
+  [history-imp navigation-point args state]
+  state)
+
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
   (let [path (if (= \/ (first path))
