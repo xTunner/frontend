@@ -113,9 +113,10 @@
                                                       :_title (:title doc)))
         (do
           (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
-                path (if (= token (doc-utils/maybe-rewrite-token token))
+                rewrite-token (doc-utils/maybe-rewrite-token token)
+                path (if (= token rewrite-token)
                        "/docs"
-                       (str "/docs/" (doc-utils/maybe-rewrite-token token)))]
+                       (str "/docs" (when-not (str/blank? rewrite-token) (str "/" rewrite-token))))]
             (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
