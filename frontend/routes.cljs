@@ -108,16 +108,15 @@
   (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
     (let [subpage (keyword (:subpage params))]
       (if-let [doc (get (doc-utils/find-all-docs) subpage)]
-        (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))]
-          (if (= token (doc-utils/maybe-rewrite-token token))
-            (open-to-outer! nav-ch :documentation (assoc params
-                                                    :subpage subpage
-                                                    :_title (:title doc)))
-            (put! nav-ch [:navigate! {:path (str "/docs/" (doc-utils/maybe-rewrite-token token))
-                                      :replace-token? true}])))
+        (open-to-outer! nav-ch :documentation (assoc params
+                                                      :subpage subpage
+                                                      :_title (:title doc)))
         (do
-          (utils/mlog "Couldn't find doc for subpage" subpage)
-          (put! nav-ch [:navigate! {:path "/docs" :replace-token? true}])))))
+          (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
+                path (if (= token (doc-utils/maybe-rewrite-token token))
+                       "/docs"
+                       (str "/docs/" (doc-utils/maybe-rewrite-token token)))]
+            (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
