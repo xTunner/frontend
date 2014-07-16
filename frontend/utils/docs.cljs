@@ -62,3 +62,38 @@
     (update-children docs)))
 
 (def find-all-docs (memoize find-all-docs*))
+
+(defn maybe-rewrite-token [token]
+  (case token
+    "common-problems#intro" ""
+    "common-problems#file-ordering" "file-ordering"
+    "common-problems#missing-log-dir" "missing-log-dir"
+    "common-problems#missing-file" "missing-file"
+    "common-problems#time-day" "time-day"
+    "common-problems#time-seconds" "time-seconds"
+    "common-problems#requires-admin" "requires-admin"
+    "common-problems#oom" "oom"
+    "common-problems#wrong-ruby-version" "wrong-ruby-version"
+    "common-problems#dont-run" "dont-run"
+    "common-problems#git-bundle-install" "git-bundle-install"
+    "common-problems#git-pip-install" "git-pip-install"
+    "common-problems#wrong-commands" "wrong-commands"
+    "common-problems#bundler-latest" "bundler-latest"
+    "common-problems#capybara-timeout" "capybara-timeout"
+    "common-problems#clojure-12" "clojure-12"
+    "common-problems" "troubleshooting"
+
+    "faq" ""
+    "faq#permissions" "permissions"
+    "faq#what-happens" "what-happens"
+    "faq#look-at-code" "look-at_code"
+    "faq#parallelism" "parallelism"
+    "faq#versions" "environment"
+    "faq#external-resources" "external-resources"
+    "faq#cant-follow" "cant-follow"
+
+    "wrong-commands" "wrong-ruby-commands"
+    "configure-php" "language-php"
+    "reference-api" "api"
+    "reference-api#build" "api#build"
+    token))

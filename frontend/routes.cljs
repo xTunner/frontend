@@ -4,8 +4,8 @@
             [frontend.async :refer [put!]]
             [goog.events :as events]
             [frontend.models.project :as proj-mod]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.docs :as doc-utils]
+            [frontend.utils :as utils :include-macros true]
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
@@ -108,9 +108,13 @@
   (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
     (let [subpage (keyword (:subpage params))]
       (if-let [doc (get (doc-utils/find-all-docs) subpage)]
-        (open-to-outer! nav-ch :documentation (assoc params
-                                                :subpage subpage
-                                                :_title (:title doc)))
+        (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))]
+          (if (= token (doc-utils/maybe-rewrite-token token))
+            (open-to-outer! nav-ch :documentation (assoc params
+                                                    :subpage subpage
+                                                    :_title (:title doc)))
+            (put! nav-ch [:navigate! {:path (str "/docs/" (doc-utils/maybe-rewrite-token token))
+                                      :replace-token? true}])))
         (do
           (utils/mlog "Couldn't find doc for subpage" subpage)
           (put! nav-ch [:navigate! {:path "/docs" :replace-token? true}])))))
