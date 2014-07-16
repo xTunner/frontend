@@ -19,6 +19,10 @@
   "inner/_obj.coffee"
   "inner/config_diagnostic.coffee"
 
+  "../views/outer/docs/"
+  "../views/shared/contact_us.hamlc"
+  "outer/versions.coffee"
+
   "ab_test_definitions.coffee" ;; TODO: necessary, convert to clojurescript
 
   "stefon-hack-for-om.coffee.ref"
