@@ -5,6 +5,7 @@
             [goog.events :as events]
             [frontend.models.project :as proj-mod]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.docs :as doc-utils]
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
@@ -102,10 +103,17 @@
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
-  (defroute v1-doc-root "/docs" []
-    (open-to-outer! nav-ch :documentation-root {}))
-  (defroute v1-doc-page #"/docs/(.*)" [doc-page]
-    (open-to-outer! nav-ch :documentation-page {:page doc-page}))
+  (defroute v1-doc "/docs" []
+    (open-to-outer! nav-ch :documentation {}))
+  (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
+    (let [subpage (keyword (:subpage params))]
+      (if-let [doc (get (doc-utils/find-all-docs) subpage)]
+        (open-to-outer! nav-ch :documentation (assoc params
+                                                :subpage subpage
+                                                :_title (:title doc)))
+        (do
+          (utils/mlog "Couldn't find doc for subpage" subpage)
+          (put! nav-ch [:navigate! {:path "/docs" :replace-token? true}])))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))

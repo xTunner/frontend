@@ -230,27 +230,6 @@
   (set-page-title! "Continuous Integration and Deployment")
   (analytics/track-homepage))
 
-(defmethod navigated-to :documentation-root
-  [history-imp to args state]
-  (-> state
-      (assoc :navigation-point :documentation-root
-             :navigation-data args)
-      state-utils/clear-page-state))
-
-(defmethod navigated-to :documentation-page
-  [history-imp to args state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point :documentation-page
-             :navigation-data args
-             :current-documentation-page (:page args))))
-
-(defmethod post-navigated-to! :documentation-page
-  [history-imp navigation-point args previous-state current-state]
-  (let [page-ref (keyword (:page args))
-        page-article (get docs/documentation-pages page-ref)]
-    (set-page-title! (:title page-article))))
-
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
