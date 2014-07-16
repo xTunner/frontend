@@ -112,7 +112,7 @@
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
-      (open-to-inner! nav-ch :account {:subpage "plans"})
+      (open-to-inner! nav-ch :account {:subpage :plans})
       (open-to-outer! nav-ch :pricing (assoc params
                                         :_analytics-page "View Pricing Outer"
                                         :_title "Plans and Pricing"))))
