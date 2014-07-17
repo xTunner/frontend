@@ -82,6 +82,7 @@
             [:a {:href "/admin"} "switch "]
             [:a {:href "/admin/build-state"} "build state "]
             [:a {:href "/admin/recent-builds"} "builds "]
+            [:a {:href "/admin/deployments"} "deployments "]
             (let [use-local-assets (get user-session-settings :use_local_assets)]
               [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
                                                                             :value (not use-local-assets)}])}

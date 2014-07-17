@@ -38,6 +38,8 @@
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
     (open-to-inner! nav-ch :dashboard {:admin true}))
+  (defroute v1-admin-recent-builds "/admin/deployments" []
+    (open-to-inner! nav-ch :dashboard {:deployments true}))
   (defroute v1-admin-build-state "/admin/build-state" []
     (open-to-inner! nav-ch :build-state {:admin true}))
   (defroute v1-admin "/admin" []
