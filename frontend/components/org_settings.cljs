@@ -831,7 +831,7 @@
             plan (get-in app state/org-plan-path)
             subpage (determine-subpage requested-subpage plan (:name org-data))]
         (html [:div.container-fluid.org-page
-               (if-not (:name org-data)
+               (if-not (:loaded org-data)
                  [:div.loading-spinner common/spinner]
                  [:div.row-fluid
                   (om/build sidebar {:subpage subpage :plan plan :org-name (:name org-data)})

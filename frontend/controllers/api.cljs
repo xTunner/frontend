@@ -398,18 +398,17 @@
     state
     (-> state
         (update-in state/org-data-path merge resp)
+        (assoc-in state/org-loaded-path true)
         (assoc-in state/org-authorized?-path true))))
 
 
-;; XXX: only show org-failure on 401s
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (-> state
-        (assoc-in [:current-organization :loaded] true)
-        (assoc-in [:current-organization :authorized] false))))
-
+        (assoc-in state/org-loaded-path true)
+        (assoc-in state/org-authorized?-path false))))
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
