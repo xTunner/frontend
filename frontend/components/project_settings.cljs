@@ -264,10 +264,10 @@
             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
             "The values can be any bash expression and can reference other variables, such as setting "
             [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
-            "To disable string substitution you need to escape the " [:code "$"]
+            " To disable string substitution you need to escape the " [:code "$"]
             " characters by prefixing them with " [:code "\\"] "."
-            "For example a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
-            " you would enter " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
+            " For example, a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
+            " would be entered as " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
            [:form
             [:input#env-var-name
              {:required true, :type "text", :value new-env-var-name
