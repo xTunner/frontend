@@ -25,6 +25,7 @@
             [frontend.components.security :as security]
             [frontend.components.shared :as shared]
             [frontend.components.stories :as stories]
+            [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
@@ -66,6 +67,7 @@
     :security-hall-of-fame security/hall-of-fame
     :enterprise enterprise/enterprise
     :shopify-story stories/shopify
+    :language-landing language-landing/language-landing
     :docker-integration integrations/docker
     :changelog changelog/changelog
     :documentation-root docs/documentation

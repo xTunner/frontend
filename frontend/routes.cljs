@@ -142,6 +142,9 @@
   (defroute v1-enterprise (FragmentRoute. "/stories/shopify") {:as params}
     (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
 
+  (defroute v1-enterprise (FragmentRoute. "/languages/:language") {:as params}
+    (open-to-outer! nav-ch :language-landing (assoc params :_title "page title here")))
+
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
   (defroute v1-enterprise (FragmentRoute. "/integrations/docker") {:as params}
     (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
