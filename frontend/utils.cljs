@@ -4,6 +4,7 @@
             [ajax.core :as ajax]
             [cljs-time.core :as time]
             [frontend.env :as env]
+            [goog.async.AnimationDelay]
             [goog.crypt :as crypt]
             [goog.crypt.Md5 :as md5]
             [goog.Uri]
@@ -182,3 +183,9 @@
         $node (jq selector)
         $typeahead (aget $node "typeahead")]
     (.call $typeahead $node (clj->js options))))
+
+(defn rAF
+  "Calls passed in function inside a requestAnimationFrame, falls back to timeouts for
+   browers without requestAnimationFrame"
+  [f]
+  (.start (goog.async.AnimationDelay. f)))
