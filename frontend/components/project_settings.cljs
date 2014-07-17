@@ -424,7 +424,7 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your test commands from your " [:a {:href "/docs/configuration#tests"} "circle.yml"] "."]]
+          [:p [:i "You can also set your test commands from your " [:a {:href "/docs/configuration#test"} "circle.yml"] "."]]
           [:div.tests-inner
            [:fieldset.spec_form
             [:textarea {:name "test",
