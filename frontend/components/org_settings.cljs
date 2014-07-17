@@ -384,6 +384,7 @@
           user-login (:login (get-in app state/user-path))
           user-orgs (get-in app state/user-organizations-path)
           plan (get-in app state/org-plan-path)
+          ;; orgs that this user can add to piggyback orgs
           elligible-piggyback-orgs (-> (map :login user-orgs)
                                        (set)
                                        (conj user-login)
@@ -415,14 +416,14 @@
             [:div.span12
              [:form
               [:div.controls
-               (for [org elligible-piggyback-orgs]
+               ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
+               (for [org (clojure.set/union elligible-piggyback-orgs (set (:piggieback_orgs plan)))]
                  [:div.control
                   [:label.checkbox
                    [:input
                     (let [checked? (contains? selected-piggyback-orgs org)]
                       {:value org
                        :checked checked?
-                       ;; Note: this is broken if the org is already in piggieback_orgs, need to explicitly pass the value :(
                        :on-change #(utils/edit-input controls-ch (conj state/selected-piggyback-orgs-path org) % :value (not checked?))
                        :type "checkbox"})]
                    org]])]
