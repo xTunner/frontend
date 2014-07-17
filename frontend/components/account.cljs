@@ -39,7 +39,7 @@
             (map
              (fn [org]
                (let [org-url    (routes/v1-org-settings-subpage {:org     (:login org)
-                                                                 :subpage "plans"})
+                                                                 :subpage "plan"})
                      avatar-url (if-let [avatar-url (:avatar_url org)]
                                   (str avatar-url "25")
                                   (gh-utils/gravatar-url {:gravatar_id (:gravatar_id org)
