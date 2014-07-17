@@ -151,14 +151,14 @@
 
 
   ;; TODO: this should be stories/:company, but we'll wait for more stories
-  (defroute v1-enterprise (FragmentRoute. "/stories/shopify") {:as params}
+  (defroute v1-stories (FragmentRoute. "/stories/shopify") {:as params}
     (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
 
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
-  (defroute v1-enterprise (FragmentRoute. "/integrations/docker") {:as params}
+  (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}
     (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
 
-  (defroute v1-enterprise (FragmentRoute. "/changelog") {:as params}
+  (defroute v1-changelog (FragmentRoute. "/changelog") {:as params}
     (open-to-outer! nav-ch :changelog params))
 
   (defroute v1-root (FragmentRoute. "/") {:as params}
