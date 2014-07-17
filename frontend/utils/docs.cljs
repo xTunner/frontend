@@ -37,8 +37,8 @@
      :subtitle (:subtitle props)
      :lastUpdated (:lastUpdated props)
      :category (:category props)
-     :title_with_child_count (str title (when (seq children) (str "(" (count children) ")")))
-     :short_title_with_child_count (str short-title (when (seq children) (str "(" (count children) ")")))}))
+     :title_with_child_count (str title (when (seq children) (str " (" (count children) ")")))
+     :short_title_with_child_count (str short-title (when (seq children) (str " (" (count children) ")")))}))
 
 (defn update-children [docs]
   (reduce (fn [acc [template-name article-info]]
