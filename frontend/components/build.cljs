@@ -53,12 +53,19 @@
     (render [_]
       (html
        (let [container-id (container-model/id container)
-             controls-ch (om/get-shared owner [:comms :controls])]
+             controls-ch (om/get-shared owner [:comms :controls])
+             status (container-model/status container)]
          [:li {:class (when (= container-id current-container-id) "active")}
           [:a.container-selector
            {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
-            :class (container-model/status-classes container build-running?)}
-           (str "C" (:index container))]])))))
+            :class (container-model/status-classes container build-running? :status status)}
+           (str "C" (:index container))
+           (case status
+             :failed [:i.fa.fa-times]
+             :success [:i.fa.fa-check]
+             :cancelled [:i.fa.fa-exclamation]
+             :running [:i.fa.fa-clock-o]
+             nil)]])))))
 
 (defn container-pills [data owner]
   (reify
