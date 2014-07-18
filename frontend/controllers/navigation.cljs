@@ -47,8 +47,8 @@
   [args]
   (if (:_fragment args)
     ;; give the page time to render
-    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))
-    (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
+    (utils/rAF #(scroll-to-fragment! (:_fragment args)))
+    (utils/rAF #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -365,7 +365,7 @@
         (if (= :success (:status api-result))
           (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
               ;; might need to scroll to the fragment
-              (js/requestAnimationFrame #(scroll! args)))
+              (utils/rAF #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))
 
 (defmethod navigated-to :account
