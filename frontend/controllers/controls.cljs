@@ -19,6 +19,7 @@
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
+            [goog.labs.userAgent.engine :as engine]
             goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]])
@@ -366,13 +367,17 @@
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
                             (sel parent ".container-view"))
-        ;; if we're scrolling left, then we want the container whose rightmost portion is showing
-        ;; if we're scrolling right, then we want the container whose leftmost portion is showing
         new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
                                     current-container-id
-                                    (if (< parent-scroll-left current-container-scroll-left)
-                                      (apply min (map container-id (take 2 containers)))
-                                      (apply max (map container-id (take 2 containers)))))]
+                                    (if-not (engine/isGecko)
+                                      ;; Safari and Chrome scroll the found content to the center of the page
+                                      (container-id (first containers))
+                                      ;; Firefox scrolls the content just into view
+                                      ;; if we're scrolling left, then we want the container whose rightmost portion is showing
+                                      ;; if we're scrolling right, then we want the container whose leftmost portion is showing
+                                      (if (< parent-scroll-left current-container-scroll-left)
+                                        (apply min (map container-id (take 2 containers)))
+                                        (apply max (map container-id (take 2 containers))))))]
     ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
     ;; do a swap here (or find a better way to structure this!)
     (when (not= current-container-id new-scrolled-container-id)
