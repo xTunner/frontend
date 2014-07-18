@@ -160,22 +160,29 @@
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
+          app-main (sel1 target ".app-main")
           current-scroll-top (.-scrollTop parent)
+          app-main-scroll-top (.-scrollTop app-main)
           current-scroll-left (.-scrollLeft parent)
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
-      (if-not animate?
-        (set! (.-scrollLeft parent) new-scroll-left)
-        (let [scroller (or (.-scroll_handler parent)
-                            (set! (.-scroll_handler parent)
-                                  ;; Store this on the parent so that we don't handle parent scroll while
-                                  ;; the animation is playing
-                                  (goog.fx.dom.Scroll. parent
-                                                       #js [0 0]
-                                                       #js [0 0]
-                                                       250)))]
-          (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
-          (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-          (.play scroller)))))
+      (let [scroller (or (.-scroll_handler parent)
+                         (set! (.-scroll_handler parent)
+                               ;; Store this on the parent so that we don't handle parent scroll while
+                               ;; the animation is playing
+                               (goog.fx.dom.Scroll. parent
+                                                    #js [0 0]
+                                                    #js [0 0]
+                                                    (if animate? 250 0))))
+            onEnd (.-onEnd scroller)]
+        (set! (.-startPoint scroller) #js [current-scroll-left 0])
+        (set! (.-endPoint scroller) #js [new-scroll-left 0])
+        ;; Browser find can scroll an absolutely positioned container into view,
+        ;; causing the parent to scroll. But then we set it to relative and there
+        ;; is no longer any overflow, so we need to scroll app-main instead.
+        (set! (.-onEnd scroller) #(do (.call onEnd scroller)
+                                      (set! (.-scrollTop app-main)
+                                            (+ app-main-scroll-top current-scroll-top))))
+        (.play scroller))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
     (let [container (get-in current-state (state/container-path container-id))
