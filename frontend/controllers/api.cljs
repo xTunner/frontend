@@ -106,24 +106,31 @@
 
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
-  (if-not (and (= (get-in state [:navigation-data :org])
-                  (get-in args [:context :org]))
-               (= (get-in state [:navigation-data :repo])
-                  (get-in args [:context :repo]))
-               (= (get-in state [:navigation-data :branch])
-                  (get-in args [:context :branch]))
-               (= (get-in state [:navigation-data :query-params :page])
-                  (get-in args [:context :query-params :page])))
-    state
-    (assoc-in state [:recent-builds] (:resp args))))
+  (let [show-settings (not (nil? (:read-settings (:scopes args))))
+        _ (mlog "recent-builds success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
+    (mlog "recent-builds success: scopes " (:scopes args))
+    (if-not (and (= (get-in state [:navigation-data :org])
+                    (get-in args [:context :org]))
+                 (= (get-in state [:navigation-data :repo])
+                    (get-in args [:context :repo]))
+                 (= (get-in state [:navigation-data :branch])
+                    (get-in args [:context :branch]))
+                 (= (get-in state [:navigation-data :query-params :page])
+                    (get-in args [:context :query-params :page])))
+      state
+      (-> state
+          (assoc-in [:recent-builds] (:resp args))
+          (assoc-in state/show-nav-settings-link-path show-settings)))))
 
 
 (defmethod api-event [:build :success]
   [target message status args state]
-  (mlog "build success")
+  (mlog "build success: scopes " (:scopes args))
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
-        containers (vec (build-model/containers build))]
+        containers (vec (build-model/containers build))
+        show-settings (not (nil? (:read-settings (:scopes args))))
+        _ (mlog "build success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
@@ -132,7 +139,8 @@
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
                     (some-> build :branch utils/encode-branch))
-          (assoc-in state/containers-path containers)))))
+          (assoc-in state/containers-path containers)
+          (assoc-in state/show-nav-settings-link-path show-settings)))))
 
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]

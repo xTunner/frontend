@@ -145,7 +145,10 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link true}
+             :navigation-settings {:show-settings-link false}
+                                        ; start out false, api-events
+                                        ; will set true with
+                                        ; appropriate scopes
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org :username org}
                                    {:type :project :username org :project repo}
