@@ -98,7 +98,7 @@
                                              (when (re-find #"^/" url)
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
-                             :handler #(put! channel (assoc % :status :success :bogus "bogus" :scopes (scopes-from-response %)))
+                             :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))
                              ;; TODO: clean this up
                              :error-handler #(put! channel (-> %
                                                                (assoc :status-code (:status %))

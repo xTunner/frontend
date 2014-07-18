@@ -103,10 +103,15 @@
   [target message status args state]
   (update-in state state/user-path merge (:resp args)))
 
+(defn should-show-settings-link? [args]
+  #_(mlog "should-show-settings-link? with args " args)
+  (if (get-in args [:context :repo])
+    (not (nil? (:read-settings (:scopes args))))
+    (get-in args [:context :org])))
 
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
-  (let [show-settings (not (nil? (:read-settings (:scopes args))))
+  (let [show-settings (should-show-settings-link? args)
         _ (mlog "recent-builds success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
     (mlog "recent-builds success: scopes " (:scopes args))
     (if-not (and (= (get-in state [:navigation-data :org])
@@ -129,7 +134,7 @@
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))
-        show-settings (not (nil? (:read-settings (:scopes args))))
+        show-settings (should-show-settings-link? args)
         _ (mlog "build success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))

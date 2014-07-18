@@ -97,7 +97,7 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link (boolean (:org args))}
+             :navigation-settings {:show-settings-link false}
              :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
