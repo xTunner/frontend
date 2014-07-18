@@ -7,12 +7,12 @@
 (defn id [container]
   (:index container))
 
-(defn status [container]
+(defn status [container build-running?]
   (let [action-statuses (->> container :actions (remove :filler-action) (map :status) (remove nil?) set)]
     (cond
-     (or
-      (empty? action-statuses)
-      (= "running" (last action-statuses)))
+     ;; If there are no action statuses, or the last one is running, it's 'running'.
+     (or (empty? action-statuses)
+         (= "running" (last action-statuses)))
      :running
      ;; If it has any of the failure-like statuses, it's 'failed'.
      (some action-statuses ["failed" "timedout" "cancelled" "infrastructure_fail"])
@@ -21,10 +21,8 @@
      (some :canceled (:actions container))
      :canceled
      ;; If there's only one status, and it's "success", it's 'success'.
-     (= action-statuses #{"success"})
-     :success)))
+     (and (= action-statuses #{"success"}))
+     (if build-running? :waiting :success))))
 
-(defn status-classes [container build-running?
-                      & {:keys [status] :or {status (status container)}}]
-  (concat (when build-running? "waiting")
-          (some-> status name (cons nil))))
+(defn status->classes [status]
+  (some-> status name (cons nil)))

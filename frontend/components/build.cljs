@@ -54,17 +54,18 @@
       (html
        (let [container-id (container-model/id container)
              controls-ch (om/get-shared owner [:comms :controls])
-             status (container-model/status container)]
+             status (container-model/status container build-running?)]
          [:li {:class (when (= container-id current-container-id) "active")}
           [:a.container-selector
            {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
-            :class (container-model/status-classes container build-running? :status status)}
+            :class (container-model/status->classes status)}
            (str "C" (:index container))
            (case status
              :failed [:i.fa.fa-times]
              :success [:i.fa.fa-check]
              :cancelled [:i.fa.fa-exclamation]
              :running [:i.fa.fa-clock-o]
+             :waiting [:i.fa.fa-clock-o]
              nil)]])))))
 
 (defn container-pills [data owner]
