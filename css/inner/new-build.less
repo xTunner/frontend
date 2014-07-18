@@ -83,25 +83,23 @@
 
 /* Set up a :after pseudo-element to reflect the build status */
 ul.container-list {
-  li > a.container-selector {
-    position:relative;
-
-    &:after {
-      content: "";
-      position: absolute;
-      z-index: 1;
-      bottom: 2px;
-      left: 0;
-      height: @sideLineWidth;
-      width: 70%;
-      margin-left: 15%;
-      border-radius: 2px;
+  i.fa {
+    display: block;
+  }
+  li {
+    a.container-selector {
+      font-weight: bold;
+      border: 0;
+      position: relative;
+      color: fadeout(@white, 50%);
+      &.success { background: @green; }
+      &.running { background: @yellow; }
+      &.waiting { background: fadeout(@yellow, 70%); }
+      &.canceled {background: @grayLight; }
+      &.failed { background: @redLight; }
     }
-
-    &.success:after { background: @green; }
-    &.running:after { background: @yellow; }
-    &.waiting:after { background: fadeout(@yellow, 70%); }
-    &.canceled:after {background: @grayLight; }
-    &.failed:after { background: @redLight; }
+    &.active > a.container-selector {
+      color: @white;
+    }
   }
 }
