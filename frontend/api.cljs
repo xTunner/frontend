@@ -21,8 +21,9 @@
              api-ch
              :context (build-model/id build)))
 
-(defn dashboard-builds-url [{:keys [branch repo org admin query-params builds-per-page]}]
+(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page]}]
   (let [url (cond admin "/api/v1/admin/recent-builds"
+                  deployments "/api/v1/admin/deployments"
                   branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
                   repo (gstring/format "/api/v1/project/%s/%s" org repo)
                   org (gstring/format "/api/v1/organization/%s" org)
