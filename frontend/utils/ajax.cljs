@@ -2,6 +2,7 @@
   (:require [ajax.core :as clj-ajax]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.utils :as utils :include-macros true]))
 
@@ -43,6 +44,13 @@
    :content-type "application/xml"
    :write identity})
 
+(defn scopes-from-response [api-resp]
+  (if-let [scope-str (get-in api-resp [:response-headers "X-Circleci-Scopes"])]
+    (->> (str/split scope-str #"[,\s]+")
+         (map #(str/replace % #"^:" ""))
+         (map keyword)
+         (set))))
+
 ;; TODO only implementing JSON format and not implementing prefixes for now since we don't use either
 (defn ajax [method url message channel & {:keys [params keywords? context headers]
                                           :or {keywords? true}}]
@@ -60,7 +68,7 @@
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(binding [frontend.async/*uuid* uuid]
-                                         (put! channel [message :success (assoc % :context context)]))
+                                         (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
                                                (put! channel [message :failed (assoc % :context context :url url)]))
                              :finally #(binding [frontend.async/*uuid* uuid]
@@ -90,7 +98,7 @@
                                              (when (re-find #"^/" url)
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
-                             :handler #(put! channel (assoc % :status :success))
+                             :handler #(put! channel (assoc % :status :success :bogus "bogus" :scopes (scopes-from-response %)))
                              ;; TODO: clean this up
                              :error-handler #(put! channel (-> %
                                                                (assoc :status-code (:status %))
