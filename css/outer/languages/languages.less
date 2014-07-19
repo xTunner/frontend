@@ -1,0 +1,109 @@
+.languages.page {
+  @em: 18px;
+  @pagesize: 940px;
+  font-size: @em;
+  line-height: ((4 / 3) * @em);
+  color: @gray;
+  h1, h2, h3, h4, h5, h6 {
+    color: @grayDark;
+    font-weight: normal;
+    margin: 1em 0 @em;
+    line-height: 1em;
+  }
+  h2 {
+    font-size: 36px;
+    text-align: center;
+    padding-top: 30px;
+  }
+  h3 {
+    font-size: 24px;
+    padding-top: 20px;
+  }
+  h5 {
+    font-size: @em;
+  }
+  p {
+    margin: 0 0 @em;
+  }
+  a {
+    transition: 400ms ease-in-out;
+    &:hover {
+      transition: 200ms ease-in-out;
+    }
+  }
+  li {
+    line-height: inherit; // BS RESET
+  }
+  .languages-head {
+    padding-top: 2.5em;
+    * {
+      margin-bottom: 1em;
+    }
+    .flexy(center, center, column);
+    color: @white;
+    max-height: 500px;
+    //for ruby, move this to variables
+    background: linear-gradient(to bottom, #7C0B02 0%, #A80D00 100%), #7C0B02;
+    h1 {
+      font-size: 40px;
+      text-align: center;
+      margin-top: 0;
+      color: inherit;
+      max-width: 940px;
+    }
+    .languages-screenshots {
+      .flexy(center, center, row);
+      justify-content: space-around;
+      width: 940px;
+
+    }
+
+  }
+  .languages-body {
+    max-width: @pagesize;
+    margin: 0 auto (@pagesize / 4);
+  }
+  .languages-features {
+    .flexy(stretch);
+    .outlineFlat();
+    border-radius: 4px;
+    height: (@pagesize / 4);
+    margin: 5vh 0;
+    a {
+      .flexy(center, center, column);
+      width: (100% / 3); // three different job types
+      &:not(:first-child) {
+        box-shadow: -1px 0 @grayBoxBorder;
+      }
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
+    i {
+      font-size: 2em;
+    }
+    h3 {
+      color: inherit;
+      margin-top: @em;
+    }
+  }
+  .languages-testimonials {
+    h3 {
+      margin: 1em 0 0;
+      padding-bottom: .3em;
+      margin-bottom: .5em;
+      box-shadow: 0 1px @grayBoxBorder;
+    }
+    ul {
+      margin: 0 0 0 @em;
+    }
+    [role="button"] {
+      .circleButton(@grayLightest, @green);
+      display: inline-block;
+      min-width: 10em;
+      margin: 2em auto 1em;
+    }
+  }
+  .languages-cta {
+  }
+}
