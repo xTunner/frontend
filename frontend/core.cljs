@@ -174,9 +174,25 @@
     (js/setInterval #(reset! mya (time/now)) 1000)
     mya))
 
+
+(defn install-om [state container]
+  (om/root
+     app/app
+     state
+     {:target container
+      :shared {:comms (:comms @state)
+               :timer-atom (setup-timer-atom)
+               :_app-state-do-not-use state}}))
+
+(defn find-top-level-node []
+  (sel1 :body))
+
+(defn find-app-container [top-level-node]
+  (sel1 top-level-node "#om-app"))
+
 (defn main [state top-level-node history-imp]
   (let [comms       (:comms @state)
-        container   (sel1 top-level-node "#om-app")
+        container   (find-app-container top-level-node)
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         pusher-imp (pusher/new-pusher-instance)
@@ -186,13 +202,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (om/root
-     app/app
-     state
-     {:target container
-      :shared {:comms comms
-               :timer-atom (setup-timer-atom)
-               :_app-state-do-not-use state}})
+    (install-om state container)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -233,7 +243,7 @@
 (defn ^:export setup! []
   (apply-app-id-hack)
   (let [state (app-state)
-        top-level-node (sel1 :body)
+        top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
@@ -256,3 +266,16 @@
 
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
+
+(defn reinstall-om! []
+  (install-om debug-state (find-app-container (find-top-level-node))))
+
+(defn refresh-css! []
+  (let [link (.createElement js/document "link")]
+    (.setAttribute link "rel" "stylesheet")
+    (.setAttribute link "href" "/assets/css/app.css.less")
+    (.appendChild (.-head js/document) link)))
+
+(defn update-ui! []
+  (reinstall-om!)
+  (refresh-css!))
