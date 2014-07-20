@@ -271,10 +271,12 @@
   (install-om debug-state (find-app-container (find-top-level-node))))
 
 (defn refresh-css! []
-  (let [link (.createElement js/document "link")]
-    (.setAttribute link "rel" "stylesheet")
-    (.setAttribute link "href" "/assets/css/app.css.less")
-    (.appendChild (.-head js/document) link)))
+  (let [is-app-css? #(re-matches #"/assets/css/app.*?\.css(?:\.less)?" (dommy/attr % :href))
+        old-link (->> (sel [:head :link])
+                      (filter is-app-css?)
+                      first)]
+        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href "/assets/css/app.css.less"}])
+        (dommy/remove! old-link)))
 
 (defn update-ui! []
   (reinstall-om!)
