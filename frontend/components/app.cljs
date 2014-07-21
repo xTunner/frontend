@@ -70,8 +70,7 @@
     :language-landing language-landing/language-landing
     :docker-integration integrations/docker
     :changelog changelog/changelog
-    :documentation-root docs/documentation
-    :documentation-page docs/docpage
+    :documentation docs/documentation
 
     :error errors/error-page))
 
