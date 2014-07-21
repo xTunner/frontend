@@ -27,7 +27,7 @@
 ;; --- Helper Methods ---
 
 (defn set-page-title! [& [title]]
-  (set! (.-title js/document) (gstring/htmlEscape
+  (set! (.-title js/document) (utils/strip-html
                                (if title
                                  (str title  " - CircleCI")
                                  "CircleCI"))))

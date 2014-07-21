@@ -1,5 +1,6 @@
 (ns frontend.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as string]
             [frontend.async :refer [put!]]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
@@ -189,3 +190,8 @@
    browers without requestAnimationFrame"
   [f]
   (.start (goog.async.AnimationDelay. f)))
+
+(defn strip-html
+  "Strips all html characters from the string"
+  [str]
+  (string/replace str #"[&<>\"']" ""))
