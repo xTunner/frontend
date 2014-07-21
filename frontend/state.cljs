@@ -92,6 +92,7 @@
 (def project-envvars-path (conj project-data-path :envvars))
 (def project-settings-branch-path (conj project-data-path :settings-branch))
 (def project-path (conj project-data-path :project))
+(def project-scopes-path (conj project-data-path :project-scopes))
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))

@@ -112,7 +112,7 @@
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
   (let [show-settings (should-show-settings-link? args)
-        _ (mlog "recent-builds success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
+        #_(mlog "recent-builds success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
     (mlog "recent-builds success: scopes " (:scopes args))
     (if-not (and (= (get-in state [:navigation-data :org])
                     (get-in args [:context :org]))
@@ -125,6 +125,7 @@
       state
       (-> state
           (assoc-in [:recent-builds] (:resp args))
+          (assoc-in state/project-scopes-path (:scopes args))
           (assoc-in state/show-nav-settings-link-path show-settings)))))
 
 
@@ -135,12 +136,13 @@
         {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))
         show-settings (should-show-settings-link? args)
-        _ (mlog "build success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
+        #_(mlog "build success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
       (-> state
           (assoc-in state/build-path build)
+          (assoc-in state/project-scopes-path (:scopes args))
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
                     (some-> build :branch utils/encode-branch))
