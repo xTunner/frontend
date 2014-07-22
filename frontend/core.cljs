@@ -120,7 +120,8 @@
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
-       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))))
+       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))
+   (analytics/track-message (first value))))
 
 (defn nav-handler
   [value state history]
