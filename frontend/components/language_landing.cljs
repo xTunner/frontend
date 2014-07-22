@@ -98,7 +98,7 @@
                     [:a {:href="#"} "Read documentation on " (:language template)]]
                    ]
                   ]
-                 [:div.languages-testimonials
+                 [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
                   [:div.languages-body.remove-margin
                    [:div.center-text
                     [:h3 "TESTIMONIALS"
@@ -107,7 +107,7 @@
                    [:div.testimonial-authors
                     (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
                                  (:testimonials template))]
-                   [:div.testimonial-box {:class (arrow-class selected-testimonial)}
+                   [:div.testimonial-box 
                     [:div.testimonial
                      [:p.testimonial-text (get-in template [:testimonials selected-testimonial :text])]
                      
