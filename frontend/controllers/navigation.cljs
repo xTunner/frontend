@@ -27,7 +27,7 @@
 ;; --- Helper Methods ---
 
 (defn set-page-title! [& [title]]
-  (set! (.-title js/document) (gstring/htmlEscape
+  (set! (.-title js/document) (utils/strip-html
                                (if title
                                  (str title  " - CircleCI")
                                  "CircleCI"))))
@@ -101,7 +101,7 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link (boolean (:org args))}
+             :navigation-settings {:show-settings-link false}
              :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build))
@@ -114,22 +114,24 @@
     (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
+              scopes (:scopes api-resp)
+              #_(mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
               comms (get-in current-state [:comms])]
           (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
             :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
-            (put! (:errors comms) [:api-error api-resp]))))
-    (when (:repo args)
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
-                 :project-settings
-                 api-ch
-                 :context {:project-name (str (:org args) "/" (:repo args))})
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
-                 :project-plan
-                 api-ch
-                 :context {:project-name (str (:org args) "/" (:repo args))})))
+            (put! (:errors comms) [:api-error api-resp]))
+          (when (and (:repo args) (:read-settings scopes))
+            (ajax/ajax :get
+                       (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
+                       :project-settings
+                       api-ch
+                       :context {:project-name (str (:org args) "/" (:repo args))})
+            (ajax/ajax :get
+                       (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
+                       :project-plan
+                       api-ch
+                       :context {:project-name (str (:org args) "/" (:repo args))})))))
   (analytics/track-dashboard)
   (set-page-title!))
 
@@ -143,11 +145,15 @@
 
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
+  (mlog "navigated-to :build with args " args)
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link true}
+             :navigation-settings {:show-settings-link false}
+                                        ; start out false, api-events
+                                        ; will set true with
+                                        ; appropriate scopes
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org :username org}
                                    {:type :project :username org :project repo}
@@ -160,27 +166,32 @@
           %))))
 
 (defmethod post-navigated-to! :build
-  [history-imp navigation-point {:keys [project-name build-num]} previous-state current-state]
+  [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/%s" project-name build-num)))]
+    (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
+              api-result (<! (ajax/managed-ajax :get build-url))
+              scopes (:scopes api-result)
+              (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))]
           (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
           (when (= :success (:status api-result))
-            (analytics/track-build (:resp api-result)))))
-    (when (not (get-in current-state state/project-path))
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/settings" project-name)
-                 :project-settings
-                 api-ch
-                 :context {:project-name project-name}))
-    (when (not (get-in current-state state/project-plan-path))
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/plan" project-name)
-                 :project-plan
-                 api-ch
-                 :context {:project-name project-name}))
+            (analytics/track-build (:resp api-result)))
+          (when (and (not (get-in current-state state/project-path))
+                     (:repo args) (:read-settings scopes))
+            (ajax/ajax :get
+                       (gstring/format "/api/v1/project/%s/settings" project-name)
+                       :project-settings
+                       api-ch
+                       :context {:project-name project-name}))
+          (when (and (not (get-in current-state state/project-plan-path))
+                     (:repo args) (:read-settings scopes))
+            (ajax/ajax :get
+                       (gstring/format "/api/v1/project/%s/plan" project-name)
+                       :project-plan
+                       api-ch
+                       :context {:project-name project-name}))))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
                                                                              :build-num build-num})
                              :messages pusher/build-messages}]))

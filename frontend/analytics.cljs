@@ -95,3 +95,6 @@
 
 (defn track-unfollow-repo []
   (google/track-event "Repos" "Remove"))
+
+(defn track-message [message]
+  (mixpanel/track-message message))

@@ -27,3 +27,10 @@
 (defn init-user [login]
   (name-tag login)
   (identify login))
+
+
+(def ignored-control-messages #{:edited-input :toggled-input :clear-inputs})
+
+(defn track-message [message]
+  (when-not (contains? ignored-control-messages message)
+    (track (name message))))

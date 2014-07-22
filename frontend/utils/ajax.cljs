@@ -2,6 +2,7 @@
   (:require [ajax.core :as clj-ajax]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.utils :as utils :include-macros true]))
 
@@ -43,6 +44,13 @@
    :content-type "application/xml"
    :write identity})
 
+(defn scopes-from-response [api-resp]
+  (if-let [scope-str (get-in api-resp [:response-headers "X-Circleci-Scopes"])]
+    (->> (str/split scope-str #"[,\s]+")
+         (map #(str/replace % #"^:" ""))
+         (map keyword)
+         (set))))
+
 (defn normalize-error-response [default-response props]
   (-> default-response
       (merge props)
@@ -67,7 +75,7 @@
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(binding [frontend.async/*uuid* uuid]
-                                         (put! channel [message :success (assoc % :context context)]))
+                                         (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
                                                (put! channel [message :failed (normalize-error-response % {:url url :context context})]))
                              :finally #(binding [frontend.async/*uuid* uuid]
@@ -97,7 +105,7 @@
                                              (when (re-find #"^/" url)
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
-                             :handler #(put! channel (assoc % :status :success))
+                             :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))
                              ;; TODO: clean this up
                              :error-handler #(put! channel (normalize-error-response % {:url url}))
                              :finally #(close! channel)}))
