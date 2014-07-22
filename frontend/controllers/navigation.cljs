@@ -27,7 +27,7 @@
 ;; --- Helper Methods ---
 
 (defn set-page-title! [& [title]]
-  (set! (.-title js/document) (gstring/htmlEscape
+  (set! (.-title js/document) (utils/strip-html
                                (if title
                                  (str title  " - CircleCI")
                                  "CircleCI"))))
@@ -47,8 +47,8 @@
   [args]
   (if (:_fragment args)
     ;; give the page time to render
-    (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))
-    (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
+    (utils/rAF #(scroll-to-fragment! (:_fragment args)))
+    (utils/rAF #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -80,6 +80,10 @@
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
   (post-default navigation-point args))
+
+(defmethod navigated-to :navigate!
+  [history-imp navigation-point args state]
+  state)
 
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
@@ -241,27 +245,6 @@
   (set-page-title! "Continuous Integration and Deployment")
   (analytics/track-homepage))
 
-(defmethod navigated-to :documentation-root
-  [history-imp to args state]
-  (-> state
-      (assoc :navigation-point :documentation-root
-             :navigation-data args)
-      state-utils/clear-page-state))
-
-(defmethod navigated-to :documentation-page
-  [history-imp to args state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point :documentation-page
-             :navigation-data args
-             :current-documentation-page (:page args))))
-
-(defmethod post-navigated-to! :documentation-page
-  [history-imp navigation-point args previous-state current-state]
-  (let [page-ref (keyword (:page args))
-        page-article (get docs/documentation-pages page-ref)]
-    (set-page-title! (:title page-article))))
-
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
@@ -393,7 +376,7 @@
         (if (= :success (:status api-result))
           (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
               ;; might need to scroll to the fragment
-              (js/requestAnimationFrame #(scroll! args)))
+              (utils/rAF #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))
 
 (defmethod navigated-to :account

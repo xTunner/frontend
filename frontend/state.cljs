@@ -174,3 +174,7 @@
 (def error-message-path [:error-message])
 
 (def inputs-path [:inputs])
+
+(def docs-search-path [:docs-query])
+(def docs-articles-results-path [:docs-articles-results])
+(def docs-articles-results-query-path [:docs-articles-results-query])

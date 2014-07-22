@@ -1,322 +1,130 @@
 (ns frontend.components.documentation
-  (:require [om.core :as om :include-macros true]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [put!]]
+            [clojure.string :as string]
+            [dommy.core :as dommy]
+            [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [frontend.components.docs.android :as android]
-            [frontend.components.docs.api :as api]
-            [frontend.components.docs.background-process :as background-process]
-            [frontend.components.docs.browser-debugging :as browser-debugging]
-            [frontend.components.docs.build-artifacts :as build-artifacts]
-            [frontend.components.docs.bundler-latest :as bundler-latest]
-            [frontend.components.docs.cant-follow :as cant-follow]
-            [frontend.components.docs.capybara-timeout :as capybara-timeout]
-            [frontend.components.docs.chromedriver-moving-elements :as chromedriver-moving-elements]
-            [frontend.components.docs.clojure-12 :as clojure-12]
-            [frontend.components.docs.composer-api-rate-limit :as composer-api-rate-limit]
-            [frontend.components.docs.config-sample :as config-sample]
-            [frontend.components.docs.configuration :as configuration]
-            [frontend.components.docs.continuous-deployment :as continuous-deployment]
-            [frontend.components.docs.deploy-google-app-engine :as deploy-google-app-engine]
-            [frontend.components.docs.dont-run :as dont-run]
-            [frontend.components.docs.ec2ip-and-security-group :as ec2ip-and-security-group]
-            [frontend.components.docs.environment :as environment]
-            [frontend.components.docs.environment-variables :as environment-variables]
-            [frontend.components.docs.external-resources :as external-resources]
-            [frontend.components.docs.file-ordering :as file-ordering]
-            [frontend.components.docs.filesystem :as filesystem]
-            [frontend.components.docs.getting-started :as getting-started]
-            [frontend.components.docs.git-bundle-install :as git-bundle-install]
-            [frontend.components.docs.git-npm-install :as git-npm-install]
-            [frontend.components.docs.git-pip-install :as git-pip-install]
-            [frontend.components.docs.github-permissions :as github-permissions]
-            [frontend.components.docs.github-privacy :as github-privacy]
-            [frontend.components.docs.github-security-ssh-keys :as github-security-ssh-keys]
-            [frontend.components.docs.how-parallelism-works :as how-parallelism-works]
-            [frontend.components.docs.how-to :as how-to]
-            [frontend.components.docs.installing-custom-software :as installing-custom-software]
-            [frontend.components.docs.installing-elasticsearch :as installing-elasticsearch]
-            [frontend.components.docs.introduction-to-continuous-deployment :as introduction-to-continuous-deployment]
-            [frontend.components.docs.language-haskell :as language-haskell]
-            [frontend.components.docs.language-nodejs :as language-nodejs]
-            [frontend.components.docs.language-php :as language-php]
-            [frontend.components.docs.language-python :as language-python]
-            [frontend.components.docs.language-ruby-on-rails :as language-ruby-on-rails]
-            [frontend.components.docs.languages :as languages]
-            [frontend.components.docs.look-at-code :as look-at-code]
-            [frontend.components.docs.manually :as manually]
-            [frontend.components.docs.missing-dir :as missing-dir]
-            [frontend.components.docs.missing-file :as missing-file]
-            [frontend.components.docs.oom :as oom]
-            [frontend.components.docs.parallel-manual-setup :as parallel-manual-setup]
-            [frontend.components.docs.permissions-and-access-during-deployment :as permissions-and-access-during-deployment]
-            [frontend.components.docs.php-memcached-compile-error :as php-memcached-compile-error]
-            [frontend.components.docs.polling-project-status :as polling-project-status]
-            [frontend.components.docs.privacy-security :as privacy-security]
-            [frontend.components.docs.reference :as reference]
-            [frontend.components.docs.requires-admin :as requires-admin]
-            [frontend.components.docs.rspec-wrong-exit-code :as rspec-wrong-exit-code]
-            [frontend.components.docs.ruby-debugger-problems :as ruby-debugger-problems]
-            [frontend.components.docs.ruby-exception-during-schema-load :as ruby-exception-during-schema-load]
-            [frontend.components.docs.skip-a-build :as skip-a-build]
-            [frontend.components.docs.ssh-build :as ssh-build]
-            [frontend.components.docs.status-badges :as status-badges]
-            [frontend.components.docs.test-with-solr :as test-with-solr]
-            [frontend.components.docs.time-date :as time-date]
-            [frontend.components.docs.time-day :as time-day]
-            [frontend.components.docs.time-seconds :as time-seconds]
-            [frontend.components.docs.troubleshooting :as troubleshooting]
-            [frontend.components.docs.troubleshooting-browsers :as troubleshooting-browsers]
-            [frontend.components.docs.troubleshooting-clojure :as troubleshooting-clojure]
-            [frontend.components.docs.troubleshooting-nodejs :as troubleshooting-nodejs]
-            [frontend.components.docs.troubleshooting-php :as troubleshooting-php]
-            [frontend.components.docs.troubleshooting-python :as troubleshooting-python]
-            [frontend.components.docs.troubleshooting-ruby :as troubleshooting-ruby]
-            [frontend.components.docs.unusual :as unusual]
-            [frontend.components.docs.what-happens :as what-happens]
-            [frontend.components.docs.wrong-ruby-commands :as wrong-ruby-commands]
-            [frontend.components.docs.wrong-ruby-version :as wrong-ruby-version]
-            [frontend.utils :refer [mlog]]
-            [sablono.core :as html :refer-macros [html]])
-  (:require-macros [frontend.utils :refer [defrender]]))
+            [frontend.state :as state]
+            [frontend.utils :as utils :include-macros true]
+            [frontend.utils.ajax :as ajax]
+            [frontend.utils.docs :as doc-utils]
+            [goog.string :as gstring])
+  (:require-macros [frontend.utils :refer [defrender html]]
+                   [dommy.macros :refer [sel sel1]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-(defn docmap
-  [docs]
-  (zipmap (map :url docs) docs))
+(defn docs-search [app owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
+        (utils/typeahead
+         "#searchQuery"
+         {:source (fn [query process]
+                    (go (let [res (<! (ajax/managed-ajax :get "/autocomplete-articles"
+                                                         :params {:query query}))]
+                          (when (= :success (:status res))
+                            (process (->> res
+                                          :resp
+                                          :suggestions
+                                          (map gstring/htmlEscape)
+                                          clj->js))))))
+          :updater (fn [query]
+                     (put! controls-ch [:edited-input {:path state/docs-search-path
+                                                       :value query}])
+                     (put! controls-ch [:doc-search-submitted {:query query}])
+                     query)})))
+    om/IRender
+    (render [_]
+      (let [query (get-in app state/docs-search-path)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+         [:form#searchDocs.clearfix.form-search
+          [:input#searchQuery
+           {:type "text",
+            :value query
+            :on-change #(utils/edit-input controls-ch state/docs-search-path %)
+            :placeholder "What can we help you find?",
+            :name "query"}]
+          [:button {:on-click #(do (put! controls-ch [:doc-search-submitted {:query query}])
+                                   false)
+                    :type "submit"}
+           [:i.fa.fa-search]]])))))
 
-(def documentation-pages
-  (docmap [android/article
-           api/article
-           background-process/article
-           browser-debugging/article
-           build-artifacts/article
-           bundler-latest/article
-           cant-follow/article
-           capybara-timeout/article
-           chromedriver-moving-elements/article
-           clojure-12/article
-           composer-api-rate-limit/article
-           config-sample/article
-           configuration/article
-           continuous-deployment/article
-           deploy-google-app-engine/article
-           dont-run/article
-           ec2ip-and-security-group/article
-           environment/article
-           environment-variables/article
-           external-resources/article
-           file-ordering/article
-           filesystem/article
-           getting-started/article
-           git-bundle-install/article
-           git-npm-install/article
-           git-pip-install/article
-           github-permissions/article
-           github-privacy/article
-           github-security-ssh-keys/article
-           how-parallelism-works/article
-           how-to/article
-           installing-custom-software/article
-           installing-elasticsearch/article
-           introduction-to-continuous-deployment/article
-           language-haskell/article
-           language-nodejs/article
-           language-php/article
-           language-python/article
-           language-ruby-on-rails/article
-           languages/article
-           look-at-code/article
-           manually/article
-           missing-dir/article
-           missing-file/article
-           oom/article
-           parallel-manual-setup/article
-           permissions-and-access-during-deployment/article
-           php-memcached-compile-error/article
-           polling-project-status/article
-           privacy-security/article
-           reference/article
-           requires-admin/article
-           rspec-wrong-exit-code/article
-           ruby-debugger-problems/article
-           ruby-exception-during-schema-load/article
-           skip-a-build/article
-           ssh-build/article
-           status-badges/article
-           test-with-solr/article
-           time-date/article
-           time-day/article
-           time-seconds/article
-           troubleshooting/article
-           troubleshooting-browsers/article
-           troubleshooting-clojure/article
-           troubleshooting-nodejs/article
-           troubleshooting-php/article
-           troubleshooting-python/article
-           troubleshooting-ruby/article
-           unusual/article
-           what-happens/article
-           wrong-ruby-commands/article
-           wrong-ruby-version/article]))
+(defrender front-page [app owner]
+  (let [query-results (get-in app state/docs-articles-results-path)
+        query (get-in app state/docs-articles-results-query-path)
+        docs (doc-utils/find-all-docs)]
+    (html
+     [:div
+      [:h1 "What can we help you with?"]
+      (om/build docs-search app)
+      (when query-results
+        [:div.article_list
+         (if (empty? query-results)
+           [:p "No articles found matching \"" [:strong query] "\""]
+           [:div
+            [:h5 "Articles matching \"" query "\""]
+            [:ul.query_results
+             (for [result query-results]
+               [:li [:a {:href (:url result)} (:title result)]])]])])
+      [:div.row
+       [:h4 "Having problems? Check these sections"]
+       [:ul.articles.span4
+        [:h4 "Getting started"]
+        (doc-utils/render-haml-template "article_list" {:article (:gettingstarted docs) :slug true})]
+       [:ul.articles.span4
+        [:h4 "Troubleshooting"]
+        (doc-utils/render-haml-template "article_list" {:article (:troubleshooting docs) :slug true})]]])))
 
-(def getting-started
-  [:getting-started
-   :manually
-   :unusual
-   :configuration])
+(defn add-link-targets [node]
+  (doseq [heading (sel node
+                       ".content h2, .content h3, .content h4, .content h5, .content h6")]
+    (let [title (dommy/text heading)
+          id (if-not (string/blank? (.-id heading))
+               (.-id heading)
+               (-> title
+                   string/lower-case
+                   string/trim
+                   (string/replace \' "")     ; heroku's -> herokus
+                   (string/replace #"[^a-z0-9]+" "-") ; dashes
+                   (string/replace #"^-" "") ; don't let first or last be dashes
+                   (string/replace #"-$" "")))]
+      (dommy/set-html! heading
+                       (goog.string/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
-(def how-to
-  [:installing-custom-software
-   :background-process
-   :code-coverage
-   :external-resources
-   :dont-run
-   :skip-a-build
-   :nightly-builds
-   :test-with-solr
-   :android
-   :continuous-deployment-with-heroku
-   :deploy-google-app-engine])
-
-(def languages
-  [:language-ruby-on-rails
-   :language-python
-   :language-nodejs
-   :language-php
-   :language-java
-   :language-haskell])
-
-(def troubleshooting
-  [:ssh-build
-   :troubleshooting-browsers
-   :troubleshooting-ruby
-   :troubleshooting-python
-   :troubleshooting-nodejs
-   :troubleshooting-php
-   :troubleshooting-clojure
-   :troubleshooting-haskell
-   :oom
-   :file-ordering
-   :filesystem
-   :time-date])
-
-(def reference
-  [:configuration
-   :config-sample
-   :environment
-   :environment-variables
-   :permissions-and-access-during-deployment
-   :status-badges
-   :polling-project-status
-   :api
-   :build-artifacts
-   :ec2ip-and-security-group])
-
-(def parallelism
-  [:how-parallelism-works
-   :parallel-manual-setup])
-
-(def privacy-and-security
-  [:github-privacy
-   :look-at-code])
-
-(def sidebar-menu
-  [{:name "Getting Started"
-    :ref :getting-started
-    :docs getting-started}
-   {:name "Languages"
-    :ref :languages
-    :docs languages}
-   {:name "How-to"
-    :ref :how-to
-    :docs how-to}
-   {:name "Troubleshooting"
-    :ref :troubleshooting
-    :docs troubleshooting}
-   {:name "Reference"
-    :ref :reference
-    :docs reference}
-   {:name "Parallelism"
-    :ref :parallelism
-    :docs parallelism}
-   {:name "Privacy and Security"
-    :ref :privacy-and-security
-    :docs privacy-and-security}])
-
-(defn article-list-item [article-ref & [title-key]]
-  (if-let [article (get documentation-pages article-ref)]
-    (let [article-name (:url article)
-          article-href (str "/docs/" (name article-name))
-          article-children (:children article)
-          title (or
-                  ((or title-key :title) article)
-                  ;; if no short title exists, fall back to using :title
-                  (:title article))
-          formatted-title (if (seq article-children)
-                            (str title " (" (count article-children) ")")
-                            title)]
-      [:li
-       [:a {:href article-href} formatted-title]])
-    (mlog "No article found for " article-ref)))
-
-(defn sidebar-category [category]
-  [:ul.articles
-   [:li
-    [:h4
-     [:a {:href (:ref category)} (:name category)]]]
-   (map #(article-list-item % :short-title) (:docs category))])
-
-(def sidebar (map #(sidebar-category %) sidebar-menu))
-
-(defn doc-section
-  [inner] 
-  [:div.docs.page
-   [:div.banner
-    [:div.container
-     [:h1 "Documentation"]]]
-   [:div.container.content
-    [:div.row
-     [:aside.span3 sidebar]
-     [:div.span8.offset1
-      [:article
-       inner]]]]])
-
-(defn doc-search
-  []
-  [:form.clearfix.form-search#searchDocs
-   [:input#searchQuery {:name "query"
-                        :placeholder "What can we help you find?"
-                        :type "search"}]
-   [:button {:type "submit"}
-    [:i.fa.fa-search]]])
-
-
-(defrender docpage [app owner opts]
-  (let [article (-> app :current-documentation-page keyword documentation-pages)]
-    (html (doc-section
-            [:article
-             (doc-search)
-             [:h1 (:title article)]
-             (when-let [last-updated (:last-updated article)]
-               [:p.meta
-                [:strong "Last Updated "]
-                last-updated])
-             (when-let [children (-> article :children seq)]
-               [:ul.article_list
-                (map article-list-item children)])
-             (:content article)]))))
+(defn docs-subpage [doc owner]
+  (reify
+    om/IDidMount
+    (did-mount [_] (add-link-targets (om/get-node owner)))
+    om/IDidUpdate
+    (did-update [_ _ _] (add-link-targets (om/get-node owner)))
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        (doc-utils/render-haml-template "docs_title" {:article doc})
+        (if (:category doc)
+          (doc-utils/render-haml-template "article_list" (assoc doc :article doc))
+          (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
 
 (defrender documentation [app owner opts]
-  (html (doc-section
-          [:article
-           [:h1 "What can we help you with?"]
-           (doc-search)
-           [:div.row
-            [:h4 "Having problems? Check these sections"]
-            [:div.articles.span4
-             [:h4 "Getting started"]
-             [:ul.articles_list
-              (map article-list-item getting-started)]]
-            [:div.articles.span4
-             [:h4 "Troubleshooting"]
-             [:ul.articles_list
-              (map article-list-item troubleshooting)]]]])))
-
+  (let [subpage (get-in app [:navigation-data :subpage])
+        docs (doc-utils/find-all-docs)
+        categories ((juxt :gettingstarted :languages :how-to :troubleshooting
+                          :reference :parallelism :privacy-security) docs)]
+    (html
+     [:div.docs.page
+      [:div.banner [:div.container [:h1 "Documentation"]]]
+      [:div.container.content
+       [:div.row
+        [:aside.span3
+         (doc-utils/render-haml-template "categories" {:categories categories})]
+        [:div.offset1.span8
+         (when subpage
+           (om/build docs-search app))
+         [:article
+          (if-not subpage
+            (om/build front-page app)
+            (om/build docs-subpage (get docs subpage)))]]]]])))

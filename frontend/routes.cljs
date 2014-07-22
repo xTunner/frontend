@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [goog.events :as events]
             [frontend.models.project :as proj-mod]
+            [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :include-macros true]
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -37,6 +38,8 @@
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
     (open-to-inner! nav-ch :dashboard {:admin true}))
+  (defroute v1-admin-deployments "/admin/deployments" []
+    (open-to-inner! nav-ch :dashboard {:deployments true}))
   (defroute v1-admin-build-state "/admin/build-state" []
     (open-to-inner! nav-ch :build-state {:admin true}))
   (defroute v1-admin "/admin" []
@@ -102,17 +105,28 @@
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
-  (defroute v1-doc-root "/docs" []
-    (open-to-outer! nav-ch :documentation-root {}))
-  (defroute v1-doc-page #"/docs/(.*)" [doc-page]
-    (open-to-outer! nav-ch :documentation-page {:page doc-page}))
+  (defroute v1-doc "/docs" []
+    (open-to-outer! nav-ch :documentation {:_title "What can we help you with?"}))
+  (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
+    (let [subpage (keyword (:subpage params))]
+      (if-let [doc (get (doc-utils/find-all-docs) subpage)]
+        (open-to-outer! nav-ch :documentation (assoc params
+                                                      :subpage subpage
+                                                      :_title (:title doc)))
+        (do
+          (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
+                rewrite-token (doc-utils/maybe-rewrite-token token)
+                path (if (= token rewrite-token)
+                       "/docs"
+                       (str "/docs" (when-not (str/blank? rewrite-token) (str "/" rewrite-token))))]
+            (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
-      (open-to-inner! nav-ch :account {:subpage "plans"})
+      (open-to-inner! nav-ch :account {:subpage :plans})
       (open-to-outer! nav-ch :pricing (assoc params
                                         :_analytics-page "View Pricing Outer"
                                         :_title "Plans and Pricing"))))
@@ -139,14 +153,14 @@
 
 
   ;; TODO: this should be stories/:company, but we'll wait for more stories
-  (defroute v1-enterprise (FragmentRoute. "/stories/shopify") {:as params}
+  (defroute v1-stories (FragmentRoute. "/stories/shopify") {:as params}
     (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
 
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
-  (defroute v1-enterprise (FragmentRoute. "/integrations/docker") {:as params}
+  (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}
     (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
 
-  (defroute v1-enterprise (FragmentRoute. "/changelog") {:as params}
+  (defroute v1-changelog (FragmentRoute. "/changelog") {:as params}
     (open-to-outer! nav-ch :changelog params))
 
   (defroute v1-root (FragmentRoute. "/") {:as params}

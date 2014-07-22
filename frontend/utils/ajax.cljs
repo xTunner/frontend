@@ -51,6 +51,13 @@
          (map keyword)
          (set))))
 
+(defn normalize-error-response [default-response props]
+  (-> default-response
+      (merge props)
+      (assoc :status-code (:status default-response))
+      (assoc :resp (get-in default-response [:response :resp]))
+      (assoc :status :failed)))
+
 ;; TODO only implementing JSON format and not implementing prefixes for now since we don't use either
 (defn ajax [method url message channel & {:keys [params keywords? context headers]
                                           :or {keywords? true}}]
@@ -70,7 +77,7 @@
                              :handler #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
-                                               (put! channel [message :failed (assoc % :context context :url url)]))
+                                               (put! channel [message :failed (normalize-error-response % {:url url :context context})]))
                              :finally #(binding [frontend.async/*uuid* uuid]
                                          (put! channel [message :finished context]))}))))
 
@@ -100,11 +107,7 @@
                                              headers)
                              :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))
                              ;; TODO: clean this up
-                             :error-handler #(put! channel (-> %
-                                                               (assoc :status-code (:status %))
-                                                               (assoc :resp (get-in % [:response :resp]))
-                                                               (assoc :status :failed)
-                                                               (assoc :url url)))
+                             :error-handler #(put! channel (normalize-error-response % {:url url}))
                              :finally #(close! channel)}))
     channel))
 

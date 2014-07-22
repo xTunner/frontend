@@ -264,10 +264,10 @@
             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
             "The values can be any bash expression and can reference other variables, such as setting "
             [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
-            "To disable string substitution you need to escape the " [:code "$"]
+            " To disable string substitution you need to escape the " [:code "$"]
             " characters by prefixing them with " [:code "\\"] "."
-            "For example a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
-            " you would enter " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
+            " For example, a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
+            " would be entered as " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
            [:form
             [:input#env-var-name
              {:required true, :type "text", :value new-env-var-name
@@ -345,7 +345,7 @@
           [:p
            " We've got a few settings you can play with, to enable things we're working on. We'd love to "
            [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
-            "know what you think about them"]
+            "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
            (describe-flag {:flag :junit
@@ -382,6 +382,7 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
+          [:p [:i "You can also set your dependencies commands from your " [:a {:href "/docs/configuration#dependencies"} "circle.yml"] "."]]
           [:div.dependencies-inner
            [:form.spec_form
             [:fieldset
@@ -423,6 +424,7 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
+          [:p [:i "You can also set your test commands from your " [:a {:href "/docs/configuration#test"} "circle.yml"] "."]]
           [:div.tests-inner
            [:fieldset.spec_form
             [:textarea {:name "test",
@@ -460,13 +462,15 @@
     (render [_]
       (html
        (let [controls-ch (om/get-shared owner [:comms :controls])
-             inputs (inputs/get-inputs-from-app-state owner)
              notify_pref (get settings field)
              id (string/replace (name field) "_" "-")]
          [:label {:for id}
           [:input {:id id
                    :checked (= "smart" notify_pref)
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) % :value (if (= "smart" notify_pref) nil "smart"))
+                   ;; note: can't use inputs-state here because react won't let us
+                   ;;       change checked state without rerendering
+                   :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
+                                                 :value (if (= "smart" notify_pref) nil "smart"))
                    :value "smart"
                    :type "checkbox"}]
           [:span "Fixed/Failed Only"]
@@ -514,7 +518,9 @@
                                          [:input#hipchat-notify
                                           {:type "checkbox"
                                            :checked (:hipchat_notify settings)
-                                           :on-change #(utils/edit-input controls-ch (conj state/inputs-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
+                                           ;; n.b. can't use inputs-state b/c react won't changed
+                                           ;;      checked state without a rerender
+                                           :on-change #(utils/edit-input controls-ch (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]

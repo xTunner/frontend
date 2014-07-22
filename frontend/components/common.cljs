@@ -5,6 +5,7 @@
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [goog.dom.DomHelper]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -44,15 +45,24 @@
                        </path>
                        <circle fill=\"#fff\" cx=\"50\" cy=\"50\" r=\"11.905\"></circle>"}}])
 
+(defn normalize-html
+  "Creates a valid html string given a (possibly) invalid html string."
+  [html-string]
+  (let [dom-helper (goog.dom.DomHelper.)]
+    (->> html-string
+         (.htmlToDocumentFragment dom-helper)
+         (.getOuterHtml dom-helper))))
+
 (defn messages [messages]
   [:div.row-fluid
    (when (pos? (count messages))
-     [:div#build-messages.offset1.span10
-      (map (fn [message]
-             [:div.alert.alert-info
-              [:strong "Warning: "]
-              [:span {:dangerouslySetInnerHTML #js {"__html" (:message message)}}]])
-           messages)])])
+     (let [dom-helper (goog.dom.DomHelper.)]
+       [:div#build-messages.offset1.span10
+        (map (fn [message]
+               [:div.alert.alert-info
+                [:strong "Warning: "]
+                [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]])
+             messages)]))])
 
 ;; TODO: Why do we have ico and icon?
 (def ico-paths

@@ -19,6 +19,7 @@
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
+            [goog.labs.userAgent.engine :as engine]
             goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]])
@@ -159,22 +160,29 @@
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
+          app-main (sel1 target ".app-main")
           current-scroll-top (.-scrollTop parent)
+          app-main-scroll-top (.-scrollTop app-main)
           current-scroll-left (.-scrollLeft parent)
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
-      (if-not animate?
-        (set! (.-scrollLeft parent) new-scroll-left)
-        (let [scroller (or (.-scroll_handler parent)
-                            (set! (.-scroll_handler parent)
-                                  ;; Store this on the parent so that we don't handle parent scroll while
-                                  ;; the animation is playing
-                                  (goog.fx.dom.Scroll. parent
-                                                       #js [0 0]
-                                                       #js [0 0]
-                                                       250)))]
-          (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
-          (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-          (.play scroller)))))
+      (let [scroller (or (.-scroll_handler parent)
+                         (set! (.-scroll_handler parent)
+                               ;; Store this on the parent so that we don't handle parent scroll while
+                               ;; the animation is playing
+                               (goog.fx.dom.Scroll. parent
+                                                    #js [0 0]
+                                                    #js [0 0]
+                                                    (if animate? 250 0))))
+            onEnd (.-onEnd scroller)]
+        (set! (.-startPoint scroller) #js [current-scroll-left 0])
+        (set! (.-endPoint scroller) #js [new-scroll-left 0])
+        ;; Browser find can scroll an absolutely positioned container into view,
+        ;; causing the parent to scroll. But then we set it to relative and there
+        ;; is no longer any overflow, so we need to scroll app-main instead.
+        (set! (.-onEnd scroller) #(do (.call onEnd scroller)
+                                      (set! (.-scrollTop app-main)
+                                            (+ app-main-scroll-top current-scroll-top))))
+        (.play scroller))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
     (let [container (get-in current-state (state/container-path container-id))
@@ -366,13 +374,17 @@
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
                             (sel parent ".container-view"))
-        ;; if we're scrolling left, then we want the container whose rightmost portion is showing
-        ;; if we're scrolling right, then we want the container whose leftmost portion is showing
         new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
                                     current-container-id
-                                    (if (< parent-scroll-left current-container-scroll-left)
-                                      (apply min (map container-id (take 2 containers)))
-                                      (apply max (map container-id (take 2 containers)))))]
+                                    (if-not (engine/isGecko)
+                                      ;; Safari and Chrome scroll the found content to the center of the page
+                                      (container-id (first containers))
+                                      ;; Firefox scrolls the content just into view
+                                      ;; if we're scrolling left, then we want the container whose rightmost portion is showing
+                                      ;; if we're scrolling right, then we want the container whose leftmost portion is showing
+                                      (if (< parent-scroll-left current-container-scroll-left)
+                                        (apply min (map container-id (take 2 containers)))
+                                        (apply max (map container-id (take 2 containers))))))]
     ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
     ;; do a swap here (or find a better way to structure this!)
     (when (not= current-container-id new-scrolled-container-id)
@@ -910,3 +922,11 @@
 (defmethod control-event :show-all-commits-toggled
   [target message _ state]
   (update-in state (conj state/build-data-path :show-all-commits) not))
+
+(defmethod post-control-event! :doc-search-submitted
+  [target message {:keys [query]} previous-state current-state]
+  (let [comms (get-in current-state [:comms])]
+    (go (let [api-result (<! (ajax/managed-ajax :get "/search-articles" :params {:query query}))]
+          (put! (:api comms) [:docs-articles (:status api-result) api-result])
+          (when (= (:success (:status api-result)))
+            (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
