@@ -16,8 +16,6 @@
 
 %iframe{src: "//www.youtube.com/embed/YtvKVfjKGWw?rel=0", width: 600, height: 400, frameborder: 0, allowfullscreen: true}
 
-%br
-
 %p
   You can also look at the GitHub repo used in the above videos
   %a{href: "https://github.com/circleci/heroku-cd"} here.
