@@ -141,6 +141,7 @@
 
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
+  (mlog "navigated-to :build with args " args)
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
@@ -169,7 +170,7 @@
     (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
               scopes (:scopes api-result)
-              #_(mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))]
+              (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))]
           (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
           (when (= :success (:status api-result))
             (analytics/track-build (:resp api-result)))
