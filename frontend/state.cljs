@@ -166,6 +166,8 @@
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
 
+(def language-testimonial-tab-path [:selected-language-testimonial-tab])
+
 (def changelog-path [:changelog])
 
 (def build-state-path [:build-state])

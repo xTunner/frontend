@@ -884,6 +884,10 @@
                                                             (redirect)))
          (async/timeout 1000) (redirect)))))
 
+(defmethod control-event :language-testimonial-tab-selected
+  [target message {:keys [index]} state]
+  (assoc-in state state/language-testimonial-tab-path index))
+
 (defmethod post-control-event! :enterprise-learn-more-clicked
   [target message {:keys [source]} previous-state current-state]
   (utils/open-modal "#enterpriseModal"))
