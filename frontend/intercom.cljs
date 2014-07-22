@@ -9,7 +9,7 @@
     (try
       (.click (jq "#IntercomTab"))
       (when-not (.is (jq "#IntercomNewMessageContainer") ":visible")
-        (.click (jq ".new_message")))
+        (.click (jq "[href=IntercomNewMessageContainer]")))
       (.focus (jq "#newMessageBody"))
       (when message
         (.text (jq "#newMessageBody") (str message "\n\n")))
