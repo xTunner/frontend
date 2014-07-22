@@ -1,6 +1,7 @@
 @tip_index: 200;
 .tip(@position: top, @tip_color: fade(@black, 80)) {
   .process (@t1: 0, @t2: 0, @t: auto, @l: auto, @b: auto, @r: auto, @mt: 0, @ml: 0, @mb: 0, @mr: 0) {
+    // TODO: remove this version of tooltip when om is fully shipped
     &[tooltip] {
       position: relative;
       &:after {
@@ -15,6 +16,36 @@
         transition: visibility 0ms 200ms, background 200ms 0ms, margin 200ms 0ms, color 200ms 0ms;
         pointer-events: none;
         content: attr(tooltip);
+        padding: .5em 1em;
+        border-radius: 2em;
+        background: fade(@tip_color, 0);
+        white-space: nowrap;
+        color: fade(@whiten, 0);
+      }
+      &:hover {
+        &:after {
+          color: @whiten;
+          background: @tip_color;
+          visibility: visible;
+          margin: @mt @mr @mb @ml;
+          transition: visibility 0ms 0ms, background 100ms 1000ms, margin 100ms 1000ms, color 100ms 1000ms;
+        }
+      }
+    }
+    &[data-tooltip] {
+      position: relative;
+      &:after {
+        .translate(@t1, @t2);
+        position: absolute;
+        top: @t;
+        left: @l;
+        bottom: @b;
+        right: @r;
+        z-index: @tip_index;
+        visibility: hidden;
+        transition: visibility 0ms 200ms, background 200ms 0ms, margin 200ms 0ms, color 200ms 0ms;
+        pointer-events: none;
+        content: attr(data-tooltip);
         padding: .5em 1em;
         border-radius: 2em;
         background: fade(@tip_color, 0);

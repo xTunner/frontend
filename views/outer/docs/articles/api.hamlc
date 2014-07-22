@@ -392,7 +392,6 @@
 -# (def api1-project-follow "/api/v1/project/:username/:project/follow")
 -# (def api1-project-unfollow "/api/v1/project/:username/:project/unfollow")
 -# (def api1-project-heroku-deploy-user "/api/v1/project/:username/:project/heroku-deploy-user")
--# (def api1-project-github-user "/api/v1/project/:username/:project/github-user")
 
 
 - @title = 'CircleCI REST API'

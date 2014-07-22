@@ -19,8 +19,8 @@
   .flex(0 0 auto);
   height: 100vh;
   overflow-y: auto;
-  width: 25% !important;
   padding: 0 1em;
+  color: @grayDark;
 }
 .outer {
   .footer-nav {
@@ -32,7 +32,10 @@
   .recent-status-badge {
     a {
       &[title="timed out"],
-      &[title="circle bug"] {
+      &[title="circle bug"],
+      &[title="canceled"],
+      &[title="not running"],
+      &[title="scheduled"] {
         &:before {
           font-size: 10px;
           padding-bottom: 1px;
