@@ -1,4 +1,5 @@
 .languages.page {
+  //font-family: ProximaNova-Light;
   @em: 18px;
   @pagesize: 940px;
   font-size: @em;
@@ -128,6 +129,30 @@
     -moz-box-shadow:    inset 0px 1px 1px 0px rgba(0,0,0,0.14);
     box-shadow:         inset 0px 1px 1px 0px rgba(0,0,0,0.14);
     padding: 3em 0;
+    &.arrowLeft {
+      .testimonial-box:after {
+        left:240px; /* controls horizontal position of arrow */
+      }
+      img:nth-child(1) {
+        opacity: 1; /* this makes the appropriate picture highlighter*/
+      }
+    }
+    &.arrowCenter {
+      .testimonial-box:after {
+        left:454px; /* controls horizontal position of arrow */
+      }
+      img:nth-child(2) {
+        opacity: 1;
+      }
+    }
+    &.arrowRight {
+      .testimonial-box:after {
+        left:668px; /* controls horizontal position of arrow */
+      }
+      img:nth-child(3) {
+        opacity: 1;
+      }
+    }
     h3 {
       margin: 2em 0;
       display: inline;
@@ -152,8 +177,10 @@
         width: 140px;
         border-radius: 70px;
         margin: 2em;
+        opacity: .5; /* only the selected photo is full opacity, see above */
         &:hover {
           cursor: pointer;
+          opacity: 1;
         }
       }
     }
@@ -181,17 +208,7 @@
         bottom:auto;
         border-width:0 15px 15px; /* vary these values to change the angle of the vertex */
         border-color:#fff transparent;
-      }
-      &.arrowLeft:after {
-        left:240px; /* controls horizontal position */
-      }
-      &.arrowCenter:after {
-        left:454px; /* controls horizontal position */
-      }
-      &.arrowRight:after {
-        left:668px; /* controls horizontal position */
-      }
-      
+      }      
     }
   }
   .languages-cta {
