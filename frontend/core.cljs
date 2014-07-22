@@ -175,12 +175,12 @@
     mya))
 
 
-(defn install-om [state container]
+(defn install-om [state container comms]
   (om/root
      app/app
      state
      {:target container
-      :shared {:comms (:comms @state)
+      :shared {:comms comms
                :timer-atom (setup-timer-atom)
                :_app-state-do-not-use state}}))
 
@@ -202,7 +202,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state container)
+    (install-om state container comms)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -268,7 +268,7 @@
   (swap! debug-state update-in [:current-user :admin] not))
 
 (defn reinstall-om! []
-  (install-om debug-state (find-app-container (find-top-level-node))))
+  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state)))
 
 (defn refresh-css! []
   (let [is-app-css? #(re-matches #"/assets/css/app.*?\.css(?:\.less)?" (dommy/attr % :href))
