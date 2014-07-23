@@ -27,9 +27,9 @@
                         :ss-3 "/assets/img/outer/languages/ruby-ss-1.png"
                         :testimonial-author-1 "/assets/img/outer/stories/john.jpg"
                         :testimonials [{:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
-                                       :img "/assets/img/outer/stories/john.jpg"
-                                       :author "Kevin Rose"
-                                       :title "Entrepneur @Google"}
+                                        :img "/assets/img/outer/stories/john.jpg"
+                                        :author "Kevin Rose"
+                                        :title "Entrepneur @Google"}
                                        {:text "text 2"
                                         :img "/assets/img/outer/stories/john.jpg"
                                         :author "Clark Kent"
@@ -120,16 +120,23 @@
                     ]
                    ]
                   ]
-                 [:div.languages-body
-                  [:div.languages-cta
-                   [:div.languages-cta-headline
-                    "How do I start using my " (:language template) " app with Circle?"] 
-                   [:div.languages-cta-step
-                    "Start by signing up using GitHub"]
-                   [:div.languages-cta-step
-                    "Run one of your Ruby projects on Circle"]
-                   [:div.languages-cta-step
-                    "That's it! If you hit any problems just us a message and we'll help you out."]
+                 
+                 [:div.languages-cta
+                  [:div.languages-body
+                   [:h3
+                    "How do I start using my " (:language template) " app with CircleCI?"] 
+                   [:div.languages-cta-steps
+                    [:div.languages-cta-step
+                     [:div.step-number "1"]
+                      "Start by signing up using GitHub"
+                     ]
+                     [:div.languages-cta-step
+                      [:div.step-number "2"]
+                      "Run one of your Ruby projects on Circle"]
+                     [:div.languages-cta-step
+                      [:div.step-number "3"]
+                      "That's it! If you hit any problems just us a message and we'll help you out."]
+                     ]
                    [:a.languages-cta-button {:href="#"}
                     "Sign Up With GitHub"]
                    ]]
