@@ -54,3 +54,12 @@
   [container message args previous-state current-state]
   (when (get-in current-state state/error-message-path)
     (set! (.-scrollTop (sel1 "main.app-main")) 0)))
+
+(defmethod error :error-triggered
+  [container message error state]
+  (assoc-in state state/error-message-path error))
+
+(defmethod post-error! :error-triggered
+  [container message args previous-state current-state]
+  (when (get-in current-state state/error-message-path)
+    (set! (.-scrollTop (sel1 "main.app-main")) 0)))

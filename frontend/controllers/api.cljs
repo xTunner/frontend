@@ -103,7 +103,6 @@
   [target message status args state]
   (update-in state state/user-path merge (:resp args)))
 
-
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
   (if-not (and (= (get-in state [:navigation-data :org])
@@ -115,12 +114,16 @@
                (= (get-in state [:navigation-data :query-params :page])
                   (get-in args [:context :query-params :page])))
     state
-    (assoc-in state [:recent-builds] (:resp args))))
+    (-> state
+        (assoc-in [:recent-builds] (:resp args))
+        (assoc-in state/project-scopes-path (:scopes args))
+        ;; Hack until we have organization scopes
+        (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 
 (defmethod api-event [:build :success]
   [target message status args state]
-  (mlog "build success")
+  (mlog "build success: scopes " (:scopes args))
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))]
@@ -129,6 +132,8 @@
       state
       (-> state
           (assoc-in state/build-path build)
+          (assoc-in state/project-scopes-path (:scopes args))
+          (assoc-in state/page-scopes-path (:scopes args))
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
                     (some-> build :branch utils/encode-branch))

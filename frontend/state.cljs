@@ -92,6 +92,8 @@
 (def project-envvars-path (conj project-data-path :envvars))
 (def project-settings-branch-path (conj project-data-path :settings-branch))
 (def project-path (conj project-data-path :project))
+(def project-scopes-path (conj project-data-path :project-scopes))
+(def page-scopes-path [:page-scopes])
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
@@ -144,8 +146,6 @@
 (def projects-path [:projects])
 
 (def inner?-path [:navigation-data :inner?])
-
-(def show-nav-settings-link-path [:navigation-settings :show-settings-link])
 
 (def instrumentation-path [:instrumentation])
 

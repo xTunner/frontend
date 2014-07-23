@@ -24,8 +24,11 @@
          (= (vcs-url/repo-name (:vcs_url project))
             (get-in app [:navigation-data :repo])))))
 
+(defn show-settings-link? [app]
+  (:read-settings (get-in app state/page-scopes-path)))
+
 (defn settings-link [app]
-  (when (get-in app state/show-nav-settings-link-path)
+  (when (show-settings-link? app)
     (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
                                                   :data-tooltip "Project Settings"}
