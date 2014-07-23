@@ -103,30 +103,22 @@
   [target message status args state]
   (update-in state state/user-path merge (:resp args)))
 
-(defn should-show-settings-link?
-  [args]
-  (if (get-in args [:context :repo])
-    (:read-settings (:scopes args)) ;; for repo, check scopes
-    (get-in args [:context :org]))) ;; for org, don't have scopes yet
-
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
-  (let [show-settings (should-show-settings-link? args)
-        _ (mlog "recent-builds success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
-    (mlog "recent-builds success: scopes " (:scopes args))
-    (if-not (and (= (get-in state [:navigation-data :org])
-                    (get-in args [:context :org]))
-                 (= (get-in state [:navigation-data :repo])
-                    (get-in args [:context :repo]))
-                 (= (get-in state [:navigation-data :branch])
-                    (get-in args [:context :branch]))
-                 (= (get-in state [:navigation-data :query-params :page])
-                    (get-in args [:context :query-params :page])))
-      state
-      (-> state
-          (assoc-in [:recent-builds] (:resp args))
-          (assoc-in state/project-scopes-path (:scopes args))
-          (assoc-in state/show-nav-settings-link-path show-settings)))))
+  (if-not (and (= (get-in state [:navigation-data :org])
+                  (get-in args [:context :org]))
+               (= (get-in state [:navigation-data :repo])
+                  (get-in args [:context :repo]))
+               (= (get-in state [:navigation-data :branch])
+                  (get-in args [:context :branch]))
+               (= (get-in state [:navigation-data :query-params :page])
+                  (get-in args [:context :query-params :page])))
+    state
+    (-> state
+        (assoc-in [:recent-builds] (:resp args))
+        (assoc-in state/project-scopes-path (:scopes args))
+        ;; Hack until we have organization scopes
+        (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 
 (defmethod api-event [:build :success]
@@ -134,20 +126,18 @@
   (mlog "build success: scopes " (:scopes args))
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
-        containers (vec (build-model/containers build))
-        show-settings (should-show-settings-link? args)
-        _ (mlog "build success: setting " state/show-nav-settings-link-path " in state to " show-settings)]
+        containers (vec (build-model/containers build))]
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
       (-> state
           (assoc-in state/build-path build)
           (assoc-in state/project-scopes-path (:scopes args))
+          (assoc-in state/page-scopes-path (:scopes args))
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
                     (some-> build :branch utils/encode-branch))
-          (assoc-in state/containers-path containers)
-          (assoc-in state/show-nav-settings-link-path show-settings)))))
+          (assoc-in state/containers-path containers)))))
 
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]

@@ -115,7 +115,7 @@
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               scopes (:scopes api-resp)
-              #_(mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
+              _ (mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
               comms (get-in current-state [:comms])]
           (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
@@ -173,8 +173,8 @@
       (api/get-projects api-ch))
     (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
-              scopes (:scopes api-result)
-              (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))]
+              scopes (:scopes api-result)]
+          (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
           (when (= :success (:status api-result))
             (analytics/track-build (:resp api-result)))
