@@ -117,6 +117,9 @@
         line-height: 17px;
         display: inline;
         padding: 1em;
+        &:hover {
+          background: lighten(#2D6072, 20%);
+        }
       }
     }
   }
@@ -209,6 +212,21 @@
         border-width:0 15px 15px; /* vary these values to change the angle of the vertex */
         border-color:#fff transparent;
       }      
+      .testimonial-text {
+        font-size: 15px;
+        color: #414446;
+        line-height: 22px;
+      }
+      .testimonial-author {
+        font-size: 18px;
+        color: #818689;
+        line-height: 22px;
+      }
+      .testimonial-author-title {
+        font-size: 15px;
+        color: #B7BDC1;
+        line-height: 22px;
+      }
     }
   }
   .languages-cta {
@@ -225,21 +243,23 @@
       text-align: center;
     }
     .languages-cta-steps {
+      margin-top: 3em;
       .flexy(center, center, row);
       .languages-cta-step:nth-child(1), .languages-cta-step:nth-child(2), {
         margin-right: 14px;
       }
+
       .languages-cta-step {
         .flexy(center, center, row);
         font-size: 15px;
-        color: #677E86;
+        color: #738B93;
         line-height: 22px;
+        width: 30%;
         .step-number {
           margin-right: 14px;
           display: block;
-          width: 20px;
           text-align: center;
-          padding: 10px;
+          padding: 14px 18px;
           border-radius: 26px;
           font-weight: bold;
           font-size: 18px;
@@ -252,5 +272,41 @@
         }
       }
     }
+    .cta-divider {
+      border:none;
+      color:white;
+      height:1px;
+      background:black;
+      background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 350, from(#5A8797), to(rgba(0, 0, 0, 0)));
+      margin: 3.5em 0;
+    }
+    .languages-cta-button {
+      padding: 1em;
+      border-radius: 4px;
+      /* Rectangle 99: */
+      background-image: -o-linear-gradient(-89deg, #98C0CE 0%, #4F94AC 100%);
+      background-image: -moz-linear-gradient(-89deg, #98C0CE 0%, #4F94AC 100%);
+      background-image: -ms-linear-gradient(-89deg, #98C0CE 0%, #4F94AC 100%);
+      background-image: linear-gradient(-179deg, #98C0CE 0%, #4F94AC 100%);
+      font-weight: bold;
+      font-size: 18px;
+      color: #FFFFFF;
+      line-height: 22px;
+      text-shadow: 0px -1px 2px rgba(0,0,0,0.20);
+      &:hover {
+       background-image: -o-linear-gradient(-89deg, #4F94AC  0%, #98C0CE 100%);
+       background-image: -moz-linear-gradient(-89deg, #4F94AC  0%, #98C0CE 100%);
+       background-image: -ms-linear-gradient(-89deg, #4F94AC  0%, #98C0CE 100%);
+       background-image: linear-gradient(-179deg, #4F94AC 0%, #98C0CE 100%);
+     }
+   }
+   .language-cta-trial {
+    font-size: 14px;
+    margin-top: 22px;
+    opacity: .7;
+    color: #fff;
+    text-align: center;
+
   }
+}
 }
