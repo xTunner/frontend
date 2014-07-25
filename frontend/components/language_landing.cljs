@@ -40,11 +40,11 @@
                                         :img "/assets/img/outer/stories/john.jpg"
                                         :author "Kevin Rose"
                                         :title "Entrepneur @Google"}
-                                       {:text "text 2"
+                                       {:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
                                         :img "/assets/img/outer/stories/john.jpg"
                                         :author "Clark Kent"
                                         :title "superman"}
-                                       {:text "text 3"
+                                       {:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
                                         :img "/assets/img/outer/stories/john.jpg"
                                         :author "Bruce Wayne"
                                         :title "Batman"}]}})
