@@ -63,27 +63,38 @@
                   [:img {:src (:logo-path template)}]
                   [:h1 (:headline template)]
                   [:div.languages-screenshots
-                   [:img {:src (:ss-1 template)}]
-                   [:img {:src (:ss-2 template)}]
-                   [:img {:src (:ss-3 template)}]]]
+                   [:img {:src "/assets/img/outer/languages/build-screenshot.png"}]]]
                  [:div.languages-body.remove-margin
                   [:div.languages-features
                    [:div.center-text
                     [:h3 "FEATURES"
                      ]
                     ]
-                   (for [feature (:features template)]
-                     [:div.feature
-                      [:div.feature-image
-                       [:img {:src (:icon feature)}]
-                       ]
-                      [:div.feature-copy
-                       [:h4.feature-title (:title feature)
-                        ]
-                       [:p.feature-description (:feature feature)] 
-                       ]
-                      
-                      ])
+                   (map-indexed
+                     (fn [i feature] [feature (:features template)]
+                       (if (odd? i) 
+                         [:div.feature
+                          [:div.feature-image
+                           [:img {:src (:icon feature)}]
+                           ]
+                          [:div.feature-copy
+                           [:h4.feature-title (:title feature)
+                            ]
+                           [:p.feature-description (:feature feature)] 
+                           ]
+                          
+                          ]
+                         [:div.feature
+                          [:div.feature-copy
+                           [:h4.feature-title (:title feature)
+                            ]
+                           [:p.feature-description (:feature feature)] 
+                           ]
+                          [:div.feature-image
+                           [:img {:src (:icon feature)}]
+                           ]
+                          ]))
+                     (:features template))
                    
                    [:div.button 
                     [:a {:href (:docs-link template)} "Read documentation on " (:language template)]]
