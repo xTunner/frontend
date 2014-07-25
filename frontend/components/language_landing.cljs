@@ -7,6 +7,7 @@
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
+            [frontend.utils.github :refer [auth-url]]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
