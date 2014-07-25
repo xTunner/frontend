@@ -207,6 +207,13 @@
 
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
+                          :title "Change Log"
+                          :href "/changelog"}
+           [:i.fa.fa-bell]
+           [:span "Changelog"]]
+
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
                           :title "Expand"
                           :on-click #(put! controls-ch [:slim-aside-toggled])}
            (if slim-aside?
