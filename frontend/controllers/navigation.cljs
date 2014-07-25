@@ -104,7 +104,8 @@
              :navigation-settings {:show-settings-link false}
              :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
-      state-utils/reset-current-build))
+      state-utils/reset-current-build
+      state-utils/reset-current-project))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state]
