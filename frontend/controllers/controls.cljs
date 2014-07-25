@@ -868,7 +868,7 @@
 
 
 
-(defmethod control-event :home-technology-tab-selected
+(defmethod control-event :home-technology-tab-selected 
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
 
