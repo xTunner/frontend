@@ -1,3 +1,14 @@
+//header style
+#navbar.ruby {
+  background: @rubyColor;
+   ul a {
+    color: #fff;
+    &:hover {
+      background: none;
+      font-weight: bold;
+    }
+   }
+}
 .languages.page {
   //font-family: ProximaNova-Light;
   @em: 18px;
@@ -44,7 +55,7 @@
     color: @white;
     max-height: 500px;
     //for ruby, move this to variables
-    background: linear-gradient(to bottom, #7C0B02 0%, #A80D00 100%), #7C0B02;
+    background: linear-gradient(to bottom, @rubyColor 0%, #A80D00 100%), @rubyColor;
     h1 {
       font-size: 40px;
       text-align: center;
