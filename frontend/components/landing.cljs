@@ -215,7 +215,7 @@
               [:ul#tech.nav.nav-tabs
                (for [tab [:languages :databases :queues :browsers :libraries :deployment :custom]]
                  (tech-tab tab selected-tab controls-ch))]]]
-            [:div.tab-content (:class (tech-class selected-tab))
+            [:div.tab-content
              (let [templates {:languages {:img-url "/img/outer/home/tech-languages.png"
                                           :blurb "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages."}
                               :databases {:img-url "/img/outer/home/tech-databases.png"
