@@ -3,10 +3,8 @@
             [goog.net.jsloader]))
 
 (defn track-pid [pid]
-  (let [twttr (aget js/window "twttr")
-        conversion (aget twttr "conversion")
-        track (aget conversion "trackPid")]
-    (.call track conversion pid)))
+  (utils/swallow-errors
+   (js/twttr.conversion.trackPid pid)))
 
 (defn track-conversion
   "Twitter has a separate pid for each type of conversion. Loads
