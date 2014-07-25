@@ -132,7 +132,7 @@
           [:div
            (when flash
              [:div#flash flash])]
-          [:div#navbar
+          [:div#navbar {:class (when (= :language-landing (:navigation-point app)) (get-in app [:navigation-data :language]))}
            [:div.container
             [:div.row
              [:div.span8
