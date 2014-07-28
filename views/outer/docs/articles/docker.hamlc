@@ -13,7 +13,7 @@
 
 %p
   Note that this article assumes some knowledge of Docker. If you are just getting started
-  with docker, then take a look at the
+  with Docker, then take a look at the
   %a{href: "http://docs.docker.com/userguide/"}
     Docker docs
   first.
@@ -21,7 +21,7 @@
 %h3#basics Basic usage
 
 %p
-  To use docker on CircleCI, simply add Docker as a required service in your
+  To use Docker on CircleCI, simply add Docker as a required service in your
   %code circle.yml
   file like this:
 
@@ -54,7 +54,7 @@
 %p
   Here is an example of a
   %code circle.yml
-  file that builds the standard ElasticSearch docker image and deploys it to
+  file that builds the standard ElasticSearch Docker image and deploys it to
   Docker Hub:
 
 %pre
@@ -92,7 +92,7 @@
   as in the example above to store sensitive information.
 
 %p
-  For a complete example of building and deploying a docker image to a 
+  For a complete example of building and deploying a Docker image to a 
   registry, see the
   %a{href: "https://github.com/circleci/docker-elasticsearch"}
     circleci/docker-elasticsearch
@@ -193,7 +193,7 @@
   Another use case for Docker on CircleCI is running tests inside of or against
   a Docker container. All of the usual Docker commands are available within
   your test environment on CircleCI, so if you want to run all of your tests
-  within a docker container, then you can simply run the container with the
+  within a Docker container, then you can simply run the container with the
   commands necessary to execute your tests, like this:
 
 %pre
