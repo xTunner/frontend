@@ -201,9 +201,9 @@
 %pre
   %code.bash<>
     :preserve
-      :test
-        :override
-          docker run myimage bundle exec rake test
+      test:
+        override:
+          - docker run myimage bundle exec rake test
 
 %p
   You can also start a container running in detached mode with an exposed
