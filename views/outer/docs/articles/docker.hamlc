@@ -36,7 +36,9 @@
   %code docker
   command throughout your
   %code circle.yml
-  file.
+  file. Note that you don't need to use
+  %code sudo
+  to use the command on CircleCI.
 
 %h3#registries Deployment to a Docker registry
 
