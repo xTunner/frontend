@@ -170,6 +170,8 @@
       (open-to-outer! nav-ch :landing params))))
 
 (defn define-spec-routes! [nav-ch]
+  (defroute trailing-slash #"(.+)/$" [path]
+    (put! nav-ch [:navigate! {:path path :replace-token? true}]))
   (defroute v1-not-found "*" []
     (open-to-outer! nav-ch :error {:status 404})))
 
