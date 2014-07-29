@@ -1,5 +1,5 @@
 (ns frontend.components.project.common
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! checan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
@@ -31,7 +31,7 @@
                 (< 10 days)
                 (list (gstring/format "%s is in a 2-week trial, enjoy! (or check out " org-name)
                       [:a {:href plan-path} "our plans"]
-                      ".")
+                      ").")
 
                 (< 7 days)
                 (list (gstring/format "%s's trial has %s days left. " org-name days)
