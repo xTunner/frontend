@@ -13,7 +13,7 @@
   Near the upper right corner of each build page, you'll find an
   'enable ssh' button:
 
-%img{src: assetPath("/img/docs/ssh-build-button.png")}
+%img{src: assetPath('(asset-path "img/outer/docs/ssh-build-button.png")')}
 
 %p
   Clicking this button will start a new build with remote SSH
@@ -21,7 +21,7 @@
   see a section labeled 'SSH Info'. Inside this section,
   you will find the host and port information:
 
-%img{src: assetPath("/img/docs/ssh-build-details.png")}
+%img{src: assetPath('(asset-path "img/outer/docs/ssh-build-details.png")')}
 
 %p
   Now you can ssh to the running build (using the same ssh key
