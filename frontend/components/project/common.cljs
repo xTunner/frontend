@@ -1,5 +1,5 @@
 (ns frontend.components.project.common
-  (:require [cljs.core.async :as async :refer [>! <! alts! checan sliding-buffer close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
