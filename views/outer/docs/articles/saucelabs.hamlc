@@ -3,7 +3,7 @@
 - @lastUpdated = "July 28, 2014"
 
 %p
-  You can run Selenium WebDriver tests with SauceLabs on CircleCI using Sauce Labs'
+  You can run Selenium WebDriver tests with Sauce Labs on CircleCI using Sauce Labs'
   secure tunnel,
   %a{href: "https://docs.saucelabs.com/reference/sauce-connect/"}
     Sauce Connect.
