@@ -170,9 +170,16 @@
                          [:div {:class (:type notice)}
                           (:message notice)])]
           [:button.btn-primary {:class (when loading? "disabled")
-                                :on-click #(do (if-not (and (seq name) (seq email))
+                                :on-click #(do (cond
+                                                 (not (or enterprise? (and (seq name) (seq email) (seq message))))
                                                  (om/set-state! owner [:notice] {:type "error"
-                                                                                 :message "Name and email are required."})
+                                                                                 :message "All fields are required."})
+
+                                                 (not (utils/valid-email? email))
+                                                 (om/set-state! owner [:notice] {:type "error"
+                                                                                 :message "Please enter a valid email address."})
+
+                                                 :else
                                                  (do
                                                    (om/set-state! owner [:loading?] true)
                                                    (go (let [resp (<! (ajax/managed-form-post

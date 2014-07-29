@@ -78,9 +78,9 @@
            [:input
             {:value (if loading? "Submitting.." "Submit"),
              :class (when loading? "disabled")
-             :on-click #(do (if-not (seq email)
+             :on-click #(do (if (or (empty? email) (not (utils/valid-email? email)))
                               (om/set-state! owner [:notice] {:type "error"
-                                                              :message "Email is required."})
+                                                              :message "Please enter a valid email address."})
                               (do
                                 (om/set-state! owner [:loading?] true)
                                 (go (let [resp (<! (marketo/submit-munchkin-form 1036 {:Email email
@@ -91,8 +91,8 @@
                                                                             :notice {:type "error"
                                                                                      :message "Sorry! There was an error submitting the form. Please try again or email sayhi@circleci.com."}})))
                                         (clear-form! {:type "success"
-                                                      :message "Thanks! We will be in touch soon."}))))
-                                false)))
+                                                      :message "Thanks! We will be in touch soon."}))))))
+                            false)
              :type "submit"}]]])))))
 
 (defn docker [app owner]
