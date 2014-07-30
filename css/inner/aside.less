@@ -213,15 +213,12 @@
   .aside-activity {
     .flexy(column);
     font-size: @em;
-    color: @activity_color;
     background: fade(@black, 0);
     opacity: 0;
     visibility: hidden;
     transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 200ms ease-in-out;
     height: 0%;
     &.open {
-      .shadow_deboss(@blueDarkest);
-      background: fade(@black, 8);
       opacity: 1;
       visibility: visible;
       transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 200ms ease-in-out;
