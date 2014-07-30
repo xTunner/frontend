@@ -237,7 +237,7 @@
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
-      (let [data (select-in app [state/projects-path state/settings-path])
+      (let [data (select-in app [state/projects-path state/settings-path state/user-options-shown-path])
             user (get-in app state/user-path)
             login (:login user)
             gravatar-id (:gravatar_id user)]
