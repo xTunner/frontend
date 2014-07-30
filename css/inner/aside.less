@@ -430,9 +430,74 @@
       &.ico-none-light {stroke: @white;}
     }
   }
+  .aside-user {
+    position: absolute;
+    top: 0;
+    left: -@tile;
+    width: @tile;
+    height: 100%;
+    background: @appBackgroundColor;
+    z-index: 5;
+    color: @appBackgroundColor;
+    box-shadow: 1px 0 @grayBoxBorder;
+    transition: (@aside_slim_speed / 2);
+    transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    overflow: hidden;
+    &.open {
+      left: 0;
+      width: 100%;
+      color: @gray;
+      h5 {
+        color: @black;
       }
+      .aside-item {
+        padding: 0 (@em * 2);
+      }
+    }
+    header {
+      .justify-content(center);
+    }
+    h5 {
+      font-weight: normal;
+      color: @appBackgroundColor;
+      white-space: nowrap;
+      transition: (@aside_slim_speed / 2);
+      transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    }
+    .close-menu {
+      .flexy(center);
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: @em;
+      height: @tile;
+      padding: 0 @em;
+      &:hover {
+        path {
+          stroke: @black;
+        }
+      }
+      path {
+        stroke: @grayLight;
+        stroke-width: 5;
+      }
+    }
+  }
+  .aside-user-options {
+    .flexy(column);
+    .aside-item {
+      transition: @aside_slim_speed ease-in-out;
+      padding: 0;
       &:hover,
       &:focus {
+        color: @grayDarker;
+        box-shadow: none;
+        background: @grayLightest;
+      }
+      &:active {
+        .shadow_deboss(@white);
+        color: inherit;
+        background: @grayLightest;
       }
     }
   }
