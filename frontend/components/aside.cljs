@@ -171,18 +171,24 @@
             slim-aside? (get-in app state/slim-aside-path)]
         (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
+
           [:a.aside-item.logo  {:title "Home"
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href "/"}
            [:div.logomark
             (common/ico :logo)]]
-          [:a.aside-item {:title "Settings"
+
+          [:a.aside-item {:on-click #(put! controls-ch [:user-options-toggled])
                           :data-placement "right"
                           :data-trigger "hover"
-                          :href "/account"}
-           [:i.fa.fa-cog]
-           [:span "Settings"]]
+                          :title "Account"
+                          :class (when (get-in app state/user-options-shown-path)
+                                  "open")}
+           [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
+                                               :login (:login opts)
+                                               :size 50})}]
+           (:login opts)]
 
           [:a.aside-item {:title "Documentation"
                           :data-placement "right"
@@ -218,38 +224,13 @@
 
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
-                          :title "Invite Teammate"
-                          ;; modal lives in aside
-                          :on-click #(utils/open-modal "#inviteForm")}
-           [:i.fa.fa-envelope-o]
-           [:span "Invite Teammate"]]
-
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
                           :title "Expand"
                           :on-click #(put! controls-ch [:slim-aside-toggled])}
            (if slim-aside?
              [:i.fa.fa-long-arrow-right]
              (list
               [:i.fa.fa-long-arrow-left]
-              [:span "Collapse"]))]
-
-          [:div.aside-slideup
-           [:a.aside-item {:href "/account"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "User Account"}
-            [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
-                                                :login (:login opts)
-                                                :size 50})}]
-            (:login opts)]
-
-           [:a.aside-item {:href "/logout"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Logout"}
-            [:i.fa.fa-sign-out]
-            [:span "Logout"]]]])))))
+              [:span "Collapse"]))]])))))
 
 (defn aside [app owner]
   (reify
