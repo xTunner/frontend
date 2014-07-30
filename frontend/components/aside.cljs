@@ -109,6 +109,24 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
+(defn context-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
+                                     "open")}
+           [:header
+            [:h5 "Your Account"]
+            [:a.close-menu
+             {:on-click #(put! controls-ch [:user-options-toggled])}
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            [:a.aside-item {:href "/account"} "Settings"]
+            [:a.aside-item {:on-click #(utils/open-modal "#inviteForm")} "Invite a Teammate"]
+            [:a.aside-item {:href "/logout"} "Logout"]]])))))
+
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
@@ -121,6 +139,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:nav.aside-left-nav.context
+          (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper
             [:header
