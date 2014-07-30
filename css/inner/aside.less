@@ -28,18 +28,40 @@
       }                           //
     }                             //
   }
-  .aside-left-nav {
+  .aside-left-nav,
+  .aside-left-menu {
     .flex(0, 0);
     .flexy(column);
-    color: fade(@white, 66);
     width: @aside_nav_width;
     height: 100vh;
-    background: @blueDarkest;
     transition: width @aside_slim_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
     overflow: hidden;
+  }
+  .aside-left-nav {
+    background: @blueDarkest;
+    color: fade(@white, 66);
+    &.slim {
+      width: @tile;
+      .aside-item {
+        .tip(right);
+        i,
+        img {
+          margin-right: ((@tile - @baseFontSize) / 2);
+          transition-duration: (@aside_slim_speed * 1.5);
+        }
+        span {
+          opacity: 0;
+          visibility: hidden;
+          transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
+          pointer-events: none;
+        }
       }
     }
+  }
+  .aside-left-menu {
+    box-shadow: 1px 0 @grayBoxBorder;
+    position: relative;
     header {
       .box-sizing(border-box);
       .flex(0, 0);
@@ -81,57 +103,33 @@
         }
       }
     }
-    &.slim {
-      width: @tile;
-      .aside-item {
-        .tip(right);
-        i,
-        img {
-          margin-right: ((@tile - @baseFontSize) / 2);
-          transition-duration: (@aside_slim_speed * 1.5);
-        }
-        span {
-          opacity: 0;
-          visibility: hidden;
-          transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
-          pointer-events: none;
+    .aside-activity {
+      color: @grayLight;
+      position: relative;
+      .wrapper {
+        &:hover {
+          &::-webkit-scrollbar-thumb {
+            background: @grayLighter;
+          }
         }
       }
-    }
-    &.context {
-      @activity_color: @grayLight;
-      background: none;
-      box-shadow: 1px 0 @grayBoxBorder;
-      .aside-activity {
-        background: none;
-        box-shadow: none;
-        color: @activity_color;
-        position: relative;
-        .wrapper {
-          &:hover {
-            &::-webkit-scrollbar-thumb {
-              background: @grayLighter;
+      .project {
+        a {
+          &:not(:hover) {
+            color: @grayDark;
+          }
+          &.toggle {
+            .ico-repo {
+              fill: @grayDark;
             }
           }
         }
-        .project {
-          a {
-            &:not(:hover) {
-              color: @grayDark;
-            }
-            &.toggle {
-              .ico-repo {
-                fill: @grayDark;
-              }
-            }
-          }
-        }
-        .branch {
-          a {
-            &:before,
-            &:after {
-              border-color: @grayLighter;
-            }
+      }
+      .branch {
+        a {
+          &:before,
+          &:after {
+            border-color: @grayLighter;
           }
         }
       }
