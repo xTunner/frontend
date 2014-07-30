@@ -138,7 +138,7 @@
             settings (get-in app state/settings-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:nav.aside-left-nav.context
+         [:nav.aside-left-menu
           (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper
