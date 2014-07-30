@@ -3,8 +3,6 @@
   @cascade_delay: 30ms;
   @aside_items: 7;
   @aside_slim_speed: 200ms;
-  @slideup_items: 2;
-  @slideup_visible: 1;
   @activity_scroll: 3px;
   @activity_color: fade(@white, 55);
   @activity_ico: (@em - 2);
@@ -226,10 +224,6 @@
       visibility: visible;
       transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 200ms ease-in-out;
       height: 100vh;
-      + .aside-slideup {
-        box-shadow: 0 -8px 13px fade(@black, 21);
-        transition-delay: 100ms;
-      }
       .wrapper {
         overflow-y: auto;
         height: 100vh; // needed to fix safari bug preventing accordion from opening up
@@ -437,15 +431,6 @@
       &.ico-none-light {stroke: @white;}
     }
   }
-  .aside-slideup {
-    .flex(0, 0, auto);
-    .flexy(column);
-    margin-top: auto;
-    transition: box-shadow 300ms ease-in-out;
-    a {
-      &:last-child {
-        margin-bottom: ((@slideup_items - @slideup_visible) * -@tile);
-        transition: margin 400ms ease-in-out;
       }
       &:hover,
       &:focus {
