@@ -154,14 +154,14 @@
       }
     }
     &:hover,
-    &:focus,
-    &.open {
+    &:focus {
       .shadow_emboss(@blueDarker);
       color: @white;
       background: @blueDarker;
       transition-duration: 0;
     }
-    &:active {
+    &:active,
+    &.open {
       .shadow_deboss(@blueDarkest);
       color: @white;
       background: fade(@black, 8);
