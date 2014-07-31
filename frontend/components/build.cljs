@@ -59,7 +59,7 @@
           [:a.container-selector
            {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
             :class (container-model/status->classes status)}
-           (str "C" (:index container))
+           (str (:index container))
            (case status
              :failed [:i.fa.fa-times]
              :success [:i.fa.fa-check]
