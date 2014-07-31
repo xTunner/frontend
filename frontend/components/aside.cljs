@@ -246,5 +246,5 @@
           shared/invite-form ;; modal trigger is in aside-nav
           (om/build aside-nav data {:opts {:login login
                                            :gravatar-id gravatar-id}})
-          (when (seq (get-in app state/projects-path))
-            (om/build activity data {:opts {:login login}}))])))))
+
+          (om/build activity data {:opts {:login login}})])))))
