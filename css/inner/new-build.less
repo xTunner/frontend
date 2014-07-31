@@ -81,95 +81,9 @@
   margin: 0;
   list-style: none;
   margin: 0 8.5%;
-  svg {
-    path {
-
-    }
-  }
-  i.fa {
-    display: block;
-  }
-  li {
-    .flex(1, 1);
-    &.active {
-      .container-selector {
-        &:before,
-        &:after {
-          content: " ";
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          height: 0;
-          width: 0;
-          border: solid transparent;
-          pointer-events: none;
-        }
-        &:before {
-          border-top-color: @grayLighter;
-          border-width: (@baseFontSize / 2) + 1;
-          margin-left: (-@baseFontSize / 2) - 1;
-        }
-        &:after {
-          border-top-color: @appBackgroundColor;
-          border-width: (@baseFontSize / 2);
-          margin-left: (-@baseFontSize / 2);
-        }
-        &.waiting {
-          &:hover {
-            &:before {
-              border-top-color: @blueLight;
-            }
-          }
-        }
-        &.running {
-          &:hover {
-            &:before {
-              border-top-color: @blueLight;
-            }
-          }
-        }
-        &.success {
-          &:hover {
-            &:before {
-              border-top-color: @green;
-            }
-          }
-        }
-        &.failed,
-        &.canceled {
-          &:before,
-          &:after {
-            border-top-color: @redLight;
-          }
-          &:hover {
-            &:after {
-              border-top-color: @appBackgroundColor;
-            }
-          }
-        }
-      }
-    }
-    &:first-child {
-      .container-selector {
-        border-left-width: 1px;
-        border-radius: 3px 0 0 3px;
-      }
-    }
-    &:not(:first-child) {
-      .container-selector {
-        &:hover {
-          margin-left: -1px;
-        }
-      }
-    }
-    &:last-child {
-      .container-selector {
-        border-radius: 0 3px 3px 0;
-      }
-    }
-  }
 }
 .container-selector {
+  .flex(1, 1);
   .flexy(column);
   .align-items(center);
   position: relative;
@@ -232,11 +146,83 @@
     color: @white;
     background: @redLight;
     border-color: @redLight;
+    + .failed,
+    + .canceled {
+      box-shadow: -1px 0 @red;
+    }
     svg {
       path {
         stroke: @white;
       }
     }
+  }
+  &.active {
+    &:before,
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      height: 0;
+      width: 0;
+      border: solid transparent;
+      pointer-events: none;
+    }
+    &:before {
+      border-top-color: @grayLighter;
+      border-width: (@baseFontSize / 2) + 1;
+      margin-left: (-@baseFontSize / 2) - 1;
+    }
+    &:after {
+      border-top-color: @appBackgroundColor;
+      border-width: (@baseFontSize / 2);
+      margin-left: (-@baseFontSize / 2);
+    }
+    &.waiting {
+      &:hover {
+        &:before {
+          border-top-color: @blueLight;
+        }
+      }
+    }
+    &.running {
+      &:hover {
+        &:before {
+          border-top-color: @blueLight;
+        }
+      }
+    }
+    &.success {
+      &:hover {
+        &:before {
+          border-top-color: @green;
+        }
+      }
+    }
+    &.failed,
+    &.canceled {
+      &:before,
+      &:after {
+        border-top-color: @redLight;
+      }
+      &:hover {
+        &:after {
+          border-top-color: @appBackgroundColor;
+        }
+      }
+    }
+  }
+  &:first-child {
+    border-left-width: 1px;
+    border-radius: 3px 0 0 3px;
+  }
+  &:not(:first-child) {
+    &:hover {
+      margin-left: -1px;
+    }
+  }
+  &:last-child {
+    border-radius: 0 3px 3px 0;
   }
   svg {
     path {
