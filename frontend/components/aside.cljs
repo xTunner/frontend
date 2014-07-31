@@ -124,7 +124,10 @@
              (common/ico :fail-light)]]
            [:div.aside-user-options
             [:a.aside-item {:href "/account"} "Settings"]
-            [:a.aside-item {:on-click #(utils/open-modal "#inviteForm")} "Invite a Teammate"]
+            [:a.aside-item {:on-click #(do
+                                        (utils/open-modal "#inviteForm")
+                                        (put! controls-ch [:user-options-toggled]))}
+             "Invite a Teammate"]
             [:a.aside-item {:href "/logout"} "Logout"]]])))))
 
 (defn activity [app owner opts]
