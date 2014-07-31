@@ -61,11 +61,11 @@
             :class (container-model/status->classes status)}
            (str (:index container))
            (case status
-             :failed [:i.fa.fa-times]
-             :success [:i.fa.fa-check]
-             :cancelled [:i.fa.fa-exclamation]
-             :running [:i.fa.fa-clock-o]
-             :waiting [:i.fa.fa-clock-o]
+             :failed (common/ico :fail-light)
+             :success (common/ico :pass-light)
+             :canceled (common/ico :fail-light)
+             :running (common/ico :logo-light)
+             :waiting (common/ico :none-light)
              nil)]])))))
 
 (defn container-pills [data owner]
