@@ -79,10 +79,10 @@
       deployment:
         hub: 
           branch: master
-            commands:
-              - sed "s/&lt;EMAIL&gt;/$DOCKER_EMAIL/;s/&lt;AUTH&gt;/$DOCKER_AUTH/" \\
-                  &lt; .dockercfg.template &gt; ~/.dockercfg
-              - docker push circleci/elasticsearch
+          commands:
+            - sed "s/&lt;EMAIL&gt;/$DOCKER_EMAIL/;s/&lt;AUTH&gt;/$DOCKER_AUTH/" \\
+                &lt; .dockercfg.template &gt; ~/.dockercfg
+            - docker push circleci/elasticsearch
 
 %p
   Note that a
