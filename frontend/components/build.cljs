@@ -79,7 +79,7 @@
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))]
         (html
-         [:div.containers.pagination.pagination-centered (when hide-pills? {:style {:display "none"}})
+         [:div.containers (when hide-pills? {:style {:display "none"}})
           [:ul.container-list
            (for [container containers]
              (om/build container-pill
