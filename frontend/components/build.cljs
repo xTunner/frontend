@@ -55,18 +55,18 @@
        (let [container-id (container-model/id container)
              controls-ch (om/get-shared owner [:comms :controls])
              status (container-model/status container build-running?)]
-         [:li {:class (when (= container-id current-container-id) "active")}
-          [:a.container-selector
-           {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
-            :class (container-model/status->classes status)}
-           (str (:index container))
-           (case status
-             :failed (common/ico :fail-light)
-             :success (common/ico :pass-light)
-             :canceled (common/ico :fail-light)
-             :running (common/ico :logo-light)
-             :waiting (common/ico :none-light)
-             nil)]])))))
+        [:a.container-selector
+         {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
+          :class (concat (container-model/status->classes status)
+                         (when (= container-id current-container-id) ["active"]))}
+         (str (:index container))
+         (case status
+           :failed (common/ico :fail-light)
+           :success (common/ico :pass-light)
+           :canceled (common/ico :fail-light)
+           :running (common/ico :logo-light)
+           :waiting (common/ico :none-light)
+           nil)])))))
 
 (defn container-pills [data owner]
   (reify
@@ -80,7 +80,7 @@
                             (empty? (remove :filler-action (mapcat :actions containers))))]
         (html
          [:div.containers (when hide-pills? {:style {:display "none"}})
-          [:ul.container-list
+          [:div.container-list
            (for [container containers]
              (om/build container-pill
                        {:container container
