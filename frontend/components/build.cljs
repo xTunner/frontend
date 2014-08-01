@@ -57,6 +57,7 @@
              status (container-model/status container build-running?)]
         [:a.container-selector
          {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
+          :role "button"
           :class (concat (container-model/status->classes status)
                          (when (= container-id current-container-id) ["active"]))}
          (str (:index container))
