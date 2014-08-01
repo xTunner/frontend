@@ -46,7 +46,7 @@
   We recommend creating specific, narrowly scoped API tokens. In fact, we created a whole
   class of tokens just for this purpose: tokens which give read-only access to the build
   status of a single project, and nothing else. You can create and manage these tokens from
-  the <b>Edit settings &gt; API Tokens</b> page of any project.
+  the <b>Project settings &gt; API Tokens</b> page of any project.
 
 %p
   If you prefer, it is also possible to use a user's API token as the circle-token. These
