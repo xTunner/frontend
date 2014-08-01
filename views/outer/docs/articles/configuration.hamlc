@@ -1,5 +1,5 @@
 - @title = 'Configuring CircleCI'
-- @lastUpdated = "May 2, 2013"
+- @lastUpdated = "August 1, 2014"
 
 %p
   CircleCI automatically infers your settings from your code, so CircleCI's normal processing works just fine in most circumstances.
@@ -879,10 +879,10 @@
 %p
   Circle will run its inference as well as all build commands from that directory.
 
-%h2#artifacts Specifying custom artifacts directories
+%h2#artifacts Specifying custom artifacts directories and files
 
 %p
-  You can specify extra directories to be
+  You can specify extra directories and files to be
   != succeed ":", ->
     %a{href: "/docs/build_artifacts"}saved as artifacts
 
@@ -893,6 +893,7 @@
         artifacts:
           - "selenium/screenshots" # relative to the build directory
           - "~/simplecov" # relative to the user's home directory
+          - "test.txt" # a single file, relative to the build directory
 
 %h2#help Need anything else?
 

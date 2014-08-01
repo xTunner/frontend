@@ -1,6 +1,6 @@
 - @children = []
 - @title = "Build artifacts"
-- @lastUpdated = "August 8, 2013"
+- @lastUpdated = "August 1, 2014"
 
 %p
   If your build produces persistent artifacts such as screenshots, coverage reports, or
@@ -14,13 +14,13 @@
 
 %p
   If you prefer, you can also
-  %a{ href: "/docs/configuration#artifacts" } configure directories whose contents will
+  %a{ href: "/docs/configuration#artifacts" } configure directories and files whose contents will
   be saved.
 
 %p
   After the build finishes, everything in these directories is saved and linked to the build.
 
-%P  
+%P
   %img.artifacts-image{src: assetPath('(asset-path "img/docs/artifacts.png")')}
 %p
   You'll find links to the artifacts at the top of the build page. You can also consume them
