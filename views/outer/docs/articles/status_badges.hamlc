@@ -1,6 +1,6 @@
 - @children = []
 - @title = "Embeddable status badges"
-- @lastUpdated = "June 28, 2013"
+- @lastUpdated = "July 30, 2014"
 
 %p
   We provide project and branch status images, which you can embed anywhere you want: a GitHub
@@ -11,26 +11,44 @@
   %img{ src: "https://circleci.com/gh/circleci/circle.png?circle-token=3cc80b12ab3627373c76e13735b8bc00a1259b9e" }
 
 %p
+  The status images are also available in "shield" style:
+  %img{ src: "https://circleci.com/gh/circleci/circle.svg?style=shield&circle-token=3cc80b12ab3627373c76e13735b8bc00a1259b9e" }
+
+%p
   You can use a simple image URL like this to see the status of your project's default branch:
 
   %code
     https://circleci.com/gh/:owner/:repo.png?circle-token=:circle-token
+  %br
+  %code
+    https://circleci.com/gh/:owner/:repo.svg?style=shield&circle-token=:circle-token
 
 %p
   For example:
+  circleci/mongofinil
   %a{ href: "https://circleci.com/gh/circleci/mongofinil.png?circle-token=b14acf911433d315298235b0c2fbf7b2670a92a8" }
-    https://circleci.com/gh/circleci/mongofinil.png?circle-token=b14ac...
+    badge
+  and
+  %a{ href: "https://circleci.com/gh/circleci/mongofinil.svg?&style=shield&circle-token=b14acf911433d315298235b0c2fbf7b2670a92a8" }
+    shield
 
 %p
   Or you can see the status of any specific branch:
 
   %code
     https://circleci.com/gh/:owner/:repo/tree/:branch.png?circle-token=:circle-token
+  %br
+  %code
+    https://circleci.com/gh/:owner/:repo/tree/:branch.svg?style=shield&circle-token=:circle-token
 
 %p
   For example:
+  circleci/mongofinil master branch
   %a{ href: "https://circleci.com/gh/circleci/mongofinil/tree/master.png?circle-token=b14acf911433d315298235b0c2fbf7b2670a92a8" }
-    https://circleci.com/gh/circleci/mongofinil/tree/master.png?circle-token=b14ac...
+    badge
+  and
+  %a{ href: "https://circleci.com/gh/circleci/mongofinil/tree/master.svg?style=shield&circle-token=b14acf911433d315298235b0c2fbf7b2670a92a8" }
+    shield
 
 %p
 
