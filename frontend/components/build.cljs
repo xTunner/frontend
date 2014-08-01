@@ -140,7 +140,8 @@
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :project-data project-data
-                                              :user user})
+                                              :user user
+                                              :scopes (get-in data state/project-scopes-path)})
              (om/build common/flashes (get-in data state/error-message-path))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data})

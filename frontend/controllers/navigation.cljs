@@ -109,8 +109,13 @@
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
-    (when-not (seq (get-in current-state state/projects-path))
+  (let [api-ch (get-in current-state [:comms :api])
+        projects-loaded? (seq (get-in current-state state/projects-path))
+        current-user (get-in current-state state/user-path)]
+    (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
+               " projects-loaded? " (not (empty? projects-loaded?))))
+    (when (and (not projects-loaded?)
+               (not (empty? current-user)))
       (api/get-projects api-ch))
     (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
                                                      :builds-per-page (:builds-per-page current-state)))
@@ -169,8 +174,13 @@
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        ws-ch (get-in current-state [:comms :ws])]
-    (when-not (seq (get-in current-state state/projects-path))
+        ws-ch (get-in current-state [:comms :ws])
+        projects-loaded? (seq (get-in current-state state/projects-path))
+        current-user (get-in current-state state/user-path)]
+    (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
+               " projects-loaded? " (not (empty? projects-loaded?))))
+    (when (and (not projects-loaded?)
+               (not (empty? current-user)))
       (api/get-projects api-ch))
     (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))

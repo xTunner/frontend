@@ -120,23 +120,26 @@
             settings (get-in app state/settings-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:nav.aside-left-nav.context
-          [:div.aside-activity.open
-           [:div.wrapper
-            [:header
-             [:select {:name "toggle-all-branches"
-                       :on-change #(put! controls-ch [:show-all-branches-toggled
-                                                      (utils/parse-uri-bool (.. % -target -value))])
-                       :value show-all-branches?}
-              [:option {:value false} "Your Branch Activity"]
-              [:option {:value true} "All Branch Activity" ]]
-             [:div.select-arrow [:i.fa.fa-caret-down]]]
-            (for [project (sort project-model/sidebar-sort projects)]
-              (om/build project-aside
-                        {:project project
-                         :settings settings}
-                        {:react-key (project-model/id project)
-                         :opts {:login (:login opts)}}))]]])))))
+         ;; for non-logged in visitors, don't display the "All Branch Activity"
+         (if projects 
+           [:nav.aside-left-nav.context
+            [:div.aside-activity.open
+             [:div.wrapper
+              [:header
+               [:select {:name "toggle-all-branches"
+                         :on-change #(put! controls-ch [:show-all-branches-toggled
+                                                        (utils/parse-uri-bool (.. % -target -value))])
+                         :value show-all-branches?}
+                [:option {:value false} "Your Branch Activity"]
+                [:option {:value true} "All Branch Activity" ]]
+               [:div.select-arrow [:i.fa.fa-caret-down]]]
+              (for [project (sort project-model/sidebar-sort projects)]
+                (om/build project-aside
+                          {:project project
+                           :settings settings}
+                          {:react-key (project-model/id project)
+                           :opts {:login (:login opts)}}))]]]
+           [:div.no-user]))))))
 
 (defn aside-nav [app owner opts]
   (reify

@@ -172,7 +172,9 @@
     om/IDisplayName (display-name [_] "Header")
     om/IRender
     (render [_]
-      (let [inner? (get-in app state/inner?-path)]
+      (let [inner? (get-in app state/inner?-path)
+            logged-in? (get-in app state/user-path)
+            _ (utils/mlog "header render inner? " inner? " logged-in? " logged-in?)]
         (html
           (if inner?
             (om/build inner-header app)
