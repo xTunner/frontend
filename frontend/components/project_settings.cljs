@@ -349,7 +349,7 @@
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
            (describe-flag {:flag :junit
-                           :title "JUnit Support"
+                           :title "JUnit support"
                            :blurb [:p
                                    "We've been experimenting with better ways to display and manage "
                                    "test result data, especially for large test suites. This adds flags "
@@ -357,7 +357,7 @@
                                    "JUnit-compatabile test runners. It only works for a handful of test "
                                    "runners for now, and the data is only available through our API, though!"]})
            (describe-flag {:flag :set-github-status
-                           :title "GitHub Status Updates"
+                           :title "GitHub Status updates"
                            :blurb [:p
                                    "By default, we update the status of every pushed commit with "
                                    "GitHub's status API. If you'd like to turn this off (if, for example, "
@@ -370,11 +370,11 @@
                                    "builds to use it and let others see your builds, both through the "
                                    "web UI and the API."]})
            (describe-flag {:flag :build-fork-prs
-                           :title "Project Fork Pull Requests"
+                           :title "Project fork pull requests"
                            :blurb [:p
                                    "CircleCI will automatically update the commit status shown on GitHub's "
-                                   "pull request page. Builds will count against the parent repository's plan "
-                                   "and will be able to access the parent's project and environment settings."
+                                   "pull request page. Builds will will be run using the parent repository's plan "
+                                   "and will be able to access the parent project's environment settings."
                                    :p
                                    "If you have SSH keys or AWS credentials stored in your project settings and "
                                    "untrusted forks can make pull requests against your repo, then this option "
