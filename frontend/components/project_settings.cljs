@@ -368,7 +368,17 @@
                                    "Be part of our F/OSS beta! Organizations now have a free container "
                                    "reserved for F/OSS projects; enabling this will allow this project's "
                                    "builds to use it and let others see your builds, both through the "
-                                   "web UI and the API."]})]])))))
+                                   "web UI and the API."]})
+           (describe-flag {:flag :build-fork-prs
+                           :title "Project Fork Pull Requests"
+                           :blurb [:p
+                                   "CircleCI will automatically update the commit status shown on GitHub's "
+                                   "pull request page. Builds will count against the parent repository's plan "
+                                   "and will be able to access the parent's project and environment settings."
+                                   :p
+                                   "If you have SSH keys or AWS credentials stored in your project settings and "
+                                   "untrusted forks can make pull requests against your repo, then this option "
+                                   "isn't for you!"]})]])))))
 
 (defn dependencies [project-data owner]
   (reify
