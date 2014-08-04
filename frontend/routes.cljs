@@ -101,7 +101,8 @@
   (defroute v1-account "/account" []
     (open-to-inner! nav-ch :account {:subpage nil}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
-    (open-to-inner! nav-ch :account {:subpage (keyword subpage)}))
+    ;; TODO: make it possible to call (v1-account-subpage {:subpage subpage}) with a fragment route then remove this hack
+    (open-to-inner! nav-ch :account {:subpage (keyword (first (str/split subpage #"#")))}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
@@ -111,8 +112,8 @@
     (let [subpage (keyword (:subpage params))]
       (if-let [doc (get (doc-utils/find-all-docs) subpage)]
         (open-to-outer! nav-ch :documentation (assoc params
-                                                      :subpage subpage
-                                                      :_title (:title doc)))
+                                                :subpage subpage
+                                                :_title (:title doc)))
         (do
           (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
                 rewrite-token (doc-utils/maybe-rewrite-token token)
@@ -169,6 +170,8 @@
       (open-to-outer! nav-ch :landing params))))
 
 (defn define-spec-routes! [nav-ch]
+  (defroute trailing-slash #"(.+)/$" [path]
+    (put! nav-ch [:navigate! {:path path :replace-token? true}]))
   (defroute v1-not-found "*" []
     (open-to-outer! nav-ch :error {:status 404})))
 

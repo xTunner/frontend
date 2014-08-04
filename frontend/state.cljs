@@ -10,6 +10,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
+   :user-options-shown false
    :selected-home-technology-tab nil
    :builds-per-page 30
    :navigation-point nil
@@ -177,3 +178,5 @@
 (def docs-search-path [:docs-query])
 (def docs-articles-results-path [:docs-articles-results])
 (def docs-articles-results-query-path [:docs-articles-results-query])
+
+(def user-options-shown-path [:user-options-shown])

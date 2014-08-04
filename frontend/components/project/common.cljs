@@ -31,7 +31,7 @@
                 (< 10 days)
                 (list (gstring/format "%s is in a 2-week trial, enjoy! (or check out " org-name)
                       [:a {:href plan-path} "our plans"]
-                      ".")
+                      ").")
 
                 (< 7 days)
                 (list (gstring/format "%s's trial has %s days left. " org-name days)

@@ -12,7 +12,8 @@
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing)]))
+  (:require-macros [frontend.utils :refer (inspect timing)])
+  (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
   (aget js/window "CSRFToken"))
@@ -195,3 +196,6 @@
   "Strips all html characters from the string"
   [str]
   (string/replace str #"[&<>\"']" ""))
+
+(defn valid-email? [str]
+  (.isValidAddrSpec EmailAddress str))

@@ -109,6 +109,27 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
+(defn context-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
+                                     "open")}
+           [:header
+            [:h5 "Your Account"]
+            [:a.close-menu
+             {:on-click #(put! controls-ch [:user-options-toggled])}
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            [:a.aside-item {:href "/account"} "Settings"]
+            [:a.aside-item {:on-click #(do
+                                        (utils/open-modal "#inviteForm")
+                                        (put! controls-ch [:user-options-toggled]))}
+             "Invite a Teammate"]
+            [:a.aside-item {:href "/logout"} "Logout"]]])))))
+
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
@@ -120,7 +141,8 @@
             settings (get-in app state/settings-path)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:nav.aside-left-nav.context
+         [:nav.aside-left-menu
+          (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper
             [:header
@@ -152,18 +174,24 @@
             slim-aside? (get-in app state/slim-aside-path)]
         (html
          [:nav.aside-left-nav {:class (when slim-aside? "slim")}
+
           [:a.aside-item.logo  {:title "Home"
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href "/"}
            [:div.logomark
             (common/ico :logo)]]
-          [:a.aside-item {:title "Settings"
+
+          [:a.aside-item {:on-click #(put! controls-ch [:user-options-toggled])
                           :data-placement "right"
                           :data-trigger "hover"
-                          :href "/account"}
-           [:i.fa.fa-cog]
-           [:span "Settings"]]
+                          :title "Account"
+                          :class (when (get-in app state/user-options-shown-path)
+                                  "open")}
+           [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
+                                               :login (:login opts)
+                                               :size 50})}]
+           (:login opts)]
 
           [:a.aside-item {:title "Documentation"
                           :data-placement "right"
@@ -199,14 +227,6 @@
 
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
-                          :title "Invite Teammate"
-                          ;; modal lives in aside
-                          :on-click #(utils/open-modal "#inviteForm")}
-           [:i.fa.fa-envelope-o]
-           [:span "Invite Teammate"]]
-
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
                           :title "Change Log"
                           :href "/changelog"}
            [:i.fa.fa-bell]
@@ -220,31 +240,14 @@
              [:i.fa.fa-long-arrow-right]
              (list
               [:i.fa.fa-long-arrow-left]
-              [:span "Collapse"]))]
-
-          [:div.aside-slideup
-           [:a.aside-item {:href "/account"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "User Account"}
-            [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
-                                                :login (:login opts)
-                                                :size 50})}]
-            (:login opts)]
-
-           [:a.aside-item {:href "/logout"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Logout"}
-            [:i.fa.fa-sign-out]
-            [:span "Logout"]]]])))))
+              [:span "Collapse"]))]])))))
 
 (defn aside [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
-      (let [data (select-in app [state/projects-path state/settings-path])
+      (let [data (select-in app [state/projects-path state/settings-path state/user-options-shown-path])
             user (get-in app state/user-path)
             login (:login user)
             gravatar-id (:gravatar_id user)]
@@ -253,4 +256,5 @@
           shared/invite-form ;; modal trigger is in aside-nav
           (om/build aside-nav data {:opts {:login login
                                            :gravatar-id gravatar-id}})
+
           (om/build activity data {:opts {:login login}})])))))

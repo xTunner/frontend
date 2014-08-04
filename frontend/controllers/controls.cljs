@@ -94,6 +94,10 @@
   [target message _ state]
   (update-in state state/show-inspector-path not))
 
+(defmethod control-event :user-options-toggled
+  [target message _ state]
+  (update-in state state/user-options-shown-path not))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
