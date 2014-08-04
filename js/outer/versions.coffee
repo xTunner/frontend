@@ -219,7 +219,7 @@ CI.Versions =
   riak: "1.4.8-1"
   cassandra: "2.0.6"
   redis: "2.8.12"
-  memcache: "1.4.13"
+  memcached: "1.4.13"
   sphinx: "2.0.4-release"
   elasticsearch: "0.90.2"
   beanstalkd: "1.4.6"
