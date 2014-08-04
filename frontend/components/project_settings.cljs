@@ -517,7 +517,7 @@
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
         (html
          [:div
-          [:h2 "Chatroom setup for" (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
           [:div.chat-rooms
            (for [chat-spec [{:service "Hipchat"
                              :icon "chat-i-hip"
