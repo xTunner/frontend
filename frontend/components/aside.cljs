@@ -227,7 +227,7 @@
 
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
-                          :title "Change Log"
+                          :title "Changelog"
                           :href "/changelog"}
            [:i.fa.fa-bell]
            [:span "Changelog"]]
