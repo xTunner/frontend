@@ -1,7 +1,6 @@
 (ns frontend.core
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
-            [cljs-time.core :as time]
             [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
@@ -25,6 +24,7 @@
             [frontend.history :as history]
             [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
+            [frontend.datetime :as datetime]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]])
@@ -145,6 +145,8 @@
            api-data (utils/third value)]
        (swap! state (wrap-api-instrumentation (partial api-con/api-event container message status api-data)
                                               api-data))
+       (when-let [date-header (get-in api-data [:response-headers "Date"])]
+         (datetime/update-server-offset date-header))
        (api-con/post-api-event! container message status api-data previous-state @state)))))
 
 (defn ws-handler
@@ -171,8 +173,8 @@
   "Sets up an atom that will keep track of the current time.
    Used from frontend.components.common/updating-duration "
   []
-  (let [mya (atom (time/now))]
-    (js/setInterval #(reset! mya (time/now)) 1000)
+  (let [mya (atom (datetime/server-now))]
+    (js/setInterval #(reset! mya (datetime/server-now)) 1000)
     mya))
 
 

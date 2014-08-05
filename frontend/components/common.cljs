@@ -1,6 +1,5 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [cljs-time.core :as time]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
@@ -143,7 +142,7 @@
     om/IInitState
     (init-state [_]
       {:watcher-uuid (utils/uuid)
-       :now (time/now)
+       :now (datetime/server-now)
        :has-watcher? false})
     om/IDidMount
     (did-mount [_]
@@ -168,7 +167,7 @@
     (render-state [_ {:keys [now]}]
       (let [end-ms (if stop
                      (.getTime (js/Date. stop))
-                     (.getTime now))
+                     now)
             formatter (get opts :formatter datetime/as-duration)
             duration-ms (- end-ms (.getTime (js/Date. start)))]
         (dom/span nil (formatter duration-ms))))))
