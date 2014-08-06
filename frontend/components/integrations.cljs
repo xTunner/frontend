@@ -122,19 +122,20 @@
                    [:div.docker-features
                     [:div.feature-container
                      [:div.feature
-                      [:img {:src "/icons/cloud-circle.png"}]
+                      [:img {:src (utils/cdn-path "/icons/cloud-circle.png")}]
                       [:h3 "Continous Deployment of your Docker images"]
                       [:p
                        "CircleCI makes it easy to deploy images to Docker Hub as well as to continuously deploy applications to AWS Elastic Beanstalk, Google Compute Engine, and others."]
                       [:a {:href "/docs/docker"} "docs"]]
                      [:div.feature
-                      [:img {:src "/icons/scale-circle.png"}]
+                      [:img {:src (utils/cdn-path "/icons/scale-circle.png")}]
+                      
                       [:h3 "Dev-production parity"]
                       [:p
                        "Docker containers let you remove almost all of the variables that differ between your test and production environments. You can specify everything from your Linux distro to what executables run at startup in a Dockerfile, build all of that information into a Docker image, test it, and deploy the exact same image byte-for-byte to production. You can now run this entire process on CircleCI."]
                       [:a {:href "/docs/docker"} "docs"]]
                      [:div.feature
-                      [:img {:src "/icons/wrench-circle.png"}]
+                      [:img {:src (utils/cdn-path "/icons/wrench-circle.png")}]
                       [:h3 "Full Docker functionality"]
                       [:p
                        "You can now use all Docker functionality within the CircleCI build environment. All of the usual Docker command-line commands work as expected, so you can build and run Docker containers to your heart's content."]
