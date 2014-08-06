@@ -106,19 +106,6 @@
           (when (and open? expanded?)
             (om/build instrumentation/line-items (:instrumentation app)))])))))
 
-(defn inner-header [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Inner Header")
-    om/IRender
-    (render [_]
-      (let [admin? (get-in app [:current-user :admin])]
-        (html
-         [:header.main-head
-          (when admin?
-            (om/build head-admin app))
-          (when (seq (get-in app state/crumbs-path))
-            (om/build head-user app))])))))
-
 (defn outer-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Outer Header")
@@ -166,6 +153,23 @@
                                       :title "Sign up with Github"}
                  "Sign up "
                  [:i.fa.fa-github-alt]]])]]]])))))
+
+(defn inner-header [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Inner Header")
+    om/IRender
+    (render [_]
+      (let [admin? (get-in app [:current-user :admin])
+            logged-out? (not (get-in app state/user-path))]
+        (html
+         [:header.main-head
+          (when admin?
+            (om/build head-admin app))
+          (when logged-out?
+            (om/build outer-header app))
+          (when (seq (get-in app state/crumbs-path))
+            (om/build head-user app))])))))
+
 
 (defn header [app owner]
   (reify
