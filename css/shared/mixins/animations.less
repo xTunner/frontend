@@ -2,6 +2,10 @@
   -webkit-animation: @arguments;
           animation: @arguments;
 }
+.animation-bezier(@x1, @y1, @x2, @y2) {
+  -webkit-animation-timing-function: cubic-bezier(@x1, @y1, @x2, @y2);
+          animation-timing-function: cubic-bezier(@x1, @y1, @x2, @y2);
+}
 .transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
   transition: -webkit-transform @duration @timing-function @delay;
   transition:         transform @duration @timing-function @delay;
