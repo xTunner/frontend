@@ -87,30 +87,26 @@
   (let [dom-helper (goog.dom.DomHelper.)]
     (events/listen top-level-node "click"
                    #(let [-target (.. % -target)
-                          _ (set! js/window.teste %)
                           target (if (= (.-tagName -target) "A")
                                    -target
                                    (.getAncestorByTagNameAndClass dom-helper -target "A"))
-                          new-window? (or (new-window-click? %) (= (.-target target) "_blank"))
                           location (when target (str (.-pathname target) (.-search target) (.-hash target)))
                           new-token (when (seq location) (subs location 1))]
                       (when (and (seq location)
                                  (= (.. js/window -location -hostname)
-                                    (.-hostname target)))
+                                    (.-hostname target))
+                                 (not (or (new-window-click? %) (= (.-target target) "_blank"))))
                         (.stopPropagation %)
                         (.preventDefault %)
-                        (cond
-                          new-window?
-                            (do (utils/mlog "new window at" location)
-                                (window/open location))
-                          (and (route-fragment location)
-                               (path-matches? (.getToken history-imp) new-token))
-                            (do (utils/mlog "scrolling to hash for" location)
-                                ;; don't break the back button
-                                (.replaceToken history-imp new-token))
-                          :else
-                            (do (utils/mlog "navigating to" location)
-                                (.setToken history-imp new-token))))))))
+                        (if (and (route-fragment location)
+                                 (path-matches? (.getToken history-imp) new-token))
+
+                          (do (utils/mlog "scrolling to hash for" location)
+                              ;; don't break the back button
+                              (.replaceToken history-imp new-token))
+
+                          (do (utils/mlog "navigating to" location)
+                              (.setToken history-imp new-token))))))))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
