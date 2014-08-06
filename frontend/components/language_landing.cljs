@@ -62,8 +62,7 @@
                  [:div.languages-head
                   [:img {:src (:logo-path template)}]
                   [:h1 (:headline template)]
-                  [:div.languages-screenshots
-                   [:img {:src "/assets/img/outer/languages/build-screenshot.png"}]]]
+                  [:div.languages-screenshots]]
                  [:div.languages-body.remove-margin
                   [:div.languages-features
                    [:div.center-text
