@@ -51,10 +51,16 @@ body {
     }
   }
   .main-body {
+    @body_padding: @innerContentPadding;
     .box-sizing(border-box);
     min-height: ~"calc(100% - @{tile})";
     // padding: @innerContentPadding 0;
-    padding: @baseFontSize 0;
+    padding: @body_padding 0;
+    > .loading-spinner {
+      @reserved_height: (@body_padding * 2) + (@tile * 2);
+      .flexy(center, center);
+      height: ~"calc(100vh - @{reserved_height})";
+    }
   }
   .main-foot {
     padding: @footerItemSize 0;
@@ -96,7 +102,6 @@ textarea {
 .loading-spinner {
   svg {
     display: inherit;
-    margin: auto;
     width: 1em;
     height: 1em;
     [fill] {
