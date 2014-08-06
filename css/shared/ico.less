@@ -1,7 +1,14 @@
-svg {
+i {
   &.ico {
-    height: 1em;
-    width: 1em;
+    .flexy();
+    svg {
+      width: @baseFontSize;
+      height: @baseFontSize;
+      &.busy-light {
+        -webkit-animation: spin 600ms infinite linear;
+                animation: spin 600ms infinite linear;
+      }
+    }
     .ico-logo {
       fill: @blueDark;
     }
@@ -14,13 +21,9 @@ svg {
     .ico-queued {
       fill: @grayLight;
     }
-    .ico-busy-light,
-    .ico-none-light,
-    .ico-settings-light {
-      &:last-child {
-        stroke-linecap: round;
-        stroke-width: 20;
-      }
+    .slim_circle {
+      stroke-linecap: round;
+      stroke-width: 20;
     }
   }
 }
