@@ -81,36 +81,29 @@
    :repo "M44.4,27.5h-5.6v5.6h5.6V27.5z M44.4,16.2h-5.6v5.6h5.6V16.2z M78.1,5H21.9c0,0-5.6,0-5.6,5.6 v67.5c0,5.6,5.6,5.6,5.6,5.6h11.2V95l8.4-8.4L50,95V83.8h28.1c0,0,5.6-0.1,5.6-5.6V10.6C83.8,5,78.1,5,78.1,5z M78.1,72.5 c0,5.4-5.6,5.6-5.6,5.6H50v-5.6H33.1v5.6h-5.6c-5.6,0-5.6-5.6-5.6-5.6v-5.6h56.2V72.5z M78.1,61.2h-45V10.6h45.1L78.1,61.2z M44.4,50h-5.6v5.6h5.6V50z M44.4,38.8h-5.6v5.6h5.6V38.8z"})
 
 (def ico-templates
-  {:logo {:paths [(:turn ico-paths) (:circle ico-paths)]}
-   :pass {:paths [(:turn ico-paths (:check ico-paths))]}
-   :fail {:paths [(:turn ico-paths) (:times ico-paths)]}
-   :queued {:paths [(:turn ico-paths) (:clock ico-paths)]}
-   :logo-light {:paths [(:slim_turn ico-paths) (:slim_circle ico-paths)]}
-   :busy-light {:paths [(:slim_turn ico-paths) (:slim_circle ico-paths)]
-                :d "600ms"
-                :v "0 50 50;360 50 50"
-                :k "0;1"}
-   :pass-light {:paths [(:slim_check ico-paths)]}
-   :fail-light {:paths [(:slim_times ico-paths)]}
-   :hold-light {:paths [(:slim_clock ico-paths)]}
-   :stop-light {:paths [(:slim_ban ico-paths)]}
-   :settings-light {:paths [(:slim_settings ico-paths) (:slim_circle ico-paths)]}
-   :none-light {:paths [(:slim_circle ico-paths)]}
-   :repo {:paths [(:repo ico-paths)]}})
+  {:logo {:paths [:turn :circle]}
+   :pass {:paths [:turn :check]}
+   :fail {:paths [:turn :times]}
+   :queued {:paths [:turn :clock]}
+   :logo-light {:paths [:slim_turn :slim_circle]}
+   :busy-light {:paths [:slim_turn :slim_circle]}
+   :pass-light {:paths [:slim_check]}
+   :fail-light {:paths [:slim_times]}
+   :hold-light {:paths [:slim_clock]}
+   :stop-light {:paths [:slim_ban]}
+   :settings-light {:paths [:slim_settings :slim_circle]}
+   :none-light {:paths [:slim_circle]}
+   :repo {:paths [:repo]}})
 
 (defn ico [ico-name]
   (let [template (get ico-templates ico-name)]
-    [:svg {:class "ico" :xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
-           :dangerouslySetInnerHTML
-           #js {"__html" (apply str
-                                (for [path (:paths template)]
-                                  (str "<path class='ico-" (name ico-name) "' fill='none'"
-                                       " d='" path "'>"
-                                       (when (:d template)
-                                         (str "<animateTransform attributeName='transform' type='rotate'"
-                                              " repeatDur='indefinite' dur='" (:d template) "' values='" (:v template) "'"
-                                              " keyTimes='" (:k template) "'></animateTransform>"))
-                                       "</path>")))}}]))
+    [:i {:class "ico"}
+      [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
+             :class (name ico-name)
+             :dangerouslySetInnerHTML
+             #js {"__html" (apply str
+                                  (for [path (:paths template)]
+                                    (str "<path class='" (name path) "' fill='none' d='" (get ico-paths path) "'></path>")))}}]]))
 
 ;; TODO: why do we have ico and icon?
 (def icon-shapes
