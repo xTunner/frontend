@@ -41,103 +41,115 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:email ""
-       :use-case ""
-       :notice nil
-       :loading? false})
+                {:email ""
+                 :use-case ""
+                 :notice nil
+                 :loading? false})
     om/IRenderState
     (render-state [_ {:keys [email use-case notice loading?]}]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            clear-notice! #(om/set-state! owner [:notice] nil)
-            clear-form! (fn [& [notice]]
-                          (om/update-state! owner (fn [s]
-                                                    (merge s
-                                                           (when notice {:notice notice})
-                                                           {:email ""
-                                                            :use-case ""
-                                                            :loading? false}))))]
-        (html
-         [:form
-          [:input {:name "Email",
-                   :required true
-                   :value email
-                   :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))
-                   :type "text"}]
-          [:label {:alt "Email (required)", :placeholder "Email"}]
-          [:textarea
-           {:name "docker_use__c",
-            :required true
-            :value use-case
-            :on-change #(do (clear-notice!) (om/set-state! owner [:use-case] (.. % -target -value)))
-            :type "text"}]
-          [:label {:placeholder "How do you want to use it?"}]
-          [:div.notice
-           (when notice
-             [:span {:class (:type notice)} (:message notice)])]
-          [:div.submit
-           [:input
-            {:value (if loading? "Submitting.." "Submit"),
-             :class (when loading? "disabled")
-             :on-click #(do (if (or (empty? email) (not (utils/valid-email? email)))
-                              (om/set-state! owner [:notice] {:type "error"
-                                                              :message "Please enter a valid email address."})
-                              (do
-                                (om/set-state! owner [:loading?] true)
-                                (go (let [resp (<! (marketo/submit-munchkin-form 1036 {:Email email
-                                                                                       :docker_use__c use-case}))]
-                                      (if-not (= :success (:status resp))
-                                        (om/update-state! owner (fn [s]
-                                                                  (merge s {:loading? false
-                                                                            :notice {:type "error"
-                                                                                     :message "Sorry! There was an error submitting the form. Please try again or email sayhi@circleci.com."}})))
-                                        (clear-form! {:type "success"
-                                                      :message "Thanks! We will be in touch soon."}))))))
-                            false)
-             :type "submit"}]]])))))
+                  (let [controls-ch (om/get-shared owner [:comms :controls])
+                        clear-notice! #(om/set-state! owner [:notice] nil)
+                        clear-form! (fn [& [notice]]
+                                      (om/update-state! owner (fn [s]
+                                                                (merge s
+                                                                       (when notice {:notice notice})
+                                                                       {:email ""
+                                                                        :use-case ""
+                                                                        :loading? false}))))]
+                    (html
+                      [:form
+                       [:input {:name "Email",
+                                :required true
+                                :value email
+                                :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))
+                                :type "text"}]
+                       [:label {:alt "Email (required)", :placeholder "Email"}]
+                       [:textarea
+                        {:name "docker_use__c",
+                         :required true
+                         :value use-case
+                         :on-change #(do (clear-notice!) (om/set-state! owner [:use-case] (.. % -target -value)))
+                         :type "text"}]
+                       [:label {:placeholder "How do you want to use it?"}]
+                       [:div.notice
+                        (when notice
+                          [:span {:class (:type notice)} (:message notice)])]
+                       [:div.submit
+                        [:input
+                         {:value (if loading? "Submitting.." "Submit"),
+                          :class (when loading? "disabled")
+                          :on-click #(do (if (or (empty? email) (not (utils/valid-email? email)))
+                                           (om/set-state! owner [:notice] {:type "error"
+                                                                           :message "Please enter a valid email address."})
+                                           (do
+                                             (om/set-state! owner [:loading?] true)
+                                             (go (let [resp (<! (marketo/submit-munchkin-form 1036 {:Email email
+                                                                                                    :docker_use__c use-case}))]
+                                                   (if-not (= :success (:status resp))
+                                                     (om/update-state! owner (fn [s]
+                                                                               (merge s {:loading? false
+                                                                                         :notice {:type "error"
+                                                                                                  :message "Sorry! There was an error submitting the form. Please try again or email sayhi@circleci.com."}})))
+                                                     (clear-form! {:type "success"
+                                                                   :message "Thanks! We will be in touch soon."}))))))
+                                       false)
+                          :type "submit"}]]])))))
 
 (defn docker [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            ab-tests (:ab-tests app)]
-        (html
-         [:div#integrations.docker
-          [:div.section-container
-           [:section.integrations-hero-wrapper
-            [:article.integrations-hero-title
-             [:h1 "CircleCI is Supporting Docker!"]]
-            [:article.integrations-hero-units
-             [:div.integrations-hero-unit
-              circle-logo
-              [:p "CircleCI makes modern continous integration and deployment easy."]]
-             [:div.integrations-hero-unit
-              docker-logo
-              [:p "Docker makes it easy to build, run, and ship applications anywhere.  "]]]
-            [:h3.message
-             "Together they make it easy to test and ship your entire cloud in one place. "]]]
-          [:div.section-container
-           [:section.integrations-hero-wrapper
-            [:div.docker-features
-             [:h4
-              "Here are some ideas we're working on, but we would love to hear your thoughts too!"]
-             [:div.feature-container
-              [:div.feature
-               [:h3 "Continous Delivery for your Docker Images"]
-               [:p
-                "CircleCI will automate the building of your docker images, test that they work, and Continuously Deliver them to the Docker registry."]]
-              [:div.feature
-               [:h3 "Dev-production parity"]
-               [:p
-                "Run your application's testing and Continuous Integration directly on your own Docker image. Never have a test fail because the test environment is different from your development environment."]]
-              [:div.feature
-               [:h3 "Specify your own image on CircleCI"]
-               [:p
-                "CircleCI will run your tests against a default image, tuned to be maximally compatible with all of our customers. Optionally, you can run your tests against your own image, tuned for your application."]]]]]]
-          [:div.section-container
-           [:section.integrations-hero-wrapper
-            [:p.center-text
-             "Let us know how you would like to use CircleCI with Docker to move to top of the beta queue!"]
-            [:div.docker-cta
-             [:h3 "Sign Up For Beta"]
-             (om/build cta-form app)]]]])))))
+            (let [controls-ch (om/get-shared owner [:comms :controls])
+                  ab-tests (:ab-tests app)]
+              (html
+                [:div#integrations.docker
+                 [:div.section-container
+                  [:section.integrations-hero-wrapper
+                   [:article.integrations-hero-title
+                    [:h1 "Build and deploy Docker containers on CircleCI."]]
+                   [:article.integrations-hero-units
+                    [:div.integrations-hero-unit
+                     circle-logo
+                     [:p "CircleCI makes modern Continuous Integration and Deployment easy."]]
+                    [:div.integrations-hero-unit
+                     docker-logo
+                     [:p "Docker makes it easy to build, run, and ship applications anywhere.  "]]]
+                   [:h3.message
+                    "Together they let you achieve development-production parity. At last.
+                    "]]]
+                 [:div.section-container
+                  [:section.integrations-hero-wrapper
+                   [:div.docker-features
+                    [:div.feature-container
+                     [:div.feature
+                      [:img {:src "/icons/cloud-circle.png"}]
+                      [:h3 "Continous Deployment of your Docker images"]
+                      [:p
+                       "CircleCI makes it easy to deploy images to Docker Hub as well as to continuously deploy applications to AWS Elastic Beanstalk, Google Compute Engine, and others."]
+                      [:a {:href "/docs/docker"} "docs"]]
+                     [:div.feature
+                      [:img {:src "/icons/scale-circle.png"}]
+                      [:h3 "Dev-production parity"]
+                      [:p
+                       "Docker containers let you remove almost all of the variables that differ between your test and production environments. You can specify everything from your Linux distro to what executables run at startup in a Dockerfile, build all of that information into a Docker image, test it, and deploy the exact same image byte-for-byte to production. You can now run this entire process on CircleCI."]
+                      [:a {:href "/docs/docker"} "docs"]]
+                     [:div.feature
+                      [:img {:src "/icons/wrench-circle.png"}]
+                      [:h3 "Full Docker functionality"]
+                      [:p
+                       "You can now use all Docker functionality within the CircleCI build environment. All of the usual Docker command-line commands work as expected, so you can build and run Docker containers to your heart's content."]
+                      [:a {:href "/docs/docker"} "docs"]]]]]]
+                 [:div.section-container
+                  [:section.integrations-hero-wrapper
+                   [:p.center-text
+                    "Docker is enabled for all current CircleCI users, everyone else can sign up below!"]
+                   [:div.docker-cta
+                    [:div.ctabox {:class "line"}
+                     [:div
+                      [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
+                     (shared/home-button {:source "integrations/docker"} controls-ch)
+                     [:div
+                      [:p
+                       [:i "CircleCI keeps your code safe. "
+                        [:a {:href "/security" :title "Security"} "Learn how."]]]]]
+                    ]]]])))))
