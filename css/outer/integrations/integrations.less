@@ -51,30 +51,24 @@
       .feature {
         width: 28%;
         margin: 2%;
+        text-align: center;
       }
     }
   }
   .docker-cta {
-    width: 350px;
-    margin: 8em auto;
     h3 {
       margin-bottom: 0;
     }
-    a {
-      font-size: @baseFontSize;
-    }
-    form {
-      margin-top: 1em;
-      [type="text"] {
-        background: @white;
+    .ctabox {
+      padding-top: 40px;
+      text-align: center;
+      p {
+        color: @circleBlueLight;
       }
-    }
-    .submit {
-      .flexy(center, flex-end);
-      [type="submit"] {
-        .circleButton(@grayLightest, @green);
-        margin-top: 1em;
-        box-shadow: none;
+      .btn {
+        margin: 10px 0;
+        padding: 12px 20px;
+        font-size: 20px;
       }
     }
   }
