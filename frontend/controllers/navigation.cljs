@@ -302,7 +302,7 @@
                      :context {:project-name project-name})
           :else nil))
 
-  (set-page-title! (str "Edit settings - " project-name)))
+  (set-page-title! (str "Project settings - " project-name)))
 
 
 (defmethod navigated-to :org-settings

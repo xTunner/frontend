@@ -3,5 +3,4 @@
 
 (defn record-payer []
   (utils/swallow-errors
-   (let [adroll (aget js/window "__adroll")]
-     ((aget adroll "record_user") #js {:adroll_segments "payer"}))))
+   (js/__adroll.record_user #js {:adroll_segments "payer"})))

@@ -22,7 +22,7 @@
          [:div.changelog.page
           [:div.banner
            [:div.container
-            [:h1 "ChangeLog"]
+            [:h1 "Changelog"]
             [:h3 "What's changed in CircleCI recently"]]]
           [:div.container.content
            [:div.entries

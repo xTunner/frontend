@@ -85,6 +85,7 @@
    :pass {:paths [(:turn ico-paths (:check ico-paths))]}
    :fail {:paths [(:turn ico-paths) (:times ico-paths)]}
    :queued {:paths [(:turn ico-paths) (:clock ico-paths)]}
+   :logo-light {:paths [(:slim_turn ico-paths) (:slim_circle ico-paths)]}
    :busy-light {:paths [(:slim_turn ico-paths) (:slim_circle ico-paths)]
                 :d "600ms"
                 :v "0 50 50;360 50 50"
