@@ -110,7 +110,7 @@
                    [:article.integrations-hero-units
                     [:div.integrations-hero-unit
                      circle-logo
-                     [:p "CircleCI makes modern continous integration and deployment easy."]]
+                     [:p "CircleCI makes modern Continuous Integration and Deployment easy."]]
                     [:div.integrations-hero-unit
                      docker-logo
                      [:p "Docker makes it easy to build, run, and ship applications anywhere.  "]]]
@@ -125,7 +125,7 @@
                       [:img {:src "/icons/cloud-circle.png"}]
                       [:h3 "Continous Deployment of your Docker images"]
                       [:p
-                       "CircleCI makes it easy to deploy images to Docker Hub as well as to continously deploy applications to AWS Elastic Beanstalk, Kubernetes on Google Compute Engine, and others."]
+                       "CircleCI makes it easy to deploy images to Docker Hub as well as to continously deploy applications to AWS Elastic Beanstalk, Google Compute Engine, and others."]
                       [:a {:href "/docs/docker"} "docs"]]
                      [:div.feature
                       [:img {:src "/icons/scale-circle.png"}]
