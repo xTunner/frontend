@@ -175,6 +175,8 @@
   [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])
+        nav-ch (get-in current-state [:comms :nav])
+        err-ch (get-in current-state [:comms :errors])
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
@@ -186,7 +188,15 @@
               api-result (<! (ajax/managed-ajax :get build-url))
               scopes (:scopes api-result)]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
-          (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
+          ;; Start 404'ing on non-existent builds, as well as when you
+          ;; try to go to a build page of a project which doesn't
+          ;; exist. This is different than current behaviour, where
+          ;; you see the "regular" inner page, with an error message
+          ;; where the build info would be. Thoughts?
+          (condp = (:status api-result)
+            :success (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
+            :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
+            (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
             (analytics/track-build (:resp api-result)))
           (when (and (not (get-in current-state state/project-path))
