@@ -490,7 +490,8 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
-    (assoc-in state state/stripe-card-path resp)))
+    (let [card (or resp {})] ; special case in case card gets deleted
+      (assoc-in state state/stripe-card-path card))))
 
 
 (defmethod api-event [:create-plan :success]
