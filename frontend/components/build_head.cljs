@@ -223,7 +223,8 @@
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             plan (get-in data [:project-data :plan])
-            user (:user data)]
+            user (:user data)
+            logged-in? (not (empty user))]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -347,15 +348,15 @@
                                                                         :build-num build-num}])}
                   "Cancel"]))]]
             [:div.no-user-actions]]
-           (when (:show-usage-queue usage-queue-data)
+           (when (and logged-in? (:show-usage-queue usage-queue-data))
              (om/build build-queue {:build build
                                     :builds (:builds usage-queue-data)
                                     :plan plan}))
            (when (:subject build)
              (om/build build-commits build-data))
-           (when (build-model/ssh-enabled-now? build)
+           (when (and logged-in? (build-model/ssh-enabled-now? build))
              (om/build build-ssh (:node build)))
-           (when (:has_artifacts build)
+           (when (and logged-in? (:has_artifacts build))
              (om/build build-artifacts-list
                        {:artifacts-data (get build-data :artifacts-data) :user user}
                        {:opts {:show-node-indices? (< 1 (:parallel build))}}))]])))))
