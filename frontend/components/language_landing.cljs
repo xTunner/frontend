@@ -13,7 +13,7 @@
   (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn arrow-class [selected-testimonial]
-  (case selected-testimonial 
+  (case selected-testimonial
     0 "arrowLeft"
     1 "arrowCenter"
     2 "arrowRight"
@@ -62,8 +62,9 @@
                  [:div.languages-head
                   [:img {:src (:logo-path template)}]
                   [:h1 (:headline template)]
-                  [:div.languages-screenshots]]
-                 [:div.languages-body.remove-margin
+                  [:div.languages-screenshots]
+                  [:div.hero-shadow]]
+                 [:div.languages-body
                   [:div.languages-features
                    [:div.center-text
                     [:h3 "FEATURES"
@@ -71,7 +72,7 @@
                     ]
                    (map-indexed
                      (fn [i feature] [feature (:features template)]
-                       (if (odd? i) 
+                       (if (odd? i)
                          [:div.feature
                           [:div.feature-image
                            [:img {:src (:icon feature)}]
@@ -79,28 +80,28 @@
                           [:div.feature-copy
                            [:h4.feature-title (:title feature)
                             ]
-                           [:p.feature-description (:feature feature)] 
+                           [:p.feature-description (:feature feature)]
                            ]
-                          
+
                           ]
                          [:div.feature
                           [:div.feature-copy
                            [:h4.feature-title (:title feature)
                             ]
-                           [:p.feature-description (:feature feature)] 
+                           [:p.feature-description (:feature feature)]
                            ]
                           [:div.feature-image
                            [:img {:src (:icon feature)}]
                            ]
                           ]))
                      (:features template))
-                   
-                   [:div.button 
+
+                   [:div.button
                     [:a {:href (:docs-link template)} "Read documentation on " (:language template)]]
                    ]
                   ]
                  [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
-                  [:div.languages-body.remove-margin
+                  [:div.languages-body
                    [:div.center-text
                     [:h3 "TESTIMONIALS"
                      ]
@@ -108,31 +109,31 @@
                    [:div.testimonial-authors
                     (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
                                  (:testimonials template))]
-                   [:div.testimonial-box 
+                   [:div.testimonial-box
                     [:div.testimonial
                      [:p.testimonial-text (get-in template [:testimonials selected-testimonial :text])]
-                     
+
                      [:div.testimonial-author "—" (get-in template [:testimonials selected-testimonial :author])]
                      [:div.testimonial-author-title (get-in template [:testimonials selected-testimonial :title])]]
                     ]
                    ]
                   ]
-                 
+
                  [:div.languages-cta
                   [:div.languages-body
                    [:h3
-                    "How do I start using my " (:language template) " app with CircleCI?"] 
+                    "How do I start using my " (:language template) " app with CircleCI?"]
                    [:div.languages-cta-steps
                     [:div.languages-cta-step
                      [:div.step-number "1"]
                      [:div
                       "Start by signing up "
-                      [:br] 
+                      [:br]
                       "using GitHub"]
                      ]
                     [:div.languages-cta-step
                      [:div.step-number "2"]
-                     [:div 
+                     [:div
                       "Run one of your Ruby projects on Circle"]]
                     [:div.languages-cta-step
                      [:div.step-number "3"]
@@ -151,5 +152,5 @@
                     [:div.language-cta-trial "14-day free trial"]
                     ]
                    ]]
-                 
+
                  ])))))
