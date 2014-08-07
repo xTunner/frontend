@@ -10,7 +10,6 @@
   }
 }
 .languages.page {
-  //font-family: ProximaNova-Light;
   @em: 18px;
   @pagesize: 940px;
   font-size: @em;
@@ -47,8 +46,9 @@
     line-height: inherit; // BS RESET
   }
   .languages-head {
-    padding-top: 2.5em;
     .flexy(center, center, column);
+    position: relative;
+    padding-top: 2.5em;
     color: @white;
     //for ruby, move this to variables
     background: linear-gradient(to bottom, @rubyColor 0%, #A80D00 100%), @rubyColor;
@@ -60,24 +60,38 @@
       max-width: 940px;
     }
     .languages-screenshots {
+      width: 700px;
+      height: 400px;
       background-image: url('/assets/img/outer/languages/build-screenshot.png');
-      width: 699px;
-      height: 387px;
-
+      background-size: cover;
+      border-radius: 5px 5px 0 0;
+      box-shadow: 2px 13px 5px 3px rgba(0, 0, 0, 0.21);
     }
-
+    .hero-shadow {
+      position: absolute;
+      width: 100%;
+      height: 50px;
+      bottom: 0;
+      left: 0;
+      background-image: radial-gradient(ellipse, fade(@black, 21) 0%, fade(@black, 0) 21%);
+      background-repeat: no-repeat;
+      background-size: 300% 50px;
+      background-position: 50% 25px;
+    }
   }
   .languages-body {
+    position: relative;
+    background: @white;
     max-width: @pagesize;
-    margin: 0 auto (@pagesize / 4);
-    //for making full width backgrounds, used multiple body elements
+    margin: 0 auto;
+    padding: 3em 0;
+    // for making full width backgrounds, used multiple body elements
     &.remove-margin {
       margin-bottom: 0px
     }
   }
 
   .languages-features {
-    margin: 3em 0;
     h3 {
       margin: 2em 0;
       display: inline;
@@ -116,14 +130,16 @@
     .button {
       text-align: center;
       a {
+        display: block;
         border-radius: 4px;
         background: #2D6072;
         font-weight: bold;
         font-size: 14px;
         color: #FFFFFF;
         line-height: 17px;
-        display: inline;
         padding: 1em;
+        margin: 0 auto;
+        max-width: 15em;
         &:hover {
           background: lighten(#2D6072, 20%);
         }
@@ -139,6 +155,9 @@
     -moz-box-shadow:    inset 0px 1px 1px 0px rgba(0,0,0,0.14);
     box-shadow:         inset 0px 1px 1px 0px rgba(0,0,0,0.14);
     padding: 5em 0;
+    .languages-body {
+      background: none;
+    }
     &.arrowLeft {
       .testimonial-box:after {
         left:240px; /* controls horizontal position of arrow */
@@ -178,7 +197,7 @@
         left: 10%;
         height: 2px;
         width: 80%%;
-        background: #B8C0C2; 
+        background: #B8C0C2;
       }
     }
     .testimonial-authors {
@@ -218,7 +237,7 @@
         bottom:auto;
         border-width:0 15px 15px; /* vary these values to change the angle of the vertex */
         border-color:#fff transparent;
-      }      
+      }
       .testimonial-text {
         font-size: 15px;
         color: #414446;
@@ -243,6 +262,9 @@
     background-image: -moz-linear-gradient(-44deg, #1A4555 0%, #001F2A 100%);
     background-image: -ms-linear-gradient(-44deg, #1A4555 0%, #001F2A 100%);
     background-image: linear-gradient(-134deg, #1A4555 0%, #001F2A 100%);
+    .languages-body {
+      background: none;
+    }
     h3 {
       font-size: 26px;
       color: #FFFFFF;
