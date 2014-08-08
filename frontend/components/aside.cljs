@@ -60,7 +60,7 @@
            [:a {:href (routes/v1-dashboard-path {:org org :repo repo :branch (name name-kw)})
                 :title (utils/display-branch name-kw)}
             (-> name-kw utils/display-branch (utils/trim-middle 23))]]
-          [:div.status {:role "button"}
+          [:div.statuses {:role "button"}
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
