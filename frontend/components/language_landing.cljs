@@ -22,19 +22,19 @@
 
 (def templates {"ruby" {:language "Ruby"
                         :headline "CircleCI makes Continous Integration and Deployment for Ruby projects a breeze."
-                        :logo-path "/assets/img/outer/languages/ruby-logo.png"
+                        :logo-path (utils/cdn-path "/img/outer/languages/ruby-logo.svg")
                         :ss-1 "/assets/img/outer/languages/ruby-ss-1.png"
                         :ss-2 "/assets/img/outer/languages/ruby-ss-1.png"
                         :ss-3 "/assets/img/outer/languages/ruby-ss-1.png"
                         :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                                     :title "Built For Ruby"
-                                    :icon "/assets/img/outer/languages/gear-icon.png"}
+                                    :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
                                    {:feature "Circle manages all your database requirements for your, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB. You can also add custom database commands via your circle.yml."
                                     :title "Database Management"
-                                    :icon "/assets/img/outer/languages/file-icon.png"}
+                                    :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
                                    {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha."
                                     :title "Inference That Just Works"
-                                    :icon "/assets/img/outer/languages/book-icon.png"}]
+                                    :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
                         :docs-link "/docs/language-ruby-on-rails"
                         :testimonials [{:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
                                         :img "/assets/img/outer/stories/john.jpg"
