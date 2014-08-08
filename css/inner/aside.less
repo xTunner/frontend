@@ -113,6 +113,20 @@
           }
         }
       }
+      .status {
+        .icon_style(transparent, @activity_ico);
+        i {
+          &.ico {
+            .busy-light {stroke: @blueLight;}
+            .pass-light {stroke: @green;}
+            .fail-light {stroke: @redLight;}
+            .hold-light {stroke: @gray;}
+            .stop-light {stroke: @orange;}
+            .none-light {stroke: @white;}
+            [class$="-light"] {stroke-width: 10;}
+          }
+        }
+      }
       .project {
         a {
           &:not(:hover) {
@@ -258,7 +272,7 @@
       width: (@aside_nav_width - @activity_scroll);
       line-height: @em; // BS RESET
       &:hover {
-        .status {
+        .statuses {
           a {
             &:not(:last-child) {
               transition-delay: 1000ms; // delay meant to give user time to hover over to branch name
@@ -332,7 +346,6 @@
         }
         &.latest {
           .flex(0, 0, auto);
-          .icon_style(transparent, @activity_ico);
           display: none;
           width: @activity_line;
           height: @activity_line;
@@ -342,7 +355,7 @@
       }
     }
     .branch,
-    .status {
+    .statuses {
       a {
         height: @activity_line;
         line-height: @activity_line;
@@ -376,12 +389,11 @@
         }
       }
     }
-    .status {
+    .statuses {
       .flex(1, 0, auto);
       .flexy(center, flex-end);
       a {
         .flexy(center, center);
-        .icon_style(transparent, @activity_ico);
         width: @activity_line;
         &:first-child {
           .flex(1, 0, auto);
@@ -399,17 +411,6 @@
         }
         &:last-child {
           padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
-        }
-      }
-      i {
-        &.ico {
-          .busy-light {stroke: @blueLight;}
-          .pass-light {stroke: @green;}
-          .fail-light {stroke: @redLight;}
-          .hold-light {stroke: @gray;}
-          .stop-light {stroke: @orange;}
-          .none-light {stroke: @white;}
-          [class$="-light"] {stroke-width: 10;}
         }
       }
     }
