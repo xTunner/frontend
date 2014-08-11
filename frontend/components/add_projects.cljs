@@ -74,8 +74,8 @@
     om/IDidMount
     (did-mount [_]
       (utils/tooltip (str "#view-project-tooltip-" (-> data :repo repo-model/id (string/replace #"[^\w]" "")))))
-    om/IRender
-    (render [_]
+    om/IRenderState
+    (render-state [_ {:keys [building?]}]
       (let [repo (:repo data)
             settings (:settings data)
             login (get-in settings [:add-projects :selected-org :login])
@@ -94,11 +94,14 @@
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-
+                (when building?
+                  [:div.building "Starting first build..."])
                 (stateful-button
-                 [:button {:on-click #(put! controls-ch [:followed-repo (assoc @repo
-                                                                          :login login
-                                                                          :type type)])
+                 [:button {:on-click #(do (put! controls-ch [:followed-repo (assoc @repo
+                                                                            :login login
+                                                                            :type type)])
+                                          (when should-build?
+                                            (om/set-state! owner :building? true)))
                            :data-api-count (if should-build? 2 1)
                            :data-spinner true}
                   [:span "Follow"]])]
