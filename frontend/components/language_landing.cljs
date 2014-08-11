@@ -57,7 +57,7 @@
               (html
                 [:div.languages.page
                  [:div.languages-head
-                  [:img {:src (:logo-path template)}]
+                  [:img {:src (utils/cdn-path (:logo-path template))}]
                   [:h1 (:headline template)]
                   [:div.languages-screenshots]
                   [:div.hero-shadow]]
@@ -72,7 +72,7 @@
                        (if (odd? i)
                          [:div.feature
                           [:div.feature-image
-                           [:img {:src (:icon feature)}]
+                           [:img {:src (utils/cdn-path (:icon feature))}]
                            ]
                           [:div.feature-copy
                            [:h4.feature-title (:title feature)
@@ -88,7 +88,7 @@
                            [:p.feature-description (:feature feature)]
                            ]
                           [:div.feature-image
-                           [:img {:src (:icon feature)}]
+                           [:img {:src (utils/cdn-path (:icon feature))}]
                            ]
                           ]))
                      (:features template))
@@ -104,7 +104,7 @@
                      ]
                     ]
                    [:div.testimonial-authors
-                    (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
+                    (map-indexed (fn [i testimonial] [:img {:src (utils/cdn-path (:img testimonial)) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
                                  (:testimonials template))]
                    [:div.testimonial-box
                     [:div.testimonial
