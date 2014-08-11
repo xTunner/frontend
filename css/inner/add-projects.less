@@ -198,14 +198,6 @@
       min-width: 6em;
       &.disabled {
         position: relative;
-        &:before {
-          content: "Starting first build...";
-          position: absolute;
-          right: 100%;
-          white-space: nowrap;
-          margin-right: 1em;
-          color: @grayLight;
-        }
         span {
           display: none;
         }
@@ -252,6 +244,11 @@
     }
     .repo-1stfollow {
       .repoButtonColor(@green);
+      .building {
+        white-space: nowrap;
+        margin-right: 1em;
+        color: @grayLight;
+      }
     }
   }
   .proj-name {
