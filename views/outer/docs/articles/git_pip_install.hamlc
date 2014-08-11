@@ -41,5 +41,5 @@
   If the repository is private, you will need to enable user keys
   from your project's
   %strong
-    Edit settings > Checkout SSH keys
+    Project settings > Checkout SSH keys
   page.

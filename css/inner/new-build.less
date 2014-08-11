@@ -21,18 +21,12 @@
 }
 
 .containers {
-  background-color: @appBackgroundColor;
-  height: 30px;
-  margin: 0px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.containers.stuck {
-  position: fixed;
-  top: 0px;
-  width: 100%;
-  z-index: 10;
+  &.fixed {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 10;
+  }
 }
 
 #topbar {
@@ -82,26 +76,162 @@
 .selectedX (@max_containers);
 
 /* Set up a :after pseudo-element to reflect the build status */
-ul.container-list {
-  li > a.container-selector {
-    position:relative;
-
-    &:after {
-      content: "";
-      position: absolute;
-      z-index: 1;
-      bottom: 2px;
-      left: 0;
-      height: @sideLineWidth;
-      width: 70%;
-      margin-left: 15%;
-      border-radius: 2px;
+.container-list {
+  .flexy();
+  margin: 0;
+  list-style: none;
+  margin: 0 8.5%;
+}
+.container-selector {
+  .flex(1, 1);
+  .flexy(column);
+  .align-items(center);
+  position: relative;
+  color: @grayLight;
+  padding: 1ex 0;
+  border: 1px solid @grayBoxBorder;
+  border-left-width: 0;
+  &:hover {
+    &.waiting {
+      color: @blueLight;
+      border: 1px solid @blueLight;
     }
-
-    &.success:after { background: @green; }
-    &.running:after { background: @yellow; }
-    &.waiting:after { background: fadeout(@yellow, 70%); }
-    &.canceled:after {background: @grayLight; }
-    &.failed:after { background: @redLight; }
+    &.running {
+      color: @blueLight;
+      border: 1px solid @blueLight;
+    }
+    &.success {
+      color: @green;
+      border: 1px solid @green;
+    }
+    &.failed,
+    &.canceled {
+      color: @redLight;
+      border: 1px solid @redLight;
+      background: none;
+      svg {
+        path {
+          stroke: @redLight;
+        }
+      }
+    }
+    color: @grayDark;
+    border: 1px solid @grayDark;
+  }
+  &.waiting {
+    svg {
+      path {
+        stroke: @blueLight;
+        stroke-linecap: round;
+        stroke-width: 20;
+      }
+    }
+  }
+  &.running {
+    svg {
+      path {
+        stroke: @blueLight;
+      }
+    }
+  }
+  &.success {
+    svg {
+      path {
+        stroke: @green;
+      }
+    }
+  }
+  &.failed,
+  &.canceled {
+    color: @white;
+    background: @redLight;
+    border-color: @redLight;
+    + .failed,
+    + .canceled {
+      box-shadow: -1px 0 @red;
+    }
+    svg {
+      path {
+        stroke: @white;
+      }
+    }
+  }
+  &.active {
+    &:before,
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      height: 0;
+      width: 0;
+      border: solid transparent;
+      pointer-events: none;
+    }
+    &:before {
+      border-top-color: @grayLighter;
+      border-width: (@baseFontSize / 2) + 1;
+      margin-left: (-@baseFontSize / 2) - 1;
+    }
+    &:after {
+      border-top-color: @appBackgroundColor;
+      border-width: (@baseFontSize / 2);
+      margin-left: (-@baseFontSize / 2);
+    }
+    &.waiting {
+      &:hover {
+        &:before {
+          border-top-color: @blueLight;
+        }
+      }
+    }
+    &.running {
+      &:hover {
+        &:before {
+          border-top-color: @blueLight;
+        }
+      }
+    }
+    &.success {
+      &:hover {
+        &:before {
+          border-top-color: @green;
+        }
+      }
+    }
+    &.failed,
+    &.canceled {
+      &:before,
+      &:after {
+        border-top-color: @redLight;
+      }
+      &:hover {
+        &:after {
+          border-top-color: @appBackgroundColor;
+        }
+      }
+    }
+  }
+  &:first-child {
+    border-left-width: 1px;
+    border-radius: 4px 0 0 4px;
+  }
+  &:not(:first-child) {
+    &:hover {
+      margin-left: -1px;
+    }
+  }
+  &:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+  svg {
+    path {
+      stroke: @grayDark;
+      stroke-width: 8;
+      &:nth-child(2) {
+        stroke-linecap: round;
+        stroke-width: 20;
+      }
+    }
   }
 }
