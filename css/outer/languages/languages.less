@@ -9,6 +9,16 @@
     }
   }
 }
+#navbar.python {
+  background: @pythonColor;
+  ul a {
+    color: #fff;
+    &:hover {
+      background: none;
+      font-weight: bold;
+    }
+  }
+}
 .languages.page {
   @em: 18px;
   @pagesize: 940px;
@@ -50,8 +60,14 @@
     position: relative;
     padding-top: 2.5em;
     color: @white;
-    //for ruby, move this to variables
-    background: linear-gradient(to bottom, @rubyColor 0%, #A80D00 100%), @rubyColor;
+    //language specific styles
+    &.Ruby {
+      background: linear-gradient(to bottom, @rubyColor 0%, lighten(saturate(spin(@rubyColor, 1), 3), 8) 100%), @rubyColor;
+    }
+    &.Python {
+      background: linear-gradient(to bottom, @pythonColor 0%, lighten(saturate(spin(@pythonColor, 1), 3), 8) 100%), @pythonColor;
+    }
+    
     h1 {
       font-size: 40px;
       text-align: center;
