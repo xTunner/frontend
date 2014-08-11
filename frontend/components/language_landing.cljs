@@ -33,18 +33,18 @@
                                     :title "Inference That Just Works"
                                     :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
                         :docs-link "/docs/language-ruby-on-rails"
-                        :testimonials [{:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
+                        :testimonials [{:text "The speed is really impressive, the rspec suite alone takes 6 minutes to run on my Macbook Air, but only 2 minutes on Circle."
+                                        :img "/img/outer/languages/olivier.jpg"
+                                        :author "Olivier Melcher"
+                                        :title "Developer @PasswordBox"}
+                                       {:text "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure."
                                         :img "/assets/img/outer/stories/john.jpg"
-                                        :author "Kevin Rose"
-                                        :title "Entrepneur @Google"}
-                                       {:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
-                                        :img "/assets/img/outer/stories/john.jpg"
-                                        :author "Clark Kent"
-                                        :title "superman"}
-                                       {:text "Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis."
-                                        :img "/assets/img/outer/stories/john.jpg"
-                                        :author "Bruce Wayne"
-                                        :title "Batman"}]}})
+                                        :author "John Duff"
+                                        :title "Director of Engineering @Shopify"}
+                                       {:text "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. CircleCI's customer support is outstanding. We get quick, thorough answers to all our questions."
+                                        :img "/img/outer/languages/aaron.jpg"
+                                        :author "Aaron Suggs"
+                                        :title "Operations Engineer @Kickstarter"}]}})
 
 (defn language-landing [app owner]
   (reify
