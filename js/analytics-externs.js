@@ -1,5 +1,12 @@
-var mixpanel;
+var __adroll;
+__adroll.record_user;
 
+var _gaq;
+_gaq.push;
+
+var mktoMunchkin;
+
+var mixpanel;
 mixpanel.disable;
 mixpanel.track;
 mixpanel.track_pageview;
@@ -14,3 +21,13 @@ mixpanel.people.clear_charges;
 mixpanel.people.delete_user;
 mixpanel.name_tag
 mixpanel.identify
+
+var _pq;
+_pq.push;
+
+var _rollbar;
+_rollbar.push;
+
+var twttr;
+twttr.conversion;
+twttr.conversion.trackPid;

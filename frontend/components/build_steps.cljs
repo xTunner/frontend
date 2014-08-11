@@ -107,15 +107,14 @@
                    [:div.loading-spinner common/spinner]
 
                    [:div#action-log-messages
+                    (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
                                        main (sel1 "main.app-main")]
                                    (set! (.-scrollTop main) (- (+ (.-scrollTop main)
                                                                   (.-y (goog.style/getRelativePosition node main))
                                                                   (.-height (goog.style/getSize node)))
-                                                               (goog.dom/getDocumentHeight))))}
-
-                     (common/messages (:messages action))]
+                                                               (goog.dom/getDocumentHeight))))}]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)

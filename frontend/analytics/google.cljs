@@ -3,9 +3,7 @@
 
 (defn push [args]
   (utils/swallow-errors
-   (let [gaq (aget js/window "_gaq")
-         push (aget gaq "push")]
-     (.call push gaq (clj->js args)))))
+   (js/_gaq.push (clj->js args))))
 
 (defn track-event [& args]
   (utils/swallow-errors (push (cons "_trackEvent" args))))

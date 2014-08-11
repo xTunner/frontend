@@ -22,7 +22,7 @@
          [:div.changelog.page
           [:div.banner
            [:div.container
-            [:h1 "ChangeLog"]
+            [:h1 "Changelog"]
             [:h3 "What's changed in CircleCI recently"]]]
           [:div.container.content
            [:div.entries
@@ -41,9 +41,9 @@
                                       (str "https://twitter.com/" (:twitter team-member))
                                       (str "https://github.com/" (:github team-member)))}
                           (:name team-member)]
-                         " on "))
+                         " on"))
                  [:a {:href (:link entry)}
-                  (datetime/as-time-since (:pubDate entry))]]]
+                  " " (datetime/as-time-since (:pubDate entry))]]]
                [:div.entry-avatar
                 (when team-member
                   [:img {:src (:img-path team-member)}])]])]]])))))

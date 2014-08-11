@@ -94,6 +94,10 @@
   [target message _ state]
   (update-in state state/show-inspector-path not))
 
+(defmethod control-event :user-options-toggled
+  [target message _ state]
+  (update-in state state/user-options-shown-path not))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
@@ -150,6 +154,11 @@
                  :build-artifacts
                  api-ch
                  :context (build-model/id build)))))
+
+
+(defmethod control-event :show-config-toggled
+  [target message build-id state]
+  (update-in state state/show-config-path not))
 
 
 (defmethod control-event :container-selected

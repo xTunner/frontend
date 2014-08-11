@@ -1,6 +1,5 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [cljs-time.core :as time]
             [frontend.async :refer [put!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
@@ -35,15 +34,6 @@
               [:a.close {:on-click #(put! controls-ch [:clear-error-message-clicked])} "×"]
               "Error: " display-message
               " If we can help, " (contact-us-inner controls-ch) "."]]]))))))
-
-(def spinner
-  [:svg {:viewBox "0 0 100 100"
-         :data-spinner true
-         :dangerouslySetInnerHTML
-         #js {"__html" "<path fill=\"#fff\" d=\"M50 0c-23.297 0-42.873 15.936-48.424 37.5-.049.191-.083.389-.083.595 0 1.315 1.066 2.381 2.381 2.381h20.16c.96 0 1.783-.572 2.159-1.391l.041-.083c4.157-8.968 13.231-15.192 23.766-15.192 14.465 0 26.19 11.726 26.19 26.19 0 14.465-11.726 26.191-26.19 26.191-10.535 0-19.609-6.225-23.766-15.191l-.041-.084c-.376-.82-1.199-1.393-2.16-1.393h-20.159c-1.315 0-2.381 1.066-2.381 2.381 0 .207.035.406.083.596 5.551 21.564 25.127 37.5 48.424 37.5 27.614 0 50-22.385 50-50 0-27.614-22.386-50-50-50z\">
-                         <animateTransform attributeName=\"transform\" begin=\"0ms\" dur=\"600ms\" fill=\"freeze\" type=\"rotate\" repeatDur=\"indefinite\" values=\"0 50 50;359 50 50\" keyTimes=\"0;1\" calcMode=\"spline\" keySplines=\"0.42 0 0.58 1\"></animateTransform>
-                       </path>
-                       <circle fill=\"#fff\" cx=\"50\" cy=\"50\" r=\"11.905\"></circle>"}}])
 
 (defn normalize-html
   "Creates a valid html string given a (possibly) invalid html string."
@@ -81,35 +71,33 @@
    :repo "M44.4,27.5h-5.6v5.6h5.6V27.5z M44.4,16.2h-5.6v5.6h5.6V16.2z M78.1,5H21.9c0,0-5.6,0-5.6,5.6 v67.5c0,5.6,5.6,5.6,5.6,5.6h11.2V95l8.4-8.4L50,95V83.8h28.1c0,0,5.6-0.1,5.6-5.6V10.6C83.8,5,78.1,5,78.1,5z M78.1,72.5 c0,5.4-5.6,5.6-5.6,5.6H50v-5.6H33.1v5.6h-5.6c-5.6,0-5.6-5.6-5.6-5.6v-5.6h56.2V72.5z M78.1,61.2h-45V10.6h45.1L78.1,61.2z M44.4,50h-5.6v5.6h5.6V50z M44.4,38.8h-5.6v5.6h5.6V38.8z"})
 
 (def ico-templates
-  {:logo {:paths [(:turn ico-paths) (:circle ico-paths)]}
-   :pass {:paths [(:turn ico-paths (:check ico-paths))]}
-   :fail {:paths [(:turn ico-paths) (:times ico-paths)]}
-   :queued {:paths [(:turn ico-paths) (:clock ico-paths)]}
-   :busy-light {:paths [(:slim_turn ico-paths) (:slim_circle ico-paths)]
-                :d "600ms"
-                :v "0 50 50;360 50 50"
-                :k "0;1"}
-   :pass-light {:paths [(:slim_check ico-paths)]}
-   :fail-light {:paths [(:slim_times ico-paths)]}
-   :hold-light {:paths [(:slim_clock ico-paths)]}
-   :stop-light {:paths [(:slim_ban ico-paths)]}
-   :settings-light {:paths [(:slim_settings ico-paths) (:slim_circle ico-paths)]}
-   :none-light {:paths [(:slim_circle ico-paths)]}
-   :repo {:paths [(:repo ico-paths)]}})
+  {:logo {:paths [:turn :circle]}
+   :pass {:paths [:turn :check]}
+   :fail {:paths [:turn :times]}
+   :queued {:paths [:turn :clock]}
+   :logo-light {:paths [:slim_turn :slim_circle]}
+   :busy-light {:paths [:slim_turn :slim_circle]}
+   :pass-light {:paths [:slim_check]}
+   :fail-light {:paths [:slim_times]}
+   :hold-light {:paths [:slim_clock]}
+   :stop-light {:paths [:slim_ban]}
+   :settings-light {:paths [:slim_settings :slim_circle]}
+   :none-light {:paths [:slim_circle]}
+   :repo {:paths [:repo]}
+   :spinner {:paths [:turn :circle]}})
 
 (defn ico [ico-name]
   (let [template (get ico-templates ico-name)]
-    [:svg {:class "ico" :xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
-           :dangerouslySetInnerHTML
-           #js {"__html" (apply str
-                                (for [path (:paths template)]
-                                  (str "<path class='ico-" (name ico-name) "' fill='none'"
-                                       " d='" path "'>"
-                                       (when (:d template)
-                                         (str "<animateTransform attributeName='transform' type='rotate'"
-                                              " repeatDur='indefinite' dur='" (:d template) "' values='" (:v template) "'"
-                                              " keyTimes='" (:k template) "'></animateTransform>"))
-                                       "</path>")))}}]))
+    [:i {:class "ico"}
+      [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
+             :class (name ico-name)
+             :dangerouslySetInnerHTML
+             #js {"__html" (apply str
+                                  (for [path (:paths template)]
+                                    (str "<path class='" (name path) "' fill='none' d='" (get ico-paths path) "'></path>")))}}]]))
+
+(def spinner
+  (ico :spinner))
 
 ;; TODO: why do we have ico and icon?
 (def icon-shapes
@@ -142,7 +130,7 @@
     om/IInitState
     (init-state [_]
       {:watcher-uuid (utils/uuid)
-       :now (time/now)
+       :now (datetime/server-now)
        :has-watcher? false})
     om/IDidMount
     (did-mount [_]
@@ -167,7 +155,7 @@
     (render-state [_ {:keys [now]}]
       (let [end-ms (if stop
                      (.getTime (js/Date. stop))
-                     (.getTime now))
+                     now)
             formatter (get opts :formatter datetime/as-duration)
             duration-ms (- end-ms (.getTime (js/Date. start)))]
         (dom/span nil (formatter duration-ms))))))

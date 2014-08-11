@@ -5,10 +5,11 @@
             [frontend.utils :as utils :include-macros true]
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
+            [goog.window :as window]
             [secretary.core :as sec])
   (:require-macros [dommy.macros :refer [sel sel1]])
   (:import [goog.history Html5History]
-           [goog.events EventType Event]
+           [goog.events EventType Event BrowserEvent]
            [goog History]))
 
 
@@ -77,31 +78,35 @@
   (= (first (string/split token-a #"#"))
      (first (string/split token-b #"#"))))
 
+(defn new-window-click? [event]
+  (or (.isButton event goog.events.BrowserEvent.MouseButton.MIDDLE)
+      (and (.-platformModifierKey event)
+           (.isButton event goog.events.BrowserEvent.MouseButton.LEFT))))
+
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (let [dom-helper (goog.dom.DomHelper.)]
     (events/listen top-level-node "click"
-                   #(when (and (.isMouseActionButton %) ; ignore middle clicks
-                               (not (.-metaKey %))) ; ignore cmd+click
-                      (let [-target (.. % -target)
-                            _ (set! js/window.teste %)
-                            target (if (= (.-tagName -target) "A")
-                                     -target
-                                     (.getAncestorByTagNameAndClass dom-helper -target "A"))
-                            location (when target (str (.-pathname target) (.-search target) (.-hash target)))
-                            new-token (when (seq location) (subs location 1 ))]
-                        (when (and (seq location)
-                                   (not= "_blank" (.-target target))
-                                   (= (.. js/window -location -hostname)
-                                      (.-hostname target)))
-                          (.stopPropagation %)
-                          (.preventDefault %)
-                          (if (and (route-fragment location)
-                                   (path-matches? (.getToken history-imp) new-token))
-                            (do (utils/mlog "scrolling to hash for" location)
-                                ;; don't break the back button
-                                (.replaceToken history-imp new-token))
-                            (do (utils/mlog "navigating to" location)
-                                (.setToken history-imp new-token)))))))))
+                   #(let [-target (.. % -target)
+                          target (if (= (.-tagName -target) "A")
+                                   -target
+                                   (.getAncestorByTagNameAndClass dom-helper -target "A"))
+                          location (when target (str (.-pathname target) (.-search target) (.-hash target)))
+                          new-token (when (seq location) (subs location 1))]
+                      (when (and (seq location)
+                                 (= (.. js/window -location -hostname)
+                                    (.-hostname target))
+                                 (not (or (new-window-click? %) (= (.-target target) "_blank"))))
+                        (.stopPropagation %)
+                        (.preventDefault %)
+                        (if (and (route-fragment location)
+                                 (path-matches? (.getToken history-imp) new-token))
+
+                          (do (utils/mlog "scrolling to hash for" location)
+                              ;; don't break the back button
+                              (.replaceToken history-imp new-token))
+
+                          (do (utils/mlog "navigating to" location)
+                              (.setToken history-imp new-token))))))))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom

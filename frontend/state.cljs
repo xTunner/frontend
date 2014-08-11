@@ -10,6 +10,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
+   :user-options-shown false
    :selected-home-technology-tab nil
    :builds-per-page 30
    :navigation-point nil
@@ -39,6 +40,7 @@
                                            :show-usage-queue false}
                         :artifact-data {:artifacts nil
                                         :show-artifacts false}
+                        :config-data {:show-config false}
                         :current-container-id 0
                         :container-data {:current-container-id 0
                                          :containers nil}
@@ -75,6 +77,8 @@
 
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])
 (def show-artifacts-path [:current-build-data :artifacts-data :show-artifacts])
+
+(def show-config-path [:current-build-data :config-data :show-config])
 
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
@@ -179,3 +183,5 @@
 (def docs-search-path [:docs-query])
 (def docs-articles-results-path [:docs-articles-results])
 (def docs-articles-results-query-path [:docs-articles-results-query])
+
+(def user-options-shown-path [:user-options-shown])

@@ -30,33 +30,31 @@
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)]
         (html
-         [:div#dashboard
-          [:section
-           (cond (nil? builds) [:div.loading-spinner common/spinner]
-                 (and (empty? builds)
-                      projects
-                      (empty? projects)) [:div
-                                          [:h2 "You don't have any projects in CircleCI!"]
-                                          [:p "Why don't you add a repository or two on the "
-                                           [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
-                 :else
-                 (list
-                  (when (and plan (show-trial-notice? plan))
-                    (om/build project-common/trial-notice plan))
-                  (om/build builds-table/builds-table builds {:opts {:show-actions? false
-                                                                     :show-branch? (not (:branch nav-data))
-                                                                     :show-project? (not (:repo nav-data))}})
-                  [:div.recent-builds-pager
-                   [:a
-                    {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
-                     ;; no newer builds if you're on the first page
-                     :class (when (zero? page) "disabled")}
-                    [:i.fa.fa-long-arrow-left]
-                    [:span " Newer builds"]]
-                   [:a
-                    {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
-                     ;; no older builds if you have less builds on the page than an
-                     ;; API call returns
-                     :class (when (> builds-per-page (count builds)) "disabled")}
-                    [:span "Older builds "]
-                    [:i.fa.fa-long-arrow-right]]]))]])))))
+         (cond (nil? builds) [:div.loading-spinner common/spinner]
+              (and (empty? builds)
+                   projects
+                   (empty? projects)) [:div
+                                       [:h2 "You don't have any projects in CircleCI!"]
+                                       [:p "Why don't you add a repository or two on the "
+                                        [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
+              :else
+              [:div.dashboard
+               (when (and plan (show-trial-notice? plan))
+                 (om/build project-common/trial-notice plan))
+               (om/build builds-table/builds-table builds {:opts {:show-actions? false
+                                                                  :show-branch? (not (:branch nav-data))
+                                                                  :show-project? (not (:repo nav-data))}})
+               [:div.recent-builds-pager
+                [:a
+                 {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
+                  ;; no newer builds if you're on the first page
+                  :class (when (zero? page) "disabled")}
+                 [:i.fa.fa-long-arrow-left]
+                 [:span " Newer builds"]]
+                [:a
+                 {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
+                  ;; no older builds if you have less builds on the page than an
+                  ;; API call returns
+                  :class (when (> builds-per-page (count builds)) "disabled")}
+                 [:span "Older builds "]
+                 [:i.fa.fa-long-arrow-right]]]]))))))

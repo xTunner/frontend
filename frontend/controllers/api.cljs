@@ -424,6 +424,7 @@
 
 (defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
+  (api/get-projects (get-in current-state [:comms :api]))
   (if-let [first-build (get-in args [:resp :first_build])]
     (let [nav-ch (get-in current-state [:comms :nav])
           build-path (-> first-build
@@ -445,6 +446,11 @@
     (if-let [repo-index (state-utils/find-repo-index state login type (:name context))]
       (assoc-in state (conj (state/repo-path login type repo-index) :following) false)
       state)))
+
+
+(defmethod post-api-event! [:unfollow-repo :success]
+  [target message status args previous-state current-state]
+  (api/get-projects (get-in current-state [:comms :api])))
 
 
 (defmethod post-api-event! [:start-build :success]
@@ -484,7 +490,8 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
-    (assoc-in state state/stripe-card-path resp)))
+    (let [card (or resp {})] ; special case in case card gets deleted
+      (assoc-in state state/stripe-card-path card))))
 
 
 (defmethod api-event [:create-plan :success]
