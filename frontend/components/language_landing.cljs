@@ -44,6 +44,31 @@
                                        {:text "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. CircleCI's customer support is outstanding. We get quick, thorough answers to all our questions."
                                         :img "/img/outer/languages/aaron.jpg"
                                         :author "Aaron Suggs"
+                                        :title "Operations Engineer @Kickstarter"}]}
+                "python" {:language "Python"
+                        :headline "CircleCI makes Continous Integration and Deployment for Python projects a breeze."
+                        :logo-path (utils/cdn-path "/img/outer/languages/ruby-logo.svg")
+                        :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
+                                    :title "Built For Ruby"
+                                    :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
+                                   {:feature "Circle manages all your database requirements for your, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB. You can also add custom database commands via your circle.yml."
+                                    :title "Database Management"
+                                    :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
+                                   {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha."
+                                    :title "Inference That Just Works"
+                                    :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
+                        :docs-link "/docs/language-ruby-on-rails"
+                        :testimonials [{:text "The speed is really impressive, the rspec suite alone takes 6 minutes to run on my Macbook Air, but only 2 minutes on Circle."
+                                        :img "/img/outer/languages/olivier.jpg"
+                                        :author "Olivier Melcher"
+                                        :title "Developer @PasswordBox"}
+                                       {:text "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure."
+                                        :img "/assets/img/outer/stories/john.jpg"
+                                        :author "John Duff"
+                                        :title "Director of Engineering @Shopify"}
+                                       {:text "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. CircleCI's customer support is outstanding. We get quick, thorough answers to all our questions."
+                                        :img "/img/outer/languages/aaron.jpg"
+                                        :author "Aaron Suggs"
                                         :title "Operations Engineer @Kickstarter"}]}})
 
 (defn language-landing [app owner]
@@ -56,7 +81,7 @@
                   controls-ch (om/get-shared owner [:comms :controls])]
               (html
                 [:div.languages.page
-                 [:div.languages-head
+                 [:div.languages-head {:class (:language template)}
                   [:img {:src (utils/cdn-path (:logo-path template))}]
                   [:h1 (:headline template)]
                   [:div.languages-screenshots]
