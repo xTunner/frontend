@@ -203,6 +203,24 @@
                            [:a {:href (:url artifact) :target "_blank"} display-path])]))
                     artifacts)]))])))))
 
+(defn build-config [{:keys [build config-data]} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            config-string (get-in build [:circle_yml :string])
+            show-config (:show-config config-data)]
+        (html
+         [:section.build-config {:class (when show-config "active")}
+          [:div.build-config-title
+           [:strong "circle.yml"]
+           [:a {:role "button"
+                :on-click #(put! controls-ch [:show-config-toggled])}
+            [:span " view "]
+            [:i.fa.fa-caret-down {:class (when show-config "fa-rotate-180")}]]]
+          (when show-config
+            [:div.build-config-string [:pre config-string]])])))))
+
 (defn build-head [data owner]
   (reify
     om/IRender
@@ -217,7 +235,8 @@
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             plan (get-in data [:project-data :plan])
-            user (:user data)]
+            user (:user data)
+            config-data (:config-data build-data)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -345,4 +364,7 @@
            (when (:has_artifacts build)
              (om/build build-artifacts-list
                        {:artifacts-data (get build-data :artifacts-data) :user user}
-                       {:opts {:show-node-indices? (< 1 (:parallel build))}}))]])))))
+                       {:opts {:show-node-indices? (< 1 (:parallel build))}}))
+           (when (build-model/config-string? build)
+             (om/build build-config
+                       {:build build :config-data config-data}))]])))))
