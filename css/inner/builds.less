@@ -190,22 +190,22 @@
 }
 
 .zerothdivider(@type) {
-  (~".container-view > .type-@{type}") {
+  .container-view > .type-@{type} {
     .type-divider { display: block; }
   }
-  (~".container-view > .type-@{type} ~ .type-@{type}") {
+  .container-view > .type-@{type} ~ .type-@{type} {
     .type-divider { display: none; }
   }
 }
 
-.zerothdivider("infrastructure");
-.zerothdivider("checkout");
-.zerothdivider("machine");
-.zerothdivider("dependencies");
-.zerothdivider("database");
-.zerothdivider("test");
-.zerothdivider("deploy");
-.zerothdivider("");
+.zerothdivider(infrastructure);
+.zerothdivider(checkout);
+.zerothdivider(machine);
+.zerothdivider(dependencies);
+.zerothdivider(database);
+.zerothdivider(test);
+.zerothdivider(deploy);
+// .zerothdivider();
 
 
 .build-output-active {
