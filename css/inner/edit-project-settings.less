@@ -665,8 +665,8 @@
       white-space: nowrap;
     }
   }
-  // Circle API Page
-  .circle-api-page {
+  // Circle API & Status Badge pages
+  .circle-api-page, .status-page {
     table {
       .skin_table();
       overflow: visible;
@@ -689,7 +689,7 @@
       }
     }
   }
-  .circle-api-page-inner {
+  .circle-api-page-inner, .status-page-inner {
     margin: 2em 0;
     max-width: @gridRowWidth;
     .popover {
@@ -740,6 +740,18 @@
           transition: color .3s ease-in-out;
         }
       }
+    }
+  }
+  .status-page-inner {
+    .token .warning {
+      font-weight: bold;
+      color: @redLight;
+    }
+    .style, .preview {
+      margin-bottom: 1.5em;
+    }
+    .embed textarea {
+      height: 8em;
     }
   }
   // Heroku Page
