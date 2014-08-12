@@ -295,7 +295,7 @@
                      api-ch
                      :context {:project-name project-name})
 
-          (and (= subpage :api)
+          (and (#{:api :badges} subpage)
                (not (get-in current-state state/project-tokens-path)))
           (ajax/ajax :get
                      (gstring/format "/api/v1/project/%s/token" project-name)
