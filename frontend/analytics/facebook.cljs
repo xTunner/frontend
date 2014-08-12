@@ -5,7 +5,7 @@
 
 (defn track-signup 
    (if (aget js/window "_fbq")
-         (track-pid pid)
+         (track-fb-conversion (.push js/window._fbq #js ["track" "6017231164176" {:value "0.01" :currency "USD"}]))
          (-> (goog.net.jsloader.load "//connect.facebook.net/en_US/fbds.js")
                      (.addCallback #(track-pid pid)))))
 
