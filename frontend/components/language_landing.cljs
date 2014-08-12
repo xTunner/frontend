@@ -89,11 +89,9 @@
                  [:div.languages-body
                   [:div.languages-features
                    [:div.center-text
-                    [:h3 "FEATURES"
-                     ]
-                    ]
+                    [:h3 "FEATURES"]]
                    (map-indexed
-                     (fn [i feature] [feature (:features template)]
+                     (fn [i feature]
                        (if (odd? i)
                          [:div.feature
                           [:div.feature-image
