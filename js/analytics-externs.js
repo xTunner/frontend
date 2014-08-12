@@ -31,3 +31,6 @@ _rollbar.push;
 var twttr;
 twttr.conversion;
 twttr.conversion.trackPid;
+
+var _fbq;
+_fbq.push;

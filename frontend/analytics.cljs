@@ -70,6 +70,7 @@
 (defn track-signup []
   (utils/swallow-errors
    (twitter/track-signup)
+   (facebook/track-signup)
    ((aget js/window "track_signup_conversion"))))
 
 (defn track-payer [login]
