@@ -6,6 +6,7 @@
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.rollbar :as rollbar]
             [frontend.analytics.twitter :as twitter]
+            [frontend.analytics.facebook :as facebook]         
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
