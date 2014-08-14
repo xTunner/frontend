@@ -1,38 +1,16 @@
-.animation(@arguments) {
+.animation(...) {
   -webkit-animation: @arguments;
           animation: @arguments;
 }
-.transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
-  transition: -webkit-transform @duration @timing-function @delay;
-  transition:         transform @duration @timing-function @delay;
+.animation-bezier(@x1, @y1, @x2, @y2) {
+  -webkit-animation-timing-function: cubic-bezier(@x1, @y1, @x2, @y2);
+          animation-timing-function: cubic-bezier(@x1, @y1, @x2, @y2);
 }
-.smoothHover(...) {
-  @joined: ~`"@{arguments}".slice(1,-1)`;
-  transition-property: @joined;
-  transition-duration: .3s;
-  transition-timing-function: ease-in-out;
-  &:hover {
-    transition-duration: .1s;
-  }
-  &:active {
-    transition-duration: .2s;
-  }
+@keyframes clockwise {
+  0%   {  .rotate(0);}
+  100% {.rotate(359);}
 }
-#animated {
-  .slide-in {
-    -webkit-animation-name: slide-in;
-    -webkit-animation-duration: 1s;
-  }
-}
-@-webkit-keyframes spin-right {
-  0%   {-webkit-transform: rotate(  0deg);}
-  100% {-webkit-transform: rotate(360deg);}
-}
-@keyframes spin-right {
-  0%   {transform: rotate(  0deg);}
-  100% {transform: rotate(360deg);}
-}
-@-webkit-keyframes slide-in {
-  0%   {-webkit-transform: translate(0, -100%);}
-  100% {-webkit-transform: translate(0, 0);    }
+@-webkit-keyframes clockwise {
+  0%   {  .rotate(0);}
+  100% {.rotate(359);}
 }

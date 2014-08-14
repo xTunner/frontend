@@ -45,7 +45,7 @@
       width: @tile;
       .aside-item {
         .tip(right);
-        i,
+        > i,
         img {
           margin-right: ((@tile - @baseFontSize) / 2);
           transition-duration: (@aside_slim_speed * 1.5);
@@ -113,15 +113,24 @@
           }
         }
       }
+      .status {
+        .icon_style(transparent, @activity_ico);
+        i {
+          &.ico {
+            .busy-light {stroke: @blueLight;}
+            .pass-light {stroke: @green;}
+            .fail-light {stroke: @redLight;}
+            .hold-light {stroke: @gray;}
+            .stop-light {stroke: @orange;}
+            .none-light {stroke: @white;}
+            [class$="-light"] {stroke-width: 10;}
+          }
+        }
+      }
       .project {
         a {
           &:not(:hover) {
             color: @grayDark;
-          }
-          &.toggle {
-            .ico-repo {
-              fill: @grayDark;
-            }
           }
         }
       }
@@ -175,7 +184,7 @@
       .underline_deboss();
       .logomark {
         .flexy(center, center);
-        .icon_style(@white, 2em);
+        .icon_style(@white, (@em * 2));
         width: @tile;
         height: @tile;
       }
@@ -190,7 +199,7 @@
     &:nth-child(9)  > i {transition-delay: @cascade_delay *  8;}
     &:nth-child(10) > i {transition-delay: @cascade_delay *  9;}
     &:nth-child(11) > i {transition-delay: @cascade_delay * 10;}
-    i {
+    > i {
       min-width: @baseFontSize;
       margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
       transition: margin @aside_slim_speed;
@@ -263,7 +272,7 @@
       width: (@aside_nav_width - @activity_scroll);
       line-height: @em; // BS RESET
       &:hover {
-        .status {
+        .statuses {
           a {
             &:not(:last-child) {
               transition-delay: 1000ms; // delay meant to give user time to hover over to branch name
@@ -288,18 +297,6 @@
               &:nth-last-of-type(3) path {opacity: .34}
               &:nth-last-of-type(4) path {opacity: .21}
               &:nth-last-of-type(5) path {opacity: .13}
-            }
-          }
-        }
-      }
-      &:not(:hover) {
-        &:not(.running) {
-          a {
-            &:not(:hover) {
-              path {
-                // opacity: .66;
-                // opacity isn't working above, will try something else, just commenting out for now to keep the selectors in place
-              }
             }
           }
         }
@@ -332,6 +329,7 @@
         &.toggle {
           .box-sizing(border-box);
           .flex(0, 0, auto);
+          .icon_style(@grayDark, 100%);
           width: @em * 2;
           height: @em *2;
           padding: 5px; // got this from trial and error
@@ -348,7 +346,6 @@
         }
         &.latest {
           .flex(0, 0, auto);
-          .icon_style(transparent, @activity_ico);
           display: none;
           width: @activity_line;
           height: @activity_line;
@@ -358,7 +355,7 @@
       }
     }
     .branch,
-    .status {
+    .statuses {
       a {
         height: @activity_line;
         line-height: @activity_line;
@@ -392,18 +389,19 @@
         }
       }
     }
-    .status {
+    .statuses {
       .flex(1, 0, auto);
       .flexy(center, flex-end);
       a {
         .flexy(center, center);
-        .icon_style(transparent, @activity_ico);
         width: @activity_line;
         &:first-child {
           .flex(1, 0, auto);
           .justify-content(flex-end);
-          svg {
-            padding-right: round((@activity_line - @activity_ico) / 2);
+          i {
+            &.ico {
+              padding-right: round((@activity_line - @activity_ico) / 2);
+            }
           }
         }
         &:not(:last-child) {
@@ -415,19 +413,6 @@
           padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
         }
       }
-    }
-    path {
-      &[class$="-light"] {
-        &:first-child {
-          stroke-width: 10;
-        }
-      }
-      &.ico-busy-light {stroke: @blueLight;}
-      &.ico-pass-light {stroke: @green;}
-      &.ico-fail-light {stroke: @redLight;}
-      &.ico-hold-light {stroke: @gray;}
-      &.ico-stop-light {stroke: @orange;}
-      &.ico-none-light {stroke: @white;}
     }
   }
   .aside-user {
