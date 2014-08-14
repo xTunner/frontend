@@ -356,10 +356,11 @@
                                                                      :build-num build-num}])}
                   "& enable ssh"]))]
              [:div.actions
-              [:button.report_build
-               {:title "Report error with build",
-                :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
-               "Report"]
+              (when logged-in? ;; no intercom for logged-out users
+                [:button.report_build
+                 {:title "Report error with build",
+                  :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
+                 "Report"])
               (when (build-model/can-cancel? build)
                 (forms/stateful-button
                  [:button.cancel_build
