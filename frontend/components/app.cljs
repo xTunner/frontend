@@ -99,7 +99,7 @@
                 ;; TODO inspector still needs lots of work. It's slow and it defaults to
                 ;;     expanding all datastructures.
                 (om/build inspector/inspector app))
-              (when inner?
+              (when (and inner? logged-in?)
                 (om/build aside/aside app))
               [:main.app-main {:tab-index 1}
                (om/build header/header app)
