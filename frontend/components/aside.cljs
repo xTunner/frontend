@@ -39,7 +39,7 @@
     :none-light))
 
 (defn sidebar-build [build {:keys [org repo branch latest?]}]
-  [:a {:class (when latest? "latest")
+  [:a.status {:class (when latest? "latest")
        :href (routes/v1-build-path org repo (:build_num build))
        :title (str (build-model/status-words build) ": " (:build_num build))}
    (common/ico (status-ico-name build))])
@@ -54,13 +54,13 @@
             display-builds (take-last 5 (sort-by :build_num (concat (:running_builds branch-builds)
                                                                     (:recent_builds branch-builds))))]
         (html
-         [:li {:class (-> display-builds last :status)}
+         [:li
           [:div.branch
            {:role "button"}
            [:a {:href (routes/v1-dashboard-path {:org org :repo repo :branch (name name-kw)})
                 :title (utils/display-branch name-kw)}
             (-> name-kw utils/display-branch (utils/trim-middle 23))]]
-          [:div.status {:role "button"}
+          [:div.statuses {:role "button"}
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 

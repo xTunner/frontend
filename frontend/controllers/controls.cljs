@@ -156,6 +156,11 @@
                  :context (build-model/id build)))))
 
 
+(defmethod control-event :show-config-toggled
+  [target message build-id state]
+  (update-in state state/show-config-path not))
+
+
 (defmethod control-event :container-selected
   [target message {:keys [container-id]} state]
   (assoc-in state state/current-container-path container-id))

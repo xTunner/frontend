@@ -107,7 +107,7 @@
              controls-ch (om/get-shared owner [:comms :controls])]
          [:div.row-fluid
           [:div.offset1.span10
-           [:div (common/messages (:messages build))]
+           [:div (common/messages (set (:messages build)))]
            (when (empty? (:messages build))
              [:div (report-error build controls-ch)])
 
