@@ -242,7 +242,7 @@
             usage-queued? (build-model/in-usage-queue? build)
             plan (get-in data [:project-data :plan])
             user (:user data)
-            logged-in? (not (empty user))
+            logged-in? (not (empty? user))
             config-data (:config-data build-data)]
         (html
          [:div.build-head-wrapper
