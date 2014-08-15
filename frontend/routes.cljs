@@ -113,6 +113,7 @@
       (if-let [doc (get (doc-utils/find-all-docs) subpage)]
         (open-to-outer! nav-ch :documentation (assoc params
                                                 :subpage subpage
+                                                :_analytics-page "View Docs"
                                                 :_title (:title doc)))
         (do
           (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
