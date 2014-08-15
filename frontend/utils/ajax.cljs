@@ -20,7 +20,7 @@
   ([{:keys [prefix keywords? url method start-time]
      :or {start-time (time/now)}}]
      {:read (fn read-json [xhrio]
-              (let [json (.getResponseJson xhrio prefix)
+              (let [json (js/JSON.parse (.getResponseText xhrio))
                     headers (js->clj (.getResponseHeaders xhrio))
                     request-time (try
                                    (time/in-millis (time/interval start-time (time/now)))
