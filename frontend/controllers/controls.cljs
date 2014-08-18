@@ -30,6 +30,15 @@
 (defn container-id [container]
   (int (last (re-find #"container_(\d+)" (.-id container)))))
 
+(defn merge-settings
+  "Merge new settings from inputs over a subset of project settings."
+  [path project settings]
+  (letfn [(merge-existing [settings-value & args]
+            (utils/deep-merge (get-in project path) settings-value))]
+    (if path
+      (update-in settings path merge-existing)
+      settings)))
+
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti control-event
@@ -483,14 +492,39 @@
        (release-button! uuid (:status api-result))))))
 
 
-(defmethod post-control-event! :saved-notification-hooks
-  [target message {:keys [project-id]} previous-state current-state]
+(defmethod post-control-event! :saved-project-settings
+  ;; Takes the state of project settings inputs and PUTs the new settings to
+  ;; /api/v1/project/:project/settings.
+  ;;
+  ;; `merge-path` is a path into the nested project data-structure. When
+  ;; merge-path is non-nil the part of the project data-structure at that path is
+  ;; used as the base values for the settings. The new settings from the inputs
+  ;; state are merged on top.
+  ;;
+  ;; This allows all the settings on a page to be submitted, even if the user only
+  ;; modifies one.
+  ;;
+  ;; E.g.
+  ;; project is
+  ;;   {:github-info { ... }
+  ;;    :aws {:keypair {:access_key_id "access key"
+  ;;                    :secret_access_key "secret key"}}}
+  ;;
+  ;; The user sets a new access key ID so inputs is
+  ;;   {:aws {:keypair {:access_key_id "new key id"}}}
+  ;;
+  ;; :merge-path is [:aws :keypair]
+  ;;
+  ;; The settings posted to the settings API will be:
+  ;;   {:aws {:keypair {:access_key_id "new key id"
+  ;;                    :secret_access_key "secret key"}}}
+  [target message {:keys [project-id merge-path]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         comms (get-in current-state [:comms])
         uuid frontend.async/*uuid*
-        project (get-in current-state state/project-path)
         inputs (get-in current-state state/inputs-path)
-        settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
+        project (get-in current-state state/project-path)
+        settings (merge-settings merge-path project inputs)]
     (go
      (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
        (if (= :success (:status api-result))
@@ -898,12 +932,13 @@
   (utils/open-modal "#enterpriseModal"))
 
 (defmethod control-event :project-feature-flag-checked
-  [target message {:keys [project-id project-name flag value]} state]
+  [target message {:keys [project-id flag value]} state]
   (assoc-in state (conj state/project-path :feature_flags flag) value))
 
 (defmethod post-control-event! :project-feature-flag-checked
-  [target message {:keys [project-id project-name flag value]} previous-state current-state]
-  (let [comms (get-in current-state [:comms])]
+  [target message {:keys [project-id flag value]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        comms (get-in current-state [:comms])]
     (go (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name)
                                                 :params {:feature_flags {flag value}}))]
           (when (not= :success (:status api-result))

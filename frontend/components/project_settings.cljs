@@ -329,7 +329,6 @@
                                     {:type "checkbox"
                                      :checked (get feature-flags flag)
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value true}])}]
                                    " On"]]
@@ -339,7 +338,6 @@
                                     {:type "checkbox"
                                      :checked (not (get feature-flags flag))
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value false}])}]
                                    " Off"]]]]]))]
@@ -588,7 +586,7 @@
               :data-loading-text "Saving",
               :value "Save notification hooks",
               :type "submit",
-              :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}])]])))))
+              :on-click #(do (put! controls-ch [:saved-project-settings {:project-id project-id}]))}])]])))))
 
 (defn webhooks [project-data owner]
   (om/component
