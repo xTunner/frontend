@@ -780,7 +780,7 @@
 
 
 %p
-  This example sends a JSON packet to the specified URL.
+  This example will POST a JSON packet to the specified URL.
 
 %pre
   %code<>
